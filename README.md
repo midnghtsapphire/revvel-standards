@@ -157,6 +157,56 @@ Every Revvel application MUST include email collection and newsletter functional
 - Email delivery stats (sent, opened, clicked, bounced)
 - One-click send to all subscribers or filtered segments
 
+### SEO Infrastructure (MANDATORY)
+Every Revvel application MUST include comprehensive SEO infrastructure for organic traffic growth.
+
+#### About Section (Multi-Page)
+Every app must have a deep About section with multiple sub-pages:
+- **About Us** — Company story, mission, values
+- **About the Team** — Founder bio, team members
+- **About the Technology** — How the app works, tech stack
+- **About Our Mission** — Social impact, accessibility commitment
+- **About Our Partners** — Affiliates, integrations, collaborators
+- **Press & Media** — Press releases, media mentions, press kit
+- **Careers** — Job listings (even placeholder for growth)
+- **Testimonials** — User reviews and success stories
+- **Awards & Recognition** — Certifications, compliance badges
+- **Contact** — Multiple contact methods, support form
+
+#### Blog System
+- **Auto-generated blog posts** via OpenRouter LLM on app launch and weekly
+- **SEO-optimized** with target keywords, meta descriptions, schema markup
+- **Categories:** How-To, Industry News, Product Updates, Tips & Tricks, Case Studies
+- **Minimum 20 blog posts** at launch, auto-growing weekly
+- **Internal linking** between blog posts and app pages
+- **RSS feed** for syndication
+
+#### FAQ System
+- **Comprehensive FAQ page** with 50+ questions at launch
+- **Categorized:** Getting Started, Pricing, Features, Technical, Legal, Accessibility
+- **Schema markup** (FAQPage) for Google rich snippets
+- **Auto-expanding** — new FAQs generated from user questions
+- **Searchable** with instant filter
+
+#### Backlink Strategy (1000+ Links)
+- **Internal backlinks:** Every page links to 5-10 other pages within the app
+- **Cross-app backlinks:** Every Revvel app links to every other Revvel app
+- **Blog-to-page backlinks:** Every blog post links to relevant app features
+- **SEO landing pages:** 15-50 city/industry/niche-specific pages per app
+- **Directory submissions:** Auto-submit to 100+ web directories
+- **Social profile backlinks:** Link from all social media profiles
+- **Guest post templates:** Auto-generated outreach emails for guest blogging
+- **Target: 1000+ backlinks** per app through internal + cross-app + directory + social + content strategy
+
+#### Technical SEO
+- **Sitemap.xml** auto-generated
+- **Robots.txt** configured
+- **Schema.org markup** on every page (Organization, Product, FAQ, Article, BreadcrumbList)
+- **Open Graph tags** for social sharing
+- **Twitter Card tags**
+- **Canonical URLs** on every page
+- **Page speed optimized** (Lighthouse 90+)
+
 ---
 
 ## 5. Deployment & Process Standards
