@@ -226,19 +226,46 @@ Provides real-time insights and control over the agent's operational integrity, 
 
 ---
 
-## 5. Data Models / Database Schema
+## 5. Agent Rental Marketplace (NEW - Blue Ocean Differentiator)
+
+The Agent Rental Marketplace is a standalone companion platform that functions as a "digital temp staffing agency" for pre-configured AI agents. This module allows platform users to monetize their specialized agents while providing businesses with instant, high-quality AI labor without long-term commitments.
+
+### 5.1. Marketplace Dynamics
+*   **Agent Provisioning for Rent**: Platform users (developers/owners) can "list" their pre-configured and tested OpenClaw agents on the marketplace.
+*   **On-Demand Access**: Businesses can browse the marketplace and rent agents by the hour to perform specific, high-value tasks.
+*   **Revenue Sharing**: The platform facilitates all transactions, earning a commission on every rental hour while the agent owner receives the majority of the fee.
+*   **No-Commitment Model**: Unlike traditional SaaS subscriptions, businesses pay only for the hours the agent is active, making it ideal for seasonal work or specific project bursts.
+
+### 5.2. Pre-Configured Agent Verticals
+The marketplace will feature specialized agents pre-trained and configured for specific industries, including but not limited to:
+*   **Medical & Dental**: Agents configured for dental/medical terminology, insurance verification, and HIPAA-compliant appointment scheduling.
+*   **Legal Services**: Specialized in legal intake, document review, and case scheduling.
+*   **Hospitality & Restaurants**: Handling reservations, menu updates, and automated review responses across social platforms.
+*   **Real Estate**: Lead qualification, automated showing scheduling, and listing management.
+*   **Business Operations**: 24/7 phone answering, message taking, and calendar management.
+*   **Marketing & Creative**: Social media content generation, copywriting, and automated campaign scheduling.
+*   **Logistics & Inventory**: Stock tracking, reorder alerts, and automated reconciliation.
+
+### 5.3. Technical Implementation
+*   **Sandboxed Execution**: Rented agents run in strictly isolated, temporary environments to ensure the security of both the owner's IP and the renter's data.
+*   **Time-Based Billing**: Integrated tracking that records active operational hours and bills the renter via Stripe at the end of the session.
+*   **Performance Ratings**: A review and rating system for rented agents to ensure quality and reliability within the marketplace.
+
+---
+
+## 6. Data Models / Database Schema
 
 To be developed. This section will detail the database schema for all entities, including users, agents, connectors, skills, tasks, logs, and security events. Key tables will include `Users`, `Agents`, `AgentConfigurations`, `Connectors`, `ConnectorSettings`, `Skills`, `SkillScans`, `Tasks`, `JobQueue`, `ActivityLogs`, `ReviewQueue`, `IPAssets`, `Personas`, and `Conversations`.
 
 ---
 
-## 6. API Endpoints
+## 7. API Endpoints
 
-To be developed. This section will outline the RESTful API endpoints for platform interaction, agent management, and data retrieval. Key API categories will include Authentication, User Management, Agent Management, Connector Management, Skill Management, Task Management, Security & Monitoring, and IP Management.
+To be developed. This section will outline the RESTful API endpoints for platform interaction, agent management, and data retrieval. Key API categories will include Authentication, User Management, Agent Management, Connector Management, Skill Management, Task Management, Security & Monitoring, IP Management, and Marketplace Transactions.
 
 ---
 
-## 7. Pricing Tier Breakdown with Feature Matrix
+## 8. Pricing Tier Breakdown with Feature Matrix
 
 Our pricing model is designed to be flexible and scalable, catering to a diverse user base from individual developers to large enterprises. It combines tiered subscriptions with a token/credit system for usage-based billing.
 
@@ -270,7 +297,7 @@ Our pricing model is designed to be flexible and scalable, catering to a diverse
 
 ---
 
-## 8. Token/Credit System Design
+## 9. Token/Credit System Design
 
 The platform will implement a flexible token/credit system to manage usage of compute resources, API calls, and advanced features beyond the base subscription. This ensures fair billing and allows users to scale their agent activities on demand.
 
@@ -282,7 +309,7 @@ The platform will implement a flexible token/credit system to manage usage of co
 
 ---
 
-## 9. One-Click Agent Provisioning Architecture
+## 10. One-Click Agent Provisioning Architecture
 
 This architecture outlines the automated deployment of OpenClaw agents on cloud infrastructure, abstracting away complexity for the user.
 
@@ -295,7 +322,7 @@ This architecture outlines the automated deployment of OpenClaw agents on cloud 
 
 ---
 
-## 10. Security Architecture
+## 11. Security Architecture
 
 Security is paramount, given the autonomous nature of OpenClaw agents and the sensitive data they may handle. Our architecture incorporates multi-layered security measures.
 
@@ -310,7 +337,7 @@ Security is paramount, given the autonomous nature of OpenClaw agents and the se
 
 ---
 
-## 11. Connector System Design
+## 12. Connector System Design
 
 The connector system is designed for extensibility, security, and ease of integration, allowing agents to interact with a wide array of third-party services.
 
@@ -323,7 +350,7 @@ The connector system is designed for extensibility, security, and ease of integr
 
 ---
 
-## 12. UI/UX Wireframe Descriptions (Glassmorphism)
+## 13. UI/UX Wireframe Descriptions (Glassmorphism)
 
 The platform will feature a modern, intuitive, and visually appealing user interface designed with a glassmorphism aesthetic. This design choice emphasizes depth, translucency, and vibrant colors, creating an engaging and ADHD-friendly experience.
 
@@ -338,7 +365,7 @@ The platform will feature a modern, intuitive, and visually appealing user inter
 
 ---
 
-## 13. Technology Stack Recommendations (FOSS-first)
+## 14. Technology Stack Recommendations (FOSS-first)
 
 Adhering to a FOSS-first philosophy, the platform will leverage robust, community-driven open-source technologies while integrating best-in-class proprietary APIs where they provide significant acceleration.
 
@@ -355,7 +382,7 @@ Adhering to a FOSS-first philosophy, the platform will leverage robust, communit
 
 ---
 
-## 14. Deployment Architecture
+## 15. Deployment Architecture
 
 The deployment architecture is designed for scalability, reliability, and security, supporting both user-provisioned agents and the core SaaS platform.
 
@@ -369,7 +396,7 @@ The deployment architecture is designed for scalability, reliability, and securi
 
 ---
 
-## 15. Go-to-Market Strategy
+## 16. Go-to-Market Strategy
 
 Our go-to-market strategy focuses on leveraging the OpenClaw community, demonstrating clear value propositions, and targeting key user segments.
 
@@ -383,7 +410,7 @@ Our go-to-market strategy focuses on leveraging the OpenClaw community, demonstr
 
 ---
 
-## 16. Revenue Projections
+## 17. Revenue Projections
 
 Based on market analysis and our tiered pricing model, we project significant revenue growth. With a global AI agents market projected to reach $10.91 billion in 2026 and growing to $47-93 billion by 2030, even a small market share represents substantial revenue.
 
@@ -395,7 +422,7 @@ Detailed financial modeling will include customer acquisition costs, churn rates
 
 ---
 
-## 17. Patent Disclosure Opportunities
+## 18. Patent Disclosure Opportunities
 
 The platform incorporates several innovative concepts that present opportunities for patent and intellectual property protection.
 
@@ -403,11 +430,12 @@ The platform incorporates several innovative concepts that present opportunities
 *   **One-Click Agent Provisioning Architecture**: The automated, secure, and user-friendly system for deploying complex AI agent environments on cloud infrastructure.
 *   **Multi-Model Research Aggregation**: The novel approach to simultaneously querying multiple LLMs, aggregating results, and cross-validating for enhanced reliability.
 *   **Agent Behavior Monitoring & Hallucination Detection**: The system for real-time monitoring, identifying erratic behavior, and specifically detecting AI agent hallucinations.
+*   **Agent Rental Marketplace Model**: The "AI Temp Agency" business model and the technical orchestration of renting pre-configured autonomous agents by the hour.
 *   **IP Tracker Module Workflow**: The specialized workflow and data models for managing the lifecycle of patents, copyrights, and trademarks within an AI-assisted environment.
 
 ---
 
-## 18. Roadmap (MVP → v1.0 → v2.0)
+## 19. Roadmap (MVP → v1.0 → v2.0)
 
 ### Minimum Viable Product (MVP)
 
