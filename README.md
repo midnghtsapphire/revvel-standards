@@ -124,6 +124,39 @@ Integration via Make.com webhooks or GoHighLevel API for scheduling and delivery
 - Bulk generation at 20/50/100/200/500 tiers
 - Track open rates, click-through, and affiliate conversions
 
+### Email Collection & Newsletter System (MANDATORY)
+Every Revvel application MUST include email collection and newsletter functionality.
+
+#### Email Collection
+- **Subscribe form** on every app — footer, popup, or dedicated page
+- **Fields:** Email (required), Name (optional), Interests (optional checkboxes)
+- **Double opt-in** with confirmation email for GDPR/CAN-SPAM compliance
+- **Centralized subscriber database** — all apps feed into ONE master email list
+- **Segmentation:** Subscribers tagged by which app they signed up from
+- **Storage:** SQLite/PostgreSQL with encrypted email storage
+- **Export:** CSV export for backup or migration to Mailchimp/SendGrid/GoHighLevel
+
+#### Auto-Newsletter Generation
+- **Triggered on every new site/app launch** — auto-generate and send announcement
+- **Weekly digest** — auto-compiled from all app activity across the ecosystem
+- **New content alerts** — when reviews, blog posts, or products are added
+- **Templates auto-generated via OpenRouter LLM:**
+  1. New App Launch announcement
+  2. Weekly Ecosystem Update
+  3. Product Review Roundup (Reese Reviews)
+  4. Deal/Affiliate Spotlight
+  5. Seasonal/Holiday promotions
+- **Affiliate links embedded in every newsletter automatically**
+- **Unsubscribe link** in every email (legally required)
+- **Delivery:** Via SMTP, SendGrid, or GoHighLevel email API
+
+#### Subscriber Dashboard
+- Total subscribers count
+- Growth chart (daily/weekly/monthly)
+- Segmentation breakdown (by app, by interest)
+- Email delivery stats (sent, opened, clicked, bounced)
+- One-click send to all subscribers or filtered segments
+
 ---
 
 ## 5. Deployment & Process Standards
