@@ -77,6 +77,53 @@ Revvel operates on a unified, token-based freemium model.
 - **Affiliate Auto-Linker:** Every product mention must automatically generate an Amazon affiliate link (Tag: `meetaudreyeva-20`).
 - **Self-Service Ads:** The "Selling Space" portal allows businesses to buy banner/sponsored space directly.
 
+### Affiliate Marketing Automation Engine (MANDATORY)
+Every Revvel application MUST include a built-in affiliate marketing automation module.
+
+#### Active Affiliate & Referral Links
+| Platform | URL | Code |
+|---|---|---|
+| **Amazon** | Auto-generated per product | Tag: `meetaudreyeva-20` |
+| **Make.com** | https://www.make.com/en/register?pc=risingaloha | risingaloha |
+| **GoHighLevel** | https://www.gohighlevel.com/?fp_ref=audrey51 | audrey51 |
+| **VideoGen** | https://videogen.io/?fpr=audrey21 | audrey21 |
+| **Chime** | https://www.chime.com/r/audreyevans44/?c=s | audreyevans44 |
+| **DigitalOcean** | https://m.do.co/c/fe8240d60588 | fe8240d60588 |
+| **Monday.com** | https://try.monday.com/9828lfh0uct0 | 9828lfh0uct0 |
+
+#### Auto-Campaign Generator
+Every app must include a Marketing Dashboard with campaign generation buttons at these tiers:
+- **20 campaigns** — Quick burst
+- **50 campaigns** — Standard push
+- **100 campaigns** — Growth mode
+- **200 campaigns** — Aggressive scaling
+- **500 campaigns** — Full blast
+
+Each campaign auto-generates using OpenRouter LLM:
+1. Ad copy / social media post text
+2. Email marketing content with affiliate links embedded
+3. Hashtags and SEO keywords
+4. Platform-specific formatting
+5. Scheduled delivery queue
+
+#### Social Media Distribution
+Campaigns must support posting to ALL platforms or individually:
+- **All Platforms** — One-click blast to every channel
+- **Facebook** — Individual targeting
+- **Instagram** — Individual targeting
+- **TikTok** — Individual targeting (hashtag: #MeetAudreyEvans)
+- **Twitter/X** — Individual targeting
+- **LinkedIn** — Individual targeting
+- **Pinterest** — Individual targeting
+
+Integration via Make.com webhooks or GoHighLevel API for scheduling and delivery.
+
+#### Email Campaign Automation
+- Auto-create email campaigns with affiliate links
+- Templates: product reviews, deals, recommendations, seasonal promotions
+- Bulk generation at 20/50/100/200/500 tiers
+- Track open rates, click-through, and affiliate conversions
+
 ---
 
 ## 5. Deployment & Process Standards
@@ -92,6 +139,14 @@ Revvel operates on a unified, token-based freemium model.
 - **ROADMAP.md:** 12-month strategic timeline.
 - **KANBAN_CARDS.md:** Initial task list for the first iteration.
 - **INVESTORS_PACK.md:** Business case, budget, and ROI analysis.
+- **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
+- **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
+
+### Auto-Documentation (MANDATORY)
+- Every change to any repo, droplet, config, or deployment MUST be auto-logged with timestamp, what changed, and who/what made the change.
+- CHANGELOG.md in every repo, updated automatically on every push.
+- INFRASTRUCTURE_MAP.md in revvel-standards is the single source of truth for all infrastructure.
+- SPRINT_STATE.md must be updated at the end of every session.
 
 ---
 
@@ -102,6 +157,16 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **Clinical Trials Finder:** Matching users to medical research via APIs.
 - **Forensic Studio:** AI-powered image analysis and beauty enhancement.
 - **Sustainable Coding:** Eco-friendly, low-carbon code standards.
+
+---
+
+## 7. Auto-Documentation & Change Tracking
+All Revvel projects enforce strict documentation standards:
+- **No undocumented changes.** Every commit, deployment, and config change is logged.
+- **CHANGELOG.md** is mandatory in every repo and auto-updated.
+- **SPRINT_STATE.md** in revvel-standards tracks cross-project progress.
+- **INFRASTRUCTURE_MAP.md** in revvel-standards maps all droplets, domains, and services.
+- **REPO_CATALOG.md** in revvel-standards catalogs every repository with description and status.
 
 ---
 **END OF DOCUMENT**
