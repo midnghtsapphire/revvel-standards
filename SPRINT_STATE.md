@@ -1,28 +1,100 @@
 # SPRINT STATE — Revvel & Eop
 
-> **Last Updated**: Feb 25, 2026 2:55 PM MST
+> **Last Updated**: Feb 25, 2026 4:35 PM MST
 > **Sprint**: Sprint 1 — Foundation & Core Apps
 > **Status**: Active
 
 ---
 
-## What Just Happened (Latest Session Summary)
+## How to Resume (READ THIS FIRST)
 
-### Completed This Session
-1. **PawSitting v1.0** — Built and deployed. Purple glassmorphism theme, 10-table DB, AI chat, Stripe payments, 15 SEO landing pages, 34 passing tests. Pushed to MIDNGHTSAPPHIRE/Pawsitting.
-2. **MindMappr Bot v2.0** — Replaced OpenClaw with custom Node.js/TypeScript backend. OpenRouter LLM (free-first stack), tool handlers (GitHub, Stripe, web research), SQLite persistent memory, hallucination detection. Deployed on droplet 164.90.148.7 as systemd service.
-3. **MindMappr Slack Integration** — Bot now runs on both Telegram (RISINGALOHA group) and Slack (RISINGALOHA workspace) simultaneously. Same brain, shared memory.
-4. **Telegram Group Config** — RISINGALOHA group (chat ID: -1003735305867) configured for open access. Bot responds to @mentions.
-5. **meetaudreyevans.com Updated** — Found the correct repo (MIDNGHTSAPPHIRE/rvvel). Added PawSitting, MindMappr, and other apps to Portfolio. Added accessibility mode display. Pushed to GitHub Pages.
-6. **meetaudreyevans.com Dashboard** — Also deployed on MindMappr droplet (164.90.148.7:80) via Docker + Caddy. This is the full React dashboard version (separate from the GitHub Pages site).
-7. **Infrastructure Map** — Created INFRASTRUCTURE_MAP.md, pushed to MIDNGHTSAPPHIRE/revvel-standards.
-8. **Soul Updated** — Auto-documentation mandatory, CHANGELOG.md in every repo, rvvel repo documented.
+### For Eop (AI Agent)
+1. Read this file
+2. Read `/home/ubuntu/soul.md` for user preferences
+3. Read MIDNGHTSAPPHIRE/revvel-standards README.md for master standards
+4. Read MIDNGHTSAPPHIRE/revvel-standards ENTITY_HIERARCHY.md for corporate structure
+5. Read MIDNGHTSAPPHIRE/revvel-standards INFRASTRUCTURE_MAP.md for all infra
+6. Check the "In Progress" and "Backlog" sections below
 
-### Known Issues / Blockers
-- **Old dashboard droplet (147.182.211.246)** — SSH locked to unknown key. Can't access. Leave it alone or destroy it once new setup is confirmed working.
-- **DigitalOcean droplet limit** — At 10/10. Need to request increase to 25 manually from DO dashboard (Settings > Team > Droplet Limit). API doesn't support this.
-- **MindMappr hallucination** — Bot sometimes hallucinates. Confidence scoring is built in but needs tuning with real conversations.
-- **Slack token type** — The xoxe-1 token is a user token, not a bot token. RTM mode works but may need a proper bot token for full Slack App features later.
+### For Revvel (Audrey)
+1. Read this file for full status
+2. Test MindMappr: @mention @googlieeyes_bot in RISINGALOHA Telegram group
+3. Check meetaudreyevans.com for Schema.org updates
+4. All code is on GitHub under MIDNGHTSAPPHIRE
+
+---
+
+## Completed This Session (Feb 25, 2026)
+
+### Apps Built & Pushed to GitHub
+| App | Repo | Status | Key Features |
+|---|---|---|---|
+| PawSitting v1.0 | MIDNGHTSAPPHIRE/Pawsitting | DONE | Purple glassmorphism, 10-table DB, Stripe, 15 SEO pages, 34 tests |
+| TheAltText v1.0 | MIDNGHTSAPPHIRE/the-alt-text | DONE | AI alt text SaaS, 3-tier Stripe, REST API, 16 SEO pages, 40 tests |
+| Reese Reviews v1.0 | MIDNGHTSAPPHIRE/steel-white | DONE | Amazon Vine tracker, tax/ETV, inventory, affiliate engine, Plaid-ready, 33+ tests |
+| Revvel Forensic Studio v1.0 | MIDNGHTSAPPHIRE/revvel-forensic-studio | DONE | Glass Observatory theme, 12 workspaces, FastAPI backend, 22 tests |
+
+### MindMappr Bot v2.0
+| Feature | Status |
+|---|---|
+| Custom backend (replaced OpenClaw) | DONE — running on 164.90.148.7 |
+| Telegram integration (RISINGALOHA group) | DONE |
+| Slack integration (RISINGALOHA workspace) | DONE |
+| OpenRouter LLM (free-first stack) | DONE |
+| Real agent capabilities (GitHub, shell, file, email) | DONE |
+| Training with all project context | DONE |
+| Hallucination detection | DONE |
+
+### Infrastructure & Standards
+| Task | Status |
+|---|---|
+| Master standards updated (Sections 4-8) | DONE — affiliate engine, email/newsletter, SEO infra, auto-docs, corporate identity |
+| ENTITY_HIERARCHY.md created | DONE — pushed to revvel-standards |
+| Schema.org JSON-LD on meetaudreyevans.com | DONE — Freedom Angel Corp (2010), all entities, all apps |
+| 82 repos made public | DONE |
+| Proprietary license on all 162 original repos | DONE |
+| 38 forked repos renamed with Z- prefix | DONE |
+| REPO_CATALOG.md created | DONE — pushed to revvel-standards |
+| SPRINT_STATE.md created | DONE |
+| Affiliate links saved | DONE — Make.com, GoHighLevel, VideoGen, Chime, DigitalOcean, Monday.com |
+| meetaudreyevans.com dashboard deployed | DONE — on 164.90.148.7 (Docker + Caddy) |
+| CLE sponsors PDF received | DONE — 91 pages, saved for reference |
+| 404 links fixed on meetaudreyevans.com | DONE — PawSitting, MindMappr, AI Bench links corrected |
+| Divider bar added to site | DONE |
+
+---
+
+## Corporate Entity Hierarchy
+
+```
+Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
+├── Freedom Angel Fighters (Advocacy & Anti-Trafficking)
+├── Angel Reporter(s) (Investigative Journalism, Copyright 2010 & 2018)
+├── Aloha Notary & Copies (Native Hawaiian Veterans & Military)
+├── IT Division
+│   ├── Angel Reporter LLC (CA, Entity #201313610094, 2013, SUSPENDED)
+│   ├── XI Website Solutions LLC
+│   ├── Spiderwebz Designs
+│   ├── Evans Digital Assets LLC (CO, Entity #20181113423, 2018)
+│   └── Fast Macros
+└── Product Brands
+    ├── GlowStarLabs / Audrey Evans Official (umbrella)
+    ├── Revvel / Hailstorm (music only)
+    ├── MeetAudreyEvans (hub)
+    ├── PawSitting
+    ├── TheAltText
+    ├── Reese Reviews
+    ├── Forensic Studio
+    ├── RevvelPress
+    └── Revvel Music Studio
+```
+
+**Credentials:**
+- Colorado Supreme Court CLE Training — Moniker: ANGEL
+- American Legion Member #302393962
+- PMI Membership ID #593830
+- SBA Certified (Zonehub)
+- "Home of the Free Because of The Brave"
 
 ---
 
@@ -39,9 +111,12 @@
 | Repo | Purpose | Deployment |
 |---|---|---|
 | MIDNGHTSAPPHIRE/rvvel | meetaudreyevans.com (GitHub Pages) | Auto-deploys on push |
-| MIDNGHTSAPPHIRE/mindmappr | MindMappr bot backend | Manual: ssh into 164.90.148.7, cd /opt/mindmappr-bot, git pull, npm run build, systemctl restart mindmappr |
+| MIDNGHTSAPPHIRE/revvel-standards | Master standards, entity hierarchy, infra map, sprint state, repo catalog | Reference only |
+| MIDNGHTSAPPHIRE/mindmappr | MindMappr bot backend | systemd on 164.90.148.7 |
 | MIDNGHTSAPPHIRE/Pawsitting | PawSitting app | Not yet deployed to production |
-| MIDNGHTSAPPHIRE/revvel-standards | Master standards + INFRASTRUCTURE_MAP.md | Reference only |
+| MIDNGHTSAPPHIRE/the-alt-text | TheAltText SaaS | Not yet deployed |
+| MIDNGHTSAPPHIRE/steel-white | Reese Reviews | Not yet deployed |
+| MIDNGHTSAPPHIRE/revvel-forensic-studio | Forensic Studio | Not yet deployed |
 | MIDNGHTSAPPHIRE/meetaudreyevans-dashboard | Full React dashboard | Docker on 164.90.148.7 |
 
 ### Domains
@@ -49,6 +124,11 @@
 |---|---|---|
 | meetaudreyevans.com | GitHub Pages (185.199.x.x) | GoDaddy |
 | www.meetaudreyevans.com | midnghtsapphire.github.io (CNAME) | GoDaddy |
+| reesereviews.com | TBD | TBD |
+| yumyumcode.com | TBD | TBD |
+| growlingeyes.com | TBD | TBD |
+| truthslayer.com | TBD | TBD |
+| glowstarlabs.com | TBD | TBD |
 
 ### Bot Channels
 | Channel | Platform | How to Talk |
@@ -58,20 +138,30 @@
 
 ---
 
-## What's Next (Backlog — Priority Order)
+## Known Issues & Blockers
 
-### Immediate (This Sprint)
-- [ ] Set up GitHub Actions auto-changelog across all repos
-- [ ] Tune MindMappr hallucination detection with real conversations
-- [ ] Deploy PawSitting to production (needs domain + hosting decision)
-- [ ] Request DO droplet limit increase (manual — DO dashboard)
+1. **Angel Reporter LLC (CA)** — Status: Suspended (FTB/SOS). Entity #201313610094, filed 05/08/2013. Needs reinstatement (file back taxes + reinstatement fee).
+2. **Old dashboard droplet (147.182.211.246)** — SSH locked, no key access. Can be destroyed.
+3. **DigitalOcean droplet limit** — At 10/10. Request increase to 25 via DO dashboard (Settings > Team > Droplet Limit).
+4. **GitHub forking** — Can't disable per-repo on user accounts. Need org conversion for full lockdown.
+5. **Forensic Studio GitHub push** — May need re-push (token expired during subtask build).
+
+---
+
+## Backlog (Prioritized)
+
+### Immediate
+- [ ] Scrape CLE sponsors PDF into searchable database (91 pages, 5000+ sponsors)
+- [ ] Deploy apps to live domains (reesereviews.com, etc.)
+- [ ] GitHub Actions auto-changelog across all repos
+- [ ] Request DO droplet limit increase
 
 ### Next Sprint
 - [ ] GodsofInsurance redesign
 - [ ] Anime Ascend Wellness app
-- [ ] the-alt-text SaaS (HIGH PRIORITY REVENUE — businesses getting sued $5K-$75K)
-- [ ] Reese Reviews (reesereviews.com) — daughter's review business
-- [ ] MindMappr web UI dashboard (agent monitoring, conversation history, bot controls)
+- [ ] Build remaining 70+ apps from repo list
+- [ ] Create MIDNGHTSAPPHIRE-forks org and transfer Z- repos
+- [ ] Reinstate Angel Reporter LLC in California
 
 ### Future
 - [ ] Auto-deploy pipeline for all apps
@@ -86,28 +176,32 @@
 ## Decisions Made This Session
 1. All apps follow REVVEL_MASTER_STANDARDS.md — no exceptions
 2. Priority accessibility modes: Neurodivergent, ECO CODE, No Blue Light
-3. Multiple apps can share one droplet (nginx/Caddy reverse proxy + Docker)
-4. OpenClaw replaced with custom bot backend — more control, less hallucination
-5. Auto-documentation is mandatory — CHANGELOG.md in every repo, every change logged
-6. INFRASTRUCTURE_MAP.md in revvel-standards is the single source of truth
-7. Free-first LLM stack: MiMo-V2-Flash → Trinity → Venice → Llama 3.3 → DeepSeek V3.2 → premium only when needed
+3. Glassmorphism dark theme for all apps
+4. Proprietary "All Rights Reserved" license on all original repos
+5. Forked repos get Z- prefix (eventually move to separate org)
+6. 2010 as anchor founding date for all Schema.org markup
+7. Freedom Angel Corp as parent entity for all products
+8. Auto-documentation mandatory — CHANGELOG.md in every repo, every change logged
+9. INFRASTRUCTURE_MAP.md in revvel-standards is the single source of truth
+10. Affiliate marketing automation engine in every app (20/50/100/200/500 campaign buttons)
+11. Email collection & auto-newsletter in every app
+12. 1000+ backlink SEO strategy in every app
+13. MindMappr is the primary agent, accessible via Telegram and Slack
+14. Free-first LLM stack: MiMo-V2-Flash → Trinity → Venice → Llama 3.3 → DeepSeek V3.2 → premium only when needed
+15. Multiple apps can share one droplet (nginx/Caddy reverse proxy + Docker)
 
 ---
 
-## How to Resume
-
-### For Revvel (You)
-1. Read this file
-2. Check meetaudreyevans.com to see the latest site
-3. Test MindMappr by @mentioning @googlieeyes_bot in the RISINGALOHA Telegram group
-4. Tell Eop what to work on next
-
-### For Eop (Me)
-1. Read this file and /home/ubuntu/soul.md
-2. Read /home/ubuntu/.history/ for compacted history if needed
-3. Check MIDNGHTSAPPHIRE/revvel-standards/INFRASTRUCTURE_MAP.md for infra state
-4. Pick up from the backlog or wait for Revvel's direction
-5. Every change gets documented — update this file at end of every session
+## Affiliate Links
+| Platform | Link |
+|---|---|
+| Make.com | https://www.make.com/en/register?pc=risingaloha |
+| GoHighLevel | https://www.gohighlevel.com/?fp_ref=audrey51 |
+| VideoGen | https://videogen.io/?fpr=audrey21 |
+| Chime | https://www.chime.com/r/audreyevans44/?c=s |
+| DigitalOcean | https://m.do.co/c/fe8240d60588 |
+| Monday.com | https://try.monday.com/9828lfh0uct0 |
+| Amazon Associates | Tag: meetaudreyeva-20 |
 
 ---
 
