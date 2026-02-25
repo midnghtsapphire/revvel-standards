@@ -252,4 +252,135 @@ All Revvel projects enforce strict documentation standards:
 - **REPO_CATALOG.md** in revvel-standards catalogs every repository with description and status.
 
 ---
+
+## 8. Corporate Identity & Entity Hierarchy
+
+All Revvel applications inherit their corporate identity and SEO authority from the parent entity structure. This section documents the full corporate tree, the reasoning behind it, and how it must be implemented in every app.
+
+### Why Entity Hierarchy Matters
+
+**Problem:** New websites and apps have zero domain authority. Google treats them as untrusted, unranked newcomers. Building authority from scratch takes years.
+
+**Solution:** By linking every app to an established parent corporation through Schema.org Organization markup, we transfer the corporate entity's age, legitimacy, and trust signals to every product. Google's Knowledge Graph connects the dots — a 2010 corporation with SBA certification, veteran affiliations, and multiple business registrations carries far more weight than a standalone app.
+
+**How it works:** Every app includes JSON-LD structured data that declares it as a product/service of the parent organization. The parent organization's `foundingDate`, `taxID`, certifications, and affiliations flow down to every child entity. This is 100% legitimate white-hat SEO — it's simply telling Google the truth about your corporate structure.
+
+### Parent Entity: Freedom Angel Corp (2010)
+
+| Field | Value |
+|---|---|
+| **Legal Name** | Freedom Angel Corp. |
+| **Type** | Non-Profit Corporation |
+| **EIN** | 86-1209156 |
+| **Founded** | 2010 |
+| **State** | Colorado |
+| **Founder/CEO** | Audrey Evans |
+| **SBA Certified** | Yes (Zonehub) |
+| **Motto 1** | "Home of the Free Because of The Brave" |
+| **Motto 2** | "End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray" |
+| **American Legion** | Member #302393962 |
+| **PMI** | Membership ID #593830 |
+| **Colorado Supreme Court** | CLE Training — Moniker: ANGEL |
+| **Classification** | Minority-owned, veteran-connected, multi-tiered business corporation |
+
+### Divisions & Sub-Brands
+
+| Entity | Type | Focus | Parent |
+|---|---|---|---|
+| **Freedom Angel Fighters** | Program | Advocacy & Anti-Trafficking | Freedom Angel Corp |
+| **Angel Reporter(s)** | Brand | Investigative Journalism | Freedom Angel Corp |
+| **Aloha Notary & Copies** | Service | Notary for Native Hawaiian Veterans & Military | Freedom Angel Corp |
+
+### Information Technology Entities (All Under Freedom Angel Corp)
+
+| Entity | Type | Focus | Copyright |
+|---|---|---|---|
+| **Angel Reporter LLC** | LLC (CA) | Media & Reporting Technology | 2010, 2018 |
+| **XI Website Solutions LLC** | LLC | Web Development & Design | 2010 |
+| **Spiderwebz Designs** | DBA | Creative Design & Branding | 2010 |
+| **Evans Digital** | DBA | Digital Marketing & Technology | 2010 |
+| **Fast Macros** | DBA | Automation & Productivity Tools | 2010 |
+
+### Modern Product Brands (Under IT Entities)
+
+| Brand | Focus | Domain |
+|---|---|---|
+| **Audrey Evans Official / GlowStarLabs** | Umbrella for all tech products | glowstarlabs.com |
+| **Revvel / Hailstorm** | Music artist brand (music only) | — |
+| **Reese Reviews** | Product review & Vine business | reesereviews.com |
+| **MeetAudreyEvans** | Personal hub & portfolio | meetaudreyevans.com |
+| **YumYumCode** | Developer tools & coding | yumyumcode.com |
+| **GrowlingEyes** | Security & surveillance | growlingeyes.com |
+| **TruthSlayer** | Fact-checking & investigation | truthslayer.com |
+
+### Schema.org Implementation (MANDATORY)
+
+Every Revvel application MUST include the following JSON-LD in the `<head>` of every page:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Freedom Angel Corp",
+  "alternateName": ["GlowStarLabs", "Audrey Evans Official"],
+  "foundingDate": "2010",
+  "founder": {
+    "@type": "Person",
+    "name": "Audrey Evans",
+    "alternateName": "Audrey Walter-Evans",
+    "sameAs": [
+      "https://meetaudreyevans.com",
+      "https://www.linkedin.com/in/audrey-evans-96a56552",
+      "https://github.com/MIDNGHTSAPPHIRE"
+    ]
+  },
+  "taxID": "86-1209156",
+  "nonprofitStatus": "NonprofitType",
+  "memberOf": [
+    {"@type": "Organization", "name": "American Legion", "membershipNumber": "302393962"},
+    {"@type": "Organization", "name": "Project Management Institute", "membershipNumber": "593830"},
+    {"@type": "Organization", "name": "Small Business Administration", "description": "SBA Certified, Zonehub"}
+  ],
+  "slogan": "Home of the Free Because of The Brave",
+  "description": "A minority-owned, veteran-connected, multi-tiered business corporation supporting disabled veterans, at-risk seniors, and underserved communities.",
+  "subOrganization": [
+    {"@type": "Organization", "name": "Angel Reporter LLC", "foundingDate": "2010"},
+    {"@type": "Organization", "name": "XI Website Solutions LLC", "foundingDate": "2010"},
+    {"@type": "Organization", "name": "Evans Digital", "foundingDate": "2010"},
+    {"@type": "Organization", "name": "Fast Macros", "foundingDate": "2010"},
+    {"@type": "Organization", "name": "Spiderwebz Designs", "foundingDate": "2010"}
+  ]
+}
+```
+
+Each individual app adds its own `Product` or `WebApplication` schema that references the parent:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "[APP NAME]",
+  "url": "[APP URL]",
+  "provider": {
+    "@type": "Organization",
+    "name": "Freedom Angel Corp",
+    "foundingDate": "2010",
+    "taxID": "86-1209156"
+  },
+  "dateCreated": "[APP LAUNCH DATE]",
+  "applicationCategory": "[CATEGORY]"
+}
+```
+
+### Why This Works for SEO
+
+1. **Entity Age (2010):** Google rewards established entities. Every app inherits 15+ years of corporate history.
+2. **EIN Verification:** A real tax ID proves this is a legitimate business, not a spam farm.
+3. **SBA Certification:** Government certification adds massive trust signals.
+4. **Veteran/Military Affiliation:** American Legion membership adds institutional credibility.
+5. **PMI Certification:** Professional management credential adds business legitimacy.
+6. **Cross-linking:** Every app links to every other app through the parent entity, creating a massive internal link network.
+7. **Knowledge Graph:** Google builds a Knowledge Graph entry for the parent entity, and every app benefits from that graph.
+
+---
 **END OF DOCUMENT**
