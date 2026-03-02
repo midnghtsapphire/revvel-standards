@@ -11,7 +11,7 @@
 ### Core Principles
 - **One-Iteration Delivery:** The goal is to move from idea to production-ready deployment in a single, intense iteration.
 - **Artifact-First:** Every project must generate a complete set of artifacts (Blueprints, Roadmaps, Specs) before or alongside code.
-- **Genius Orchestration:** Use multi-agent AI systems (Manus, OpenRouter, Kimi) to handle complex research, design, and coding tasks autonomously.
+- **Genius Orchestration:** Use multi-agent AI systems (OpenRouter,Kimi, venice, grok fast, sonnet 4 and 4.5, deepsix) to handle complex research, design, and coding tasks autonomously.
 - **FOSS Priority:** Always prioritize Free and Open Source Software tools and libraries.
 
 ### The 8-Phase Lifecycle
