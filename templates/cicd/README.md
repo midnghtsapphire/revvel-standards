@@ -15,26 +15,19 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 
 ## New App Setup Checklist
 
-Follow these steps every time you create a new app repo:
+Follow these steps every time you create a new app repo.
 
-### Step 1 — Copy the templates
+### Step 1 — Run the Bootstrap Script
+From your new app's repo root, run the one-line bootstrap command. This automatically downloads the standard templates and configures them with your specific app details.
+
 ```bash
-# From your new app repo root:
-mkdir -p .github/workflows
-cp /path/to/revvel-standards/templates/cicd/deploy.yml .github/workflows/deploy.yml
-cp /path/to/revvel-standards/templates/cicd/deploy.sh deploy.sh
-chmod +x deploy.sh
+curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s <app_name> <droplet_ip> <app_dir>
+
+# Example:
+# curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s growlingeyes 164.90.148.7 growlingeyes
 ```
 
-### Step 2 — Replace the placeholder values
-Open both files and replace every `YOUR_*` placeholder:
-
-| Placeholder | Replace With | Example |
-|---|---|---|
-| `YOUR_APP_NAME` | Your PM2 process name | `growlingeyes` |
-| `YOUR_DROPLET_IP` | Your droplet's IP address | `164.90.148.7` |
-| `YOUR_APP` | Your app directory name on droplet | `growlingeyes` |
-| `YOUR_DOMAIN.com` | Your live domain | `growlingeyes.com` |
+This will instantly generate `.github/workflows/deploy.yml` and `deploy.sh` fully configured for your app.
 
 ### Step 3 — Add the SSH secret to GitHub
 1. Go to: `github.com/midnghtsapphire/YOUR_REPO/settings/secrets/actions`
@@ -77,15 +70,10 @@ GitHub Actions runner (ubuntu-latest)
     ↓
 pnpm install → pnpm build
     ↓
-tar dist/ + package.json + pnpm-lock.yaml → /tmp/APP-update.tar.gz
-    ↓
-SCP upload → Droplet /tmp/
+rsync dist/index.js + dist/public/ + package.json + pnpm-lock.yaml → Droplet APP_DIR
     ↓
 SSH into droplet:
-  - tar -xzf → APP_DIR
-  - pnpm install --prod
   - pm2 restart APP_NAME --update-env
-  - rm temp file
     ↓
 Live at https://YOUR_DOMAIN.com (~2-3 min total)
 ```

@@ -8,23 +8,14 @@
 #   1. Copy this file to your repo at:
 #        .github/workflows/deploy.yml
 #   2. Replace ALL occurrences of:
-#        APP_NAME     → your PM2 process name (e.g., growlingeyes)
-#        DROPLET_IP   → your droplet's IP address
-#        APP_DIR      → your app's directory on the droplet
+#        YOUR_APP_NAME    → your PM2 process name (e.g., growlingeyes)
+#        YOUR_DROPLET_IP  → your droplet's IP address
+#        YOUR_APP_DIR     → your app's directory on the droplet
 #   3. Add SSH_PRIVATE_KEY to your repo's GitHub Actions secrets:
 #        GitHub → Repo → Settings → Secrets → Actions → New secret
 #        Name: SSH_PRIVATE_KEY
-#        Value: contents of your ~/.ssh/<app>_universal private key
+#        Value: contents of your deploy private key
 #   4. Commit and push — every push to main auto-deploys.
-#
-# REQUIRED GITHUB SECRETS:
-#   SSH_PRIVATE_KEY   — Private SSH key for droplet root access
-#
-# OPTIONAL GITHUB SECRETS (add as needed per app):
-#   DATABASE_URL      — MySQL connection string
-#   STRIPE_SECRET_KEY — Stripe secret key
-#   GOOGLE_OAUTH_*    — Google OAuth credentials
-#   (Add any other .env vars your app needs here)
 # ============================================================
 
 name: Deploy to DigitalOcean Droplet
@@ -33,12 +24,12 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 env:
-  APP_NAME: "YOUR_APP_NAME"       # ← REPLACE: PM2 process name
-  DROPLET_IP: "YOUR_DROPLET_IP"   # ← REPLACE: e.g., 164.90.148.7
-  APP_DIR: "/var/www/YOUR_APP"    # ← REPLACE: e.g., /var/www/growlingeyes
+  APP_NAME: "YOUR_APP_NAME"
+  DROPLET_IP: "YOUR_DROPLET_IP"
+  APP_DIR: "/var/www/YOUR_APP_DIR"
 
 jobs:
   build-and-deploy:
@@ -48,27 +39,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js with corepack
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Enable pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.4.1 --activate
+          pnpm --version
 
       - name: Get pnpm store directory
-        shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -76,41 +66,27 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      - name: Package build artifacts
-        run: tar -czf /tmp/${{ env.APP_NAME }}-update.tar.gz dist/ package.json pnpm-lock.yaml
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
 
-      - name: Upload to droplet
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ env.DROPLET_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "/tmp/${{ env.APP_NAME }}-update.tar.gz"
-          target: "/tmp/"
-          strip_components: 2
+      - name: Upload build to droplet via rsync
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            dist/index.js dist/public/ package.json pnpm-lock.yaml \
+            root@${{ env.DROPLET_IP }}:${{ env.APP_DIR }}/
 
-      - name: Extract, install, and restart PM2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.DROPLET_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
+      - name: Restart PM2 on droplet
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@${{ env.DROPLET_IP }} "
             set -e
             cd ${{ env.APP_DIR }}
-
-            # Extract new build
-            tar -xzf /tmp/${{ env.APP_NAME }}-update.tar.gz -C .
-
-            # Install production dependencies if lockfile changed
-            pnpm install --prod --frozen-lockfile
-
-            # Restart PM2 process
             pm2 restart ${{ env.APP_NAME }} --update-env
-
-            # Cleanup
-            rm /tmp/${{ env.APP_NAME }}-update.tar.gz
-
-            # Confirm
-            echo "Deploy complete. PM2 status:"
+            sleep 3
             pm2 status
+            echo 'Deploy complete'
+          "
