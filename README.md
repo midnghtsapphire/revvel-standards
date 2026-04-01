@@ -247,6 +247,38 @@ To prevent orphaned code and lost droplets, every project must maintain an **Inf
 3. **Repository Naming:** The GitHub repository name MUST match the primary domain or app name (e.g., `growlingeyes.com` lives in the `growlingeyes` repo, not a generic name like `osint-watch`).
 4. **Environment Variables:** A list of required (but not the actual secret values) `.env` variables must be documented so future agents know what the app needs to run.
 
+### CI/CD Pipeline (MANDATORY for Every App)
+
+Every Revvel/MIDNGHTSAPPHIRE application deployed to a DigitalOcean Droplet **MUST** have a GitHub Actions CI/CD pipeline configured from day one. Manual deploys via rsync or SSH are only acceptable as a fallback — the pipeline is the standard.
+
+**The goal:** Push to `main` → site is live in under 3 minutes. No manual steps.
+
+#### Reusable Templates
+
+Ready-to-use templates are in `templates/cicd/` in this repository:
+
+| Template | Purpose |
+|---|---|
+| `templates/cicd/deploy.yml` | Copy to `.github/workflows/deploy.yml` in every app repo |
+| `templates/cicd/deploy.sh` | Copy to `deploy.sh` in every app repo root (manual fallback) |
+| `templates/cicd/README.md` | Step-by-step setup checklist |
+
+#### Mandatory Setup Steps for Every New App
+
+1. Copy `deploy.yml` → `.github/workflows/deploy.yml` and replace all `YOUR_*` placeholders.
+2. Copy `deploy.sh` → repo root, `chmod +x deploy.sh`, replace all `YOUR_*` placeholders.
+3. Add `SSH_PRIVATE_KEY` as a GitHub Actions secret (the private key for `~/.ssh/<app>_universal`).
+4. Add all required `.env` variables as GitHub Actions secrets.
+5. Push to `main` and verify the first deploy at `github.com/midnghtsapphire/REPO/actions`.
+
+#### SSH Key Naming Convention
+
+Every app's deploy key must follow this naming pattern: `<app_name>_universal`. The private key is stored in GitHub Actions secrets as `SSH_PRIVATE_KEY`. The public key must be in `/root/.ssh/authorized_keys` on the target droplet.
+
+#### Reference Implementation
+
+GrowlingEyes (`github.com/midnghtsapphire/growlingeyes`) is the reference implementation. See `.github/workflows/deploy.yml` and `deploy.sh` in that repo for a working example.
+
 ### Auto-Documentation (MANDATORY)
 - Every change to any repo, droplet, config, or deployment MUST be auto-logged with timestamp, what changed, and who/what made the change.
 - CHANGELOG.md in every repo, updated automatically on every push.

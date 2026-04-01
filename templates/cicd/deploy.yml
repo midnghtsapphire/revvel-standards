@@ -1,0 +1,116 @@
+# ============================================================
+# REVVEL STANDARD CI/CD PIPELINE — GitHub Actions
+# ============================================================
+# MANDATORY for every Revvel/MIDNGHTSAPPHIRE app deployed to
+# a DigitalOcean Droplet via PM2 + Nginx.
+#
+# HOW TO USE:
+#   1. Copy this file to your repo at:
+#        .github/workflows/deploy.yml
+#   2. Replace ALL occurrences of:
+#        APP_NAME     → your PM2 process name (e.g., growlingeyes)
+#        DROPLET_IP   → your droplet's IP address
+#        APP_DIR      → your app's directory on the droplet
+#   3. Add SSH_PRIVATE_KEY to your repo's GitHub Actions secrets:
+#        GitHub → Repo → Settings → Secrets → Actions → New secret
+#        Name: SSH_PRIVATE_KEY
+#        Value: contents of your ~/.ssh/<app>_universal private key
+#   4. Commit and push — every push to main auto-deploys.
+#
+# REQUIRED GITHUB SECRETS:
+#   SSH_PRIVATE_KEY   — Private SSH key for droplet root access
+#
+# OPTIONAL GITHUB SECRETS (add as needed per app):
+#   DATABASE_URL      — MySQL connection string
+#   STRIPE_SECRET_KEY — Stripe secret key
+#   GOOGLE_OAUTH_*    — Google OAuth credentials
+#   (Add any other .env vars your app needs here)
+# ============================================================
+
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+env:
+  APP_NAME: "YOUR_APP_NAME"       # ← REPLACE: PM2 process name
+  DROPLET_IP: "YOUR_DROPLET_IP"   # ← REPLACE: e.g., 164.90.148.7
+  APP_DIR: "/var/www/YOUR_APP"    # ← REPLACE: e.g., /var/www/growlingeyes
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Package build artifacts
+        run: tar -czf /tmp/${{ env.APP_NAME }}-update.tar.gz dist/ package.json pnpm-lock.yaml
+
+      - name: Upload to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "/tmp/${{ env.APP_NAME }}-update.tar.gz"
+          target: "/tmp/"
+          strip_components: 2
+
+      - name: Extract, install, and restart PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd ${{ env.APP_DIR }}
+
+            # Extract new build
+            tar -xzf /tmp/${{ env.APP_NAME }}-update.tar.gz -C .
+
+            # Install production dependencies if lockfile changed
+            pnpm install --prod --frozen-lockfile
+
+            # Restart PM2 process
+            pm2 restart ${{ env.APP_NAME }} --update-env
+
+            # Cleanup
+            rm /tmp/${{ env.APP_NAME }}-update.tar.gz
+
+            # Confirm
+            echo "Deploy complete. PM2 status:"
+            pm2 status
