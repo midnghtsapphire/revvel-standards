@@ -29,14 +29,16 @@ curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main
 
 This will instantly generate `.github/workflows/deploy.yml` and `deploy.sh` fully configured for your app.
 
-### Step 3 — Add the SSH secret to GitHub
-1. Go to: `github.com/midnghtsapphire/YOUR_REPO/settings/secrets/actions`
-2. Click **New repository secret**
-3. Name: `SSH_PRIVATE_KEY`
-4. Value: Paste the **full contents** of `~/.ssh/YOUR_APP_universal` (the private key)
-5. Save
+### Step 3 — The SSH Secret is Already Shared
+Because all Revvel apps deploy to the same DigitalOcean droplet (`164.90.148.7`), the `SSH_PRIVATE_KEY` secret is **shared across all your repositories**. 
 
-> **Note:** The SSH key naming convention is `<app_name>_universal`. If the key doesn't exist yet, generate it on the droplet and add the public key to `~/.ssh/authorized_keys`.
+When you create a new app, you do **not** need to generate a new SSH key or manually add it to the repo settings. Just run this one command in your terminal to copy the shared key from an existing repo (like `growlingeyes`) to your new one:
+
+```bash
+# Copy the shared deploy key to your new repo
+gh secret set SSH_PRIVATE_KEY --repo midnghtsapphire/YOUR_NEW_REPO --body "$(gh secret list --repo midnghtsapphire/growlingeyes)" 
+```
+*(Note: If you have the private key saved locally, just run `gh secret set SSH_PRIVATE_KEY --repo midnghtsapphire/YOUR_NEW_REPO < ~/.ssh/growlingeyes_deploy`)*
 
 ### Step 4 — Add any app-specific secrets
 Add any `.env` variables your app needs as GitHub Actions secrets (same location as above). Common ones:
