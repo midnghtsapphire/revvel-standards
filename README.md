@@ -225,6 +225,28 @@ Every app must have a deep About section with multiple sub-pages:
 - **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
 
+### Infrastructure Location & Architecture Tracking (MANDATORY)
+
+Every Revvel/MIDNGHTSAPPHIRE application MUST explicitly define its deployment architecture, live URLs, and repository locations within its `HANDOFF.md` or `README.md`. Furthermore, any changes to infrastructure must be immediately synced to the master `INFRASTRUCTURE_COMPLETE.md` in the `revvel-standards` repository.
+
+#### The "Where Everything Lives" Standard
+To prevent orphaned code and lost droplets, every project must maintain an **Infrastructure Map** table.
+
+**Example Format (GrowlingEyes Model):**
+| System Component | Purpose | Location / URL |
+|---|---|---|
+| **Production Site** | Live user-facing application | `https://growlingeyes.com` |
+| **Primary Server** | DigitalOcean Droplet | `164.90.148.7` (Nginx + PM2) |
+| **App Directory** | Production code on droplet | `/var/www/growlingeyes/` |
+| **GitHub Repo** | Source code & Issue tracking | `github.com/midnghtsapphire/growlingeyes` |
+| **App Platform Config** | DO App Spec (if applicable) | `.do/app.yaml` |
+
+#### Mandatory Deployment Rules
+1. **No "Ghost" Deployments:** If an app is live on a droplet or DO App Platform, its exact IP, directory path, and start command (e.g., `pm2 start` or `systemctl`) MUST be documented in the project's `DEPLOYMENT.md` or `HANDOFF.md`.
+2. **Reverse Proxy Transparency:** If Nginx is used, the proxy port (e.g., `3003`) must be documented alongside the public domain.
+3. **Repository Naming:** The GitHub repository name MUST match the primary domain or app name (e.g., `growlingeyes.com` lives in the `growlingeyes` repo, not a generic name like `osint-watch`).
+4. **Environment Variables:** A list of required (but not the actual secret values) `.env` variables must be documented so future agents know what the app needs to run.
+
 ### Auto-Documentation (MANDATORY)
 - Every change to any repo, droplet, config, or deployment MUST be auto-logged with timestamp, what changed, and who/what made the change.
 - CHANGELOG.md in every repo, updated automatically on every push.

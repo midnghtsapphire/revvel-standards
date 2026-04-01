@@ -16,6 +16,7 @@ This table lists all known active droplets and their primary services.
 | :--- | :--- | :--- | :--- |
 | **Primary Production** | `164.90.148.7` | Nginx, MindMappr Bot, PawSitting, TheAltText, ReeseReviews, ForensicStudio, Dashboard | `root` / `+j2swyCE.*B6kdg` |
 | **Dashboard (Old)** | `147.182.211.246` | Legacy Dashboard (to be decommissioned) | SSH Key (Unknown) |
+| **GrowlingEyes** | `164.90.148.7` | Nginx, PM2, Node.js App (`growlingeyes.com` / port 3003) | `root` / SSH Key (`growlingeyes_universal`) |
 | **datascope-standalone** | `68.183.29.25` | Datascope Application | SSH Key |
 | **marketing-automation** | `159.65.231.36` | Marketing Automation Suite | SSH Key |
 | **project-face-standalone**| `192.241.141.186`| Project Face Application | SSH Key |
@@ -44,7 +45,7 @@ All domains are managed through GoDaddy or Namecheap, with DNS pointing to Digit
 | meetaudreyevans.com | GitHub Pages (`midnghtsapphire.github.io`) | GoDaddy | Main Hub / Portfolio |
 | reesereviews.com | `164.90.148.7` | GoDaddy | Reese Reviews Application |
 | yumyumcode.com | TBD | GoDaddy | Consulting & Accessibility |
-| growlingeyes.com | TBD | GoDaddy | Security & Monitoring |
+| growlingeyes.com | `164.90.148.7` (Droplet) / DO App Platform | GoDaddy | Multi-Domain Threat Intelligence Platform |
 | truthslayer.com | TBD | GoDaddy | Data Intelligence |
 | glowstarlabs.com | TBD | GoDaddy | Corporate Hub |
 
@@ -56,6 +57,7 @@ All domains are managed through GoDaddy or Namecheap, with DNS pointing to Digit
     - `MIDNGHTSAPPHIRE/revvel-standards`: This repository.
     - `MIDNGHTSAPPHIRE/revvel-app-template`: The boilerplate template for all new apps.
     - `MIDNGHTSAPPHIRE/rvvel`: The source for `meetaudreyevans.com`.
+    - `MIDNGHTSAPPHIRE/growlingeyes`: The source for `growlingeyes.com` (formerly osint-watch).
     - `MIDNGHTSAPPHIRE/mindmappr`: The MindMappr bot backend.
     - Individual app repositories (e.g., `Pawsitting`, `the-alt-text`).
 
