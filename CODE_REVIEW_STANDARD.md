@@ -1,6 +1,6 @@
 # Revvel Code Review and Deployment Standard
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Date:** April 3, 2026
 **Status:** Mandatory Policy
 
@@ -55,7 +55,26 @@ GitHub Actions handles the build, test, and deploy phases for all web applicatio
 
 For mobile applications built with React Native and Expo, CodeMagic is the mandatory CI/CD platform. CodeMagic automates the building of iOS and Android binaries, runs necessary tests, and handles direct submission to the Apple App Store and Google Play Store.
 
-## 5. Security Gates
+## 5. No Force Push Policy
+
+`git push --force` is **permanently banned** across all Revvel and MIDNGHTSAPPHIRE repositories. This policy is non-negotiable and applies to all contributors, automated agents, and CI/CD pipelines without exception.
+
+### 5.1. Why This Policy Exists
+
+On April 3, 2026, a force-push to the `master` branch of the MindMappr repository overwrote two teams' committed work — including the Rex Tools integration and the Activity Window feature. The lost commits required a full manual reconstruction effort. This policy exists to ensure this never happens again.
+
+### 5.2. Enforcement
+
+- GitHub branch protection rules must be enabled on all repos to block force-pushes at the server level.
+- Pre-push hooks in CI/CD templates must detect and reject `--force` flags.
+- Any force-push attempt triggers an immediate alert to the repository owner.
+- If a branch has diverged from `master`, the correct resolution is always `git rebase`, never `git push --force`.
+
+### 5.3. Reference
+
+See [`CONCURRENT_DEVELOPMENT_STANDARD.md`](./CONCURRENT_DEVELOPMENT_STANDARD.md) for the full multi-team coordination workflow and branch protection rules that accompany this policy.
+
+## 6. Security Gates
 
 During the CI/CD process, several security gates are enforced:
 -   **Secret Management:** All secrets must be injected via HashiCorp Vault (AppRole + OIDC auth) or GitHub Actions Secrets. Hardcoded credentials will cause an immediate pipeline failure.
