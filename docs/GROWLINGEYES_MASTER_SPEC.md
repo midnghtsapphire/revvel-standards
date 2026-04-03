@@ -308,7 +308,15 @@ All 90 data sources are mapped to their respective fetcher files and database ta
 
 ## 5. API & Connector Registry
 
-Keys are stored in `.env` on the DigitalOcean droplet and in Manus sandbox secrets. **Never hardcode keys.**
+Keys are stored in the **HashiCorp Vault** on the DigitalOcean `vault-server` droplet, and synchronized to the `.env` on the `growlingeyes` droplet. **Never hardcode keys.**
+
+### HashiCorp Vault Server (DigitalOcean)
+
+- **Droplet Name:** `vault-server`
+- **URL:** `https://vault.freedomangelcorps.com`
+- **SSH Access:** Use the `growlingeyes_deploy` key (or your DO account SSH key) to access `root@159.65.36.200`.
+- **Unseal Keys & Root Token:** The 5 unseal keys and the root token generated during Vault initialization MUST be stored securely (e.g., in a secure password manager or physical safe). If the vault server restarts, 3 of the 5 unseal keys are required to unlock it.
+- **Seeding Process:** To seed the vault, SSH into the vault server, unseal it (`vault operator unseal`), authenticate (`vault login <root_token>`), and write secrets to `secret/data/growlingeyes/...`.
 
 ### Free APIs (No Key Required)
 
