@@ -478,7 +478,35 @@ All raw data (JSON, XML, CSV) MUST be parsed and presented in human-readable for
 
 ---
 
-## 13. Error Handling & API Fallback Protocol
+## 13. Live Data Wiring Protocol (OpenSky & ADS-B)
+
+When integrating live, high-frequency data sources like OpenSky Network or MarineTraffic AIS, the following wiring protocol MUST be used:
+1. **Frontend-Direct Polling**: Live data should be queried from the frontend via a tRPC endpoint that acts as a proxy to the external API, rather than storing every tick in the database.
+2. **Rate Limiting Respect**: Polling intervals must respect the provider's limits (e.g., OpenSky anonymous tier = 10 seconds max, default to 30s).
+3. **Data Fusion**: The UI must clearly distinguish between **Historical/Promoted Events** (from the database) and **Live Contacts** (from the live API feed).
+4. **Visual Indicators**: Live data feeds must have a pulsing indicator (e.g., `animate-pulse` green dot) and a manual refresh button to assure the user the connection is active.
+5. **Graceful Degradation**: If the live API is unreachable or rate-limited, the UI must show a clean fallback message (e.g., "Polling..." or "No contacts in range") instead of breaking the page.
+
+---
+
+## 14. Vault Security & Secret Management
+
+All API keys, SSH keys, and sensitive environment variables MUST be managed securely using the dedicated HashiCorp Vault server.
+
+**Vault Server Details:**
+- **URL:** `https://vault.freedomangelcorps.com`
+- **Droplet IP:** `159.65.36.200`
+- **SSH Access:** `root@159.65.36.200` (using the `growlingeyes_deploy` key)
+
+**Mandatory Unseal Key Protocol:**
+When initializing a new Vault (`vault operator init`), the system generates 5 unseal keys and 1 root token. **These MUST be immediately saved to a secure password manager (e.g., 1Password, Bitwarden) by the owner.** The vault requires 3 of the 5 keys to unseal after any reboot. If these keys are lost, the vault and all secrets within are permanently inaccessible.
+
+**Seeding Protocol:**
+After unsealing, secrets are seeded using the `scripts/seed_vault.sh` script, which writes to the `secret/data/growlingeyes/*` path.
+
+---
+
+## 15. Error Handling & API Fallback Protocol
 
 To maintain 100% uptime and data flow, all fetchers MUST adhere to the following:
 1. **Fallback Wrapper**: All external API calls MUST use `fetchWithFallback` or `fetchXmlWithFallback`.
@@ -490,7 +518,7 @@ To maintain 100% uptime and data flow, all fetchers MUST adhere to the following
 
 ---
 
-## 14. GitHub → DigitalOcean Pre-Deploy Verification Checklist
+## 16. GitHub → DigitalOcean Pre-Deploy Verification Checklist
 
 Before claiming ANY deployment is "live", you MUST verify both backend and frontend builds:
 
@@ -518,5 +546,5 @@ Before claiming ANY deployment is "live", you MUST verify both backend and front
 
 ---
 
-**END OF SPECIFICATION — SSOT v3.1.0**
+**END OF SPECIFICATION — SSOT v3.2.0**
 *GrowlingEyes is a product of Freedom Angel Corps — "We believe you."*
