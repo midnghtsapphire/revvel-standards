@@ -470,23 +470,45 @@ All raw data (JSON, XML, CSV) MUST be parsed and presented in human-readable for
 
 ---
 
-## 13. GitHub → DigitalOcean Deployment Checklist
+## 13. Error Handling & API Fallback Protocol
 
-Before every deployment, verify:
+To maintain 100% uptime and data flow, all fetchers MUST adhere to the following:
+1. **Fallback Wrapper**: All external API calls MUST use `fetchWithFallback` or `fetchXmlWithFallback`.
+2. **URL Chain**: Every primary API URL MUST have at least one fallback URL (e.g., an alternative endpoint, an RSS feed, or a secondary provider like GDACS for ReliefWeb).
+3. **No Uncaught Exceptions**: Fetchers MUST NEVER throw runtime errors. They must return empty arrays `[]` or `0` on complete failure.
+4. **Health Monitor**: The `healthMonitor.ts` worker runs every 30 minutes to ping all primary endpoints.
+5. **Auto-Alerting**: Any 4xx/5xx error or timeout detected by the health monitor automatically creates a GitHub Issue (deduplicated) and sends an email alert via SMTP.
+6. **Schema Guards**: API responses MUST be validated (e.g., using `zod` or safe destructuring) to prevent crashes when external providers change their JSON structure (e.g., NOAA Kp Index format change).
 
-- [ ] `esbuild` compiles with 0 errors
-- [ ] All new fetchers have error handling (`try/catch`)
-- [ ] All new endpoints return `[]` on failure (never throw to client)
-- [ ] `source_hash` is `varchar(64)` in all tables
-- [ ] New environment variables are added to droplet `.env`
-- [ ] New DB tables are created on droplet before deployment
-- [ ] PM2 restarts cleanly (check `pm2 logs` for startup errors)
-- [ ] Site returns HTTP 200 after restart
+---
+
+## 14. GitHub → DigitalOcean Pre-Deploy Verification Checklist
+
+Before claiming ANY deployment is "live", you MUST verify both backend and frontend builds:
+
+### Backend Build
+- [ ] `esbuild` compiles with 0 errors (`npm run build`)
+- [ ] All new fetchers use `fetchWithFallback`
+- [ ] New environment variables are added to droplet `.env` (including API keys)
+- [ ] New DB tables are created/pushed on droplet before deployment
+
+### Frontend Build
+- [ ] `vite build` completes successfully (`npm run build`)
+- [ ] The `dist/public/assets/index-[hash].js` file is generated
+- [ ] The `dist/public/` folder is uploaded to the droplet (`/var/www/growlingeyes/dist/public/`)
+- [ ] **Permissions Check**: Run `chmod -R o+rX /var/www/growlingeyes/dist/public/` to ensure `nginx` (www-data) can read static files (prevents 403 errors).
+
+### Live Verification
+- [ ] PM2 restarts cleanly (`pm2 restart growlingeyes --update-env`)
+- [ ] Check `pm2 logs growlingeyes` for startup errors
+- [ ] **CRITICAL**: Verify the live `index.html` serves the NEW asset hash (`curl -s https://growlingeyes.com/ | grep assets/index-`)
+- [ ] Site returns HTTP 200 after restart (`curl -A 'Mozilla/5.0' -I https://growlingeyes.com/`)
+- [ ] Visual verification: All UI changes (hero section, favicon) are confirmed visible on the live site.
 - [ ] All new endpoints tested with `curl` before marking complete
 - [ ] Changes committed to `midnghtsapphire/growlingeyes` on `main`
 - [ ] Standards updated in `midnghtsapphire/revvel-standards`
 
 ---
 
-**END OF SPECIFICATION — SSOT v3.0.0**
+**END OF SPECIFICATION — SSOT v3.1.0**
 *GrowlingEyes is a product of Freedom Angel Corps — "We believe you."*
