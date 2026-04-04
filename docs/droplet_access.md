@@ -45,3 +45,12 @@
   - `agentintruder.com` — AgentIntruder project (ACTIVE, expires Feb 26, 2027)
     - Domain Privacy: ON
 - **2 Expiring/Expired domains**: Check Namecheap dashboard for renewal status
+
+## Discord Bot (MindMappr)
+- **Application ID**: 1490049282525630464
+- **Public Key**: 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
+- **Bot Token**: Stored as DISCORD_BOT_TOKEN in DigitalOcean App Platform env vars
+- **Bot Username**: MindMappr
+- **Invite URL**: https://discord.com/api/oauth2/authorize?client_id=1490049282525630464&permissions=277025770560&scope=bot%20applications.commands
+- **Permissions**: Send Messages, Read Message History, Embed Links, Attach Files, Use Slash Commands
+- **Intents Required**: Message Content, Server Members
