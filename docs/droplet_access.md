@@ -16,8 +16,23 @@
 - **Status**: SSH access lost (key-only auth, unknown key)
 - **Note**: Can be destroyed once new dashboard is confirmed working
 
+## Discord Bot (MindMappr)
+- **Application Name**: MindMappr
+- **Application ID**: 1490049282525630464
+- **Public Key**: 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
+- **Bot Token**: [stored as DISCORD_BOT_TOKEN in DO App Platform env vars]
+- **Intents Enabled**: Message Content Intent, Server Members Intent
+- **OAuth2 Scopes**: bot, applications.commands
+- **Bot Permissions**: Send Messages, Read Message History, Embed Links, Attach Files, Use Slash Commands
+- **Invite URL**: https://discord.com/oauth2/authorize?client_id=1490049282525630464&permissions=274877991936&scope=bot+applications.commands
+- **Created**: 2026-04-04
+
 ## DigitalOcean API
 - **Token**: [REDACTED — see vault]
+- **MindMappr App Env Vars** (set via DO dashboard or doctl):
+  - `DISCORD_BOT_TOKEN` = [set in DO App Platform environment variables]
+  - `DISCORD_APP_ID` = 1490049282525630464
+  - `DISCORD_PUBLIC_KEY` = 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
 
 ## GitHub
 - **Org**: MIDNGHTSAPPHIRE
@@ -45,12 +60,3 @@
   - `agentintruder.com` — AgentIntruder project (ACTIVE, expires Feb 26, 2027)
     - Domain Privacy: ON
 - **2 Expiring/Expired domains**: Check Namecheap dashboard for renewal status
-
-## Discord Bot (MindMappr)
-- **Application ID**: 1490049282525630464
-- **Public Key**: 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
-- **Bot Token**: Stored as DISCORD_BOT_TOKEN in DigitalOcean App Platform env vars
-- **Bot Username**: MindMappr
-- **Invite URL**: https://discord.com/api/oauth2/authorize?client_id=1490049282525630464&permissions=277025770560&scope=bot%20applications.commands
-- **Permissions**: Send Messages, Read Message History, Embed Links, Attach Files, Use Slash Commands
-- **Intents Required**: Message Content, Server Members
