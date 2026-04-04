@@ -30,3 +30,18 @@
 ## Slack
 - **Workspace**: RISINGALOHA
 - **Token**: [REDACTED — see vault]
+
+## Namecheap (Domain Registrar)
+- **Username**: uprisinghope
+- **Password**: Church#123
+- **Login URL**: https://www.namecheap.com/myaccount/login/
+- **Note**: Account requires email 2FA verification on new device logins
+- **Domains Managed**:
+  - `mind-mappr.com` — MindMappr app (ACTIVE, expires Feb 26, 2027)
+    - DNS: ALIAS @ → mindmappr-qarz8.ondigitalocean.app
+    - DNS: CNAME www → mindmappr-qarz8.ondigitalocean.app
+    - Domain Privacy: ON (WithhheldforPrivacy)
+    - PremiumDNS: ON
+  - `agentintruder.com` — AgentIntruder project (ACTIVE, expires Feb 26, 2027)
+    - Domain Privacy: ON
+- **2 Expiring/Expired domains**: Check Namecheap dashboard for renewal status
