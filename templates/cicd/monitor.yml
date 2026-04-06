@@ -1,0 +1,80 @@
+name: S.H.I.F.T. Self-Healing Monitor
+
+# Runs every 10 minutes to check the live site and self-heal on failure
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.4.1 --activate
+
+      - name: Install Playwright
+        run: |
+          pnpm add -D @playwright/test
+          npx playwright install chromium --with-deps
+
+      - name: Run S.H.I.F.T. Monitor Tests
+        id: monitor_tests
+        run: npx playwright test tests/e2e/shift-monitor.spec.ts --reporter=json > playwright-results.json 2>&1
+        continue-on-error: true
+        env:
+          BASE_URL: ${{ vars.LIVE_URL || 'https://YOUR_APP_DOMAIN.com' }}
+
+      - name: Self-Heal — Restart PM2 on Failure
+        if: steps.monitor_tests.outcome == 'failure'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ vars.DROPLET_IP || '164.90.148.7' }} >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@${{ vars.DROPLET_IP || '164.90.148.7' }} "
+            echo '[SHIFT Monitor] Failure detected. Attempting self-heal...'
+            pm2 restart ${{ vars.PM2_APP_NAME || 'growlingeyes' }} --update-env
+            sleep 5
+            pm2 status
+            echo '[SHIFT Monitor] Self-heal complete.'
+          "
+
+      - name: Generate Failure Report
+        if: steps.monitor_tests.outcome == 'failure'
+        run: |
+          echo "## S.H.I.F.T. Monitor Failure Report" > failure-report.md
+          echo "**Time:** $(date -u)" >> failure-report.md
+          echo "**Site:** ${{ vars.LIVE_URL }}" >> failure-report.md
+          echo "" >> failure-report.md
+          echo "### What Happened" >> failure-report.md
+          echo "One or more E2E tests failed. PM2 was automatically restarted as a first-pass self-heal." >> failure-report.md
+          echo "" >> failure-report.md
+          echo "### Next Steps" >> failure-report.md
+          echo "1. Check the Actions run logs for the specific test that failed." >> failure-report.md
+          echo "2. If PM2 restart did not resolve it, check the droplet directly." >> failure-report.md
+          echo "3. Review the Playwright test output below." >> failure-report.md
+          echo "" >> failure-report.md
+          echo '```json' >> failure-report.md
+          cat playwright-results.json >> failure-report.md
+          echo '```' >> failure-report.md
+
+      - name: Upload Failure Report as Artifact
+        if: steps.monitor_tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: shift-failure-report-${{ github.run_id }}
+          path: failure-report.md
+          retention-days: 7
