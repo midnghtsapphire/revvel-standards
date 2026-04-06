@@ -345,3 +345,42 @@ SESSION END
 ---
 
 **Bottom line:** AI agents are force multipliers, not replacements. They execute brilliantly within narrow, well-defined boundaries. They fail catastrophically when given vague, broad instructions. The standards in this repository exist to create those boundaries. Follow them, and agents will ship. Ignore them, and you'll get 80%-done apps forever.
+
+---
+
+## 9. Research Sources & Industry Validation
+
+The findings in this document are corroborated by external research:
+
+### The 80% Problem
+Addy Osmani coined the definitive framing: agents rapidly generate 80% of code, but the remaining 20% requires deep knowledge of context, architecture, and trade-offs that agents lack. This creates **"Comprehension Debt"** — when agents generate code faster than you can read and understand it, you borrow against your future ability to maintain the system.
+
+### Measured Productivity Gaps
+A 2025 METR study found a **39-44% perception gap**: developers felt 20% faster but measured **19% slower** in real-world codebases, with 9% of time now spent reviewing and correcting AI output. Amazon's retail org experienced a leap in outages caused by AI agents, now requiring senior sign-off for junior engineers' AI-assisted changes.
+
+### Silent Failure Patterns
+Columbia University's DAPLab analyzed top agents (Cline, Claude, Cursor, Replit, V0) and identified **9 critical failure patterns**. The most dangerous: error handling and business logic violations are often silent — the code runs without errors but doesn't do what was asked.
+
+### AI-Generated Bug Rates
+Ox Security's 2025 analysis of 300+ repositories found **ten recurring anti-patterns in 80-100% of AI-generated code**: AI-generated code includes bugs like improper password handling at **1.5-2x the rate** of human coders, **8x higher excessive I/O operations**, and **2x more concurrency/dependency errors**.
+
+### What Actually Works
+- **Spec-driven development** is the #1 success factor (Addy Osmani, GitHub AI team)
+- **AGENTS.md / CLAUDE.md files** provide persistent context across sessions — keep under 300 lines
+- **Well-scoped, repetitive tasks** succeed: migrations (10-14x faster), security fixes (20x), refactoring (8x). Novel full-app creation fails.
+- **3 focused agents consistently outperform 1 generalist working 3x longer**
+- **Agentic engineering** (Karpathy, 2026): the discipline of designing systems where AI agents plan, write, test, and ship code under structured human oversight
+
+### Multi-Agent Orchestration (Emerging)
+Four major agent communication protocols in 2026: MCP (Model Context Protocol), ACP (Agent Communication Protocol), A2A (Agent-to-Agent, Google), ANP (Agent Network Protocol). However, CIO magazine's honest assessment: "True multi-agent collaboration doesn't work — yet."
+
+### References
+- Addy Osmani: "The 80% Problem in Agentic Coding" (addyo.substack.com)
+- Columbia DAPLab: "9 Critical Failure Patterns of Coding Agents" (daplab.cs.columbia.edu)
+- METR Study: "Measuring AI Coding Productivity" (2025)
+- Ox Security: "AI-Generated Code Anti-Patterns" (2025)
+- Anthropic: "2026 Agentic Coding Trends Report"
+- Andrej Karpathy: "Agentic Engineering" framework (2026)
+- Devin AI: 2025 Annual Performance Review (cognition.ai)
+- Red Hat: "Vibes, Specs, Skills, and Agents" (developers.redhat.com)
+- Harvard Business Review: "To Scale AI Agents, Think of Them Like Team Members" (2026)
