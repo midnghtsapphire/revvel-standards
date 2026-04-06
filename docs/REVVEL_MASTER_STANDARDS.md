@@ -1,8 +1,57 @@
 # REVVEL MASTER STANDARDS & SPECIFICATIONS
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)  
 **Status:** SINGLE SOURCE OF TRUTH (SSOT)  
-**Version:** 2.0.0 (March 2, 2026)  
+**Version:** 2.1.0 (April 6, 2026)  
 **Major Update:** Comprehensive resource expansion with 500+ direct links to cutting-edge tools and platforms
+
+---
+
+## 0. Standards Index — Detailed Specifications
+
+This document is the master policy document. For detailed implementation specifications, field maps, and technical standards, refer to these dedicated documents. **Every document listed here is mandatory.**
+
+### Core Architecture
+| Document | What It Covers |
+|---|---|
+| [`DATABASE_ARCHITECTURE_STANDARD.md`](../DATABASE_ARCHITECTURE_STANDARD.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
+| [`DATA_MODEL_STANDARD.md`](../DATA_MODEL_STANDARD.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
+| [`SECURITY_STANDARD.md`](../SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting |
+| [`DEPLOYMENT_STANDARD.md`](../DEPLOYMENT_STANDARD.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD |
+
+### Field Maps (Database → UI → API — every column mapped)
+| Document | What It Covers |
+|---|---|
+| [`docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md`](field-maps/DATABASE_TO_UI_MASTER_MAP.md) | All 12 core tables: users, products, orders, subscriptions, affiliates, ad_campaigns, etc. |
+| [`docs/field-maps/LEADS_FIELD_MAP.md`](field-maps/LEADS_FIELD_MAP.md) | Lead capture form, CRM detail, pipeline board, metrics dashboard |
+| [`docs/field-maps/INSURANCE_LEADS_FIELD_MAP.md`](field-maps/INSURANCE_LEADS_FIELD_MAP.md) | Burial, term life, whole life, UL/IUL, pet insurance product fields |
+| [`docs/field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md`](field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md) | Blog editor, public listing, newsletter form, campaign editor, SEO app config |
+
+### Content & Marketing
+| Document | What It Covers |
+|---|---|
+| [`CONTENT_STANDARD.md`](../CONTENT_STANDARD.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases |
+| [`SEO_METADATA_STANDARD.md`](../SEO_METADATA_STANDARD.md) | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
+| [`MARKETING_AUTOMATION_STANDARD.md`](../MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels |
+| [`AFFILIATE_MARKETING_STANDARD.md`](../AFFILIATE_MARKETING_STANDARD.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
+
+### Leads & Insurance
+| Document | What It Covers |
+|---|---|
+| [`LEADS_STANDARD.md`](../LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up cadence, state licensing gate |
+
+### Accessibility & Compliance
+| Document | What It Covers |
+|---|---|
+| [`ACCESSIBILITY_STANDARD.md`](../ACCESSIBILITY_STANDARD.md) | WCAG 2.2 AA/AAA, **TTY/TDD** (confirmed line), 7 UI modes, screen reader testing, ADA for insurance |
+| [`COMPLIANCE_RUBRIC.md`](../COMPLIANCE_RUBRIC.md) | P0/P1/P2 compliance tiers, scoring rubric, automated check |
+| [`TESTING_STANDARD.md`](../TESTING_STANDARD.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
+
+### EDI & Tax
+| Document | What It Covers |
+|---|---|
+| [`docs/edi-maps/IRS_TAX_FORM_FIELD_MAP.md`](edi-maps/IRS_TAX_FORM_FIELD_MAP.md) | W-9, 1099-NEC, 1099-K DB→IRS field maps; TTY/phone filing for deaf users |
+| [`docs/edi-maps/EDI_INTEGRATION_STANDARD.md`](edi-maps/EDI_INTEGRATION_STANDARD.md) | How to hand field maps to any partner (IRS, carrier, bank) |
+| [`docs/edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md`](edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md) | Blank template for any external integration |
 
 ---
 
