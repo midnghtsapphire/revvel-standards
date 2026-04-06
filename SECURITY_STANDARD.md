@@ -1,0 +1,346 @@
+# Revvel Security Standard
+
+**Version:** 1.0.0  
+**Date:** April 6, 2026  
+**Status:** Mandatory Policy  
+**Author:** Audrey Evans (MIDNGHTSAPPHIRE)
+
+---
+
+## 1. Introduction
+
+Security is not bolted on at the end — it is built into every layer from day one. Every Revvel application must implement all P0 requirements before any code reaches production. The items in this document are not suggestions; they are requirements that CI enforces.
+
+---
+
+## 2. Secret Management
+
+### 2.1. No Hardcoded Secrets — EVER
+
+Hardcoded API keys, passwords, tokens, and connection strings in source code are an automatic P0 compliance failure. The `check-compliance.js` script scans for common secret patterns and fails CI if any are found.
+
+**What counts as a secret:**
+- API keys (Stripe, Plaid, OpenAI, etc.)
+- Database connection strings with credentials
+- JWT signing secrets
+- OAuth client secrets
+- SSH private keys
+- Any value that begins with `sk_`, `pk_`, `Bearer `, `ghp_`, `xox`, etc.
+
+### 2.2. Environment Variables
+
+All secrets must be injected at runtime via environment variables.
+
+```
+# .env.example (commit this — no real values)
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+STRIPE_SECRET_KEY=sk_live_...
+JWT_SECRET=your-32-char-secret-here
+CLERK_SECRET_KEY=sk_...
+```
+
+**Rules:**
+- `.env` is always in `.gitignore`
+- `.env.example` is always committed and kept up to date
+- GitHub Actions secrets are used for CI/CD — never `.env` files in pipelines
+
+### 2.3. HashiCorp Vault (Production Secret Storage)
+
+For production environments, all secrets must be stored in and retrieved from HashiCorp Vault.
+
+**Authentication method:** AppRole (for CI/CD pipelines) + OIDC (for human operators)
+
+```bash
+# Minimal Vault setup for a new app
+vault secrets enable -path=revvel/apps/YOUR_APP kv-v2
+vault kv put revvel/apps/YOUR_APP/prod \
+  DATABASE_URL="postgresql://..." \
+  STRIPE_SECRET_KEY="sk_live_..." \
+  JWT_SECRET="..."
+```
+
+**Vault AppRole retrieval in Node.js:**
+
+```ts
+import vault from 'node-vault';
+
+const client = vault({ endpoint: process.env.VAULT_ADDR });
+
+async function getSecrets() {
+  await client.approleLogin({
+    role_id: process.env.VAULT_ROLE_ID,
+    secret_id: process.env.VAULT_SECRET_ID,
+  });
+  const result = await client.read('revvel/apps/YOUR_APP/prod');
+  return result.data.data;
+}
+```
+
+---
+
+## 3. HTTP Security Headers (Helmet.js)
+
+Every Express/Node.js backend must use `helmet` to set security headers. This is a P0 requirement.
+
+```ts
+import helmet from 'helmet';
+import express from 'express';
+
+const app = express();
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.stripe.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["https://js.stripe.com"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Disable if using external iframes (e.g., Stripe)
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+}));
+```
+
+**Required headers (enforced by Helmet):**
+
+| Header | Value | Purpose |
+|---|---|---|
+| `X-Content-Type-Options` | `nosniff` | Prevents MIME-type sniffing |
+| `X-Frame-Options` | `DENY` | Prevents clickjacking |
+| `X-XSS-Protection` | `1; mode=block` | Legacy XSS protection |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains; preload` | Forces HTTPS |
+| `Content-Security-Policy` | (see config above) | Prevents XSS and injection |
+| `Referrer-Policy` | `no-referrer-when-downgrade` | Controls referrer info |
+
+---
+
+## 4. CORS Configuration
+
+```ts
+import cors from 'cors';
+
+const allowedOrigins = [
+  'https://yourdomain.com',
+  'https://www.yourdomain.com',
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin} is not allowed`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+```
+
+**Rules:**
+- Never use `cors({ origin: '*' })` on any route that handles authenticated requests or sensitive data.
+- Wildcard CORS is only acceptable for fully public, read-only, non-authenticated endpoints.
+
+---
+
+## 5. Rate Limiting
+
+All API endpoints must implement rate limiting to prevent brute-force attacks, credential stuffing, and abuse.
+
+```ts
+import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
+
+// Global rate limiter (all routes)
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+
+// Strict limiter for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  skipSuccessfulRequests: true,
+  message: { error: 'Too many login attempts. Try again in 15 minutes.' },
+});
+
+// Slow down repeated requests (before hard block)
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000,
+  delayAfter: 50,
+  delayMs: (hits) => hits * 100,
+});
+
+app.use(globalLimiter);
+app.use(speedLimiter);
+app.use('/api/auth', authLimiter);
+```
+
+---
+
+## 6. Input Validation (Zod — Mandatory)
+
+All request inputs (body, query params, route params) must be validated with Zod before processing.
+
+```ts
+import { z } from 'zod';
+
+const CreateProductSchema = z.object({
+  name: z.string().min(1).max(255),
+  price: z.number().positive().max(999999),
+  description: z.string().max(2000).optional(),
+  categoryId: z.string().uuid(),
+});
+
+// In route handler:
+app.post('/api/products', async (req, res) => {
+  const result = CreateProductSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.flatten() });
+  }
+  // result.data is now type-safe
+  const product = await createProduct(result.data);
+  res.json(product);
+});
+```
+
+**Rules:**
+- Never trust `req.body` directly without Zod validation.
+- Always use `.safeParse()` not `.parse()` in route handlers (avoid uncaught exceptions).
+- Validate query params and route params too — not just body.
+
+---
+
+## 7. SQL Injection Prevention
+
+All database queries must use parameterized queries via the Drizzle ORM. Raw SQL strings with user input are strictly prohibited.
+
+```ts
+// ✅ CORRECT — Drizzle parameterized
+const user = await db.query.users.findFirst({
+  where: eq(users.email, email),
+});
+
+// ❌ WRONG — raw SQL with string interpolation
+const user = await db.execute(sql`SELECT * FROM users WHERE email = '${email}'`);
+```
+
+If raw SQL is absolutely necessary (complex queries), always use Drizzle's `sql` tagged template literal:
+
+```ts
+// ✅ ACCEPTABLE — sql tagged template is parameterized
+const result = await db.execute(
+  sql`SELECT * FROM products WHERE price < ${maxPrice} AND category_id = ${categoryId}`
+);
+```
+
+---
+
+## 8. Dependency Vulnerability Scanning
+
+### 8.1. Automated (CI)
+
+`pnpm audit` or `npm audit` runs automatically in every CI pipeline. A critical-severity vulnerability blocks deployment.
+
+```yaml
+- name: Audit dependencies
+  run: pnpm audit --audit-level=high
+```
+
+### 8.2. Snyk (Recommended)
+
+Integrate Snyk for continuous monitoring:
+
+```yaml
+- name: Run Snyk vulnerability scan
+  uses: snyk/actions/node@master
+  env:
+    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  with:
+    args: --severity-threshold=high
+```
+
+### 8.3. OWASP ZAP (Pre-Production Scan)
+
+Before every major release, run an OWASP ZAP scan against the staging environment:
+
+```yaml
+- name: OWASP ZAP Baseline Scan
+  uses: zaproxy/action-baseline@v0.11.0
+  with:
+    target: 'https://staging.yourdomain.com'
+    fail_action: true
+```
+
+---
+
+## 9. Authentication Security
+
+### 9.1. Clerk (Recommended)
+
+Clerk is the preferred authentication provider. Follow these security rules:
+
+- Enable **email verification** for all new accounts.
+- Enable **MFA** as an option for all users; make it mandatory for admin users.
+- Configure **session expiration** to 24 hours for regular users, 8 hours for admins.
+- Use Clerk's **organization** feature for multi-tenant apps.
+
+### 9.2. Custom JWT (When Clerk Is Not Used)
+
+If building a custom JWT system:
+
+```ts
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  throw new Error('JWT_SECRET must be at least 32 characters');
+}
+
+// Sign
+const token = jwt.sign(
+  { userId: user.id, role: user.role },
+  JWT_SECRET,
+  { expiresIn: '24h', algorithm: 'HS256' }
+);
+
+// Verify
+const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+```
+
+**JWT rules:**
+- Minimum secret length: 32 characters
+- Always set `expiresIn`
+- Store tokens in `httpOnly` cookies, not `localStorage`
+- Rotate secrets if compromised
+
+---
+
+## 10. Security Checklist for Every PR
+
+Before any code can be merged to `main`, the reviewer (Venice AI primary, Claude fallback) must confirm:
+
+- [ ] No hardcoded secrets or credentials
+- [ ] All new API routes have input validation (Zod)
+- [ ] All new API routes have authentication/authorization checks
+- [ ] No raw SQL with user-provided values
+- [ ] No `console.log` statements that could leak sensitive data to production logs
+- [ ] No `eval()`, `Function()`, or dynamic `require()`
+- [ ] CORS configuration not widened beyond necessary origins
+- [ ] Rate limiting applied to any new public endpoints
