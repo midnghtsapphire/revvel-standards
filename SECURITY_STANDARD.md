@@ -344,3 +344,66 @@ Before any code can be merged to `main`, the reviewer (Venice AI primary, Claude
 - [ ] No `eval()`, `Function()`, or dynamic `require()`
 - [ ] CORS configuration not widened beyond necessary origins
 - [ ] Rate limiting applied to any new public endpoints
+
+---
+
+## 11. Automated Security Scanning
+
+### 11.1. Security Scanning Workflow (`security.yml`)
+
+Every Revvel application repository must include the `security.yml` workflow. Copy from `templates/cicd/security.yml`.
+
+The workflow runs:
+- On every push to `main`
+- On every pull request to `main`
+- Weekly on Monday at 6am UTC (scheduled baseline)
+
+**Jobs:**
+1. **Dependency Vulnerability Audit** — `pnpm audit --audit-level=high` (reports but does not block; change `continue-on-error: false` to make it a hard gate)
+2. **TruffleHog Secret Scanning** — Scans the full git history for verified leaked secrets
+
+```bash
+# Copy to your app repo
+cp templates/cicd/security.yml .github/workflows/security.yml
+```
+
+### 11.2. The Auto-Fix Loop (`auto-fix.yml`)
+
+Every Revvel application repository must also include the `auto-fix.yml` workflow. Copy from `templates/cicd/auto-fix.yml`.
+
+The auto-fix loop works as follows:
+
+```
+CI workflow fails
+    ↓
+auto-fix.yml triggers on workflow_run completion (conclusion = failure)
+    ↓
+Fetches failed job names + run URL
+    ↓
+Creates GitHub Issue labeled 'auto-fix' + 'copilot'
+    ↓
+Issue body includes full instructions for Copilot to:
+  1. Read the CI logs
+  2. Identify root cause
+  3. Fix following the MVI Contract
+  4. Open a PR with all acceptance gates passing
+    ↓
+Copilot picks up the issue → fixes → opens PR
+    ↓
+CI passes on PR → merge → issue auto-closes
+```
+
+**Setup:**
+```bash
+# Copy to your app repo
+cp templates/cicd/auto-fix.yml .github/workflows/auto-fix.yml
+
+# Edit .github/workflows/auto-fix.yml:
+# Replace OWNER_USERNAME with your GitHub username
+```
+
+**Labels auto-created:** `auto-fix` (color: `#0075ca`) and `copilot` (color: `#0075ca`) are created automatically by the workflow if they don't exist.
+
+### 11.3. Error Monitoring (`monitored()` wrapper)
+
+For runtime security monitoring, see `standards/ERROR_REPORTING_STANDARD.md`. The `monitored()` wrapper ensures that security-relevant errors (auth failures, data integrity issues) escalate to GitHub Issues automatically, providing an audit trail.

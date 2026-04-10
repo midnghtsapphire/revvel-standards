@@ -333,3 +333,65 @@ tests/
 ## 9. Compliance
 
 A missing `tests/` directory or a test run that fails CI coverage thresholds blocks all deployments. There are no exceptions. If a test is genuinely impossible to write for a given piece of code, the reason must be documented in a comment adjacent to the code and approved by the repository owner.
+
+---
+
+## 10. GrowlingEyes Proven Patterns
+
+The following test patterns have been proven in the GrowlingEyes project and are now the standard approach for all Revvel applications.
+
+### 10.1. Field Validation Tests
+
+Every database table must have a corresponding field validation test that checks:
+- Required field presence (null/empty rejection)
+- Range validation (lat/lon, scores, numeric bounds)
+- Timestamp validity
+- Enum value constraints
+- String non-empty and max-length checks
+
+**Template:** `templates/testing/field-validation.test.ts`
+
+**Example pattern (from GrowlingEyes):**
+```ts
+describe('reports field validation', () => {
+  it('should reject insert when title is null', async () => {
+    await expect(
+      db.insert(reports).values({ title: null, ...otherFields })
+    ).rejects.toThrow();
+  });
+
+  it('should reject severity outside valid enum values', () => {
+    const VALID_SEVERITIES = ['low', 'medium', 'high', 'critical'];
+    expect(VALID_SEVERITIES.includes('invalid')).toBe(false);
+  });
+});
+```
+
+### 10.2. UI-to-DB Shape Validation Tests
+
+Every API endpoint or tRPC procedure must have a shape validation test that:
+- Mocks the database layer
+- Asserts the response shape matches exactly what the UI components expect
+- Verifies authentication guards (unauthenticated → 401)
+- Ensures sensitive fields are not exposed
+
+**Template:** `templates/testing/ui-db-map.test.ts`
+
+**Key rule:** The test defines the "contract" between the API and the UI. If the API changes its response shape, this test fails — alerting you to update the UI components before they break.
+
+### 10.3. E2E Data-Void Tests (Playwright)
+
+Every page must have an E2E test that verifies:
+- The page returns HTTP 200
+- No JavaScript console errors on load
+- The main content panel is visible and NOT showing "Loading..."
+- The content panel contains actual data (not just empty state)
+- No generic error messages ("Something went wrong", "Error", "404")
+
+**Template:** `templates/testing/panel-data-void.spec.ts`
+
+**Why this matters:** A "data void" is when a page loads without error but shows no data — either because the DB query returned empty, the loading state never resolved, or a silent error occurred. Data-void tests catch these failures that TypeScript and unit tests cannot catch.
+
+### 10.4. Template Locations
+
+All three test templates are in `templates/testing/`. Copy and adapt them for every new project — see `templates/testing/README.md` for substitution instructions.
