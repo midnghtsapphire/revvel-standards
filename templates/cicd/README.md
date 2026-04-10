@@ -10,6 +10,12 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 |---|---|---|
 | `deploy.yml` | GitHub Actions workflow — auto-deploys on every push to `main` | `.github/workflows/deploy.yml` |
 | `deploy.sh` | Manual one-click deploy script for local use | `deploy.sh` (repo root) |
+| `monitor.yml` | Uptime/health-check monitoring workflow | `.github/workflows/monitor.yml` |
+| `ci.yml` | Universal CI — TypeScript check, Vitest unit tests, Playwright E2E | `.github/workflows/ci.yml` |
+| `auto-fix.yml` | Auto-fix loop — creates GitHub Issue + Copilot instructions on CI failure | `.github/workflows/auto-fix.yml` |
+| `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
+| `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
+| `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
 
 ---
 

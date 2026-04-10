@@ -68,39 +68,42 @@ jobs:
           script: |
             const runId = '${{ steps.get-jobs.outputs.run_id }}';
             const failedJobs = '${{ steps.get-jobs.outputs.failed_jobs }}';
-            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
+            const runUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + runId;
             const branch = context.payload.workflow_run.head_branch;
             const commit = context.payload.workflow_run.head_sha.substring(0, 8);
 
-            const body = `## CI Failure — Auto-Fix Required
-
-**Workflow Run:** [View full logs](${runUrl})
-**Branch:** \`${branch}\`
-**Commit:** \`${commit}\`
-**Failed Jobs:** ${failedJobs}
-
----
-
-## Instructions for Copilot
-
-1. Read the full CI logs at the link above
-2. Identify the root cause of the failure in the failed jobs: **${failedJobs}**
-3. Fix the issue following the MVI Contract standard (see \`standards/MVI_CONTRACT_STANDARD.md\`)
-4. Open a PR targeting \`main\` with:
-   - A clear description of what failed and what was fixed
-   - All acceptance gates passing (TypeScript check, unit tests, E2E tests)
-5. Reference this issue in the PR description with "Fixes #[issue-number]"
-
-**Do NOT close this issue manually.** It will be closed automatically when the fix PR is merged and CI passes.
-
----
-
-*This issue was created automatically by the auto-fix workflow.*`;
+            const lines = [
+              '## CI Failure — Auto-Fix Required',
+              '',
+              'Workflow Run: [View full logs](' + runUrl + ')',
+              'Branch: `' + branch + '`',
+              'Commit: `' + commit + '`',
+              'Failed Jobs: ' + failedJobs,
+              '',
+              '---',
+              '',
+              '## Instructions for Copilot',
+              '',
+              '1. Read the full CI logs at the link above',
+              '2. Identify the root cause of the failure in the failed jobs: ' + failedJobs,
+              '3. Fix the issue following the MVI Contract standard (see `standards/MVI_CONTRACT_STANDARD.md`)',
+              '4. Open a PR targeting `main` with:',
+              '   - A clear description of what failed and what was fixed',
+              '   - All acceptance gates passing (TypeScript check, unit tests, E2E tests)',
+              '5. Reference this issue in the PR description with "Fixes #[issue-number]"',
+              '',
+              'Do NOT close this issue manually. It will be closed automatically when the fix PR is merged and CI passes.',
+              '',
+              '---',
+              '',
+              '_This issue was created automatically by the auto-fix workflow._',
+            ];
+            const body = lines.join('\n');
 
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `[Auto-Fix] CI Failure — ${failedJobs} — ${commit}`,
+              title: '[Auto-Fix] CI Failure — ' + failedJobs + ' — ' + commit,
               body: body,
               labels: ['auto-fix', 'copilot'],
               assignees: ['OWNER_USERNAME'], // CONFIGURE: Replace with your GitHub username

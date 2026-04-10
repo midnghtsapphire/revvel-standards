@@ -983,4 +983,99 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - ✅ Security-first design and regular audits
 
 ---
+
+## Project Tracking — BOM & Per-Project Docs
+
+Every active Revvel project has a dedicated docs directory with a Bill of Materials (BOM), brand identity document, and sprint log.
+
+| Project | Docs Directory | BOM | Brand |
+|---|---|---|---|
+| GrowlingEyes | [`docs/growlingeyes/`](docs/growlingeyes/) | [BOM.md](docs/growlingeyes/BOM.md) | [BRAND.md](docs/growlingeyes/BRAND.md) |
+| Neurooz | [`docs/neurooz/`](docs/neurooz/) | [BOM.md](docs/neurooz/BOM.md) | — |
+| Revvel Music Studio | [`docs/revvel-music-studio/`](docs/revvel-music-studio/) | [BOM.md](docs/revvel-music-studio/BOM.md) | — |
+| Universal SAR App | [`docs/universal-sar-app/`](docs/universal-sar-app/) | [BOM.md](docs/universal-sar-app/BOM.md) | — |
+| Premolt | [`docs/premolt/`](docs/premolt/) | [BOM.md](docs/premolt/BOM.md) | — |
+
+**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
+
+Regenerate the master BOM: `bash scripts/sync-bom.sh`
+
+---
+
+## Brand & Design — MN Emblem Standard
+
+Every Revvel project derives its visual identity from the **Metaphorical Neomorphism (MN) Formula**.
+
+- **MN Design Standard:** [`templates/brand/MN_EMBLEM_DESIGN_STANDARD.md`](templates/brand/MN_EMBLEM_DESIGN_STANDARD.md)
+- **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](templates/brand/BRAND_IDENTITY_TEMPLATE.md)
+- **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](templates/brand/ICON_SIZE_SPEC.md)
+- **How to use brand templates:** [`templates/brand/README.md`](templates/brand/README.md)
+
+---
+
+## CI/CD Templates
+
+All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.github/workflows/` of every app repo.
+
+| Workflow | File | Purpose |
+|---|---|---|
+| Deploy | `deploy.yml` | Auto-deploy to DigitalOcean on push to `main` |
+| CI | `ci.yml` | TypeScript check + Vitest tests + Playwright E2E |
+| Auto-Fix | `auto-fix.yml` | Creates GitHub Issue + Copilot instructions on CI failure |
+| Security | `security.yml` | `pnpm audit` + TruffleHog secret scanning |
+| Deploy Android | `deploy-android.yml` | Manual PWA → Play Store (inactive until account ready) |
+| Deploy iOS | `deploy-ios.yml` | Manual PWA → App Store (inactive until account ready) |
+| Monitor | `monitor.yml` | Uptime/health-check monitoring |
+
+Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
+
+---
+
+## Testing Templates
+
+Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every project.
+
+| Template | Type | Purpose |
+|---|---|---|
+| `field-validation.test.ts` | Vitest unit | Validates database field constraints |
+| `ui-db-map.test.ts` | Vitest integration | Validates API response shapes match DB |
+| `panel-data-void.spec.ts` | Playwright E2E | Validates pages load with real data |
+
+Instructions: [`templates/testing/README.md`](templates/testing/README.md)
+
+---
+
+## Bootstrap a New Project
+
+One command to scaffold a complete new Revvel app from all standard templates:
+
+```bash
+# From your new app repo root:
+bash path/to/revvel-standards/scripts/bootstrap-new-project.sh <app_name> <droplet_ip> <production_url>
+
+# Example:
+bash ../revvel-standards/scripts/bootstrap-new-project.sh neurooz 164.90.148.7 neurooz.com
+```
+
+This creates:
+- `SYSTEM_STATE.md` + `CONTEXT_PRIMER.md` (session state standards)
+- `.github/workflows/` (all 6 CI/CD workflows)
+- `scripts/pwa-audit.sh` (PWA readiness checker)
+- `docs/MOBILE_DEPLOYMENT.md` (store deployment guide)
+- `fastlane/` scaffold (inactive until accounts ready)
+- `tests/` structure with all three test templates
+
+---
+
+## GitHub Projects Setup
+
+Labels, milestones, and project board setup for every new Revvel repository.
+
+- **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](docs/GITHUB_PROJECTS_SETUP.md)
+
+Standard labels include: `bug`, `enhancement`, `security`, `bom-purchase`, `design`, `blocked`, `auto-fix`, `copilot`, `documentation`
+
+Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 7: Maintenance).
+
+---
 **END OF DOCUMENT**
