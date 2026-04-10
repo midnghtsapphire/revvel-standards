@@ -45,6 +45,8 @@ echo ""
 
 # -------------------------------------------------------------------------
 # Helper: copy + substitute
+# Cross-platform sed: BSD (macOS) requires a backup extension with -i,
+# GNU (Linux) accepts -i ''. Use -i.bak and clean up to support both.
 # -------------------------------------------------------------------------
 copy_and_substitute() {
   local src="$1"
@@ -53,12 +55,13 @@ copy_and_substitute() {
   mkdir -p "$(dirname "$dest")"
   cp "$src" "$dest"
 
-  # Substitute all template markers
-  sed -i \
+  # Substitute all template markers (cross-platform: works on macOS and Linux)
+  sed -i.bak \
     -e "s/\[APP_NAME\]/$APP_NAME/g" \
     -e "s/\[DROPLET_IP\]/$DROPLET_IP/g" \
     -e "s/\[PRODUCTION_URL\]/$PRODUCTION_URL/g" \
     "$dest"
+  rm -f "${dest}.bak"
 
   echo "  ✅ $dest"
 }
