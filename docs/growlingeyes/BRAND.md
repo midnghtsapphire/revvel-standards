@@ -1,7 +1,7 @@
 # Brand Identity — GrowlingEyes
 
 > Filled from `templates/brand/BRAND_IDENTITY_TEMPLATE.md`
-> MN Emblem derivation based on actual GrowlingEyes design decisions.
+> Revvel Emblem derivation based on actual GrowlingEyes design decisions.
 
 ---
 
@@ -17,9 +17,9 @@
 
 ---
 
-## MN Emblem Derivation
+## Revvel Emblem Derivation
 
-| MN Element | GrowlingEyes Value |
+| Revvel Emblem Element | GrowlingEyes Value |
 |---|---|
 | **Topic** | Knowledge discovery vs. information obscuration |
 | **User Metaphor** | "The more we find out, the more our eyes narrow into a digital growl" |

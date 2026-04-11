@@ -1,22 +1,21 @@
-# MN Emblem Design Standard
+# Revvel Emblem Standard — Design Formula for Every Revvel App
 
 **Version:** 1.0.0
 **Date:** April 2026
 **Scope:** All Revvel/MIDNGHTSAPPHIRE projects
-**Formula Type:** Metaphorical Neomorphism (MN)
+**Formula Type:** Revvel Emblem Standard
 
-> Every new project derives its complete visual identity from this formula.
-> No exceptions. Every emblem must trace back to the derivation chain.
+The Revvel Emblem Standard is the universal visual design formula for every Revvel and MIDNGHTSAPPHIRE project. It defines how to create a layered, machine-like shield emblem specific to each project's purpose — derived from the project's core topic and user metaphor. GrowlingEyes is the reference implementation.
 
 ---
 
-## Section 1: What Is Metaphorical Neomorphism (MN)?
+## Section 1: What Is the Revvel Emblem Standard?
 
-The **MN Emblem** is a highly detailed, skeuomorphic-yet-digital shield. It bridges institutional knowledge (metal, glass, depth, weight) with cutting-edge data analysis (circuits, holograms, crystalline data). The result looks heavy, functional, and **active** — like a physical machine performing its purpose.
+The **Revvel Emblem** is a highly detailed, skeuomorphic-yet-digital shield. It bridges institutional knowledge (metal, glass, depth, weight) with cutting-edge data analysis (circuits, holograms, crystalline data). The result looks heavy, functional, and **active** — like a physical machine performing its purpose.
 
 **Core tension:** It should feel like something you could hold in your hand AND like it's running complex operations in real time.
 
-**Why this formula exists:** Generic logos are forgettable. The MN formula forces every visual element to be *derived* from the project's actual purpose. This means the logo communicates function, not just aesthetics.
+**Why this formula exists:** Generic logos are forgettable. The Revvel Emblem formula forces every visual element to be *derived* from the project's actual purpose. This means the logo communicates function, not just aesthetics.
 
 ---
 
@@ -31,9 +30,9 @@ User Metaphor (the "feeling" the user describes — e.g., "digital growl")
     ↓
 Visual Translators (what does each element of the metaphor LOOK like?)
     ↓
-Layer Assignment (which MN layer does each visual go on?)
+Layer Assignment (which Revvel Emblem layer does each visual go on?)
     ↓
-Color Conversion (apply project palette using the MN conversion formula)
+Color Conversion (apply project palette using the Revvel Emblem Color Conversion formula)
 ```
 
 ### GrowlingEyes — Full Derivation Chain Example
@@ -48,7 +47,7 @@ Color Conversion (apply project palette using the MN conversion formula)
 
 ---
 
-## Section 3: The 5-Layer MN Visual Stack
+## Section 3: The 5-Layer Revvel Emblem Stack
 
 Build the emblem in these layers, bottom to top.
 
@@ -137,7 +136,7 @@ This layer must include a defensive/adversarial detail derived from the project'
 
 ## Section 4: Universal Color Conversion Formula
 
-Steps to apply any 4-color palette to the MN system:
+Steps to apply any 4-color palette to the Revvel Emblem system:
 
 ### Step 1: Define User Colors
 
@@ -147,9 +146,9 @@ The project defines exactly 4 brand colors:
 - **Accent** — the highlight/glow color
 - **Background** — the base/neutral color
 
-### Step 2: Assign to MN Roles
+### Step 2: Assign to Revvel Emblem Roles
 
-| MN Role | Color Assignment | Material Effect |
+| Revvel Emblem Role | Color Assignment | Material Effect |
 |---|---|---|
 | Primary Casing (frosted dome + outline) | User **Primary** | Apply frosted glass effect — slightly translucent, not solid |
 | Adversarial/Defensive Accent (sharp details, intensity points) | User **Secondary** (most intense) | Hard edge, high contrast, almost aggressive |
@@ -170,7 +169,7 @@ The depth gradient (dark at the edges, bright at the center) must always be main
 
 ### GrowlingEyes Example
 
-| MN Role | GrowlingEyes Color |
+| Revvel Emblem Role | GrowlingEyes Color |
 |---|---|
 | Primary Casing | Teal — `#0D9488` (frosted teal dome) |
 | Adversarial Accent | Red — `#DC2626` (fang outlines, intensity points) |
@@ -183,12 +182,12 @@ The depth gradient (dark at the edges, bright at the center) must always be main
 ## Section 5: The Golden Formula
 
 ```
-MN Emblem = (Derivation × Metaphor Stack) + Integrated Logic
+Revvel Emblem = (Derivation × Metaphor Stack) + Integrated Logic
 ```
 
 ### Implementation Checklist
 
-Every MN Emblem commission or generation must complete all items:
+Every Revvel Emblem commission or generation must complete all items:
 
 - [ ] Define Topic/Goal → derive initial metaphors
 - [ ] Define User Metaphor Input → derive adversarial/protective elements
@@ -199,7 +198,7 @@ Every MN Emblem commission or generation must complete all items:
 - [ ] Apply Layer E: Functional Nodes (etched circuit nodes with 4–6 derived icons)
 - [ ] Apply Layer F: Inputs/Outputs (physical cables + base data grid)
 - [ ] Apply Layer G: Multiple integrated text blocks (project name header + solution statement at base)
-- [ ] Apply Color Conversion Formula (4 colors → 5 MN roles)
+- [ ] Apply Color Conversion Formula (4 colors → 5 Revvel Emblem roles)
 - [ ] Verify depth gradient: center bright (gold crystal) → edge dark (shadow)
 - [ ] Deliver all required asset sizes (see `BRAND_IDENTITY_TEMPLATE.md` Asset Delivery Checklist)
 

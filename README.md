@@ -1002,11 +1002,11 @@ Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 ---
 
-## Brand & Design — MN Emblem Standard
+## Brand & Design — Revvel Emblem Standard
 
-Every Revvel project derives its visual identity from the **Metaphorical Neomorphism (MN) Formula**.
+Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
-- **MN Design Standard:** [`templates/brand/MN_EMBLEM_DESIGN_STANDARD.md`](templates/brand/MN_EMBLEM_DESIGN_STANDARD.md)
+- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](templates/brand/REVVEL_EMBLEM_STANDARD.md)
 - **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](templates/brand/BRAND_IDENTITY_TEMPLATE.md)
 - **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](templates/brand/ICON_SIZE_SPEC.md)
 - **How to use brand templates:** [`templates/brand/README.md`](templates/brand/README.md)
