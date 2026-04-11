@@ -995,6 +995,7 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 | Revvel Music Studio | [`docs/revvel-music-studio/`](docs/revvel-music-studio/) | [BOM.md](docs/revvel-music-studio/BOM.md) | — |
 | Universal SAR App | [`docs/universal-sar-app/`](docs/universal-sar-app/) | [BOM.md](docs/universal-sar-app/BOM.md) | — |
 | Premolt | [`docs/premolt/`](docs/premolt/) | [BOM.md](docs/premolt/BOM.md) | — |
+| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](penny-sovereign-yield-scout/) | [CHANGELOG.md](penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](penny-sovereign-yield-scout/branding/) |
 
 **Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
 
