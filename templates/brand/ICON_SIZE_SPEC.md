@@ -101,7 +101,7 @@ iconutil -c icns MyApp.iconset
 | 1200×630 | `og-image-1200x630.jpg` | Fallback JPEG | Some platforms prefer JPEG |
 
 **Design notes:**
-- OG image should include the MN Emblem + project name wordmark
+- OG image should include the Revvel Emblem + project name wordmark
 - Leave ~100px padding on all edges (some platforms crop)
 - Text should be readable at thumbnail size (thumbnail is ~200×105px)
 

@@ -35,7 +35,7 @@ gh label create "wontfix"         --color "ffffff" --description "This will not 
 | `enhancement` | `#a2eeef` | New feature or request |
 | `security` | `#cc0000` | Security vulnerability or concern |
 | `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
-| `design` | `#7057ff` | Design/brand work needed (MN Emblem, icons) |
+| `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
 | `blocked` | `#e4e669` | Blocked by external dependency |
 | `auto-fix` | `#0075ca` | Created by auto-fix workflow |
 | `copilot` | `#0075ca` | Assigned to Copilot for fixing |
@@ -54,7 +54,7 @@ APP_REPO="midnghtsapphire/YOUR_REPO"  # Replace
 
 gh api repos/$APP_REPO/milestones -f title="Phase 0: Inception"    -f description="Idea validation, legal setup, entity formation"
 gh api repos/$APP_REPO/milestones -f title="Phase 1: Planning"     -f description="Blueprints, architecture decisions, BOM"
-gh api repos/$APP_REPO/milestones -f title="Phase 2: Design"       -f description="MN Emblem, wireframes, brand identity"
+gh api repos/$APP_REPO/milestones -f title="Phase 2: Design"       -f description="Revvel Emblem, wireframes, brand identity"
 gh api repos/$APP_REPO/milestones -f title="Phase 3: Development"  -f description="MVP coding sprints — MVI by MVI"
 gh api repos/$APP_REPO/milestones -f title="Phase 4: Testing"      -f description="QA, security scanning, field validation"
 gh api repos/$APP_REPO/milestones -f title="Phase 5: Deployment"   -f description="Production launch, store submission"
@@ -68,7 +68,7 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 |---|---|---|
 | `Phase 0: Inception` | EXRUP Phase 0 | Idea validation, legal, entity |
 | `Phase 1: Planning` | EXRUP Phase 1 | Blueprints, architecture, BOM |
-| `Phase 2: Design` | EXRUP Phase 2 | MN Emblem, wireframes, brand identity |
+| `Phase 2: Design` | EXRUP Phase 2 | Revvel Emblem, wireframes, brand identity |
 | `Phase 3: Development` | EXRUP Phase 3 | MVP coding sprints — MVI by MVI |
 | `Phase 4: Testing` | EXRUP Phase 4 | QA, security, field validation |
 | `Phase 5: Deployment` | EXRUP Phase 5 | Production launch, store submission |

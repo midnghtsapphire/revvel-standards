@@ -1,7 +1,7 @@
 # Brand Identity — [PROJECT_NAME]
 
 > Fill in every field marked [PLACEHOLDER] before your first design session.
-> Derive all MN values from `MN_EMBLEM_DESIGN_STANDARD.md`.
+> Derive all Revvel Emblem values from `REVVEL_EMBLEM_STANDARD.md`.
 > Commit the filled version to `docs/[project-name]/BRAND.md` in revvel-standards.
 
 ---
@@ -11,16 +11,16 @@
 | Field | Value |
 |---|---|
 | Project Name | [PROJECT_NAME] |
-| Tagline | [ONE SENTENCE — derived from MN formula topic + metaphor] |
+| Tagline | [ONE SENTENCE — derived from Revvel Emblem formula topic + metaphor] |
 | Domain | [domain.com] — registered at Namecheap |
 | Parent Entity | Freedom Angel Corp (EIN: 86-1209156) |
 | Brand Colors | Primary: `[HEX]` · Secondary: `[HEX]` · Accent: `[HEX]` · Background: `[HEX]` |
 
 ---
 
-## MN Emblem Derivation
+## Revvel Emblem Derivation
 
-| MN Element | This Project's Value |
+| Revvel Emblem Element | This Project's Value |
 |---|---|
 | **Topic** | [What the app does in 5 words] |
 | **User Metaphor** | [The feeling or action the user described] |

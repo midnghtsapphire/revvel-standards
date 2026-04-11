@@ -7,12 +7,12 @@ How to use the brand templates for every new Revvel/MIDNGHTSAPPHIRE project.
 ## Steps
 
 1. **Fill in `BRAND_IDENTITY_TEMPLATE.md` first**
-   - Derive everything from the MN formula in `MN_EMBLEM_DESIGN_STANDARD.md`
+   - Derive everything from the Revvel Emblem formula in `REVVEL_EMBLEM_STANDARD.md`
    - Define your 4 brand colors before doing anything else
-   - Work through the MN Derivation table: topic → metaphor → visual translators → layers
+   - Work through the Revvel Emblem Derivation table: topic → metaphor → visual translators → layers
 
-2. **Commission or generate the MN Emblem**
-   - Use the formula in `MN_EMBLEM_DESIGN_STANDARD.md` as your creative brief
+2. **Commission or generate the Revvel Emblem**
+   - Use the formula in `REVVEL_EMBLEM_STANDARD.md` as your creative brief
    - The formula is precise enough to give to any AI image generator or human designer
    - Deliver the emblem as a 1024x1024 PNG minimum (scale down from there)
 
@@ -39,6 +39,6 @@ How to use the brand templates for every new Revvel/MIDNGHTSAPPHIRE project.
 
 | File | Purpose |
 |---|---|
-| `MN_EMBLEM_DESIGN_STANDARD.md` | Complete Metaphorical Neomorphism formula — universal design language |
+| `REVVEL_EMBLEM_STANDARD.md` | Complete Revvel Emblem formula — universal design language |
 | `BRAND_IDENTITY_TEMPLATE.md` | Blank brand identity document — fill in for every new project |
 | `ICON_SIZE_SPEC.md` | Quick reference for all icon sizes, platforms, and export tools |
