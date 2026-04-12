@@ -716,7 +716,153 @@ When running `scripts/setup-mcp.sh` on a new project, the following steps are pe
 
 ---
 
-## 11. Updating This Standard
+## 11. Building Custom MCP Servers with FastMCP
+
+Every Revvel project that exposes business logic to AI agents should package that logic as a custom MCP server using **FastMCP** — the de facto Python-native framework for building MCP servers and clients.
+
+### 11.1. What Is FastMCP?
+
+FastMCP ([jlowin/fastmcp](https://github.com/jlowin/fastmcp) · [gofastmcp.com](https://gofastmcp.com)) is the officially recommended Python framework for building MCP servers. It is maintained by Prefect and provides:
+
+- **Decorator-based tool/resource definition** — `@mcp.tool`, `@mcp.resource`, `@mcp.prompt`
+- **Automatic schema generation and parameter validation** — no manual JSON schema writing
+- **Full async support** — sync and async tools work interchangeably
+- **Multi-transport** — STDIO (Claude Desktop/Cursor), HTTP, and Server-Sent Events (SSE)
+- **Built-in MCP client SDK** — test your server from Python
+- **CLI utilities** — `fastmcp run`, `fastmcp dev`, `fastmcp install`
+- **Production-ready** — OAuth/token auth, Docker, OpenAPI integration
+
+### 11.2. When to Build a Custom Server
+
+Build a custom FastMCP server when:
+- The project has domain-specific business logic that AI agents should invoke (e.g., Penny Sovereign yield calculations, lead scoring, insurance quoting)
+- You need to wrap an internal API that has no public MCP server
+- You want to expose a project's database queries as typed, documented tools
+- You are building an agent pipeline and need a custom orchestration layer
+
+### 11.3. Installation
+
+```bash
+# Install with uv (preferred — matches Revvel Python standard)
+uv pip install fastmcp
+
+# Or with pip
+pip install fastmcp
+```
+
+### 11.4. Standard Custom Server Template
+
+See `templates/mcp/custom-server/server.py` for the Revvel starter template. Every custom MCP server must follow this structure:
+
+```python
+from fastmcp import FastMCP
+import os
+
+mcp = FastMCP(
+    name="[APP_NAME] MCP Server",
+    instructions="Describe what this server does and when agents should use it."
+)
+
+# --- Tools (actions the agent can take) ---
+@mcp.tool
+def example_tool(param: str) -> dict:
+    """One-line description used as the tool's docstring by AI agents."""
+    return {"result": param}
+
+# --- Resources (read-only data sources) ---
+@mcp.resource("data://status")
+def get_status() -> dict:
+    """Return current service status."""
+    return {"status": "operational"}
+
+# --- Entry point ---
+if __name__ == "__main__":
+    mcp.run()
+```
+
+### 11.5. Running and Installing
+
+```bash
+# Dev mode (auto-reload on file changes)
+fastmcp dev server.py
+
+# Run directly
+fastmcp run server.py
+
+# Install into Claude Desktop config automatically
+fastmcp install server.py --name "[APP_NAME] MCP"
+
+# Install with environment variables
+fastmcp install server.py --name "[APP_NAME] MCP" -e DATABASE_URL -e API_KEY
+```
+
+### 11.6. Adding to `.mcp.json`
+
+After building, register the custom server in the project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "[app_name]-custom": {
+      "command": "uvx",
+      "args": ["--from", ".", "[app_name]-mcp"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}",
+        "API_KEY": "${API_KEY}"
+      }
+    }
+  }
+}
+```
+
+Or for development (running from source):
+```json
+{
+  "mcpServers": {
+    "[app_name]-custom": {
+      "command": "uv",
+      "args": ["run", "python", "mcp_server/server.py"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    }
+  }
+}
+```
+
+### 11.7. Custom Server File Structure
+
+Place all custom MCP server code in `mcp_server/` within the project:
+
+```
+[project-root]/
+  mcp_server/
+    __init__.py
+    server.py          # FastMCP entry point
+    tools/
+      __init__.py
+      [domain].py      # Domain-specific tool modules
+    resources/
+      __init__.py
+      [domain].py      # Read-only data resources
+    pyproject.toml     # Package metadata (if deploying as package)
+  .mcp.json            # Registers this server + all standard servers
+  .env                 # Real credentials (gitignored)
+  .env.mcp.example     # Placeholder env vars (committed)
+```
+
+### 11.8. FastMCP Best Practices
+
+- **Type everything.** FastMCP uses Python type hints to generate schemas — always annotate parameters and return types.
+- **Document every tool.** The docstring becomes the tool description that AI agents read. Write it for an agent, not a human developer.
+- **Keep tools atomic.** One tool does one thing. Agents compose tools; you don't need to pre-compose them.
+- **Use resources for reads.** If a tool only reads data and has no side effects, make it a `@mcp.resource`, not a `@mcp.tool`.
+- **Never hardcode secrets.** Load all credentials from `os.environ`. The `fastmcp install` command passes env vars securely.
+- **Test with the client SDK.** Use `fastmcp.Client` in tests to verify tools work end-to-end before deploying.
+
+---
+
+## 12. Updating This Standard
 
 When adding new MCP servers to the Revvel ecosystem:
 1. Add the server entry to Section 4 with full documentation
