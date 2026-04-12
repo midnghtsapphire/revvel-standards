@@ -1,0 +1,32 @@
+name: brainstorming
+title: Brainstorming
+version: 1.0.0
+description: "Facilitates structured brainstorming sessions using proven techniques and best practices for software development teams."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Developer Workflow"
+  tags: [brainstorming, ideation, workflow]
+  created_at: "2026-04-12"
+  updated_at: "2026-04-12"
+
+dependencies:
+  skills: []
+  tools: []
+  pip_packages: []
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  content: |
+    # Brainstorming
+    
+    ## Methodology
+    - Description of how brainstorming is conducted and its significance in software development.
+    - Include techniques used, tools, and best practices for facilitating effective brainstorming sessions.
+
+examples:
+  - description: "Run a brainstorming session for a new feature"
+    usage: "Use the brainstorming skill to generate ideas for implementing a new authentication system."
+
+schema_version: "1.0"
