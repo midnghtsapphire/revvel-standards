@@ -1,0 +1,102 @@
+name: concurrent_development
+title: "Concurrent Development"
+version: "1.0.0"
+description: "Coordinate concurrent development across multiple branches with safe merging, conflict resolution, and integration testing."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Developer Workflow"
+  tags: ["concurrent-development", "branches", "merge", "coordination"]
+  created_at: "2026-04-12"
+  updated_at: "2026-04-12"
+
+dependencies:
+  skills: []
+  tools: ["git"]
+  pip_packages: []
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    # Concurrent Development Skill
+    
+    Coordinate concurrent development across multiple branches with safe merging, conflict resolution, and integration testing.
+    
+    ## Branch Protection Rules (Mandatory)
+    
+    1. **No direct pushes to `master`/`main`** — all changes via feature branches + PRs
+    2. **No force-push EVER** — `git push --force` is permanently banned across all repos
+    3. **Branch protection enabled** — require PR review before merge
+    4. **Linear history preferred** — rebase before merge, no merge commits
+    
+    ## Multi-Team Coordination Workflow
+    
+    1. Each team gets a dedicated feature branch: `feat/team-name-description`
+    2. Teams commit and push to their feature branch freely
+    3. When ready, create a PR to `main`
+    4. PRs are merged sequentially (first-come-first-served)
+    5. If conflicts, the later team **rebases** on the updated `main` — never force-push
+    6. Venice AI reviews every PR (mandatory)
+    
+    ```bash
+    # Start work
+    git checkout main && git pull origin main
+    git checkout -b feat/team-name-description
+    
+    # Push regularly
+    git push origin feat/team-name-description
+    
+    # If main has moved ahead before your PR merges
+    git fetch origin
+    git rebase origin/main
+    git push origin feat/team-name-description  # (force-push on YOUR OWN feature branch is OK)
+    
+    # Create PR when ready — never push directly to main
+    ```
+    
+    ## Why This Exists (April 3, 2026 Incident)
+    
+    Three teams pushed directly to `master`. Team 3 force-pushed, overwriting Teams 1 and 2's commits. Rex Tools integration and the Activity Window feature were lost and required full manual reconstruction. **This must never happen again.**
+    
+    ## Enforcement
+    
+    - GitHub branch protection rules set via API on all repos
+    - Pre-push hooks in CI/CD templates detect and reject `--force` to `main`/`master`
+    - Any force-push to `main` triggers an immediate alert to the repo owner
+    - Coderabbit review required on all PRs before merge
+    
+    ## Conflict Resolution Protocol
+    
+    If a branch has diverged from `main`:
+    ```bash
+    # CORRECT: Rebase
+    git fetch origin
+    git rebase origin/main
+    # Resolve conflicts in each commit, then:
+    git rebase --continue
+    
+    # NEVER: Force-push to main
+    # git push --force origin main  ← BANNED
+    ```
+    
+    ## CI/CD Integration
+    
+    - Feature branch push → triggers CI (tests + type check)
+    - PR to `main` → triggers Coderabbit review + CI
+    - Merge to `main` → triggers Deploy Agent (see DEPLOYMENT_STANDARD)
+    
+    ## Commit Message Format
+    
+    ```
+    feat: description of what was added
+    fix: description of what was fixed
+    refactor: description of what was restructured
+    docs: documentation update
+    chore: dependency updates, config changes
+    ```
+    
+
+examples: []
+
+schema_version: "1.0"

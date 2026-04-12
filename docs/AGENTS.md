@@ -31,13 +31,68 @@ Ship working, tested code. Not plans. Not proposals. Not summaries of what you w
 
 All code in this repository belongs to Audrey Evans, operating under the MIDNGHTSAPPHIRE GitHub organization. All work product you generate belongs to her. Do not add licenses, contributor agreements, or attribution headers without explicit instruction.
 
+## Skills Vault — Load Before Working
+
+This repository contains a **Skills Vault** at `skills/`. Skills are specialist instruction sets that tell you exactly how to handle specific domains. **You must load the relevant skills before executing any task.**
+
+### How to Load a Skill
+
+1. Read `skills/REGISTRY.md` — the master index with trigger keywords.
+2. Identify which skill(s) match the current task.
+3. Read the skill's `SKILL.md` at its path (e.g., `skills/code-review/SKILL.md`).
+4. Apply all rules and workflows defined in that skill.
+
+### Mandatory Skills — Load at Session Start
+
+These skills are required for **every** session, without exception:
+
+| Order | Skill | Path | Why |
+|---|---|---|---|
+| 1 | **System State** | `skills/system-state/SKILL.md` | Know what's in production before touching code |
+| 2 | **MVI Contract** | `skills/mvi-contract/SKILL.md` | Define scope and acceptance gates before coding |
+| 3 | **Model Router** | `skills/model-router/SKILL.md` | Route tasks to Sonnet or Opus appropriately |
+| 4 | **Context Management** | `skills/context-management/SKILL.md` | Monitor tokens; never exceed 120k |
+
+### Mandatory Skills — Load at Session End
+
+| Skill | Path | Why |
+|---|---|---|
+| **Wrap-Up** | `skills/wrap-up/SKILL.md` | Ship, Remember, Review, Publish |
+| **Memory Pruning** | `skills/memory-pruning/SKILL.md` | Prune session logs to prevent bloat |
+
+### Domain Skills — Load When Relevant
+
+| Task Domain | Skill to Load |
+|---|---|
+| Reviewing a PR or code | `skills/code-review/SKILL.md` |
+| Writing/running tests | `skills/testing/SKILL.md` |
+| Any security-sensitive code | `skills/security/SKILL.md` |
+| Building any UI | `skills/accessibility/SKILL.md` |
+| Deploying to production | `skills/deployment/SKILL.md` |
+| SEO / public pages | `skills/seo-metadata/SKILL.md` |
+| Scheduled jobs / workers | `skills/error-reporting/SKILL.md` |
+| Breaking down features | `skills/todo-breakdown/SKILL.md` |
+| Multi-agent coordination | `skills/parallel-development/SKILL.md` |
+| Git worktrees / branches | `skills/using-git-worktrees/SKILL.md` |
+| Architecture decisions | `skills/dare-log/SKILL.md` |
+| Generating docs | `skills/auto-documentation/SKILL.md` |
+| Concurrent branches | `skills/concurrent-development/SKILL.md` |
+| Agent behavior testing | `skills/shift-testing/SKILL.md` |
+| ANY tax or legal query | `skills/tax-legal-agent/SKILL.md` |
+
+> **Full skill catalog:** `skills/REGISTRY.md`  
+> **Machine-readable index:** `skills/SKILLS_INDEX.yml`
+
+---
+
 ## First Steps — Before Writing Any Code
 
 1. **Read this entire file.**
-2. **Assess the repo state.** Run the commands in the "Assess Repo State" section below. Understand what exists, what works, what is broken, and what is missing.
-3. **Check for a HANDOFF.md or TODO.md.** If one exists, it was left by the last agent or human. Follow its instructions as your primary task list.
-4. **Check open issues and PRs.** If there are open issues, they are your task list.
-5. **If no handoff, no issues, and no explicit instructions:** analyze the codebase, identify what is incomplete or broken, fix it, and ship it.
+2. **Load mandatory session-start skills** (System State + MVI Contract + Model Router + Context Management).
+3. **Assess the repo state.** Run the commands in the "Assess Repo State" section below. Understand what exists, what works, what is broken, and what is missing.
+4. **Check for a HANDOFF.md or TODO.md.** If one exists, it was left by the last agent or human. Follow its instructions as your primary task list.
+5. **Check open issues and PRs.** If there are open issues, they are your task list.
+6. **If no handoff, no issues, and no explicit instructions:** analyze the codebase, identify what is incomplete or broken, fix it, and ship it.
 
 ## Assess Repo State
 

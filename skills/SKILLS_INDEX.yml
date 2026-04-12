@@ -1,0 +1,352 @@
+# Revvel Skills Index — Machine-Readable Registry
+# Version: 1.0.0
+# Date: 2026-04-12
+# This file is the authoritative index of all skills in the Revvel Skills Vault.
+# Agents should read REGISTRY.md for human-readable documentation.
+
+schema_version: "1.0"
+vault_version: "1.0.0"
+last_updated: "2026-04-12"
+maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
+
+mandatory_session_start:
+  - system_state
+  - mvi_contract
+  - model_router
+  - context_management
+
+mandatory_session_end:
+  - wrap_up
+  - memory_pruning
+
+skills:
+
+  # ─── Agent Operations ──────────────────────────────────────────────────────
+
+  - name: model_router
+    title: "Model Router"
+    version: "1.0.0"
+    path: "skills/model-router/"
+    skill_file: "skills/model-router/model-router.skill.yml"
+    category: "Agent Operations"
+    access: all  # all agents: openclaw, copilot, temporary
+    triggers:
+      - "model selection"
+      - "sonnet vs opus"
+      - "cost optimization"
+      - "ai routing"
+
+  - name: context_management
+    title: "Context Management"
+    version: "1.0.0"
+    path: "skills/context-management/"
+    skill_file: "skills/context-management/context-management.skill.yml"
+    category: "Agent Operations"
+    access: all
+    triggers:
+      - "token limit"
+      - "context handoff"
+      - "session management"
+      - "100k tokens"
+      - "120k tokens"
+
+  - name: memory_pruning
+    title: "Memory Pruning"
+    version: "1.0.0"
+    path: "skills/memory-pruning/"
+    skill_file: "skills/memory-pruning/memory-pruning.skill.yml"
+    category: "Agent Operations"
+    access: all
+    triggers:
+      - "memory bloat"
+      - "session logs"
+      - "prune memory"
+      - "half-life retention"
+
+  # ─── Developer Workflow ────────────────────────────────────────────────────
+
+  - name: brainstorming
+    title: "Brainstorming"
+    version: "1.0.0"
+    path: "skills/brainstorming/"
+    skill_file: "skills/brainstorming/brainstorming.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "brainstorm"
+      - "ideation"
+      - "creative planning"
+
+  - name: todo_breakdown
+    title: "TODO Breakdown"
+    version: "1.0.0"
+    path: "skills/todo-breakdown/"
+    skill_file: "skills/todo-breakdown/todo-breakdown.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "break down requirements"
+      - "create todos"
+      - "feature planning"
+      - "task breakdown"
+
+  - name: parallel_development
+    title: "Parallel Development"
+    version: "1.0.0"
+    path: "skills/parallel-development/"
+    skill_file: "skills/parallel-development/parallel-development.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "parallel agents"
+      - "multi-agent"
+      - "simultaneous development"
+      - "parallel todos"
+
+  - name: using_git_worktrees
+    title: "Using Git Worktrees"
+    version: "1.0.0"
+    path: "skills/using-git-worktrees/"
+    skill_file: "skills/using-git-worktrees/using-git-worktrees.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "git worktree"
+      - "multiple branches simultaneously"
+      - "parallel branches"
+
+  - name: wrap_up
+    title: "Wrap-Up"
+    version: "1.0.0"
+    path: "skills/wrap-up/"
+    skill_file: "skills/wrap-up/wrap-up.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "wrap up session"
+      - "close session"
+      - "publish artifacts"
+      - "session end"
+
+  - name: code_review
+    title: "Code Review"
+    version: "1.0.0"
+    path: "skills/code-review/"
+    skill_file: "skills/code-review/code_review.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "code review"
+      - "PR review"
+      - "pull request review"
+      - "review code"
+      - "quality gates"
+
+  - name: testing
+    title: "Testing Standard"
+    version: "1.0.0"
+    path: "skills/testing/"
+    skill_file: "skills/testing/testing.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "write tests"
+      - "test coverage"
+      - "vitest"
+      - "playwright"
+      - "e2e tests"
+      - "unit tests"
+
+  - name: mvi_contract
+    title: "MVI Contract"
+    version: "1.0.0"
+    path: "skills/mvi-contract/"
+    skill_file: "skills/mvi-contract/mvi_contract.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    mandatory: true
+    load_order: session_start
+    triggers:
+      - "start coding session"
+      - "mvi contract"
+      - "acceptance gates"
+      - "session scope"
+
+  - name: system_state
+    title: "System State"
+    version: "1.0.0"
+    path: "skills/system-state/"
+    skill_file: "skills/system-state/system_state.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    mandatory: true
+    load_order: session_start
+    triggers:
+      - "system state"
+      - "production status"
+      - "session handoff"
+      - "what is deployed"
+
+  - name: dare_log
+    title: "DARE Log"
+    version: "1.0.0"
+    path: "skills/dare-log/"
+    skill_file: "skills/dare-log/dare_log.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "dare log"
+      - "risk management"
+      - "decision log"
+      - "track issues"
+      - "architectural decision"
+
+  - name: auto_documentation
+    title: "Auto Documentation"
+    version: "1.0.0"
+    path: "skills/auto-documentation/"
+    skill_file: "skills/auto-documentation/auto_documentation.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "generate docs"
+      - "update changelog"
+      - "api documentation"
+      - "session artifacts"
+
+  - name: concurrent_development
+    title: "Concurrent Development"
+    version: "1.0.0"
+    path: "skills/concurrent-development/"
+    skill_file: "skills/concurrent-development/concurrent_development.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "concurrent development"
+      - "merge conflicts"
+      - "branch coordination"
+      - "multiple developers"
+
+  - name: shift_testing
+    title: "S.H.I.F.T. Testing"
+    version: "1.0.0"
+    path: "skills/shift-testing/"
+    skill_file: "skills/shift-testing/shift_testing.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "shift testing"
+      - "agent behavior"
+      - "evaluator agent"
+      - "woz testing"
+      - "behavioral testing"
+
+  # ─── DevOps & Deployment ───────────────────────────────────────────────────
+
+  - name: deployment
+    title: "Deployment Standard"
+    version: "1.0.0"
+    path: "skills/deployment/"
+    skill_file: "skills/deployment/deployment.skill.yml"
+    category: "DevOps & Deployment"
+    access: all
+    triggers:
+      - "deploy"
+      - "digitalocean"
+      - "pm2"
+      - "nginx"
+      - "production deploy"
+      - "ci/cd"
+
+  - name: error_reporting
+    title: "Error Reporting"
+    version: "1.0.0"
+    path: "skills/error-reporting/"
+    skill_file: "skills/error-reporting/error_reporting.skill.yml"
+    category: "DevOps & Deployment"
+    access: all
+    triggers:
+      - "error monitoring"
+      - "server job"
+      - "cron job"
+      - "webhook handler"
+      - "monitored wrapper"
+      - "github issue alerts"
+
+  # ─── Security & Compliance ─────────────────────────────────────────────────
+
+  - name: security
+    title: "Security Standard"
+    version: "1.0.0"
+    path: "skills/security/"
+    skill_file: "skills/security/security.skill.yml"
+    category: "Security & Compliance"
+    access: all
+    triggers:
+      - "security"
+      - "owasp"
+      - "api keys"
+      - "authentication"
+      - "rate limiting"
+      - "input sanitization"
+      - "secrets management"
+
+  # ─── Accessibility & Compliance ────────────────────────────────────────────
+
+  - name: accessibility
+    title: "Accessibility Standard"
+    version: "1.0.0"
+    path: "skills/accessibility/"
+    skill_file: "skills/accessibility/accessibility.skill.yml"
+    category: "Accessibility & Compliance"
+    access: all
+    triggers:
+      - "accessibility"
+      - "wcag"
+      - "ada compliance"
+      - "screen reader"
+      - "tty"
+      - "aria"
+      - "color contrast"
+
+  # ─── Content & Marketing ───────────────────────────────────────────────────
+
+  - name: seo_metadata
+    title: "SEO Metadata"
+    version: "1.0.0"
+    path: "skills/seo-metadata/"
+    skill_file: "skills/seo-metadata/seo_metadata.skill.yml"
+    category: "Content & Marketing"
+    access: all
+    triggers:
+      - "seo"
+      - "metadata"
+      - "open graph"
+      - "json-ld"
+      - "lighthouse"
+      - "twitter cards"
+      - "page title"
+      - "meta description"
+
+  # ─── Tax & Legal ───────────────────────────────────────────────────────────
+
+  - name: tax_legal_agent
+    title: "Tax + Legal Agent"
+    version: "1.0.0"
+    path: "skills/tax-legal-agent/"
+    skill_file: "skills/tax-legal-agent/tax_legal_agent.skill.yml"
+    category: "Tax & Legal"
+    access: all
+    triggers:
+      - "tax return"
+      - "irs"
+      - "legal research"
+      - "court filing"
+      - "case law"
+      - "contract drafting"
+      - "enrolled agent"
+      - "deduction"
+      - "tax planning"
+      - "obbba"
+      - "1040"
+      - "1099"

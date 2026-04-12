@@ -1,0 +1,263 @@
+# Revvel Skills Registry
+
+**Version:** 1.0.0  
+**Date:** April 12, 2026  
+**Status:** Active  
+**Scope:** All Revvel/MIDNGHTSAPPHIRE agents — OpenClaw, GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and all temporary agents
+
+---
+
+## What Is This?
+
+This registry is the **master index of all skills** available in the Revvel Skills Vault. Every agent operating in any Revvel repository must read this file and load the relevant skill(s) before executing a task.
+
+A skill is a text file that gives an AI agent specialized, focused instructions for a specific domain. Loading a skill at the start of a task is equivalent to handing an expert their playbook — the agent instantly knows the rules, workflow, and requirements for that domain without needing to rediscover them.
+
+**How to load a skill:**
+1. Identify which skill(s) apply to the current task (use the trigger keywords below).
+2. Read the skill's `SKILL.md` or `.skill.yml` file at the path shown.
+3. Apply all rules and workflows defined in the skill to your task.
+4. If multiple skills apply, load all of them.
+
+---
+
+## Quick-Reference Trigger Table
+
+| If the task involves... | Load this skill |
+|---|---|
+| AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
+| Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
+| Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
+| Breaking down features into atomic TODOs | [`todo-breakdown`](#todo-breakdown) |
+| Multiple agents working simultaneously | [`parallel-development`](#parallel-development) |
+| Git worktrees, parallel branches | [`using-git-worktrees`](#using-git-worktrees) |
+| Wrapping up a session, publishing artifacts | [`wrap-up`](#wrap-up) |
+| Brainstorming, ideation, creative problem solving | [`brainstorming`](#brainstorming) |
+| Code review, PR review, quality gates | [`code-review`](#code-review) |
+| Security, OWASP, secrets, API keys, auth | [`security`](#security) |
+| Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
+| Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
+| Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
+| Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
+| Starting a coding session, defining scope | [`mvi-contract`](#mvi-contract) |
+| Checking production state, session handoff | [`system-state`](#system-state) |
+| Tracking decisions, risks, issues (DARE/RAID) | [`dare-log`](#dare-log) |
+| Generating docs, changelogs, API references | [`auto-documentation`](#auto-documentation) |
+| Concurrent branches, merging, conflict resolution | [`concurrent-development`](#concurrent-development) |
+| Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
+| Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
+
+---
+
+## Full Skill Catalog
+
+### Agent Operations
+
+#### model-router
+- **Path:** `skills/model-router/`
+- **Files:** `SKILL.md` · `model-router.skill.yml`
+- **Description:** Intelligent model selection (Sonnet vs Opus) based on task complexity for cost-effective AI operations.
+- **Tags:** model-routing, cost-optimization, sonnet, opus, ai-operations
+- **Trigger:** Any task where model selection matters; default to Sonnet, escalate to Opus for complex analysis.
+
+#### context-management
+- **Path:** `skills/context-management/`
+- **Files:** `SKILL.md` · `context-management.skill.yml`
+- **Description:** Optimize token usage and prevent cost explosion through intelligent session management.
+- **Tags:** context, tokens, session-management, handoff, cost-optimization
+- **Trigger:** Sessions approaching 100k tokens; multi-session projects; context handoffs.
+
+#### memory-pruning
+- **Path:** `skills/memory-pruning/`
+- **Files:** `SKILL.md` · `memory-pruning.skill.yml`
+- **Description:** Aggressive memory management with half-life strategies to prevent information bloat.
+- **Tags:** memory, pruning, retention, half-life, session-logs
+- **Trigger:** Memory files growing large; end of long sessions; wrap-up procedures.
+
+---
+
+### Developer Workflow
+
+#### brainstorming
+- **Path:** `skills/brainstorming/`
+- **Files:** `SKILL.md` · `brainstorming.skill.yml`
+- **Description:** Structured brainstorming methodology for software development ideation.
+- **Tags:** brainstorming, ideation, creativity, planning
+- **Trigger:** Feature ideation, architecture exploration, creative problem-solving sessions.
+
+#### todo-breakdown
+- **Path:** `skills/todo-breakdown/`
+- **Files:** `SKILL.md` · `todo-breakdown.skill.yml`
+- **Description:** Break complex requirements into structured, independently implementable TODOs with acceptance criteria.
+- **Tags:** todo, breakdown, planning, requirements, complexity-scoring
+- **Trigger:** Any time complex requirements need to be broken into implementable tasks.
+
+#### parallel-development
+- **Path:** `skills/parallel-development/`
+- **Files:** `SKILL.md` · `parallel-development.skill.yml`
+- **Description:** Coordinate multiple agents working on the same project simultaneously without conflicts.
+- **Tags:** parallel, multi-agent, coordination, locking, branching
+- **Trigger:** Multiple agents assigned to the same project; large feature sets needing parallel execution.
+
+#### using-git-worktrees
+- **Path:** `skills/using-git-worktrees/`
+- **Files:** `SKILL.md` · `using-git-worktrees.skill.yml`
+- **Description:** Manage multiple working directories under a single repository for parallel development.
+- **Tags:** git, worktrees, branches, parallel-development
+- **Trigger:** Working on multiple branches simultaneously; parallel development setup.
+
+#### wrap-up
+- **Path:** `skills/wrap-up/`
+- **Files:** `SKILL.md` · `wrap-up.skill.yml`
+- **Description:** Four-phase session wrap-up workflow: Ship It, Remember It, Review & Apply, Publish It.
+- **Tags:** wrap-up, session-management, artifacts, publishing
+- **Trigger:** Closing any coding session; before context limit is reached; end of MVI.
+
+#### code-review
+- **Path:** `skills/code-review/`
+- **Files:** `SKILL.md` · `code-review.skill.yml`
+- **Description:** Enforce Revvel code review standards including security, accessibility, test coverage, and style gates.
+- **Tags:** code-review, quality, security, pr-review, standards
+- **Trigger:** Reviewing any PR or code change before merging.
+
+#### testing
+- **Path:** `skills/testing/`
+- **Files:** `SKILL.md` · `testing.skill.yml`
+- **Description:** Apply Revvel testing standards with Vitest, Playwright E2E, and mandatory coverage thresholds.
+- **Tags:** testing, vitest, playwright, e2e, coverage, unit-tests
+- **Trigger:** Writing any tests; setting up test infrastructure; validating coverage thresholds.
+
+#### mvi-contract
+- **Path:** `skills/mvi-contract/`
+- **Files:** `SKILL.md` · `mvi-contract.skill.yml`
+- **Description:** Fill out the 7-section MVI Contract before every coding session to define scope and acceptance gates.
+- **Tags:** mvi, session, exrup, contract, scope, acceptance-gates
+- **Trigger:** **MANDATORY** — start of every coding session. Fill the contract before writing any code.
+
+#### system-state
+- **Path:** `skills/system-state/`
+- **Files:** `SKILL.md` · `system-state.skill.yml`
+- **Description:** Maintain SYSTEM_STATE.md as the single source of truth for production status.
+- **Tags:** system-state, production, handoff, session-start, session-end
+- **Trigger:** **MANDATORY** — read at session start, update at session end.
+
+#### dare-log
+- **Path:** `skills/dare-log/`
+- **Files:** `SKILL.md` · `dare-log.skill.yml`
+- **Description:** Track decisions and risks using the DARE framework (Define, Assess, Respond, Evaluate).
+- **Tags:** dare, risk-management, decisions, issues, kanban
+- **Trigger:** Major architectural decisions; tracking unresolved issues; agent failure analysis.
+
+#### auto-documentation
+- **Path:** `skills/auto-documentation/`
+- **Files:** `SKILL.md` · `auto-documentation.skill.yml`
+- **Description:** Automatically generate and maintain project documentation, changelogs, and API docs.
+- **Tags:** documentation, changelog, api-docs, auto-doc, artifacts
+- **Trigger:** After shipping any feature; generating changelogs; creating API reference docs.
+
+#### concurrent-development
+- **Path:** `skills/concurrent-development/`
+- **Files:** `SKILL.md` · `concurrent-development.skill.yml`
+- **Description:** Coordinate concurrent development across multiple branches with safe merging strategies.
+- **Tags:** concurrent, branches, merge, coordination, conflict-resolution
+- **Trigger:** Multiple developers or agents working on the same codebase simultaneously.
+
+#### shift-testing
+- **Path:** `skills/shift-testing/`
+- **Files:** `SKILL.md` · `shift-testing.skill.yml`
+- **Description:** Evaluate AI agent behavior across five quality dimensions using the S.H.I.F.T. methodology.
+- **Tags:** shift, behavioral-testing, evaluator, woz, agent-quality
+- **Trigger:** Validating AI agent output quality; setting up evaluator agents; WoZ testing.
+
+---
+
+### DevOps & Deployment
+
+#### deployment
+- **Path:** `skills/deployment/`
+- **Files:** `SKILL.md` · `deployment.skill.yml`
+- **Description:** Deploy Revvel applications to DigitalOcean using PM2, Nginx, and GitHub Actions CI/CD.
+- **Tags:** deployment, digitalocean, pm2, nginx, ci-cd, github-actions
+- **Trigger:** Deploying any application to production or staging.
+
+#### error-reporting
+- **Path:** `skills/error-reporting/`
+- **Files:** `SKILL.md` · `error-reporting.skill.yml`
+- **Description:** Implement three-tier error reporting (console → email → GitHub Issue) for all server jobs.
+- **Tags:** error-reporting, monitoring, three-tier, monitored-wrapper, alerts
+- **Trigger:** Writing any scheduled job, background worker, webhook handler, or payment function.
+
+---
+
+### Security & Compliance
+
+#### security
+- **Path:** `skills/security/`
+- **Files:** `SKILL.md` · `security.skill.yml`
+- **Description:** Apply OWASP top 10 protections, secret management, input sanitization, and authentication standards.
+- **Tags:** security, owasp, helmet, csp, rate-limiting, secrets, auth
+- **Trigger:** Any work touching authentication, API keys, user inputs, or data storage.
+
+---
+
+### Accessibility & Compliance
+
+#### accessibility
+- **Path:** `skills/accessibility/`
+- **Files:** `SKILL.md` · `accessibility.skill.yml`
+- **Description:** Implement WCAG 2.2 AA/AAA, TTY/TDD support, 7 UI modes, and ADA compliance for insurance.
+- **Tags:** accessibility, wcag, ada, screen-reader, tty, aria
+- **Trigger:** Building any UI component; insurance/financial app features; public-facing pages.
+
+---
+
+### Content & Marketing
+
+#### seo-metadata
+- **Path:** `skills/seo-metadata/`
+- **Files:** `SKILL.md` · `seo-metadata.skill.yml`
+- **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
+- **Tags:** seo, metadata, open-graph, twitter-cards, json-ld, lighthouse
+- **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
+
+---
+
+### Tax & Legal
+
+#### tax-legal-agent
+- **Path:** `skills/tax-legal-agent/`
+- **Files:** `SKILL.md` · `tax-legal-agent.skill.yml`
+- **Description:** Activate for any tax or legal query — returns, IRS correspondence, case law, court filings, contracts.
+- **Tags:** tax, legal, irs, enrolled-agent, cpa, court, compliance, obbba
+- **Trigger:** ANY tax or legal question. When in doubt — USE IT.
+
+---
+
+## Mandatory Skills for Every Session
+
+These skills **must** be loaded at the start of every agent session:
+
+1. **`system-state`** — Read `SYSTEM_STATE.md` before writing any code.
+2. **`mvi-contract`** — Fill the MVI Contract before starting work.
+3. **`model-router`** — Route tasks to the correct model (Sonnet/Opus).
+4. **`context-management`** — Monitor token usage throughout the session.
+
+At the end of every session:
+5. **`wrap-up`** — Ship, Remember, Review, Publish.
+6. **`memory-pruning`** — Prune session logs to stay under limits.
+
+---
+
+## Adding a New Skill
+
+1. Create a directory: `skills/{skill-name}/`
+2. Write `SKILL.md` — concise, agent-readable instructions
+3. Write `{skill-name}.skill.yml` — following `docs/spec.md` format
+4. Add the skill to this registry (`skills/REGISTRY.md`)
+5. Add the skill to `skills/SKILLS_INDEX.yml`
+6. Update `docs/AGENTS.md` if the skill should be auto-loaded
+
+---
+
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 12, 2026.*
