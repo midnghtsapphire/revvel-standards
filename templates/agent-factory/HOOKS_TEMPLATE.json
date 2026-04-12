@@ -1,0 +1,25 @@
+{
+  "hooks": [
+    {
+      "event": "pre-commit",
+      "commands": ["npm run lint", "npm run secrets-scan"],
+      "on_fail": "block"
+    },
+    {
+      "event": "post-command",
+      "match": "exit_code != 0",
+      "commands": ["./scripts/capture-logs.sh", "/diagnose"],
+      "on_fail": "notify-and-continue"
+    },
+    {
+      "event": "test-fail",
+      "commands": ["/diagnose", "/patch"],
+      "on_fail": "escalate"
+    },
+    {
+      "event": "deploy-precheck",
+      "commands": ["/schema-guard", "/ui-audit"],
+      "on_fail": "block"
+    }
+  ]
+}

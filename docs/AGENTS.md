@@ -75,6 +75,11 @@ git log --oneline -10 && git status && git branch -a
 - **Commit frequently.** Small, descriptive commits. Not one giant commit at the end.
 - **Leave the codebase better than you found it.** If you touch a file, clean it up. Fix obvious bugs. Remove dead code.
 
+### Agent Factory Usage
+- Route tasks via trigger words to the Agent Factory (`AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
+- When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
+- On any non-zero exit, run the self-heal loop: `/diagnose` → `/patch` → rerun targeted checks.
+
 ## Commit Messages
 
 ```
