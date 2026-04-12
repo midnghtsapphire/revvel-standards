@@ -1,0 +1,58 @@
+# Agent Factory Standard
+
+Design a reusable **Agent Factory** that behaves like a skill: the coding agent can swap in the right specialist automatically, route work by trigger words, and self-heal when a run stalls. The factory aligns with Claude Code templates (agents, commands, settings, hooks, plugins) so the same scaffolding works across repos.
+
+## Principles
+- **Trigger-first routing**: map keywords, file types, and build failures to target agents or command packs.
+- **Cognitive scaffolding**: every agent ships with its own goals, guardrails, tool access, and recap cadence; the factory preserves and reloads that state on swap.
+- **Self-healing loop**: detect failure → capture context → switch to the recovery agent → retry with tighter checks → escalate only with evidence.
+- **Composable bundles**: treat commands, settings, hooks, and plugins as swappable modules so teams can assemble the right kit per project.
+
+## Directory Layout
+- `agent-factory/README.md` — orchestration flow and usage.
+- `agent-factory/commands/README.md` — how to author `/` commands and pair them with agents.
+- `agent-factory/settings/README.md` — security, tooling, and memory profiles.
+- `agent-factory/hooks/README.md` — lifecycle automations for self-heal and governance.
+- `agent-factory/plugins/README.md` — bundling agents + commands + hooks into reusable packs.
+- `templates/agent-factory/*` — drop-in templates for agents, commands, settings, hooks, and plugins (AITMPL/Claude-compatible).
+
+## Coding Agent Trigger Matrix
+| Trigger | Route To | Action |
+| --- | --- | --- |
+| `api`, `backend`, `fastapi`, `express`, `supabase` | Backend agent | Swap to backend agent template; load `/api-scaffold`, `/schema-guard` commands. |
+| `ui`, `react`, `next`, `tailwind`, `storybook` | Frontend agent | Swap to frontend agent; run `/ui-audit`, `/accessibility-pass`. |
+| `data`, `sql`, `analytics`, `etl` | Data agent | Attach `/model-audit`, `/perf-plan` commands; enforce read-only settings by default. |
+| `sec`, `auth`, `jwt`, `vuln`, `owasp` | Security agent | Force secure settings profile; auto-run pre-commit hooks for secrets scan. |
+| `ci`, `pipeline`, `docker`, `deploy` | DevOps agent | Load `/pipeline-fix`, `/image-hardening`; enable hooks on build/test failure. |
+| `docs`, `runbook`, `handoff` | Documentation agent | Trigger `/doc-sync`, `/handoff-pack`; prefer summarization settings. |
+| Failure: tests/build/lint exit non-zero | Recovery agent | Run self-heal hook: collect logs, open incident note, rerun with stricter checklist. |
+
+## Cognitive Scaffolding (per agent)
+- **Frontmatter**: `name`, `role`, `models`, `tools`, `inputs`, `outputs`, `handoff_expectations`.
+- **Context kit**: problem statement, constraints, recent decisions, open risks, test focus, done/not-done list.
+- **Swap protocol**: when a trigger fires, persist context kit → load target agent frontmatter → replay context kit → run warm-up checklist.
+- **Recap cadence**: after each major tool use or failure, append to the context kit and persist for the next swap.
+
+## Self-Healing Loop
+1. **Detect**: hook catches non-zero exit or flaky run; capture command, exit code, tail logs.
+2. **Stabilize**: lock working tree; snapshot state and failing command.
+3. **Recover**: swap to the recovery agent template; rerun with `/diagnose` then `/patch` commands.
+4. **Verify**: rerun targeted tests/linters; if clean, release lock; if not, escalate with a minimal repro note.
+5. **Record**: update the context kit and handoff notes for continuity.
+
+## Actions & Workflows
+- **Init**: choose baseline settings profile → register default hooks (pre-commit lint, post-run artifact capture) → install command pack.
+- **Auto-route**: parse task text, filenames, and failure logs for triggers; call `swap_agent(trigger)`; execute the mapped command stack.
+- **Guardrails**: enforce settings per agent (tool allowlist, network rules, token ceilings, redaction rules).
+- **Outputs**: every run emits a recap (decisions, commands used, artifacts, remaining risks) stored with the handoff template.
+
+## How to Use
+1. Start from `templates/agent-factory/AGENT_TEMPLATE.md` to author specialists.
+2. Add `/` commands with `templates/agent-factory/COMMAND_TEMPLATE.md`; register them in `agent-factory/commands/README.md`.
+3. Select a settings profile and hook set from the templates; tune limits per repo.
+4. Bundle agents + commands + hooks as a plugin (see `templates/agent-factory/PLUGIN_TEMPLATE.md`) for reuse across projects or clients.
+5. Wire the coding agent to honor the trigger matrix and self-heal loop before shipping.
+
+## References
+- AITMPL components: agents, commands, settings, hooks, plugins, and templates (`https://www.aitmpl.com/`, `https://docs.aitmpl.com/introduction`).
+- Claude Code Templates (`https://github.com/davila7/claude-code-templates`).

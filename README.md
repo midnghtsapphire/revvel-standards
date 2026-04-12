@@ -6,6 +6,9 @@
 
 ---
 
+**Key Standards**
+- `AGENT_FACTORY_STANDARD.md` — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
+
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
 
