@@ -109,6 +109,13 @@ else
   echo "  ⏭️  compliance-check.yml already exists, skipping"
 fi
 
+if [ ! -f ".github/workflows/syntax-check.yml" ]; then
+  curl -sL "$STANDARDS_REPO/templates/cicd/syntax-check.yml" > .github/workflows/syntax-check.yml
+  echo "  ✅ .github/workflows/syntax-check.yml created"
+else
+  echo "  ⏭️  syntax-check.yml already exists, skipping"
+fi
+
 # ─── Step 4: Vitest Config ────────────────────────────────
 echo ""
 echo "🧪 Step 4: Setting up test configuration..."
@@ -172,18 +179,53 @@ if command -v npm &>/dev/null && [ -f "package.json" ]; then
   if ! grep -q '"husky"' package.json 2>/dev/null; then
     npm install --save-dev husky lint-staged 2>/dev/null
     npx husky init 2>/dev/null || true
-    # Pre-commit hook
+    # Pre-commit hook — runs lint-staged AND TypeScript check
     cat > .husky/pre-commit << 'EOF'
 #!/bin/sh
+# Revvel pre-commit hook: lint-staged + TypeScript syntax check
 npx lint-staged
+# TypeScript check (runs only if tsconfig.json exists)
+if [ -f "tsconfig.json" ]; then
+  npx tsc --noEmit --skipLibCheck
+fi
 EOF
     chmod +x .husky/pre-commit
-    echo "  ✅ Husky pre-commit hook installed"
+    echo "  ✅ Husky pre-commit hook installed (lint-staged + tsc)"
   else
     echo "  ⏭️  Husky already configured, skipping"
   fi
 else
   echo "  ⚠️  No package.json found — skipping Husky setup. Run manually after init."
+fi
+
+# ─── Step 5b: Native pre-commit hook (git/hooks) ──────────
+echo ""
+echo "🔒 Step 5b: Installing native git pre-commit hook..."
+
+if [ ! -f ".git/hooks/pre-commit" ]; then
+  mkdir -p .git/hooks
+  curl -sL "$STANDARDS_REPO/templates/hooks/pre-commit" > .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
+  echo "  ✅ Native git pre-commit hook installed"
+else
+  echo "  ⏭️  .git/hooks/pre-commit already exists, skipping"
+fi
+
+# ─── Step 5c: pre-commit framework config ─────────────────
+echo ""
+echo "🔒 Step 5c: Setting up .pre-commit-config.yaml..."
+
+if [ ! -f ".pre-commit-config.yaml" ]; then
+  curl -sL "$STANDARDS_REPO/templates/hooks/.pre-commit-config.yaml" > .pre-commit-config.yaml
+  echo "  ✅ .pre-commit-config.yaml created"
+  if command -v pre-commit &>/dev/null; then
+    pre-commit install 2>/dev/null || true
+    echo "  ✅ pre-commit framework installed"
+  else
+    echo "  ℹ️  pre-commit framework not found. Install with: pip install pre-commit && pre-commit install"
+  fi
+else
+  echo "  ⏭️  .pre-commit-config.yaml already exists, skipping"
 fi
 
 # ─── Step 6: .env.example ─────────────────────────────────

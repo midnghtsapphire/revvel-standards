@@ -189,24 +189,27 @@ const checks = [
   // Category F: Documentation
   { id: 'F3', category: 'F', desc: 'CHANGELOG.md has at least one entry (## heading)', points: 2, tier: 'P0', fn: () => fileContains('CHANGELOG.md', ['##']) },
 
-  // Category G: Pre-commit Hooks (bonus)
-  { id: 'G1', category: 'G', desc: '.husky/ directory exists', points: 1, tier: 'P2', fn: () => dirExists('.husky') },
-  { id: 'G2', category: 'G', desc: 'lint-staged config exists', points: 1, tier: 'P2', fn: () => fileExistsAny(['.lintstagedrc', '.lintstagedrc.json', '.lintstagedrc.js', 'lint-staged.config.js']) || fileContains('package.json', ['lint-staged']) },
+  // Category G: Pre-commit Hooks & Syntax Checks (G1-G2 bonus; G6-G8 scored)
+  { id: 'G1', category: 'G', desc: '.husky/ directory exists', points: 1, tier: 'P2', bonus: true, fn: () => dirExists('.husky') },
+  { id: 'G2', category: 'G', desc: 'lint-staged config exists', points: 1, tier: 'P2', bonus: true, fn: () => fileExistsAny(['.lintstagedrc', '.lintstagedrc.json', '.lintstagedrc.js', 'lint-staged.config.js']) || fileContains('package.json', ['lint-staged']) },
+  { id: 'G6', category: 'G', desc: '.github/workflows/syntax-check.yml exists', points: 3, tier: 'P1', bonus: false, fn: () => fileExists('.github/workflows/syntax-check.yml') },
+  { id: 'G7', category: 'G', desc: '.pre-commit-config.yaml exists', points: 2, tier: 'P2', bonus: false, fn: () => fileExistsAny(['.pre-commit-config.yaml', '.pre-commit-config.yml']) },
+  { id: 'G8', category: 'G', desc: 'SYNTAX_ERROR_PREVENTION_STANDARD.md exists or syntax standard referenced', points: 1, tier: 'P1', bonus: false, fn: () => fileExists('SYNTAX_ERROR_PREVENTION_STANDARD.md') || fileContains('AGENTS.md', ['SYNTAX_ERROR_PREVENTION', 'syntax-check', 'pre-commit']) },
 ];
 
 // ─── Run Checks ───────────────────────────────────────────
 console.log('\n');
 console.log('╔══════════════════════════════════════════════════════════╗');
-console.log('║          REVVEL COMPLIANCE CHECKER v1.0.0                ║');
+console.log('║          REVVEL COMPLIANCE CHECKER v1.1.0                ║');
 console.log('╚══════════════════════════════════════════════════════════╝');
 console.log(`\nAuditing: ${repoRoot}\n`);
 
-// Calculate max score (excluding G/bonus)
-const coreChecks = checks.filter((c) => c.category !== 'G');
+// Calculate max score (excluding bonus checks)
+const coreChecks = checks.filter((c) => !c.bonus);
 const maxScore = coreChecks.reduce((sum, c) => sum + c.points, 0);
 
 for (const check of checks) {
-  const isBonus = check.category === 'G';
+  const isBonus = check.bonus === true;
   if (!isBonus) totalPoints += check.points;
 
   let passed = false;

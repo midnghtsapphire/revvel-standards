@@ -87,6 +87,7 @@ copy_and_substitute "$TEMPLATES_DIR/cicd/ci.yml"             ".github/workflows/
 copy_and_substitute "$TEMPLATES_DIR/cicd/auto-fix.yml"       ".github/workflows/auto-fix.yml"
 copy_and_substitute "$TEMPLATES_DIR/cicd/security.yml"       ".github/workflows/security.yml"
 copy_and_substitute "$TEMPLATES_DIR/cicd/deploy.yml"         ".github/workflows/deploy.yml"
+copy_and_substitute "$TEMPLATES_DIR/cicd/syntax-check.yml"   ".github/workflows/syntax-check.yml"
 copy_and_substitute "$TEMPLATES_DIR/cicd/deploy-android.yml" ".github/workflows/deploy-android.yml"
 copy_and_substitute "$TEMPLATES_DIR/cicd/deploy-ios.yml"     ".github/workflows/deploy-ios.yml"
 echo ""
@@ -124,6 +125,14 @@ mkdir -p tests/unit tests/integration tests/e2e
 copy_and_substitute "$TEMPLATES_DIR/testing/field-validation.test.ts" "tests/unit/field-validation.test.ts"
 copy_and_substitute "$TEMPLATES_DIR/testing/ui-db-map.test.ts"        "tests/integration/ui-db-map.test.ts"
 copy_and_substitute "$TEMPLATES_DIR/testing/panel-data-void.spec.ts"  "tests/e2e/panel-data-void.spec.ts"
+echo ""
+
+# -------------------------------------------------------------------------
+# Step 7: Copy pre-commit framework config
+# -------------------------------------------------------------------------
+echo "🔒 Step 7: Creating .pre-commit-config.yaml..."
+cp "$TEMPLATES_DIR/hooks/.pre-commit-config.yaml" ".pre-commit-config.yaml"
+echo "  ✅ .pre-commit-config.yaml"
 echo ""
 
 # -------------------------------------------------------------------------

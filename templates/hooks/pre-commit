@@ -1,0 +1,156 @@
+#!/bin/sh
+# =============================================================
+# REVVEL PRE-COMMIT HOOK
+# =============================================================
+# Copy to .git/hooks/pre-commit and make executable:
+#   cp templates/hooks/pre-commit .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+#
+# This hook checks for syntax errors in staged files before
+# allowing a commit. If any check fails the commit is aborted.
+# =============================================================
+
+set -e
+
+# Collect staged files only
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+ERRORS=0
+
+echo "🔍 Revvel pre-commit syntax check..."
+
+# ─── Shell scripts ──────────────────────────────────────────
+for file in $STAGED_FILES; do
+  case "$file" in
+    *.sh|*.bash)
+      if ! bash -n "$file" 2>&1; then
+        echo "  ❌ Shell syntax error in: $file"
+        ERRORS=$((ERRORS + 1))
+      else
+        echo "  ✅ Shell OK: $file"
+      fi
+      ;;
+  esac
+done
+
+# ─── JavaScript / MJS ───────────────────────────────────────
+if command -v node >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.js|*.mjs|*.cjs)
+        if ! node --check "$file" 2>&1; then
+          echo "  ❌ JS syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ JS OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── JSON ────────────────────────────────────────────────────
+if command -v node >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.json)
+        if ! node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" 2>&1; then
+          echo "  ❌ JSON syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ JSON OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── TypeScript (full project check if tsconfig exists) ──────
+TS_FILES=""
+for file in $STAGED_FILES; do
+  case "$file" in
+    *.ts|*.tsx) TS_FILES="$TS_FILES $file" ;;
+  esac
+done
+
+if [ -n "$TS_FILES" ] && [ -f "tsconfig.json" ]; then
+  if command -v npx >/dev/null 2>&1; then
+    echo "  🔎 Running TypeScript check (tsc --noEmit)..."
+    if ! npx tsc --noEmit --skipLibCheck 2>&1; then
+      echo "  ❌ TypeScript errors detected — commit aborted"
+      ERRORS=$((ERRORS + 1))
+    else
+      echo "  ✅ TypeScript OK"
+    fi
+  fi
+fi
+
+# ─── Python ──────────────────────────────────────────────────
+if command -v python3 >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.py)
+        if ! python3 -m py_compile "$file" 2>&1; then
+          echo "  ❌ Python syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ Python OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── YAML ────────────────────────────────────────────────────
+if command -v python3 >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.yml|*.yaml)
+        if ! python3 -c "import yaml; yaml.safe_load(open('$file'))" 2>&1; then
+          echo "  ❌ YAML syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ YAML OK: $file"
+        fi
+        ;;
+    esac
+  done
+elif command -v node >/dev/null 2>&1; then
+  # Only attempt js-yaml check if the module is actually installed
+  JS_YAML_AVAILABLE=false
+  if node -e "require('js-yaml')" 2>/dev/null; then
+    JS_YAML_AVAILABLE=true
+  fi
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.yml|*.yaml)
+        if [ "$JS_YAML_AVAILABLE" = "true" ]; then
+          if ! node -e "require('js-yaml').load(require('fs').readFileSync('$file','utf8'))" 2>&1; then
+            echo "  ❌ YAML syntax error in: $file"
+            ERRORS=$((ERRORS + 1))
+          else
+            echo "  ✅ YAML OK: $file"
+          fi
+        else
+          echo "  ⚠️  YAML check skipped (install python3 or js-yaml for YAML validation): $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── Result ──────────────────────────────────────────────────
+echo ""
+if [ "$ERRORS" -gt 0 ]; then
+  echo "  🚫 $ERRORS syntax error(s) found. Commit aborted."
+  echo "  Fix the errors above and try again."
+  echo "  (Use 'git commit --no-verify' ONLY in emergencies with team lead approval)"
+  exit 1
+fi
+
+echo "  ✅ All syntax checks passed."
+exit 0
