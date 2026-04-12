@@ -220,6 +220,16 @@
     "serena": {
       "command": "uvx",
       "args": ["serena", "--context", "ide-assistant", "--project", "${PROJECT_ROOT}"]
+    },
+
+    "rvvel-affiliate-links": {
+      "command": "npx",
+      "args": ["rvvel-affiliate-links-mcp"]
+    },
+
+    "code-review": {
+      "command": "node",
+      "args": ["${CODE_REVIEW_MCP_PATH}/dist/index.js"]
     }
 
   }

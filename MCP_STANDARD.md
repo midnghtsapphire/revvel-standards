@@ -862,7 +862,96 @@ Place all custom MCP server code in `mcp_server/` within the project:
 
 ---
 
-## 12. Updating This Standard
+## 12. Revvel Custom MCP Servers
+
+The MIDNGHTSAPPHIRE GitHub organization maintains custom MCP servers built specifically for the Revvel ecosystem. Every project **must** include the two production-ready custom servers. The MCT microservice modules are added per project domain.
+
+For the full audit of all 22 repos see: [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md)
+
+### 12.1. The Two Must-Have Custom Servers
+
+These two are **mandatory in every Revvel project** — include them in any profile alongside the standard servers.
+
+#### `rvvel-affiliate-links-mcp`
+- **Repo:** [midnghtsapphire/rvvel-affiliate-links-mcp](https://github.com/midnghtsapphire/rvvel-affiliate-links-mcp)
+- **Transport:** stdio · **Backend:** SQLite (self-contained) · **No env vars required**
+- **8 Tools:** `store_affiliate_link`, `get_affiliate_links`, `get_best_link`, `search_links`, `get_stats`, `track_click`, `track_conversion`, `export_links`
+- **Use case:** AI agents call `get_best_link` or `search_links` to automatically insert real, tracked affiliate links into any content, recommendation, or product page.
+- **Config:**
+  ```json
+  "rvvel-affiliate-links": {
+    "command": "npx",
+    "args": ["rvvel-affiliate-links-mcp"]
+  }
+  ```
+
+#### `code-review-mcp-server`
+- **Repo:** [midnghtsapphire/code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server)
+- **Transport:** stdio · **No database** (scans filesystem in-process)
+- **10 Tools:** `scan_nested_anchors`, `check_react_best_practices`, `validate_typescript`, `scan_accessibility`, `detect_security_issues`, `analyze_performance`, `generate_quality_report`, `validate_deployment_readiness`, `integrate_coderabbit`, `send_slack_report`
+- **Use case:** Enforce the Dev→Test→Live deployment gate. Run `validate_deployment_readiness` before every push to `main`.
+- **Config:**
+  ```json
+  "code-review": {
+    "command": "node",
+    "args": ["${CODE_REVIEW_MCP_PATH}/dist/index.js"]
+  }
+  ```
+- **Setup:**
+  ```bash
+  git clone https://github.com/midnghtsapphire/code-review-mcp-server ~/mct/code-review
+  cd ~/mct/code-review && npm install && npm run build
+  # Set CODE_REVIEW_MCP_PATH=~/mct/code-review in .env
+  ```
+
+### 12.2. MCT Microservice Modules
+
+The 20 `MCP-*` repos are the InTheWild platform microservice suite. Each is a TypeScript/Express REST API containerized with Docker, with a partial or complete `@modelcontextprotocol/sdk` layer.
+
+**Modules with MCP tools fully implemented (add to projects that need them):**
+
+| Module | Repo | Tools | Domain |
+|---|---|---|---|
+| MCP-ANALYTICS | [midnghtsapphire/MCP-ANALYTICS](https://github.com/midnghtsapphire/MCP-ANALYTICS) | `get_analytics_data` | Event tracking, user analytics |
+| MCP-SUBSCRIPTION | [midnghtsapphire/MCP-SUBSCRIPTION](https://github.com/midnghtsapphire/MCP-SUBSCRIPTION) | `getSubscriptions` | Subscription lifecycle |
+| MCP-ADMIN-DASHBOARD | [midnghtsapphire/MCP-ADMIN-DASHBOARD](https://github.com/midnghtsapphire/MCP-ADMIN-DASHBOARD) | `getUsers`, `addUser` | Admin user management |
+| MCP-CUSTOMER-SUPPORT | [midnghtsapphire/MCP-CUSTOMER-SUPPORT](https://github.com/midnghtsapphire/MCP-CUSTOMER-SUPPORT) | `fetchCustomerData` | Customer data retrieval |
+| MCP-USER-DASHBOARD | [midnghtsapphire/MCP-USER-DASHBOARD](https://github.com/midnghtsapphire/MCP-USER-DASHBOARD) | `getUserData`, `updateUserData` | User profile management |
+| MCP-WEBSITE-GENERATOR | [midnghtsapphire/MCP-WEBSITE-GENERATOR](https://github.com/midnghtsapphire/MCP-WEBSITE-GENERATOR) | `generateWebsite` | AI website generation |
+| MCP-CONTENT-CALENDAR | [midnghtsapphire/MCP-CONTENT-CALENDAR](https://github.com/midnghtsapphire/MCP-CONTENT-CALENDAR) | (connected, tools pending) | Content scheduling |
+
+**Modules with partial MCP implementation (REST API works, tools need completion):**
+
+MCP-AUTH, MCP-PAYMENT, MCP-AFFILIATE, MCP-SEO-ACCESSIBILITY, MCP-EMAIL-MARKETING, MCP-AD-CAMPAIGN, MCP-BRANDING, MCP-AB-TESTING, MCP-CODE-REVIEW, MCP-DATA-MANAGEMENT
+
+**Not yet audited:** MCP-REPORTS, MCP-KUBERNETES, MCP-LOCALIZATION, MCP-SOFTWARE-DISCOVERY
+
+### 12.3. Adding MCT Modules to `.mcp.json`
+
+Build from source (development):
+```bash
+git clone https://github.com/midnghtsapphire/MCP-ANALYTICS ~/mct/analytics
+cd ~/mct/analytics && npm install && npm run build
+```
+
+Then add to `.mcp.json`:
+```json
+"mct-analytics": {
+  "command": "node",
+  "args": ["${MCT_ANALYTICS_PATH}/dist/index.js"],
+  "env": { "MONGODB_URI": "${MONGODB_URI}" }
+}
+```
+
+For all custom Revvel servers in one config block, use `templates/mcp/mcp.revvel-custom.json`.
+
+### 12.4. Critical Fix Required: Hardcoded Credentials
+
+**P0 Security Issue:** Multiple MCT modules have hardcoded database credentials in `src/db/schema.ts` (e.g., `password: 'password'`, localhost connection strings). Before running any MCT module in any non-local environment, these must be replaced with `process.env.DATABASE_URL` or equivalent. This is a known issue tracked in [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md).
+
+---
+
+## 13. Updating This Standard
 
 When adding new MCP servers to the Revvel ecosystem:
 1. Add the server entry to Section 4 with full documentation

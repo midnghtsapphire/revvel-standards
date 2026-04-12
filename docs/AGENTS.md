@@ -178,6 +178,74 @@ If the repo already uses something different, use what is already there. Do not 
 - Sanitize all user inputs.
 - If you find a security vulnerability while working, fix it immediately and note it in your commit message.
 
+## MCP Servers — Using Tools in This Repo
+
+Every Revvel project has a `.mcp.json` at the root that exposes tools to you. **Before writing code, check for `.mcp.json` and use the tools it provides.**
+
+### Available Tool Categories
+
+| Category | When to Use |
+|---|---|
+| Database (postgres, sqlite, mongodb) | Query data directly instead of guessing schema |
+| Search (duckduckgo, tavily, brave-search) | Fetch current information before answering about external topics |
+| Memory (memory, memorymesh, mem0) | Persist facts about this project across sessions |
+| Filesystem | Read/write project files via MCP rather than generating content inline |
+| Code execution (python, calculator) | Run and verify code/calculations rather than guessing output |
+
+### Two Mandatory Custom Revvel Servers
+
+Every project must include these two — check they are in `.mcp.json`:
+
+#### `rvvel-affiliate-links`
+8 tools for the Revvel affiliate link ecosystem:
+- `get_best_link(category)` — get the top affiliate link for a category
+- `search_links(query)` — full-text search all stored links
+- `store_affiliate_link(...)` — add a new link to the ecosystem
+- `track_click(linkId, source)` — record a click event
+- `track_conversion(linkId, amount)` — record a conversion
+- `get_stats(linkId)` — clicks, conversions, revenue, conversion rate
+- `get_affiliate_links(category, minCommission)` — filtered link list
+- `export_links(format)` — export as JSON or CSV
+
+**When to call it:** Any time you are generating content, product pages, blog posts, or recommendations — call `get_best_link` or `search_links` first to get real, tracked affiliate links.
+
+#### `code-review`
+10 tools for automated code quality enforcement:
+- `validate_deployment_readiness(projectPath, environment)` — **run before every push to `main`**
+- `generate_quality_report(projectPath, outputFormat)` — full code quality report
+- `scan_nested_anchors(projectPath)` — React `<Link><a>` nesting bugs
+- `check_react_best_practices(projectPath)` — hooks, key props, effects
+- `validate_typescript(projectPath, strict)` — TypeScript type errors
+- `scan_accessibility(projectPath, level)` — WCAG 2.1 scan
+- `detect_security_issues(projectPath)` — XSS, injection, exposed secrets
+- `send_slack_report(webhookUrl, reportData)` — post to Slack
+
+**When to call it:** Before declaring any task complete, run `validate_deployment_readiness` for the relevant environment.
+
+### MCT Module Tools (when modules are included)
+
+When the project `.mcp.json` includes MCT modules, these additional tools are available:
+
+| Server Key | Tools |
+|---|---|
+| `mct-analytics` | `get_analytics_data` |
+| `mct-subscription` | `getSubscriptions` |
+| `mct-admin-dashboard` | `getUsers`, `addUser` |
+| `mct-customer-support` | `fetchCustomerData` |
+| `mct-user-dashboard` | `getUserData`, `updateUserData` |
+| `mct-website-generator` | `generateWebsite` |
+
+### MCP Server Rules
+
+1. **Check for `.mcp.json` first.** If it doesn't exist at project root, note it as missing and continue.
+2. **Use database tools for all data queries.** Don't guess schema — ask the MCP server.
+3. **Use search tools before citing facts.** If information could be outdated, search first.
+4. **Never put real credentials in `.mcp.json`.** Use `${ENV_VAR}` references only.
+5. **Use `validate_deployment_readiness` before declaring done.** Not optional.
+
+For full MCP documentation see: `revvel-standards/MCP_STANDARD.md`  
+For custom Revvel MCPs see: `revvel-standards/docs/MCP_REVVEL_CATALOG.md`
+
 ## What NOT to Do
 
 - **Do not ask unnecessary questions.** If the task is clear, execute it.
