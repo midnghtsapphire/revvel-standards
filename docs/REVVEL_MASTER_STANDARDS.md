@@ -53,6 +53,19 @@ This document is the master policy document. For detailed implementation specifi
 | [`docs/edi-maps/EDI_INTEGRATION_STANDARD.md`](edi-maps/EDI_INTEGRATION_STANDARD.md) | How to hand field maps to any partner (IRS, carrier, bank) |
 | [`docs/edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md`](edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md) | Blank template for any external integration |
 
+### MCP Servers & AI Tool Integration
+| Document | What It Covers |
+|---|---|
+| [`MCP_STANDARD.md`](../MCP_STANDARD.md) | **Mandatory.** All 32 standard MCP servers + FastMCP custom server standard. Every project must have `.mcp.json`. |
+| [`docs/MCP_REVVEL_CATALOG.md`](MCP_REVVEL_CATALOG.md) | Deep audit of all 22 MIDNGHTSAPPHIRE custom MCP repos — tools, databases, wiring instructions |
+| [`templates/mcp/mcp.full.json`](../templates/mcp/mcp.full.json) | Full 34-server config (32 standard + 2 mandatory custom) |
+| [`templates/mcp/mcp.web.json`](../templates/mcp/mcp.web.json) | Web project config (18 standard servers) |
+| [`templates/mcp/mcp.mobile.json`](../templates/mcp/mcp.mobile.json) | Mobile/Expo config (14 servers) |
+| [`templates/mcp/mcp.minimal.json`](../templates/mcp/mcp.minimal.json) | Minimal config (8 servers — DB, search, memory, filesystem) |
+| [`templates/mcp/mcp.revvel-custom.json`](../templates/mcp/mcp.revvel-custom.json) | All 19 custom Revvel MCP servers — merge into any project config |
+| [`templates/mcp/.env.mcp.example`](../templates/mcp/.env.mcp.example) | All env vars for every MCP server |
+| [`templates/mcp/custom-server/`](../templates/mcp/custom-server/) | FastMCP starter template for building new custom Revvel MCP servers |
+
 ---
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)

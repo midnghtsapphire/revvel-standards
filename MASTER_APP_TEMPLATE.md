@@ -97,3 +97,33 @@ Security is integrated into every layer of the application. **Secret Management*
 ## 8. Branding and Design
 
 The visual identity of Revvel applications must follow specific guidelines. The aesthetic preference is a **Glassmorphism UI/UX** design. A **Dark Theme** must be the default presentation, but a manual light mode toggle is mandatory. When selecting **Domains**, prioritize trending, high-SEO, creative, and cost-effective domain names.
+
+## 9. MCP Server Integration
+
+Every Revvel project must be wired with MCP servers to give AI coding agents (Claude Code, Cursor, GitHub Copilot, Windsurf) full access to the project's data, services, and tools. This is enforced by placing a `.mcp.json` at the project root.
+
+### Mandatory for Every Project
+
+1. **`.mcp.json`** — Copy from `revvel-standards/templates/mcp/mcp.<profile>.json` and merge with `mcp.revvel-custom.json`.
+2. **`rvvel-affiliate-links-mcp`** — Always included. Enables AI agents to insert real affiliate links automatically. Run: `npx rvvel-affiliate-links-mcp`.
+3. **`code-review-mcp-server`** — Always included. Enforces the Dev→Test→Live gate. Requires local clone: `github.com/midnghtsapphire/code-review-mcp-server`.
+
+### Profile Selection
+
+| Project Type | Template to Copy |
+|---|---|
+| Full-stack / flagship | `templates/mcp/mcp.full.json` + `mcp.revvel-custom.json` |
+| Web (Next.js / React) | `templates/mcp/mcp.web.json` + `mcp.revvel-custom.json` |
+| Mobile (Expo) | `templates/mcp/mcp.mobile.json` + `mcp.revvel-custom.json` |
+| CLI / utility / script | `templates/mcp/mcp.minimal.json` + `mcp.revvel-custom.json` |
+
+### Quick Setup
+
+```bash
+# Run from the new project root:
+bash ../revvel-standards/scripts/setup-mcp.sh web
+```
+
+### Full Documentation
+
+See **[`MCP_STANDARD.md`](https://github.com/midnghtsapphire/revvel-standards/blob/main/MCP_STANDARD.md)** for the complete standard including all 32 community servers, the FastMCP custom server guide, and the full Revvel Custom MCP catalog.
