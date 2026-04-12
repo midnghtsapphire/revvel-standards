@@ -1,7 +1,7 @@
 # Revvel Compliance Rubric
 
-**Version:** 1.0.0  
-**Date:** April 6, 2026  
+**Version:** 1.1.0  
+**Date:** April 12, 2026  
 **Status:** Mandatory Policy — Single Source of Truth  
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 
@@ -118,7 +118,9 @@ The automated checker (`scripts/check-compliance.js`) evaluates each item below.
 
 ---
 
-### Category G: Pre-commit Hooks (5 points — bonus, not required for score)
+### Category G: Pre-commit Hooks & Syntax Checks (10 points)
+
+> G1–G4 are bonus points. G5–G8 are required and scored. See `SYNTAX_ERROR_PREVENTION_STANDARD.md` for full details.
 
 | ID | Requirement | Points | Tier | Check Type |
 |---|---|---|---|---|
@@ -127,6 +129,9 @@ The automated checker (`scripts/check-compliance.js`) evaluates each item below.
 | G3 | Pre-commit hook runs linting | 1 | P2 | MANUAL |
 | G4 | Pre-commit hook runs TypeScript check | 1 | P2 | MANUAL |
 | G5 | Secret scanning configured (gitleaks or detect-secrets) | 1 | P1 | MANUAL |
+| G6 | `.github/workflows/syntax-check.yml` exists | 3 | P1 | AUTO |
+| G7 | `.pre-commit-config.yaml` exists at repo root | 2 | P2 | AUTO |
+| G8 | `SYNTAX_ERROR_PREVENTION_STANDARD.md` present (standards repo) or referenced in `AGENTS.md` | 1 | P1 | AUTO |
 
 ---
 
@@ -176,7 +181,10 @@ The `scripts/check-compliance.js` checker reads this embedded JSON to score repo
     { "id": "E3", "description": "tsconfig.json exists with strict mode", "points": 3, "tier": "P0", "auto": true, "check": "file_contains", "target": "tsconfig.json", "contains": ["strict"] },
     { "id": "F3", "description": "CHANGELOG.md has at least one entry", "points": 2, "tier": "P0", "auto": true, "check": "file_contains", "target": "CHANGELOG.md", "contains": ["##"] },
     { "id": "G1", "description": ".husky/ directory exists", "points": 1, "tier": "P2", "auto": true, "check": "dir_exists", "target": ".husky" },
-    { "id": "G2", "description": "lint-staged config exists", "points": 1, "tier": "P2", "auto": true, "check": "file_exists_any", "targets": [".lintstagedrc", ".lintstagedrc.json", ".lintstagedrc.js"] }
+    { "id": "G2", "description": "lint-staged config exists", "points": 1, "tier": "P2", "auto": true, "check": "file_exists_any", "targets": [".lintstagedrc", ".lintstagedrc.json", ".lintstagedrc.js"] },
+    { "id": "G6", "description": "syntax-check.yml workflow exists", "points": 3, "tier": "P1", "auto": true, "check": "file_exists", "target": ".github/workflows/syntax-check.yml" },
+    { "id": "G7", "description": ".pre-commit-config.yaml exists", "points": 2, "tier": "P2", "auto": true, "check": "file_exists", "target": ".pre-commit-config.yaml" },
+    { "id": "G8", "description": "SYNTAX_ERROR_PREVENTION_STANDARD.md exists or referenced in AGENTS.md", "points": 1, "tier": "P1", "auto": true, "check": "file_exists_any", "targets": ["SYNTAX_ERROR_PREVENTION_STANDARD.md"] }
   ]
 }
 ```
@@ -211,3 +219,5 @@ Any change to this rubric requires a PR. The PR must:
 2. Update the JSON in Section 4 to match
 3. Update `scripts/check-compliance.js` to reflect any new check logic
 4. Bump the version number at the top of this file
+
+Related standards: see `SYNTAX_ERROR_PREVENTION_STANDARD.md` for the full four-layer syntax error prevention policy.
