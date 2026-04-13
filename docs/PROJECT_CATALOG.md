@@ -14,6 +14,14 @@ A complete, real-time list of all repositories can be accessed via the [MIDNGHTS
 
 ## 2. Application & SaaS Repositories
 
+### Food & Catering
+
+| Repository | Status | Description | Link |
+| :--- | :--- | :--- | :--- |
+| **Soul2Bowl** | In Development | Premium online ordering and catering platform for St. Louis fusion cuisine — BBQ, Asian-Hawaiian, Southern soul food. Features glassmorphic design, animated UI, booking calendar, Stripe payments (one-time + subscriptions), Clerk auth (Google/Apple/Email), admin CMS panel, and eco-friendly LIFEMADE compostable bowl showcase. | [Soul2Bowl](https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl) |
+
+### General Applications
+
 These repositories contain full-stack applications and Software-as-a-Service (SaaS) products.
 
 | Repository | Status | Description | Link |
