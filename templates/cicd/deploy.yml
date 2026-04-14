@@ -11,11 +11,19 @@
 #        YOUR_APP_NAME    → your PM2 process name (e.g., growlingeyes)
 #        YOUR_DROPLET_IP  → your droplet's IP address
 #        YOUR_APP_DIR     → your app's directory on the droplet
+#        YOUR_DOMAIN      → your app's production domain (e.g., growlingeyes.com)
 #   3. Add SSH_PRIVATE_KEY to your repo's GitHub Actions secrets:
 #        GitHub → Repo → Settings → Secrets → Actions → New secret
 #        Name: SSH_PRIVATE_KEY
 #        Value: contents of your deploy private key
 #   4. Commit and push — every push to main auto-deploys.
+#
+# DEPLOYBOT INTEGRATION:
+#   This workflow creates GitHub Deployment records via the GitHub
+#   Deployments API. The deploybot-app (https://deploybot.app/) reads
+#   these records to track and display deployment status across all
+#   Revvel repos automatically — no extra configuration required once
+#   the app is installed on the organisation.
 # ============================================================
 
 name: Deploy to DigitalOcean Droplet
@@ -30,14 +38,33 @@ env:
   APP_NAME: "YOUR_APP_NAME"
   DROPLET_IP: "YOUR_DROPLET_IP"
   APP_DIR: "/var/www/YOUR_APP_DIR"
+  APP_DOMAIN: "https://YOUR_DOMAIN"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    # deployments: write is required for the GitHub Deployments API
+    # (used by deploybot-app to track deployment status)
+    permissions:
+      contents: read
+      deployments: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # ── DeployBot: create pending deployment record ──────────────
+      # deploybot-app (https://deploybot.app/) picks this up to track
+      # deployment status across the organisation.
+      - name: Create GitHub Deployment (pending)
+        id: deployment
+        uses: chrnorm/deployment-action@v2
+        with:
+          token: ${{ github.token }}
+          environment: production
+          ref: ${{ github.sha }}
+          description: "Deploying ${{ env.APP_NAME }} to production"
 
       - name: Setup Node.js with corepack
         uses: actions/setup-node@v4
@@ -90,3 +117,23 @@ jobs:
             pm2 status
             echo 'Deploy complete'
           "
+
+      # ── DeployBot: update deployment status ──────────────────────
+      - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ github.token }}
+          state: success
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+          environment-url: ${{ env.APP_DOMAIN }}
+          description: "${{ env.APP_NAME }} deployed successfully"
+
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ github.token }}
+          state: failure
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+          description: "Deployment of ${{ env.APP_NAME }} failed"
