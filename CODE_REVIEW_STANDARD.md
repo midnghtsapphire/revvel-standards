@@ -80,3 +80,33 @@ During the CI/CD process, several security gates are enforced:
 -   **Secret Management:** All secrets must be injected via HashiCorp Vault (AppRole + OIDC auth) or GitHub Actions Secrets. Hardcoded credentials will cause an immediate pipeline failure.
 -   **Dependency Scanning:** Automated checks for known vulnerabilities in npm/pip packages.
 -   **Static Analysis:** Code is scanned for common vulnerabilities (e.g., SQL injection, XSS) before deployment.
+
+## 7. Developer Productivity Analytics (Waydev)
+
+All Revvel and MIDNGHTSAPPHIRE repositories are monitored by the **Waydev GitHub App** for developer productivity analytics. Waydev is installed at the organisation level and requires no per-repository configuration.
+
+### 7.1. What Waydev Tracks
+
+| Metric | Purpose |
+|---|---|
+| PR cycle time | Flags PRs that sit open longer than 48 hours without review |
+| Code churn | Detects excessive rework (> 30% churn triggers a review) |
+| Commit frequency | Confirms regular delivery cadence per sprint |
+| Deployment frequency | Validates that `main` receives merges at the expected rate |
+| Review participation | Ensures code review obligations are being met |
+
+### 7.2. Dashboard Access
+
+- **URL:** https://app.waydev.co
+- **Login:** Use GitHub SSO (same account as `midnghtsapphire`)
+- **Repositories covered:** All active Revvel application repos
+
+### 7.3. Installation & Evaluation
+
+Waydev was evaluated as part of a 1-week trial. Full setup instructions, pricing, and removal steps are documented in:
+
+→ [`docs/WAYDEV_SETUP.md`](docs/WAYDEV_SETUP.md)
+
+### 7.4. Scope
+
+Waydev reads only repository *metadata* (commit timestamps, PR titles, author usernames). It does **not** access source code content and has no write permissions to any repository.
