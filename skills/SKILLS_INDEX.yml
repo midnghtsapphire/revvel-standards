@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-12"
+last_updated: "2026-04-14"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -274,6 +274,30 @@ skills:
       - "github issue alerts"
 
   # ─── Security & Compliance ─────────────────────────────────────────────────
+
+  - name: vault_agent
+    title: "Vault Agent"
+    version: "1.0.0"
+    path: "skills/vault-agent/"
+    skill_file: "skills/vault-agent/vault_agent.skill.yml"
+    category: "Security & Credential Management"
+    access: all
+    lifecycle: ephemeral
+    triggers:
+      - "api key"
+      - "oauth token"
+      - "vault"
+      - "credential"
+      - "secret provisioning"
+      - "mcp credential"
+      - "provision"
+      - "register api"
+      - "github secret"
+      - "expired token"
+      - "rotate credential"
+      - "new project bootstrap"
+      - "database url"
+      - "gatekeeper"
 
   - name: security
     title: "Security Standard"

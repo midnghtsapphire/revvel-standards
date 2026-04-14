@@ -35,6 +35,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Brainstorming, ideation, creative problem solving | [`brainstorming`](#brainstorming) |
 | Code review, PR review, quality gates | [`code-review`](#code-review) |
 | Security, OWASP, secrets, API keys, auth | [`security`](#security) |
+| API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
@@ -192,6 +193,13 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### Security & Compliance
 
+#### vault-agent
+- **Path:** `skills/vault-agent/`
+- **Files:** `SKILL.md` · `vault_agent.skill.yml`
+- **Description:** Ephemeral gatekeeper agent that provisions, stores, and rotates all secrets (API keys, OAuth tokens, DB credentials, MCP connections) via HashiCorp Vault. Spawns on demand, provisions with minimum privilege, and terminates. Triggers the Ralph Loop on failure.
+- **Tags:** vault, secrets, api-keys, oauth, mcp-credentials, provisioning, gatekeeper, ralph-loop, ephemeral-agent
+- **Trigger:** `api key`, `oauth token`, `vault`, `credential`, `secret`, `database url`, `mcp credential`, `provision`, `register api`, `github secret`, `expired token`, `rotate credential`, new project bootstrap.
+
 #### security
 - **Path:** `skills/security/`
 - **Files:** `SKILL.md` · `security.skill.yml`
@@ -260,4 +268,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 12, 2026.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 14, 2026.*

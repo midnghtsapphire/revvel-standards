@@ -20,6 +20,7 @@ Design a reusable **Agent Factory** that behaves like a skill: the coding agent 
 | Trigger | Route To | Action |
 | --- | --- | --- |
 | `api`, `backend`, `fastapi`, `express`, `supabase` | Backend agent | Swap to backend agent template; load `/api-scaffold`, `/schema-guard` commands. |
+| `vault`, `secret`, `token`, `api key`, `credential`, `mcp credential`, `provision`, `register api` | Vault agent | Spawn ephemeral Vault Agent; run credential check → provision → store in vault → terminate. |
 | `ui`, `react`, `next`, `tailwind`, `storybook` | Frontend agent | Swap to frontend agent; run `/ui-audit`, `/accessibility-pass`. |
 | `data`, `sql`, `analytics`, `etl` | Data agent | Attach `/model-audit`, `/perf-plan` commands; enforce read-only settings by default. |
 | `sec`, `auth`, `jwt`, `vuln`, `owasp` | Security agent | Force secure settings profile; auto-run pre-commit hooks for secrets scan. |
@@ -33,12 +34,18 @@ Design a reusable **Agent Factory** that behaves like a skill: the coding agent 
 - **Swap protocol**: when a trigger fires, persist context kit → load target agent frontmatter → replay context kit → run warm-up checklist.
 - **Recap cadence**: after each major tool use or failure, append to the context kit and persist for the next swap.
 
-## Self-Healing Loop
+## Self-Healing Loop (Ralph Loop)
 1. **Detect**: hook catches non-zero exit or flaky run; capture command, exit code, tail logs.
 2. **Stabilize**: lock working tree; snapshot state and failing command.
 3. **Recover**: swap to the recovery agent template; rerun with `/diagnose` then `/patch` commands.
 4. **Verify**: rerun targeted tests/linters; if clean, release lock; if not, escalate with a minimal repro note.
 5. **Record**: update the context kit and handoff notes for continuity.
+
+The **Ralph Loop** (`templates/cicd/ralph-loop.yml`) is the CI implementation of this self-healing loop:
+- Fires on any workflow failure
+- Creates a GitHub Issue labeled `ralph-loop` + `auto-fix` + `copilot` and assigns @copilot
+- Adds retry comments with updated context on each subsequent failure (max 5 retries)
+- After max retries, re-labels as `needs-human` and escalates to the repository owner
 
 ## Actions & Workflows
 - **Init**: choose baseline settings profile → register default hooks (pre-commit lint, post-run artifact capture) → install command pack.
@@ -56,3 +63,5 @@ Design a reusable **Agent Factory** that behaves like a skill: the coding agent 
 ## References
 - AITMPL components: agents, commands, settings, hooks, plugins, and templates (`https://www.aitmpl.com/`, `https://docs.aitmpl.com/introduction`).
 - Claude Code Templates (`https://github.com/davila7/claude-code-templates`).
+- Vault Agent: `VAULT_AGENT_STANDARD.md` · `skills/vault-agent/SKILL.md` · `templates/agent-factory/VAULT_AGENT_TEMPLATE.md`
+- Ralph Loop: `templates/cicd/ralph-loop.yml`
