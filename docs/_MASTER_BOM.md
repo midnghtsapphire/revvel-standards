@@ -25,71 +25,184 @@ See [`Universal-BOM_List/API_REGISTRY_BOM.md`](Universal-BOM_List/API_REGISTRY_B
 
 ---
 
-## The Shopping List (All ❌ Not Purchased Items)
+## Outstanding Purchases by Priority
 
-Sorted by Priority (P0 = do immediately, P1 = do soon, P2 = do when ready for stores).
+The following items are marked ❌ "Not purchased" across all project BOMs, sorted by priority.
 
 ### P0 — Do Immediately
 
-| Project | Item | Provider | Est. Cost | Notes |
-|---|---|---|---|---|
-| Neurooz | OpenAI API (production tier) | OpenAI | ~$20–100/mo | Required for AI features |
-| Revvel Music Studio | Audio CDN / storage | Cloudflare R2 or AWS S3 | ~$5–20/mo | Required for audio hosting |
-| Revvel Music Studio | Stripe payments | Stripe | Transaction % | Required for marketplace |
-| Universal SAR App | Mapping API | Google Maps or Mapbox | ~$10–50/mo | Required for GPS features |
-| Universal SAR App | Push notifications | Firebase | ~$0–20/mo | Required for incident alerts |
-| Premolt | Stripe payments | Stripe | Transaction % | Required for billing |
+| Project | Item | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|
+| Soul2bowl | DigitalOcean Spaces | Image / media CDN | DigitalOcean | $5/mo | P0 | ❌ Not yet |
+| Soul2bowl | Google Cloud Console project | Google OAuth | Google | $0 | P0 | ❌ Not set up |
+| Neurooz | OpenAI API (production tier) | AI/LLM features | OpenAI | Variable (~$20–100/mo) | P0 | ❌ Not set up |
+| Penny Sovereign Yield Scout | Twitter/X API (Basic tier) | Signal listener — real-time tweets | X/Twitter | $100/mo | P0 | ❌ Not set up |
+| Penny Sovereign Yield Scout | CoinGecko Pro API | DeFi protocol data (APY, TVL, price) | CoinGecko | $129/mo | P0 | ❌ Not set up |
+| Penny Sovereign Yield Scout | Telegram Bot API | Signal listening + alert notifications | Telegram | $0 (free) | P0 | ❌ Not configured |
+| Premolt | Stripe payments | Subscription billing | Stripe | Transaction % | P0 | ❌ Not set up |
+| Revvel Forensic Studio | OpenAI API (GPT-4o Vision) | AI image analysis, face feature description | OpenAI | ~$20–100/mo | P0 | ❌ Not set up |
+| Revvel Music Studio | Audio CDN / storage | Hosting audio files (samples, uploads) | Cloudflare R2 or AWS S3 | ~$5–20/mo | P0 | ❌ Not set up |
+| Revvel Music Studio | Stripe payments | Music marketplace transactions | Stripe | Transaction % | P0 | ❌ Not set up |
+| Revvel Standards | RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28 |
+| Revvel Standards | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
+| The Alt Text | OpenAI API (GPT-4o Vision) | Core AI: generate alt text from images | OpenAI | ~$10–50/mo | P0 | ❌ Check usage — may need upgrade |
+| The Alt Text | Domain renewal | Keep `thealttext.com` active | Namecheap | ~$15/yr | P0 | ❌ Verify renewal date |
+| Universal Sar App | Mapping API | GPS/mapping for SAR operations | Google Maps Platform or Mapbox | ~$10–50/mo | P0 | ❌ Not set up |
+| Universal Sar App | Push notifications | Real-time incident alerts | Firebase (free tier available) | $0–20/mo | P0 | ❌ Not set up |
 
 ### P1 — Do Soon
 
-| Project | Item | Provider | Est. Cost | Notes |
-|---|---|---|---|---|
-| GrowlingEyes | Apple Developer Program | Apple | $99/year | Required for iOS store |
-| GrowlingEyes | Google Play Developer | Google | $25 one-time | Required for Android store |
-| Revvel Music Studio | Domain registration | Namecheap | ~$15/yr | App needs a home |
-| Universal SAR App | Domain registration | Namecheap | ~$15/yr | App needs a home |
-| Premolt | Domain registration | Namecheap | ~$15/yr | App needs a home |
-| Universal SAR App | Apple Developer Program | Apple | $99/year | Required for iOS store |
-| Universal SAR App | Google Play Developer | Google | $25 one-time | Required for Android store |
+| Project | Item | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|
+| Soul2bowl | Resend paid tier (if needed) | Transactional email beyond 3k/mo | Resend | $20/mo | P1 | ❌ Not yet |
+| Soul2bowl | Plausible Analytics | Privacy analytics | Plausible | $9/mo | P1 | ❌ Not yet |
+| Soul2bowl | Apple Developer Program | Apple Sign-In in production | Apple | $99/yr | P1 | ❌ Not purchased |
+| Growlingeyes | Apple Developer Program | iOS App Store submission + TestFlight | Apple | $99/year | P1 | ❌ Not purchased |
+| Growlingeyes | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased |
+| Penny Sovereign Yield Scout | Reddit API (free tier) | Social signal monitoring | Reddit | $0 | P1 | ❌ Not configured |
+| Penny Sovereign Yield Scout | Domain registration | `pennyscout.io` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
+| Penny Sovereign Yield Scout | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| Penny Sovereign Yield Scout | DigitalOcean Managed PostgreSQL | Storing yield history, signal log, compounding records | DigitalOcean | ~$15/mo | P1 | ❌ Currently using shared MySQL |
+| Penny Sovereign Yield Scout | Sentry | Error monitoring for background jobs | Sentry | $0 (free tier) | P1 | ❌ Not configured |
+| Penny Sovereign Yield Scout | Resend | Alert emails (impermanent loss warnings, compound reports) | Resend | $0 (free tier) | P1 | ❌ Not configured |
+| Premolt | Domain registration | `premolt.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
+| Revvel Forensic Studio | Domain registration | `revvelforensics.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
+| Revvel Forensic Studio | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| Revvel Forensic Studio | DeepAI / Replicate API | Image enhancement, face reconstruction models | Replicate or DeepAI | ~$10–50/mo | P1 | ❌ Not set up |
+| Revvel Forensic Studio | Sentry Error Tracking | Production error monitoring | Sentry | $0 (free tier) | P1 | ❌ Not configured |
+| Revvel Music Studio | Domain registration | `revvelmusic.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
+| The Alt Text | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| Universal Sar App | Domain registration | `universalsar.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
+| Universal Sar App | Apple Developer Program | iOS App Store submission | Apple | $99/year | P1 | ❌ Not purchased |
+| Universal Sar App | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased |
 
 ### P2 — Do When Ready for Stores
 
-| Project | Item | Provider | Est. Cost | Notes |
-|---|---|---|---|---|
-| Neurooz | Apple Developer Program | Apple | $99/year | iOS store deployment |
-| Neurooz | Google Play Developer | Google | $25 one-time | Android store deployment |
-| Revvel Music Studio | Apple Developer Program | Apple | $99/year | iOS store deployment |
-| Revvel Music Studio | Google Play Developer | Google | $25 one-time | Android store deployment |
-| Premolt | Apple Developer Program | Apple | $99/year | iOS store deployment |
-| Premolt | Google Play Developer | Google | $25 one-time | Android store deployment |
-
----
-
-## Summary by Project
-
-| Project | Status | Fixed Monthly | One-Time Outstanding |
-|---|---|---|---|
-| GrowlingEyes | ✅ Active | ~$5/mo | $99 + $25 = $124 (stores) |
-| Neurooz | 🔧 In Development | ~$25–55/mo | $99 + $25 = $124 (stores) + OpenAI setup |
-| Revvel Music Studio | 📋 Planned | ~$10–25/mo | Domain + $99 + $25 + Audio CDN |
-| Universal SAR App | 📋 Planned | ~$15–75/mo | Domain + $99 + $25 + Maps + Push |
-| Premolt | 📋 Planned | ~$5/mo | Domain + $99 + $25 |
-
----
-
-## Consolidated Monthly Cost (All Projects Running)
-
-| Category | Estimated Monthly |
-|---|---|
-| DigitalOcean Droplet + Managed MySQL (shared) | ~$25/mo (split across all projects) |
-| OpenAI API (Neurooz) | ~$20–50/mo |
-| Audio CDN (Revvel Music Studio) | ~$5–20/mo |
-| Mapping API (Universal SAR App) | ~$10–50/mo |
-| **Total estimated (all projects live)** | **~$60–145/mo** |
+| Project | Item | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|
+| Neurooz | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
+| Neurooz | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
+| Premolt | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
+| Premolt | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
+| Revvel Forensic Studio | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
+| Revvel Forensic Studio | Google Play Developer | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
+| Revvel Music Studio | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
+| Revvel Music Studio | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
+| The Alt Text | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
+| The Alt Text | Google Play Developer | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
 
 ---
 
 ## Project BOM Files
+
+- [Soul2bowl BOM](Soul2Bowl/BOM.md)
+- [Growlingeyes BOM](growlingeyes/BOM.md)
+- [Neurooz BOM](neurooz/BOM.md)
+- [Penny Sovereign Yield Scout BOM](penny-sovereign-yield-scout/BOM.md)
+- [Premolt BOM](premolt/BOM.md)
+- [Revvel Forensic Studio BOM](revvel-forensic-studio/BOM.md)
+- [Revvel Music Studio BOM](revvel-music-studio/BOM.md)
+- [Revvel Standards BOM](revvel-standards/BOM.md)
+- [The Alt Text BOM](the-alt-text/BOM.md)
+- [Universal Sar App BOM](universal-sar-app/BOM.md)
+
+---
+
+*Auto-generated by `scripts/sync-bom.sh` — Do not edit manually.*
+
+---
+
+## ⚡ Universal Tool Suggestions — Evaluate for the Full Ecosystem
+
+> This section is manually maintained. It documents researched tool recommendations across the entire MIDNGHTSAPPHIRE platform and is not overwritten by `sync-bom.sh`.
+
+### 🤖 AI Code Quality & Autonomy
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **RecurseML** | Autonomous bug detection + custom code standards on PRs | $250/yr | ⭐⭐⭐ All repos — catches AI-generated bugs | **P0 — 14-day trial active now** |
+| **Codacy** | Static analysis, test coverage, code duplication | Free (open source) / $15/mo | ⭐⭐ Good alternative if RecurseML doesn't pan out | P1 |
+| **SonarQube Cloud** | SAST, code smell detection, security hotspots | Free (public repos) / $75/mo+ | ⭐⭐ Enterprise-grade SAST for security-sensitive projects | P1 |
+| **Snyk Code** | AI-powered security vulnerability scanner | Free tier / $25/mo | ⭐⭐⭐ Pairs with Snyk for dep + code scanning | P1 |
+
+### 🔐 Security & Secrets Management
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **GitGuardian** | Real-time secret leak detection in commits | Free for individuals | ⭐⭐⭐ Free, instant value — detect leaked keys on push | P0 |
+| **Snyk** | Dependency vulnerability scanning + fix PRs | Free tier / $25/mo | ⭐⭐⭐ Every repo with npm/pip deps | P1 |
+| **Infisical** | Open-source secrets manager (HashiCorp Vault alternative) | Free (self-host) / $6/mo cloud | ⭐⭐⭐ Replace manual `.env` management ecosystem-wide | P1 |
+
+### 🚀 CI/CD & Deployment Automation
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **Railway** | One-click deploy for Node/Python with managed DBs | $5/mo hobby / $20/mo+ | ⭐ Faster to spin up than DO Droplets for rapid prototypes | P2 |
+| **Render** | App hosting (alternative to DigitalOcean App Platform) | Free tier / $7/mo | ⭐ Good for small apps, simpler than DO for some use cases | P2 |
+| **Doppler** | Secrets/config manager with GitHub Actions integration | Free (5 projects) / $10/mo | ⭐⭐ Simpler than Vault for env var management | P2 |
+
+### 📊 Monitoring & Observability
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **UptimeRobot** | Uptime pings + alerting | Free (50 monitors) | ⭐⭐⭐ Free tier is excellent — monitor all deployed apps | P0 |
+| **Sentry** (free tier) | Error tracking + performance monitoring | $0 (free: 5k errors/mo) | ⭐⭐⭐ Every deployed app — already in some BOMs | P0 |
+| **Plausible Analytics** | Privacy-first web analytics (GDPR-compliant, no cookies) | $9/mo | ⭐⭐⭐ Soul2Bowl, GrowlingEyes web, The Alt Text | P1 |
+| **BetterStack (Logtail)** | Log aggregation + uptime monitoring | Free tier / $25/mo | ⭐⭐ Replaces multiple monitoring tools in one | P1 |
+
+### 🧠 AI & LLM Infrastructure
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **OpenRouter** | Multi-model LLM router (use cheapest model per task) | Pay-per-token | ⭐⭐⭐ All AI projects — already in use for some | P0 |
+| **Groq** | Ultra-fast LLM inference (Llama, Mixtral) — near-free | Free tier / pay-per-token | ⭐⭐⭐ Neurooz real-time cognitive features, Penny Scout signal analysis | P1 |
+| **Replicate** | Run open-source ML models (image, audio, video) | ~$0.001–0.01/call | ⭐⭐⭐ Revvel Forensic Studio, Revvel Music Studio | P1 |
+| **Together.ai** | Fine-tuned LLM hosting at low cost | Pay-per-token | ⭐ Good for custom models | P2 |
+
+### 💳 Payments & Subscriptions
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **Stripe** (already in stack) | Payments, subscriptions, invoicing | 2.9% + $0.30/txn | ⭐⭐⭐ All billing projects — already in BOM | P0 |
+| **Paddle** | Merchant-of-record for global SaaS (handles VAT/taxes) | 5% + $0.50/txn | ⭐ Worth considering for international SaaS | P2 |
+| **LemonSqueezy** | Digital product sales + subscriptions (simpler than Stripe) | 5% + $0.50/txn | ⭐ Good for info products and SaaS with low volume | P2 |
+
+### 📧 Email & Communication
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **Resend** (already in stack) | Transactional email | Free (3k/mo) / $20/mo | ⭐⭐⭐ All projects — already in BOM | P0 |
+| **Loops** | Email marketing for SaaS (drip campaigns, onboarding) | Free (1k contacts) / $49/mo | ⭐⭐ The Alt Text SaaS onboarding, Neurooz user journeys | P1 |
+| **Buttondown** | Newsletter platform for content projects | Free (100 subs) / $9/mo | ⭐ If any projects have newsletters | P2 |
+
+### 📱 Mobile App Distribution
+
+| Tool | Category | Cost | Fit | Priority |
+|---|---|---|---|---|
+| **Apple Developer Program** | iOS App Store + TestFlight | $99/year | ⭐⭐⭐ GrowlingEyes, Neurooz, Universal SAR App | P1 |
+| **Google Play Developer** | Android Play Store | $25 one-time | ⭐⭐⭐ All mobile apps | P1 |
+| **Expo EAS Build** | Cloud-based iOS + Android builds (no Xcode needed) | Free (30 builds/mo) / $29/mo | ⭐⭐⭐ All Expo projects | P1 |
+
+---
+
+## RecurseML 14-Day Trial Decision Gate
+
+**Trial Start:** April 14, 2026  
+**Trial Expires:** April 28, 2026  
+**Cost if Renewed:** $250/year  
+**Skill Reference:** `skills/recurse-ml/SKILL.md`
+
+Renew if ≥ 4 of 5 criteria are met by April 28:
+
+| Criterion | Target | Status |
+|---|---|---|
+| Bugs caught before merge | ≥ 5 genuine issues caught | ⬜ Pending |
+| False positive rate | < 20% of comments are noise | ⬜ Pending |
+| PR review time reduction | Noticeable reduction in manual review | ⬜ Pending |
+| Integration reliability | 0 workflow failures due to RecurseML | ⬜ Pending |
+| Custom rules effectiveness | Catching Revvel-specific patterns | ⬜ Pending |
+
+_Update the Status column daily during the trial. Decision and rationale go in `docs/DARE_LOG.md`._
 
 - [GrowlingEyes BOM](growlingeyes/BOM.md)
 - [Neurooz BOM](neurooz/BOM.md)

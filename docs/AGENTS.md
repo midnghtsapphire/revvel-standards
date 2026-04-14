@@ -65,6 +65,7 @@ These skills are required for **every** session, without exception:
 | Task Domain | Skill to Load |
 |---|---|
 | Reviewing a PR or code | `skills/code-review/SKILL.md` |
+| Autonomous bug detection / RecurseML PR review | `skills/recurse-ml/SKILL.md` |
 | Writing/running tests | `skills/testing/SKILL.md` |
 | Any security-sensitive code | `skills/security/SKILL.md` |
 | API key / credential / vault / MCP provisioning | `skills/vault-agent/SKILL.md` |
