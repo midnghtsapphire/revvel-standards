@@ -1,0 +1,113 @@
+# Revvel AI Research Module Workflow
+#
+# Triggers on manual dispatch. Runs 5 specialized sub-agents via OpenRouter
+# and synthesizes results into a research document committed to the repo.
+#
+# SETUP:
+#   1. Register a GitHub App (see GITHUB_APP_INTEGRATION_STANDARD.md)
+#   2. Add GitHub Secrets: APP_ID, APP_PRIVATE_KEY, OPENROUTER_API_KEY
+#      (Settings → Secrets and variables → Actions → New repository secret)
+#
+# See: AI_RESEARCH_MODULE_STANDARD.md
+
+name: AI Research Module
+
+on:
+  workflow_dispatch:
+    inputs:
+      question:
+        description: "Research question to investigate"
+        required: true
+        type: string
+      output_file:
+        description: "Output file path (e.g., docs/MY_RESEARCH.md)"
+        required: true
+        default: "docs/research-output.md"
+        type: string
+      create_issue:
+        description: "Create a GitHub Issue summarizing findings?"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: research-module-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  research:
+    name: Run AI Research Module
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate GitHub App Token
+        id: app-token
+        # Uses a GitHub App to authenticate — required for cross-repo access
+        # and to avoid rate limits of the built-in GITHUB_TOKEN.
+        # If no GitHub App is configured yet, remove this step and use
+        # secrets.GITHUB_TOKEN in subsequent steps instead.
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        continue-on-error: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run Research Module
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          QUESTION: ${{ inputs.question }}
+          OUTPUT_FILE: ${{ inputs.output_file }}
+        run: node scripts/research-module.js
+
+      - name: Commit research document
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "revvel-automation[bot]"
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+          git add "${{ inputs.output_file }}"
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "research: add ${{ inputs.output_file }}"
+            git push
+            echo "Research document committed and pushed."
+          fi
+
+      - name: Create summary issue
+        if: ${{ inputs.create_issue == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "Research Complete: ${{ inputs.question }}" \
+            --label "New Project" \
+            --body "## Research Findings
+
+          The AI Research Module has completed research on:
+
+          **Question:** ${{ inputs.question }}
+
+          **Output document:** [\`${{ inputs.output_file }}\`](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/${{ inputs.output_file }})
+
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ---
+
+          Review the research document and create follow-up issues for any actionable items.
+          Label follow-up issues with \`New Project\` as appropriate."
