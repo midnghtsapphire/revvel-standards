@@ -67,6 +67,7 @@ These skills are required for **every** session, without exception:
 | Reviewing a PR or code | `skills/code-review/SKILL.md` |
 | Writing/running tests | `skills/testing/SKILL.md` |
 | Any security-sensitive code | `skills/security/SKILL.md` |
+| API key / credential / vault / MCP provisioning | `skills/vault-agent/SKILL.md` |
 | Building any UI | `skills/accessibility/SKILL.md` |
 | Deploying to production | `skills/deployment/SKILL.md` |
 | SEO / public pages | `skills/seo-metadata/SKILL.md` |
