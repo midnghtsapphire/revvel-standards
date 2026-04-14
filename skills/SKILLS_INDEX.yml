@@ -393,3 +393,35 @@ skills:
       - "obbba"
       - "1040"
       - "1099"
+
+  # ─── Testing & Quality Agents ─────────────────────────────────────────────
+
+  - name: testing_agent
+    title: "Testing Agent (Ephemeral)"
+    version: "1.0.0"
+    path: "skills/testing-agent/"
+    skill_file: "skills/testing-agent/SKILL.md"
+    category: "Testing & Quality"
+    access: all
+    lifecycle: ephemeral
+    tested: true
+    test_path: "skills/testing-agent/tests/promptfoo.yml"
+    triggers:
+      - "test"
+      - "testing"
+      - "spec"
+      - "coverage"
+      - "playwright"
+      - "vitest"
+      - "e2e tests"
+      - "unit tests"
+      - "skill test"
+      - "promptfoo"
+      - "assertion"
+      - "failing test"
+      - "flaky test"
+      - "test gap"
+      - "missing tests"
+      - "write tests"
+      - "generate tests"
+      - "coverage report"
