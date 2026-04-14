@@ -9,13 +9,15 @@
 #   bash <(curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/scripts/bootstrap-repo.sh) \
 #     --app-name growlingeyes \
 #     --droplet-ip 164.90.148.7 \
-#     --app-dir growlingeyes
+#     --app-dir growlingeyes \
+#     --domain growlingeyes.com
 #
 # Or with a local clone of revvel-standards:
 #   bash /path/to/revvel-standards/scripts/bootstrap-repo.sh \
 #     --app-name myapp \
 #     --droplet-ip 1.2.3.4 \
-#     --app-dir myapp
+#     --app-dir myapp \
+#     --domain myapp.com
 # ============================================================
 
 set -e
@@ -24,6 +26,7 @@ STANDARDS_REPO="https://raw.githubusercontent.com/midnghtsapphire/revvel-standar
 APP_NAME=""
 DROPLET_IP=""
 APP_DIR=""
+APP_DOMAIN=""
 
 # ─── Argument Parsing ──────────────────────────────────────
 while [[ $# -gt 0 ]]; do
@@ -31,14 +34,20 @@ while [[ $# -gt 0 ]]; do
     --app-name) APP_NAME="$2"; shift 2 ;;
     --droplet-ip) DROPLET_IP="$2"; shift 2 ;;
     --app-dir) APP_DIR="$2"; shift 2 ;;
+    --domain) APP_DOMAIN="$2"; shift 2 ;;
     *) echo "Unknown argument: $1"; exit 1 ;;
   esac
 done
 
 if [ -z "$APP_NAME" ] || [ -z "$DROPLET_IP" ] || [ -z "$APP_DIR" ]; then
-  echo "Usage: bootstrap-repo.sh --app-name <name> --droplet-ip <ip> --app-dir <dir>"
-  echo "Example: bootstrap-repo.sh --app-name growlingeyes --droplet-ip 164.90.148.7 --app-dir growlingeyes"
+  echo "Usage: bootstrap-repo.sh --app-name <name> --droplet-ip <ip> --app-dir <dir> [--domain <domain>]"
+  echo "Example: bootstrap-repo.sh --app-name growlingeyes --droplet-ip 164.90.148.7 --app-dir growlingeyes --domain growlingeyes.com"
   exit 1
+fi
+
+# Default domain if not provided
+if [ -z "$APP_DOMAIN" ]; then
+  APP_DOMAIN="https://$APP_NAME.com"
 fi
 
 echo ""
@@ -49,6 +58,7 @@ echo ""
 echo "  App Name:   $APP_NAME"
 echo "  Droplet IP: $DROPLET_IP"
 echo "  App Dir:    /var/www/$APP_DIR"
+echo "  Domain:     $APP_DOMAIN"
 echo ""
 
 # ─── Step 1: Required Files ───────────────────────────────
@@ -96,8 +106,9 @@ if [ ! -f ".github/workflows/deploy.yml" ]; then
   sed -i.bak "s/YOUR_APP_NAME/$APP_NAME/g" .github/workflows/deploy.yml
   sed -i.bak "s/YOUR_DROPLET_IP/$DROPLET_IP/g" .github/workflows/deploy.yml
   sed -i.bak "s/YOUR_APP_DIR/$APP_DIR/g" .github/workflows/deploy.yml
+  sed -i.bak "s|YOUR_DOMAIN|$APP_DOMAIN|g" .github/workflows/deploy.yml
   rm -f .github/workflows/deploy.yml.bak
-  echo "  ✅ .github/workflows/deploy.yml created"
+  echo "  ✅ .github/workflows/deploy.yml created (with DeployBot tracking)"
 else
   echo "  ⏭️  deploy.yml already exists, skipping"
 fi
@@ -407,6 +418,8 @@ echo "NEXT STEPS:"
 echo "  1. Add secrets to GitHub: gh secret set SSH_PRIVATE_KEY --repo midnghtsapphire/$APP_NAME < ~/.ssh/deploy_key"
 echo "  2. Apply branch protection: see Step 10 output above"
 echo "  3. Install dependencies and run tests: pnpm install && npx vitest run"
-echo "  4. Commit the bootstrap files: git add . && git commit -m 'chore: apply Revvel standards bootstrap'"
-echo "  5. Push to trigger first CI run: git push origin main"
+echo "  4. Ensure deploybot-app is installed on the org (one-time only):"
+echo "     https://github.com/apps/deploybot-app → Install → midnghtsapphire (All repositories)"
+echo "  5. Commit the bootstrap files: git add . && git commit -m 'chore: apply Revvel standards bootstrap'"
+echo "  6. Push to trigger first CI run: git push origin main"
 echo ""

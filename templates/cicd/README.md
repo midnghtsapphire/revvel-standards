@@ -8,7 +8,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 
 | File | Purpose | Where It Goes in Your App Repo |
 |---|---|---|
-| `deploy.yml` | GitHub Actions workflow — auto-deploys on every push to `main` | `.github/workflows/deploy.yml` |
+| `deploy.yml` | GitHub Actions workflow — auto-deploys on every push to `main`; **includes DeployBot tracking** | `.github/workflows/deploy.yml` |
 | `deploy.sh` | Manual one-click deploy script for local use | `deploy.sh` (repo root) |
 | `monitor.yml` | Uptime/health-check monitoring workflow | `.github/workflows/monitor.yml` |
 | `ci.yml` | Universal CI — TypeScript check, Vitest unit tests, Playwright E2E | `.github/workflows/ci.yml` |
@@ -16,6 +16,39 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
+
+---
+
+## DeployBot Integration
+
+**[deploybot-app](https://deploybot.app/)** (developed by [@poseidon](https://github.com/poseidon)) is the Revvel standard for tracking GitHub Deployments across every repo and the organisation.
+
+### How it works
+
+The `deploy.yml` template uses the GitHub Deployments API to create a `pending` deployment record at the start of every run, then updates it to `success` or `failure` when the workflow finishes. DeployBot reads these records and surfaces a live deployment dashboard across all Revvel repos — **no extra configuration per project is needed** once the app is installed at the organisation level.
+
+### What is automated
+
+- **Create deployment (pending)** — at workflow start, via `chrnorm/deployment-action@v2`
+- **Update to `success`** — when the full build + SSH deploy finishes cleanly
+- **Update to `failure`** — on any workflow error, so failures are immediately visible in the DeployBot dashboard
+
+### Organisation-level install (one time only)
+
+DeployBot only needs to be installed once at the **midnghtsapphire** organisation level. Every repo that uses `deploy.yml` automatically appears in the dashboard.
+
+```
+GitHub → github.com/apps/deploybot-app → Install → midnghtsapphire (All repositories)
+```
+
+### Placeholders to replace in `deploy.yml`
+
+| Placeholder | Replace with |
+|---|---|
+| `YOUR_APP_NAME` | PM2 process name (e.g. `growlingeyes`) |
+| `YOUR_DROPLET_IP` | Droplet IP address (e.g. `164.90.148.7`) |
+| `YOUR_APP_DIR` | App directory on droplet (e.g. `growlingeyes`) |
+| `YOUR_DOMAIN` | Production domain (e.g. `growlingeyes.com`) |
 
 ---
 
@@ -27,13 +60,13 @@ Follow these steps every time you create a new app repo.
 From your new app's repo root, run the one-line bootstrap command. This automatically downloads the standard templates and configures them with your specific app details.
 
 ```bash
-curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s <app_name> <droplet_ip> <app_dir>
+curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s <app_name> <droplet_ip> <app_dir> <domain>
 
 # Example:
-# curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s growlingeyes 164.90.148.7 growlingeyes
+# curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/bootstrap-deploy.sh | bash -s growlingeyes 164.90.148.7 growlingeyes growlingeyes.com
 ```
 
-This will instantly generate `.github/workflows/deploy.yml` and `deploy.sh` fully configured for your app.
+This will instantly generate `.github/workflows/deploy.yml` and `deploy.sh` fully configured for your app, including **DeployBot deployment tracking**.
 
 ### Step 3 — The SSH Secret is Already Shared
 Because all Revvel apps deploy to the same DigitalOcean droplet (`164.90.148.7`), the `SSH_PRIVATE_KEY` secret is **shared across all your repositories**. 

@@ -1023,13 +1023,15 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 
 | Workflow | File | Purpose |
 |---|---|---|
-| Deploy | `deploy.yml` | Auto-deploy to DigitalOcean on push to `main` |
+| Deploy | `deploy.yml` | Auto-deploy to DigitalOcean on push to `main`; **includes DeployBot tracking** |
 | CI | `ci.yml` | TypeScript check + Vitest tests + Playwright E2E |
 | Auto-Fix | `auto-fix.yml` | Creates GitHub Issue + Copilot instructions on CI failure |
 | Security | `security.yml` | `pnpm audit` + TruffleHog secret scanning |
 | Deploy Android | `deploy-android.yml` | Manual PWA → Play Store (inactive until account ready) |
 | Deploy iOS | `deploy-ios.yml` | Manual PWA → App Store (inactive until account ready) |
 | Monitor | `monitor.yml` | Uptime/health-check monitoring |
+
+**DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
 Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
 
