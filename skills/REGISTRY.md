@@ -25,6 +25,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 | If the task involves... | Load this skill |
 |---|---|
+| RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
@@ -52,6 +53,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ## Full Skill Catalog
+
+### Code Quality & Autonomous Review
+
+#### recurse-ml
+- **Path:** `skills/recurse-ml/`
+- **Files:** `SKILL.md` · `recurse-ml.skill.yml`
+- **Description:** Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.
+- **Tags:** recurse-ml, autonomous-review, bug-detection, code-standards, pr-review, self-healing, github-actions
+- **Trigger:** Setting up code-review automation; integrating RecurseML; enforcing recurse-rules; self-healing PR loop.
+
+---
 
 ### Agent Operations
 
@@ -268,4 +280,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 14, 2026.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 14, 2026. RecurseML skill added.*

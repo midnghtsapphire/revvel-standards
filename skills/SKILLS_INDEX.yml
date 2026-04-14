@@ -21,6 +21,25 @@ mandatory_session_end:
 
 skills:
 
+  # ─── Code Quality & Autonomous Review ─────────────────────────────────────
+
+  - name: recurse_ml
+    title: "RecurseML — Autonomous Code Review"
+    version: "1.0.0"
+    path: "skills/recurse-ml/"
+    skill_file: "skills/recurse-ml/recurse-ml.skill.yml"
+    category: "Code Quality & Autonomous Review"
+    access: all
+    triggers:
+      - "recurse ml"
+      - "recurseml"
+      - "code review automation"
+      - "autonomous bug detection"
+      - "pr code review"
+      - "enforce code standards"
+      - "self-healing review"
+      - "recurse-rules"
+
   # ─── Agent Operations ──────────────────────────────────────────────────────
 
   - name: model_router
