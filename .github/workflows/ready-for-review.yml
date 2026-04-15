@@ -145,13 +145,31 @@ jobs:
             const title = context.payload.pull_request.title || '';
             const text  = `${title}\n${body}`;
 
+            // ── 1. Match closing keywords in PR title / body ─────────────────
             // Match: Closes #N, Fixes #N, Resolves #N (all common variants)
             const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
             const matches = [...text.matchAll(pattern)];
-            const issueNumbers = [...new Set(matches.map(m => parseInt(m[1])))];
+            const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
+
+            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
+            // Covers branches created by the create-issue-branch action using
+            // the label-based prefixes defined in .github/issue-branch.yml:
+            //   issue/69-i-need-the-issue-to-close-...   (fallback prefix)
+            //   feature/69-some-title                    (enhancement)
+            //   bugfix/69-some-title                     (bug)
+            //   docs/69-some-title                       (documentation)
+            //   hotfix/69-some-title                     (security)
+            //   chore/69-some-title                      (dependencies)
+            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
+            if (branchMatch) {
+              issueNumberSet.add(parseInt(branchMatch[1], 10));
+            }
+
+            const issueNumbers = [...issueNumberSet];
 
             if (issueNumbers.length === 0) {
-              core.info('No linked issues found in PR title or body.');
+              core.info('No linked issues found in PR title, body, or branch name.');
               core.setOutput('issue_list', '');
               return;
             }
@@ -236,9 +254,19 @@ jobs:
             const title = context.payload.pull_request.title || '';
             const text  = `${title}\n${body}`;
 
+            // ── 1. Match closing keywords in PR title / body ─────────────────
             const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
             const matches = [...text.matchAll(pattern)];
-            const issueNumbers = [...new Set(matches.map(m => parseInt(m[1])))];
+            const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
+
+            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
+            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
+            if (branchMatch) {
+              issueNumberSet.add(parseInt(branchMatch[1], 10));
+            }
+
+            const issueNumbers = [...issueNumberSet];
 
             if (issueNumbers.length === 0) {
               core.info('No linked issues found — nothing to clean up.');
