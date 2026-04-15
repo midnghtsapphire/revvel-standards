@@ -20,6 +20,7 @@ gh label create "security"        --color "cc0000" --description "Security vulne
 gh label create "bom-purchase"    --color "ffd700" --description "Requires a purchase (links to BOM.md)" --repo $APP_REPO
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
+gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
 gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
 gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
@@ -37,6 +38,7 @@ gh label create "wontfix"         --color "ffffff" --description "This will not 
 | `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
 | `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
 | `blocked` | `#e4e669` | Blocked by external dependency |
+| `in-review` | `#fbca04` | Linked PR is open and ready for review (set automatically) |
 | `auto-fix` | `#0075ca` | Created by auto-fix workflow |
 | `copilot` | `#0075ca` | Assigned to Copilot for fixing |
 | `documentation` | `#0075ca` | Documentation only |
@@ -118,6 +120,37 @@ Set up these automation rules in GitHub Projects → Workflows:
 | PR merged → linked issue | Move linked issue to **Done** |
 | Issue labeled `blocked` | Move to **Blocked** |
 | Issue assigned | Move to **In Progress** (if in Backlog) |
+| Issue labeled `in-review` | Move to **In Review** |
+
+### Ready for Review Automation Workflow
+
+The `ready-for-review.yml` workflow (copy from `templates/cicd/ready-for-review.yml`) automates the full lifecycle between an issue and a PR:
+
+| Trigger | Automation |
+|---|---|
+| PR opened (non-draft) | Adds `in-review` label to linked issues; posts review checklist comment |
+| Draft PR — all CI checks pass | Automatically promotes draft PR to **Ready for Review** |
+| PR marked Ready for Review | Adds `in-review` label to linked issues; posts review checklist comment |
+| PR closed / merged | Removes `in-review` label from linked issues |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/ready-for-review.yml .github/workflows/ready-for-review.yml
+```
+
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**How linked issues are detected:** The workflow parses the PR title and body for any of these patterns (case-insensitive):
+
+```
+Closes #42    Fixes #42    Resolves #42
+Close #42     Fix #42      Resolve #42
+Closed #42    Fixed #42    Resolved #42
+```
+
+GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
 
 ### Link Issues to a Project
 

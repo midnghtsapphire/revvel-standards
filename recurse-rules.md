@@ -163,3 +163,54 @@ burden and conflict with shared tooling.
 
 **Fix:** Replace with the approved alternative. If a non-standard library is genuinely needed,
 add a comment `// EXCEPTION: <reason>` and note it in the PR description.
+
+---
+
+## Unsafe Recursion — Missing Depth Guards
+
+**Pattern:** Recursive functions that do not include a depth parameter and maximum depth check.
+Functions that call themselves without tracking how deep the recursion has gone.
+
+**Why:** Unguarded recursion causes stack overflow crashes on large or malicious inputs. All
+Revvel projects must prevent production crashes from recursive functions.
+
+**Fix:** Add a `depth` parameter (default 0) and check against a maximum (typically 50-100).
+Throw an error when the limit is exceeded. See `RECURSION_STANDARD.md` for full guidance.
+
+**Example:**
+```typescript
+// ❌ WRONG - No depth tracking
+function process(data: any): any {
+  if (typeof data === 'object') {
+    return Object.values(data).map(process);
+  }
+  return data;
+}
+
+// ✅ CORRECT - Has depth guard
+function process(data: any, depth = 0, maxDepth = 50): any {
+  if (depth > maxDepth) {
+    throw new Error(`Recursion depth limit ${maxDepth} exceeded`);
+  }
+  if (typeof data === 'object') {
+    return Object.values(data).map(v => process(v, depth + 1, maxDepth));
+  }
+  return data;
+}
+```
+
+---
+
+## Recursion on Untrusted Input
+
+**Pattern:** Recursive functions processing user-uploaded data, API responses, or any external
+input without strict depth limits. Recursion on data from `req.body`, uploaded files, or
+third-party APIs.
+
+**Why:** Attackers can craft deeply nested payloads that exhaust the stack and crash the
+application (Denial of Service attack). All external data must be treated as potentially
+malicious.
+
+**Fix:** Either convert to iteration with an explicit stack, or use recursion with a very
+conservative depth limit (≤20). Validate input structure before processing. See
+`RECURSION_STANDARD.md` Section 5.1.

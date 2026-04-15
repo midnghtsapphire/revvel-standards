@@ -1036,6 +1036,8 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 
 **DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
+**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](docs/WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
+
 Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
 
 ---
