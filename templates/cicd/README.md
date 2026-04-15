@@ -15,6 +15,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `auto-fix.yml` | Auto-fix loop — creates GitHub Issue + Copilot instructions on CI failure | `.github/workflows/auto-fix.yml` |
 | `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
 | `panda-ops.yml` | PandaOps AI PR Review — posts inline OpenAI-powered feedback on every PR | `.github/workflows/panda-ops.yml` |
+| `auto-label-issues.yml` | Auto-labels issues/PRs and creates standard issue templates/labels | `.github/workflows/auto-label-issues.yml` |
 | `dependabot.yml` | Dependabot configuration — automated dependency and security updates | `.github/dependabot.yml` |
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |

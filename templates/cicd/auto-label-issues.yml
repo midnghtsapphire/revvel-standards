@@ -1,0 +1,29 @@
+# Copy to .github/workflows/auto-label-issues.yml in your app repo.
+# Automatically creates/maintains issue templates + labels and applies labels
+# to issues/PRs based on content and changed files.
+
+name: Auto Label Issues & Templates
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  auto-label:
+    name: Auto Label Issues & Templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Devlander Issue Labler
+        uses: Devlander-Software/issue-labler@v1.2.0
+        with:
+          create_templates: 'true'
+          create_labels: 'true'
+          auto_label_issues: 'true'

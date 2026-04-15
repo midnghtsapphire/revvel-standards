@@ -152,6 +152,23 @@ Closed #42    Fixed #42    Resolved #42
 
 GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
 
+### Issue Auto-Labeling & Templates Workflow
+
+Use the Devlander Issue Labler action to bootstrap and maintain professional issue templates and labels automatically.
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/auto-label-issues.yml .github/workflows/auto-label-issues.yml
+```
+
+It runs on `issues` (opened/edited) and `pull_request` (opened/edited/synchronize) to:
+
+- Create and maintain issue templates
+- Create and maintain standardized labels
+- Auto-label issues and PRs based on content/changed files
+
 ### Link Issues to a Project
 
 When creating issues in your app repo, assign them to the project using:
