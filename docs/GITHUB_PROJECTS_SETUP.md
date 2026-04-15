@@ -26,6 +26,8 @@ gh label create "copilot"         --color "0075ca" --description "Assigned to Co
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
 gh label create "good-first-issue" --color "7057ff" --description "Good for newcomers"                  --repo $APP_REPO
 gh label create "wontfix"         --color "ffffff" --description "This will not be worked on"           --repo $APP_REPO
+gh label create "docker"          --color "0db7ed" --description "Requires Docker-based CI checks"      --repo $APP_REPO
+gh label create "merge-queue-pr"  --color "c5def5" --description "Created by Mergify merge queue"      --repo $APP_REPO
 ```
 
 ### Full Label Reference
@@ -44,6 +46,8 @@ gh label create "wontfix"         --color "ffffff" --description "This will not 
 | `documentation` | `#0075ca` | Documentation only |
 | `good-first-issue` | `#7057ff` | Good for newcomers |
 | `wontfix` | `#ffffff` | This will not be worked on |
+| `docker` | `#0db7ed` | Requires Docker-based CI checks |
+| `merge-queue-pr` | `#c5def5` | Created by Mergify merge queue (set automatically) |
 
 ---
 
@@ -151,6 +155,34 @@ Closed #42    Fixed #42    Resolved #42
 ```
 
 GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
+
+### Mergify Merge-Queue Labels Copier Workflow
+
+The `mergify-merge-queue-labels-copier.yml` workflow (copy from `templates/cicd/mergify-merge-queue-labels-copier.yml`) ensures that labels are correctly propagated from a source PR to the temporary merge-queue PR that Mergify creates during the merge process.
+
+**Why this matters:** Mergify's merge queue creates a temporary PR that batches one or more source PRs before merging to the base branch. Without this workflow, CI jobs that gate on specific labels (e.g., Docker-based checks) skip on merge-queue PRs — causing the queue to stall or merge unvalidated code.
+
+| Trigger | Automation |
+|---|---|
+| Mergify opens a merge-queue PR (`mergify/merge-queue/…`) | Copies configured labels from the source PR; adds `merge-queue-pr` label |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/mergify-merge-queue-labels-copier.yml .github/workflows/mergify-merge-queue-labels-copier.yml
+```
+
+No secrets required — uses `github.token`. Customise the `labels` and `additional-labels` inputs to match your repo's CI requirements.
+
+**Configuration inputs:**
+
+| Input | Description | Default |
+|---|---|---|
+| `labels` | Comma-separated labels to copy from the source PR | `docker` |
+| `additional-labels` | Extra labels added to every merge-queue PR | `merge-queue-pr` |
+
+**Required labels:** Ensure your repository has the `docker` and `merge-queue-pr` labels created (see Section 1 above). The workflow does not create missing labels automatically.
 
 ### Link Issues to a Project
 
