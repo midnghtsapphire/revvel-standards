@@ -14,6 +14,7 @@ Every Revvel app deployed as a PWA supports **"Add to Home Screen"** on both And
 | iOS | Safari → Share → Add to Home Screen | ✅ Works now |
 | Android (Play Store) | Trusted Web Activity (TWA) via Bubblewrap | ❌ Pending Play account |
 | iOS (App Store) | Capacitor → Xcode → App Store Connect | ❌ Pending Apple account |
+| Android + iOS | Apache Cordova → Play Store / App Store | ❌ Pending store accounts |
 
 Users can install your app to their home screen today without any store submission.
 
@@ -109,7 +110,75 @@ npx cap open ios
 
 ---
 
-## 4. Required Accounts + Costs (BOM Items)
+## 4. Apache Cordova Path
+
+Apache Cordova wraps your web app (HTML/CSS/JS) in a native WebView and provides access to native device APIs (camera, GPS, push notifications, etc.) via its plugin system.
+
+### When to Use Cordova
+
+Use Cordova when:
+- You need a specific native API only available as a Cordova plugin
+- You are migrating an existing Cordova-based app
+- You need cross-platform support (Android + iOS) from a single build pipeline
+
+For new projects, prefer **Capacitor** (already documented above in Section 3).
+
+### Required Accounts (BOM Items)
+
+Same as Capacitor / TWA — you need the same store accounts:
+
+| Item | Provider | Cost | Status |
+|---|---|---|---|
+| Google Play Developer account | Google | $25 one-time | ❌ Not purchased |
+| Apple Developer Program | Apple | $99/year | ❌ Not purchased |
+
+### Technology: Apache Cordova CLI → APK/AAB/IPA
+
+```bash
+# Step 1: Install Cordova CLI
+npm install -g cordova
+
+# Step 2: Create project (run once)
+cordova create my-app com.revvel.myapp "My Revvel App"
+cd my-app
+
+# Step 3: Add platforms
+cordova platform add android
+cordova platform add ios    # macOS only
+
+# Step 4: Add required plugins
+cordova plugin add cordova-plugin-device
+cordova plugin add cordova-plugin-splashscreen
+
+# Step 5: Build for Android (debug)
+cordova build android
+
+# Step 6: Build for iOS (debug, macOS only)
+cordova build ios
+```
+
+### CI/CD Workflow
+
+```bash
+# Copy the Cordova workflow template to your app repo
+cp templates/cicd/deploy-cordova.yml .github/workflows/deploy-cordova.yml
+```
+
+Then follow the TODO comments in the workflow to activate Android and iOS deployment steps.
+
+### Full Documentation
+
+See **`templates/mobile/CORDOVA_STANDARD.md`** for:
+- Complete setup instructions (Java, Android SDK, Xcode, CocoaPods)
+- `config.xml` reference and plugin management
+- Android keystore generation and Play Store signing
+- iOS App Store Connect API key configuration
+- Fastlane lane additions for Cordova builds
+- Security checklist and troubleshooting
+
+---
+
+## 5. Required Accounts + Costs (BOM Items)
 
 | Account | Purpose | Cost | Where to Buy |
 |---|---|---|---|
@@ -119,7 +188,7 @@ npx cap open ios
 
 ---
 
-## 5. Fastlane Setup for Automated Store Publishing
+## 6. Fastlane Setup for Automated Store Publishing
 
 Fastlane automates the build → sign → upload process for both platforms.
 
@@ -158,7 +227,7 @@ bundle exec fastlane ios app_store
 
 ---
 
-## 6. CI/CD Integration
+## 7. CI/CD Integration
 
 Once accounts are active, add the deployment workflows to your app repo:
 
@@ -166,13 +235,14 @@ Once accounts are active, add the deployment workflows to your app repo:
 # Copy the workflow templates
 cp templates/cicd/deploy-android.yml .github/workflows/deploy-android.yml
 cp templates/cicd/deploy-ios.yml .github/workflows/deploy-ios.yml
+cp templates/cicd/deploy-cordova.yml .github/workflows/deploy-cordova.yml
 ```
 
 Then follow the TODO comments in each workflow to replace the placeholder steps.
 
 ---
 
-## 7. PWA Audit
+## 8. PWA Audit
 
 Before submitting to any store, run the PWA audit script:
 
