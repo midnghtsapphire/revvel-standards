@@ -45,6 +45,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
+| Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
 | CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
@@ -302,6 +303,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### Testing & Quality
 
+#### mabl
+
+- **Path:** `skills/mabl/`
+- **Files:** `SKILL.md` · `mabl.skill.yml`
+- **Description:** Integrate the Mabl CLI (`mablhq/setup-mabl-cli@v1.5`) into any Revvel project for AI-powered, self-healing end-to-end, API, and cross-browser test automation via GitHub Actions deployment events.
+- **Tags:** mabl, e2e-testing, ai-testing, self-healing-tests, cross-browser, deployment-events, api-testing, github-actions
+- **Trigger:** Setting up Mabl; running AI-maintained E2E tests; cross-browser test automation; registering deployment events; integrating `mablhq/setup-mabl-cli`.
+
+---
+
 #### testing-agent
 - **Path:** `skills/testing-agent/`
 - **Files:** `SKILL.md` · `testing-agent.skill.yml` · `tests/promptfoo.yml`
@@ -338,4 +349,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 15, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 15, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl skills.*
