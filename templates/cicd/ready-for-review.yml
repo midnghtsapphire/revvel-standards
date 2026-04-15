@@ -1,0 +1,248 @@
+# Copy to .github/workflows/ready-for-review.yml in your app repo.
+# No configuration required — works out of the box with GITHUB_TOKEN.
+#
+# What this workflow does:
+#   1. AUTO-PROMOTE: When all CI checks pass on a draft PR, it is automatically
+#      converted to "Ready for Review" so reviewers are notified without manual action.
+#   2. LABEL LINKED ISSUES: When a PR is opened (non-draft) or promoted to Ready
+#      for Review, any issues referenced with "Closes #N / Fixes #N / Resolves #N"
+#      in the PR title or body are labeled `in-review` so the project board
+#      moves them to the In Review column automatically.
+#   3. CHECKLIST COMMENT: A review-readiness checklist comment is posted to the PR
+#      when it first becomes ready for review.
+#   4. CLEANUP: When a PR is merged or closed, the `in-review` label is removed
+#      from all linked issues (GitHub closes them automatically on merge).
+
+name: Ready for Review Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Auto-promote a draft PR once all CI checks turn green
+  # ────────────────────────────────────────────────────────────────────────────
+  promote-draft:
+    name: Promote Draft PR When CI Passes
+    runs-on: ubuntu-latest
+    # Only run on push-to-draft-PR events (not when it is already ready)
+    if: |
+      github.event.pull_request.draft == true &&
+      (github.event.action == 'synchronize' || github.event.action == 'reopened')
+
+    steps:
+      - name: Check all CI status checks for this commit
+        id: check-status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Wait 10 s so any in-flight check runs triggered by the same push
+            // have time to register with the Checks API before we query it.
+            await new Promise(r => setTimeout(r, 10000));
+
+            const { data } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.payload.pull_request.head.sha,
+              per_page: 100,
+            });
+
+            // Exclude this workflow itself from the evaluation
+            const runs = data.check_runs.filter(r => r.name !== context.workflow);
+            core.info(`Found ${runs.length} check run(s) (excluding self).`);
+            runs.forEach(r => core.info(`  • ${r.name}: ${r.status} / ${r.conclusion}`));
+
+            const allDone   = runs.length > 0 && runs.every(r => r.status === 'completed');
+            const allPassed = allDone && runs.every(r => r.conclusion === 'success' || r.conclusion === 'skipped');
+
+            core.setOutput('all_passed', allPassed ? 'true' : 'false');
+            return allPassed;
+
+      - name: Convert draft PR to Ready for Review
+        if: steps.check-status.outputs.all_passed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.graphql(`
+              mutation($prId: ID!) {
+                markPullRequestReadyForReview(input: { pullRequestId: $prId }) {
+                  pullRequest { number title isDraft }
+                }
+              }
+            `, { prId: context.payload.pull_request.node_id });
+
+            core.notice(
+              `✅ PR #${context.payload.pull_request.number} — all CI checks passed. ` +
+              `Promoted from Draft to Ready for Review.`
+            );
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Label linked issues as `in-review` and post checklist comment
+  # ────────────────────────────────────────────────────────────────────────────
+  label-linked-issues:
+    name: Label Linked Issues as In-Review
+    runs-on: ubuntu-latest
+    if: |
+      github.event.action == 'ready_for_review' ||
+      (github.event.action == 'opened' && github.event.pull_request.draft == false)
+
+    steps:
+      - name: Ensure `in-review` label exists
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'in-review',
+              });
+            } catch (e) {
+              if (e.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'in-review',
+                  color: 'fbca04',
+                  description: 'Linked PR is open and ready for review',
+                });
+                core.info('Created label: in-review');
+              }
+            }
+
+      - name: Find linked issues and apply `in-review` label
+        id: find-issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body  = context.payload.pull_request.body  || '';
+            const title = context.payload.pull_request.title || '';
+            const text  = `${title}\n${body}`;
+
+            // Match: Closes #N, Fixes #N, Resolves #N (all common variants)
+            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+            const matches = [...text.matchAll(pattern)];
+            const issueNumbers = [...new Set(matches.map(m => parseInt(m[1])))];
+
+            if (issueNumbers.length === 0) {
+              core.info('No linked issues found in PR title or body.');
+              core.setOutput('issue_list', '');
+              return;
+            }
+
+            core.info(`Linked issue(s): ${issueNumbers.join(', ')}`);
+            core.setOutput('issue_list', issueNumbers.join(','));
+
+            for (const num of issueNumbers) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: num,
+                  labels: ['in-review'],
+                });
+                core.info(`  • Added 'in-review' to issue #${num}`);
+              } catch (e) {
+                core.warning(`  • Could not label issue #${num}: ${e.message}`);
+              }
+            }
+
+      - name: Post review-readiness checklist comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueList = '${{ steps.find-issues.outputs.issue_list }}';
+            const linkedSection = issueList
+              ? `\n\n**Linked issue(s):** ${issueList.split(',').map(n => `#${n.trim()}`).join(', ')} — labeled \`in-review\` ✅`
+              : '';
+
+            const body = [
+              '## 🟡 Ready for Review',
+              '',
+              'This PR is now open for review. Please verify the following before approving:',
+              '',
+              '### Code Quality',
+              '- [ ] No hardcoded secrets or credentials',
+              '- [ ] All new API routes have input validation (Zod or equivalent)',
+              '- [ ] All new API routes have auth / authorisation checks',
+              '- [ ] No raw SQL with user-supplied values',
+              '- [ ] No `console.log` leaking sensitive data',
+              '- [ ] No `eval()`, `Function()`, or dynamic `require()`',
+              '',
+              '### Testing',
+              '- [ ] Tests written for new functionality',
+              '- [ ] Coverage thresholds maintained (80% statements/functions/lines, 75% branches)',
+              '- [ ] All CI checks passing',
+              '',
+              '### Standards',
+              '- [ ] Follows `MASTER_APP_TEMPLATE.md` conventions',
+              '- [ ] Coderabbit comments addressed',
+              '- [ ] PR description references the linked issue(s) with `Closes #N`',
+              linkedSection,
+              '',
+              '---',
+              '_This comment was posted automatically by the Ready for Review Automation workflow._',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 3 — Remove `in-review` label from linked issues when PR is closed
+  # ────────────────────────────────────────────────────────────────────────────
+  unlabel-on-close:
+    name: Remove In-Review Label on PR Close
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+
+    steps:
+      - name: Remove `in-review` label from linked issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body  = context.payload.pull_request.body  || '';
+            const title = context.payload.pull_request.title || '';
+            const text  = `${title}\n${body}`;
+
+            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+            const matches = [...text.matchAll(pattern)];
+            const issueNumbers = [...new Set(matches.map(m => parseInt(m[1])))];
+
+            if (issueNumbers.length === 0) {
+              core.info('No linked issues found — nothing to clean up.');
+              return;
+            }
+
+            for (const num of issueNumbers) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: num,
+                  name: 'in-review',
+                });
+                core.info(`  • Removed 'in-review' from issue #${num}`);
+              } catch (e) {
+                // 404 = label was not present; ignore silently
+                if (e.status !== 404) {
+                  core.warning(`  • Could not remove label from issue #${num}: ${e.message}`);
+                }
+              }
+            }
