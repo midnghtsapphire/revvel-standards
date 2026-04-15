@@ -27,8 +27,10 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
+| OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
+| Persistent agent memory, brain repo, knowledge base, gbrain | [`gbrain`](#gbrain) |
 | Activating a persona, greeting, guided session, character | [`persona-engine`](#persona-engine) |
 | Building, creating, or scaffolding a new skill | [`skill-forge`](#skill-forge) |
 | Breaking down features into atomic TODOs | [`todo-breakdown`](#todo-breakdown) |
@@ -43,7 +45,9 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
+| Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
+| CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
 | Starting a coding session, defining scope | [`mvi-contract`](#mvi-contract) |
 | Checking production state, session handoff | [`system-state`](#system-state) |
 | Tracking decisions, risks, issues (DARE/RAID) | [`dare-log`](#dare-log) |
@@ -59,6 +63,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Code Quality & Autonomous Review
 
 #### recurse-ml
+
 - **Path:** `skills/recurse-ml/`
 - **Files:** `SKILL.md` · `recurse-ml.skill.yml`
 - **Description:** Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.
@@ -76,6 +81,21 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** persona, ephemeral-persona, ux, greeting, character, skill-guide, cold-start
 - **Trigger:** Any task where a persona should be activated; automatically invoked by other skills via `.skill.yml` persona config.
 - **Lifecycle:** Ephemeral — session-scoped, terminates at session end.
+
+#### gbrain
+- **Path:** `skills/gbrain/`
+- **Files:** `SKILL.md` · `gbrain.skill.yml`
+- **Description:** Connects an AI agent to a persistent, searchable knowledge base built from markdown files. The brain-agent loop: read from brain before every response, write back after. Knowledge compounds with every session. Derived from garrytan/gbrain (PGLite + pgvector, 30 MCP tools).
+- **Tags:** gbrain, agent-memory, persistent-memory, brain-repo, knowledge-base, pglite, pgvector, mcp
+- **Trigger:** Persistent agent memory, brain repo, knowledge compounding, remember between sessions, gbrain.
+
+#### openrouter-swarms
+- **Path:** `skills/openrouter-swarms/`
+- **Files:** `SKILL.md` · `openrouter-swarms.skill.yml`
+- **Description:** Decision framework for routing tasks to the right model via OpenRouter, choosing the correct agent topology (single / MAS / swarm), and assigning human names to every spawned agent. Includes the Revvel Agent Name Registry, GitHub model tokens (o1 Cell Sequencing, GPT-5 Nano Physics Coding), cost governance, and deep research protocols.
+- **Tags:** openrouter, mas, multi-agent, swarm, agent-topology, agent-naming, github-models, research-protocol, cost-governance
+- **Trigger:** OpenRouter, multi-agent systems, swarms, agent naming, o1 cell sequencing, GPT-5 nano, which model to use, research agents.
+- **Persona:** 🔭 Scout
 
 #### model-router
 - **Path:** `skills/model-router/`
@@ -220,6 +240,13 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** error-reporting, monitoring, three-tier, monitored-wrapper, alerts
 - **Trigger:** Writing any scheduled job, background worker, webhook handler, or payment function.
 
+#### ralph-loop
+- **Path:** `skills/ralph-loop/`
+- **Files:** `SKILL.md` · `ralph-loop.skill.yml`
+- **Description:** Self-healing CI loop — when a check fails, Ralph triggers @copilot via a PR comment, blocks the merge with a `won't-merge` label, and retries on every subsequent commit push until all checks pass (auto-merge) or the retry limit is reached (escalate to human). RALPH: Retry → Analyze → Log → Patch → reCheck.
+- **Tags:** ralph-loop, self-healing, auto-fix, ci-failure, copilot-trigger, won't-merge, auto-merge, retry-loop
+- **Trigger:** CI failure, self-healing, auto-fix, won't merge, merge blocked, copilot fix loop.
+
 ---
 
 ### Security & Compliance
@@ -273,6 +300,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+### Testing & Quality
+
+#### testing-agent
+- **Path:** `skills/testing-agent/`
+- **Files:** `SKILL.md` · `testing-agent.skill.yml` · `tests/promptfoo.yml`
+- **Description:** Ephemeral agent that generates and evaluates tests for Revvel skills and projects. Understands PromptFoo (skill tests), Vitest (unit tests), and Playwright (E2E). Spawns on demand, terminates after delivery.
+- **Tags:** testing-agent, ephemeral-agent, promptfoo, vitest, playwright, test-generation, skill-testing, coverage-gap
+- **Trigger:** Any request to generate tests, write tests, fix failing tests, audit test coverage, or run skill tests.
+- **Lifecycle:** Ephemeral — terminates after test files are delivered.
+
+---
+
 ## Mandatory Skills for Every Session
 
 These skills **must** be loaded at the start of every agent session:
@@ -299,4 +338,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 14, 2026. RecurseML skill added.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 15, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent skills.*

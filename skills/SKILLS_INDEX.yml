@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-14"
+last_updated: "2026-04-15"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -41,6 +41,45 @@ skills:
       - "recurse-rules"
 
   # ─── Agent Operations ──────────────────────────────────────────────────────
+
+  - name: gbrain
+    title: "GBrain — Persistent Agent Memory"
+    version: "1.0.0"
+    path: "skills/gbrain/"
+    skill_file: "skills/gbrain/gbrain.skill.yml"
+    category: "Agent Operations"
+    access: all
+    triggers:
+      - "gbrain"
+      - "agent memory"
+      - "persistent memory"
+      - "brain repo"
+      - "remember between sessions"
+      - "knowledge base"
+      - "memory compounding"
+      - "brain-agent loop"
+
+  - name: openrouter_swarms
+    title: "OpenRouter & Multi-Agent Swarms"
+    version: "1.0.0"
+    path: "skills/openrouter-swarms/"
+    skill_file: "skills/openrouter-swarms/openrouter-swarms.skill.yml"
+    category: "Agent Operations"
+    access: all
+    persona: scout
+    triggers:
+      - "openrouter"
+      - "mas"
+      - "swarm"
+      - "multi-agent"
+      - "sub-agent"
+      - "agent topology"
+      - "o1 cell sequencing"
+      - "gpt-5 nano"
+      - "research agents"
+      - "spawn swarm"
+      - "agent name"
+      - "github model tokens"
 
   - name: model_router
     title: "Model Router"
@@ -292,6 +331,27 @@ skills:
       - "monitored wrapper"
       - "github issue alerts"
 
+  - name: ralph_loop
+    title: "Ralph Loop — Self-Healing Error Recovery"
+    version: "1.0.0"
+    path: "skills/ralph-loop/"
+    skill_file: "skills/ralph-loop/ralph-loop.skill.yml"
+    category: "DevOps & Automation"
+    access: all
+    lifecycle: ephemeral
+    triggers:
+      - "ralph loop"
+      - "self-healing"
+      - "auto-fix"
+      - "won't merge"
+      - "ci failed"
+      - "check failed"
+      - "error loop"
+      - "auto retry"
+      - "copilot fix"
+      - "error recovery"
+      - "loop until fixed"
+
   # ─── Security & Compliance ─────────────────────────────────────────────────
 
   - name: vault_agent
@@ -447,7 +507,7 @@ skills:
     title: "Testing Agent (Ephemeral)"
     version: "1.0.0"
     path: "skills/testing-agent/"
-    skill_file: "skills/testing-agent/SKILL.md"
+    skill_file: "skills/testing-agent/testing-agent.skill.yml"
     category: "Testing & Quality"
     access: all
     lifecycle: ephemeral
