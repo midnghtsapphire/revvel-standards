@@ -160,6 +160,36 @@
       "env": {
         "MONGODB_URI": "${MONGODB_URI}"
       }
+    },
+
+    "mct-ai-chat": {
+      "_comment": "AI chat interface. MCP status: ❓ Not audited. Add when project needs a managed AI chat layer.",
+      "command": "node",
+      "args": ["${MCT_AI_CHAT_PATH}/dist/index.js"]
+    },
+
+    "mct-reports": {
+      "_comment": "Report generation for InTheWild platform. MCP status: ❓ Not audited. Add when project needs reporting. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_REPORTS_PATH}/dist/index.js"]
+    },
+
+    "mct-kubernetes": {
+      "_comment": "Kubernetes cluster management. MCP status: ❓ Not audited. Add for infrastructure-management projects. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_KUBERNETES_PATH}/dist/index.js"]
+    },
+
+    "mct-localization": {
+      "_comment": "Internationalization and translation management. MCP status: ❓ Not audited. Add when project needs i18n. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_LOCALIZATION_PATH}/dist/index.js"]
+    },
+
+    "mct-software-discovery": {
+      "_comment": "Software and tool discovery. MCP status: ❓ Not audited. Add when project needs software cataloguing. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_DISCOVERY_PATH}/dist/index.js"]
     }
 
   }
