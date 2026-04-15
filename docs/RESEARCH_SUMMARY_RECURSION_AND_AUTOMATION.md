@@ -296,7 +296,7 @@ The new standards align with established industry practices:
 | `recurse-rules.md` | ✅ Updated | +40 lines | Added 2 recursion safety rules |
 | `README.md` | ✅ Updated | +2 lines | Referenced new standards |
 
-**Total Addition:** ~33 KB of new documentation, 0 breaking changes
+**Total Addition:** ~47 KB of new documentation (33 KB standards + 14 KB research summary), 0 breaking changes
 
 ---
 
