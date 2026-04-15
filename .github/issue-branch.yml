@@ -1,0 +1,57 @@
+# Create Issue Branch — configuration
+#
+# Used by both:
+#   • The GitHub Marketplace App (github.com/marketplace/create-issue-branch)
+#   • The GitHub Action defined in .github/workflows/create-issue-branch.yml
+#
+# App docs: https://github.com/robvanderleek/create-issue-branch
+# Mode: "immediate" — a branch is created as soon as an issue is opened.
+# This matches the Revvel workflow where every issue drives a code change.
+
+mode: immediate
+
+# ── Branch naming ────────────────────────────────────────────────────────────
+# Branches are lowercase, dash-separated, and include both the issue number
+# and a sanitised version of the issue title.
+# Example: issue-42-add-stripe-webhook
+
+branchName: 'issue-${issue.number}-${issue.title,}'
+gitSafeReplacementChar: '-'
+gitReplaceChars: "'\"()[]{}!?"
+
+# ── Label-based prefixes ──────────────────────────────────────────────────────
+# Maps standard GitHub labels to conventional branch prefixes so the history
+# is easy to read and tooling (auto-changelog, etc.) can classify commits.
+
+branches:
+  - label: bug
+    prefix: bugfix/
+  - label: enhancement
+    prefix: feature/
+  - label: documentation
+    prefix: docs/
+  - label: good-first-issue
+    prefix: feature/
+  - label: security
+    prefix: hotfix/
+  - label: dependencies
+    prefix: chore/
+  # Fallback — issues with no matching label get a plain "issue/" prefix
+  - label: '*'
+    prefix: issue/
+
+# ── Source branch ─────────────────────────────────────────────────────────────
+# All issue branches are cut from `main`.
+defaultBranch: main
+
+# ── Auto-link & lifecycle ─────────────────────────────────────────────────────
+# Automatically closes the issue when a PR that references it is merged,
+# and deletes the issue branch once the PR is merged to keep the repo tidy.
+autoLinkIssue: true
+autoCloseIssue: true
+autoDeleteBranch: true
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+# Comment on the issue once the branch has been created so contributors know
+# where to push their work.
+silent: false
