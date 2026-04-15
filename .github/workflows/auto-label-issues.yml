@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Devlander Issue Labler
+      - name: Run Devlander Issue Labeler
         uses: Devlander-Software/issue-labler@v1.2.0
         with:
           create_templates: 'true'

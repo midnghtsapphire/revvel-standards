@@ -154,7 +154,7 @@ GitHub itself closes the linked issues when the PR is merged. The workflow handl
 
 ### Issue Auto-Labeling & Templates Workflow
 
-Use the Devlander Issue Labler action to bootstrap and maintain professional issue templates and labels automatically.
+Use the Devlander Issue Labeler action to bootstrap and maintain professional issue templates and labels automatically.
 
 **Setup:**
 
