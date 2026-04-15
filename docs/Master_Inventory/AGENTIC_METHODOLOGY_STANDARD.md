@@ -409,7 +409,7 @@ jobs:
 
 ## 9. Monetization & Marketplace Guide
 
-See **[docs/MARKETPLACE_GUIDE.md](docs/MARKETPLACE_GUIDE.md)** for the full guide, but here's the summary:
+See **[docs/MARKETPLACE_GUIDE.md](../MARKETPLACE_GUIDE.md)** for the full guide, but here's the summary:
 
 ### Where to List
 
