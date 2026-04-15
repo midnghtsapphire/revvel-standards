@@ -8,7 +8,19 @@ Complete guide to setting up GitHub Projects, Labels, and Milestones for the Rev
 
 ## 1. Standard Label Set
 
-Apply these labels to ALL Revvel repositories. Run the GitHub CLI commands below or create them manually in GitHub → Settings → Labels.
+The canonical label definitions live in `.github/labels.yml` in this repo. The `sync-labels.yml` workflow keeps them in sync automatically.
+
+**Preferred setup (automated):**
+
+```bash
+# Copy both files to your app repo
+cp .github/labels.yml          YOUR_REPO/.github/labels.yml
+cp templates/cicd/sync-labels.yml  YOUR_REPO/.github/workflows/sync-labels.yml
+
+# Commit and push — the workflow will create all labels on the first run
+```
+
+**Manual setup (one-time CLI):**
 
 ```bash
 # Run in your repo root (requires `gh` CLI authenticated)
@@ -21,29 +33,41 @@ gh label create "bom-purchase"    --color "ffd700" --description "Requires a pur
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
-gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
-gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
+gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix / Ralph Loop workflow" --repo $APP_REPO
+gh label create "copilot"         --color "7057ff" --description "Assigned to GitHub Copilot for fixing" --repo $APP_REPO
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
 gh label create "good-first-issue" --color "7057ff" --description "Good for newcomers"                  --repo $APP_REPO
 gh label create "wontfix"         --color "ffffff" --description "This will not be worked on"           --repo $APP_REPO
+gh label create "auto-merge"      --color "0e8a16" --description "Merge automatically once approved and CI passes" --repo $APP_REPO
+gh label create "won't-merge"     --color "b60205" --description "Block auto-merge — human review required" --repo $APP_REPO
+gh label create "ralph-loop"      --color "ff6b35" --description "Managed by the Ralph Loop self-healing workflow" --repo $APP_REPO
+gh label create "needs-human"     --color "d93f0b" --description "Escalated — requires human intervention" --repo $APP_REPO
+gh label create "vault-agent"     --color "e4e669" --description "Vault Agent credential provisioning required" --repo $APP_REPO
+gh label create "dependencies"    --color "0075ca" --description "Dependency updates (Dependabot, etc.)" --repo $APP_REPO
 ```
 
 ### Full Label Reference
 
-| Label | Color | Purpose |
-|---|---|---|
-| `bug` | `#d73a4a` | Something isn't working |
-| `enhancement` | `#a2eeef` | New feature or request |
-| `security` | `#cc0000` | Security vulnerability or concern |
-| `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
-| `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
-| `blocked` | `#e4e669` | Blocked by external dependency |
-| `in-review` | `#fbca04` | Linked PR is open and ready for review (set automatically) |
-| `auto-fix` | `#0075ca` | Created by auto-fix workflow |
-| `copilot` | `#0075ca` | Assigned to Copilot for fixing |
-| `documentation` | `#0075ca` | Documentation only |
-| `good-first-issue` | `#7057ff` | Good for newcomers |
-| `wontfix` | `#ffffff` | This will not be worked on |
+| Label | Color | Set by | Purpose |
+|---|---|---|---|
+| `bug` | `#d73a4a` | Human | Something isn't working |
+| `enhancement` | `#a2eeef` | Human | New feature or request |
+| `security` | `#cc0000` | Human | Security vulnerability or concern |
+| `bom-purchase` | `#ffd700` | Human | Requires a purchase (links to BOM.md) |
+| `design` | `#7057ff` | Human | Design/brand work needed (Revvel Emblem, icons) |
+| `documentation` | `#0075ca` | Human | Documentation only |
+| `dependencies` | `#0075ca` | Dependabot | Dependency updates |
+| `good-first-issue` | `#7057ff` | Human | Good for newcomers |
+| `blocked` | `#e4e669` | Human / Automation | Blocked by external dependency |
+| `in-review` | `#fbca04` | **Automatic** (`ready-for-review.yml`) | Linked PR is open and ready for review |
+| `auto-merge` | `#0e8a16` | Human / Automation | Merge automatically once approved and CI passes |
+| `won't-merge` | `#b60205` | Human / Ralph Loop | Block auto-merge — human review required |
+| `auto-fix` | `#0075ca` | **Automatic** (Ralph Loop) | Created by auto-fix / Ralph Loop workflow |
+| `copilot` | `#7057ff` | **Automatic** (Ralph Loop) | Assigned to GitHub Copilot for fixing |
+| `ralph-loop` | `#ff6b35` | **Automatic** (Ralph Loop) | Managed by the Ralph Loop self-healing workflow |
+| `needs-human` | `#d93f0b` | **Automatic** (Ralph Loop) | Escalated — requires human intervention |
+| `vault-agent` | `#e4e669` | **Automatic** (Ralph Loop) | Vault Agent provisioning required |
+| `wontfix` | `#ffffff` | Human | This will not be worked on |
 
 ---
 
@@ -152,6 +176,67 @@ Closed #42    Fixed #42    Resolved #42
 
 GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
 
+### Auto-Merge Workflow
+
+The `auto-merge.yml` workflow (copy from `templates/cicd/auto-merge.yml`) closes the final gap in the automated pipeline by enabling GitHub's native pull request auto-merge when the `auto-merge` label is applied.
+
+| Trigger | Automation |
+|---|---|
+| PR labeled `auto-merge` | Calls `enablePullRequestAutoMerge` — squash-merges when CI passes + approved |
+| PR labeled `won't-merge` | Calls `disablePullRequestAutoMerge` — blocks pending auto-merge |
+| `auto-merge` label removed | Calls `disablePullRequestAutoMerge` — cancels pending auto-merge |
+
+**Setup:**
+
+```bash
+# 1. Enable branch protection on main (required for auto-merge to work)
+#    Settings → Branches → Add rule for 'main':
+#      ✅ Require a pull request before merging (1 approval minimum)
+#      ✅ Require status checks to pass before merging
+#      ✅ Allow auto-merge
+
+# 2. Copy the workflow to your app repo
+cp templates/cicd/auto-merge.yml .github/workflows/auto-merge.yml
+```
+
+**Full automated pipeline with all workflows installed:**
+
+```
+Issue created
+    ↓  create-issue-branch.yml
+Branch created automatically (label-based prefix)
+    ↓  [developer or Copilot pushes code]
+Draft PR opened
+    ↓  ready-for-review.yml (promote-draft job)
+CI checks pass → PR promoted to Ready for Review
+    ↓  ready-for-review.yml (label-linked-issues job)
+`in-review` label applied to linked issues + checklist comment posted
+    ↓  [reviewer approves the PR]
+Reviewer (or automation) adds `auto-merge` label
+    ↓  auto-merge.yml (enable-auto-merge job)
+GitHub auto-merge enabled — squash-merges when all conditions met
+    ↓  [GitHub merges the PR]
+    ↓  ready-for-review.yml (unlabel-on-close job)
+`in-review` label removed from linked issues
+    ↓  close-linked-issue.yml
+Linked issue closed automatically
+```
+
+### Sync Labels Workflow
+
+The `sync-labels.yml` workflow (copy from `templates/cicd/sync-labels.yml`) keeps the standard Revvel labels in sync across all repos by reading `.github/labels.yml` and creating or updating labels automatically.
+
+**Setup:**
+
+```bash
+# Copy both files to your app repo
+cp .github/labels.yml              YOUR_REPO/.github/labels.yml
+cp templates/cicd/sync-labels.yml  YOUR_REPO/.github/workflows/sync-labels.yml
+
+# Then trigger the first sync manually:
+gh workflow run sync-labels.yml --repo midnghtsapphire/YOUR_REPO
+```
+
 ### Link Issues to a Project
 
 When creating issues in your app repo, assign them to the project using:
@@ -188,7 +273,10 @@ When creating a new Revvel application repository:
 APP_REPO="midnghtsapphire/NEW_REPO"
 APP_NAME="new-app-name"
 
-# 1. Create standard labels
+# 1. Sync standard labels (automated — recommended)
+cp .github/labels.yml             $APP_NAME/.github/labels.yml
+cp templates/cicd/sync-labels.yml $APP_NAME/.github/workflows/sync-labels.yml
+# OR run manually:
 # (run all gh label create commands from Section 1)
 
 # 2. Create error reporting label
@@ -200,7 +288,20 @@ gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error r
 # 4. Create GitHub Project board
 # (manual step — do in GitHub UI)
 
-# 5. Run bootstrap script
+# 5. Install automation workflows
+cp templates/cicd/ready-for-review.yml   $APP_NAME/.github/workflows/ready-for-review.yml
+cp templates/cicd/auto-merge.yml         $APP_NAME/.github/workflows/auto-merge.yml
+cp .github/workflows/close-linked-issue.yml $APP_NAME/.github/workflows/close-linked-issue.yml
+cp .github/workflows/create-issue-branch.yml $APP_NAME/.github/workflows/create-issue-branch.yml
+cp .github/issue-branch.yml              $APP_NAME/.github/issue-branch.yml
+
+# 6. Enable branch protection on main (required for auto-merge):
+#    Settings → Branches → Add rule for 'main':
+#      ✅ Require a pull request before merging (1 approval minimum)
+#      ✅ Require status checks to pass before merging
+#      ✅ Allow auto-merge
+
+# 7. Run bootstrap script
 bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION_URL]
 ```
 
