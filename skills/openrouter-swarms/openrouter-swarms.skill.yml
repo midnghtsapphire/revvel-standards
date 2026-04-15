@@ -1,0 +1,118 @@
+skill: openrouter-swarms
+version: "1.0.0"
+title: "OpenRouter & Multi-Agent Swarms"
+description: |
+  Decision framework for routing tasks to the right model via OpenRouter,
+  choosing the correct agent topology (single / MAS / swarm), and assigning
+  human names to every spawned agent. Covers GitHub model tokens (o1 Cell
+  Sequencing, GPT-5 Nano Physics Coding) and deep research protocols.
+category: "Agent Operations"
+lifecycle: persistent
+status: beta
+author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+date: "2026-04-15"
+
+triggers:
+  - "openrouter"
+  - "mas"
+  - "swarm"
+  - "multi-agent"
+  - "sub-agent"
+  - "agent topology"
+  - "o1 cell sequencing"
+  - "gpt-5 nano"
+  - "physics coding"
+  - "research agents"
+  - "parallel agents"
+  - "agent team"
+  - "which model"
+  - "route to model"
+  - "spawn swarm"
+  - "agent name"
+  - "github model tokens"
+
+models:
+  primary: claude-sonnet-4-5
+  fast: claude-haiku-4-5
+  orchestrator: claude-opus-4
+  research_workers: claude-sonnet-4-5
+
+openrouter:
+  api_url: "https://openrouter.ai/api/v1/chat/completions"
+  mcp_package: "@openrouter/mcp-server"
+  model_map:
+    code_generation: "anthropic/claude-sonnet-4"
+    deep_reasoning: "anthropic/claude-opus-4"
+    fast_tasks: "anthropic/claude-haiku-4-5"
+    physics_coding: "github/gpt-5-nano"
+    cell_sequencing: "github/o1"
+    general_research: "openai/gpt-5"
+    long_documents: "google/gemini-2.5-pro"
+
+persona:
+  enabled: true
+  name: "Scout"
+  role: "Research & Discovery Specialist"
+  voice: "curious, systematic, precise, energetic"
+  emoji: "🔭"
+  greeting: "Scout here! Ready to map your research and route your agents. What are we exploring today?"
+  farewell: "Research mapped. Scout signing off. 🔭"
+
+agent_topology:
+  single_agent: "Single deterministic task"
+  parallel_mas: "Multiple independent subtasks"
+  sequential_mas: "Iterative tasks requiring agent review chains"
+  swarm: "100+ independent micro-tasks at scale"
+  three_layer_team: "Research + synthesise + deliver"
+
+cost_governance:
+  research_scout_monthly: "$5"
+  code_agent_monthly: "$10"
+  orchestrator_per_session: "$25"
+  swarm_total: "$50"
+  budget_warning_threshold: 0.20
+
+agent_name_registry:
+  research: ["Scout", "Iris", "Lumen"]
+  code: ["Aria", "Forge", "Pixel", "Axle"]
+  security: ["Vault", "Shield", "Cipher"]
+  content: ["Sage", "Echo", "Quill"]
+  devops: ["Nexus", "Pulse", "Rail"]
+  legal_finance: ["Atlas", "Ledger", "Penny"]
+  testing: ["Prism", "Mirror"]
+  orchestration: ["Audrey", "Felix", "Felixia"]
+
+dependencies:
+  skills:
+    - "model-router"
+    - "gbrain"
+    - "context-management"
+    - "persona-engine"
+  env_vars:
+    - name: "OPENROUTER_API_KEY"
+      required: true
+      source: "https://openrouter.ai/keys"
+    - name: "GITHUB_TOKEN"
+      required: false
+      purpose: "Access GitHub-hosted models (o1, GPT-5 Nano)"
+
+tests:
+  path: "skills/openrouter-swarms/tests/promptfoo.yml"
+
+implementation:
+  type: markdown_prompt
+  skill_file: "skills/openrouter-swarms/SKILL.md"
+
+references:
+  - path: "AGENTIC_METHODOLOGY_STANDARD.md"
+    description: "Revvel agentic framework"
+  - path: "skills/model-router/SKILL.md"
+    description: "Single-agent model selection"
+  - path: "skills/gbrain/SKILL.md"
+    description: "Persistent memory to avoid duplicate research"
+  - path: "skills/parallel-development/SKILL.md"
+    description: "Parallel code agents"
+  - path: "skills/context-management/SKILL.md"
+    description: "Token budget management"
+
+schema_version: "1.0"
