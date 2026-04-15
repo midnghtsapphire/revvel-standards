@@ -34,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on push-to-draft-PR events (not when it is already ready)
     if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.draft == true &&
       (github.event.action == 'synchronize' || github.event.action == 'reopened')
 
@@ -92,8 +93,11 @@ jobs:
     name: Label Linked Issues as In-Review
     runs-on: ubuntu-latest
     if: |
-      github.event.action == 'ready_for_review' ||
-      (github.event.action == 'opened' && github.event.pull_request.draft == false)
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        github.event.action == 'ready_for_review' ||
+        (github.event.action == 'opened' && github.event.pull_request.draft == false)
+      )
 
     steps:
       - name: Ensure `in-review` label exists
@@ -209,7 +213,7 @@ jobs:
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
     runs-on: ubuntu-latest
-    if: github.event.action == 'closed'
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.action == 'closed'
 
     steps:
       - name: Remove `in-review` label from linked issues
