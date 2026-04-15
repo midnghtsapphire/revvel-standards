@@ -395,3 +395,99 @@ Every page must have an E2E test that verifies:
 ### 10.4. Template Locations
 
 All three test templates are in `templates/testing/`. Copy and adapt them for every new project — see `templates/testing/README.md` for substitution instructions.
+
+---
+
+## 11. Human Testing API
+
+The **Human Testing API** is an AI-powered behavioral testing layer that simulates how a real human would experience your application. It complements Vitest unit/integration tests and Playwright E2E tests by evaluating subjective quality dimensions that automated scripts cannot measure: cognitive load, neuro-inclusive design, fault tolerance, and intent alignment.
+
+### 11.1. What It Tests
+
+The Human Testing API dispatches 5 parallel S.H.I.F.T.-aligned AI agents, each evaluating a distinct dimension:
+
+| Agent | Dimension | Evaluates |
+|---|---|---|
+| **Functional** | Feature correctness | Page loads, auth flow, happy-path journeys, API response times |
+| **Accessibility** | Neuro-inclusive design | WCAG 2.2 AA, predictability, sensory control, calm microcopy |
+| **Resilience** | Fault tolerance | API outage handling, empty states, slow network, session expiry |
+| **Behavioral** | S.H.I.F.T. compliance | Memory, Reflection, Planning, Action, System Reliability |
+| **Performance** | Lighthouse budget | Core Web Vitals, LCP/CLS/INP, Lighthouse score thresholds |
+
+A synthesizer agent aggregates all findings into a single structured report with a PASS / FAIL / NEEDS_WORK verdict, prioritized fix list, and re-test checklist.
+
+### 11.2. When to Run
+
+Run the Human Testing API:
+- Before any production deployment of a new major feature
+- After significant UI or API changes
+- When the S.H.I.F.T. Monitor detects recurring failures
+- As a release gate before shipping to end users
+
+### 11.3. Setup
+
+**Requirements:**
+- `OPENROUTER_API_KEY` GitHub Secret (get key at https://openrouter.ai)
+- The `scripts/run-human-testing-api.js` script in your repo
+
+**One-time setup for any Revvel app:**
+```bash
+# Copy the workflow template
+cp node_modules/@revvel/standards/templates/cicd/run-human-testing-api.yml .github/workflows/
+# Or download directly:
+curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/templates/cicd/run-human-testing-api.yml \
+  > .github/workflows/run-human-testing-api.yml
+
+# Copy the script
+mkdir -p scripts
+curl -sL https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/scripts/run-human-testing-api.js \
+  > scripts/run-human-testing-api.js
+```
+
+Then add your `OPENROUTER_API_KEY` to GitHub Secrets:
+`Settings → Secrets and variables → Actions → New repository secret`
+
+### 11.4. Running the Human Testing API
+
+**Via GitHub Actions (recommended):**
+1. Go to `Actions → Human Testing API → Run workflow`
+2. Enter your target URL (e.g., `https://yourapp.com`)
+3. Enter the app name and output file path
+4. Click **Run workflow**
+
+The workflow will:
+1. Run 5 AI test agents in parallel (~60–120 seconds)
+2. Synthesize findings into a structured Markdown report
+3. Commit the report to your repository
+4. Optionally open a GitHub Issue with a summary
+
+**Via command line:**
+```bash
+OPENROUTER_API_KEY=sk-or-... \
+TARGET_URL="https://yourapp.com" \
+APP_NAME="My App" \
+OUTPUT_FILE="docs/human-test-report.md" \
+node scripts/run-human-testing-api.js
+```
+
+### 11.5. Report Output
+
+The Human Testing API produces a report at the specified `OUTPUT_FILE` with these sections:
+
+1. **Executive Summary** — Overall verdict (PASS / FAIL / NEEDS_WORK)
+2. **Overall Score Card** — Ratings per dimension
+3. **Critical Blockers** — P0 issues blocking production
+4. **S.H.I.F.T. Compliance** — Behavioral validation findings
+5. **Accessibility & Neuro-Inclusive Design** — WCAG and cognitive load findings
+6. **Resilience & Error Handling** — Fault tolerance evaluation
+7. **Performance Budget Compliance** — Lighthouse score analysis
+8. **Recommended Fixes** — Prioritized action list (P0 / P1 / P2)
+9. **Re-test Checklist** — Items to verify after fixes
+
+### 11.6. Workflow and Script Locations
+
+| File | Purpose |
+|---|---|
+| `scripts/run-human-testing-api.js` | Core script — calls OpenRouter AI agents |
+| `.github/workflows/run-human-testing-api.yml` | Workflow for this standards repo |
+| `templates/cicd/run-human-testing-api.yml` | Template to copy into any app repo |
