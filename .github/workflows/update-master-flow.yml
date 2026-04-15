@@ -1,0 +1,77 @@
+# Update Master Revvel-Standards Flow Chart
+#
+# Automatically regenerates docs/Master Revvel-Standards Flow Charts/README.md
+# with up-to-date metadata (repo name, docs path, timestamp) and scans for
+# any new workflow files or scripts that should be added to TOOLS_INVENTORY.md.
+#
+# Triggers:
+#   - Push to main branch (keeps the chart current after every merge)
+#   - Weekly cron (Sunday midnight UTC — catches any drift)
+#   - Manual dispatch (run on demand)
+#
+# Reference: docs/Master Revvel-Standards Flow Charts/README.md
+
+name: Update Master Flow Chart
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # Avoid infinite loop: don't re-trigger when only the flow chart changed
+      - "docs/Master Revvel-Standards Flow Charts/**"
+  schedule:
+    # Every Sunday at 00:00 UTC
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview changes without committing (dry run)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+concurrency:
+  group: update-master-flow
+  cancel-in-progress: true
+
+jobs:
+  update-flow:
+    name: Update Master Flow Chart
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so git remote get-url works correctly
+          fetch-depth: 0
+
+      - name: Run update-master-flow.sh
+        env:
+          DRY_RUN: ${{ inputs.dry_run == 'true' && '1' || '0' }}
+        run: |
+          chmod +x scripts/update-master-flow.sh
+          bash scripts/update-master-flow.sh
+
+      - name: Commit updated flow chart
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "revvel-automation[bot]"
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+
+          git add "docs/Master Revvel-Standards Flow Charts/"
+
+          if git diff --staged --quiet; then
+            echo "✅ No changes to commit — flow chart is already up to date."
+          else
+            git commit -m "docs: auto-update master flow chart [skip ci]"
+            git push
+            echo "✅ Flow chart committed and pushed."
+          fi

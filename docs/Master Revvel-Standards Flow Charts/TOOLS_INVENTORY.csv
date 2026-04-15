@@ -1,0 +1,76 @@
+Category,Name,Type,URL / Location,What It Does,Required Secret / Notes
+AI Models & Platforms,OpenRouter,API,openrouter.ai,Sends one question to 5+ AI models at once and picks the best answer — the switchboard for all AI calls.,OPENROUTER_API_KEY
+AI Models & Platforms,Anthropic Claude (Sonnet 4/4.5),AI Model,anthropic.com,Writes code + documentation + standards. Used by Claude Code CLI.,ANTHROPIC_API_KEY
+AI Models & Platforms,OpenAI GPT,AI Model,openai.com,Powers PandaOps PR review. Reviews code changes for bugs and warnings.,OPENAI_API_KEY
+AI Models & Platforms,DeepSeek,AI Model,deepseek.com,Open AI model used for research sub-agents.,Via OpenRouter
+AI Models & Platforms,Grok,AI Model,grok.x.ai,Fast inference with real-time data. Used as a research sub-agent.,Via OpenRouter
+AI Models & Platforms,Kimi,AI Model,kimi.ai,Long-context model (200k+ tokens). Good for reading big documents.,Via OpenRouter
+AI Models & Platforms,Venice.ai,AI Platform,venice.ai,Privacy-focused AI. No data logged. Used for sensitive research.,Via OpenRouter
+AI Models & Platforms,Perplexity AI,Research Tool,perplexity.ai,AI search engine with citations. Used for fact-checking and manual research.,Optional API key
+AI Models & Platforms,GitHub Copilot,AI Coding Assistant,GitHub extension,Suggests code completions inside VS Code / Cursor / Windsurf.,GitHub subscription
+Code Editors & IDEs,Cursor,AI Code Editor,cursor.sh,VS Code + AI. Writes whole features based on your description.,None (paid app)
+Code Editors & IDEs,Windsurf,AI Code Editor,codeium.com/windsurf,Similar to Cursor. Made by Codeium.,None (free/paid)
+Code Editors & IDEs,VS Code,Code Editor,code.visualstudio.com,Standard code editor. Works with Copilot and Codeium.,None (free)
+Code Editors & IDEs,Claude Code,AI CLI Agent,claude.ai/code,Terminal agent that writes + edits + tests code autonomously.,ANTHROPIC_API_KEY
+Code Editors & IDEs,Cline,VS Code Extension,VS Code Marketplace,AI agent extension inside VS Code.,None (free)
+GitHub Tools & Actions,GitHub Actions,CI/CD Platform,.github/workflows/,Runs automated jobs on every push + PR + schedule.,Built-in
+GitHub Tools & Actions,actions/checkout@v4,GitHub Action,Marketplace,Downloads the repo code onto the GitHub Actions runner.,Built-in
+GitHub Tools & Actions,actions/setup-node@v4,GitHub Action,Marketplace,Installs Node.js on the GitHub Actions runner.,Built-in
+GitHub Tools & Actions,actions/create-github-app-token@v1,GitHub Action,Marketplace,Creates a secure token for a GitHub App to use in workflows.,APP_ID + APP_PRIVATE_KEY
+GitHub Tools & Actions,actions/github-script@v7,GitHub Action,Marketplace,Runs JavaScript inside GitHub Actions to call the GitHub API.,Built-in
+GitHub Tools & Actions,omnedia/panda-ops@v1,GitHub Action,Marketplace,AI code reviewer. Posts inline feedback on every PR.,OPENAI_API_KEY
+GitHub Tools & Actions,GitHub CLI (gh),CLI Tool,Built-in on runners,Creates issues + PRs + comments from command line or scripts.,GITHUB_TOKEN
+GitHub Tools & Actions,GitHub REST API,API,api.github.com,Programmatic access to issues + PRs + branches + comments.,GITHUB_TOKEN
+GitHub Tools & Actions,GitHub Projects,Project Management,GitHub UI,Organizes issues into Kanban boards with automatic tracking.,None
+GitHub Tools & Actions,Branch Protection Rules,GitHub Setting,Repo Settings,Prevents merging unless all required checks pass.,None
+GitHub Tools & Actions,Dependabot,GitHub Bot,.github/dependabot.yml,Automatically opens PRs to update outdated dependencies.,None
+Workflow Files,research-module.yml,GitHub Workflow,.github/workflows/research-module.yml,Manual trigger — runs AI research + creates docs + creates GitHub Issue.,OPENROUTER_API_KEY
+Workflow Files,create-issue-branch.yml,GitHub Workflow,.github/workflows/create-issue-branch.yml,Auto-creates a git branch for every new issue that is labeled or assigned.,GITHUB_TOKEN
+Workflow Files,panda-ops.yml,GitHub Workflow,.github/workflows/panda-ops.yml,AI reviews the PR diff and posts inline comments on every PR.,OPENAI_API_KEY
+Workflow Files,ralph-loop.yml,GitHub Workflow,.github/workflows/ralph-loop.yml,If CI fails asks Copilot to fix it. After 5 failures escalates to human.,GITHUB_TOKEN
+Workflow Files,ready-for-review.yml,GitHub Workflow,.github/workflows/ready-for-review.yml,Marks PR as ready for review automatically when checks pass.,GITHUB_TOKEN
+Workflow Files,recurse-ml.yml,GitHub Workflow,.github/workflows/recurse-ml.yml,Runs recursive ML checks on the codebase.,GITHUB_TOKEN
+Workflow Files,update-master-flow.yml,GitHub Workflow,.github/workflows/update-master-flow.yml,Regenerates the master flow chart on push to main and weekly on schedule.,GITHUB_TOKEN
+Scripts,scripts/research-module.js,Node.js Script,scripts/research-module.js,Sends a question to 5 OpenRouter AI agents and writes the synthesized answer to a .md file.,OPENROUTER_API_KEY
+Scripts,scripts/run-human-testing-api.js,Node.js Script,scripts/run-human-testing-api.js,Simulates human users testing a URL using S.H.I.F.T. AI agents. Writes a test report.,OPENROUTER_API_KEY
+Scripts,scripts/check-compliance.js,Node.js Script,scripts/check-compliance.js,Checks if a repo has all required Revvel standard files (CHANGELOG + AGENTS.md + etc.).,None
+Scripts,scripts/bootstrap-repo.sh,Bash Script,scripts/bootstrap-repo.sh,Sets up a brand-new repo with all Revvel standard files + CI/CD + folder structure.,None
+Scripts,scripts/bootstrap-new-project.sh,Bash Script,scripts/bootstrap-new-project.sh,Creates a new app project from templates (mobile + web + etc.) with workflows and docs.,None
+Scripts,scripts/setup-mcp.sh,Bash Script,scripts/setup-mcp.sh,Copies the right MCP server config (.mcp.json) into a project. Profiles: minimal/web/mobile/full.,None
+Scripts,scripts/sync-bom.sh,Bash Script,scripts/sync-bom.sh,Syncs the Bill of Materials (BOM) document across all repos.,GITHUB_TOKEN
+Scripts,scripts/update-master-flow.sh,Bash Script,scripts/update-master-flow.sh,Auto-updater for this flow chart. Scans the repo and updates metadata (repo name + doc paths + timestamps).,None
+MCP Servers,Postgres MCP,MCP Server,.mcp.json,Let AI query your PostgreSQL database with plain English.,DATABASE_URL
+MCP Servers,Supabase MCP,MCP Server,.mcp.json,Let AI read/write Supabase (hosted Postgres + auth).,SUPABASE_URL + SUPABASE_KEY
+MCP Servers,SQLite MCP,MCP Server,.mcp.json,Let AI work with local SQLite databases.,None
+MCP Servers,Brave Search MCP,MCP Server,.mcp.json,Let AI search the web via Brave Search API.,BRAVE_API_KEY
+MCP Servers,Fetch MCP,MCP Server,.mcp.json,Let AI read any URL or webpage.,None
+MCP Servers,Filesystem MCP,MCP Server,.mcp.json,Let AI read and write files on your computer.,None
+MCP Servers,Memory MCP,MCP Server,.mcp.json,Give AI persistent memory across sessions.,None
+MCP Servers,GitHub MCP,MCP Server,.mcp.json,Let AI create issues + PRs + branches via natural language.,GITHUB_TOKEN
+MCP Servers,Slack MCP,MCP Server,.mcp.json,Let AI send Slack messages and read channels.,SLACK_BOT_TOKEN
+MCP Servers,SendGrid MCP,MCP Server,.mcp.json,Let AI send emails.,SENDGRID_API_KEY
+MCP Servers,Twilio MCP,MCP Server,.mcp.json,Let AI send SMS messages.,TWILIO credentials
+MCP Servers,Stripe MCP,MCP Server,.mcp.json,Let AI read payment data and create charges.,STRIPE_SECRET_KEY
+MCP Servers,Shopify MCP,MCP Server,.mcp.json,Let AI manage Shopify stores.,SHOPIFY credentials
+MCP Servers,Google Maps MCP,MCP Server,.mcp.json,Let AI search and route using Google Maps.,GOOGLE_MAPS_API_KEY
+MCP Servers,Playwright MCP,MCP Server,.mcp.json,Let AI control a web browser (testing + scraping).,None
+MCP Servers,Redis MCP,MCP Server,.mcp.json,Let AI use Redis for caching and queuing.,REDIS_URL
+MCP Servers,Elasticsearch MCP,MCP Server,.mcp.json,Let AI search Elasticsearch indexes.,ES_URL
+MCP Servers,Docker MCP,MCP Server,.mcp.json,Let AI manage Docker containers.,None
+Third-Party Platforms,DigitalOcean,Cloud Hosting,digitalocean.com,Runs deployed apps on virtual servers (Droplets).,DO_API_TOKEN
+Third-Party Platforms,Cloudflare,CDN / Security,cloudflare.com,Protects the app from attacks + routes traffic + provides free HTTPS.,CF_API_TOKEN
+Third-Party Platforms,Supabase,Database / Auth,supabase.com,Hosted Postgres database with built-in authentication. Free tier available.,SUPABASE credentials
+Third-Party Platforms,Vercel,Hosting,vercel.com,One-click deploy for Next.js apps. Free tier.,VERCEL_TOKEN
+Third-Party Platforms,Netlify,Hosting,netlify.com,Easy deploy for static sites and functions. Free tier.,NETLIFY_TOKEN
+Third-Party Platforms,Stripe,Payments,stripe.com,Handles online payments. Used for affiliate and e-commerce.,STRIPE_SECRET_KEY
+Third-Party Platforms,Shopify,E-commerce,shopify.com,Runs online stores.,SHOPIFY credentials
+Third-Party Platforms,PDFiller,Document Tool,pdffiller.com,Fills and signs PDF forms (legal documents + filings).,PDFiller account
+Third-Party Platforms,Waydev,Analytics,waydev.co,Tracks developer activity and output metrics.,WAYDEV_TOKEN
+Third-Party Platforms,Tailwind CSS,UI Framework,tailwindcss.com,Makes web apps look good without writing custom CSS.,None
+Third-Party Platforms,Next.js,Web Framework,nextjs.org,Full-stack React framework. The standard for Revvel web apps.,None
+Third-Party Platforms,Expo,Mobile Framework,expo.dev,Builds iOS and Android apps from one JavaScript codebase.,None
+Third-Party Platforms,Vitest,Testing,vitest.dev,Runs fast unit tests.,None
+Third-Party Platforms,Playwright,E2E Testing,playwright.dev,Automates browser testing (clicks buttons + checks results).,None
+Third-Party Platforms,Kong,API Gateway,konghq.com,FOSS API gateway that controls who can call your APIs.,None
+Third-Party Platforms,Sentry,Error Tracking,sentry.io,Catches and reports errors in production automatically.,SENTRY_DSN
+Third-Party Platforms,OpenClaw,AI Orchestration,Internal (Revvel),Revvels internal AI orchestration system for running agents.,Internal
