@@ -21,6 +21,7 @@ This folder is the result of a full **self-healing evaluation** of the Revvel St
 |---|---|
 | [`README.md`](README.md) | This file — orientation and navigation |
 | [`TOOLING_AND_TESTING_BOM.md`](TOOLING_AND_TESTING_BOM.md) | Exhaustive list of testing, QA, monitoring, and auto-healing tools (FOSS + paid) |
+| [`UI_FIELD_TESTING_BOM.md`](UI_FIELD_TESTING_BOM.md) | Tools for UI-to-database field testing and mapping validation — the DBA process BOM |
 | [`API_REGISTRY_BOM.md`](API_REGISTRY_BOM.md) | Every API Revvel needs, uses, or should evaluate — with priority and cost |
 | [`SELF_HEALING_BOM_TEMPLATE.md`](SELF_HEALING_BOM_TEMPLATE.md) | Per-project self-healing BOM template — copy this into every new project |
 | [`LLM_RECOMMENDATIONS.md`](LLM_RECOMMENDATIONS.md) | Which LLMs to wire into Revvel for autonomous, self-improving agent operation |

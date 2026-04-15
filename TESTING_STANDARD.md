@@ -396,6 +396,24 @@ Every page must have an E2E test that verifies:
 
 All three test templates are in `templates/testing/`. Copy and adapt them for every new project — see `templates/testing/README.md` for substitution instructions.
 
+### 10.5. UI-to-Database Field Tests (DBA Process Module)
+
+Every Revvel application must validate that every UI form field correctly maps to the right database column through CRUD operations. This is the **DBA testing process** — a mandatory quality gate before any data-entry screen is considered production-ready.
+
+**See:** `UI_FIELD_TESTING_DBA_STANDARD.md` for the complete module, which covers:
+
+- **Field-to-column mapping verification** — every UI field confirmed against the field map document
+- **Data type consistency checks** — UI input type vs. database column type
+- **CRUD validation workflow** — CREATE (INSERT), READ (SELECT), UPDATE, DELETE all verified by querying the database directly after each UI action
+- **Constraint testing** — NOT NULL, UNIQUE, CHECK, and FK constraints intentionally tested with invalid data
+- **ACID property verification** — atomicity, consistency, isolation, and durability
+- **Trigger and stored procedure testing** — database-side business logic confirmed to fire on the correct UI actions
+- **Automated test pattern** — Playwright + `pg` client: drive the browser, then run SQL assertions in the same test step
+
+**Compliance checks added by this module:** DBA-001 through DBA-006 (see `COMPLIANCE_RUBRIC.md`).
+
+**BOM:** `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md`
+
 ---
 
 ## 11. Human Testing API
