@@ -30,6 +30,7 @@
 | [`FIELD_MAPPING_STANDARD.md`](FIELD_MAPPING_STANDARD.md) | Field mapping conventions for database-to-UI data flow |
 | [`GITHUB_APP_INTEGRATION_STANDARD.md`](GITHUB_APP_INTEGRATION_STANDARD.md) | GitHub App integration patterns and standards |
 | [`LEADS_STANDARD.md`](LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up |
+| [`GITHUB_PROJECTS_SETUP.md`](../GITHUB_PROJECTS_SETUP.md) | Full guide: labels, milestones, project boards, CI/CD automation |
 | [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, funnels |
 | [`MASTER_APP_TEMPLATE.md`](MASTER_APP_TEMPLATE.md) | Master template for all Revvel application projects |
 | [`MCP_STANDARD.md`](MCP_STANDARD.md) | All 32 standard MCP servers + FastMCP custom server standard |
@@ -53,7 +54,6 @@
 | [`DARE_LOG.md`](DARE_LOG.md) | Decisions, Actions, Results, Evidence — running decision log |
 | [`ENHANCEMENT_SUMMARY.md`](ENHANCEMENT_SUMMARY.md) | Summary of enhancements and improvements across the ecosystem |
 | [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md) | Business entity hierarchy: LLCs, non-profits, brand relationships |
-| [`GITHUB_PROJECTS_SETUP.md`](GITHUB_PROJECTS_SETUP.md) | GitHub Projects hierarchy and portfolio management structure |
 | [`INFRASTRUCTURE_MAP.md`](INFRASTRUCTURE_MAP.md) | DigitalOcean droplets, domains, services, and infrastructure topology |
 | [`CHANGELOG_v2.0.md`](CHANGELOG_v2.0.md) | Standards v2.0 changelog — major update history |
 
