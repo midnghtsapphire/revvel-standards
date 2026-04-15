@@ -29,6 +29,8 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
+| Activating a persona, greeting, guided session, character | [`persona-engine`](#persona-engine) |
+| Building, creating, or scaffolding a new skill | [`skill-forge`](#skill-forge) |
 | Breaking down features into atomic TODOs | [`todo-breakdown`](#todo-breakdown) |
 | Multiple agents working simultaneously | [`parallel-development`](#parallel-development) |
 | Git worktrees, parallel branches | [`using-git-worktrees`](#using-git-worktrees) |
@@ -67,6 +69,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### Agent Operations
 
+#### persona-engine
+- **Path:** `skills/persona-engine/`
+- **Files:** `SKILL.md` · `persona-engine.skill.yml` · `tests/promptfoo.yml`
+- **Description:** Ephemeral persona engine that attaches a named character to any skill session. Activates on demand, delivers greeting + guided first prompt, maintains persona voice throughout, and signs off cleanly. Eliminates the cold-start UX problem. Ships with 6 built-in personas: Aria (code review), Forge (skill building), Vault (security), Scout (research), Sage (documentation), Nexus (deployment).
+- **Tags:** persona, ephemeral-persona, ux, greeting, character, skill-guide, cold-start
+- **Trigger:** Any task where a persona should be activated; automatically invoked by other skills via `.skill.yml` persona config.
+- **Lifecycle:** Ephemeral — session-scoped, terminates at session end.
+
 #### model-router
 - **Path:** `skills/model-router/`
 - **Files:** `SKILL.md` · `model-router.skill.yml`
@@ -91,6 +101,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Developer Workflow
+
+#### skill-forge
+- **Path:** `skills/skill-forge/`
+- **Files:** `SKILL.md` · `skill-forge.skill.yml` · `tests/promptfoo.yml`
+- **Description:** The meta-skill that builds new skills. Interviews the user with 10 discovery questions, then generates all required skill files in one shot: SKILL.md, .skill.yml, persona.yml, PromptFoo tests, Windows .bat installer, Mac .command installer, README, and a marketplace listing draft. Adds the skill to SKILLS_INDEX.yml and REGISTRY.md automatically. Uses the Forge persona.
+- **Tags:** skill-forge, meta-skill, skill-builder, scaffolding, skill-creator, forge
+- **Trigger:** Any request to build, create, or scaffold a new skill.
+- **Lifecycle:** Ephemeral — terminates after skill is built and registered.
+- **Persona:** 🔨 Forge
 
 #### brainstorming
 - **Path:** `skills/brainstorming/`
