@@ -1,0 +1,31 @@
+# Issue Automation
+#
+# Automatically reviews newly opened issues for template completeness,
+# potential duplicates, and assignment via AutomaticIssue action.
+#
+# See: https://github.com/Dtar380/AutomaticIssue
+
+name: Issue Automation
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  automate-issue:
+    name: Automate Issue Triage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Issue Automation
+        uses: Dtar380/AutomaticIssue@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ github.repository }}
