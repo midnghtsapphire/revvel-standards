@@ -55,13 +55,28 @@ jobs:
               per_page: 100,
             });
 
-            // Exclude this workflow itself from the evaluation
-            const runs = data.check_runs.filter(r => r.name !== context.workflow);
-            core.info(`Found ${runs.length} check run(s) (excluding self).`);
+            // Ignore this workflow's own check runs so we don't block on ourselves.
+            const SELF_CHECK_NAMES = new Set([
+              'Promote Draft PR When CI Passes',
+              'Label Linked Issues as In-Review',
+              'Remove In-Review Label on PR Close',
+            ]);
+            const allowedConclusions = new Set(['success', 'skipped', 'neutral']);
+
+            const runs = data.check_runs.filter(
+              r => r.name !== context.workflow && !SELF_CHECK_NAMES.has(r.name)
+            );
+            core.info(`Found ${runs.length} external check run(s).`);
             runs.forEach(r => core.info(`  • ${r.name}: ${r.status} / ${r.conclusion}`));
 
-            const allDone   = runs.length > 0 && runs.every(r => r.status === 'completed');
-            const allPassed = allDone && runs.every(r => r.conclusion === 'success' || r.conclusion === 'skipped');
+            if (runs.length === 0) {
+              core.info('No external check runs yet; will not auto-promote.');
+              core.setOutput('all_passed', 'false');
+              return false;
+            }
+
+            const allDone   = runs.every(r => r.status === 'completed');
+            const allPassed = allDone && runs.every(r => allowedConclusions.has(r.conclusion));
 
             core.setOutput('all_passed', allPassed ? 'true' : 'false');
             return allPassed;
