@@ -155,6 +155,28 @@ For frontend applications, GitHub Pages provides a free zero-config staging URL:
 
 > **Important:** Ensure the repository is **private**. GitHub Pages for private repositories requires GitHub Pro or higher. If the account is on the free tier, use a DigitalOcean staging app instead (see §4.1).
 
+#### Adding a Jekyll Theme on GitHub Pages
+
+If the repository uses Jekyll for Pages, add or update `_config.yml` in the repository root:
+
+```yaml
+title: My Site
+theme: minima
+```
+
+Then commit and push. GitHub Pages will rebuild with the selected theme.
+
+For a supported remote theme:
+
+```yaml
+title: My Site
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+  - jekyll-remote-theme
+```
+
+Use a theme supported by GitHub Pages to avoid build failures.
+
 ### Graduate to Live-Test When
 
 - [ ] All CI checks pass on `main`
