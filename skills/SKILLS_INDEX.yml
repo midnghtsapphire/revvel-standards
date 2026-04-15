@@ -394,6 +394,53 @@ skills:
       - "1040"
       - "1099"
 
+  # ─── Skill Building & Personas ────────────────────────────────────────────
+
+  - name: skill_forge
+    title: "Skill Forge"
+    version: "1.0.0"
+    path: "skills/skill-forge/"
+    skill_file: "skills/skill-forge/skill-forge.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    lifecycle: ephemeral
+    tested: true
+    test_path: "skills/skill-forge/tests/promptfoo.yml"
+    persona: forge
+    triggers:
+      - "skill forge"
+      - "build a skill"
+      - "create a skill"
+      - "new skill"
+      - "scaffold skill"
+      - "make a skill"
+      - "skill builder"
+      - "skill creator"
+      - "forge a skill"
+      - "skill template"
+
+  - name: persona_engine
+    title: "Persona Engine"
+    version: "1.0.0"
+    path: "skills/persona-engine/"
+    skill_file: "skills/persona-engine/persona-engine.skill.yml"
+    category: "Agent Operations"
+    access: all
+    lifecycle: ephemeral
+    tested: true
+    test_path: "skills/persona-engine/tests/promptfoo.yml"
+    triggers:
+      - "persona"
+      - "character"
+      - "guide"
+      - "who are you"
+      - "greeting"
+      - "activate persona"
+      - "start persona"
+      - "ephemeral identity"
+      - "persona engine"
+      - "skill guide"
+
   # ─── Testing & Quality Agents ─────────────────────────────────────────────
 
   - name: testing_agent
