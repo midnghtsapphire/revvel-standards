@@ -23,6 +23,7 @@ This folder is the result of a full **self-healing evaluation** of the Revvel St
 | [`TOOLING_AND_TESTING_BOM.md`](TOOLING_AND_TESTING_BOM.md) | Exhaustive list of testing, QA, monitoring, and auto-healing tools (FOSS + paid) |
 | [`API_REGISTRY_BOM.md`](API_REGISTRY_BOM.md) | Every API Revvel needs, uses, or should evaluate — with priority and cost |
 | [`SELF_HEALING_BOM_TEMPLATE.md`](SELF_HEALING_BOM_TEMPLATE.md) | Per-project self-healing BOM template — copy this into every new project |
+| [`INVENTORY_TEMPLATE.md`](INVENTORY_TEMPLATE.md) | Per-project/per-business inventory template — tracks services, quotas, physical products, and upgrade triggers |
 | [`LLM_RECOMMENDATIONS.md`](LLM_RECOMMENDATIONS.md) | Which LLMs to wire into Revvel for autonomous, self-improving agent operation |
 | [`FOLDER_STRUCTURE_RECOMMENDATIONS.md`](FOLDER_STRUCTURE_RECOMMENDATIONS.md) | Recommended improvements to repo and docs folder structure |
 
@@ -82,15 +83,17 @@ For the autonomous BOM agent loop specifically:
 
 ### For new projects
 1. Copy `SELF_HEALING_BOM_TEMPLATE.md` into `docs/<project-name>/BOM.md`
-2. Fill in the stack decisions during Phase 0
-3. Reference `TOOLING_AND_TESTING_BOM.md` to choose testing tools
-4. Reference `API_REGISTRY_BOM.md` to identify required APIs
+2. Copy `INVENTORY_TEMPLATE.md` into `docs/<project-name>/INVENTORY.md`
+3. Fill in the stack decisions during Phase 0
+4. Reference `TOOLING_AND_TESTING_BOM.md` to choose testing tools
+5. Reference `API_REGISTRY_BOM.md` to identify required APIs
 
 ### For existing projects
 1. Open the project's `BOM.md`
 2. Run through the Self-Healing Checklist at the bottom of `SELF_HEALING_BOM_TEMPLATE.md`
 3. Update status fields (`❌ Not purchased` → `✅ Active` / `🗑️ Removed`)
 4. Re-run `scripts/sync-bom.sh` to update the master BOM
+5. Review `INVENTORY.md` — update quota usage, flag any ⚡ UPGRADE TRIGGERs, and sync changes to `docs/_MASTER_INVENTORY.md`
 
 ### For the coding agent
 - Reference `API_REGISTRY_BOM.md` to identify which APIs are available and what credentials to request
@@ -120,6 +123,7 @@ This script pulls all `BOM.md` files from `docs/*/BOM.md`, extracts outstanding 
 | MCP Standard | [`MCP_STANDARD.md`](../../MCP_STANDARD.md) |
 | Security Standard | [`SECURITY_STANDARD.md`](../../SECURITY_STANDARD.md) |
 | Vault Agent Standard | [`VAULT_AGENT_STANDARD.md`](../../VAULT_AGENT_STANDARD.md) |
+| Master Inventory | [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md) |
 
 ---
 

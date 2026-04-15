@@ -4,6 +4,8 @@
 > This file shows all outstanding purchases sorted by priority across all active projects.
 >
 > **Universal BOM List:** For the complete tooling, API, and self-healing BOM reference, see [`Universal-BOM_List/`](Universal-BOM_List/README.md).
+>
+> **Master Inventory:** For a full inventory of all active services, APIs, subscriptions, quota limits, and physical products across all MIDNGHTSAPPHIRE businesses, see [`_MASTER_INVENTORY.md`](_MASTER_INVENTORY.md).
 
 **Last Regenerated:** April 14, 2026
 
