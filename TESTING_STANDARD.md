@@ -508,24 +508,26 @@ The Human Testing API produces a report at the specified `OUTPUT_FILE` with thes
 | Visual regression | Screenshot diffing with AI-powered dynamic-area detection |
 | GitHub integration | PR status checks, deployment events, test result comments |
 
-### 12.2. Required API Keys and Secrets
+### 12.2. Required Secrets and Variables
 
-Add the following to **GitHub → Settings → Secrets and variables → Actions** for the revvel-standards workspace (`BsQPWJHcAYbKHlKpH1TWtA-w`):
+The workflow uses the **shared Revvel GitHub App** for GitHub authentication, consistent with all other Revvel automation workflows. Add the following to **GitHub → Settings → Secrets and variables → Actions**:
 
 **Repository Secrets:**
 
 | Secret Name | Where to Get It |
 |---|---|
+| `APP_ID` | Shared Revvel GitHub App — already used by other workflows |
+| `APP_PRIVATE_KEY` | Shared Revvel GitHub App — already used by other workflows |
 | `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create a **"CI/CD Integration"** key |
 
 **Repository Variables:**
 
 | Variable Name | Where to Get It |
 |---|---|
-| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID from URL or API docs |
-| `MABL_ENVIRONMENT_ID` | mabl Dashboard → Environments → select environment → copy ID from URL or API docs |
+| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID |
+| `MABL_ENVIRONMENT_ID` | mabl Dashboard → Environments → select environment → copy ID |
 
-> **Note:** Either `MABL_APPLICATION_ID` or `MABL_ENVIRONMENT_ID` must be set. Both can be set. The workflow gracefully skips (exit 0) if `MABL_API_KEY` is absent.
+> **Note:** `APP_ID` and `APP_PRIVATE_KEY` are already in place if other Revvel workflows (Research Module, Human Testing API) are active. Either `MABL_APPLICATION_ID` or `MABL_ENVIRONMENT_ID` must be set. The workflow gracefully skips (exit 0) if `MABL_API_KEY` is absent.
 
 ### 12.3. GitHub Actions Workflow
 
@@ -535,7 +537,7 @@ The workflow at `.github/workflows/mabl.yml` runs on:
 - Every pull request (opened, synchronize, reopened)
 - Manual dispatch via `Actions → mabl Automated Tests → Run workflow`
 
-The workflow uses the official `mablhq/github-run-tests-action@v1` action and posts a test summary to the GitHub Actions step summary on every run.
+The workflow installs the mabl CLI (`npm install -g @mablhq/mabl-cli`), authenticates via the shared GitHub App token, and runs `mabl deployments create` with the configured application/environment IDs.
 
 ### 12.4. Getting Application and Environment IDs
 
@@ -551,5 +553,5 @@ The workflow uses the official `mablhq/github-run-tests-action@v1` action and po
 | mabl Workspace | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w |
 | mabl Agent Tasks | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks |
 | mabl API Settings | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis |
-| GitHub Action | https://github.com/mablhq/github-run-tests-action |
+| mabl CLI (npm) | https://www.npmjs.com/package/@mablhq/mabl-cli |
 | Workflow file | `.github/workflows/mabl.yml` |

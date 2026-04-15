@@ -23,7 +23,7 @@
 |---|---|---|---|---|---|
 | RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28 |
 | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
-| mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ API key required — see setup below |
+| mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ CLI + GitHub App setup needed — see setup below |
 
 ---
 
@@ -52,15 +52,20 @@ All costs are tooling (RecurseML, Copilot) and developer tools.
 
 ---
 
-## mabl Setup (Required API Keys)
+## mabl Setup (Required Secrets and Variables)
 
-The `.github/workflows/mabl.yml` workflow is already configured. To activate it, add the following
-to **GitHub → Settings → Secrets and variables → Actions**:
+The `.github/workflows/mabl.yml` workflow is already configured. It uses:
+- **`npm install -g @mablhq/mabl-cli`** — installs the mabl CLI
+- **GitHub App authentication** — same `APP_ID` + `APP_PRIVATE_KEY` used by all Revvel workflows
+
+To activate it, add the following to **GitHub → Settings → Secrets and variables → Actions**:
 
 ### Repository Secrets
 
 | Secret Name | How to Get It | Notes |
 |---|---|---|
+| `APP_ID` | Shared Revvel GitHub App | Already present if other automation workflows are active |
+| `APP_PRIVATE_KEY` | Shared Revvel GitHub App | Already present if other automation workflows are active |
 | `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create "CI/CD Integration" key | Required — workflow skips if missing |
 
 ### Repository Variables

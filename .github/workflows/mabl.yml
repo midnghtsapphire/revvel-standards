@@ -1,15 +1,20 @@
 # Revvel mabl Automated Testing Workflow
 #
-# Runs mabl AI-powered tests on every push to main, every pull request,
-# and on demand via workflow_dispatch.
+# Installs the mabl CLI and runs mabl tests on every push to main,
+# every pull request, and on demand via workflow_dispatch.
+#
+# Uses the shared GitHub App (APP_ID + APP_PRIVATE_KEY) for authentication,
+# consistent with all other Revvel automation workflows.
 #
 # REQUIRED SECRETS (Settings → Secrets and variables → Actions):
-#   MABL_API_KEY  — "CI/CD Integration" API key from:
-#                   https://app.mabl.com/workspaces/-/settings/apis
+#   APP_ID          — GitHub App ID (shared across all Revvel workflows)
+#   APP_PRIVATE_KEY — GitHub App private key (shared across all Revvel workflows)
+#   MABL_API_KEY    — mabl API key for CLI authentication
+#                     https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis
 #
 # REQUIRED VARIABLES (Settings → Secrets and variables → Actions → Variables):
-#   MABL_APPLICATION_ID  — mabl application ID (find via curl builder in mabl API settings)
-#   MABL_ENVIRONMENT_ID  — mabl environment ID  (find via curl builder in mabl API settings)
+#   MABL_APPLICATION_ID  — mabl application ID
+#   MABL_ENVIRONMENT_ID  — mabl environment ID
 #
 # Workspace: BsQPWJHcAYbKHlKpH1TWtA-w
 # Dashboard: https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks
@@ -61,6 +66,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Generate GitHub App Token
+        id: app-token
+        # Uses the shared Revvel GitHub App for authentication.
+        # Required for elevated access and to avoid built-in GITHUB_TOKEN rate limits.
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        continue-on-error: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install mabl CLI
+        run: npm install -g @mablhq/mabl-cli
+
       - name: Verify MABL_API_KEY is configured
         run: |
           if [ -z "${{ secrets.MABL_API_KEY }}" ]; then
@@ -75,31 +98,49 @@ jobs:
           echo "✅ MABL_API_KEY is set — proceeding with mabl test run."
 
       - name: Run mabl tests
-        id: mabl-test-deployment
-        uses: mablhq/github-run-tests-action@v1
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          application-id: ${{ vars.MABL_APPLICATION_ID }}
-          environment-id: ${{ vars.MABL_ENVIRONMENT_ID }}
-          app-url: ${{ inputs.app-url }}
-          plan-labels: ${{ inputs.plan-labels }}
-          continue-on-failure: ${{ inputs.continue-on-failure == 'true' }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+        run: |
+          # Build optional flags
+          FLAGS=""
+          if [ -n "${{ vars.MABL_APPLICATION_ID }}" ]; then
+            FLAGS="$FLAGS --application-id ${{ vars.MABL_APPLICATION_ID }}"
+          fi
+          if [ -n "${{ vars.MABL_ENVIRONMENT_ID }}" ]; then
+            FLAGS="$FLAGS --environment-id ${{ vars.MABL_ENVIRONMENT_ID }}"
+          fi
+          if [ -n "${{ inputs.app-url }}" ]; then
+            FLAGS="$FLAGS --app-url ${{ inputs.app-url }}"
+          fi
+          if [ -n "${{ inputs.plan-labels }}" ]; then
+            FLAGS="$FLAGS --plan-labels ${{ inputs.plan-labels }}"
+          fi
+          if [ "${{ inputs.continue-on-failure }}" = "true" ]; then
+            FLAGS="$FLAGS --continue-on-failure"
+          fi
+
+          echo "Running: mabl deployments create $FLAGS"
+          mabl deployments create $FLAGS 2>&1 | tee /tmp/mabl-output.txt
 
       - name: Post mabl summary
         if: always()
         run: |
           echo "## 🧪 mabl Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Deployment ID | \`${{ steps.mabl-test-deployment.outputs.mabl-deployment-id }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Plans Run | ${{ steps.mabl-test-deployment.outputs.plans_run }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Plans Passed | ${{ steps.mabl-test-deployment.outputs.plans_passed }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Plans Failed | ${{ steps.mabl-test-deployment.outputs.plans_failed }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests Run | ${{ steps.mabl-test-deployment.outputs.tests_run }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests Passed | ${{ steps.mabl-test-deployment.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests Failed | ${{ steps.mabl-test-deployment.outputs.tests_failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | \`${{ github.repository }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Event | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f /tmp/mabl-output.txt ]; then
+            echo "### CLI Output" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat /tmp/mabl-output.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_Full results: [mabl Dashboard](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks)_" >> $GITHUB_STEP_SUMMARY
+
