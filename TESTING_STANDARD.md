@@ -491,3 +491,65 @@ The Human Testing API produces a report at the specified `OUTPUT_FILE` with thes
 | `scripts/run-human-testing-api.js` | Core script — calls OpenRouter AI agents |
 | `.github/workflows/run-human-testing-api.yml` | Workflow for this standards repo |
 | `templates/cicd/run-human-testing-api.yml` | Template to copy into any app repo |
+
+---
+
+## 12. mabl AI-Powered Testing
+
+**mabl** is an AI-powered test automation platform used for cloud-based E2E, API, and visual regression testing. It integrates with GitHub Actions to trigger automated test runs on every deployment.
+
+### 12.1. Why mabl
+
+| Capability | Detail |
+|---|---|
+| AI-generated tests | mabl auto-generates and self-heals tests as the UI changes |
+| E2E browser testing | Chrome, Firefox, WebKit, Edge — cloud-parallel execution |
+| API testing | REST/GraphQL test plans triggered by CI/CD events |
+| Visual regression | Screenshot diffing with AI-powered dynamic-area detection |
+| GitHub integration | PR status checks, deployment events, test result comments |
+
+### 12.2. Required API Keys and Secrets
+
+Add the following to **GitHub → Settings → Secrets and variables → Actions** for the revvel-standards workspace (`BsQPWJHcAYbKHlKpH1TWtA-w`):
+
+**Repository Secrets:**
+
+| Secret Name | Where to Get It |
+|---|---|
+| `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create a **"CI/CD Integration"** key |
+
+**Repository Variables:**
+
+| Variable Name | Where to Get It |
+|---|---|
+| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID from URL or API docs |
+| `MABL_ENVIRONMENT_ID` | mabl Dashboard → Environments → select environment → copy ID from URL or API docs |
+
+> **Note:** Either `MABL_APPLICATION_ID` or `MABL_ENVIRONMENT_ID` must be set. Both can be set. The workflow gracefully skips (exit 0) if `MABL_API_KEY` is absent.
+
+### 12.3. GitHub Actions Workflow
+
+The workflow at `.github/workflows/mabl.yml` runs on:
+
+- Push to `main` or `release/**` branches
+- Every pull request (opened, synchronize, reopened)
+- Manual dispatch via `Actions → mabl Automated Tests → Run workflow`
+
+The workflow uses the official `mablhq/github-run-tests-action@v1` action and posts a test summary to the GitHub Actions step summary on every run.
+
+### 12.4. Getting Application and Environment IDs
+
+1. Log in to [mabl](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis)
+2. Open the **curl builder** in the API settings page
+3. Select "Create deployment event" — the builder will display your available `application-id` and `environment-id` values
+4. Copy these values and add them as repository variables (`MABL_APPLICATION_ID`, `MABL_ENVIRONMENT_ID`)
+
+### 12.5. Workflow and Dashboard Links
+
+| Resource | URL |
+|---|---|
+| mabl Workspace | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w |
+| mabl Agent Tasks | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks |
+| mabl API Settings | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis |
+| GitHub Action | https://github.com/mablhq/github-run-tests-action |
+| Workflow file | `.github/workflows/mabl.yml` |

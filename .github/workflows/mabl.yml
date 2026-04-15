@@ -1,0 +1,105 @@
+# Revvel mabl Automated Testing Workflow
+#
+# Runs mabl AI-powered tests on every push to main, every pull request,
+# and on demand via workflow_dispatch.
+#
+# REQUIRED SECRETS (Settings → Secrets and variables → Actions):
+#   MABL_API_KEY  — "CI/CD Integration" API key from:
+#                   https://app.mabl.com/workspaces/-/settings/apis
+#
+# REQUIRED VARIABLES (Settings → Secrets and variables → Actions → Variables):
+#   MABL_APPLICATION_ID  — mabl application ID (find via curl builder in mabl API settings)
+#   MABL_ENVIRONMENT_ID  — mabl environment ID  (find via curl builder in mabl API settings)
+#
+# Workspace: BsQPWJHcAYbKHlKpH1TWtA-w
+# Dashboard: https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks
+#
+# See: TESTING_STANDARD.md §12
+
+name: mabl Automated Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "release/**"
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      app-url:
+        description: "Override app URL for this run (optional)"
+        required: false
+        type: string
+      plan-labels:
+        description: "Comma-separated mabl plan labels to run (optional, e.g. smoke-test)"
+        required: false
+        type: string
+      continue-on-failure:
+        description: "Continue workflow even if mabl tests fail?"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: mabl-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mabl-tests:
+    name: mabl Automated Tests
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify MABL_API_KEY is configured
+        run: |
+          if [ -z "${{ secrets.MABL_API_KEY }}" ]; then
+            echo "⚠️  MABL_API_KEY secret is not set."
+            echo "   1. Log in to https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis"
+            echo "   2. Create a 'CI/CD Integration' API key"
+            echo "   3. Add it to GitHub: Settings → Secrets and variables → Actions → New repository secret"
+            echo "      Name: MABL_API_KEY"
+            echo "   Skipping mabl run (no credentials)."
+            exit 0
+          fi
+          echo "✅ MABL_API_KEY is set — proceeding with mabl test run."
+
+      - name: Run mabl tests
+        id: mabl-test-deployment
+        uses: mablhq/github-run-tests-action@v1
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          application-id: ${{ vars.MABL_APPLICATION_ID }}
+          environment-id: ${{ vars.MABL_ENVIRONMENT_ID }}
+          app-url: ${{ inputs.app-url }}
+          plan-labels: ${{ inputs.plan-labels }}
+          continue-on-failure: ${{ inputs.continue-on-failure == 'true' }}
+
+      - name: Post mabl summary
+        if: always()
+        run: |
+          echo "## 🧪 mabl Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment ID | \`${{ steps.mabl-test-deployment.outputs.mabl-deployment-id }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Plans Run | ${{ steps.mabl-test-deployment.outputs.plans_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Plans Passed | ${{ steps.mabl-test-deployment.outputs.plans_passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Plans Failed | ${{ steps.mabl-test-deployment.outputs.plans_failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Run | ${{ steps.mabl-test-deployment.outputs.tests_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | ${{ steps.mabl-test-deployment.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Failed | ${{ steps.mabl-test-deployment.outputs.tests_failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Full results: [mabl Dashboard](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks)_" >> $GITHUB_STEP_SUMMARY

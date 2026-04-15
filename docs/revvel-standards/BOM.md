@@ -23,6 +23,7 @@
 |---|---|---|---|---|---|
 | RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28 |
 | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
+| mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ API key required — see setup below |
 
 ---
 
@@ -48,3 +49,26 @@ All costs are tooling (RecurseML, Copilot) and developer tools.
 - RecurseML is the highest-priority purchase decision — 14-day trial expires 2026-04-28.
 - Decision gate documented in `docs/DARE_LOG.md` (if it exists) or the `docs/_MASTER_BOM.md`.
 - This repo is the source of all skill files, templates, and standards — high value, low cost.
+
+---
+
+## mabl Setup (Required API Keys)
+
+The `.github/workflows/mabl.yml` workflow is already configured. To activate it, add the following
+to **GitHub → Settings → Secrets and variables → Actions**:
+
+### Repository Secrets
+
+| Secret Name | How to Get It | Notes |
+|---|---|---|
+| `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create "CI/CD Integration" key | Required — workflow skips if missing |
+
+### Repository Variables
+
+| Variable Name | How to Get It | Notes |
+|---|---|---|
+| `MABL_APPLICATION_ID` | [mabl API curl builder](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis#api-docs-selector-dropdown-button) | Either application or environment ID is required |
+| `MABL_ENVIRONMENT_ID` | [mabl API curl builder](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis#api-docs-selector-dropdown-button) | Either application or environment ID is required |
+
+**Workspace:** `BsQPWJHcAYbKHlKpH1TWtA-w`  
+**Dashboard:** https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks
