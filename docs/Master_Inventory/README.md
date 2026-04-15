@@ -56,6 +56,10 @@
 | [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md) | Business entity hierarchy: LLCs, non-profits, brand relationships |
 | [`INFRASTRUCTURE_MAP.md`](INFRASTRUCTURE_MAP.md) | DigitalOcean droplets, domains, services, and infrastructure topology |
 | [`CHANGELOG_v2.0.md`](CHANGELOG_v2.0.md) | Standards v2.0 changelog — major update history |
+| [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) | Mandatory process for making repositories private and migrating to Freedom Angel Corps enterprise org |
+| [`TEST_ENVIRONMENTS_STANDARD.md`](TEST_ENVIRONMENTS_STANDARD.md) | Four-stage test pipeline (dev → staging → live-test → production) and the S.H.I.F.T. test harness |
+| [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md) | SSO/SAML authentication integration standard |
+| [`UI_FIELD_TESTING_DBA_STANDARD.md`](UI_FIELD_TESTING_DBA_STANDARD.md) | UI-to-database field testing and DBA process standard |
 
 ---
 

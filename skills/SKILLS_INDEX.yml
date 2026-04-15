@@ -532,3 +532,22 @@ skills:
       - "write tests"
       - "generate tests"
       - "coverage report"
+
+  - name: mabl
+    title: "Mabl CLI — AI-Powered Test Automation"
+    version: "1.0.0"
+    path: "skills/mabl/"
+    skill_file: "skills/mabl/mabl.skill.yml"
+    category: "Testing & Quality"
+    access: all
+    triggers:
+      - "mabl"
+      - "mabl cli"
+      - "mabl tests"
+      - "ai test automation"
+      - "self-healing tests"
+      - "cross-browser testing"
+      - "deployment event"
+      - "mabl test plan"
+      - "mablhq"
+      - "setup-mabl-cli"
