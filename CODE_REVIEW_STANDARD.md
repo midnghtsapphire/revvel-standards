@@ -27,6 +27,17 @@ If Venice AI is unavailable, encounters an error, or flags code that requires a 
 
 All pull requests (PRs) must integrate with Coderabbit for automated line-by-line review. Coderabbit provides immediate feedback on syntax, style, and common anti-patterns directly within the GitHub PR interface. Developers must address all Coderabbit comments before a PR can be merged.
 
+### 2.4. AI PR Review (PandaOps)
+
+All repositories must include the **PandaOps** GitHub Actions workflow (`omnedia/panda-ops@v1`). PandaOps runs on every pull request, fetches the diff, performs heuristic scanning (e.g. `console.log`, `debugger`, TODOs, large diffs), and then calls OpenAI to post inline code-level feedback and a summary comment directly to the PR.
+
+- **Workflow template:** `templates/cicd/panda-ops.yml` → copy to `.github/workflows/panda-ops.yml`
+- **Required secret:** `OPENAI_API_KEY` (add via GitHub → Settings → Secrets and variables → Actions)
+- **Interaction with Coderabbit:** PandaOps and Coderabbit operate independently and complement each other — PandaOps focuses on AI reasoning over the full diff while Coderabbit provides line-by-line rule-based checks.
+- **Blocking policy:** `fail_on_warnings` defaults to `false`. Set it to `true` in repos where you want AI warnings to block merges at the CI level.
+
+See [`templates/cicd/README.md`](./templates/cicd/README.md) for full configuration options and setup instructions.
+
 ## 3. Deployment Pipeline Structure
 
 The official software development lifecycle for Revvel applications mandates a structured progression through distinct environments to ensure stability.

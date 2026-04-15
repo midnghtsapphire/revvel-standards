@@ -14,6 +14,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `ci.yml` | Universal CI — TypeScript check, Vitest unit tests, Playwright E2E | `.github/workflows/ci.yml` |
 | `auto-fix.yml` | Auto-fix loop — creates GitHub Issue + Copilot instructions on CI failure | `.github/workflows/auto-fix.yml` |
 | `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
+| `panda-ops.yml` | PandaOps AI PR Review — posts inline OpenAI-powered feedback on every PR | `.github/workflows/panda-ops.yml` |
 | `dependabot.yml` | Dependabot configuration — automated dependency and security updates | `.github/dependabot.yml` |
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
@@ -50,6 +51,46 @@ GitHub → github.com/apps/deploybot-app → Install → midnghtsapphire (All re
 | `YOUR_DROPLET_IP` | Droplet IP address (e.g. `164.90.148.7`) |
 | `YOUR_APP_DIR` | App directory on droplet (e.g. `growlingeyes`) |
 | `YOUR_DOMAIN` | Production domain (e.g. `growlingeyes.com`) |
+
+---
+
+## PandaOps AI PR Review
+
+**[PandaOps](https://github.com/omnedia/panda-ops)** (`omnedia/panda-ops`) is the Revvel standard for automated AI-powered pull request reviews. It uses OpenAI to post inline feedback and a summary comment on every PR.
+
+### How it works
+
+The `panda-ops.yml` workflow runs on every `pull_request` (opened, synchronize, reopened), fetches the PR diff, and uses OpenAI to produce actionable feedback directly in the GitHub PR interface — before any human review takes place.
+
+### What is automated
+
+- **Heuristic scanning** — flags `console.log`, `debugger`, TODOs, and oversized diffs without spending API credits
+- **AI review** — posts inline comments for critical errors, risky logic, and maintainability tips
+- **Summary comment** — posts an overall review summary to the PR
+
+### One-time secret setup (per repo)
+
+Add the `OPENAI_API_KEY` secret to the repository:
+
+```
+GitHub → Settings → Secrets and variables → Actions → New repository secret
+Name: OPENAI_API_KEY
+Value: <your key from https://platform.openai.com/api-keys>
+```
+
+`GITHUB_TOKEN` is provided automatically by GitHub Actions — no extra setup needed.
+
+### Configuration options
+
+| Input | Description | Default |
+|---|---|---|
+| `fail_on_warnings` | Set `true` to block merges when warnings are found | `false` |
+| `max_comments` | Cap on total comments posted | `25` |
+| `ai_focus_errors` | Detect critical/breaking issues | `true` |
+| `ai_focus_warn` | Detect risky logic | `true` |
+| `ai_focus_tips` | Suggest maintainability improvements | `true` |
+| `ai_focus_notes` | Add design/architecture notes | `false` |
+| `ai_focus_grammar` | Grammar/naming checks | `false` |
 
 ---
 
