@@ -1030,6 +1030,7 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 | CI | `ci.yml` | TypeScript check + Vitest tests + Playwright E2E |
 | Auto-Fix | `auto-fix.yml` | Creates GitHub Issue + Copilot instructions on CI failure |
 | Security | `security.yml` | `pnpm audit` + TruffleHog secret scanning |
+| PandaOps AI Review | `panda-ops.yml` | OpenAI-powered inline PR feedback on every pull request |
 | Deploy Android | `deploy-android.yml` | Manual PWA → Play Store (inactive until account ready) |
 | Deploy iOS | `deploy-ios.yml` | Manual PWA → App Store (inactive until account ready) |
 | Monitor | `monitor.yml` | Uptime/health-check monitoring |
