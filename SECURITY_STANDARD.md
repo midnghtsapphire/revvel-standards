@@ -301,7 +301,28 @@ Clerk is the preferred authentication provider. Follow these security rules:
 - Configure **session expiration** to 24 hours for regular users, 8 hours for admins.
 - Use Clerk's **organization** feature for multi-tenant apps.
 
-### 9.2. Custom JWT (When Clerk Is Not Used)
+### 9.2. SAML / SSO (Enterprise & Organization Login)
+
+For applications serving organization members or enterprise users, SAML SSO is **required** in addition to Clerk. Follow `SSO_SAML_STANDARD.md` for the full implementation guide.
+
+**Key rules:**
+- Every app must offer SSO as a login option on the login page.
+- Admin accounts must use SSO — password-only login is **forbidden** for admins.
+- In GitHub Actions, use `gagoar/get-saml-identity-action@0.9.0` to resolve a GitHub username to its corporate SSO email:
+
+```yaml
+      - name: Get SAML identity for PR author
+        id: saml
+        uses: gagoar/get-saml-identity-action@0.9.0
+        with:
+          login: ${{ github.actor }}
+          organization: ${{ github.repository_owner }}
+          token: ${{ secrets.ORG_ADMIN_TOKEN }}
+```
+
+The `ORG_ADMIN_TOKEN` must have `admin:org` scope and be stored as a repository secret. See `templates/cicd/get-saml-identity.yml` for the full workflow template.
+
+### 9.3. Custom JWT (When Clerk Is Not Used)
 
 If building a custom JWT system:
 
