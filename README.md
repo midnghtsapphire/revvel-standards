@@ -6,11 +6,11 @@
 
 ---
 
-**Key Standards**
-- `AGENT_FACTORY_STANDARD.md` — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
-- `OSINT_STANDARD.md` — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
-- `AUTOMATED_AUDIT_AGENT_STANDARD.md` — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
-- `API_GATEKEEPER_STANDARD.md` — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
+**Key Standards** — All standards live in [`docs/Master_Inventory/`](docs/Master_Inventory/)
+- [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
+- [`OSINT_STANDARD.md`](docs/Master_Inventory/OSINT_STANDARD.md) — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
+- [`AUTOMATED_AUDIT_AGENT_STANDARD.md`](docs/Master_Inventory/AUTOMATED_AUDIT_AGENT_STANDARD.md) — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
+- [`API_GATEKEEPER_STANDARD.md`](docs/Master_Inventory/API_GATEKEEPER_STANDARD.md) — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
