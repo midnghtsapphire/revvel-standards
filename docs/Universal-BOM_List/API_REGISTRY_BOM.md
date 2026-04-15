@@ -28,7 +28,7 @@
 | API | Provider | Free Tier | Cost | Priority | Status | Projects | Notes |
 |---|---|---|---|---|---|---|---|
 | **Anthropic Claude API** | Anthropic | ❌ No free tier | $3–75/M tokens | P0 | ❌ Not Provisioned | Audrey, Agent Factory, all agents | **Primary LLM for all Revvel agents.** Claude 3.7 Sonnet recommended for coding; Claude 3 Haiku for fast tasks. Add API key to Vault immediately |
-| **OpenAI API** | OpenAI | ❌ No free tier | $0.15–30/M tokens | P0 | ❌ Not Provisioned | Neurooz, GBrain | Required for Neurooz AI features. GPT-4o for reasoning; GPT-4o mini for speed/cost |
+| **OpenAI API** | OpenAI | ❌ No free tier | $0.15–30/M tokens | P0 | ✅ Active | Neurooz, GBrain, Revvel Forensic Studio, The Alt Text | API key provisioned in Vault at `revvel/shared/llm/openai`. GPT-4o for reasoning; GPT-4o mini for speed/cost |
 | **Google Gemini API** | Google | ✅ Free tier (limited RPM) | $0 free / $0.075+/M tokens | P1 | 🔵 Recommended | Agent Factory, multi-model router | Gemini 1.5 Flash free tier useful for high-volume tasks; Pro for quality. Via Google AI Studio |
 | **Google Vertex AI** | Google Cloud | 🆓 Free credits | Pay per use | P2 | 🟡 Evaluate | Enterprise projects | Managed Gemini + other models; better for production scale |
 

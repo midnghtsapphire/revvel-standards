@@ -11,6 +11,8 @@
 - `OSINT_STANDARD.md` — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
 - `AUTOMATED_AUDIT_AGENT_STANDARD.md` — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
 - `API_GATEKEEPER_STANDARD.md` — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
+- `REPOSITORY_PRIVACY_MIGRATION_STANDARD.md` — **mandatory** process for making all repositories private, auditing git history for unauthorized contributors, and migrating from `midnghtsapphire` to the `Freedom Angel Corps` enterprise organization.
+- `TEST_ENVIRONMENTS_STANDARD.md` — four-stage test pipeline (dev → staging → live-test → production), the **S.H.I.F.T. test harness**, and deployment targets (GitHub Actions/Pages → openaudrey subdomain → Freedom Angel Corps / DigitalOcean).
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
@@ -1004,6 +1006,8 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 | penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](penny-sovereign-yield-scout/) | [CHANGELOG.md](penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](penny-sovereign-yield-scout/branding/) |
 
 **Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
+
+**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](docs/_MASTER_INVENTORY.md)
 
 Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
