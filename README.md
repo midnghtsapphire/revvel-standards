@@ -1005,6 +1005,8 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 
 **Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
 
+**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](docs/_MASTER_INVENTORY.md)
+
 Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 ---
