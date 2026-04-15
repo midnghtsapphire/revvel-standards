@@ -20,6 +20,8 @@ gh label create "security"        --color "cc0000" --description "Security vulne
 gh label create "bom-purchase"    --color "ffd700" --description "Requires a purchase (links to BOM.md)" --repo $APP_REPO
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
+gh label create "triage"          --color "e4e669" --description "Needs triage — newly opened issue awaiting classification" --repo $APP_REPO
+gh label create "draft"           --color "cccccc" --description "Pull request is still a draft"        --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
 gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
 gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
@@ -30,20 +32,22 @@ gh label create "wontfix"         --color "ffffff" --description "This will not 
 
 ### Full Label Reference
 
-| Label | Color | Purpose |
-|---|---|---|
-| `bug` | `#d73a4a` | Something isn't working |
-| `enhancement` | `#a2eeef` | New feature or request |
-| `security` | `#cc0000` | Security vulnerability or concern |
-| `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
-| `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
-| `blocked` | `#e4e669` | Blocked by external dependency |
-| `in-review` | `#fbca04` | Linked PR is open and ready for review (set automatically) |
-| `auto-fix` | `#0075ca` | Created by auto-fix workflow |
-| `copilot` | `#0075ca` | Assigned to Copilot for fixing |
-| `documentation` | `#0075ca` | Documentation only |
-| `good-first-issue` | `#7057ff` | Good for newcomers |
-| `wontfix` | `#ffffff` | This will not be worked on |
+| Label | Color | Purpose | Set by |
+|---|---|---|---|
+| `bug` | `#d73a4a` | Something isn't working | Manual |
+| `enhancement` | `#a2eeef` | New feature or request | Manual |
+| `security` | `#cc0000` | Security vulnerability or concern | Manual |
+| `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) | Manual |
+| `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) | Manual |
+| `blocked` | `#e4e669` | Blocked by external dependency | Manual |
+| `triage` | `#e4e669` | Needs triage — newly opened issue awaiting classification | Auto (`arsc-labels.yml`) |
+| `draft` | `#cccccc` | Pull request is still a draft | Auto (`arsc-labels.yml`) |
+| `in-review` | `#fbca04` | Linked PR is open and ready for review | Auto (`ready-for-review.yml`) |
+| `auto-fix` | `#0075ca` | Created by auto-fix workflow | Auto (`ralph-loop.yml`) |
+| `copilot` | `#0075ca` | Assigned to Copilot for fixing | Auto (`ralph-loop.yml`) |
+| `documentation` | `#0075ca` | Documentation only | Manual |
+| `good-first-issue` | `#7057ff` | Good for newcomers | Manual |
+| `wontfix` | `#ffffff` | This will not be worked on | Manual |
 
 ---
 
@@ -121,6 +125,45 @@ Set up these automation rules in GitHub Projects → Workflows:
 | Issue labeled `blocked` | Move to **Blocked** |
 | Issue assigned | Move to **In Progress** (if in Backlog) |
 | Issue labeled `in-review` | Move to **In Review** |
+
+### ARSC Labels Automation Workflow
+
+The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests using the [`wagner-cotta/arsc-label`](https://github.com/wagner-cotta/arsc-label) action. It supports **Add**, **Remove**, **Set**, and **Clear** operations.
+
+| Trigger | Automation |
+|---|---|
+| Issue opened (no labels) | Adds `triage` label so the issue appears in the Backlog |
+| Draft PR opened | Adds `draft` label so the project board can filter draft work |
+| PR marked Ready for Review | Removes `draft` label automatically |
+| Manual `workflow_dispatch` | Operator can run any ARSC operation on any issue or PR number |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/arsc-labels.yml .github/workflows/arsc-labels.yml
+```
+
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**Manual usage (via GitHub Actions UI):**
+
+1. Go to **Actions** → **ARSC Labels** → **Run workflow**
+2. Enter the issue or PR number in **object-id**
+3. Choose an operation: `add`, `remove`, `set`, or `clear`
+4. Enter a comma-separated list of labels (not required for `clear`)
+5. Click **Run workflow**
+
+**Supported operations:**
+
+| Operation | Description |
+|---|---|
+| `add` | Adds the specified labels without removing existing ones |
+| `remove` | Removes the specified label(s) |
+| `set` | Replaces all existing labels with the specified set |
+| `clear` | Removes all labels |
+
+---
 
 ### Ready for Review Automation Workflow
 
@@ -200,7 +243,11 @@ gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error r
 # 4. Create GitHub Project board
 # (manual step — do in GitHub UI)
 
-# 5. Run bootstrap script
+# 5. Copy CI/CD workflows
+cp templates/cicd/ready-for-review.yml .github/workflows/ready-for-review.yml
+cp templates/cicd/arsc-labels.yml .github/workflows/arsc-labels.yml
+
+# 6. Run bootstrap script
 bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION_URL]
 ```
 
