@@ -1,0 +1,100 @@
+# SAML SSO Registration Workflow
+# Verifies that GitHub users in the organization have a linked SAML/SSO identity.
+#
+# Required secret: ADMIN_GITHUB_TOKEN
+#   The GitHub SAML GraphQL API requires `admin:org` scope — there is no narrower
+#   permission available. Create a classic Personal Access Token (PAT) scoped to
+#   `admin:org` and store it as a repository/organization secret.
+#   → GitHub → Settings → Secrets and variables → Actions → New repository secret
+#   Name:  ADMIN_GITHUB_TOKEN
+#   Value: <classic PAT with admin:org scope>
+#   Rotate this token regularly and restrict it to the minimum set of repositories.
+#
+# Triggers:
+#   • organization member_added — checks the new member immediately.
+#     NOTE: the `organization` event is only delivered to workflows in the
+#     organization's `.github` repository. Move this file to the org-level
+#     `.github` repo to enable this trigger.
+#   • pull_request opened/synchronized — checks the PR author on every push.
+
+name: SAML SSO Registration
+
+on:
+  # Fires when a member is added to the organization.
+  # Requires this workflow to live in the org-level `.github` repository.
+  organization:
+    types: [member_added]
+  # Also verify the PR author each time a PR is opened or updated
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Job: verify-saml-identity
+  # Resolve the SSO/SAML identity for the triggering user and fail (or warn)
+  # if the account is not yet linked to the organization's SAML provider.
+  # ──────────────────────────────────────────────────────────────────────────
+  verify-saml-identity:
+    name: Verify SAML SSO Identity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve triggering username
+        id: resolve-user
+        run: |
+          # organization member_added exposes the new member via .membership.user.login
+          # pull_request events expose the PR author via .pull_request.user.login
+          USERNAME="${{ github.event.membership.user.login || github.event.pull_request.user.login }}"
+          echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
+          echo "Checking SAML identity for: ${USERNAME}"
+
+      - name: get-saml-identity-action
+        id: saml-identity
+        uses: gagoar/get-saml-identity-action@0.9.0
+        with:
+          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          username: ${{ steps.resolve-user.outputs.username }}
+          organization: ${{ github.repository_owner }}
+
+      - name: Report SAML identity result
+        run: |
+          IDENTITY="${{ steps.saml-identity.outputs.identity }}"
+          USERNAME="${{ steps.resolve-user.outputs.username }}"
+
+          if [ -z "${IDENTITY}" ]; then
+            echo "::warning title=SAML Identity Missing::User '${USERNAME}' does not have a linked SAML/SSO identity in the organization. Ask them to authorize via SSO at https://github.com/orgs/${{ github.repository_owner }}/sso"
+          else
+            echo "::notice title=SAML Identity Verified::User '${USERNAME}' → SSO identity: ${IDENTITY}"
+          fi
+
+      - name: Comment on PR if SAML identity is missing
+        if: >
+          github.event_name == 'pull_request' &&
+          steps.saml-identity.outputs.identity == ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const username = '${{ steps.resolve-user.outputs.username }}';
+            const org = '${{ github.repository_owner }}';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: [
+                '## ⚠️ SAML SSO Identity Not Linked',
+                '',
+                `@${username}, your GitHub account does not have a linked SAML/SSO identity in the **${org}** organization.`,
+                '',
+                'Please authorize your account with the organization SSO provider before this PR can be merged:',
+                '',
+                `👉 [Authorize SSO for ${org}](https://github.com/orgs/${org}/sso)`,
+                '',
+                '---',
+                '_This comment was posted automatically by the SAML SSO Registration workflow._',
+              ].join('\n'),
+            });

@@ -207,6 +207,21 @@ Every database table column must be mapped to its corresponding UI field. See:
 - `docs/field-maps/ADMIN_PANEL_FIELD_MAP.md` — admin management fields
 - `docs/field-maps/AFFILIATE_FIELD_MAP.md` — affiliate tracking fields
 
+### 7.1. UI Field Testing & Validation (DBA Process)
+
+Once field maps are created, every field must be validated through a systematic CRUD testing process. This is a mandatory DBA step before any screen is considered production-ready.
+
+**See:** `UI_FIELD_TESTING_DBA_STANDARD.md` — the complete DBA module for field-by-field UI-to-database testing, including:
+- CRUD validation workflow (INSERT, SELECT, UPDATE, DELETE verification)
+- Constraint testing (NOT NULL, UNIQUE, CHECK, FK)
+- ACID property verification
+- Trigger and stored procedure testing
+- Playwright + PostgreSQL automated test patterns
+- Test evidence log templates
+- Compliance checks DBA-001 through DBA-006
+
+**BOM:** `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md` — all tools for UI field testing (free minimum stack: $0).
+
 ---
 
 ## 8. Backup and Recovery Policy

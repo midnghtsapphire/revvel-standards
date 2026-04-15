@@ -301,7 +301,28 @@ Clerk is the preferred authentication provider. Follow these security rules:
 - Configure **session expiration** to 24 hours for regular users, 8 hours for admins.
 - Use Clerk's **organization** feature for multi-tenant apps.
 
-### 9.2. Custom JWT (When Clerk Is Not Used)
+### 9.2. SAML / SSO (Enterprise & Organization Login)
+
+For applications serving organization members or enterprise users, SAML SSO is **required** in addition to Clerk. Follow `SSO_SAML_STANDARD.md` for the full implementation guide.
+
+**Key rules:**
+- Every app must offer SSO as a login option on the login page.
+- Admin accounts must use SSO — password-only login is **forbidden** for admins.
+- In GitHub Actions, use `gagoar/get-saml-identity-action@0.9.0` to resolve a GitHub username to its corporate SSO email:
+
+```yaml
+      - name: Get SAML identity for PR author
+        id: saml
+        uses: gagoar/get-saml-identity-action@0.9.0
+        with:
+          login: ${{ github.actor }}
+          organization: ${{ github.repository_owner }}
+          token: ${{ secrets.ORG_ADMIN_TOKEN }}
+```
+
+The `ORG_ADMIN_TOKEN` must have `admin:org` scope and be stored as a repository secret. See `templates/cicd/get-saml-identity.yml` for the full workflow template.
+
+### 9.3. Custom JWT (When Clerk Is Not Used)
 
 If building a custom JWT system:
 
@@ -407,3 +428,40 @@ cp templates/cicd/auto-fix.yml .github/workflows/auto-fix.yml
 ### 11.3. Error Monitoring (`monitored()` wrapper)
 
 For runtime security monitoring, see `standards/ERROR_REPORTING_STANDARD.md`. The `monitored()` wrapper ensures that security-relevant errors (auth failures, data integrity issues) escalate to GitHub Issues automatically, providing an audit trail.
+
+---
+
+## 12. Repository Visibility & Code Provenance
+
+### 12.1. All Repositories Must Be Private
+
+Proprietary application code must never be publicly accessible. This is a P0 requirement.
+
+- All `midnghtsapphire` and `Freedom Angel Corps` application repositories must be set to **Private**.
+- Public visibility is only acceptable for intentionally open-sourced libraries with explicit approval.
+- See `REPOSITORY_PRIVACY_MIGRATION_STANDARD.md` for the full process and bulk-privatization script.
+
+### 12.2. Unknown Contributor Response Protocol
+
+If GitGuardian, TruffleHog, or a manual git log audit detects commits attributed to unknown external email addresses (e.g., any address not belonging to the authorized team):
+
+1. **Immediately run** `git log --all --format='%ae %an %H %s' | grep <unknown-email>` to identify the exact commits.
+2. Determine whether the commit introduced functional code or was a merge artifact from a public template or tutorial.
+3. If the commit introduced unauthorized code: treat as a P0 security event — open a GitHub Issue, rotate any credentials accessible from that code path, and initiate a git history rewrite per `REPOSITORY_PRIVACY_MIGRATION_STANDARD.md §3.4`.
+4. If the commit was a false positive (e.g., an example commit from a tutorial included in a fork): document the finding and close the alert.
+
+### 12.3. Code Provenance Scanning
+
+Every repository must pass TruffleHog scanning before any production deployment (see §11.1). Additionally, run a periodic full-history audit:
+
+```bash
+# Full git history author audit
+git log --all --format='%ae' | sort -u
+
+# Check for any email not matching your known team
+git log --all --format='%ae %an %H' \
+  | grep -vE "your@email\.com|second@email\.com" \
+  | head -20
+```
+
+Any unknown authors must be investigated before the repository is granted production deploy access.

@@ -396,6 +396,24 @@ Every page must have an E2E test that verifies:
 
 All three test templates are in `templates/testing/`. Copy and adapt them for every new project — see `templates/testing/README.md` for substitution instructions.
 
+### 10.5. UI-to-Database Field Tests (DBA Process Module)
+
+Every Revvel application must validate that every UI form field correctly maps to the right database column through CRUD operations. This is the **DBA testing process** — a mandatory quality gate before any data-entry screen is considered production-ready.
+
+**See:** `UI_FIELD_TESTING_DBA_STANDARD.md` for the complete module, which covers:
+
+- **Field-to-column mapping verification** — every UI field confirmed against the field map document
+- **Data type consistency checks** — UI input type vs. database column type
+- **CRUD validation workflow** — CREATE (INSERT), READ (SELECT), UPDATE, DELETE all verified by querying the database directly after each UI action
+- **Constraint testing** — NOT NULL, UNIQUE, CHECK, and FK constraints intentionally tested with invalid data
+- **ACID property verification** — atomicity, consistency, isolation, and durability
+- **Trigger and stored procedure testing** — database-side business logic confirmed to fire on the correct UI actions
+- **Automated test pattern** — Playwright + `pg` client: drive the browser, then run SQL assertions in the same test step
+
+**Compliance checks added by this module:** DBA-001 through DBA-006 (see `COMPLIANCE_RUBRIC.md`).
+
+**BOM:** `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md`
+
 ---
 
 ## 11. Human Testing API
@@ -491,3 +509,67 @@ The Human Testing API produces a report at the specified `OUTPUT_FILE` with thes
 | `scripts/run-human-testing-api.js` | Core script — calls OpenRouter AI agents |
 | `.github/workflows/run-human-testing-api.yml` | Workflow for this standards repo |
 | `templates/cicd/run-human-testing-api.yml` | Template to copy into any app repo |
+
+---
+
+## 12. mabl AI-Powered Testing
+
+**mabl** is an AI-powered test automation platform used for cloud-based E2E, API, and visual regression testing. It integrates with GitHub Actions to trigger automated test runs on every deployment.
+
+### 12.1. Why mabl
+
+| Capability | Detail |
+|---|---|
+| AI-generated tests | mabl auto-generates and self-heals tests as the UI changes |
+| E2E browser testing | Chrome, Firefox, WebKit, Edge — cloud-parallel execution |
+| API testing | REST/GraphQL test plans triggered by CI/CD events |
+| Visual regression | Screenshot diffing with AI-powered dynamic-area detection |
+| GitHub integration | PR status checks, deployment events, test result comments |
+
+### 12.2. Required Secrets and Variables
+
+The workflow uses the **shared Revvel GitHub App** for GitHub authentication, consistent with all other Revvel automation workflows. Add the following to **GitHub → Settings → Secrets and variables → Actions**:
+
+**Repository Secrets:**
+
+| Secret Name | Where to Get It |
+|---|---|
+| `APP_ID` | Shared Revvel GitHub App — already used by other workflows |
+| `APP_PRIVATE_KEY` | Shared Revvel GitHub App — already used by other workflows |
+| `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create a **"CI/CD Integration"** key |
+
+**Repository Variables:**
+
+| Variable Name | Where to Get It |
+|---|---|
+| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID |
+| `MABL_ENVIRONMENT_ID` | mabl Dashboard → Environments → select environment → copy ID |
+
+> **Note:** `APP_ID` and `APP_PRIVATE_KEY` are already in place if other Revvel workflows (Research Module, Human Testing API) are active. Either `MABL_APPLICATION_ID` or `MABL_ENVIRONMENT_ID` must be set. The workflow gracefully skips (exit 0) if `MABL_API_KEY` is absent.
+
+### 12.3. GitHub Actions Workflow
+
+The workflow at `.github/workflows/mabl.yml` runs on:
+
+- Push to `main` or `release/**` branches
+- Every pull request (opened, synchronize, reopened)
+- Manual dispatch via `Actions → mabl Automated Tests → Run workflow`
+
+The workflow installs the mabl CLI (`npm install -g @mablhq/mabl-cli`), authenticates via the shared GitHub App token, and runs `mabl deployments create` with the configured application/environment IDs.
+
+### 12.4. Getting Application and Environment IDs
+
+1. Log in to [mabl](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis)
+2. Open the **curl builder** in the API settings page
+3. Select "Create deployment event" — the builder will display your available `application-id` and `environment-id` values
+4. Copy these values and add them as repository variables (`MABL_APPLICATION_ID`, `MABL_ENVIRONMENT_ID`)
+
+### 12.5. Workflow and Dashboard Links
+
+| Resource | URL |
+|---|---|
+| mabl Workspace | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w |
+| mabl Agent Tasks | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks |
+| mabl API Settings | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis |
+| mabl CLI (npm) | https://www.npmjs.com/package/@mablhq/mabl-cli |
+| Workflow file | `.github/workflows/mabl.yml` |
