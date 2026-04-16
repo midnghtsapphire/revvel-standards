@@ -24,6 +24,7 @@ The Revvel Standards repository already includes:
 | **Code Review** | RecurseML | ✅ Active | `.github/workflows/recurse-ml.yml` |
 | **Custom Standards Enforcement** | recurse-rules.md | ✅ Active | `recurse-rules.md` |
 | **Research Module** | AI Research Workflow | ✅ Active | `.github/workflows/research-module.yml` |
+| **Issue Triage** | Automatic Issue GH Action | ✅ Active | `.github/workflows/issue-automation.yml` |
 | **Human Testing API** | S.H.I.F.T. AI behavioral testing | ✅ Active | `.github/workflows/run-human-testing-api.yml` |
 | **Syntax Checking** | Pre-commit hooks + CI | ✅ Documented | `SYNTAX_ERROR_PREVENTION_STANDARD.md` |
 | **Testing Standards** | Vitest + Playwright | ✅ Documented | `TESTING_STANDARD.md` |
