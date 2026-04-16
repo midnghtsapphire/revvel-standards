@@ -63,7 +63,7 @@ jobs:
         uses: wagner-cotta/arsc-label@v1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.inputs.object-id }}
+          object-id: ${{ github.event.inputs['object-id'] }}
           operation: ${{ github.event.inputs.operation }}
           labels: ${{ github.event.inputs.labels }}
 
