@@ -410,5 +410,5 @@ Common high-value opportunities:
 
 ---
 
-*See also: [AGENTIC_METHODOLOGY_STANDARD.md](../AGENTIC_METHODOLOGY_STANDARD.md) for skill building methodology.*  
+*See also: [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for skill building methodology.*  
 *See also: [SKILL_CREATION_GUIDE.md](SKILL_CREATION_GUIDE.md) for step-by-step skill creation.*
