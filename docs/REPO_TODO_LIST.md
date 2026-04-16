@@ -5,6 +5,13 @@
 
 ---
 
+## CURRENT REVVEL-STANDARDS HOUSEKEEPING (Issue #108)
+
+- [ ] Organize and update `revvel-standards` documentation and standards references.
+- [ ] Create a **separate GitHub issue** for **Proof of Live App** scope (do not bundle into this standards housekeeping issue).
+
+---
+
 ## YOUR ORIGINAL APPS (Private — Need: Make Public, Add License, Lock Down)
 
 | # | Repo | Description | Status | TODO |
