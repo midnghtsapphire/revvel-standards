@@ -26,6 +26,8 @@ gh label create "copilot"         --color "0075ca" --description "Assigned to Co
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
 gh label create "good-first-issue" --color "7057ff" --description "Good for newcomers"                  --repo $APP_REPO
 gh label create "wontfix"         --color "ffffff" --description "This will not be worked on"           --repo $APP_REPO
+gh label create "skip-tests"      --color "e4e669" --description "Skip CI tests (hotfix / docs-only — remove before merge)" --repo $APP_REPO
+gh label create "hotfix"          --color "d93f0b" --description "Urgent fix for a production incident" --repo $APP_REPO
 ```
 
 ### Full Label Reference
@@ -44,6 +46,8 @@ gh label create "wontfix"         --color "ffffff" --description "This will not 
 | `documentation` | `#0075ca` | Documentation only |
 | `good-first-issue` | `#7057ff` | Good for newcomers |
 | `wontfix` | `#ffffff` | This will not be worked on |
+| `skip-tests` | `#e4e669` | Skip CI tests (hotfix / docs-only — remove before merge) |
+| `hotfix` | `#d93f0b` | Urgent fix for a production incident |
 
 ---
 
@@ -152,6 +156,64 @@ Closed #42    Fixed #42    Resolved #42
 
 GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
 
+### PR Labels Automation Workflow
+
+The `pr-labels.yml` workflow (copy from `templates/cicd/pr-labels.yml`) uses [`joerick/pr-labels-action@v1.0.9`](https://github.com/joerick/pr-labels-action) to read the labels applied to a PR and drive label-aware automation.
+
+**How it works:** The action reads all labels on the current PR and exposes them in two ways:
+
+| Output | Format | Example |
+|---|---|---|
+| Env var `GITHUB_PR_LABEL_<NAME>` | Set to `true` when the label is present | `GITHUB_PR_LABEL_SECURITY=true` |
+| Step output `steps.pr-labels.outputs.labels` | Space-padded string of all label names | `" bug security "` |
+
+**Label-driven automations included in the template:**
+
+| Label | Automation triggered |
+|---|---|
+| `skip-tests` | Posts a `::notice` annotation — lets CI jobs gate on this output and skip test steps |
+| `security` | Posts a security review checklist comment on the PR |
+| `design` | Posts a design asset checklist comment (screenshots, Figma link, a11y check) |
+| `bom-purchase` | Posts a BOM.md update reminder comment |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/pr-labels.yml .github/workflows/pr-labels.yml
+```
+
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**Using label outputs in other workflows (e.g. `ci.yml`):**
+
+```yaml
+jobs:
+  read-labels:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.pr-labels.outputs.labels }}
+    steps:
+      - id: pr-labels
+        uses: joerick/pr-labels-action@v1.0.9
+
+  test:
+    needs: read-labels
+    # Skip tests when the `skip-tests` label is applied
+    if: "!contains(needs.read-labels.outputs.labels, ' skip-tests ')"
+    runs-on: ubuntu-latest
+    steps:
+      - run: pnpm test
+```
+
+**How labels become env vars:** Label names are uppercased and hyphens become underscores.
+
+```
+label: "skip-tests"   →  GITHUB_PR_LABEL_SKIP_TESTS=true
+label: "security"     →  GITHUB_PR_LABEL_SECURITY=true
+label: "bom-purchase" →  GITHUB_PR_LABEL_BOM_PURCHASE=true
+```
+
 ### Link Issues to a Project
 
 When creating issues in your app repo, assign them to the project using:
@@ -200,7 +262,11 @@ gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error r
 # 4. Create GitHub Project board
 # (manual step — do in GitHub UI)
 
-# 5. Run bootstrap script
+# 5. Copy CI/CD workflow templates
+cp templates/cicd/ready-for-review.yml .github/workflows/ready-for-review.yml
+cp templates/cicd/pr-labels.yml        .github/workflows/pr-labels.yml
+
+# 6. Run bootstrap script
 bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION_URL]
 ```
 
