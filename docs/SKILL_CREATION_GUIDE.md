@@ -318,4 +318,4 @@ install/
 
 ---
 
-*Built with the Revvel Agentic Skills Framework. See [AGENTIC_METHODOLOGY_STANDARD.md](../AGENTIC_METHODOLOGY_STANDARD.md) for the full methodology.*
+*Built with the Revvel Agentic Skills Framework. See [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for the full methodology.*
