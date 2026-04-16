@@ -28,8 +28,8 @@ gh label create "copilot"         --color "0075ca" --description "Assigned to Co
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
 gh label create "good-first-issue" --color "7057ff" --description "Good for newcomers"                  --repo $APP_REPO
 gh label create "wontfix"         --color "ffffff" --description "This will not be worked on"           --repo $APP_REPO
-gh label create "skip-tests"      --color "e4e669" --description "Skip CI tests (hotfix / docs-only — remove before merge)" --repo $APP_REPO
-gh label create "hotfix"          --color "d93f0b" --description "Urgent fix for a production incident" --repo $APP_REPO
+gh label create "docker"          --color "0db7ed" --description "Requires Docker-based CI checks"      --repo $APP_REPO
+gh label create "merge-queue-pr"  --color "c5def5" --description "Created by Mergify merge queue"      --repo $APP_REPO
 ```
 
 ### Full Label Reference
@@ -48,8 +48,8 @@ gh label create "hotfix"          --color "d93f0b" --description "Urgent fix for
 | `documentation` | `#0075ca` | Documentation only |
 | `good-first-issue` | `#7057ff` | Good for newcomers |
 | `wontfix` | `#ffffff` | This will not be worked on |
-| `skip-tests` | `#e4e669` | Skip CI tests (hotfix / docs-only — remove before merge) |
-| `hotfix` | `#d93f0b` | Urgent fix for a production incident |
+| `docker` | `#0db7ed` | Requires Docker-based CI checks |
+| `merge-queue-pr` | `#c5def5` | Created by Mergify merge queue (set automatically) |
 
 ---
 
