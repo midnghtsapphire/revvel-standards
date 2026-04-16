@@ -15,13 +15,12 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `auto-fix.yml` | Auto-fix loop — creates GitHub Issue + Copilot instructions on CI failure | `.github/workflows/auto-fix.yml` |
 | `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
 | `panda-ops.yml` | PandaOps AI PR Review — posts inline OpenAI-powered feedback on every PR | `.github/workflows/panda-ops.yml` |
-| `ready-for-review.yml` | Draft PR promotion + `in-review` label lifecycle + review checklist comment | `.github/workflows/ready-for-review.yml` |
-| `auto-merge.yml` | Label-driven auto-merge — squash-merges when `auto-merge` label + CI pass + approved | `.github/workflows/auto-merge.yml` |
-| `sync-labels.yml` | Syncs standard Revvel labels from `.github/labels.yml` to the repo | `.github/workflows/sync-labels.yml` |
-| `ralph-loop.yml` | Self-healing CI retry — creates issues for Copilot on repeated CI failures | `.github/workflows/ralph-loop.yml` |
+| `ready-for-review.yml` | Ready for Review Automation — auto-promotes draft PRs, labels linked issues, posts review checklist | `.github/workflows/ready-for-review.yml` |
+| `mergify-merge-queue-labels-copier.yml` | Mergify Merge-Queue Labels Copier — copies labels from source PRs to Mergify merge-queue PRs | `.github/workflows/mergify-merge-queue-labels-copier.yml` |
 | `dependabot.yml` | Dependabot configuration — automated dependency and security updates | `.github/dependabot.yml` |
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
+| `labels-as-parameters.yml` | Converts PR labels (`key:value`) into named step outputs for conditional deploys and feature flags | `.github/workflows/labels-as-parameters.yml` |
 
 ---
 

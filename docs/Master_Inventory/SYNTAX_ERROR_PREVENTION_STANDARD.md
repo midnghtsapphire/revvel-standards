@@ -57,7 +57,7 @@ The standard Revvel pre-commit hook (`templates/hooks/pre-commit`) checks:
 
 ### 3.3 Hook Template
 
-See: [`templates/hooks/pre-commit`](templates/hooks/pre-commit)
+See: [`templates/hooks/pre-commit`](../../templates/hooks/pre-commit)
 
 ### 3.4 Rules
 
@@ -87,7 +87,7 @@ pre-commit run --all-files
 
 ### 4.2 Configuration
 
-Place `.pre-commit-config.yaml` in the repo root. See the template at [`templates/hooks/.pre-commit-config.yaml`](templates/hooks/.pre-commit-config.yaml).
+Place `.pre-commit-config.yaml` in the repo root. See the template at [`templates/hooks/.pre-commit-config.yaml`](../../templates/hooks/.pre-commit-config.yaml).
 
 ### 4.3 Required Hooks for Revvel Projects
 
@@ -162,7 +162,7 @@ Every Revvel TypeScript project **MUST** have an ESLint config (`.eslintrc.json`
 - `"no-undef": "error"` to catch undefined variables
 - `"no-unreachable": "error"` to catch unreachable code
 
-See [`COMPLIANCE_RUBRIC.md`](../COMPLIANCE_RUBRIC.md) Category E for the full code quality checklist.
+See [`COMPLIANCE_RUBRIC.md`](./COMPLIANCE_RUBRIC.md) Category E for the full code quality checklist.
 
 ---
 
@@ -172,7 +172,7 @@ Even if local hooks are bypassed, CI is the last line of defense. The `syntax-ch
 
 ### 6.1 Workflow Template
 
-See: [`templates/cicd/syntax-check.yml`](templates/cicd/syntax-check.yml)
+See: [`templates/cicd/syntax-check.yml`](../../templates/cicd/syntax-check.yml)
 
 Copy it to `.github/workflows/syntax-check.yml` in your app repo.
 
@@ -282,7 +282,7 @@ For a new project, run through this checklist:
 - [Husky](https://typicode.github.io/husky/)
 - [lint-staged](https://github.com/lint-staged/lint-staged)
 - [yamllint](https://yamllint.readthedocs.io/)
-- [`COMPLIANCE_RUBRIC.md`](../COMPLIANCE_RUBRIC.md) — Category G
-- [`templates/cicd/syntax-check.yml`](templates/cicd/syntax-check.yml)
-- [`templates/hooks/pre-commit`](templates/hooks/pre-commit)
-- [`templates/hooks/.pre-commit-config.yaml`](templates/hooks/.pre-commit-config.yaml)
+- [`COMPLIANCE_RUBRIC.md`](./COMPLIANCE_RUBRIC.md) — Category G
+- [`templates/cicd/syntax-check.yml`](../../templates/cicd/syntax-check.yml)
+- [`templates/hooks/pre-commit`](../../templates/hooks/pre-commit)
+- [`templates/hooks/.pre-commit-config.yaml`](../../templates/hooks/.pre-commit-config.yaml)

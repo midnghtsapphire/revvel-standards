@@ -3,7 +3,7 @@
 **Version:** 1.0.0  
 **Date:** April 2026  
 **Status:** Active  
-**Standards Reference:** [`SEO_METADATA_STANDARD.md`](../../SEO_METADATA_STANDARD.md)  
+**Standards Reference:** [`SEO_METADATA_STANDARD.md`](../Master_Inventory/SEO_METADATA_STANDARD.md)  
 **Target Lighthouse SEO Score:** 95+
 
 ---
@@ -193,7 +193,7 @@ export const metadata = {
 
 ## 5. Content Strategy — Blog (20 Posts at Launch)
 
-SEO-targeted blog posts to publish at launch per [Content Standard](../../CONTENT_STANDARD.md):
+SEO-targeted blog posts to publish at launch per [Content Standard](../Master_Inventory/CONTENT_STANDARD.md):
 
 | # | Title | Primary Keyword | Schema Type |
 |---|---|---|---|

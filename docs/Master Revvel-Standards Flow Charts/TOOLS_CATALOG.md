@@ -36,6 +36,7 @@ Every tool in the Revvel ecosystem is listed here with:
 | 10 | **`actions/setup-node@v4`** | GitHub Action | Installs Node.js inside a workflow runner | Phase 2, 5 | Free | none |
 | 11 | **`actions/create-github-app-token@v1`** | GitHub Action | Mints a short-lived (1-hour) GitHub App token for secure API calls | All phases | Free | `APP_ID`, `APP_PRIVATE_KEY` |
 | 12 | **`actions/github-script@v7`** | GitHub Action | Runs JavaScript inside a workflow to call the GitHub API | Phase 5–6 | Free | none |
+| 13 | **`matheusvellone/labels-as-parameters@1.0.0`** | GitHub Action | Converts PR labels (`key:value`) into named step outputs — drives conditional deploys and feature flags without manual `workflow_dispatch` inputs | Phase 5–7 | Free | none |
 
 ---
 
@@ -115,6 +116,7 @@ Config file: `.mcp.json` in each project root. Setup: `scripts/setup-mcp.sh`.
 | 51 | `recurse-ml.yml` | ML/recursion automation workflow | Scheduled / manual |
 | 52 | `run-human-testing-api.yml` | Human testing API runner | Manual |
 | 53 | `flow-chart-sync.yml` | **THIS FOLDER'S MAINTAINER.** Auto-syncs flow charts on every push | `push` to main |
+| 54 | `pr-labels.yml` | Reads PR labels via `joerick/pr-labels-action@v1.0.9`; triggers label-driven automations (security checklist, design reminder, BOM reminder, skip-tests gate) | `pull_request` |
 
 ---
 

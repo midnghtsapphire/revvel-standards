@@ -183,7 +183,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 
 ## 6. Technology Stack
 
-Per [Revvel Master App Template](../../MASTER_APP_TEMPLATE.md):
+Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 
 | Layer | Technology |
 |---|---|
@@ -330,7 +330,7 @@ Core tables: `users`, `orders`, `order_items`, `menu_items`, `calendar_slots`, `
 
 ## 15. Required Compliance Checklist
 
-Per [Revvel Compliance Rubric](../../COMPLIANCE_RUBRIC.md):
+Per [Revvel Compliance Rubric](../Master_Inventory/COMPLIANCE_RUBRIC.md):
 
 - [x] Google OAuth + Apple Sign-In + Email/Password auth
 - [x] Stripe integration (one-time + subscriptions + webhooks)

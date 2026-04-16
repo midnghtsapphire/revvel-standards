@@ -36,7 +36,7 @@ All repositories must include the **PandaOps** GitHub Actions workflow (`omnedia
 - **Interaction with Coderabbit:** PandaOps and Coderabbit operate independently and complement each other — PandaOps focuses on AI reasoning over the full diff while Coderabbit provides line-by-line rule-based checks.
 - **Blocking policy:** `fail_on_warnings` defaults to `false`. Set it to `true` in repos where you want AI warnings to block merges at the CI level.
 
-See [`templates/cicd/README.md`](./templates/cicd/README.md) for full configuration options and setup instructions.
+See [`templates/cicd/README.md`](../../templates/cicd/README.md) for full configuration options and setup instructions.
 
 ## 3. Deployment Pipeline Structure
 
@@ -116,7 +116,7 @@ All Revvel and MIDNGHTSAPPHIRE repositories are monitored by the **Waydev GitHub
 
 Waydev was evaluated as part of a 1-week trial. Full setup instructions, pricing, and removal steps are documented in:
 
-→ [`docs/WAYDEV_SETUP.md`](docs/WAYDEV_SETUP.md)
+→ [`docs/WAYDEV_SETUP.md`](../WAYDEV_SETUP.md)
 
 ### 7.4. Scope
 

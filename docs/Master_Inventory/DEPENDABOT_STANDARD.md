@@ -498,7 +498,7 @@ Run this checklist when bootstrapping a new Revvel project:
 - [ ] Enable **Dependabot security updates** in Repository Settings → Code security and analysis
 - [ ] Copy `templates/cicd/dependabot.yml` → `.github/dependabot.yml`
 - [ ] Replace `OWNER_USERNAME` placeholder with your GitHub username
-- [ ] Add `dependencies` and `automated` labels to the repository (see `GITHUB_PROJECTS_SETUP.md`)
+- [ ] Add `dependencies` and `automated` labels to the repository (see `docs/GITHUB_PROJECTS_SETUP.md`)
 - [ ] Confirm CI workflow runs on `pull_request` events (required for Dependabot PRs to get checked)
 - [ ] Optionally add `templates/cicd/dependabot-auto-merge.yml` → `.github/workflows/dependabot-auto-merge.yml`
 - [ ] Verify first Dependabot PR appears within 24 hours of adding the config
@@ -509,8 +509,8 @@ Run this checklist when bootstrapping a new Revvel project:
 
 | Document | Relevance |
 |---|---|
-| `SECURITY_STANDARD.md` | Overall security requirements; Section 8 covers dependency scanning |
+| `docs/Master_Inventory/SECURITY_STANDARD.md` | Overall security requirements; Section 8 covers dependency scanning |
 | `templates/cicd/security.yml` | The `pnpm audit` workflow that complements Dependabot |
 | `templates/cicd/ci.yml` | The CI workflow that Dependabot PRs trigger |
-| `GITHUB_PROJECTS_SETUP.md` | Label setup for `dependencies` and `automated` labels |
-| `DEPLOYMENT_STANDARD.md` | How vetted dependency updates flow through to production |
+| `docs/GITHUB_PROJECTS_SETUP.md` | Label setup for `dependencies` and `automated` labels |
+| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` | How vetted dependency updates flow through to production |
