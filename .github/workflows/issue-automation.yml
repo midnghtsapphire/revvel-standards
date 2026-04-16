@@ -25,7 +25,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Issue Automation
-        uses: Dtar380/AutomaticIssue@v2.0.0
+        # Pin to the full commit SHA for the upstream v2.0.0 release.
+        uses: Dtar380/AutomaticIssue@<FULL_40_CHARACTER_COMMIT_SHA_FOR_V2_0_0>
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ github.repository }}
