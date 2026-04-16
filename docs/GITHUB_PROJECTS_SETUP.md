@@ -8,7 +8,19 @@ Complete guide to setting up GitHub Projects, Labels, and Milestones for the Rev
 
 ## 1. Standard Label Set
 
-Apply these labels to ALL Revvel repositories. Run the GitHub CLI commands below or create them manually in GitHub → Settings → Labels.
+The canonical label definitions live in `.github/labels.yml` in this repo. The `sync-labels.yml` workflow keeps them in sync automatically.
+
+**Preferred setup (automated):**
+
+```bash
+# Copy both files to your app repo
+cp .github/labels.yml          YOUR_REPO/.github/labels.yml
+cp templates/cicd/sync-labels.yml  YOUR_REPO/.github/workflows/sync-labels.yml
+
+# Commit and push — the workflow will create all labels on the first run
+```
+
+**Manual setup (one-time CLI):**
 
 ```bash
 # Run in your repo root (requires `gh` CLI authenticated)
@@ -23,8 +35,8 @@ gh label create "blocked"         --color "e4e669" --description "Blocked by ext
 gh label create "triage"          --color "e4e669" --description "Needs triage — newly opened issue awaiting classification" --repo $APP_REPO
 gh label create "draft"           --color "cccccc" --description "Pull request is still a draft"        --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
-gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
-gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
+gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix / Ralph Loop workflow" --repo $APP_REPO
+gh label create "copilot"         --color "7057ff" --description "Assigned to GitHub Copilot for fixing" --repo $APP_REPO
 gh label create "documentation"   --color "0075ca" --description "Documentation only"                   --repo $APP_REPO
 gh label create "good-first-issue" --color "7057ff" --description "Good for newcomers"                  --repo $APP_REPO
 gh label create "wontfix"         --color "ffffff" --description "This will not be worked on"           --repo $APP_REPO
@@ -291,7 +303,10 @@ When creating a new Revvel application repository:
 APP_REPO="midnghtsapphire/NEW_REPO"
 APP_NAME="new-app-name"
 
-# 1. Create standard labels
+# 1. Sync standard labels (automated — recommended)
+cp .github/labels.yml             $APP_NAME/.github/labels.yml
+cp templates/cicd/sync-labels.yml $APP_NAME/.github/workflows/sync-labels.yml
+# OR run manually:
 # (run all gh label create commands from Section 1)
 
 # 2. Create error reporting label
