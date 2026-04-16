@@ -20,6 +20,8 @@ gh label create "security"        --color "cc0000" --description "Security vulne
 gh label create "bom-purchase"    --color "ffd700" --description "Requires a purchase (links to BOM.md)" --repo $APP_REPO
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
+gh label create "triage"          --color "e4e669" --description "Needs triage — newly opened issue awaiting classification" --repo $APP_REPO
+gh label create "draft"           --color "cccccc" --description "Pull request is still a draft"        --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
 gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
 gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
@@ -125,6 +127,45 @@ Set up these automation rules in GitHub Projects → Workflows:
 | Issue labeled `blocked` | Move to **Blocked** |
 | Issue assigned | Move to **In Progress** (if in Backlog) |
 | Issue labeled `in-review` | Move to **In Review** |
+
+### ARSC Labels Automation Workflow
+
+The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests using the [`wagner-cotta/arsc-label`](https://github.com/wagner-cotta/arsc-label) action. It supports **Add**, **Remove**, **Set**, and **Clear** operations.
+
+| Trigger | Automation |
+|---|---|
+| Issue opened (no labels) | Adds `triage` label so the issue appears in the Backlog |
+| Draft PR opened | Adds `draft` label so the project board can filter draft work |
+| PR marked Ready for Review | Removes `draft` label automatically |
+| Manual `workflow_dispatch` | Operator can run any ARSC operation on any issue or PR number |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/arsc-labels.yml .github/workflows/arsc-labels.yml
+```
+
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**Manual usage (via GitHub Actions UI):**
+
+1. Go to **Actions** → **ARSC Labels** → **Run workflow**
+2. Enter the issue or PR number in **object-id**
+3. Choose an operation: `add`, `remove`, `set`, or `clear`
+4. Enter a comma-separated list of labels (not required for `clear`)
+5. Click **Run workflow**
+
+**Supported operations:**
+
+| Operation | Description |
+|---|---|
+| `add` | Adds the specified labels without removing existing ones |
+| `remove` | Removes the specified label(s) |
+| `set` | Replaces all existing labels with the specified set |
+| `clear` | Removes all labels |
+
+---
 
 ### Ready for Review Automation Workflow
 
