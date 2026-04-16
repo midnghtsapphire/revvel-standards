@@ -20,6 +20,8 @@ gh label create "security"        --color "cc0000" --description "Security vulne
 gh label create "bom-purchase"    --color "ffd700" --description "Requires a purchase (links to BOM.md)" --repo $APP_REPO
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
+gh label create "triage"          --color "e4e669" --description "Needs triage — newly opened issue awaiting classification" --repo $APP_REPO
+gh label create "draft"           --color "cccccc" --description "Pull request is still a draft"        --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
 gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix workflow"         --repo $APP_REPO
 gh label create "copilot"         --color "0075ca" --description "Assigned to Copilot for fixing"       --repo $APP_REPO
@@ -126,6 +128,45 @@ Set up these automation rules in GitHub Projects → Workflows:
 | Issue assigned | Move to **In Progress** (if in Backlog) |
 | Issue labeled `in-review` | Move to **In Review** |
 
+### ARSC Labels Automation Workflow
+
+The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests using the [`wagner-cotta/arsc-label`](https://github.com/wagner-cotta/arsc-label) action. It supports **Add**, **Remove**, **Set**, and **Clear** operations.
+
+| Trigger | Automation |
+|---|---|
+| Issue opened (no labels) | Adds `triage` label so the issue appears in the Backlog |
+| Draft PR opened | Adds `draft` label so the project board can filter draft work |
+| PR marked Ready for Review | Removes `draft` label automatically |
+| Manual `workflow_dispatch` | Operator can run any ARSC operation on any issue or PR number |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/arsc-labels.yml .github/workflows/arsc-labels.yml
+```
+
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**Manual usage (via GitHub Actions UI):**
+
+1. Go to **Actions** → **ARSC Labels** → **Run workflow**
+2. Enter the issue or PR number in **object-id**
+3. Choose an operation: `add`, `remove`, `set`, or `clear`
+4. Enter a comma-separated list of labels (not required for `clear`)
+5. Click **Run workflow**
+
+**Supported operations:**
+
+| Operation | Description |
+|---|---|
+| `add` | Adds the specified labels without removing existing ones |
+| `remove` | Removes the specified label(s) |
+| `set` | Replaces all existing labels with the specified set |
+| `clear` | Removes all labels |
+
+---
+
 ### Ready for Review Automation Workflow
 
 The `ready-for-review.yml` workflow (copy from `templates/cicd/ready-for-review.yml`) automates the full lifecycle between an issue and a PR:
@@ -156,33 +197,63 @@ Closed #42    Fixed #42    Resolved #42
 
 GitHub itself closes the linked issues when the PR is merged. The workflow handles the labeling so the project board moves cards automatically.
 
-### Mergify Merge-Queue Labels Copier Workflow
+### PR Labels Automation Workflow
 
-The `mergify-merge-queue-labels-copier.yml` workflow (copy from `templates/cicd/mergify-merge-queue-labels-copier.yml`) ensures that labels are correctly propagated from a source PR to the temporary merge-queue PR that Mergify creates during the merge process.
+The `pr-labels.yml` workflow (copy from `templates/cicd/pr-labels.yml`) uses [`joerick/pr-labels-action@v1.0.9`](https://github.com/joerick/pr-labels-action) to read the labels applied to a PR and drive label-aware automation.
 
-**Why this matters:** Mergify's merge queue creates a temporary PR that batches one or more source PRs before merging to the base branch. Without this workflow, CI jobs that gate on specific labels (e.g., Docker-based checks) skip on merge-queue PRs — causing the queue to stall or merge unvalidated code.
+**How it works:** The action reads all labels on the current PR and exposes them in two ways:
 
-| Trigger | Automation |
+| Output | Format | Example |
+|---|---|---|
+| Env var `GITHUB_PR_LABEL_<NAME>` | Set to `true` when the label is present | `GITHUB_PR_LABEL_SECURITY=true` |
+| Step output `steps.pr-labels.outputs.labels` | Space-padded string of all label names | `" bug security "` |
+
+**Label-driven automations included in the template:**
+
+| Label | Automation triggered |
 |---|---|
-| Mergify opens a merge-queue PR (`mergify/merge-queue/…`) | Copies configured labels from the source PR; adds `merge-queue-pr` label |
+| `skip-tests` | Posts a `::notice` annotation — lets CI jobs gate on this output and skip test steps |
+| `security` | Posts a security review checklist comment on the PR |
+| `design` | Posts a design asset checklist comment (screenshots, Figma link, a11y check) |
+| `bom-purchase` | Posts a BOM.md update reminder comment |
 
 **Setup:**
 
 ```bash
 # Copy to your app repo
-cp templates/cicd/mergify-merge-queue-labels-copier.yml .github/workflows/mergify-merge-queue-labels-copier.yml
+cp templates/cicd/pr-labels.yml .github/workflows/pr-labels.yml
 ```
 
-No secrets required — uses `github.token`. Customise the `labels` and `additional-labels` inputs to match your repo's CI requirements.
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
 
-**Configuration inputs:**
+**Using label outputs in other workflows (e.g. `ci.yml`):**
 
-| Input | Description | Default |
-|---|---|---|
-| `labels` | Comma-separated labels to copy from the source PR | `docker` |
-| `additional-labels` | Extra labels added to every merge-queue PR | `merge-queue-pr` |
+```yaml
+jobs:
+  read-labels:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.pr-labels.outputs.labels }}
+    steps:
+      - id: pr-labels
+        uses: joerick/pr-labels-action@v1.0.9
 
-**Required labels:** Ensure your repository has the `docker` and `merge-queue-pr` labels created (see Section 1 above). The workflow does not create missing labels automatically.
+  test:
+    needs: read-labels
+    # Skip tests when the `skip-tests` label is applied
+    if: "!contains(needs.read-labels.outputs.labels, ' skip-tests ')"
+    runs-on: ubuntu-latest
+    steps:
+      - run: pnpm test
+```
+
+**How labels become env vars:** Label names are uppercased and hyphens become underscores.
+
+```
+label: "skip-tests"   →  GITHUB_PR_LABEL_SKIP_TESTS=true
+label: "security"     →  GITHUB_PR_LABEL_SECURITY=true
+label: "bom-purchase" →  GITHUB_PR_LABEL_BOM_PURCHASE=true
+```
 
 ### Link Issues to a Project
 
@@ -232,7 +303,11 @@ gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error r
 # 4. Create GitHub Project board
 # (manual step — do in GitHub UI)
 
-# 5. Run bootstrap script
+# 5. Copy CI/CD workflow templates
+cp templates/cicd/ready-for-review.yml .github/workflows/ready-for-review.yml
+cp templates/cicd/pr-labels.yml        .github/workflows/pr-labels.yml
+
+# 6. Run bootstrap script
 bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION_URL]
 ```
 

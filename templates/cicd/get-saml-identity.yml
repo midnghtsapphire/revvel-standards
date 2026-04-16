@@ -1,0 +1,57 @@
+# Copy to .github/workflows/get-saml-identity.yml in your app repo
+#
+# Resolves a GitHub username to its SAML/SSO corporate email identity.
+# Useful for PR author notifications, SSO enforcement checks, and audit logging.
+#
+# Required secret: ORG_ADMIN_TOKEN
+#   A GitHub PAT or App installation token with `admin:org` scope.
+#   GitHub → Settings → Secrets and variables → Actions → New repository secret
+#
+# See SSO_SAML_STANDARD.md for full context and Clerk/app-level SSO setup.
+
+name: Resolve SAML Identity
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  resolve-saml-identity:
+    name: Resolve PR Author SAML Identity
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Get SAML identity for PR author
+        id: saml
+        uses: gagoar/get-saml-identity-action@0.9.0
+        with:
+          login: ${{ github.actor }}
+          organization: ${{ github.repository_owner }}
+          token: ${{ secrets.ORG_ADMIN_TOKEN }}
+
+      - name: Fail if no SSO identity found
+        if: ${{ steps.saml.outputs.identity == '' }}
+        run: |
+          echo "::error::No SAML/SSO identity found for GitHub user '${{ github.actor }}'."
+          echo "::error::Ensure the user has authenticated via SSO in the '${{ github.repository_owner }}' organization."
+          exit 1
+
+      - name: Log resolved identity
+        run: |
+          echo "GitHub user : ${{ github.actor }}"
+          echo "SSO email   : ${{ steps.saml.outputs.identity }}"
+
+      - name: Comment identity on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🔐 **SAML Identity Verified**\n\n| Field | Value |\n|---|---|\n| GitHub user | \`${{ github.actor }}\` |\n| SSO email | \`${{ steps.saml.outputs.identity }}\` |`
+            })

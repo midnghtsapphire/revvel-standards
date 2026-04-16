@@ -866,7 +866,7 @@ Place all custom MCP server code in `mcp_server/` within the project:
 
 The MIDNGHTSAPPHIRE GitHub organization maintains custom MCP servers built specifically for the Revvel ecosystem. Every project **must** include the two production-ready custom servers. The MCT microservice modules are added per project domain.
 
-For the full audit of all 22 repos see: [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md)
+For the full audit of all 22 repos see: [`docs/MCP_REVVEL_CATALOG.md`](../MCP_REVVEL_CATALOG.md)
 
 ### 12.1. The Two Must-Have Custom Servers
 
@@ -947,7 +947,7 @@ For all custom Revvel servers in one config block, use `templates/mcp/mcp.revvel
 
 ### 12.4. Critical Fix Required: Hardcoded Credentials
 
-**P0 Security Issue:** Multiple MCT modules have hardcoded database credentials in `src/db/schema.ts` (e.g., `password: 'password'`, localhost connection strings). Before running any MCT module in any non-local environment, these must be replaced with `process.env.DATABASE_URL` or equivalent. This is a known issue tracked in [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md).
+**P0 Security Issue:** Multiple MCT modules have hardcoded database credentials in `src/db/schema.ts` (e.g., `password: 'password'`, localhost connection strings). Before running any MCT module in any non-local environment, these must be replaced with `process.env.DATABASE_URL` or equivalent. This is a known issue tracked in [`docs/MCP_REVVEL_CATALOG.md`](../MCP_REVVEL_CATALOG.md).
 
 ---
 
