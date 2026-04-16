@@ -4,7 +4,7 @@
 **Date:** April 2026  
 **Route:** `/admin`  
 **Auth:** Clerk — admin role only (email: `angelreporters@gmail.com` auto-elevated)  
-**Standards Reference:** [`MASTER_APP_TEMPLATE.md`](../../MASTER_APP_TEMPLATE.md) Section 3 — Administration and Control
+**Standards Reference:** [`MASTER_APP_TEMPLATE.md`](../Master_Inventory/MASTER_APP_TEMPLATE.md) Section 3 — Administration and Control
 
 ---
 

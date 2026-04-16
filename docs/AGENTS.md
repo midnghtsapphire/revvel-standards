@@ -133,7 +133,7 @@ git log --oneline -10 && git status && git branch -a
 - **Leave the codebase better than you found it.** If you touch a file, clean it up. Fix obvious bugs. Remove dead code.
 
 ### Agent Factory Usage
-- Route tasks via trigger words to the Agent Factory (`AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
+- Route tasks via trigger words to the Agent Factory (`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
 - When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
 - On any non-zero exit, run the self-heal loop: `/diagnose` → `/patch` → rerun targeted checks.
 
@@ -305,7 +305,7 @@ When the project `.mcp.json` includes MCT modules, these additional tools are av
 4. **Never put real credentials in `.mcp.json`.** Use `${ENV_VAR}` references only.
 5. **Use `validate_deployment_readiness` before declaring done.** Not optional.
 
-For full MCP documentation see: `revvel-standards/MCP_STANDARD.md`  
+For full MCP documentation see: `revvel-standards/docs/Master_Inventory/MCP_STANDARD.md`  
 For custom Revvel MCPs see: `revvel-standards/docs/MCP_REVVEL_CATALOG.md`
 
 ## What NOT to Do

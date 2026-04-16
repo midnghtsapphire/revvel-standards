@@ -534,5 +534,5 @@ cordova prepare
 | `templates/cicd/deploy-cordova.yml` | Cordova GitHub Actions workflow template |
 | `templates/cicd/dependabot.yml` | Dependabot config (covers Cordova npm plugins automatically) |
 | `SECURITY_STANDARD.md` | Security requirements for mobile apps |
-| `VAULT_AGENT_STANDARD.md` | Keystore and API key secret management |
-| `DEPLOYMENT_STANDARD.md` | How releases flow through CI to the stores |
+| `docs/Master_Inventory/VAULT_AGENT_STANDARD.md` | Keystore and API key secret management |
+| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` | How releases flow through CI to the stores |
