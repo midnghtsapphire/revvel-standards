@@ -166,12 +166,12 @@ theme: minima
 
 Then commit and push. GitHub Pages will rebuild with the selected theme.
 
-For a supported remote theme:
+For a supported remote theme, add `remote_theme` and append `jekyll-remote-theme` to the existing `plugins:` list if one is already present:
 
 ```yaml
 title: My Site
 remote_theme: pages-themes/cayman@v0.2.0
-plugins:
+plugins: # append to this list if plugins already exist; do not replace existing entries
   - jekyll-remote-theme
 ```
 
