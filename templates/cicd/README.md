@@ -20,6 +20,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `dependabot.yml` | Dependabot configuration — automated dependency and security updates | `.github/dependabot.yml` |
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
+| `labels-as-parameters.yml` | Converts PR labels (`key:value`) into named step outputs for conditional deploys and feature flags | `.github/workflows/labels-as-parameters.yml` |
 
 ---
 
