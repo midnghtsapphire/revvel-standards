@@ -44,42 +44,68 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Wait 10 s so any in-flight check runs triggered by the same push
-            // have time to register with the Checks API before we query it.
-            await new Promise(r => setTimeout(r, 10000));
-
-            const { data } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.payload.pull_request.head.sha,
-              per_page: 100,
-            });
-
-            // Ignore this workflow's own check runs so we don't block on ourselves.
-            const SELF_CHECK_NAMES = new Set([
+            // Job names that belong to this workflow — exclude them from the
+            // external-check evaluation so we never block on ourselves.
+            const SELF_JOB_NAMES = new Set([
               'Promote Draft PR When CI Passes',
               'Label Linked Issues as In-Review',
               'Remove In-Review Label on PR Close',
             ]);
-            const allowedConclusions = new Set(['success', 'skipped', 'neutral']);
+            const ALLOWED_CONCLUSIONS = new Set(['success', 'skipped', 'neutral']);
 
-            const runs = data.check_runs.filter(
-              r => r.name !== context.workflow && !SELF_CHECK_NAMES.has(r.name)
-            );
-            core.info(`Found ${runs.length} external check run(s).`);
-            runs.forEach(r => core.info(`  • ${r.name}: ${r.status} / ${r.conclusion}`));
+            // Poll until all external checks complete or we time out.
+            const INITIAL_WAIT_MS  = 15_000;   // 15 s — let checks register first
+            const POLL_INTERVAL_MS = 30_000;   // re-check every 30 s
+            const MAX_WAIT_MS      = 8 * 60 * 1000; // 8 minutes — give up after this
 
-            if (runs.length === 0) {
-              core.info('No external check runs yet; will not auto-promote.');
-              core.setOutput('all_passed', 'false');
-              return false;
+            await new Promise(r => setTimeout(r, INITIAL_WAIT_MS));
+
+            let elapsed = INITIAL_WAIT_MS;
+
+            while (true) {
+              const { data } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: context.payload.pull_request.head.sha,
+                per_page: 100,
+              });
+
+              const runs = data.check_runs.filter(r => !SELF_JOB_NAMES.has(r.name));
+              core.info(`[${elapsed / 1000}s] Found ${runs.length} external check run(s):`);
+              runs.forEach(r => core.info(`  • ${r.name}: ${r.status} / ${r.conclusion}`));
+
+              if (runs.length === 0) {
+                // No external CI configured — safe to promote immediately.
+                core.info('No external check runs found — auto-promoting.');
+                core.setOutput('all_passed', 'true');
+                return true;
+              }
+
+              const allDone = runs.every(r => r.status === 'completed');
+
+              if (allDone) {
+                const allPassed = runs.every(r => ALLOWED_CONCLUSIONS.has(r.conclusion));
+                if (!allPassed) {
+                  const failed = runs.filter(r => !ALLOWED_CONCLUSIONS.has(r.conclusion));
+                  failed.forEach(r => core.warning(`  ✗ ${r.name}: ${r.conclusion}`));
+                }
+                core.setOutput('all_passed', allPassed ? 'true' : 'false');
+                return allPassed;
+              }
+
+              if (elapsed >= MAX_WAIT_MS) {
+                const pending = runs.filter(r => r.status !== 'completed');
+                core.warning(`Timed out after ${MAX_WAIT_MS / 1000}s. Still pending:`);
+                pending.forEach(r => core.warning(`  • ${r.name}`));
+                core.setOutput('all_passed', 'false');
+                return false;
+              }
+
+              const pendingCount = runs.filter(r => r.status !== 'completed').length;
+              core.info(`Waiting for ${pendingCount} check(s) to finish... (${elapsed / 1000}s elapsed)`);
+              await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+              elapsed += POLL_INTERVAL_MS;
             }
-
-            const allDone   = runs.every(r => r.status === 'completed');
-            const allPassed = allDone && runs.every(r => allowedConclusions.has(r.conclusion));
-
-            core.setOutput('all_passed', allPassed ? 'true' : 'false');
-            return allPassed;
 
       - name: Convert draft PR to Ready for Review
         if: steps.check-status.outputs.all_passed == 'true'
