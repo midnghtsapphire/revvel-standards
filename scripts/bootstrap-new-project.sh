@@ -7,7 +7,7 @@
 # It reads templates from a local clone of revvel-standards.
 #
 # Prerequisites:
-#   - revvel-standards repo cloned at ../revvel-standards (or set REVVEL_STANDARDS_PATH)
+#   - Revvel standards repo cloned at ../revvel-standards (or set REVVEL_STANDARDS_PATH)
 #   - Script will warn and attempt a fast-forward update if the clone is behind origin/main
 #   - bash 4+
 #   - sed
@@ -47,7 +47,7 @@ echo ""
 # -------------------------------------------------------------------------
 # Step 0: Verify revvel-standards clone freshness (if it is a git repo)
 # -------------------------------------------------------------------------
-if command -v git &>/dev/null && [ -d "$REVVEL_STANDARDS_PATH/.git" ]; then
+if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVEL_STANDARDS_PATH/.git" ]; then
   echo "🔍 Checking revvel-standards for updates..."
 
   if git -C "$REVVEL_STANDARDS_PATH" remote get-url origin >/dev/null 2>&1; then
