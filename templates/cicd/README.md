@@ -12,6 +12,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `deploy.sh` | Manual one-click deploy script for local use | `deploy.sh` (repo root) |
 | `monitor.yml` | Uptime/health-check monitoring workflow | `.github/workflows/monitor.yml` |
 | `ci.yml` | Universal CI — TypeScript check, Vitest unit tests, Playwright E2E | `.github/workflows/ci.yml` |
+| `commit-queue-monitor.yml` | Commit Queue Monitor — alerts when merge queue backlog exceeds threshold | `.github/workflows/commit-queue-monitor.yml` |
 | `auto-fix.yml` | Auto-fix loop — creates GitHub Issue + Copilot instructions on CI failure | `.github/workflows/auto-fix.yml` |
 | `security.yml` | Security scanning — `pnpm audit` + TruffleHog secret scan | `.github/workflows/security.yml` |
 | `panda-ops.yml` | PandaOps AI PR Review — posts inline OpenAI-powered feedback on every PR | `.github/workflows/panda-ops.yml` |
