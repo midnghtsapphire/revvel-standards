@@ -82,6 +82,10 @@ labels:
     color: "ff6b35"
     description: "Managed by the Ralph Loop self-healing workflow"
 
+  - name: openrouter
+    color: "6f42c1"
+    description: "Routed to the OpenRouter orchestrator (first line of sight)"
+
   - name: needs-human
     color: "d93f0b"
     description: "Escalated — requires human intervention"
