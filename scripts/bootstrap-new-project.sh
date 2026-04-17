@@ -8,6 +8,7 @@
 #
 # Prerequisites:
 #   - revvel-standards repo cloned at ../revvel-standards (or set REVVEL_STANDARDS_PATH)
+#   - Script will warn and attempt a fast-forward update if the clone is behind origin/main
 #   - bash 4+
 #   - sed
 
@@ -42,6 +43,48 @@ echo "  Production URL: $PRODUCTION_URL"
 echo "  Source:         $TEMPLATES_DIR"
 echo "  Destination:    $DEST_DIR"
 echo ""
+
+# -------------------------------------------------------------------------
+# Step 0: Verify revvel-standards clone freshness (if it is a git repo)
+# -------------------------------------------------------------------------
+if command -v git &>/dev/null && [ -d "$REVVEL_STANDARDS_PATH/.git" ]; then
+  echo "🔍 Checking revvel-standards for updates..."
+
+  if git -C "$REVVEL_STANDARDS_PATH" remote get-url origin >/dev/null 2>&1; then
+    if git -C "$REVVEL_STANDARDS_PATH" fetch --quiet origin main; then
+      if git -C "$REVVEL_STANDARDS_PATH" show-ref --verify --quiet refs/remotes/origin/main; then
+        BEHIND_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count HEAD..origin/main)
+
+        if [ "$BEHIND_COUNT" -gt 0 ]; then
+          echo "  ⚠️  revvel-standards is ${BEHIND_COUNT} commits behind origin/main."
+
+          if [ -z "$(git -C "$REVVEL_STANDARDS_PATH" status --porcelain)" ]; then
+            echo "  ⬆️  Fast-forwarding to latest standards..."
+            if git -C "$REVVEL_STANDARDS_PATH" merge --ff-only origin/main; then
+              echo "  ✅ revvel-standards updated."
+            else
+              echo "  ⚠️  Fast-forward failed — please update manually:"
+              echo "     git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
+            fi
+          else
+            echo "  ⚠️  Local changes detected — skipping auto-update."
+            echo "     Run: git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
+          fi
+        else
+          echo "  ✅ revvel-standards is up to date."
+        fi
+      else
+        echo "  ⚠️  origin/main not found — using local templates."
+      fi
+    else
+      echo "  ⚠️  Unable to fetch origin/main — using local templates."
+    fi
+  else
+    echo "  ⚠️  No git remote configured — using local templates."
+  fi
+
+  echo ""
+fi
 
 # -------------------------------------------------------------------------
 # Helper: copy + substitute
