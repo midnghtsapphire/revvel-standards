@@ -34,7 +34,7 @@ jobs:
             const repo = context.repo.repo;
             const alertTitle = process.env.ALERT_TITLE;
             const thresholdRaw = Number.parseInt(process.env.QUEUE_THRESHOLD, 10);
-            const threshold = Number.isFinite(thresholdRaw) && thresholdRaw > 0 ? thresholdRaw : 200;
+            const threshold = Number.isNaN(thresholdRaw) || thresholdRaw <= 0 ? 200 : thresholdRaw;
             const queueLabel = process.env.QUEUE_LABEL || 'merge-queue-pr';
             const queuePrefix = process.env.QUEUE_BRANCH_PREFIX || 'mergify/merge-queue/';
             const timestamp = new Date().toISOString();
