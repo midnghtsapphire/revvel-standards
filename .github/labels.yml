@@ -93,3 +93,19 @@ labels:
   - name: vault-agent
     color: "e4e669"
     description: "Vault Agent credential provisioning required"
+
+  - name: codex
+    color: "5319e7"
+    description: "Routed to Codex (via OpenRouter) for code execution"
+
+  - name: proof-of-life
+    color: "2ea44f"
+    description: "Proof-of-life run — app-review revvel-standards-run"
+
+  - name: "role:orchestrator"
+    color: "6f42c1"
+    description: "OpenRouter agent is acting as orchestrator on this item"
+
+  - name: "role:fixer"
+    color: "ff6b35"
+    description: "OpenRouter agent is acting as fixer on this item"
