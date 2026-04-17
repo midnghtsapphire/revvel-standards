@@ -45,10 +45,10 @@ echo "  Destination:    $DEST_DIR"
 echo ""
 
 # -------------------------------------------------------------------------
-# Step 0: Verify revvel-standards clone freshness (if it is a git repo)
+# Step 0: Verify Revvel standards clone freshness (if it is a git repo)
 # -------------------------------------------------------------------------
-if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVEL_STANDARDS_PATH/.git" ]; then
-  echo "🔍 Checking revvel-standards for updates..."
+if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVEL_STANDARDS_PATH/.git" ] && [ -d "$TEMPLATES_DIR" ]; then
+  echo "🔍 Checking Revvel standards for updates..."
 
   if git -C "$REVVEL_STANDARDS_PATH" remote get-url origin >/dev/null 2>&1; then
     if git -C "$REVVEL_STANDARDS_PATH" fetch --quiet origin main; then
@@ -56,12 +56,12 @@ if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVE
         BEHIND_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count HEAD..origin/main)
 
         if [ "$BEHIND_COUNT" -gt 0 ]; then
-          echo "  ⚠️  revvel-standards is ${BEHIND_COUNT} commits behind origin/main."
+          echo "  ⚠️  Revvel standards is ${BEHIND_COUNT} commits behind origin/main."
 
           if [ -z "$(git -C "$REVVEL_STANDARDS_PATH" status --porcelain)" ]; then
             echo "  ⬆️  Fast-forwarding to latest standards..."
             if git -C "$REVVEL_STANDARDS_PATH" merge --ff-only origin/main; then
-              echo "  ✅ revvel-standards updated."
+              echo "  ✅ Revvel standards updated."
             else
               echo "  ⚠️  Fast-forward failed — please update manually:"
               echo "     git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
@@ -71,7 +71,7 @@ if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVE
             echo "     Run: git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
           fi
         else
-          echo "  ✅ revvel-standards is up to date."
+          echo "  ✅ Revvel standards is up to date."
         fi
       else
         echo "  ⚠️  origin/main not found — using local templates."
