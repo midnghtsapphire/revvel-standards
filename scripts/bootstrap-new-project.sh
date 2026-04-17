@@ -47,6 +47,7 @@ echo ""
 # -------------------------------------------------------------------------
 # Step 0: Verify Revvel standards clone freshness (if it is a git repo)
 # -------------------------------------------------------------------------
+# Guard: git available, standards path set, repo is a git clone, templates dir exists
 if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVEL_STANDARDS_PATH/.git" ] && [ -d "$TEMPLATES_DIR" ]; then
   echo "🔍 Checking Revvel standards for updates..."
 
@@ -54,8 +55,13 @@ if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVE
     if git -C "$REVVEL_STANDARDS_PATH" fetch --quiet origin main; then
       if git -C "$REVVEL_STANDARDS_PATH" show-ref --verify --quiet refs/remotes/origin/main; then
         BEHIND_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count HEAD..origin/main)
+        AHEAD_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count origin/main..HEAD)
 
-        if [ "$BEHIND_COUNT" -gt 0 ]; then
+        if [ "$BEHIND_COUNT" -gt 0 ] && [ "$AHEAD_COUNT" -gt 0 ]; then
+          echo "  ⚠️  Revvel standards has diverged from origin/main."
+          echo "     Ahead: ${AHEAD_COUNT} commits, Behind: ${BEHIND_COUNT} commits."
+          echo "     Resolve manually: git -C \"$REVVEL_STANDARDS_PATH\" pull --rebase"
+        elif [ "$BEHIND_COUNT" -gt 0 ]; then
           echo "  ⚠️  Revvel standards is ${BEHIND_COUNT} commits behind origin/main."
 
           if [ -z "$(git -C "$REVVEL_STANDARDS_PATH" status --porcelain)" ]; then
@@ -70,6 +76,8 @@ if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVE
             echo "  ⚠️  Local changes detected — skipping auto-update."
             echo "     Run: git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
           fi
+        elif [ "$AHEAD_COUNT" -gt 0 ]; then
+          echo "  ℹ️  Revvel standards is ahead of origin/main by ${AHEAD_COUNT} commits."
         else
           echo "  ✅ Revvel standards is up to date."
         fi
