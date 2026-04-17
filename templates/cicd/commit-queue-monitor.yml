@@ -175,7 +175,7 @@ jobs:
                 owner,
                 repo,
                 issue_number: existingAlert.number,
-                assignees: ['Copilot'],
+                assignees: ['copilot'],
               });
             } catch (error) {
               core.info(`Could not assign Copilot: ${error.message}`);
