@@ -7,7 +7,8 @@
 # It reads templates from a local clone of revvel-standards.
 #
 # Prerequisites:
-#   - revvel-standards repo cloned at ../revvel-standards (or set REVVEL_STANDARDS_PATH)
+#   - Revvel standards repo cloned at ../revvel-standards (or set REVVEL_STANDARDS_PATH)
+#   - Script will warn and attempt a fast-forward update if the clone is behind origin/main
 #   - bash 4+
 #   - sed
 
@@ -42,6 +43,56 @@ echo "  Production URL: $PRODUCTION_URL"
 echo "  Source:         $TEMPLATES_DIR"
 echo "  Destination:    $DEST_DIR"
 echo ""
+
+# -------------------------------------------------------------------------
+# Step 0: Verify Revvel standards clone freshness (if it is a git repo)
+# -------------------------------------------------------------------------
+# Guard: git available, standards path set, repo is a git clone, templates dir exists
+if command -v git &>/dev/null && [ -n "$REVVEL_STANDARDS_PATH" ] && [ -d "$REVVEL_STANDARDS_PATH/.git" ] && [ -d "$TEMPLATES_DIR" ]; then
+  echo "🔍 Checking Revvel standards for updates..."
+
+  if git -C "$REVVEL_STANDARDS_PATH" remote get-url origin >/dev/null 2>&1; then
+    if git -C "$REVVEL_STANDARDS_PATH" fetch --quiet origin main; then
+      if git -C "$REVVEL_STANDARDS_PATH" show-ref --verify --quiet refs/remotes/origin/main; then
+        BEHIND_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count HEAD..origin/main)
+        AHEAD_COUNT=$(git -C "$REVVEL_STANDARDS_PATH" rev-list --count origin/main..HEAD)
+
+        if [ "$BEHIND_COUNT" -gt 0 ] && [ "$AHEAD_COUNT" -gt 0 ]; then
+          echo "  ⚠️  Revvel standards has diverged from origin/main."
+          echo "     Ahead: ${AHEAD_COUNT} commits, Behind: ${BEHIND_COUNT} commits."
+          echo "     Resolve manually: git -C \"$REVVEL_STANDARDS_PATH\" pull --rebase"
+        elif [ "$BEHIND_COUNT" -gt 0 ]; then
+          echo "  ⚠️  Revvel standards is ${BEHIND_COUNT} commits behind origin/main."
+
+          if [ -z "$(git -C "$REVVEL_STANDARDS_PATH" status --porcelain)" ]; then
+            echo "  ⬆️  Fast-forwarding to latest standards..."
+            if git -C "$REVVEL_STANDARDS_PATH" merge --ff-only origin/main; then
+              echo "  ✅ Revvel standards updated."
+            else
+              echo "  ⚠️  Fast-forward failed — please update manually:"
+              echo "     git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
+            fi
+          else
+            echo "  ⚠️  Local changes detected — skipping auto-update."
+            echo "     Run: git -C \"$REVVEL_STANDARDS_PATH\" pull --ff-only"
+          fi
+        elif [ "$AHEAD_COUNT" -gt 0 ]; then
+          echo "  ℹ️  Revvel standards is ahead of origin/main by ${AHEAD_COUNT} commits."
+        else
+          echo "  ✅ Revvel standards is up to date."
+        fi
+      else
+        echo "  ⚠️  origin/main not found — using local templates."
+      fi
+    else
+      echo "  ⚠️  Unable to fetch origin/main — using local templates."
+    fi
+  else
+    echo "  ⚠️  No git remote configured — using local templates."
+  fi
+
+  echo ""
+fi
 
 # -------------------------------------------------------------------------
 # Helper: copy + substitute
