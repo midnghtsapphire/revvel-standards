@@ -1,6 +1,6 @@
 # Copy to .github/workflows/ready-for-review.yml in your app repo.
 # No configuration required — works out of the box with GITHUB_TOKEN.
-#
+# 04/18/2026 modified GITHUB_TOKEN to READY_FOR_REVIEW_TOKEN Fine Grain PAT required. Queue I am the Champion-Audrey
 # What this workflow does:
 #   1. AUTO-PROMOTE: When all CI checks pass on a draft PR, it is automatically
 #      converted to "Ready for Review" so reviewers are notified without manual action.
@@ -43,7 +43,7 @@ jobs:
         id: check-status
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.READY_FOR_REVIEW_TOKEN}}
           script: |
             // Job names that belong to this workflow — exclude them from the
             // external-check evaluation so we never block on ourselves.
@@ -112,7 +112,7 @@ jobs:
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
           script: |
             await github.graphql(`
               mutation($prId: ID!) {
@@ -144,7 +144,7 @@ jobs:
       - name: Ensure `in-review` label exists
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
           script: |
             try {
               await github.rest.issues.getLabel({
@@ -169,7 +169,7 @@ jobs:
         id: find-issues
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
           script: |
             const body  = context.payload.pull_request.body  || '';
             const title = context.payload.pull_request.title || '';
@@ -224,7 +224,7 @@ jobs:
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
           script: |
             const issueList = '${{ steps.find-issues.outputs.issue_list }}';
             const linkedSection = issueList
@@ -278,7 +278,7 @@ jobs:
       - name: Remove `in-review` label from linked issues
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
           script: |
             const body  = context.payload.pull_request.body  || '';
             const title = context.payload.pull_request.title || '';

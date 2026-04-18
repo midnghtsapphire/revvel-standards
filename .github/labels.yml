@@ -23,6 +23,10 @@ labels:
     color: "a2eeef"
     description: "New feature or request"
 
+  - name: triage
+    color: "e4e669"
+    description: "Needs triage — newly opened issue awaiting classification"
+
   - name: documentation
     color: "0075ca"
     description: "Documentation only"
@@ -46,6 +50,23 @@ labels:
   - name: bom-purchase
     color: "ffd700"
     description: "Requires a purchase (links to BOM.md)"
+
+  # ── Priority ─────────────────────────────────────────────────────────────────
+  - name: "priority:p0"
+    color: "b60205"
+    description: "Critical priority — drop everything"
+
+  - name: "priority:p1"
+    color: "d93f0b"
+    description: "High priority — next up"
+
+  - name: "priority:p2"
+    color: "fbca04"
+    description: "Medium priority — normal queue"
+
+  - name: "priority:p3"
+    color: "0e8a16"
+    description: "Low priority — backlog"
 
   # ── Lifecycle / State ─────────────────────────────────────────────────────────
   - name: in-review
