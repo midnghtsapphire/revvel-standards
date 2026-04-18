@@ -139,6 +139,7 @@ If the orchestrator cannot complete a routed item:
 
 ## See also
 
+- [`PROOF_OF_LIFE_PROCESS.md`](./PROOF_OF_LIFE_PROCESS.md) — manually-triggered proof-of-life for the app-review `revvel-standards-run` pipeline, with operator choice of role (orchestrator / fixer) and assignee (openrouter / Copilot / codex).
 - `skills/openrouter-swarms/SKILL.md` — OpenRouter routing, model selection, agent registry.
 - `skills/ralph-loop/SKILL.md` — the Ralph self-healing pattern.
 - `skills/vault-agent/SKILL.md` — how secrets (including `OPENROUTER_API_KEY`) are provisioned from Vault.
