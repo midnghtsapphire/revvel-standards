@@ -11,7 +11,7 @@ on:
   pull_request_target:
     types: [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

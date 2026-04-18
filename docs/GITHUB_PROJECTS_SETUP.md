@@ -205,7 +205,7 @@ The `priority-router.yml` workflow (copy from `templates/cicd/priority-router.ym
 |---|---|
 | Issue/PR opened or closed | Sweeps the full open backlog and recalculates priority labels |
 | Issue/PR edited, labeled, or unlabeled | Re-runs priority only for the touched item |
-| Hourly cron sweep | Re-evaluates the open backlog to keep priorities fresh |
+| 6-hour cron sweep | Re-evaluates the open backlog to keep priorities fresh |
 
 **Setup:**
 
