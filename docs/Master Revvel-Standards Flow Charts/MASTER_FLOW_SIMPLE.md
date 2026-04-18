@@ -227,4 +227,4 @@ gh issue create \
 ---
 
 *This document is automatically kept up-to-date by `scripts/sync-flow-charts.js`.*
-*Last auto-sync: 2026-04-17*
+*Last auto-sync: 2026-04-18*
