@@ -41,6 +41,10 @@ gh label create "bom-purchase"    --color "ffd700" --description "Requires a pur
 gh label create "design"          --color "7057ff" --description "Design/brand work needed"             --repo $APP_REPO
 gh label create "blocked"         --color "e4e669" --description "Blocked by external dependency"       --repo $APP_REPO
 gh label create "triage"          --color "e4e669" --description "Needs triage — newly opened issue awaiting classification" --repo $APP_REPO
+gh label create "priority:p0"     --color "b60205" --description "Critical priority — drop everything" --repo $APP_REPO
+gh label create "priority:p1"     --color "d93f0b" --description "High priority — next up"             --repo $APP_REPO
+gh label create "priority:p2"     --color "fbca04" --description "Medium priority — normal queue"      --repo $APP_REPO
+gh label create "priority:p3"     --color "0e8a16" --description "Low priority — backlog"              --repo $APP_REPO
 gh label create "draft"           --color "cccccc" --description "Pull request is still a draft"        --repo $APP_REPO
 gh label create "in-review"       --color "fbca04" --description "Linked PR is open and ready for review" --repo $APP_REPO
 gh label create "auto-fix"        --color "0075ca" --description "Created by auto-fix / Ralph Loop workflow" --repo $APP_REPO
@@ -62,6 +66,11 @@ gh label create "merge-queue-pr"  --color "c5def5" --description "Created by Mer
 | `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
 | `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
 | `blocked` | `#e4e669` | Blocked by external dependency |
+| `triage` | `#e4e669` | Needs triage — newly opened issue awaiting classification |
+| `priority:p0` | `#b60205` | Critical priority — drop everything |
+| `priority:p1` | `#d93f0b` | High priority — next up |
+| `priority:p2` | `#fbca04` | Medium priority — normal queue |
+| `priority:p3` | `#0e8a16` | Low priority — backlog |
 | `in-review` | `#fbca04` | Linked PR is open and ready for review (set automatically) |
 | `auto-fix` | `#0075ca` | Created by auto-fix workflow |
 | `copilot` | `#0075ca` | Assigned to Copilot for fixing |
@@ -185,6 +194,30 @@ No secrets or configuration changes are required — the workflow uses `GITHUB_T
 | `remove` | Removes the specified label(s) |
 | `set` | Replaces all existing labels with the specified set |
 | `clear` | Removes all labels |
+
+---
+
+### Priority Router Automation Workflow
+
+The `priority-router.yml` workflow (copy from `templates/cicd/priority-router.yml`) assigns priority labels (`priority:p0` → `priority:p3`) and re-evaluates the open backlog whenever work is opened or completed.
+
+| Trigger | Automation |
+|---|---|
+| Issue/PR opened or closed | Sweeps the full open backlog and recalculates priority labels |
+| Issue/PR edited, labeled, or unlabeled | Re-runs priority only for the touched item |
+| Hourly cron sweep | Re-evaluates the open backlog to keep priorities fresh |
+
+**Setup:**
+
+```bash
+# Copy to your app repo
+cp templates/cicd/priority-router.yml .github/workflows/priority-router.yml
+```
+
+**Configuration notes:**
+- Uses `OPENROUTER_API_KEY` when available; falls back to a rule-based classifier if missing.
+- Skips items labeled `needs-human` or `blocked`.
+- Tune the cron cadence by editing the `schedule:` block in the workflow.
 
 ---
 
