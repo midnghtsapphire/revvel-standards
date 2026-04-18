@@ -4,6 +4,14 @@ Complete guide to setting up GitHub Projects, Labels, and Milestones for the Rev
 
 **Note:** This document describes the setup steps — it does not create actual GitHub Projects or issues. Follow these steps manually or via the GitHub CLI (`gh`) when setting up a new repository.
 
+**Scope:** This is the standard for **all Revvel repos**. Project setup is a mandatory gate before any issue intake (including in this repo).
+
+**Enterprise-first prerequisite:** Migration to the enterprise org and global secrets/PATs are the largest prerequisite steps before project/issue intake.
+- See [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](../docs/Master_Inventory/REPOSITORY_PRIVACY_MIGRATION_STANDARD.md)
+- See [`SECRETS_MANAGEMENT.md`](../docs/SECRETS_MANAGEMENT.md)
+
+**Project-first gate:** If `project_exists = 0`, create the project and set the default repo before continuing. Only proceed to issue creation when `project_exists = 1`.
+
 ---
 
 ## 1. Standard Label Set
@@ -117,6 +125,7 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 3. Choose **Board** template
 4. Name it: `{PRODUCT_NAME} — Active Development`
 5. Add the repository to the project
+6. **Set the repository as the default repo** (Project settings → Repositories → “Set as default”)
 
 ### Standard Column Structure
 
@@ -279,7 +288,70 @@ Or link manually from the issue sidebar → **Projects** → select project.
 
 ---
 
-## 4. Per-App Error Label
+## 4. Project-First Intake (Required)
+
+**Do not create issues directly in the repo.** Issues must be created from the **Project board** so the Project, Status, Milestone, and Labels are attached at creation time.
+
+### Required fields for control & reporting
+
+| Field | Required | Purpose |
+|---|---|---|
+| Project | Yes | Source of truth for intake and reporting |
+| Status | Yes | Backlog → In Progress → In Review → Blocked → Done |
+| Milestone | Yes | EXRUP phase tracking |
+| Labels | Yes | Type + routing (e.g., `triage`, `bug`, `enhancement`, `blocked`) |
+| Assignee | Optional | Ownership (human or orchestrator) |
+| Linked PR | Required before closing | Enables automation and lifecycle transitions |
+
+### Create from Project (preferred)
+1. Open the Project board
+2. **Add item** → **Create new issue**
+3. Fill in **Milestone** + **Labels** immediately
+4. Confirm **Status = Backlog**
+
+### CLI (allowed, but still project-first)
+```bash
+gh issue create \
+  --title "..." \
+  --body "..." \
+  --project "{PRODUCT_NAME} — Active Development" \
+  --milestone "Phase 3: Development" \
+  --label "triage,enhancement"
+```
+
+### Project gate checklist (no CLI helper for now)
+- Project exists and is named `{PRODUCT_NAME} — Active Development`
+- Repo is added **and set as default**
+- Standard columns present (Backlog/In Progress/In Review/Blocked/Done)
+- EXRUP milestones created
+- Standard labels synced
+
+### Guardrail workflow proposal (optional)
+Create a lightweight workflow that:
+- Triggers on **issue opened** and a **daily schedule**
+- Detects issues missing a Project
+- **Auto-adds** them to the default Project Backlog **or** applies a `needs-project`/`triage` label + comment
+- Optionally flags missing Milestone with `needs-milestone`
+
+Suggested building blocks:
+- `actions/add-to-project` for auto-adding issues to a Project
+- `actions/github-script` for label + comment enforcement
+
+---
+
+## 5. End-to-End Flow (Project → Issue → Milestone → PR → Automation)
+
+1. **Project created** and default repo set
+2. **Issue created from Project** with Milestone + Labels
+3. **PR opened** and linked via `Closes #123`
+4. **Automation fires**:
+   - `in-review` label when PR opens
+   - Project Status moves to **In Review**
+   - PR merge moves Issue to **Done**
+
+---
+
+## 6. Per-App Error Label
 
 Each app repo must have a project-specific error label for the `monitored()` system:
 
@@ -294,7 +366,7 @@ See `standards/ERROR_REPORTING_STANDARD.md` — Section 6 for full details on th
 
 ---
 
-## 5. Complete New Repo Setup Checklist
+## 7. Complete New Repo Setup Checklist
 
 When creating a new Revvel application repository:
 
@@ -303,20 +375,23 @@ When creating a new Revvel application repository:
 APP_REPO="midnghtsapphire/NEW_REPO"
 APP_NAME="new-app-name"
 
-# 1. Sync standard labels (automated — recommended)
+# 0. Migrate repo to enterprise org + configure global secrets/PATs
+# (see REPOSITORY_PRIVACY_MIGRATION_STANDARD.md + SECRETS_MANAGEMENT.md)
+
+# 1. Create GitHub Project board + set default repo
+# (manual step — do in GitHub UI)
+
+# 2. Sync standard labels (automated — recommended)
 cp .github/labels.yml             $APP_NAME/.github/labels.yml
 cp templates/cicd/sync-labels.yml $APP_NAME/.github/workflows/sync-labels.yml
 # OR run manually:
 # (run all gh label create commands from Section 1)
 
-# 2. Create error reporting label
-gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error report" --repo $APP_REPO
-
 # 3. Create EXRUP milestones
 # (run all gh api commands from Section 2)
 
-# 4. Create GitHub Project board
-# (manual step — do in GitHub UI)
+# 4. Create error reporting label
+gh label create "${APP_NAME}/error" --color "cc0000" --description "Auto error report" --repo $APP_REPO
 
 # 5. Copy CI/CD workflow templates
 cp templates/cicd/ready-for-review.yml .github/workflows/ready-for-review.yml
@@ -328,7 +403,7 @@ bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION
 
 ---
 
-## 6. Issue Templates
+## 8. Issue Templates
 
 Create these issue templates in `.github/ISSUE_TEMPLATE/` of each app repo:
 
