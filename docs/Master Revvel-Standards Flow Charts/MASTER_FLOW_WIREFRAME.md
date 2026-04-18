@@ -130,6 +130,7 @@
   ┌──────────────────────────────┐
   │  GitHub CLI  (gh)            │   OR   research-module.yml auto-creates
   │  gh issue create             │        the issue after research finishes
+  │    --repo  midnghtsapphire/revvel-standards │
   │    --title "..."             │
   │    --label "New Project"     │
   │    --body  "..."             │

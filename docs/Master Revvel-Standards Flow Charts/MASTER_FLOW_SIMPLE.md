@@ -101,9 +101,10 @@
 - The research workflow (`research-module.yml`) creates an issue automatically when it finishes
 - The issue includes a link to the research doc
 
-**Manually:**
+**Manually:** (avoid the `mindmappr` default by pinning the repo)
 ```bash
 gh issue create \
+  --repo midnghtsapphire/revvel-standards \
   --title "Your task name" \
   --label "New Project" \
   --body "What needs to be done and why"
