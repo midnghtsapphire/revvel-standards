@@ -11,7 +11,7 @@ on:
   pull_request_target:
     types: [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
   schedule:
-    # Runs at 00:00, 06:00, 12:00, 18:00 UTC.
+    # Runs at fixed UTC times: 00:00, 06:00, 12:00, 18:00.
     - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
