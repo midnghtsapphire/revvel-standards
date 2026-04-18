@@ -46,19 +46,26 @@ jobs:
     if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - name: Verify OPENROUTER_API_KEY is configured
+      - name: Verify OPENROUTER_API_KEY and ADMIN_GITHUB_TOKEN are configured
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
         run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set. Routing will still tag Copilot, but the OpenRouter orchestrator will not be able to process this item until the secret is added. See docs/OPENROUTER_ASSIGNEE_PROCESS.md."
           else
             echo "OPENROUTER_API_KEY is configured."
           fi
+          if [ -z "${ADMIN_GITHUB_TOKEN}" ]; then
+            echo "::notice::ADMIN_GITHUB_TOKEN is not set. Using the default GITHUB_TOKEN for routing."
+          else
+            echo "ADMIN_GITHUB_TOKEN is configured."
+          fi
 
       - name: Assign OpenRouter orchestrator + label + comment
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const issue_number =
               context.payload.issue?.number ||
@@ -71,6 +78,13 @@ jobs:
             const isPR = !!context.payload.pull_request;
             const kind = isPR ? 'pull request' : 'issue';
             const hasKey = !!process.env.OPENROUTER_API_KEY;
+            const hasAdmin = !!process.env.ADMIN_GITHUB_TOKEN;
+            const existingLabels = (
+              context.payload.issue?.labels ||
+              context.payload.pull_request?.labels ||
+              []
+            ).map(label => typeof label === 'string' ? label : label.name);
+            const hasFixerRole = existingLabels.includes('role:fixer');
 
             // 1) Assign Copilot (the OpenRouter-routed orchestrator).
             try {
@@ -86,7 +100,9 @@ jobs:
             }
 
             // 2) Apply routing labels (best-effort).
-            for (const label of ['openrouter', 'auto-fix', 'copilot']) {
+            const routingLabels = ['openrouter', 'auto-fix', 'copilot'];
+            if (!hasFixerRole) routingLabels.push('role:orchestrator');
+            for (const label of routingLabels) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
@@ -105,6 +121,8 @@ jobs:
               `This ${kind} has been routed to the OpenRouter-backed orchestrator ` +
               `(GitHub assignee: \`@Copilot\`) as the first line of sight.\n\n` +
               `- Secret: \`OPENROUTER_API_KEY\` ${hasKey ? '✅ configured' : '⚠️ **not configured** — add it in repo Settings → Secrets'}\n` +
+              `- Admin token: \`ADMIN_GITHUB_TOKEN\` ${hasAdmin ? '✅ configured' : '⚠️ not configured — using \`GITHUB_TOKEN\`'}\n` +
+              `- Role label: ${hasFixerRole ? '\`role:fixer\` (pre-existing)' : '\`role:orchestrator\` (default)'}\n` +
               `- Skill: \`skills/openrouter-swarms/SKILL.md\`\n` +
               `- Loop: \`skills/ralph-loop/SKILL.md\` (24/7 cron sweep enabled)\n` +
               `- Docs: \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\`\n\n` +
@@ -122,6 +140,7 @@ jobs:
             }
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
 
   # ─── 24/7 Ralph cron sweep ───────────────────────────────────────────────────
   ralph-cron-sweep:
@@ -133,11 +152,14 @@ jobs:
         uses: actions/github-script@v7
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const dryRun = process.env.DRY_RUN === 'true';
             const hasKey = !!process.env.OPENROUTER_API_KEY;
+            const hasAdmin = !!process.env.ADMIN_GITHUB_TOKEN;
 
             // Pull open issues (includes PRs — filter afterwards via pull_request field).
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -150,7 +172,7 @@ jobs:
             let routed = 0;
             let skipped = 0;
 
-            for (const item of items) {
+              for (const item of items) {
               // Skip anything already assigned — the orchestrator (or a human) owns it.
               if (item.assignees && item.assignees.length > 0) { skipped++; continue; }
               // Skip items already tagged as escalated.
@@ -179,7 +201,9 @@ jobs:
                 core.info(`Could not assign Copilot to #${item.number}: ${err.message}`);
               }
 
-              for (const label of ['openrouter', 'auto-fix', 'copilot']) {
+              const routingLabels = ['openrouter', 'auto-fix', 'copilot'];
+              if (!labelNames.includes('role:fixer')) routingLabels.push('role:orchestrator');
+              for (const label of routingLabels) {
                 try {
                   await github.rest.issues.addLabels({
                     owner: context.repo.owner,
@@ -200,6 +224,7 @@ jobs:
                     `This ${kind} was unassigned at sweep time and has been routed to ` +
                     `the OpenRouter orchestrator (\`@Copilot\`).\n\n` +
                     `- \`OPENROUTER_API_KEY\`: ${hasKey ? '✅ configured' : '⚠️ not configured'}\n` +
+                    `- \`ADMIN_GITHUB_TOKEN\`: ${hasAdmin ? '✅ configured' : '⚠️ not configured (using GITHUB_TOKEN)'}\n` +
                     `- See \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\` to tune the cron cadence.`,
                 });
               } catch (_) { /* best-effort */ }
@@ -217,5 +242,6 @@ jobs:
                 ['Total open', String(items.length)],
                 ['Dry run', String(dryRun)],
                 ['OPENROUTER_API_KEY', hasKey ? 'configured' : 'missing'],
+                ['ADMIN_GITHUB_TOKEN', hasAdmin ? 'configured' : 'missing'],
               ])
               .write();

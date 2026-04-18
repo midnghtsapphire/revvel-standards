@@ -9,8 +9,8 @@ This document describes the process, the implementation, and how to tune it.
 ## TL;DR
 
 1. Every new issue and pull request in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter.
-2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**.
-3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret and the relevant skills.
+2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**, plus the default **`role:orchestrator`** label.
+3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret, the optional `ADMIN_GITHUB_TOKEN`, and the relevant skills.
 4. A **cron sweep runs every hour, 24/7**, to pick up anything that was opened while the event workflow missed it or that arrived before the secret was configured.
 5. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
 
@@ -27,6 +27,7 @@ OpenRouter is a service, not a GitHub user — it cannot be set as a GitHub `ass
 | GitHub `assignee` | `@Copilot` | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
 | Label | `openrouter` | Routing hint for any automation that filters by OpenRouter-owned work |
 | Label | `auto-fix`, `copilot` | Shared routing labels consumed by the Ralph loop |
+| Label | `role:orchestrator` | Default role marker for first-line-of-sight routing |
 | Comment | First-line-of-sight notice | Points reviewers / auditors at `OPENROUTER_API_KEY`, the skill, and this doc |
 
 If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned later, swap the `assignees: ['Copilot']` value in the workflow — no other changes required.
@@ -43,6 +44,17 @@ If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned
   ```
 - Add to this repo: **Settings → Secrets and variables → Actions → New repository secret**, name `OPENROUTER_API_KEY`.
 - The workflow does **not fail** if the secret is missing; it logs a warning and annotates the routing comment with `⚠️ not configured` so you can see at a glance which repos still need provisioning.
+
+---
+
+## Optional: `ADMIN_GITHUB_TOKEN` (elevated routing permissions)
+
+If the default `GITHUB_TOKEN` does not have enough rights to assign `@Copilot` or apply routing labels, provide an elevated token:
+
+- Secret name: `ADMIN_GITHUB_TOKEN`
+- Type: GitHub App installation token or PAT with **minimum** scopes (`issues:write`, `pull_requests:write`, `contents:read`).
+- Used by: `.github/workflows/openrouter-assignee.yml` for routing on issues/PRs (falls back to `GITHUB_TOKEN` when missing).
+- Safety note: the workflow does **not** check out code or execute PR content, so it remains safe for `pull_request_target` runs when scoped minimally.
 
 ---
 
@@ -112,7 +124,7 @@ The workflow is self-contained. To enable it on another repo:
 
 1. Copy `.github/workflows/openrouter-assignee.yml` into the target repo.
 2. Ensure `OPENROUTER_API_KEY` is set in the target repo's Actions secrets.
-3. Ensure the `openrouter`, `auto-fix`, `copilot`, `needs-human`, `blocked` labels exist (they do automatically if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`).
+3. Ensure the `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`, `needs-human`, `blocked` labels exist (they do automatically if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`).
 4. (Optional) Adjust the cron cadence in the copy to match that repo's activity level.
 
 No other changes are required.
