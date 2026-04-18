@@ -134,7 +134,7 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 3. Choose **Board** template
 4. Name it: `{PRODUCT_NAME} — Active Development`
 5. Add the repository to the project
-6. **Set the repository as the default repo** (Project settings → Repositories → “Set as default”)
+6. **Set the repository as the default repo** (GitHub Projects v2 → Project settings → Repositories → “Set as default”)
 
 ### Standard Column Structure
 
