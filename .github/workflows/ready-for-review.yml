@@ -43,7 +43,7 @@ jobs:
         id: check-status
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.READY_FOR_REVIEW_TOKEN}}
           script: |
             // Job names that belong to this workflow — exclude them from the
             // external-check evaluation so we never block on ourselves.
