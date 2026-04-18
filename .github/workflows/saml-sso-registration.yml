@@ -1,6 +1,6 @@
 # SAML SSO Registration Workflow
 # Verifies that GitHub users in the organization have a linked SAML/SSO identity.
-#
+# 4.18.2026 Added by Audrey
 # Required secret: ADMIN_GITHUB_TOKEN
 #   The GitHub SAML GraphQL API requires `admin:org` scope — there is no narrower
 #   permission available. Create a classic Personal Access Token (PAT) scoped to
