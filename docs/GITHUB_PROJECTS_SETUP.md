@@ -205,7 +205,7 @@ The `priority-router.yml` workflow (copy from `templates/cicd/priority-router.ym
 |---|---|
 | Issue/PR opened or closed | Sweeps the full open backlog and recalculates priority labels |
 | Issue/PR edited, labeled, or unlabeled | Re-runs priority only for the touched item |
-| 6-hour cron sweep | Re-evaluates the open backlog to keep priorities fresh |
+| 6-hour cron sweep | Re-evaluates the open backlog at 00:00/06:00/12:00/18:00 UTC |
 
 **Setup:**
 
@@ -217,7 +217,7 @@ cp templates/cicd/priority-router.yml .github/workflows/priority-router.yml
 **Configuration notes:**
 - Uses `OPENROUTER_API_KEY` when available; falls back to a rule-based classifier if missing.
 - Skips items labeled `needs-human` or `blocked`.
-- Tune the cron cadence by editing the `schedule:` block in the workflow.
+- Tune the cron cadence by editing the `schedule:` block in the workflow (default runs at fixed UTC times).
 
 ---
 

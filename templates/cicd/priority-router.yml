@@ -11,6 +11,7 @@ on:
   pull_request_target:
     types: [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
   schedule:
+    # Runs at 00:00, 06:00, 12:00, 18:00 UTC.
     - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
@@ -27,6 +28,11 @@ permissions:
   issues: write
   pull-requests: write
   contents: read
+
+env:
+  PRIORITY_LABELS: "priority:p0,priority:p1,priority:p2,priority:p3"
+  PRIORITY_DEFINITIONS: >-
+    [{"name":"priority:p0","color":"b60205","description":"Critical priority — drop everything"},{"name":"priority:p1","color":"d93f0b","description":"High priority — next up"},{"name":"priority:p2","color":"fbca04","description":"Medium priority — normal queue"},{"name":"priority:p3","color":"0e8a16","description":"Low priority — backlog"}]
 
 jobs:
   route-single:
@@ -46,13 +52,8 @@ jobs:
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
           script: |
-            const PRIORITY_LABELS = ['priority:p0', 'priority:p1', 'priority:p2', 'priority:p3'];
-            const PRIORITY_DEFINITIONS = [
-              { name: 'priority:p0', color: 'b60205', description: 'Critical priority — drop everything' },
-              { name: 'priority:p1', color: 'd93f0b', description: 'High priority — next up' },
-              { name: 'priority:p2', color: 'fbca04', description: 'Medium priority — normal queue' },
-              { name: 'priority:p3', color: '0e8a16', description: 'Low priority — backlog' },
-            ];
+            const PRIORITY_LABELS = process.env.PRIORITY_LABELS.split(',');
+            const PRIORITY_DEFINITIONS = JSON.parse(process.env.PRIORITY_DEFINITIONS);
             const dryRun = process.env.DRY_RUN === 'true';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' && !!process.env.OPENROUTER_API_KEY;
 
@@ -219,13 +220,8 @@ jobs:
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
           script: |
-            const PRIORITY_LABELS = ['priority:p0', 'priority:p1', 'priority:p2', 'priority:p3'];
-            const PRIORITY_DEFINITIONS = [
-              { name: 'priority:p0', color: 'b60205', description: 'Critical priority — drop everything' },
-              { name: 'priority:p1', color: 'd93f0b', description: 'High priority — next up' },
-              { name: 'priority:p2', color: 'fbca04', description: 'Medium priority — normal queue' },
-              { name: 'priority:p3', color: '0e8a16', description: 'Low priority — backlog' },
-            ];
+            const PRIORITY_LABELS = process.env.PRIORITY_LABELS.split(',');
+            const PRIORITY_DEFINITIONS = JSON.parse(process.env.PRIORITY_DEFINITIONS);
             const dryRun = process.env.DRY_RUN === 'true';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' && !!process.env.OPENROUTER_API_KEY;
 
