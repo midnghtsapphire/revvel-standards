@@ -125,7 +125,7 @@ jobs:
               `- Loop: \`skills/ralph-loop/SKILL.md\` (24/7 cron sweep enabled)\n` +
               `- Docs: \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\`\n\n` +
               `The orchestrator will pick this up autonomously. If it stalls, ` +
-              `add the \`needs-human\` label to escalate.`;
+              `add the \`needs-human\` label to flag for manual attention.`;
             try {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -175,7 +175,7 @@ jobs:
               if (item.assignees && item.assignees.length > 0) { skipped++; continue; }
               // Skip items already tagged as escalated.
               const labelNames = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
-              if (labelNames.includes('needs-human') || labelNames.includes('blocked')) { skipped++; continue; }
+              // if (labelNames.includes('needs-human') || labelNames.includes('blocked')) { skipped++; continue; }
               // Skip items already routed by a previous sweep.
               if (labelNames.includes('openrouter')) { skipped++; continue; }
 

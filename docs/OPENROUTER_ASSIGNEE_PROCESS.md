@@ -73,9 +73,8 @@ on:
 For every open issue and PR in the repo it:
 
 1. Skips items that already have an assignee (the orchestrator or a human already owns it).
-2. Skips items labelled `needs-human` or `blocked` (explicitly escalated — do not re-route).
-3. Skips items already labelled `openrouter` (already routed in a previous sweep).
-4. Otherwise: assigns `@Copilot`, adds the routing labels, posts a sweep comment.
+2. Skips items already labelled `openrouter` (already routed in a previous sweep).
+3. Otherwise: assigns `@Copilot`, adds the routing labels, posts a sweep comment.
 
 A run summary is written to the workflow summary page (`Routed / Skipped / Total open / Dry run / Secret status`).
 
@@ -135,7 +134,7 @@ No other changes are required.
 
 If the orchestrator cannot complete a routed item:
 
-- Add the **`needs-human`** label → the sweep will stop re-routing it.
+- Add the **`needs-human`** label → flags the item for manual attention (routing continues).
 - The existing `ralph-loop.yml` also escalates after 5 failed auto-fix attempts on a PR by pinging `@midnghtsapphire` and applying `needs-human` + `blocked`.
 
 ---
