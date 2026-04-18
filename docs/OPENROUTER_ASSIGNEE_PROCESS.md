@@ -8,7 +8,7 @@ This document describes the process, the implementation, and how to tune it.
 
 ## TL;DR
 
-1. Every new issue and pull request in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter.
+1. Every new issue in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter. Open pull requests are picked up by the hourly cron sweep.
 2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**, plus the default **`role:orchestrator`** label.
 3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret, the optional `ADMIN_GITHUB_TOKEN`, and the relevant skills.
 4. A **cron sweep runs every hour, 24/7**, to pick up anything that was opened while the event workflow missed it or that arrived before the secret was configured.
@@ -93,7 +93,7 @@ Edit the `schedule:` block in `.github/workflows/openrouter-assignee.yml` and co
 
 ### Disabling the sweep
 
-Comment out the `schedule:` block, or delete the `ralph-cron-sweep` job. The `route-new` job (event-driven) will continue to work.
+Comment out the `schedule:` block, or delete the `ralph-cron-sweep` job. The `route-new` job (event-driven) will still route newly opened issues.
 
 ### Manual run / dry run
 
@@ -109,7 +109,7 @@ A dry run logs what *would* be routed without making changes — useful when fir
 
 | Workflow | Trigger | Scope | Relationship |
 |---|---|---|---|
-| `openrouter-assignee.yml` (**new**) | New issue / PR, hourly cron | Routes work **to** the orchestrator | Entry point — "first line of sight" |
+| `openrouter-assignee.yml` (**new**) | New issue, hourly cron | Routes work **to** the orchestrator (PRs via sweep) | Entry point — "first line of sight" |
 | `ralph-loop.yml` | CI failure on a PR | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails |
 | `issue-automation.yml` | Issue opened | Template / duplicate / triage checks | Runs alongside the new workflow; independent |
 | `sync-labels.yml` | Push to `main` | Syncs `.github/labels.yml` across repos | Propagates the new `openrouter` label |
