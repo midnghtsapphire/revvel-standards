@@ -30,6 +30,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
+| OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight | [`openclaw-self-eval`](#openclaw-self-eval) |
 | Persistent agent memory, brain repo, knowledge base, gbrain | [`gbrain`](#gbrain) |
 | Activating a persona, greeting, guided session, character | [`persona-engine`](#persona-engine) |
 | Building, creating, or scaffolding a new skill | [`skill-forge`](#skill-forge) |
@@ -118,6 +119,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Aggressive memory management with half-life strategies to prevent information bloat.
 - **Tags:** memory, pruning, retention, half-life, session-logs
 - **Trigger:** Memory files growing large; end of long sessions; wrap-up procedures.
+
+#### openclaw-self-eval
+- **Path:** `skills/openclaw-self-eval/`
+- **Files:** `SKILL.md` · `openclaw-self-eval.skill.yml` · `tests/promptfoo.yml`
+- **Description:** Ephemeral pre-flight auditor for any OpenClaw-style agent. Runs 8 read-only audits (soul, memory, agent manifest, skill files, installers, persona, vault/secrets, drift) and emits a markdown report + JSON sidecar with a prioritized P0/P1/P2 fix list. Never reads secret values; never writes to memory.
+- **Tags:** self-eval, agent-audit, pre-flight, soul, memory, skill-audit, readiness, openclaw
+- **Trigger:** "self eval", "audit yourself", "pre-flight", "agent audit", "soul check", "memory check", "skill audit", "am I set up correctly", onboarding/readiness checks.
+- **Lifecycle:** Ephemeral — terminates after the audit report is produced.
+- **Persona:** 🪞 Mirror
 
 ---
 

@@ -121,6 +121,34 @@ skills:
       - "prune memory"
       - "half-life retention"
 
+  - name: openclaw_self_eval
+    title: "OpenClaw Self-Evaluation"
+    version: "1.0.0"
+    path: "skills/openclaw-self-eval/"
+    skill_file: "skills/openclaw-self-eval/openclaw-self-eval.skill.yml"
+    category: "Agent Operations"
+    access: all
+    persona: mirror
+    lifecycle: ephemeral
+    triggers:
+      - "self eval"
+      - "self-eval"
+      - "self evaluate"
+      - "audit yourself"
+      - "pre-flight"
+      - "openclaw audit"
+      - "agent audit"
+      - "soul check"
+      - "memory check"
+      - "skill check"
+      - "skill audit"
+      - "am I set up correctly"
+      - "check my setup"
+      - "evaluate my setup"
+      - "agent self check"
+      - "onboarding check"
+      - "readiness check"
+
   # ─── Developer Workflow ────────────────────────────────────────────────────
 
   - name: brainstorming
