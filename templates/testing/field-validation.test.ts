@@ -2,6 +2,7 @@
 // Copy to: tests/unit/[table-name]-field-validation.test.ts
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { z } from 'zod';
 
 // TODO: Replace with your actual imports
 // import { db } from '@/db';
@@ -32,9 +33,8 @@ describe('[TABLE_NAME] field validation', () => {
 
     it('should reject insert when [FIELD_NAME] is an empty string', async () => {
       // TODO: Replace with your actual validation logic
-      // const schema = z.string().min(1);
-      // expect(schema.safeParse('').success).toBe(false);
-      expect(''.length).toBe(0);
+      const schema = z.string().min(1);
+      expect(schema.safeParse('').success).toBe(false);
     });
   });
 
