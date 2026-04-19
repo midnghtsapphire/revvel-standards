@@ -39,3 +39,6 @@ build/
 
 # Weekly branding exports (runtime)
 branding/weekly_results.json
+
+# pytest coverage
+.coverage
