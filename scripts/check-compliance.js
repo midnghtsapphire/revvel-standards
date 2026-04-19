@@ -258,16 +258,30 @@ if (failures.P2.length > 0) {
 
 console.log('');
 
+// Export functions for testing if required
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    codeContains,
+    fileExists,
+    dirExists,
+    dirHasFiles,
+    fileContains,
+    fileExistsAny
+  };
+}
+
 // Exit with error code if P0 failures exist (used by CI)
-if (failures.P0.length > 0) {
-  console.log('  ❌ P0 failures found. CI will block deployment until resolved.\n');
-  process.exit(1);
-}
+if (require.main === module) {
+  if (failures.P0.length > 0) {
+    console.log('  ❌ P0 failures found. CI will block deployment until resolved.\n');
+    process.exit(1);
+  }
 
-if (score < 70) {
-  console.log('  ❌ Score below 70. Non-compliant.\n');
-  process.exit(1);
-}
+  if (score < 70) {
+    console.log('  ❌ Score below 70. Non-compliant.\n');
+    process.exit(1);
+  }
 
-console.log('  ✅ No P0 failures. Compliance check passed.\n');
-process.exit(0);
+  console.log('  ✅ No P0 failures. Compliance check passed.\n');
+  process.exit(0);
+}
