@@ -23,6 +23,7 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  checks: read
 
 jobs:
 
@@ -43,7 +44,7 @@ jobs:
         id: check-status
         uses: actions/github-script@v7
         with:
-          github-token: ${{secrets.READY_FOR_REVIEW_TOKEN}}
+          github-token: ${{ github.token }}
           script: |
             // Job names that belong to this workflow — exclude them from the
             // external-check evaluation so we never block on ourselves.
@@ -112,7 +113,7 @@ jobs:
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             await github.graphql(`
               mutation($prId: ID!) {
@@ -144,7 +145,7 @@ jobs:
       - name: Ensure `in-review` label exists
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             try {
               await github.rest.issues.getLabel({
@@ -169,7 +170,7 @@ jobs:
         id: find-issues
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const body  = context.payload.pull_request.body  || '';
             const title = context.payload.pull_request.title || '';
@@ -224,7 +225,7 @@ jobs:
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const issueList = '${{ steps.find-issues.outputs.issue_list }}';
             const linkedSection = issueList
@@ -278,7 +279,7 @@ jobs:
       - name: Remove `in-review` label from linked issues
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const body  = context.payload.pull_request.body  || '';
             const title = context.payload.pull_request.title || '';
