@@ -126,10 +126,11 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       // await expect(unauthCaller.[ROUTER_NAME].[ENDPOINT_NAME]()).rejects.toThrow('UNAUTHORIZED');
 
       // Placeholder — replace with real auth check
-      const isAuthenticated = false;
-      if (!isAuthenticated) {
-        expect(isAuthenticated).toBe(false);
-      }
+      const mockUnauthCall = async () => {
+        throw new Error('UNAUTHORIZED');
+      };
+
+      await expect(mockUnauthCall()).rejects.toThrow('UNAUTHORIZED');
     });
   });
 });
