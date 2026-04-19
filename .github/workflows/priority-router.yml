@@ -45,8 +45,32 @@ jobs:
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
           script: |
-            const PRIORITY_LABELS = process.env.PRIORITY_LABELS.split(',');
-            const PRIORITY_DEFINITIONS = JSON.parse(process.env.PRIORITY_DEFINITIONS);
+            const DEFAULT_PRIORITY_LABELS = ['priority-p0', 'priority-p1', 'priority-p2', 'priority-p3'];
+            const DEFAULT_PRIORITY_DEFINITIONS = [
+              { name: 'priority-p0', color: 'b60205', description: 'Critical priority — drop everything' },
+              { name: 'priority-p1', color: 'd93f0b', description: 'High priority — next up' },
+              { name: 'priority-p2', color: 'fbca04', description: 'Medium priority — normal queue' },
+              { name: 'priority-p3', color: '0e8a16', description: 'Low priority — backlog' },
+            ];
+
+            const PRIORITY_LABELS = (process.env.PRIORITY_LABELS || DEFAULT_PRIORITY_LABELS.join(','))
+              .split(',')
+              .map((label) => label.trim())
+              .filter(Boolean);
+
+            let PRIORITY_DEFINITIONS = DEFAULT_PRIORITY_DEFINITIONS;
+            if (process.env.PRIORITY_DEFINITIONS) {
+              try {
+                const parsed = JSON.parse(process.env.PRIORITY_DEFINITIONS);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  PRIORITY_DEFINITIONS = parsed;
+                } else {
+                  core.warning('PRIORITY_DEFINITIONS is empty or invalid. Using defaults.');
+                }
+              } catch (e) {
+                core.warning(`Failed to parse PRIORITY_DEFINITIONS. Using defaults. ${e.message}`);
+              }
+            }
             const dryRun = process.env.DRY_RUN === 'true';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' && !!process.env.OPENROUTER_API_KEY;
 
@@ -195,6 +219,8 @@ jobs:
                   }
                 }
               }
+
+              await ensureLabelExists(priorityLabel);
 
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,

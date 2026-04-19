@@ -71,9 +71,44 @@ class VerifiableLogger:
 
     def _read_last_hash(self) -> str:
         """Read the hash of the last entry in the log file."""
-        if not self.log_file.exists():
+        if not self.log_file.exists() or self.log_file.stat().st_size == 0:
             return "0" * 64
+
         last_hash = "0" * 64
+        try:
+            # Attempt to seek to the end and read backwards for performance
+            with open(self.log_file, "rb") as f:
+                f.seek(0, os.SEEK_END)
+                pointer = f.tell()
+                buffer = bytearray()
+                read_size = 4096
+
+                while pointer > 0:
+                    step = min(pointer, read_size)
+                    pointer -= step
+                    f.seek(pointer)
+                    chunk = f.read(step)
+                    buffer = chunk + buffer
+
+                    lines = buffer.splitlines()
+                    # If we found a newline or we're at the start of the file,
+                    # we can attempt to parse the lines we have.
+                    if b"\n" in chunk or pointer == 0:
+                        for line in reversed(lines):
+                            line = line.strip()
+                            if line:
+                                try:
+                                    entry = json.loads(line.decode("utf-8"))
+                                    if "entry_hash" in entry:
+                                        return entry["entry_hash"]
+                                except (json.JSONDecodeError, UnicodeDecodeError):
+                                    continue
+                        # If we processed all lines in buffer and didn't find a valid hash,
+                        # but we haven't reached the start of the file, we continue.
+        except (OSError, IOError):
+            pass
+
+        # Fallback to O(N) full file read if optimized seek fails
         with open(self.log_file, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()

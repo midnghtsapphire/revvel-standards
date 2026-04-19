@@ -1,0 +1,140 @@
+skill: openclaw-self-eval
+version: "1.0.0"
+title: "OpenClaw Self-Evaluation"
+description: |
+  Ephemeral pre-flight auditor for any OpenClaw-style agent. Audits the
+  soul file, memory backend, agent manifest, skill files, installers,
+  persona, secrets/vault references, and drift against the last known-
+  good snapshot. Emits a markdown report + JSON sidecar and a prioritized
+  P0/P1/P2 fix list. Read-only: never reads secret values and never
+  writes to memory.
+category: "Agent Operations"
+lifecycle: ephemeral
+status: beta
+author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+date: "2026-04-19"
+
+triggers:
+  - "self eval"
+  - "self-eval"
+  - "self evaluate"
+  - "audit yourself"
+  - "pre-flight"
+  - "openclaw audit"
+  - "agent audit"
+  - "soul check"
+  - "memory check"
+  - "skill check"
+  - "skill audit"
+  - "am I set up correctly"
+  - "check my setup"
+  - "evaluate my setup"
+  - "agent self check"
+  - "onboarding check"
+  - "readiness check"
+
+models:
+  primary: claude-sonnet-4-5
+  fast: claude-haiku-4-5
+
+persona:
+  enabled: true
+  name: "Mirror"
+  role: "Agent Self-Auditor"
+  voice: "terse, factual, non-judgemental"
+  emoji: "🪞"
+  greeting: "Mirror here. Running self-eval. No preamble; the report is the output."
+  farewell: "🪞 Mirror — audit complete."
+
+inputs:
+  agent_root:
+    required: true
+    default: "."
+    description: "Root directory to audit."
+  soul_path:
+    required: false
+    default: "SOUL.md"
+    description: "Override path to the soul file."
+  memory_backend:
+    required: false
+    default: "auto"
+    enum: ["auto", "gbrain", "local", "mem0", "none"]
+  skill_vault:
+    required: false
+    default: "skills/"
+  registry_file:
+    required: false
+    default: "skills/REGISTRY.md"
+  index_file:
+    required: false
+    default: "skills/SKILLS_INDEX.yml"
+  output_dir:
+    required: false
+    default: "./self-eval/"
+  staleness_days:
+    required: false
+    default: 30
+    type: integer
+  fail_on_warn:
+    required: false
+    default: false
+    type: boolean
+
+outputs:
+  report_markdown:
+    path: "{output_dir}/self-eval-{iso8601}.md"
+    format: markdown
+  report_json:
+    path: "{output_dir}/self-eval-{iso8601}.json"
+    format: json
+    schema:
+      timestamp: string
+      overall: "PASS | WARN | FAIL"
+      audits:
+        - name: string
+          status: "PASS | WARN | FAIL"
+          notes: string
+          fixes: [string]
+
+audits:
+  - name: soul
+    checks: ["exists", "non_empty", "has_version", "not_stale"]
+  - name: memory
+    checks: ["reachable", "recent_write", "below_half_life"]
+  - name: agent_manifest
+    checks: ["exists", "lists_this_agent", "persona_matches"]
+  - name: skill_files
+    checks:
+      - "every_dir_has_SKILL_md"
+      - "every_dir_has_skill_yml"
+      - "registry_matches_index"
+      - "registry_matches_filesystem"
+  - name: installers
+    checks: ["mac_command_exists", "windows_bat_exists", "readable"]
+  - name: persona
+    checks: ["persona_file_exists", "greeting_and_farewell", "emoji_assigned"]
+  - name: vault_secrets
+    checks: ["references_resolve", "no_secret_values_read"]
+  - name: drift
+    checks: ["matches_last_snapshot", "no_unexpected_deletes"]
+
+exit_codes:
+  "0": "all audits PASS"
+  "1": "any audit FAIL"
+  "2": "any audit FAIL, or any WARN when fail_on_warn=true"
+
+related_skills:
+  - skill-forge
+  - gbrain
+  - memory-pruning
+  - persona-engine
+  - vault-agent
+  - testing-agent
+  - system-state
+
+safety:
+  read_only: true
+  forbids_reading_secret_values: true
+  network_required: false
+
+schema_version: "1.0"

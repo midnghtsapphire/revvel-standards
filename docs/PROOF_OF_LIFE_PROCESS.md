@@ -96,7 +96,7 @@ The workflow is self-contained. To enable it on another repo:
 
 1. Copy `.github/workflows/proof-of-life.yml` into the target repo.
 2. Ensure `OPENROUTER_API_KEY` is set in the target repo's Actions secrets (optional — the workflow tolerates it being absent).
-3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `role-orchestrator`, `role-fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
+3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `role:orchestrator`, `role:fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
 
 ---
 
