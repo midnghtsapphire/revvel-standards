@@ -86,11 +86,20 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       expect(typeof row.id).toBe('number');
 
       // TODO: Add assertions for each field your UI components use
-      // expect(row).toHaveProperty('[FIELD_NAME_1]');
-      // expect(typeof row['[FIELD_NAME_1]']).toBe('string');
+      expect(row).toHaveProperty('[FIELD_NAME_1]');
+      expect(typeof row['[FIELD_NAME_1]']).toBe('string');
+
+      expect(row).toHaveProperty('[FIELD_NAME_2]');
+      expect(typeof row['[FIELD_NAME_2]']).toBe('number');
+
+      expect(row).toHaveProperty('[FIELD_NAME_3]');
+      expect(typeof row['[FIELD_NAME_3]']).toBe('boolean');
 
       expect(row).toHaveProperty('createdAt');
       expect(row.createdAt).toBeInstanceOf(Date);
+
+      expect(row).toHaveProperty('updatedAt');
+      expect(row.updatedAt).toBeInstanceOf(Date);
     });
 
     it('should return an empty array when no records exist', async () => {
