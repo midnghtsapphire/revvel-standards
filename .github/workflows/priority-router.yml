@@ -213,8 +213,7 @@ jobs:
                     name: label,
                   });
                 } catch (e) {
-                  const message = String(e?.message || '');
-                  if (e?.status !== 404 && !/label does not exist/i.test(message)) {
+                  if (e.status !== 404) {
                     throw e;
                   }
                 }

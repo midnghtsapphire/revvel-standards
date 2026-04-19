@@ -113,7 +113,7 @@ jobs:
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v8
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
             await github.graphql(`
               mutation($prId: ID!) {
