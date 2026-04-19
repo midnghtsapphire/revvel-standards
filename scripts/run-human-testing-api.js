@@ -87,13 +87,13 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
         try {
           const parsed = JSON.parse(data);
           if (parsed.error) {
-            reject(new Error(`OpenRouter error: ${JSON.stringify(parsed.error)}`));
+            reject(new Error(`OpenRouter error: ${parsed.error.message || "Unknown error"}`));
             return;
           }
           const content = parsed.choices?.[0]?.message?.content ?? "";
           resolve(content);
         } catch (err) {
-          reject(new Error(`Failed to parse OpenRouter response: ${err.message}\nRaw: ${data}`));
+          reject(new Error(`Failed to parse OpenRouter response: ${err.message}`));
         }
       });
     });
