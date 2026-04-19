@@ -53,10 +53,16 @@ const MOCK_TABLE_NAME_ROW = {
 describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
   beforeAll(async () => {
     // TODO: Set up test environment (e.g., mock auth context)
+    // vi.mock('@/auth', () => ({
+    //   auth: vi.fn().mockResolvedValue({ userId: 'test-user-1' }),
+    // }));
+    // vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://localhost:3000');
   });
 
   afterAll(async () => {
     // TODO: Clean up
+    // vi.restoreAllMocks();
+    // vi.unstubAllEnvs();
   });
 
   // -------------------------------------------------------------------------
