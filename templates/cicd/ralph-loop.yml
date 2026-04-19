@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Gather failure context
         id: gather-context
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -84,7 +84,7 @@ jobs:
             return failedJobs;
 
       - name: Ensure all Ralph Loop labels exist
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -115,7 +115,7 @@ jobs:
 
       - name: Check for existing open Ralph Loop issue (dedup)
         id: check-existing
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -175,7 +175,7 @@ jobs:
       - name: Create new Ralph Loop issue (first failure)
         if: steps.check-existing.outputs.existing_issue == ''
         id: create-issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -235,7 +235,7 @@ jobs:
 
       - name: Add retry comment to existing issue
         if: steps.check-existing.outputs.existing_issue != '' && steps.escalation.outputs.escalate == 'false'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -269,7 +269,7 @@ jobs:
 
       - name: Escalate to human after max retries
         if: steps.check-existing.outputs.existing_issue != '' && steps.escalation.outputs.escalate == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

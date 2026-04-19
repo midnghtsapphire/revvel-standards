@@ -124,7 +124,7 @@ jobs:
 
       - name: Create GitHub Issue for P0 gaps
         if: steps.p0-count.outputs.count > 0
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const p0Count = ${{ steps.p0-count.outputs.count }};
