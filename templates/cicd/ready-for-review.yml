@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Check all CI status checks for this commit
         id: check-status
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -110,7 +110,7 @@ jobs:
 
       - name: Convert draft PR to Ready for Review
         if: steps.check-status.outputs.all_passed == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -142,7 +142,7 @@ jobs:
 
     steps:
       - name: Ensure `in-review` label exists
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -167,7 +167,7 @@ jobs:
 
       - name: Find linked issues and apply `in-review` label
         id: find-issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -204,7 +204,7 @@ jobs:
             }
 
       - name: Post review-readiness checklist comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -258,7 +258,7 @@ jobs:
 
     steps:
       - name: Remove `in-review` label from linked issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

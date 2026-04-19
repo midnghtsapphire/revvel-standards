@@ -87,7 +87,7 @@ jobs:
 
     steps:
       - name: Post security review reminder comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -144,7 +144,7 @@ jobs:
 
     steps:
       - name: Post design asset reminder comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -197,7 +197,7 @@ jobs:
 
     steps:
       - name: Post BOM update reminder comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

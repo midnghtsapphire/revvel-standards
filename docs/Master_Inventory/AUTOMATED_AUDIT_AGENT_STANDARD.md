@@ -254,7 +254,7 @@ jobs:
 
       - name: Open issue for new CVEs
         if: ${{ hashFiles('reports/new-vulns.json') != '' }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
@@ -588,7 +588,7 @@ The **Ralph Loop** (`templates/cicd/ralph-loop.yml`) is the CI implementation of
     needs: [sast, secret-scan, dependency-audit]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         with:
           script: |
             await github.rest.issues.create({
