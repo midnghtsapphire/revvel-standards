@@ -105,7 +105,7 @@ jobs:
             if (assignee === 'Copilot')  githubAssignee = 'Copilot';
 
             // ── Routing labels ─────────────────────────────────────────────────
-            const labels = ['openrouter', 'proof-of-life', `role:${role}`];
+            const labels = ['openrouter', 'proof-of-life', `role-${role}`];
             if (assignee === 'Copilot') labels.push('copilot');
             if (assignee === 'codex')   labels.push('codex');
 

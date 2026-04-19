@@ -52,19 +52,19 @@ labels:
     description: "Requires a purchase (links to BOM.md)"
 
   # ── Priority ─────────────────────────────────────────────────────────────────
-  - name: "priority:p0"
+  - name: "priority-p0"
     color: "b60205"
     description: "Critical priority — drop everything"
 
-  - name: "priority:p1"
+  - name: "priority-p1"
     color: "d93f0b"
     description: "High priority — next up"
 
-  - name: "priority:p2"
+  - name: "priority-p2"
     color: "fbca04"
     description: "Medium priority — normal queue"
 
-  - name: "priority:p3"
+  - name: "priority-p3"
     color: "0e8a16"
     description: "Low priority — backlog"
 
@@ -123,10 +123,10 @@ labels:
     color: "2ea44f"
     description: "Proof-of-life run — app-review revvel-standards-run"
 
-  - name: "role:orchestrator"
+  - name: "role-orchestrator"
     color: "6f42c1"
     description: "OpenRouter agent is acting as orchestrator on this item"
 
-  - name: "role:fixer"
+  - name: "role-fixer"
     color: "ff6b35"
     description: "OpenRouter agent is acting as fixer on this item"
