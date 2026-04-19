@@ -1,6 +1,6 @@
 # Copy to .github/workflows/ready-for-review.yml in your app repo.
 # No configuration required — works out of the box with GITHUB_TOKEN.
-#
+# 04/18/2026 modified GITHUB_TOKEN to READY_FOR_REVIEW_TOKEN Fine Grain PAT required. Queue I am the Champion-Audrey
 # What this workflow does:
 #   1. AUTO-PROMOTE: When all CI checks pass on a draft PR, it is automatically
 #      converted to "Ready for Review" so reviewers are notified without manual action.

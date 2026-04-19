@@ -113,7 +113,7 @@ A dry run logs what *would* be routed without making changes — useful when fir
 | `issue-automation.yml` | Issue opened | Template / duplicate / triage checks | Runs alongside the new workflow; independent |
 | `sync-labels.yml` | Push to `main` | Syncs `.github/labels.yml` across repos | Propagates the new `openrouter` label |
 
-Together these give you: **route → attempt → self-heal → escalate**, running continuously.
+Together these give you: **route → prioritize → attempt → self-heal → escalate**, running continuously.
 
 ---
 
