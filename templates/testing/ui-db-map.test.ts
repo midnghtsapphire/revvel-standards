@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
-// TODO: Replace with your actual imports
+// Replace with your actual imports
 // For tRPC:
 // import { createCallerFactory } from '@trpc/server';
 // import { appRouter } from '@/server/routers';
@@ -22,7 +22,7 @@ import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 vi.mock('@/db', () => ({
   db: {
     query: {
-      // TODO: Replace [TABLE_NAME] with your actual table name
+      // Replace [TABLE_NAME] with your actual table name
       '[TABLE_NAME]': {
         findMany: vi.fn(),
         findFirst: vi.fn(),
@@ -42,7 +42,7 @@ vi.mock('@/db', () => ({
 
 const MOCK_[TABLE_NAME]_ROW = {
   id: 1,
-  // TODO: Replace with your actual field names and types
+  // Replace with your actual field names and types
   '[FIELD_NAME_1]': '[mock value]',
   '[FIELD_NAME_2]': 42,
   '[FIELD_NAME_3]': true,
@@ -52,11 +52,11 @@ const MOCK_[TABLE_NAME]_ROW = {
 
 describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
   beforeAll(async () => {
-    // TODO: Set up test environment (e.g., mock auth context)
+    // Set up test environment (e.g., mock auth context)
   });
 
   afterAll(async () => {
-    // TODO: Clean up
+    // Clean up
   });
 
   // -------------------------------------------------------------------------
@@ -65,7 +65,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
 
   describe('[ENDPOINT_NAME]', () => {
     it('should return an array of [TABLE_NAME] rows', async () => {
-      // TODO: Replace with your actual mock setup and caller
+      // Replace with your actual mock setup and caller
       // const { db } = await import('@/db');
       // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([MOCK_[TABLE_NAME]_ROW]);
 
@@ -85,7 +85,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       expect(row).toHaveProperty('id');
       expect(typeof row.id).toBe('number');
 
-      // TODO: Add assertions for each field your UI components use
+      // Add assertions for each field your UI components use
       // expect(row).toHaveProperty('[FIELD_NAME_1]');
       // expect(typeof row['[FIELD_NAME_1]']).toBe('string');
 
@@ -94,7 +94,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
     });
 
     it('should return an empty array when no records exist', async () => {
-      // TODO: Mock empty DB response
+      // Mock empty DB response
       // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([]);
       // const result = await caller.[ROUTER_NAME].[ENDPOINT_NAME]();
       // expect(result).toEqual([]);
@@ -108,7 +108,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       const row = mockResult[0];
 
       // Ensure password hashes, secrets, and internal flags are not returned
-      // TODO: Replace with your actual sensitive field names
+      // Replace with your actual sensitive field names
       expect(row).not.toHaveProperty('passwordHash');
       expect(row).not.toHaveProperty('secretKey');
       expect(row).not.toHaveProperty('internalFlag');
@@ -121,7 +121,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
 
   describe('authentication', () => {
     it('should reject unauthenticated requests with 401', async () => {
-      // TODO: Replace with your actual auth check
+      // Replace with your actual auth check
       // const unauthCaller = createCallerFactory(appRouter)({ userId: null });
       // await expect(unauthCaller.[ROUTER_NAME].[ENDPOINT_NAME]()).rejects.toThrow('UNAUTHORIZED');
 
