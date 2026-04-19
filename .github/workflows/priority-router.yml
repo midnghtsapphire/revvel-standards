@@ -170,12 +170,16 @@ jobs:
               }
 
               for (const label of existingPriority) {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  name: label,
-                });
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    name: label,
+                  });
+                } catch (e) {
+                  if (e.status !== 404) throw e;
+                }
               }
 
               await github.rest.issues.addLabels({
