@@ -170,7 +170,7 @@ describe('[TABLE_NAME] field validation', () => {
     });
 
     it('should enforce maximum length for [FIELD_NAME]', () => {
-      const MAX_LENGTH = 255; // TODO: Replace with your actual max length
+      const MAX_LENGTH = /* [MAX_LENGTH] */ 255;
       const longString = 'a'.repeat(MAX_LENGTH + 1);
       expect(longString.length).toBeGreaterThan(MAX_LENGTH);
       // Your validation: expect insert of longString to fail
