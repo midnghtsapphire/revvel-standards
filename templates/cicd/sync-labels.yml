@@ -62,8 +62,13 @@ jobs:
               { name: 'auto-fix',          color: '0075ca', description: 'Created by auto-fix / Ralph Loop workflow' },
               { name: 'copilot',           color: '7057ff', description: 'Assigned to GitHub Copilot for fixing' },
               { name: 'ralph-loop',        color: 'ff6b35', description: 'Managed by the Ralph Loop self-healing workflow' },
+              { name: 'openrouter',        color: '6f42c1', description: 'Routed to the OpenRouter orchestrator (first line of sight)' },
               { name: 'needs-human',       color: 'd93f0b', description: 'Escalated — requires human intervention' },
               { name: 'vault-agent',       color: 'e4e669', description: 'Vault Agent credential provisioning required' },
+              { name: 'codex',             color: '5319e7', description: 'Routed to Codex (via OpenRouter) for code execution' },
+              { name: 'proof-of-life',     color: '2ea44f', description: 'Proof-of-life run — app-review revvel-standards-run' },
+              { name: 'role:orchestrator', color: '6f42c1', description: 'OpenRouter agent is acting as orchestrator on this item' },
+              { name: 'role:fixer',        color: 'ff6b35', description: 'OpenRouter agent is acting as fixer on this item' },
             ];
 
             // Fetch existing labels (paginated — repos can have 100+)

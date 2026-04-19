@@ -8,9 +8,9 @@ This document describes the process, the implementation, and how to tune it.
 
 ## TL;DR
 
-1. Every new issue and pull request in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter.
-2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**.
-3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret and the relevant skills.
+1. Every new issue in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter. Open pull requests are picked up by the hourly cron sweep.
+2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**, plus the default **`role:orchestrator`** label.
+3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret, the optional `ADMIN_GITHUB_TOKEN`, and the relevant skills.
 4. A **cron sweep runs every hour, 24/7**, to pick up anything that was opened while the event workflow missed it or that arrived before the secret was configured.
 5. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
 
@@ -27,6 +27,7 @@ OpenRouter is a service, not a GitHub user — it cannot be set as a GitHub `ass
 | GitHub `assignee` | `@Copilot` | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
 | Label | `openrouter` | Routing hint for any automation that filters by OpenRouter-owned work |
 | Label | `auto-fix`, `copilot` | Shared routing labels consumed by the Ralph loop |
+| Label | `role:orchestrator` | Default role marker for first-line-of-sight routing |
 | Comment | First-line-of-sight notice | Points reviewers / auditors at `OPENROUTER_API_KEY`, the skill, and this doc |
 
 If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned later, swap the `assignees: ['Copilot']` value in the workflow — no other changes required.
@@ -46,6 +47,17 @@ If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned
 
 ---
 
+## Optional: `ADMIN_GITHUB_TOKEN` (elevated routing permissions)
+
+If the default `GITHUB_TOKEN` does not have enough rights to assign `@Copilot` or apply routing labels, provide an elevated token:
+
+- Secret name: `ADMIN_GITHUB_TOKEN`
+- Type: GitHub App installation token or PAT with **minimum** scopes (`issues:write`, `pull_requests:write`, `contents:read`).
+- Used by: `.github/workflows/openrouter-assignee.yml` for routing on issues/PRs (falls back to `GITHUB_TOKEN` when missing).
+- Safety note: the workflow does **not** check out code or execute PR content, so it remains safe for `pull_request_target` runs when scoped minimally.
+
+---
+
 ## The 24/7 Ralph cron loop
 
 The `ralph-cron-sweep` job runs on the GitHub Actions `schedule` trigger:
@@ -61,9 +73,8 @@ on:
 For every open issue and PR in the repo it:
 
 1. Skips items that already have an assignee (the orchestrator or a human already owns it).
-2. Skips items labelled `needs-human` or `blocked` (explicitly escalated — do not re-route).
-3. Skips items already labelled `openrouter` (already routed in a previous sweep).
-4. Otherwise: assigns `@Copilot`, adds the routing labels, posts a sweep comment.
+2. Skips items already labelled `openrouter` (already routed in a previous sweep).
+3. Otherwise: assigns `@Copilot`, adds the routing labels, posts a sweep comment.
 
 A run summary is written to the workflow summary page (`Routed / Skipped / Total open / Dry run / Secret status`).
 
@@ -81,7 +92,7 @@ Edit the `schedule:` block in `.github/workflows/openrouter-assignee.yml` and co
 
 ### Disabling the sweep
 
-Comment out the `schedule:` block, or delete the `ralph-cron-sweep` job. The `route-new` job (event-driven) will continue to work.
+Comment out the `schedule:` block, or delete the `ralph-cron-sweep` job. The `route-new` job (event-driven) will still route newly opened issues.
 
 ### Manual run / dry run
 
@@ -97,8 +108,7 @@ A dry run logs what *would* be routed without making changes — useful when fir
 
 | Workflow | Trigger | Scope | Relationship |
 |---|---|---|---|
-| `openrouter-assignee.yml` (**new**) | New issue / PR, hourly cron | Routes work **to** the orchestrator | Entry point — "first line of sight" |
-| `priority-router.yml` | Issue/PR events + hourly cron | Assigns `priority:p0` → `priority:p3` labels | Keeps backlog priority fresh alongside routing |
+| `openrouter-assignee.yml` (**new**) | New issue, hourly cron | Routes work **to** the orchestrator (PRs via sweep) | Entry point — "first line of sight" |
 | `ralph-loop.yml` | CI failure on a PR | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails |
 | `issue-automation.yml` | Issue opened | Template / duplicate / triage checks | Runs alongside the new workflow; independent |
 | `sync-labels.yml` | Push to `main` | Syncs `.github/labels.yml` across repos | Propagates the new `openrouter` label |
@@ -113,7 +123,7 @@ The workflow is self-contained. To enable it on another repo:
 
 1. Copy `.github/workflows/openrouter-assignee.yml` into the target repo.
 2. Ensure `OPENROUTER_API_KEY` is set in the target repo's Actions secrets.
-3. Ensure the `openrouter`, `auto-fix`, `copilot`, `needs-human`, `blocked` labels exist (they do automatically if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`).
+3. Ensure the `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`, `needs-human`, `blocked` labels exist (they do automatically if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`).
 4. (Optional) Adjust the cron cadence in the copy to match that repo's activity level.
 
 No other changes are required.
@@ -124,7 +134,7 @@ No other changes are required.
 
 If the orchestrator cannot complete a routed item:
 
-- Add the **`needs-human`** label → the sweep will stop re-routing it.
+- Add the **`needs-human`** label → flags the item for manual attention (routing continues).
 - The existing `ralph-loop.yml` also escalates after 5 failed auto-fix attempts on a PR by pinging `@midnghtsapphire` and applying `needs-human` + `blocked`.
 
 ---
