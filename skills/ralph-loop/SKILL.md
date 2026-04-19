@@ -95,7 +95,7 @@ jobs:
     steps:
       - name: Get failing PR
         id: get-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prs = await github.rest.pulls.list({
@@ -110,7 +110,7 @@ jobs:
       - name: Check retry count
         id: retry-count
         if: steps.get-pr.outputs.result != 'null'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = ${{ steps.get-pr.outputs.result }};
@@ -128,7 +128,7 @@ jobs:
         if: |
           steps.get-pr.outputs.result != 'null' &&
           steps.retry-count.outputs.result < 5
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = ${{ steps.get-pr.outputs.result }};
@@ -162,7 +162,7 @@ jobs:
         if: |
           steps.get-pr.outputs.result != 'null' &&
           steps.retry-count.outputs.result >= 5
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = ${{ steps.get-pr.outputs.result }};
@@ -199,7 +199,7 @@ jobs:
 
     steps:
       - name: Remove won't-merge label on CI pass
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prs = await github.rest.pulls.list({

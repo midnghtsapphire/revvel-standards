@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Find matching open PR
         id: find-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const head_sha =
@@ -61,7 +61,7 @@ jobs:
       - name: Count existing Ralph Loop attempts
         id: count-attempts
         if: steps.find-pr.outputs.result != 'null'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -81,7 +81,7 @@ jobs:
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -142,7 +142,7 @@ jobs:
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) >= 5
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -191,7 +191,7 @@ jobs:
     steps:
       - name: Find matching open PR
         id: find-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const head_sha =
@@ -211,7 +211,7 @@ jobs:
 
       - name: Remove won't-merge label on CI pass
         if: steps.find-pr.outputs.result != 'null'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
