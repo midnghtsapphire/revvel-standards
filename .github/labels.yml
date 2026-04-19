@@ -123,10 +123,10 @@ labels:
     color: "2ea44f"
     description: "Proof-of-life run — app-review revvel-standards-run"
 
-  - name: "role-orchestrator"
+  - name: "role:orchestrator"
     color: "6f42c1"
     description: "OpenRouter agent is acting as orchestrator on this item"
 
-  - name: "role-fixer"
+  - name: "role:fixer"
     color: "ff6b35"
     description: "OpenRouter agent is acting as fixer on this item"
