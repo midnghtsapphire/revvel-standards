@@ -108,7 +108,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       const row = mockResult[0];
 
       // Ensure password hashes, secrets, and internal flags are not returned
-      // TODO: Replace with your actual sensitive field names
+      // INSTRUCTION: Replace with your actual sensitive field names
       expect(row).not.toHaveProperty('passwordHash');
       expect(row).not.toHaveProperty('secretKey');
       expect(row).not.toHaveProperty('internalFlag');
