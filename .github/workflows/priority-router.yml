@@ -70,23 +70,34 @@ jobs:
               return 'priority-p2';
             };
 
-            const ensurePriorityLabels = async () => {
-              for (const def of PRIORITY_DEFINITIONS) {
-                try {
-                  await github.rest.issues.getLabel({
+            const ensureLabelExists = async (name) => {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                });
+              } catch (e) {
+                if (e.status === 404) {
+                  const def = PRIORITY_DEFINITIONS.find((d) => d.name === name);
+                  await github.rest.issues.createLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    name: def.name,
+                    ...(def || {
+                      name,
+                      color: 'cfd3d7',
+                      description: `Auto-created priority label: ${name}`,
+                    }),
                   });
-                } catch (e) {
-                  if (e.status === 404) {
-                    await github.rest.issues.createLabel({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      ...def,
-                    });
-                  }
+                  return;
                 }
+                throw e;
+              }
+            };
+
+            const ensurePriorityLabels = async () => {
+              for (const name of PRIORITY_LABELS) {
+                await ensureLabelExists(name);
               }
             };
 
@@ -170,12 +181,19 @@ jobs:
               }
 
               for (const label of existingPriority) {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  name: label,
-                });
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    name: label,
+                  });
+                } catch (e) {
+                  const message = String(e?.message || '');
+                  if (e?.status !== 404 && !/label does not exist/i.test(message)) {
+                    throw e;
+                  }
+                }
               }
 
               await github.rest.issues.addLabels({
