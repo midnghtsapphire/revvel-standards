@@ -1,0 +1,78 @@
+# Match Labels — Detect merge-control / release labels on pull requests
+#
+# Uses: binowork/match-labels@v0.1.1
+# Docs: https://github.com/binowork/match-labels
+#       docs/MATCH_LABELS_PROCESS.md
+#
+# What this workflow does:
+#   1. Runs on every pull request event where the label set can change
+#      (opened, reopened, labeled, unlabeled, synchronize, ready_for_review).
+#   2. Uses the `binowork/match-labels` action to inspect the pull request's
+#      labels and return any that match the configured filter set — the
+#      repository's merge-control and release-routing labels.
+#   3. Exposes the matched labels as job outputs so downstream workflows and
+#      jobs can gate on them (e.g. auto-merge only when an explicit merge-
+#      control label is applied, block when `won't-merge` or `blocked` is set).
+#   4. Applies the `triage` label as a default when no configured label is
+#      matched, mirroring the fallback used by `arsc-labels.yml`.
+#
+# The `binowork/match-labels` action only executes against `pull_request`
+# payloads — see upstream README — so this workflow is scoped to pull
+# requests only and never runs on issues.
+
+name: Match Labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+      - unlabeled
+      - synchronize
+      - ready_for_review
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+concurrency:
+  group: match-labels-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  match-labels:
+    name: Match PR Labels
+    runs-on: ubuntu-latest
+    outputs:
+      matched_labels: ${{ steps.match.outputs.matched_labels }}
+      matched_labels_array: ${{ steps.match.outputs.matched_labels_array }}
+      matched_labels_count: ${{ steps.match.outputs.matched_labels_count }}
+
+    steps:
+      - name: Match merge-control / routing labels
+        id: match
+        uses: binowork/match-labels@v0.1.1
+        with:
+          # Canonical Revvel merge-control and routing labels. Edit this list
+          # to extend the filter — e.g. add `major`, `minor`, `patch` to gate
+          # a semver-aware release workflow.
+          match_labels: |
+            auto-merge
+            won't-merge
+            blocked
+            auto-fix
+            openrouter
+            copilot
+            needs-human
+          # Applied when none of the labels above are present on the PR.
+          default_label: triage
+
+      - name: Summarise match result
+        run: |
+          echo "### Match Labels" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels_count:** ${{ steps.match.outputs.matched_labels_count }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels:** \`${{ steps.match.outputs.matched_labels }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels_array:** \`${{ steps.match.outputs.matched_labels_array }}\`" >> "$GITHUB_STEP_SUMMARY"

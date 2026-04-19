@@ -17,6 +17,10 @@ name: OpenRouter Assignee — First Line of Sight
 on:
   issues:
     types: [opened, reopened]
+  # `pull_request_target` (not `pull_request`) so the job has write permissions
+  # even for PRs opened from forks — routing needs to assign + label + comment.
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
   schedule:
     # Hourly sweep — the 24/7 Ralph loop. Edit here or override per repo by
     # forking this workflow; keep cadence aligned with your OpenRouter budget.
@@ -40,8 +44,8 @@ concurrency:
 jobs:
   # ─── Immediate: new issue or PR ──────────────────────────────────────────────
   route-new:
-    name: Route new issue
-    if: github.event_name == 'issues'
+    name: Route new issue or PR
+    if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
       - name: Verify OPENROUTER_API_KEY and ADMIN_GITHUB_TOKEN are configured
