@@ -30,9 +30,9 @@ permissions:
   contents: read
 
 env:
-  PRIORITY_LABELS: "priority:p0,priority:p1,priority:p2,priority:p3"
+  PRIORITY_LABELS: "priority-p0,priority-p1,priority-p2,priority-p3"
   PRIORITY_DEFINITIONS: >-
-    [{"name":"priority:p0","color":"b60205","description":"Critical priority — drop everything"},{"name":"priority:p1","color":"d93f0b","description":"High priority — next up"},{"name":"priority:p2","color":"fbca04","description":"Medium priority — normal queue"},{"name":"priority:p3","color":"0e8a16","description":"Low priority — backlog"}]
+    [{"name":"priority-p0","color":"b60205","description":"Critical priority — drop everything"},{"name":"priority-p1","color":"d93f0b","description":"High priority — next up"},{"name":"priority-p2","color":"fbca04","description":"Medium priority — normal queue"},{"name":"priority-p3","color":"0e8a16","description":"Low priority — backlog"}]
 
 jobs:
   route-priority:
@@ -55,21 +55,21 @@ jobs:
             const normalizePriority = (value) => {
               if (!value) return null;
               const v = String(value).toLowerCase();
-              if (v.includes('p0')) return 'priority:p0';
-              if (v.includes('p1')) return 'priority:p1';
-              if (v.includes('p2')) return 'priority:p2';
-              if (v.includes('p3')) return 'priority:p3';
+              if (v.includes('p0')) return 'priority-p0';
+              if (v.includes('p1')) return 'priority-p1';
+              if (v.includes('p2')) return 'priority-p2';
+              if (v.includes('p3')) return 'priority-p3';
               return null;
             };
 
             const fallbackPriority = (labels, text) => {
               const labelSet = new Set(labels);
               const lower = text.toLowerCase();
-              if (labelSet.has('security') || /security|vuln|cve|credential|breach/.test(lower)) return 'priority:p0';
-              if (labelSet.has('bug') || /bug|error|fail|broken|crash|regression/.test(lower)) return 'priority:p1';
-              if (labelSet.has('documentation') || /docs|documentation|readme/.test(lower)) return 'priority:p3';
-              if (labelSet.has('enhancement') || /feature|enhancement|improve/.test(lower)) return 'priority:p2';
-              return 'priority:p2';
+              if (labelSet.has('security') || /security|vuln|cve|credential|breach/.test(lower)) return 'priority-p0';
+              if (labelSet.has('bug') || /bug|error|fail|broken|crash|regression/.test(lower)) return 'priority-p1';
+              if (labelSet.has('documentation') || /docs|documentation|readme/.test(lower)) return 'priority-p3';
+              if (labelSet.has('enhancement') || /feature|enhancement|improve/.test(lower)) return 'priority-p2';
+              return 'priority-p2';
             };
 
             const ensurePriorityLabels = async () => {

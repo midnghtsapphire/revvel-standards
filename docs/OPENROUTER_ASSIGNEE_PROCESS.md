@@ -98,7 +98,7 @@ A dry run logs what *would* be routed without making changes — useful when fir
 | Workflow | Trigger | Scope | Relationship |
 |---|---|---|---|
 | `openrouter-assignee.yml` (**new**) | New issue / PR, hourly cron | Routes work **to** the orchestrator | Entry point — "first line of sight" |
-| `priority-router.yml` | Issue/PR events + hourly cron | Assigns `priority:p0` → `priority:p3` labels | Keeps backlog priority fresh alongside routing |
+| `priority-router.yml` | Issue/PR events + hourly cron | Assigns `priority-p0` → `priority-p3` labels | Keeps backlog priority fresh alongside routing |
 | `ralph-loop.yml` | CI failure on a PR | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails |
 | `issue-automation.yml` | Issue opened | Template / duplicate / triage checks | Runs alongside the new workflow; independent |
 | `sync-labels.yml` | Push to `main` | Syncs `.github/labels.yml` across repos | Propagates the new `openrouter` label |

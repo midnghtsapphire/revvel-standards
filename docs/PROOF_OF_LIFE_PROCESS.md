@@ -15,7 +15,7 @@ Implementation: [`.github/workflows/proof-of-life.yml`](../.github/workflows/pro
    - **`Copilot`** — assigns GitHub `@Copilot` (orchestrated by OpenRouter).
    - **`codex`** — routes Codex via OpenRouter (`openai/codex-5.1`); label-only, no GitHub user.
 4. *(Optional)* Enter a `target_issue` (issue or PR number) to have the workflow assign, label and comment on it. Leave blank for a log-only heartbeat.
-5. The workflow verifies `OPENROUTER_API_KEY`, applies routing labels (`openrouter`, `proof-of-life`, `role:<role>`, plus `copilot` or `codex` where relevant), and posts the proof-of-life comment.
+5. The workflow verifies `OPENROUTER_API_KEY`, applies routing labels (`openrouter`, `proof-of-life`, `role-<role>`, plus `copilot` or `codex` where relevant), and posts the proof-of-life comment.
 
 ---
 
@@ -36,9 +36,9 @@ OpenRouter is a service, not a GitHub user, and `codex` is a model behind OpenRo
 
 | Input `assignee` | GitHub `assignees` | Labels added | Meaning |
 |---|---|---|---|
-| `openrouter` | *(none)* | `openrouter`, `proof-of-life`, `role:<role>` | **Independent of Copilot.** OpenRouter owns the run end-to-end; routing is label-only. |
-| `Copilot` | `@Copilot` | `openrouter`, `proof-of-life`, `role:<role>`, `copilot` | Orchestrated by OpenRouter, executed by GitHub Copilot. |
-| `codex` | *(none)* | `openrouter`, `proof-of-life`, `role:<role>`, `codex` | Orchestrated by OpenRouter, executed by the Codex model (`openai/codex-5.1`) — label-only, no GitHub user. |
+| `openrouter` | *(none)* | `openrouter`, `proof-of-life`, `role-<role>` | **Independent of Copilot.** OpenRouter owns the run end-to-end; routing is label-only. |
+| `Copilot` | `@Copilot` | `openrouter`, `proof-of-life`, `role-<role>`, `copilot` | Orchestrated by OpenRouter, executed by GitHub Copilot. |
+| `codex` | *(none)* | `openrouter`, `proof-of-life`, `role-<role>`, `codex` | Orchestrated by OpenRouter, executed by the Codex model (`openai/codex-5.1`) — label-only, no GitHub user. |
 
 If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot` or `revvel-codex-bot`) is provisioned later, swap the `githubAssignee` resolution block in the workflow — no other changes required.
 
@@ -96,7 +96,7 @@ The workflow is self-contained. To enable it on another repo:
 
 1. Copy `.github/workflows/proof-of-life.yml` into the target repo.
 2. Ensure `OPENROUTER_API_KEY` is set in the target repo's Actions secrets (optional — the workflow tolerates it being absent).
-3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `role:orchestrator`, `role:fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
+3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `role-orchestrator`, `role-fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
 
 ---
 
