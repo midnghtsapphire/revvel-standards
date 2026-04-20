@@ -1,7 +1,7 @@
 name: truthslayer_audit
 title: "TruthSlayer Audit — Composite Code Scoring"
-version: "1.0.0"
-description: "Audit and evaluate code on GitHub or a marketplace using TruthSlayer's eight-factor composite rubric; emit a 0–100 TruthSlayer Score, letter grade, badge label, and evidence-cited report. Brand home: truthslayer.com."
+version: "1.1.0"
+description: "Audit and evaluate code on GitHub or a marketplace using TruthSlayer's eight-factor composite rubric; emit a 0–100 TruthSlayer Score, letter grade, badge label, confidence level, and evidence-cited report. Brand home: truthslayer.com."
 
 metadata:
   author: "Audrey Evans (MIDNGHTSAPPHIRE)"
@@ -19,6 +19,7 @@ metadata:
     - marketplace-audit
   created_at: "2026-04-20"
   updated_at: "2026-04-20"
+  changelog_ref: "skills/truthslayer-audit/SKILL.md#changelog"
 
 dependencies:
   skills:
@@ -71,6 +72,13 @@ scoring:
       - tests_ci
       - documentation
     per_factor_boost: 0.025
+  confidence_levels:
+    - id: high
+      when: "All 8 factors scored with direct, first-hand evidence; no material gaps."
+    - id: medium
+      when: "≥ 6 of 8 factors scored from direct evidence; the remainder from unverified secondary signals."
+    - id: low
+      when: "≤ 5 of 8 factors have direct evidence, or the artifact / scanners were partly inaccessible. Re-run before use as a trust signal."
 
 implementation:
   type: markdown_prompt
@@ -112,10 +120,23 @@ implementation:
     Produce the report.
 
 output_schema:
-  schema: "truthslayer-audit/v1"
+  schema: "truthslayer-audit/v1.1"
+  required_fields:
+    - score
+    - grade
+    - badge
+    - confidence
+    - sub_scores
+    - evidence
+  optional_fields:
+    - evidence_confidence
+    - publication
   files:
     - "truthslayer-report.md"
     - "truthslayer-report.json"
+  publication:
+    trust_community_index: "trust-community/index.json"
+    trust_community_audit_dir: "trust-community/audits/<slug>/"
 
 triggers:
   - "truthslayer"
