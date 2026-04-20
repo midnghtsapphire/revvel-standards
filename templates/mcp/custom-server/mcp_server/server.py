@@ -67,16 +67,21 @@ def example_query(query: str, limit: int = 10) -> list[dict]:
     Returns:
         A list of matching records as dictionaries.
     """
-    # TODO: implement actual database query using DATABASE_URL
-    # Example with psycopg2:
-    # import psycopg2
-    # conn = psycopg2.connect(DATABASE_URL)
-    # cur = conn.cursor()
-    # cur.execute("SELECT * FROM table WHERE name ILIKE %s LIMIT %s", (f"%{query}%", limit))
-    # rows = cur.fetchall()
-    # return [dict(row) for row in rows]
+    if DATABASE_URL:
+        import psycopg2
+        import psycopg2.extras
 
-    # Mock search across in-memory records
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        try:
+            cur.execute("SELECT * FROM table WHERE name ILIKE %s LIMIT %s", (f"%{query}%", limit))
+            rows = cur.fetchall()
+            return [dict(row) for row in rows]
+        finally:
+            cur.close()
+            conn.close()
+
+    # Fallback: Mock search across in-memory records
     results = [
         r for r in RECORDS.values()
         if query.lower() in r["name"].lower()
@@ -95,20 +100,25 @@ def create_record(name: str, data: dict) -> dict:
     Returns:
         The created record including its generated ID.
     """
-    # TODO: implement actual record creation using DATABASE_URL
-    # Example with psycopg2:
-    # import psycopg2
-    # import json
-    # conn = psycopg2.connect(DATABASE_URL)
-    # cur = conn.cursor()
-    # cur.execute(
-    #     "INSERT INTO table (name, data) VALUES (%s, %s) RETURNING id, created_at",
-    #     (name, json.dumps(data))
-    # )
-    # record_id, created_at = cur.fetchone()
-    # conn.commit()
-    # return {"id": record_id, "name": name, "data": data, "created_at": created_at}
+    if DATABASE_URL:
+        import psycopg2
+        import json
 
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+        try:
+            cur.execute(
+                "INSERT INTO table (name, data) VALUES (%s, %s) RETURNING id, created_at",
+                (name, json.dumps(data))
+            )
+            record_id, created_at = cur.fetchone()
+            conn.commit()
+            return {"id": record_id, "name": name, "data": data, "created_at": created_at}
+        finally:
+            cur.close()
+            conn.close()
+
+    # Fallback: Mock creation
     record_id = str(uuid.uuid4())
     record = {"id": record_id, "name": name, "data": data}
     RECORDS[record_id] = record
