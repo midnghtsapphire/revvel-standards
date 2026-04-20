@@ -161,6 +161,10 @@ labels:
     color: "5319e7"
     description: "Routed to Codex (via OpenRouter) for code execution"
 
+  - name: jules
+    color: "4285f4"
+    description: "Routed to Google Jules for deep-research and authoring"
+
   - name: proof-of-life
     color: "2ea44f"
     description: "Proof-of-life run — app-review revvel-standards-run"
