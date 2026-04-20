@@ -27,6 +27,27 @@ labels:
     color: "e4e669"
     description: "Needs triage — newly opened issue awaiting classification"
 
+  # ── Triage sub-states (visibility into where in the triage process an item is)
+  - name: "triage:new"
+    color: "fef2c0"
+    description: "Triage stage — freshly opened, not yet looked at"
+
+  - name: "triage:in-progress"
+    color: "f9d71c"
+    description: "Triage stage — a triager is actively classifying"
+
+  - name: "triage:needs-info"
+    color: "e4e669"
+    description: "Triage stage — waiting on reporter for more info"
+
+  - name: "triage:classified"
+    color: "c2e0c6"
+    description: "Triage stage — labelled & routed, ready for owner"
+
+  - name: "triage:escalated"
+    color: "d93f0b"
+    description: "Triage stage — escalated beyond default triager"
+
   - name: documentation
     color: "0075ca"
     description: "Documentation only"
@@ -106,6 +127,27 @@ labels:
   - name: openrouter
     color: "6f42c1"
     description: "Routed to the OpenRouter orchestrator (first line of sight)"
+
+  # ── OpenRouter instantiation lifecycle (visibility into the instantiate dance)
+  - name: "openrouter:instantiating"
+    color: "fbca04"
+    description: "OpenRouter instantiation in progress — API ping pending"
+
+  - name: "openrouter:instantiated"
+    color: "0e8a16"
+    description: "OpenRouter instantiated — API key verified, 👍 live"
+
+  - name: "openrouter:instantiation-failed"
+    color: "b60205"
+    description: "OpenRouter instantiation failed — see tracking issue for captured error"
+
+  - name: "openrouter:needs-key"
+    color: "d93f0b"
+    description: "OPENROUTER_API_KEY not configured — cannot instantiate"
+
+  - name: "openrouter:ralph-escalated"
+    color: "ff6b35"
+    description: "Instantiation unresolved > 24h — Ralph loop escalated to humans"
 
   - name: needs-human
     color: "d93f0b"
