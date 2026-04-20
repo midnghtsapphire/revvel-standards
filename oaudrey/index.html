@@ -11,7 +11,7 @@
   <meta property="og:title" content="oAudrey — Automation Software Hub" />
   <meta property="og:description" content="Autonomous automation hub for Freedom Angel Corp. Proceeds fund reskilling, recovery, and restoration for trafficking survivors." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://openaudrey.com" />
+  <meta property="og:url" content="https://oaudrey.com" />
 
   <!-- Tailwind CSS (CDN; matches the FieldWork landing-page convention) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -97,11 +97,28 @@
   <header class="sticky top-0 z-40 border-b hairline bg-void/80 backdrop-blur">
     <div class="mx-auto max-w-[1440px] px-6 md:px-12">
       <div class="flex items-center justify-between py-4">
-        <a href="#top" class="flex items-center gap-3">
-          <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center bg-gradient-to-br from-iris to-cyan">
-            <span class="h-2.5 w-2.5 bg-void"></span>
+        <a href="#top" class="flex items-center gap-3" aria-label="oAudrey — home">
+          <!-- oAudrey mark: original, orbit+aperture monogram (no third-party assets) -->
+          <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="oAudrey mark">
+            <defs>
+              <linearGradient id="oa-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#7C5CFF"/>
+                <stop offset="1" stop-color="#3DDCFF"/>
+              </linearGradient>
+            </defs>
+            <!-- outer orbit -->
+            <circle cx="20" cy="20" r="18" stroke="url(#oa-grad)" stroke-width="1.5" opacity="0.55"/>
+            <!-- aperture ring (the "o") -->
+            <circle cx="20" cy="20" r="12" stroke="url(#oa-grad)" stroke-width="3"/>
+            <!-- "A" wedge — two inward strokes + crossbar -->
+            <path d="M14 27 L20 13 L26 27" stroke="#E7ECF5" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+            <path d="M16.2 22.3 L23.8 22.3" stroke="#E7ECF5" stroke-width="2" stroke-linecap="square"/>
+            <!-- signal dot on the orbit -->
+            <circle cx="36" cy="14" r="2" fill="#F7C948"/>
+          </svg>
+          <span class="font-black tracking-tightest text-lg">
+            <span class="text-mist">o</span><span class="text-ice">Audrey</span>
           </span>
-          <span class="font-black tracking-tightest text-lg">oAudrey</span>
           <span class="hidden md:inline font-mono text-[10px] uppercase tracking-widest text-mist">
             Automation Software Hub · Freedom Angel Corp
           </span>
@@ -206,7 +223,7 @@
         </div>
         <p class="max-w-md text-mist leading-relaxed">
           Every Freedom Angel Corp product lives here as its own tab. Each tab is
-          also its own subdomain on <span class="font-mono text-ice">openaudrey.com</span>
+          also its own subdomain on <span class="font-mono text-ice">oaudrey.com</span>
           so teams can ship independently.
         </p>
       </div>
@@ -243,7 +260,7 @@
         <div class="lg:col-span-7 glass p-8 md:p-10">
           <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
             <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
-            fieldwork.openaudrey.com
+            fieldwork.oaudrey.com
           </div>
           <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
             FieldWork — documentation, engineered for the job site.
@@ -253,10 +270,10 @@
             precise PDF progress reports for architects and contractors.
             The landing page lives in this repository under
             <span class="font-mono text-ice">/fieldwork</span> and deploys to the
-            <span class="font-mono text-ice">fieldwork.openaudrey.com</span> subdomain.
+            <span class="font-mono text-ice">fieldwork.oaudrey.com</span> subdomain.
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
-            <a href="https://fieldwork.openaudrey.com"
+            <a href="https://fieldwork.oaudrey.com"
                class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-void hover:opacity-90">
               Open FieldWork →
             </a>
@@ -268,7 +285,7 @@
         </div>
         <aside class="lg:col-span-5 glass p-8 md:p-10">
           <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
-          <div class="mt-3 font-mono text-ice break-all">fieldwork.openaudrey.com</div>
+          <div class="mt-3 font-mono text-ice break-all">fieldwork.oaudrey.com</div>
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-cyan">LIVE-TEST</dd>
@@ -291,7 +308,7 @@
         <div class="lg:col-span-7 glass p-8 md:p-10">
           <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
             <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
-            growlingeyes.openaudrey.com
+            growlingeyes.oaudrey.com
           </div>
           <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
             GrowlingEyes — autonomous OSINT &amp; threat intelligence.
@@ -304,7 +321,7 @@
         </div>
         <aside class="lg:col-span-5 glass p-8 md:p-10">
           <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
-          <div class="mt-3 font-mono text-ice break-all">growlingeyes.openaudrey.com</div>
+          <div class="mt-3 font-mono text-ice break-all">growlingeyes.oaudrey.com</div>
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
@@ -321,7 +338,7 @@
         <div class="lg:col-span-7 glass p-8 md:p-10">
           <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
             <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
-            penny.openaudrey.com
+            penny.oaudrey.com
           </div>
           <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
             Penny Sovereign Yield Scout.
@@ -334,7 +351,7 @@
         </div>
         <aside class="lg:col-span-5 glass p-8 md:p-10">
           <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
-          <div class="mt-3 font-mono text-ice break-all">penny.openaudrey.com</div>
+          <div class="mt-3 font-mono text-ice break-all">penny.oaudrey.com</div>
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
@@ -351,7 +368,7 @@
         <div class="lg:col-span-7 glass p-8 md:p-10">
           <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
             <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
-            agents.openaudrey.com
+            agents.oaudrey.com
           </div>
           <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
             Agent Factory — trigger-driven autonomous agents.
@@ -364,7 +381,7 @@
         </div>
         <aside class="lg:col-span-5 glass p-8 md:p-10">
           <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
-          <div class="mt-3 font-mono text-ice break-all">agents.openaudrey.com</div>
+          <div class="mt-3 font-mono text-ice break-all">agents.oaudrey.com</div>
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-cyan">LIVE</dd>
@@ -381,7 +398,7 @@
         <div class="lg:col-span-7 glass p-8 md:p-10">
           <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
             <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
-            market.openaudrey.com
+            market.oaudrey.com
           </div>
           <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
             Marketing &amp; Ecommerce — autonomous storefronts.
@@ -394,7 +411,7 @@
         </div>
         <aside class="lg:col-span-5 glass p-8 md:p-10">
           <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
-          <div class="mt-3 font-mono text-ice break-all">market.openaudrey.com</div>
+          <div class="mt-3 font-mono text-ice break-all">market.oaudrey.com</div>
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
@@ -411,7 +428,7 @@
         <h3 class="text-2xl md:text-4xl font-extrabold tracking-tightest">More tabs land here as they ship.</h3>
         <p class="mt-4 text-mist max-w-2xl">
           Mobile apps, autonomous pipelines, advocacy tools. Every product gets
-          its own <span class="font-mono text-ice">&lt;app&gt;.openaudrey.com</span>
+          its own <span class="font-mono text-ice">&lt;app&gt;.oaudrey.com</span>
           subdomain and a tab in this hub.
         </p>
       </div>
@@ -546,11 +563,11 @@
             </div>
             <div class="flex items-start justify-between gap-6 border-t hairline pt-5">
               <dt class="text-mist">Hub</dt>
-              <dd class="font-mono text-ice text-right">openaudrey.com</dd>
+              <dd class="font-mono text-ice text-right">oaudrey.com</dd>
             </div>
             <div class="flex items-start justify-between gap-6 border-t hairline pt-5">
               <dt class="text-mist">FieldWork</dt>
-              <dd class="font-mono text-ice text-right">fieldwork.openaudrey.com</dd>
+              <dd class="font-mono text-ice text-right">fieldwork.oaudrey.com</dd>
             </div>
             <div class="flex items-start justify-between gap-6 border-t hairline pt-5">
               <dt class="text-mist">Standards</dt>

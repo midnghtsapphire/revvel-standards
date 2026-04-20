@@ -40,24 +40,28 @@ Non-Profit, Good Standing).
 ## Subdomain Model
 
 Per [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md),
-every Freedom Angel Corp product ships to an `<app>.openaudrey.com` subdomain
+every Freedom Angel Corp product ships to an `<app>.oaudrey.com` subdomain
 during the **live-test** stage, and is surfaced as a **tab** in the oAudrey
 hub landing page.
 
+> **Canonical domain:** `oaudrey.com`. Older copies of the standards doc may
+> still reference `openaudrey.com` — `oaudrey.com` is the correct apex for
+> this hub and all product subdomains.
+
 | Product (tab) | Subdomain | Source in this repo |
 |---|---|---|
-| **FieldWork** | `fieldwork.openaudrey.com` | [`/fieldwork`](../fieldwork) |
-| GrowlingEyes | `growlingeyes.openaudrey.com` | *(external repo)* |
-| Penny Sovereign Yield Scout | `penny.openaudrey.com` | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
-| Agent Factory | `agents.openaudrey.com` | [`/agent-factory`](../agent-factory) |
-| Marketing & Ecommerce | `market.openaudrey.com` | *(external repo)* |
+| **FieldWork** | `fieldwork.oaudrey.com` | [`/fieldwork`](../fieldwork) |
+| GrowlingEyes | `growlingeyes.oaudrey.com` | *(external repo)* |
+| Penny Sovereign Yield Scout | `penny.oaudrey.com` | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
+| Agent Factory | `agents.oaudrey.com` | [`/agent-factory`](../agent-factory) |
+| Marketing & Ecommerce | `market.oaudrey.com` | *(external repo)* |
 
 ---
 
 ## Project Layout
 
 ```
-openaudrey/
+oaudrey/
 ├── README.md            ← You are here
 └── index.html           ← Hub landing page (static, Tailwind CDN)
 ```
@@ -69,7 +73,7 @@ openaudrey/
 No build step. Just serve the directory:
 
 ```bash
-cd openaudrey
+cd oaudrey
 python3 -m http.server 8080
 # → open http://localhost:8080
 ```
@@ -101,7 +105,8 @@ respected.
 ## Status
 
 - [x] Hub landing page v1.0 (static, single file)
-- [x] FieldWork tab linked to `fieldwork.openaudrey.com`
+- [x] FieldWork tab linked to `fieldwork.oaudrey.com`
 - [x] Giving Pledge section (reskilling, recovery, restoration)
-- [ ] Replace placeholder bot/logo artwork with OpenAudrey asset set
+- [x] Original oAudrey SVG monogram mark in nav (orbit + aperture + signal dot)
+- [ ] Extend brand system: supporting illustrations, bot characters, product iconography — all original, **no third-party assets reused**.
 - [ ] Connect tabs to live metrics pulled from each product subdomain

@@ -16,8 +16,8 @@ aligned, PDF-style progress reports — in minutes, not hours.
 This directory holds the **concept landing page** (a single static `index.html`
 built with Tailwind CSS) and the early blueprint / roadmap docs.
 
-FieldWork ships as a **tab on the [oAudrey hub](../openaudrey/README.md)** and
-deploys to the **`fieldwork.openaudrey.com`** subdomain per
+FieldWork ships as a **tab on the [oAudrey hub](../oaudrey/README.md)** and
+deploys to the **`fieldwork.oaudrey.com`** subdomain per
 [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md).
 A percentage of proceeds is donated — via Freedom Angel Fighters — to
 trafficking survivors for reskilling, recovery, and restoration.
