@@ -1,0 +1,79 @@
+# GitPolyglot — AI Readme Translator
+#
+# Marketplace: https://github.com/marketplace/actions/gitpolyglot-ai-readme-translator
+# Source:      https://github.com/aboutexo04/git-polyglot
+#
+# Translates README files via an OpenRouter-hosted model and commits the
+# translated copies (`README.<lang>.md`) back to the repo.
+#
+# Secrets required: OPENROUTER_API_KEY
+# Copy this file to: .github/workflows/ai-readme-translator.yml
+
+name: AI Readme Translator (GitPolyglot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "OpenRouter model ID"
+        type: string
+        required: false
+        default: "meta-llama/llama-3.3-70b-instruct:free"
+      source_file:
+        description: "Source markdown file to translate"
+        type: string
+        required: false
+        default: "README.md"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-readme-translator-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    name: Translate README
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Verify OPENROUTER_API_KEY is configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set — skipping translation."
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: Checkout repository
+        if: env.OPENROUTER_API_KEY != ''
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: env.OPENROUTER_API_KEY != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run GitPolyglot
+        if: env.OPENROUTER_API_KEY != ''
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          MODEL_NAME: ${{ inputs.model || 'meta-llama/llama-3.3-70b-instruct:free' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai PyGithub
+          curl -fsSL -o main.py \
+            https://raw.githubusercontent.com/aboutexo04/git-polyglot/main/main.py
+          python main.py "${{ inputs.source_file || 'README.md' }}"
+
+      - name: Commit translations
+        if: env.OPENROUTER_API_KEY != ''
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.*.md || true
+          git commit -m "chore(i18n): auto-translate README" || echo "No changes to commit"
+          git push || echo "Nothing to push"
