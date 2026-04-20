@@ -1,7 +1,7 @@
 # TruthSlayer Audit Report
 
 - **Target:** https://github.com/midnghtsapphire/revvel-standards
-- **Commit / Version:** HEAD (branch `copilot/jules-research-revvel-standards`, 2026-04-20)
+- **Commit / Version:** <PINNED_COMMIT_SHA> (branch `copilot/jules-research-revvel-standards`, 2026-04-20)
 - **Auditor:** github-copilot-coding-agent (acting as TruthSlayer Auditor)
 - **Date (UTC):** 2026-04-20T16:58:46Z
 - **Self-audit:** true
