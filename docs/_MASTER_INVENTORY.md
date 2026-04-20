@@ -81,7 +81,7 @@
 | Loops | Email marketing and drip campaigns for SaaS products | Loops | 1,000 contacts free | $49+/mo | Exceeds 1,000 contacts | 🟡 Research Topic | The Alt Text, Neurooz (evaluate) |
 | Buttondown | Newsletter platform for content distribution | Buttondown | 100 subscribers free | $9+/mo | Exceeds 100 subscribers | 🟡 Research Topic | Any newsletter project (evaluate) |
 | Firebase Cloud Messaging (FCM) | Push notifications for mobile apps | Google | Unlimited (free) | $0 | N/A (free tier is generous) | ❌ Expired / Lapsed | Universal SAR App, GrowlingEyes |
-| TelAPI ([telapi-python](https://github.com/TelAPI/telapi-python)) | Twilio-compatible SMS / voice / telephony REST API; Python client for sending SMS, placing calls, and handling IVR flows | TelAPI | Pay-per-use (no free tier) | Usage-based (per SMS / per minute) | First production SMS or voice call (no free tier) | 🟡 Research Topic | Integrate for later — candidate for SAR alerts, 2FA, and outbound notifications (evaluate vs Twilio) |
+| TelAPI | Twilio-compatible SMS / voice / telephony REST API; Python client ([telapi-python](https://github.com/TelAPI/telapi-python)) for sending SMS, placing calls, and handling IVR flows | TelAPI | Pay-per-use (no free tier) | Usage-based (per SMS / per minute) | First production SMS or voice call (no free tier) | 🟡 Research Topic | Integrate for later — candidate for SAR alerts, 2FA, and outbound notifications (evaluate vs Twilio) |
 
 ### 1.6 Authentication
 
