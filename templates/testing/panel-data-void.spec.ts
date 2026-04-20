@@ -16,18 +16,21 @@ const PAGES_TO_CHECK: Array<{
   name: string;
   path: string;
   panelSelector: string;
+  emptyStateSelector?: string;
   requiresAuth?: boolean;
 }> = [
   {
     name: 'Home page',
     path: '/',                          // [PAGE_PATH]
     panelSelector: 'main',              // [PANEL_SELECTOR] — replace with specific selector
+    emptyStateSelector: '[data-testid="empty-state"]', // Default empty state selector
     requiresAuth: false,
   },
   {
     name: 'Dashboard',
     path: '/dashboard',                 // [PAGE_PATH]
     panelSelector: '.dashboard-panel',  // [PANEL_SELECTOR]
+    emptyStateSelector: '[data-testid="empty-state"]', // Default empty state selector
     requiresAuth: true,
   },
   // TODO: Add all pages you want to validate
@@ -35,6 +38,7 @@ const PAGES_TO_CHECK: Array<{
   //   name: '[PAGE_NAME]',
   //   path: '[PAGE_PATH]',
   //   panelSelector: '[PANEL_SELECTOR]',
+  //   emptyStateSelector: '[EMPTY_STATE_SELECTOR]', // Optional
   //   requiresAuth: true,
   // },
 ];
@@ -120,13 +124,14 @@ test.describe('Panel Data Void Check — no empty states in production', () => {
       await expect(panel).not.toContainText('500', { ignoreCase: false });
 
       // Panel must not be the only content visible (empty state only)
-      // TODO: Replace with your actual empty state selector if you have one
-      // const emptyState = panel.locator('[data-testid="empty-state"]');
-      // const emptyStateCount = await emptyState.count();
-      // const allContent = panel.locator(':not([data-testid="empty-state"])');
-      // if (emptyStateCount > 0) {
-      //   await expect(allContent).not.toHaveCount(0);
-      // }
+      if (pageConfig.emptyStateSelector) {
+        const emptyState = panel.locator(pageConfig.emptyStateSelector);
+        const emptyStateCount = await emptyState.count();
+        const allContent = panel.locator(`:not(${pageConfig.emptyStateSelector})`);
+        if (emptyStateCount > 0) {
+          await expect(allContent).not.toHaveCount(0);
+        }
+      }
     });
   }
 });
