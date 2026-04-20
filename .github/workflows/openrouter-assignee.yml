@@ -184,7 +184,7 @@ jobs:
               try {
                 return await fn(github);
               } catch (err) {
-                core.info(`${label}: ${err.message}`);
+                core.notice(`${label}: ${err.message}`);
                 return null;
               }
             }
