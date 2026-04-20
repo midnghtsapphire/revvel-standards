@@ -423,8 +423,12 @@ async function main() {
       console.warn('[warn] skipping malformed candidate:', cand);
       continue;
     }
-    // Serialise requests — we're nowhere near the secondary-rate-limit
-    // budget and simple sequencing makes failure modes obvious.
+    // Serialise requests — GitHub's secondary rate limit penalises
+    // concurrent writes from the same token, and serial execution makes
+    // per-candidate error isolation straightforward (one try/catch per
+    // iteration, one log line per candidate, no Promise.allSettled gymnastics).
+    // The candidate list is bounded by `max_candidates_per_run`, so total
+    // wall time stays well under the workflow's 30-minute timeout.
     // eslint-disable-next-line no-await-in-loop
     const r = await processCandidate(token, cand, defaults).catch((e) => ({
       repo: cand.repo,

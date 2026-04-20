@@ -67,4 +67,4 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           SELF_REPO: ${{ github.repository }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
-        run: node scripts/fork-audit-bot.js "${{ inputs.config_path || 'fork-audit/candidates.json' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: node scripts/fork-audit-bot.js "${{ inputs.config_path }}" | tee -a "$GITHUB_STEP_SUMMARY"
