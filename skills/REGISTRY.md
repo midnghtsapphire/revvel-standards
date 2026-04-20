@@ -26,6 +26,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | If the task involves... | Load this skill |
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
@@ -71,6 +72,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.
 - **Tags:** recurse-ml, autonomous-review, bug-detection, code-standards, pr-review, self-healing, github-actions
 - **Trigger:** Setting up code-review automation; integrating RecurseML; enforcing recurse-rules; self-healing PR loop.
+
+#### truthslayer-audit
+
+- **Path:** `skills/truthslayer-audit/`
+- **Files:** `SKILL.md` · `truthslayer-audit.skill.yml`
+- **Brand:** [TruthSlayer](https://truthslayer.com) — Audrey's fact-checking & investigation property under MIDNGHTSAPPHIRE.
+- **Description:** Audit and evaluate code on GitHub or a marketplace using TruthSlayer's **eight-factor composite rubric** (Security 20%, Authenticity 15%, Help-Intent 10%, Maintainability 10%, Tests & CI 15%, Documentation 10%, Community 10%, Accessibility 10%). Emits a single 0–100 **TruthSlayer Score**, letter grade (A+–F), canonical badge label (`TruthSlayer Verified — Gold`, `TruthSlayer Verified — Silver`, `TruthSlayer Verified — Bronze`, `Conditional — Fix Required`, `Not Recommended — Significant Concerns`, or `Avoid — Material Issues`), and an evidence-cited markdown report + JSON sidecar. P0 findings (live secrets, malware, license fraud, data exfiltration, RCE-on-install) auto-cap the grade to F. Ships a drop-in Gemini-ready system prompt so any model can act as TruthSlayer Auditor. Designed to power a public trust/authenticity signal on creator pages, portfolios, and marketplace listings.
+- **Tags:** truthslayer, code-audit, code-rating, trust-score, authenticity, composite-score, creator-trust, marketplace-audit
+- **Trigger:** "truthslayer audit", "truthslayer score", "rate this repo", "audit this repo", "trust score", "authenticity score", "marketplace audit", "creator trust badge".
 
 ---
 
