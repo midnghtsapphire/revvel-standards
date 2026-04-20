@@ -200,3 +200,4 @@ Total expected engineering time: **~1 day** across the 8 PRs, assuming a single 
 - [`skills/shift-testing/SKILL.md`](../../skills/shift-testing/SKILL.md) — S.H.I.F.T. self-healing test framework.
 - [`skills/openclaw-self-eval/SKILL.md`](../../skills/openclaw-self-eval/SKILL.md) — OpenClaw agent self-evaluation skill (companion to this document).
 - [`docs/revvel-standards/BOM.md`](./BOM.md) — this repo's Bill of Materials.
+- [`docs/revvel-standards/HIVE_HARNESS_RESEARCH.md`](./HIVE_HARNESS_RESEARCH.md) — evaluation of `aden-hive/hive` (an **agent** harness, not a test harness); clarifies why it does not apply to this document's plan.
