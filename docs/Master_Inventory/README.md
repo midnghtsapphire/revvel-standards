@@ -35,6 +35,7 @@
 | [`MASTER_APP_TEMPLATE.md`](MASTER_APP_TEMPLATE.md) | Master template for all Revvel application projects |
 | [`MCP_STANDARD.md`](MCP_STANDARD.md) | All 32 standard MCP servers + FastMCP custom server standard |
 | [`OSINT_STANDARD.md`](OSINT_STANDARD.md) | Automated OSINT pipelines, threat intelligence, dark web monitoring |
+| [`PUBLIC_IDENTITY_STANDARD.md`](PUBLIC_IDENTITY_STANDARD.md) | Public-facing GitHub trust & integrity: profile README, pinned repos, collaboration, tool integrations, numerical User ID, no-reply email |
 | [`RECURSION_STANDARD.md`](RECURSION_STANDARD.md) | Recursion patterns, depth limits, and performance guidelines |
 | [`RUNBOOK_STANDARD.md`](RUNBOOK_STANDARD.md) | Operational runbooks: incident response, deployment, rollback |
 | [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting, secrets management |
