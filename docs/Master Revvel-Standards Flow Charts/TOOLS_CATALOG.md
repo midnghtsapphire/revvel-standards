@@ -37,6 +37,7 @@ Every tool in the Revvel ecosystem is listed here with:
 | 11 | **`actions/create-github-app-token@v1`** | GitHub Action | Mints a short-lived (1-hour) GitHub App token for secure API calls | All phases | Free | `APP_ID`, `APP_PRIVATE_KEY` |
 | 12 | **`actions/github-script@v8`** | GitHub Action | Runs JavaScript inside a workflow to call the GitHub API | Phase 5–6 | Free | none |
 | 13 | **`matheusvellone/labels-as-parameters@1.0.0`** | GitHub Action | Converts PR labels (`key:value`) into named step outputs — drives conditional deploys and feature flags without manual `workflow_dispatch` inputs | Phase 5–7 | Free | none |
+| 13a | **`GeekZoneHQ/eisenhower@25222276`** | GitHub Action | Eisenhower Priority Labeler — reads `Impact` / `Urgency` fields from an issue template and auto-assigns `P1`–`P4` labels using the Eisenhower Matrix | Phase 4 | Free | `GH_ACCESS_TOKEN` (or `GITHUB_TOKEN`) |
 
 ---
 
