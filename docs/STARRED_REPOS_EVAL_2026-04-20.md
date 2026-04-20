@@ -64,8 +64,8 @@ workflow.
   Vault, behind the same backup/restore runbook.
 - **Second source of truth.** Without discipline, secrets could diverge between
   Vault and Infisical. Mitigation: scope split — Infisical = app/dev secrets,
-  Vault = infra/prod secrets, documented in
-  [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md).
+  Vault = infra/prod secrets, to be documented in
+  [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) as part of the pilot.
 - **GitHub Actions secret-deletion invariant** in
   [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) must remain true — the
   `Infisical/secrets-action` GitHub App only **reads** from Infisical and
