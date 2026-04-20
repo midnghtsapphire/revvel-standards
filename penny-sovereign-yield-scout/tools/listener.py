@@ -26,6 +26,8 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+from concurrent.futures import ThreadPoolExecutor
+
 
 import httpx
 from dotenv import load_dotenv
@@ -184,14 +186,17 @@ def scan_ticker(ticker: str) -> SocialSignal:
 
 def scan_tickers(tickers: list[str], threshold: float = 0.65) -> list[SocialSignal]:
     """Scan a list of tickers and return those meeting the threshold."""
-    results = []
-    for ticker in tickers:
+    def process_ticker(ticker: str) -> SocialSignal:
         sig = scan_ticker(ticker)
-        results.append(sig)
         log.info(
             "Scanned %-10s | score=%.4f | action=%s",
             ticker, sig.sentiment_score, sig.recommended_action
         )
+        return sig
+
+    with ThreadPoolExecutor(max_workers=min(32, len(tickers) if tickers else 1)) as executor:
+        results = list(executor.map(process_ticker, tickers))
+
     results.sort(key=lambda s: s.sentiment_score, reverse=True)
     return [s for s in results if s.sentiment_score >= threshold]
 
