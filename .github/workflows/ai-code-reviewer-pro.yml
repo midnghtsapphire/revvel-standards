@@ -1,0 +1,1 @@
+name: CI\n\non: [push, pull_request]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n\n    steps:\n    - name: Checkout code\n      uses: actions/checkout@v2\n\n    - name: AI Code Reviewer\n      uses: VIVAAN-DHAWAN/AI-code-reviewer@77b646ec5c322525fa288ddf0199b8cdab4a7ead\n\n    - name: Run tests\n      run: npm test
