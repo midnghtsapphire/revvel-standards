@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
-// TODO: Replace with your actual imports
+// Replace with your actual imports
 // For tRPC:
 // import { createCallerFactory } from '@trpc/server';
 // import { appRouter } from '@/server/routers';
@@ -22,7 +22,7 @@ import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 vi.mock('@/db', () => ({
   db: {
     query: {
-      // TODO: Replace [TABLE_NAME] with your actual table name
+      // Replace [TABLE_NAME] with your actual table name
       '[TABLE_NAME]': {
         findMany: vi.fn(),
         findFirst: vi.fn(),
@@ -40,9 +40,9 @@ vi.mock('@/db', () => ({
 // This is the "contract" — UI components depend on this exact shape.
 // -------------------------------------------------------------------------
 
-const MOCK_[TABLE_NAME]_ROW = {
+const MOCK_TABLE_NAME_ROW = {
   id: 1,
-  // TODO: Replace with your actual field names and types
+  // Replace with your actual field names and types
   '[FIELD_NAME_1]': '[mock value]',
   '[FIELD_NAME_2]': 42,
   '[FIELD_NAME_3]': true,
@@ -53,10 +53,16 @@ const MOCK_[TABLE_NAME]_ROW = {
 describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
   beforeAll(async () => {
     // TODO: Set up test environment (e.g., mock auth context)
+    // vi.mock('@/auth', () => ({
+    //   auth: vi.fn().mockResolvedValue({ userId: 'test-user-1' }),
+    // }));
+    // vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://localhost:3000');
   });
 
   afterAll(async () => {
     // TODO: Clean up
+    // vi.restoreAllMocks();
+    // vi.unstubAllEnvs();
   });
 
   // -------------------------------------------------------------------------
@@ -65,20 +71,20 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
 
   describe('[ENDPOINT_NAME]', () => {
     it('should return an array of [TABLE_NAME] rows', async () => {
-      // TODO: Replace with your actual mock setup and caller
+      // Replace with your actual mock setup and caller
       // const { db } = await import('@/db');
-      // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([MOCK_[TABLE_NAME]_ROW]);
+      // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([MOCK_TABLE_NAME_ROW]);
 
       // const caller = createCallerFactory(appRouter)({ userId: 'test-user-1' });
       // const result = await caller.[ROUTER_NAME].[ENDPOINT_NAME]();
 
       // Placeholder assertion — replace with real caller
-      const mockResult = [MOCK_[TABLE_NAME]_ROW];
+      const mockResult = [MOCK_TABLE_NAME_ROW];
       expect(Array.isArray(mockResult)).toBe(true);
     });
 
     it('should return each row with the required shape', async () => {
-      const mockResult = [MOCK_[TABLE_NAME]_ROW];
+      const mockResult = [MOCK_TABLE_NAME_ROW];
       const row = mockResult[0];
 
       // Assert the exact shape the UI components expect
@@ -86,29 +92,43 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       expect(typeof row.id).toBe('number');
 
       // TODO: Add assertions for each field your UI components use
-      // expect(row).toHaveProperty('[FIELD_NAME_1]');
-      // expect(typeof row['[FIELD_NAME_1]']).toBe('string');
+      expect(row).toHaveProperty('[FIELD_NAME_1]');
+      expect(typeof row['[FIELD_NAME_1]']).toBe('string');
+
+      expect(row).toHaveProperty('[FIELD_NAME_2]');
+      expect(typeof row['[FIELD_NAME_2]']).toBe('number');
+
+      expect(row).toHaveProperty('[FIELD_NAME_3]');
+      expect(typeof row['[FIELD_NAME_3]']).toBe('boolean');
 
       expect(row).toHaveProperty('createdAt');
       expect(row.createdAt).toBeInstanceOf(Date);
+
+      expect(row).toHaveProperty('updatedAt');
+      expect(row.updatedAt).toBeInstanceOf(Date);
     });
 
     it('should return an empty array when no records exist', async () => {
-      // TODO: Mock empty DB response
+      // TODO: Replace with your actual mock setup and caller
+      // const { db } = await import('@/db');
       // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([]);
+
+      // const caller = createCallerFactory(appRouter)({ userId: 'test-user-1' });
       // const result = await caller.[ROUTER_NAME].[ENDPOINT_NAME]();
       // expect(result).toEqual([]);
 
-      const mockEmptyResult: typeof MOCK_[TABLE_NAME]_ROW[] = [];
+      // Placeholder assertion — replace with real caller
+      const mockEmptyResult: typeof MOCK_TABLE_NAME_ROW[] = [];
       expect(mockEmptyResult.length).toBe(0);
+      expect(mockEmptyResult).toEqual([]);
     });
 
     it('should not expose sensitive fields in the response', async () => {
-      const mockResult = [MOCK_[TABLE_NAME]_ROW];
+      const mockResult = [MOCK_TABLE_NAME_ROW];
       const row = mockResult[0];
 
       // Ensure password hashes, secrets, and internal flags are not returned
-      // TODO: Replace with your actual sensitive field names
+      // Replace with your actual sensitive field names
       expect(row).not.toHaveProperty('passwordHash');
       expect(row).not.toHaveProperty('secretKey');
       expect(row).not.toHaveProperty('internalFlag');
@@ -121,15 +141,16 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
 
   describe('authentication', () => {
     it('should reject unauthenticated requests with 401', async () => {
-      // TODO: Replace with your actual auth check
+      // Replace with your actual auth check
       // const unauthCaller = createCallerFactory(appRouter)({ userId: null });
       // await expect(unauthCaller.[ROUTER_NAME].[ENDPOINT_NAME]()).rejects.toThrow('UNAUTHORIZED');
 
       // Placeholder — replace with real auth check
-      const isAuthenticated = false;
-      if (!isAuthenticated) {
-        expect(isAuthenticated).toBe(false);
-      }
+      const mockUnauthCall = async () => {
+        throw new Error('UNAUTHORIZED');
+      };
+
+      await expect(mockUnauthCall()).rejects.toThrow('UNAUTHORIZED');
     });
   });
 });

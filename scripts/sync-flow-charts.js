@@ -68,20 +68,37 @@ const WALK_SKIP_DIRS = new Set([
  * Automatically skips common non-documentation directories.
  * @param {string} dir
  * @param {(file: string) => boolean} filter
- * @returns {string[]}
+ * @returns {Promise<string[]>}
  */
-function walk(dir, filter) {
-  if (!fs.existsSync(dir)) return [];
+async function walk(dir, filter) {
+  let entries;
+  try {
+    entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === 'ENOENT' || err.code === 'ENOTDIR') return [];
+    throw err;
+  }
+
   const results = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  const promises = [];
+
+  for (const entry of entries) {
     if (entry.isDirectory() && WALK_SKIP_DIRS.has(entry.name)) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...walk(full, filter));
+      promises.push(walk(full, filter));
     } else if (entry.isFile() && filter(full)) {
       results.push(full);
     }
   }
+
+  if (promises.length > 0) {
+    const subDirs = await Promise.all(promises);
+    for (const sub of subDirs) {
+      results.push(...sub);
+    }
+  }
+
   return results;
 }
 
@@ -111,8 +128,8 @@ function writeFile(filePath, content) {
 // Step 1: Scan docs/ for all .md files
 // ---------------------------------------------------------------------------
 
-function scanDocs() {
-  const allMd = walk(REPO_ROOT, (f) => f.endsWith(".md"));
+async function scanDocs() {
+  const allMd = await walk(REPO_ROOT, (f) => f.endsWith(".md"));
   // Exclude the flow charts folder itself to avoid circular counting
   const flowChartsPrefix = FLOW_CHARTS_DIR + path.sep;
   const docsMd = allMd.filter((f) => !f.startsWith(flowChartsPrefix));
@@ -302,7 +319,7 @@ async function main() {
   }
 
   // Step 1: Scan docs
-  const allDocPaths = scanDocs();
+  const allDocPaths = await scanDocs();
   const docCount = allDocPaths.length;
 
   // Step 2: Update metadata blocks + footers
