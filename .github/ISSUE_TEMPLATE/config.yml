@@ -1,0 +1,16 @@
+# Issue template picker configuration for midnghtsapphire/revvel-standards.
+#
+# When a user clicks "New issue" they see the templates in this directory as
+# selectable options. Each template is pre-scoped so Audrey doesn't have to
+# retype "review all of midnghtsapphire/revvel-standards" every time, and
+# @google-labs-jules (Google Jules) is mentioned in the body so she is pulled
+# in automatically to deep-research and refine the request before work starts.
+#
+# Keep `blank_issues_enabled: true` so power users can still open a blank
+# issue; the templates are the recommended default.
+
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Universal Agent Instructions (AGENTS.md)
+    url: https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/AGENTS.md
+    about: Read the repo-wide rules that every agent (including Jules) follows before filing structured work.
