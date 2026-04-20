@@ -88,33 +88,66 @@ jobs:
             ).map(label => typeof label === 'string' ? label : label.name);
             const hasFixerRole = existingLabels.includes('role:fixer');
 
-            // 1) Assign Copilot (the OpenRouter-routed orchestrator).
-            try {
-              await github.rest.issues.addAssignees({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number,
-                assignees: ['Copilot'],
-              });
-              core.info(`Assigned Copilot to ${kind} #${issue_number}.`);
-            } catch (err) {
-              core.warning(`Could not assign Copilot to #${issue_number}: ${err.message}`);
+            // Build a fallback Octokit authenticated with GITHUB_TOKEN so that
+            // when ADMIN_GITHUB_TOKEN is present but under-scoped (returns 403
+            // "Resource not accessible by personal access token") we can still
+            // route the item — GITHUB_TOKEN has issues:write + pull-requests:write
+            // granted via this workflow's `permissions:` block.
+            const gh = require('@actions/github');
+            const fallbackToken = process.env.FALLBACK_GITHUB_TOKEN;
+            const fallbackOctokit =
+              fallbackToken && fallbackToken !== process.env.ADMIN_GITHUB_TOKEN
+                ? gh.getOctokit(fallbackToken)
+                : null;
+
+            async function withFallback(label, fn) {
+              try {
+                return await fn(github);
+              } catch (err) {
+                const permError = err.status === 403 || err.status === 404;
+                if (fallbackOctokit && permError) {
+                  core.info(
+                    `${label}: primary token returned ${err.status}; retrying with GITHUB_TOKEN.`
+                  );
+                  try {
+                    return await fn(fallbackOctokit);
+                  } catch (err2) {
+                    core.warning(`${label} (fallback): ${err2.message}`);
+                    return null;
+                  }
+                }
+                core.warning(`${label}: ${err.message}`);
+                return null;
+              }
             }
+
+            // 1) Assign Copilot (the OpenRouter-routed orchestrator).
+            await withFallback(
+              `Could not assign Copilot to #${issue_number}`,
+              (octokit) =>
+                octokit.rest.issues.addAssignees({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                  assignees: ['Copilot'],
+                })
+            );
+            core.info(`Routed ${kind} #${issue_number} to Copilot (best-effort).`);
 
             // 2) Apply routing labels (best-effort).
             const routingLabels = ['openrouter', 'auto-fix', 'copilot'];
             if (!hasFixerRole) routingLabels.push('role:orchestrator');
             for (const label of routingLabels) {
-              try {
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number,
-                  labels: [label],
-                });
-              } catch (err) {
-                core.info(`Could not add label "${label}" (ok if missing): ${err.message}`);
-              }
+              await withFallback(
+                `Could not add label "${label}" (ok if missing)`,
+                (octokit) =>
+                  octokit.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number,
+                    labels: [label],
+                  })
+              );
             }
 
             // 3) Post the first-line-of-sight comment.
@@ -130,19 +163,20 @@ jobs:
               `- Docs: \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\`\n\n` +
               `The orchestrator will pick this up autonomously. If it stalls, ` +
               `add the \`needs-human\` label to flag for manual attention.`;
-            try {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number,
-                body,
-              });
-            } catch (err) {
-              core.warning(`Could not post routing comment: ${err.message}`);
-            }
+            await withFallback(
+              'Could not post routing comment',
+              (octokit) =>
+                octokit.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                  body,
+                })
+            );
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          FALLBACK_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ─── 24/7 Ralph cron sweep ───────────────────────────────────────────────────
   ralph-cron-sweep:
@@ -155,6 +189,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          FALLBACK_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -162,6 +197,38 @@ jobs:
             const dryRun = process.env.DRY_RUN === 'true';
             const hasKey = !!process.env.OPENROUTER_API_KEY;
             const hasAdmin = !!process.env.ADMIN_GITHUB_TOKEN;
+
+            // Build a fallback Octokit authenticated with GITHUB_TOKEN so we
+            // gracefully recover when ADMIN_GITHUB_TOKEN is set but missing the
+            // required scopes (surfaces as 403 "Resource not accessible by
+            // personal access token").
+            const gh = require('@actions/github');
+            const fallbackToken = process.env.FALLBACK_GITHUB_TOKEN;
+            const fallbackOctokit =
+              fallbackToken && fallbackToken !== process.env.ADMIN_GITHUB_TOKEN
+                ? gh.getOctokit(fallbackToken)
+                : null;
+
+            async function withFallback(label, fn) {
+              try {
+                return await fn(github);
+              } catch (err) {
+                const permError = err.status === 403 || err.status === 404;
+                if (fallbackOctokit && permError) {
+                  core.info(
+                    `${label}: primary token returned ${err.status}; retrying with GITHUB_TOKEN.`
+                  );
+                  try {
+                    return await fn(fallbackOctokit);
+                  } catch (err2) {
+                    core.warning(`${label} (fallback): ${err2.message}`);
+                    return null;
+                  }
+                }
+                core.info(`${label}: ${err.message}`);
+                return null;
+              }
+            }
 
             // Pull open issues (includes PRs — filter afterwards via pull_request field).
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -192,44 +259,48 @@ jobs:
                 continue;
               }
 
-              try {
-                await github.rest.issues.addAssignees({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  assignees: ['Copilot'],
-                });
-              } catch (err) {
-                core.info(`Could not assign Copilot to #${item.number}: ${err.message}`);
-              }
+              await withFallback(
+                `Could not assign Copilot to #${item.number}`,
+                (octokit) =>
+                  octokit.rest.issues.addAssignees({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    assignees: ['Copilot'],
+                  })
+              );
 
               const routingLabels = ['openrouter', 'auto-fix', 'copilot'];
               if (!labelNames.includes('role:fixer')) routingLabels.push('role:orchestrator');
               for (const label of routingLabels) {
-                try {
-                  await github.rest.issues.addLabels({
+                await withFallback(
+                  `Could not add label "${label}" to #${item.number}`,
+                  (octokit) =>
+                    octokit.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [label],
+                    })
+                );
+              }
+
+              await withFallback(
+                `Could not post sweep comment to #${item.number}`,
+                (octokit) =>
+                  octokit.rest.issues.createComment({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: item.number,
-                    labels: [label],
-                  });
-                } catch (_) { /* best-effort */ }
-              }
-
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  body:
-                    `🔁 **Ralph cron sweep — 24/7**\n\n` +
-                    `This ${kind} was unassigned at sweep time and has been routed to ` +
-                    `the OpenRouter orchestrator (\`@Copilot\`).\n\n` +
-                    `- \`OPENROUTER_API_KEY\`: ${hasKey ? '✅ configured' : '⚠️ not configured'}\n` +
-                    `- \`ADMIN_GITHUB_TOKEN\`: ${hasAdmin ? '✅ configured' : '⚠️ not configured (using GITHUB_TOKEN)'}\n` +
-                    `- See \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\` to tune the cron cadence.`,
-                });
-              } catch (_) { /* best-effort */ }
+                    body:
+                      `🔁 **Ralph cron sweep — 24/7**\n\n` +
+                      `This ${kind} was unassigned at sweep time and has been routed to ` +
+                      `the OpenRouter orchestrator (\`@Copilot\`).\n\n` +
+                      `- \`OPENROUTER_API_KEY\`: ${hasKey ? '✅ configured' : '⚠️ not configured'}\n` +
+                      `- \`ADMIN_GITHUB_TOKEN\`: ${hasAdmin ? '✅ configured' : '⚠️ not configured (using GITHUB_TOKEN)'}\n` +
+                      `- See \`docs/OPENROUTER_ASSIGNEE_PROCESS.md\` to tune the cron cadence.`,
+                  })
+              );
 
               routed++;
             }
