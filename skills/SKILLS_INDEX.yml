@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-15"
+last_updated: "2026-04-20"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -39,6 +39,32 @@ skills:
       - "enforce code standards"
       - "self-healing review"
       - "recurse-rules"
+
+  - name: truthslayer_audit
+    title: "TruthSlayer Audit — Composite Code Scoring"
+    version: "1.0.0"
+    path: "skills/truthslayer-audit/"
+    skill_file: "skills/truthslayer-audit/truthslayer-audit.skill.yml"
+    category: "Code Quality & Autonomous Review"
+    brand: "TruthSlayer"
+    brand_url: "https://truthslayer.com"
+    access: all
+    triggers:
+      - "truthslayer"
+      - "truth slayer"
+      - "truthslayer.com"
+      - "truthslayer audit"
+      - "truthslayer score"
+      - "code rating"
+      - "code audit score"
+      - "rate this repo"
+      - "rate this code"
+      - "audit this repo"
+      - "trust score"
+      - "authenticity score"
+      - "marketplace audit"
+      - "marketplace code rating"
+      - "creator trust badge"
 
   # ─── Agent Operations ──────────────────────────────────────────────────────
 
