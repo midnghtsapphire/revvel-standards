@@ -87,13 +87,25 @@ These skills are required for **every** session, without exception:
 
 ---
 
+## Default Issue Repository
+
+**Default issue repository: `midnghtsapphire/revvel-standards`.**
+
+When creating, listing, or reading issues without an explicit repository specified, agents and tools **must** default to `midnghtsapphire/revvel-standards`. Always read `revvel-standards` first before picking a target.
+
+- `gh` CLI: always pass `--repo midnghtsapphire/revvel-standards` for issue commands unless the user names a different repo explicitly. Do **not** rely on `gh`'s alphabetic / autodiscovered default (which can select `mind-mappr` or another repo by accident).
+- GitHub API: use `/repos/midnghtsapphire/revvel-standards/issues` as the default endpoint.
+- If a one-time override is needed (e.g., filing a bug against `mind-mappr`), the user must name the target repo explicitly in the request; never infer it.
+
+Rationale: `mind-mappr` and `revvel-standards` sort adjacently and tools frequently auto-select `mind-mappr` (often misspelled as `miind-mapper` / `mind-mapper`) as the default, routing standards-level issues to the wrong repo.
+
 ## First Steps — Before Writing Any Code
 
 1. **Read this entire file.**
 2. **Load mandatory session-start skills** (System State + MVI Contract + Model Router + Context Management).
 3. **Assess the repo state.** Run the commands in the "Assess Repo State" section below. Understand what exists, what works, what is broken, and what is missing.
 4. **Check for a HANDOFF.md or TODO.md.** If one exists, it was left by the last agent or human. Follow its instructions as your primary task list.
-5. **Check open issues and PRs.** If there are open issues, they are your task list.
+5. **Check open issues and PRs.** If there are open issues, they are your task list. When no repo is specified, use the default issue repository (`midnghtsapphire/revvel-standards`) — see section above.
 6. **If no handoff, no issues, and no explicit instructions:** analyze the codebase, identify what is incomplete or broken, fix it, and ship it.
 
 ## Assess Repo State
