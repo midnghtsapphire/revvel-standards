@@ -24,6 +24,21 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `labels-as-parameters.yml` | Converts PR labels (`key:value`) into named step outputs for conditional deploys and feature flags | `.github/workflows/labels-as-parameters.yml` |
 | `eisenhower.yml` | Eisenhower Priority Labeler — auto-assigns `P1`–`P4` labels to issues using the Eisenhower Matrix (Impact × Urgency) | `.github/workflows/eisenhower.yml` |
 | `eisenhower-issue-template.yml` | Companion issue form with required `Impact` / `Urgency` dropdowns, consumed by `eisenhower.yml` | `.github/ISSUE_TEMPLATE/prioritized-issue.yml` |
+| `ai-weekly-changelog.yml` | Weekly AI-generated `CHANGELOG.md` via OpenRouter ([`fridzema/ai-weekly-changelog-action`](https://github.com/fridzema/ai-weekly-changelog-action)) | `.github/workflows/ai-weekly-changelog.yml` |
+| `ai-pr-review-openrouter.yml` | Per-PR diff analysis posted as a sticky comment ([`maxlim0/AI-PR-Reviewer`](https://github.com/maxlim0/AI-PR-Reviewer)) | `.github/workflows/ai-pr-review-openrouter.yml` |
+| `ai-readme-translator.yml` | GitPolyglot — translates `README.md` → `README.<lang>.md` via OpenRouter ([`aboutexo04/git-polyglot`](https://github.com/aboutexo04/git-polyglot)) | `.github/workflows/ai-readme-translator.yml` |
+| `ai-ci-failure-helper.yml` | Post-failure AI root-cause analysis in a PR comment ([`maxlim0/actions-progci-fail`](https://github.com/maxlim0/actions-progci-fail)) | `.github/workflows/ai-ci-failure-helper.yml` |
+| `ai-code-reviewer-pro.yml` | Inline AI review comments on changed lines + summary ([`VIVAAN-DHAWAN/ai-code-reviewer`](https://github.com/VIVAAN-DHAWAN/ai-code-reviewer)) | `.github/workflows/ai-code-reviewer-pro.yml` |
+| `android-resource-translator.yml` | Android `strings.xml` missing-translation → auto-PR ([`duartebarbosadev/AndroidResourceTranslator`](https://github.com/duartebarbosadev/AndroidResourceTranslator)) | `.github/workflows/android-resource-translator.yml` |
+| `mcp-server-evals.yml` | LLM-as-judge evaluations against an MCP server ([`mcp-use/eval-action`](https://github.com/mcp-use/eval-action)) | `.github/workflows/mcp-server-evals.yml` |
+| `gass-scoring.yml` | On-chain PR quality score via O2 Oracle ([`michael-bey/gass`](https://github.com/michael-bey/gass)) | `.github/workflows/gass-scoring.yml` |
+| `iara-code-reviewer.yml` | Iara AI reviewer — bugs / SAST / performance ([`felipefernandes/iara`](https://github.com/felipefernandes/iara)) | `.github/workflows/iara-code-reviewer.yml` |
+| `bc-ai-code-reviewer.yml` | Business Central AL-specific AI review ([`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer)) | `.github/workflows/bc-ai-code-reviewer.yml` |
+
+> **OpenRouter-backed actions.** The last ten templates above all share the
+> single `OPENROUTER_API_KEY` secret (Vault path `revvel/shared/llm/openrouter`).
+> See [`docs/OPENROUTER_MARKETPLACE_ACTIONS.md`](../../docs/OPENROUTER_MARKETPLACE_ACTIONS.md)
+> for rollout steps, cost governance, and per-action extra secrets.
 
 ---
 

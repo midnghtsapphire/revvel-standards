@@ -8,9 +8,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-15
 
 ### Added
-- `Master_Inventory/ODOO_INTEGRATION_STANDARD.md` — Mandatory policy for adopting Odoo Community Edition (LGPL-3.0) as the shared multi-company ERP + CRM + free accounting back office across every MIDNGHTSAPPHIRE legal entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews). Covers: platform decision, multi-company model (one Odoo company per legal entity, inter-company rules enabled), module matrix (CRM / sale / purchase / stock / account / project, Enterprise-only modules explicitly rejected), full ERD of the core Odoo models we read/write with a Mermaid diagram, cross-system identifier convention (`x_external_system` / `x_external_id`), bridge-service integration topology (Shopify + Stripe + Revvel apps + reese-reviews webhooks routed through one authenticated service, never direct XML-RPC), `revvel_odoo_bridge` custom addon spec, free-accounting concretisation (US chart of accounts, 1099-NEC tagging aligned with the IRS $600 threshold in `AFFILIATE_MARKETING_STANDARD.md`, OCA `account_financial_report` for Enterprise-parity reports at $0), four-phase rollout plan (with explicit Phase-0 audit of any pre-existing Odoo code in `reese-reviews`), Category I compliance checks (I1–I6), and cross-references to every related standard.
-- `docs/_MASTER_INVENTORY.md` — New section **1.14 Back-Office: ERP, CRM & Accounting (Cross-Entity)** listing Odoo CE, OCA `account_financial_report`, OCA `mis_builder`, and the `revvel_odoo_bridge` custom addon. Section 3.2 (Vine House Capital accounting) updated to mark Odoo CE as the planned default and QuickBooks/Wave as superseded/deferred.
-- `docs/_MASTER_BOM.md` — New **🏢 ERP, CRM & Back-Office** section under Universal Tool Suggestions with Odoo CE (P1), OCA `account_financial_report` (P1), OCA `mis_builder` (P2), and `revvel_odoo_bridge` (P1).
+- `ui/freedom-angel-repo-manager/` — production GitHub-wired repository
+  inventory and Revvel Standards audit dashboard. Zero-dependency
+  (HTML/CSS/vanilla JS), read-only against the GitHub REST API, and
+  implements all 7 accessibility modes mandated by
+  `ACCESSIBILITY_STANDARD.md` §4 (Standard, WCAG AAA, Dyslexia-Friendly,
+  ADHD Focus, Sensory Safe, Large Print, ECO/Low-Power). Runs from
+  `file://`, localhost, or GitHub Pages. Enables non-technical family
+  members to audit the full MIDNGHTSAPPHIRE inventory against the
+  standards via a fine-grained personal access token.
+- `ui/freedom-angel-repo-manager/MASTER_PROMPT.md` — reusable EXRUP /
+  XRP master system prompt that converts any third-party agent
+  (OpenRouter, Grok, Claude, GPT, DeepSeek, Kimi, etc.) into a
+  Revvel-Standards-compliant agent. Copy of the prompt appended to
+  `AGENT_FACTORY_STANDARD.md` and `AUDREY_AUTONOMOUS_AGENT_STANDARD.md`.
+- `ui/freedom-angel-repo-manager/README.md` — usage guide, GitHub
+  Pages deployment instructions, and a 10-step bootstrap verification
+  checklist for manual and automated verification.
+
+### Changed
+- `README.md` — appended dated section linking to the new UI and
+  master prompt.
+- `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md` — appended reusable
+  master prompt section.
+- `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` —
+  appended reusable master prompt section.
+- `docs/SPRINT_STATE.md` — appended dated sprint entry for this task.
+- `docs/REPO_CATALOG.md` — appended note pointing at the audit UI.
+- `docs/Master_Inventory/INFRASTRUCTURE_MAP.md` — appended entry
+  mapping the UI into the infrastructure diagram.
+
+### Policy
+- **Append-only** — no existing files deleted or renamed in this
+  change. Per the repository's append-only policy, structural changes
+  to existing files would be preceded by a dated backup rename.
+
+## [Unreleased] - 2026-04-15
 
 ### Added
 - `UI_FIELD_TESTING_DBA_STANDARD.md` — Mandatory DBA process module for UI-to-database field testing and mapping. Covers: field-to-column mapping verification, data type consistency, schema validation, full CRUD validation workflow (CREATE/READ/UPDATE/DELETE), ACID property testing, constraint testing (NOT NULL, UNIQUE, CHECK, FK), trigger and stored procedure testing, Playwright + PostgreSQL automated test patterns, test evidence log templates, CI/CD integration guide, and compliance checks DBA-001 through DBA-006.

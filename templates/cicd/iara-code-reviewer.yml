@@ -1,0 +1,73 @@
+# Iara Code Reviewer
+#
+# Marketplace: https://github.com/marketplace/actions/iara-code-reviewer
+# Project:     https://github.com/felipefernandes/iara
+#
+# AI-powered PR review for bugs, security, and performance problems, driven
+# by OpenRouter LLMs (with automatic fallback to free models). Iara can be
+# run via its PyPI CLI (`iara-reviewer`) in any repo.
+#
+# Secrets required: OPENROUTER_API_KEY
+# Copy this file to: .github/workflows/iara-code-reviewer.yml
+
+name: Iara Code Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: iara-code-reviewer-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  iara:
+    name: Iara code review
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false &&
+       !contains(github.event.pull_request.title, '[skip-review]'))
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Verify OPENROUTER_API_KEY is configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set — skipping Iara review."
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: Checkout
+        if: env.OPENROUTER_API_KEY != ''
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        if: env.OPENROUTER_API_KEY != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Iara
+        if: env.OPENROUTER_API_KEY != ''
+        run: |
+          python -m pip install --upgrade pip
+          pip install iara-reviewer
+
+      - name: Run Iara on PR diff
+        if: env.OPENROUTER_API_KEY != ''
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IARA_PROVIDER: openrouter
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          git diff "origin/${{ github.base_ref }}"...HEAD | iara

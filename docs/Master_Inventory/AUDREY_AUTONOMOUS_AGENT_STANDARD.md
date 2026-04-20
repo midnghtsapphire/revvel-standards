@@ -38,3 +38,32 @@ All AUDREY agents must comply with established standards such as:
 
 ## Conclusion  
 The AUDREY Autonomous Agent Standard aims to ensure a robust and comprehensive framework for the creation and operating of autonomous agents under the Revvel umbrella, aligning with existing standards and best practices.
+---
+
+## [2026-04-15] Reusable Master Prompt
+
+AUDREY agents (and any agent acting on Audrey's behalf) must load the
+canonical Revvel Standards master system prompt from
+[`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../../ui/freedom-angel-repo-manager/MASTER_PROMPT.md)
+before accepting a task. The prompt encodes the ten non-negotiable
+rules (append-only, artifact-first, auto-documentation, GitHub flow,
+7-mode accessibility, audit via GitHub API, Freedom Angel Corp root
+entity, secrets hygiene, FOSS priority, self-heal) and fixes the
+output format to:
+
+```
+--- ISSUE MARKDOWN ---
+--- CHANGES ---
+--- VERIFICATION STEPS ---
+--- REUSABILITY NOTES ---
+```
+
+Autonomous runs must emit output in that exact structure so that
+downstream automations (issue-creation workflows, PR bots, compliance
+auditors) can parse and act on the result without human rewriting.
+
+Reusing the prompt across models (OpenRouter, Grok, Claude, GPT,
+DeepSeek, Kimi) produces identical governance, which is the core
+guarantee of the AUDREY standard: **consistent, append-only,
+fully-documented behaviour regardless of which model is driving the
+agent.**
