@@ -5,6 +5,34 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-04-20
+
+### Added
+- `docs/GRAPHITE_INTEGRATION.md` — integration doc for the Graphite
+  PR-stacking CLI + GitHub App. Explains how Graphite adds *granularity*
+  to the existing `revvel-standards` test harness (see
+  `docs/revvel-standards/TEST_HARNESS_RESEARCH.md`) without replacing any
+  suite-level tool, and how stack metadata is surfaced in the PR →
+  OpenRouter first-line-of-sight comment so the orchestrator receives
+  stack-aware context. Includes RFC-2119 requirements (R-GT-01..R-GT-G-03)
+  and a 5-step rollout plan (PR-9..PR-13). Adopts the Graphite Free tier
+  for public repos at $0.
+- `.github/labels.yml` — two new labels (`graphite`, `graphite:stacked`)
+  so `sync-labels.yml` propagates them to every Revvel repo that tracks
+  the canonical label set.
+
+### Changed
+- `docs/revvel-standards/BOM.md` — appended a Graphite row to
+  "Purchase Needed" at P1 / $0 / 🟡 Planned, linking to the new
+  integration doc.
+- `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
+  `GRAPHITE_INTEGRATION.md` in the "See also" section (append-only).
+
+### Policy
+- **Append-only** — no existing files deleted or renamed. The existing
+  `TEST_HARNESS_RESEARCH.md` v1.0.0 is left intact; Graphite is added as
+  an extension (PR-9..PR-13) rather than an edit to that versioned doc.
+
 ## [Unreleased] - 2026-04-15
 
 ### Added
