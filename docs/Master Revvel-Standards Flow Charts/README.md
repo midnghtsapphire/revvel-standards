@@ -56,7 +56,7 @@ If you rename a document or move a folder, the workflow will catch it on the nex
 ## Metadata (Auto-Updated)
 
 <!-- SYNC-META-START -->
-- **Last sync:** 2026-04-19
+- **Last sync:** 2026-04-20
 - **Total docs in repo:** 232
 - **Total tools catalogued:** 71
 - **Workflow:** `.github/workflows/flow-chart-sync.yml`
