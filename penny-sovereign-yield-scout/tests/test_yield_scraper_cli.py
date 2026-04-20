@@ -260,3 +260,55 @@ def test_watch_mode_http_error(mock_sleep, mock_fetch):
 
     assert mock_fetch.call_count == 2
     mock_sleep.assert_called_with(30) # Retry after 30s
+
+def test_filter_and_rank_unordered():
+    # Test with un-ordered pools, edge conditions, and matching scores
+    mock_pools = [
+        {"id": "A", "apy": 5.0, "tvl_usd": 500_000, "opportunity_score": 1.0}, # Exact minimums
+        {"id": "B", "apy": 10.0, "tvl_usd": 600_000, "opportunity_score": 2.0},
+        {"id": "C", "apy": 15.0, "tvl_usd": 1_000_000, "opportunity_score": 3.0}, # Highest score
+        {"id": "D", "apy": 2.0, "tvl_usd": 2_000_000, "opportunity_score": 0.2}, # Filtered out (low APY)
+        {"id": "E", "apy": 20.0, "tvl_usd": 100_000, "opportunity_score": 4.0}, # Filtered out (low TVL)
+        {"id": "F", "apy": 10.0, "tvl_usd": 800_000, "opportunity_score": 2.0}, # Equal score to B
+    ]
+
+    filtered = filter_and_rank(mock_pools, min_apy=5.0, min_tvl=500_000, top=10)
+
+    # D and E should be filtered out
+    assert len(filtered) == 4
+
+    # Check ranking
+    assert filtered[0]["id"] == "C"
+    assert filtered[0]["rank"] == 1
+
+    # B and F have equal scores, so their relative order depends on Python's stable sort
+    # Since F comes after B in the original list, B will come before F if they have the same score
+    # Both should have rank 2 and 3
+    assert filtered[1]["id"] in ["B", "F"]
+    assert filtered[1]["opportunity_score"] == 2.0
+    assert filtered[1]["rank"] == 2
+
+    assert filtered[2]["id"] in ["B", "F"]
+    assert filtered[2]["opportunity_score"] == 2.0
+    assert filtered[2]["rank"] == 3
+
+    # A has the lowest score among the remaining
+    assert filtered[3]["id"] == "A"
+    assert filtered[3]["rank"] == 4
+
+def test_filter_and_rank_top_limit():
+    mock_pools = [
+        {"id": "1", "apy": 10.0, "tvl_usd": 1_000_000, "opportunity_score": 1.0},
+        {"id": "2", "apy": 10.0, "tvl_usd": 1_000_000, "opportunity_score": 2.0},
+        {"id": "3", "apy": 10.0, "tvl_usd": 1_000_000, "opportunity_score": 3.0},
+        {"id": "4", "apy": 10.0, "tvl_usd": 1_000_000, "opportunity_score": 4.0},
+        {"id": "5", "apy": 10.0, "tvl_usd": 1_000_000, "opportunity_score": 5.0},
+    ]
+
+    filtered = filter_and_rank(mock_pools, min_apy=5.0, min_tvl=500_000, top=3)
+
+    assert len(filtered) == 3
+    assert filtered[0]["id"] == "5"
+    assert filtered[1]["id"] == "4"
+    assert filtered[2]["id"] == "3"
+    assert filtered[2]["rank"] == 3
