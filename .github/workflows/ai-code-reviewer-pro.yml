@@ -1,1 +1,42 @@
-name: CI\n\non: [push, pull_request]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n\n    steps:\n    - name: Checkout code\n      uses: actions/checkout@v2\n\n    - name: AI Code Reviewer\n      uses: VIVAAN-DHAWAN/AI-code-reviewer@77b646ec5c322525fa288ddf0199b8cdab4a7ead\n\n    - name: Run tests\n      run: npm test
+name: AI Code Reviewer Pro
+	on: [pull_request:
+	  opened,
+	  synchronize,
+	  reopened,
+	  ready_for_review],
+	workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-code-reviewer-pro-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft != true && !contains(github.event.pull_request.title, '[skip-review]')
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Check OPENROUTER_API_KEY
+        run: |
+          if [[ -z "${{ secrets.OPENROUTER_API_KEY }}" ]]; then
+            echo 'Warning: OPENROUTER_API_KEY is unset.';
+          fi
+
+      - name: Checkout Code
+        if: ${{ secrets.OPENROUTER_API_KEY != '' }}
+        uses: actions/checkout@v4
+
+      - name: Run AI Review
+        uses: VIVAAN-DHAWAN/ai-code-reviewer@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          ai_provider: openrouter
+          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          model: google/gemini-2.5-flash
+          review_level: full
+          max_files: 10
