@@ -153,3 +153,25 @@ Repos like `rvvel`, `mindmappr`, and `Pawsitting` use GitHub Actions for automat
 - DigitalOcean Dashboard: [https://cloud.digitalocean.com](https://cloud.digitalocean.com)
 - GitHub Org: [https://github.com/MIDNGHTSAPPHIRE](https://github.com/MIDNGHTSAPPHIRE)
 - Revvel Standards: `MIDNGHTSAPPHIRE/revvel-standards`
+
+---
+
+## 8. Freedom Angel Corps Repo Manager UI (2026-04-15)
+
+A static, zero-dependency standards audit dashboard lives inside this
+repository at [`ui/freedom-angel-repo-manager/`](../../ui/freedom-angel-repo-manager/).
+
+| Attribute | Value |
+|---|---|
+| **Path** | `ui/freedom-angel-repo-manager/` |
+| **Runtime** | Browser (HTML + CSS + vanilla JS) |
+| **External calls** | `api.github.com` only |
+| **Credentials** | Optional fine-grained PAT, stored in `localStorage` |
+| **Write access** | None — strictly read-only against GitHub |
+| **Hosting options** | `file://`, localhost, or GitHub Pages (`main` / root) |
+| **Accessibility** | All 7 modes from `ACCESSIBILITY_STANDARD.md` §4 |
+
+Inherits branding and compliance from **Freedom Angel Corp** (root
+entity, EIN 86-1209156). See
+[`ui/freedom-angel-repo-manager/README.md`](../../ui/freedom-angel-repo-manager/README.md)
+for the 10-step bootstrap verification checklist.

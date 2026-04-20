@@ -8,6 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-15
 
 ### Added
+- `ui/freedom-angel-repo-manager/` — production GitHub-wired repository
+  inventory and Revvel Standards audit dashboard. Zero-dependency
+  (HTML/CSS/vanilla JS), read-only against the GitHub REST API, and
+  implements all 7 accessibility modes mandated by
+  `ACCESSIBILITY_STANDARD.md` §4 (Standard, WCAG AAA, Dyslexia-Friendly,
+  ADHD Focus, Sensory Safe, Large Print, ECO/Low-Power). Runs from
+  `file://`, localhost, or GitHub Pages. Enables non-technical family
+  members to audit the full MIDNGHTSAPPHIRE inventory against the
+  standards via a fine-grained personal access token.
+- `ui/freedom-angel-repo-manager/MASTER_PROMPT.md` — reusable EXRUP /
+  XRP master system prompt that converts any third-party agent
+  (OpenRouter, Grok, Claude, GPT, DeepSeek, Kimi, etc.) into a
+  Revvel-Standards-compliant agent. Copy of the prompt appended to
+  `AGENT_FACTORY_STANDARD.md` and `AUDREY_AUTONOMOUS_AGENT_STANDARD.md`.
+- `ui/freedom-angel-repo-manager/README.md` — usage guide, GitHub
+  Pages deployment instructions, and a 10-step bootstrap verification
+  checklist for manual and automated verification.
+
+### Changed
+- `README.md` — appended dated section linking to the new UI and
+  master prompt.
+- `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md` — appended reusable
+  master prompt section.
+- `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` —
+  appended reusable master prompt section.
+- `docs/SPRINT_STATE.md` — appended dated sprint entry for this task.
+- `docs/REPO_CATALOG.md` — appended note pointing at the audit UI.
+- `docs/Master_Inventory/INFRASTRUCTURE_MAP.md` — appended entry
+  mapping the UI into the infrastructure diagram.
+
+### Policy
+- **Append-only** — no existing files deleted or renamed in this
+  change. Per the repository's append-only policy, structural changes
+  to existing files would be preceded by a dated backup rename.
+
+## [Unreleased] - 2026-04-15
+
+### Added
 - `UI_FIELD_TESTING_DBA_STANDARD.md` — Mandatory DBA process module for UI-to-database field testing and mapping. Covers: field-to-column mapping verification, data type consistency, schema validation, full CRUD validation workflow (CREATE/READ/UPDATE/DELETE), ACID property testing, constraint testing (NOT NULL, UNIQUE, CHECK, FK), trigger and stored procedure testing, Playwright + PostgreSQL automated test patterns, test evidence log templates, CI/CD integration guide, and compliance checks DBA-001 through DBA-006.
 - `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md` — Bill of materials for all UI field testing tools. Covers automated testing (Playwright, Vitest, mabl), SQL-native testing (pgTAP, pg_prove), GUI DB clients (Supabase, Beekeeper Studio, DBeaver), no-code CRUD generators (Budibase, Appsmith, NocoDB), schema validation tools (drizzle-kit, schemalint), test data management (Faker.js, @snaplet/seed), and ACID/load testing tools. Minimum viable stack documented at $0 cost.
 
