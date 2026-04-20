@@ -605,3 +605,35 @@ skills:
       - "mabl test plan"
       - "mablhq"
       - "setup-mabl-cli"
+
+  # ─── Bot Creation ─────────────────────────────────────────────────────────
+
+  - name: bot_creator
+    title: "Bot Creator"
+    version: "1.0.0"
+    path: "skills/bot-creator/"
+    skill_file: "skills/bot-creator/bot-creator.skill.yml"
+    category: "Bot Creation"
+    access: all
+    lifecycle: ephemeral
+    persona: forge
+    triggers:
+      - "bot creator"
+      - "create a bot"
+      - "build a bot"
+      - "new bot"
+      - "design a bot"
+      - "bot builder"
+      - "scaffold bot"
+      - "make a bot"
+      - "bot spec"
+      - "bot factory"
+      - "glassmorphic bot"
+      - "3d bot"
+      - "pacman bot"
+      - "bt21 bot"
+      - "pretty pony bot"
+      - "memelord bot"
+      - "genz bot"
+      - "adulting bot"
+      - "weaponized bot"
