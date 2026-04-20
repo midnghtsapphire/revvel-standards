@@ -138,6 +138,7 @@
 | Codacy | Static analysis, test coverage tracking, code duplication detection | Codacy | Free for open-source | $15+/mo (private) | Repo becomes private | 🟡 Research Topic | All repos (evaluate) |
 | SonarQube Cloud | SAST security scanning and code smell detection | SonarSource | Free for public repos | $75+/mo (private) | Repo becomes private | 🟡 Research Topic | Security-sensitive projects (evaluate) |
 | vscode-copilot-chat-bedrock | VS Code extension that exposes AWS Bedrock models (Claude, Llama, Titan, Mistral) inside Copilot Chat — [evaluated here](STARRED_REPOS_EVAL_2026-04-20.md#2-vscode-copilot-chat-bedrock--aws-bedrock-models-in-copilot-chat) | `gabrielkoo` (community) | Free extension | $0 extension + AWS Bedrock per-token (~$3/M in, $15/M out for Claude 3.5 Sonnet) | Opening an AWS account with Bedrock enabled | 🟡 Research Topic | None (OpenRouter already covers these models; defer) |
+| API CraftPro | Auto-generates a full Go + Gin backend REST API (CRUD, JWT/PASETO auth, unit tests, GitHub Actions CI/CD, Dockerfile, Postman collection) from an uploaded SQL schema and pushes it to GitHub — [evaluated here](API_CRAFTPRO_EVAL_2026-04-20.md) | API CraftPro (GitHub Marketplace app) | Free trial (capped generations) | $0 trial / paid tier (verify at adoption) | Free trial generations exhausted, or adopting Go + Gin as a permanent stack (not today) | 🟡 Research Topic | None (prototype-only candidate; Revvel default stack is Node/TypeScript, not Go — defer) |
 
 ### 1.12 Mobile App Distribution
 
