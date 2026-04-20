@@ -14,18 +14,13 @@
 # Secrets required: OPENROUTER_API_KEY
 # Copy this file to: .github/workflows/ai-ci-failure-helper.yml
 #
-# Usage: add a second job to any workflow, with `needs: [<job-to-watch>]`
-# and `if: failure()`, and invoke this reusable logic via the steps below.
+# Usage: copy this workflow into `.github/workflows/` and run it manually
+# with `workflow_dispatch` when you want AI assistance on the current run.
 
 name: AI CI Failure Helper
 
 on:
   workflow_dispatch:
-    inputs:
-      workflow_run_id:
-        description: "Workflow run ID to analyze (defaults to this run)"
-        type: string
-        required: false
 
 permissions:
   actions: read
