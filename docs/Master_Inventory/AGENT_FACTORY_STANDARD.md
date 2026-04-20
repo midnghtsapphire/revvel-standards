@@ -65,3 +65,31 @@ The **Ralph Loop** (`templates/cicd/ralph-loop.yml`) is the CI implementation of
 - Claude Code Templates (`https://github.com/davila7/claude-code-templates`).
 - Vault Agent: `VAULT_AGENT_STANDARD.md` · `skills/vault-agent/SKILL.md` · `templates/agent-factory/VAULT_AGENT_TEMPLATE.md`
 - Ralph Loop: `templates/cicd/ralph-loop.yml`
+
+---
+
+## [2026-04-15] Reusable Master Prompt (Revvel Standards v2.0.0)
+
+The canonical, copy-paste system prompt that converts any third-party
+agent (OpenRouter, Grok, Claude, GPT, DeepSeek, Kimi, etc.) into an
+EXRUP-compliant Revvel Standards agent lives at
+[`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../../ui/freedom-angel-repo-manager/MASTER_PROMPT.md).
+
+It enforces the ten non-negotiable rules — append-only, artifact-first,
+auto-documentation, GitHub flow (issue → changes → verification →
+reusability), WCAG-AAA + 7-mode accessibility, GitHub API inventory /
+audit, Freedom Angel Corp root entity, secrets hygiene, FOSS priority,
+and self-heal on CI failure — and defines a fixed output format that
+the agent factory can consume without reformatting.
+
+Use it in two ways:
+
+1. **Outside agents** — paste the fenced block from `MASTER_PROMPT.md`
+   as the system prompt for any external model.
+2. **Agent factory specialists** — reference the master prompt from
+   each specialist authored from `templates/agent-factory/AGENT_TEMPLATE.md`
+   so that all specialists inherit the same rules and output format.
+
+When the prompt evolves, increment `Version:` at the top of the file,
+append prior versions to `## Previous versions`, and log the change in
+`CHANGELOG.md`. Never rewrite the historical blocks in place.

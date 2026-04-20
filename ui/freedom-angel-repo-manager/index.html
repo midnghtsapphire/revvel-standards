@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-a11y-mode="standard">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Freedom Angel Corps Repo Manager — a GitHub-wired inventory and standards-audit dashboard for the Revvel Standards ecosystem. Built for non-technical users with full WCAG AAA accessibility."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0a2540" />
+    <title>Freedom Angel Corps Repo Manager — Revvel Standards</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%91%BC%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header" role="banner">
+      <div class="site-title">
+        <span aria-hidden="true" class="emblem">👼</span>
+        <div>
+          <h1>Freedom Angel Corps Repo Manager</h1>
+          <p class="tagline">
+            GitHub-wired inventory &amp; Revvel Standards audit dashboard
+          </p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <label for="a11y-mode" class="visually-hidden">
+          Accessibility mode
+        </label>
+        <select
+          id="a11y-mode"
+          aria-label="Choose accessibility mode (Alt+A)"
+          accesskey="a"
+        >
+          <option value="standard">Standard</option>
+          <option value="wcag_aaa">High Contrast (WCAG AAA)</option>
+          <option value="dyslexia">Dyslexia-Friendly</option>
+          <option value="adhd">Focus Mode (ADHD)</option>
+          <option value="sensory">Sensory Safe</option>
+          <option value="large_print">Large Print</option>
+          <option value="eco">Low Power / Eco</option>
+        </select>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="card" aria-labelledby="auth-heading">
+        <h2 id="auth-heading">1. Connect to GitHub</h2>
+        <p>
+          Public repositories can be audited with <strong>no token</strong>.
+          For private repositories or higher rate limits, create a
+          <a
+            href="https://github.com/settings/tokens?type=beta"
+            rel="noopener noreferrer"
+            target="_blank"
+            >fine-grained personal access token</a
+          >
+          with <em>read-only</em> access to the repositories you want to
+          audit, then paste it below. The token is stored only in your
+          browser (<code>localStorage</code>) and is never sent anywhere
+          except to <code>api.github.com</code>.
+        </p>
+
+        <form id="auth-form" class="form-row" novalidate>
+          <div class="form-field">
+            <label for="owner">GitHub owner / organization</label>
+            <input
+              id="owner"
+              name="owner"
+              type="text"
+              autocomplete="off"
+              required
+              aria-required="true"
+              placeholder="midnghtsapphire"
+              value="midnghtsapphire"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="token">
+              Personal access token
+              <span class="hint">(optional — leave blank for public)</span>
+            </label>
+            <input
+              id="token"
+              name="token"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="github_pat_…"
+              aria-describedby="token-hint"
+            />
+            <p id="token-hint" class="hint">
+              Stored only in your browser. Click “Forget token” to remove.
+            </p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="load-btn">
+              Load repositories
+            </button>
+            <button type="button" class="btn" id="forget-btn">
+              Forget token
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">2. Inventory summary</h2>
+        <div
+          id="status"
+          class="status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          Ready. Enter an owner and click <strong>Load repositories</strong>.
+        </div>
+
+        <div class="summary-grid" id="summary-grid" hidden>
+          <div class="metric">
+            <span class="metric-label">Total repos</span>
+            <span class="metric-value" id="m-total">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Audited</span>
+            <span class="metric-value" id="m-audited">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg. compliance</span>
+            <span class="metric-value" id="m-avg">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Rate limit remaining</span>
+            <span class="metric-value" id="m-rate">—</span>
+          </div>
+        </div>
+
+        <div class="controls" id="controls" hidden>
+          <label for="filter">
+            <span class="visually-hidden">Filter repositories</span>
+          </label>
+          <input
+            id="filter"
+            type="search"
+            placeholder="Filter by name or description…"
+            aria-label="Filter repositories"
+          />
+          <button type="button" class="btn" id="audit-all-btn">
+            Audit all repositories
+          </button>
+          <button type="button" class="btn" id="export-btn">
+            Export report (JSON)
+          </button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="results-heading">
+        <h2 id="results-heading">3. Repositories</h2>
+        <div id="repo-list" class="repo-list" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="about-heading">
+        <h2 id="about-heading">About this audit</h2>
+        <p>
+          This dashboard audits each repository against the
+          <a
+            href="../../docs/Master_Inventory/"
+            rel="noopener"
+            >Revvel Standards Master Inventory</a
+          >. Checks include:
+        </p>
+        <ul>
+          <li><code>README.md</code> present</li>
+          <li><code>LICENSE</code> present</li>
+          <li><code>CHANGELOG.md</code> present (auto-documentation)</li>
+          <li>
+            <code>.github/workflows/</code> present (CI / CD automation)
+          </li>
+          <li>
+            <code>SECURITY.md</code> or <code>security.yml</code> workflow
+          </li>
+          <li>Standard labels (<code>enhancement</code>, <code>bug</code>,
+            <code>security</code>, <code>documentation</code>)
+          </li>
+          <li>Accessibility reference (<code>accessibility</code> word
+            appears in README)
+          </li>
+          <li>
+            Mentions <code>revvel-standards</code> (inheritance from SSOT)
+          </li>
+        </ul>
+        <p class="hint">
+          Results are read-only — nothing is written to GitHub. All data
+          stays in your browser.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <p>
+        <strong>Freedom Angel Corps</strong> · EIN 86-1209156 ·
+        <a href="../../README.md">Revvel Standards</a> ·
+        <a href="./MASTER_PROMPT.md">Reusable Master Prompt</a>
+      </p>
+      <p class="hint">
+        TTY accessible · Alt+A for accessibility mode · Works offline after
+        first load
+      </p>
+    </footer>
+
+    <template id="repo-card-template">
+      <article class="repo-card" data-repo>
+        <header class="repo-card-header">
+          <h3 class="repo-name"></h3>
+          <span class="repo-visibility" aria-hidden="true"></span>
+          <span class="repo-score" aria-label="Compliance score"></span>
+        </header>
+        <p class="repo-description"></p>
+        <ul class="repo-checks" aria-label="Standards checks"></ul>
+        <footer class="repo-card-footer">
+          <a class="repo-link" target="_blank" rel="noopener noreferrer"
+            >Open on GitHub ↗</a
+          >
+          <button
+            type="button"
+            class="btn btn-small audit-btn"
+            data-action="audit"
+          >
+            Run audit
+          </button>
+        </footer>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

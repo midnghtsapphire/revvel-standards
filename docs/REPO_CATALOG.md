@@ -246,3 +246,20 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | Z-wallpaper | My personal collection of wallpapers. Works great on all desktop environments. | Library/Other |
 | Z-whisperX | WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization) | Library/Other |
 | Z-wifi-densepose | Production-ready implementation of InvisPose - a revolutionary WiFi-based dense human pose estimation system that enables real-time full-body tracking through walls using commodity mesh routers  | Library/Other |
+
+---
+
+## Live Audit Tool
+
+As of 2026-04-15, this catalog is complemented by a live audit UI at
+[`ui/freedom-angel-repo-manager/`](../ui/freedom-angel-repo-manager/).
+It pulls the current inventory directly from the GitHub REST API and
+scores each repository against the Revvel Standards (README, LICENSE,
+CHANGELOG, workflows, SECURITY, standard labels, accessibility
+reference, and `revvel-standards` SSOT inheritance).
+
+Open `ui/freedom-angel-repo-manager/index.html` in any browser — no
+build step, no server required — and click **Audit all repositories**
+to generate a live compliance report. A fine-grained personal access
+token is optional and is stored only in the browser's
+`localStorage`.
