@@ -108,7 +108,7 @@ erDiagram
     RES_PARTNER ||--o{ ACCOUNT_MOVE : "counterparty"
     RES_PARTNER ||--o{ PROJECT_PROJECT : "client"
 
-    CRM_LEAD ||--o| CRM_STAGE : "in stage"
+    CRM_STAGE ||--o{ CRM_LEAD : "in stage"
     CRM_LEAD ||--o{ CRM_LEAD : "converts to opportunity"
     CRM_LEAD ||--o| SALE_ORDER : "won -> quote"
 
@@ -308,7 +308,7 @@ Everything else — invoicing, bill entry, bank reconciliation, tax reports, int
 
 ## 8. Security, Privacy & Compliance
 
-1. **Secrets** — DB password, admin password, bridge HMAC key live in Vault. No secret may appear in `odoo.conf`, git, or `.env.example`. Enforced by the gitleaks hook from [`SYNTAX_ERROR_PREVENTION_STANDARD.md`](SYNTAX_ERROR_PREVENTION_STANDARD.md).
+1. **Secrets** — DB password, admin password, bridge HMAC key live in Vault. No secret may appear in `odoo.conf`, git, or `.env.example`. Enforced by the pre-commit secret-scanning hooks (`detect-secrets` and `detect-private-key`) defined by [`SYNTAX_ERROR_PREVENTION_STANDARD.md`](SYNTAX_ERROR_PREVENTION_STANDARD.md).
 2. **Access** — Portal users (customers, tenants) get read-only access to their own records through Odoo's built-in portal. Internal users authenticate via Google OAuth (and SAML later per [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md)).
 3. **Repo hosting** — `revvel_odoo_bridge` source lives in a **private** Freedom Angel Corps repo per [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md). PII test fixtures are never committed.
 4. **Backups** — Encrypted at rest (DO Spaces SSE). Restore drill quarterly, logged in [`DARE_LOG.md`](DARE_LOG.md).
