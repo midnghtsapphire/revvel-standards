@@ -88,34 +88,14 @@ jobs:
             ).map(label => typeof label === 'string' ? label : label.name);
             const hasFixerRole = existingLabels.includes('role:fixer');
 
-            // Build a fallback Octokit authenticated with GITHUB_TOKEN so that
-            // when ADMIN_GITHUB_TOKEN is present but under-scoped (returns 403
-            // "Resource not accessible by personal access token") we can still
-            // route the item — GITHUB_TOKEN has issues:write + pull-requests:write
-            // granted via this workflow's `permissions:` block.
-            const gh = require('@actions/github');
-            const fallbackToken = process.env.FALLBACK_GITHUB_TOKEN;
-            const fallbackOctokit =
-              fallbackToken && fallbackToken !== process.env.ADMIN_GITHUB_TOKEN
-                ? gh.getOctokit(fallbackToken)
-                : null;
-
+            // Best-effort wrapper: log a warning on failure instead of failing
+            // the workflow. `@actions/github` is not available inside the
+            // github-script runtime, so we rely on the pre-authenticated
+            // `github` Octokit that github-script provides.
             async function withFallback(label, fn) {
               try {
                 return await fn(github);
               } catch (err) {
-                const permError = err.status === 403 || err.status === 404;
-                if (fallbackOctokit && permError) {
-                  core.info(
-                    `${label}: primary token returned ${err.status}; retrying with GITHUB_TOKEN.`
-                  );
-                  try {
-                    return await fn(fallbackOctokit);
-                  } catch (err2) {
-                    core.warning(`${label} (fallback): ${err2.message}`);
-                    return null;
-                  }
-                }
                 core.warning(`${label}: ${err.message}`);
                 return null;
               }
@@ -176,7 +156,6 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          FALLBACK_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ─── 24/7 Ralph cron sweep ───────────────────────────────────────────────────
   ralph-cron-sweep:
@@ -189,7 +168,6 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          FALLBACK_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -198,33 +176,14 @@ jobs:
             const hasKey = !!process.env.OPENROUTER_API_KEY;
             const hasAdmin = !!process.env.ADMIN_GITHUB_TOKEN;
 
-            // Build a fallback Octokit authenticated with GITHUB_TOKEN so we
-            // gracefully recover when ADMIN_GITHUB_TOKEN is set but missing the
-            // required scopes (surfaces as 403 "Resource not accessible by
-            // personal access token").
-            const gh = require('@actions/github');
-            const fallbackToken = process.env.FALLBACK_GITHUB_TOKEN;
-            const fallbackOctokit =
-              fallbackToken && fallbackToken !== process.env.ADMIN_GITHUB_TOKEN
-                ? gh.getOctokit(fallbackToken)
-                : null;
-
+            // Best-effort wrapper: log a notice on failure instead of failing
+            // the sweep. `@actions/github` is not available inside the
+            // github-script runtime, so we rely on the pre-authenticated
+            // `github` Octokit that github-script provides.
             async function withFallback(label, fn) {
               try {
                 return await fn(github);
               } catch (err) {
-                const permError = err.status === 403 || err.status === 404;
-                if (fallbackOctokit && permError) {
-                  core.info(
-                    `${label}: primary token returned ${err.status}; retrying with GITHUB_TOKEN.`
-                  );
-                  try {
-                    return await fn(fallbackOctokit);
-                  } catch (err2) {
-                    core.warning(`${label} (fallback): ${err2.message}`);
-                    return null;
-                  }
-                }
                 core.info(`${label}: ${err.message}`);
                 return null;
               }
