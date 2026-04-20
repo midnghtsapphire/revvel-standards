@@ -177,6 +177,16 @@ labels:
     color: "ff6b35"
     description: "OpenRouter agent is acting as fixer on this item"
 
+  # ── Graphite (PR stacking + merge queue) ────────────────────────────────────
+  # See docs/GRAPHITE_INTEGRATION.md for rationale and rollout.
+  - name: graphite
+    color: "8b5cf6"
+    description: "Managed by the Graphite PR-stacking app / merge queue"
+
+  - name: "graphite:stacked"
+    color: "a78bfa"
+    description: "PR is part of a Graphite stack (parent/child branches)"
+
   # ── Fork-Audit Bot (cron-driven upstream eval) ──────────────────────────────
   - name: fork-audit
     color: "bfdadc"

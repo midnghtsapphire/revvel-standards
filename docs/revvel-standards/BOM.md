@@ -24,6 +24,7 @@
 | RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28 |
 | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
 | mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ CLI + GitHub App setup needed — see setup below |
+| Graphite (CLI + GitHub App, Free tier) | PR stacking + merge queue that adds granularity to the test harness and forwards stack metadata into the PR→OpenRouter first-line-of-sight comment. CLI is MIT-licensed FOSS; App is SaaS on the Free tier for public repos. | Graphite ([graphite.dev](https://graphite.dev)) | $0 (Free tier; re-confirm before provisioning) | P1 | 🟡 Planned — see [`docs/GRAPHITE_INTEGRATION.md`](../GRAPHITE_INTEGRATION.md) (rollout PR-10..PR-13) |
 
 ---
 

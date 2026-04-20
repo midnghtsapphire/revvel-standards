@@ -153,6 +153,7 @@ If the orchestrator cannot complete a routed item:
 ## See also
 
 - [`OPENROUTER_INSTANTIATION_CHECK.md`](./OPENROUTER_INSTANTIATION_CHECK.md) — automated daily probe that verifies `OPENROUTER_API_KEY` actually works, with a 👍 / ❌ signal, lifecycle labels (`openrouter:instantiating` / `instantiated` / `instantiation-failed` / `needs-key`), and a Ralph escalation after 24h.
+- [`GRAPHITE_INTEGRATION.md`](./GRAPHITE_INTEGRATION.md) — how the Graphite PR-stacking app augments the first-line-of-sight comment with stack metadata so the OpenRouter orchestrator receives stack-aware context instead of single-PR context.
 - [`PROOF_OF_LIFE_PROCESS.md`](./PROOF_OF_LIFE_PROCESS.md) — manually-triggered proof-of-life for the app-review `revvel-standards-run` pipeline, with operator choice of role (orchestrator / fixer) and assignee (openrouter / Copilot / codex).
 - `skills/openrouter-swarms/SKILL.md` — OpenRouter routing, model selection, agent registry.
 - `skills/ralph-loop/SKILL.md` — the Ralph self-healing pattern.
