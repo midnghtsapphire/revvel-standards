@@ -55,6 +55,7 @@ If the default `GITHUB_TOKEN` does not have enough rights to assign `@Copilot` o
 - Type: GitHub App installation token or PAT with **minimum** scopes (`issues:write`, `pull_requests:write`, `contents:read`).
 - Used by: `.github/workflows/openrouter-assignee.yml` for routing on issues/PRs (falls back to `GITHUB_TOKEN` when missing).
 - Safety note: the workflow does **not** check out code or execute PR content, so it remains safe for `pull_request_target` runs when scoped minimally.
+- **Automatic per-call fallback:** if `ADMIN_GITHUB_TOKEN` is configured but a particular API call returns `403` / `404` (e.g. `"Resource not accessible by personal access token"` when the PAT is under-scoped), the workflow transparently retries that call with the default `GITHUB_TOKEN` (which has `issues:write` + `pull-requests:write` granted by the workflow's `permissions:` block). This prevents an under-scoped admin PAT from silently breaking the OpenRouter orchestrator routing.
 
 ---
 
