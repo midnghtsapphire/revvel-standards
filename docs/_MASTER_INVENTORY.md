@@ -127,7 +127,7 @@
 | GitGuardian | Scans every commit for accidentally committed secrets (API keys, passwords) | GitGuardian | Unlimited (free for individuals) | $0 | N/A (free for individual developers) | 🟡 Research Topic | All repos (evaluate) |
 | Gitleaks | Pre-commit hook that blocks commits containing secrets | FOSS | Unlimited | $0 | N/A (FOSS) | 🟡 Research Topic | All repos (evaluate) |
 | Snyk | Scans dependencies for known security vulnerabilities; auto-creates fix PRs | Snyk | Free tier (limited scans) | $0 free / $25+/mo | Exceeds free tier scan limit | 🟡 Research Topic | All projects with npm/pip deps (evaluate) |
-| Infisical | Open-source secrets manager; replaces manual `.env` file management | Self-hosted or Cloud | Free (self-hosted) | $0 / $6+/mo cloud | Switching to cloud tier | 🟡 Research Topic | All projects (evaluate) |
+| Infisical | Open-source secrets manager; replaces manual `.env` file management — [evaluated here](STARRED_REPOS_EVAL_2026-04-20.md#1-infisical--application-secrets-and-configuration-management) | Self-hosted or Cloud | Free (self-hosted) | $0 / $6+/mo cloud | Switching to cloud tier | 🟡 Research Topic — Pilot recommended | All projects (evaluate) |
 
 ### 1.11 Code Quality & Autonomous Review
 
@@ -137,6 +137,7 @@
 | GitHub Copilot | AI code completion and chat inside IDE; context-aware suggestions | GitHub | No free tier for business use | $10–19/mo/seat | First seat activated (no free tier) | ⚠️ Expiring Soon | All developers |
 | Codacy | Static analysis, test coverage tracking, code duplication detection | Codacy | Free for open-source | $15+/mo (private) | Repo becomes private | 🟡 Research Topic | All repos (evaluate) |
 | SonarQube Cloud | SAST security scanning and code smell detection | SonarSource | Free for public repos | $75+/mo (private) | Repo becomes private | 🟡 Research Topic | Security-sensitive projects (evaluate) |
+| vscode-copilot-chat-bedrock | VS Code extension that exposes AWS Bedrock models (Claude, Llama, Titan, Mistral) inside Copilot Chat — [evaluated here](STARRED_REPOS_EVAL_2026-04-20.md#2-vscode-copilot-chat-bedrock--aws-bedrock-models-in-copilot-chat) | `gabrielkoo` (community) | Free extension | $0 extension + AWS Bedrock per-token (~$3/M in, $15/M out for Claude 3.5 Sonnet) | Opening an AWS account with Bedrock enabled | 🟡 Research Topic — Defer | None (OpenRouter already covers these models) |
 
 ### 1.12 Mobile App Distribution
 

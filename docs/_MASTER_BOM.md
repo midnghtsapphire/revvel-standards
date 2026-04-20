@@ -133,7 +133,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 |---|---|---|---|---|
 | **GitGuardian** | Real-time secret leak detection in commits | Free for individuals | ⭐⭐⭐ Free, instant value — detect leaked keys on push | P0 |
 | **Snyk** | Dependency vulnerability scanning + fix PRs | Free tier / $25/mo | ⭐⭐⭐ Every repo with npm/pip deps | P1 |
-| **Infisical** | Open-source secrets manager (HashiCorp Vault alternative) | Free (self-host) / $6/mo cloud | ⭐⭐⭐ Replace manual `.env` management ecosystem-wide | P1 |
+| **Infisical** | Open-source secrets manager (HashiCorp Vault alternative) ([eval](STARRED_REPOS_EVAL_2026-04-20.md#1-infisical--application-secrets-and-configuration-management)) | Free (self-host) / $6/mo cloud | ⭐⭐⭐ Replace manual `.env` management ecosystem-wide | P1 |
 
 ### 🚀 CI/CD & Deployment Automation
 
@@ -160,6 +160,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 | **Groq** | Ultra-fast LLM inference (Llama, Mixtral) — near-free | Free tier / pay-per-token | ⭐⭐⭐ Neurooz real-time cognitive features, Penny Scout signal analysis | P1 |
 | **Replicate** | Run open-source ML models (image, audio, video) | ~$0.001–0.01/call | ⭐⭐⭐ Revvel Forensic Studio, Revvel Music Studio | P1 |
 | **Together.ai** | Fine-tuned LLM hosting at low cost | Pay-per-token | ⭐ Good for custom models | P2 |
+| **vscode-copilot-chat-bedrock** | VS Code extension exposing AWS Bedrock models in Copilot Chat ([eval](STARRED_REPOS_EVAL_2026-04-20.md#2-vscode-copilot-chat-bedrock--aws-bedrock-models-in-copilot-chat)) | Free extension + AWS Bedrock per-token | ⭐ Duplicates OpenRouter; only useful once we have an AWS Bedrock account | P3 — defer |
 
 ### 🏢 ERP, CRM & Back-Office
 
