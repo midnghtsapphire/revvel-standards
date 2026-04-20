@@ -2,7 +2,7 @@
 
 **Purpose:** Establish a consistent, professional, public-facing GitHub identity for all Revvel / MIDNGHTSAPPHIRE contributors so that every account projects verifiable trust and integrity to employers, collaborators, and the open-source community.
 
-**Scope:** Applies to every personal GitHub account that contributes to any Revvel / Freedom Angel Corps repository. This standard governs profile presentation, collaboration hygiene, tool integration, and technical use of the numerical User ID.
+**Scope:** Applies to every personal GitHub account that contributes to any Revvel, MIDNGHTSAPPHIRE, or Freedom Angel Corps repository. This standard governs profile presentation, collaboration hygiene, tool integration, and technical use of the numerical User ID.
 
 ---
 
