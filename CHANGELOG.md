@@ -22,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for public repos at $0.
 - `.github/labels.yml` — two new canonical labels (`graphite`,
   `graphite:stacked`) added to the repository label definition set.
+- `docs/GITKRAKEN_INTEGRATION.md` — integration doc wiring in the
+  GitKraken Client + `gk` CLI + GitLens as an opt-in, read-side
+  contributor GUI. Adds multi-repo Workspaces, a unified Launchpad that
+  surfaces existing `openrouter` / `graphite` / `graphite:stacked`
+  labels, and a visual conflict editor for Graphite-rebased stacks.
+  Free tier for public repos at $0; `gk` CLI is MIT-licensed FOSS.
+  Includes RFC-2119 requirements (R-GK-01..R-GK-G-03) and a 4-step
+  rollout plan (PR-1..PR-4). GitKraken is **not** granted write access
+  and **not** a required tool.
+- `.github/labels.yml` — two new canonical labels (`gitkraken`,
+  `gitkraken:workspace`) added to the repository label definition set.
 
 ### Changed
 - `.gitignore` — now ignores local GitButler state while still committing
@@ -31,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integration doc.
 - `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
   `GRAPHITE_INTEGRATION.md` in the "See also" section (append-only).
+- `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
+  `GITKRAKEN_INTEGRATION.md` in the "See also" section (append-only).
+- `docs/revvel-standards/BOM.md` — appended a GitKraken row to
+  "Purchase Needed" at P2 / $0 / 🟡 Planned, linking to the new
+  integration doc.
 
 ### Policy
 - **Append-only** — no existing files deleted or renamed. The existing

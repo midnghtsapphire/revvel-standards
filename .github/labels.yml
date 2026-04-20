@@ -187,6 +187,16 @@ labels:
     color: "a78bfa"
     description: "PR is part of a Graphite stack (parent/child branches)"
 
+  # ── GitKraken (multi-repo GUI + Workspaces + Launchpad) ─────────────────────
+  # See docs/GITKRAKEN_INTEGRATION.md for rationale and rollout.
+  - name: gitkraken
+    color: "179287"
+    description: "Contributor is tracking this item in GitKraken Launchpad"
+
+  - name: "gitkraken:workspace"
+    color: "5ac8b5"
+    description: "Repo is part of the canonical GitKraken Workspace"
+
   # ── Fork-Audit Bot (cron-driven upstream eval) ──────────────────────────────
   - name: fork-audit
     color: "bfdadc"
