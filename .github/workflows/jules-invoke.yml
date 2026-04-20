@@ -1,0 +1,131 @@
+# Jules Invoke
+#
+# Marketplace: https://github.com/marketplace/actions/jules-invoke
+# Action repo: https://github.com/BeksOmega/jules-action
+#
+# Invoke Jules, Google's AI-powered coding agent, to perform tasks on the
+# codebase. This workflow supports two entry points:
+#
+#   1. `workflow_dispatch` — an operator supplies an ad-hoc prompt.
+#   2. `issues: [closed]`  — when an issue is closed, run Jules against any
+#      issues that become "unblocked" (per BeksOmega/on-unblocked).
+#
+# Secret required: JULES_API_KEY
+# Copy this file to: .github/workflows/jules-invoke.yml
+
+name: Jules Invoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "The prompt for Jules"
+        required: true
+        type: string
+      starting_branch:
+        description: "Branch for Jules to start from"
+        required: false
+        type: string
+        default: main
+      include_last_commit:
+        description: "Pass the content of the last commit to Jules"
+        required: false
+        type: boolean
+        default: false
+      include_commit_log:
+        description: "Pass the commit history to Jules"
+        required: false
+        type: boolean
+        default: false
+  issues:
+    types: [closed]
+
+concurrency:
+  group: jules-invoke-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  # ─── Ad-hoc invocation via workflow_dispatch ────────────────────────────────
+  dispatch:
+    name: Invoke Jules (dispatch)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+    steps:
+      - name: Verify JULES_API_KEY is configured
+        run: |
+          if [ -z "${JULES_API_KEY}" ]; then
+            echo "::warning::JULES_API_KEY is not set — skipping Jules Invoke."
+          else
+            echo "JULES_API_KEY is configured."
+          fi
+
+      - name: Invoke Jules
+        if: env.JULES_API_KEY != ''
+        uses: BeksOmega/jules-action@v1
+        with:
+          prompt: ${{ github.event.inputs.prompt }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          starting_branch: ${{ github.event.inputs.starting_branch }}
+          include_last_commit: ${{ github.event.inputs.include_last_commit }}
+          include_commit_log: ${{ github.event.inputs.include_commit_log }}
+
+  # ─── Run Jules on issues that become unblocked when another closes ─────────
+  detect-unblocked:
+    name: Detect unblocked issues
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      matrix: ${{ steps.finder.outputs.issues }}
+      found: ${{ steps.finder.outputs.has_issues }}
+    steps:
+      - name: Find Unblocked Issues
+        id: finder
+        uses: BeksOmega/on-unblocked@v1.0.0
+
+  invoke-on-unblocked:
+    name: Invoke Jules on unblocked issue
+    needs: detect-unblocked
+    if: needs.detect-unblocked.outputs.found == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    strategy:
+      matrix:
+        issue-number: ${{ fromJson(needs.detect-unblocked.outputs.matrix) }}
+    env:
+      JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+    steps:
+      - name: Verify JULES_API_KEY is configured
+        run: |
+          if [ -z "${JULES_API_KEY}" ]; then
+            echo "::warning::JULES_API_KEY is not set — skipping Jules Invoke."
+          else
+            echo "JULES_API_KEY is configured."
+          fi
+
+      - name: Get issue details
+        if: env.JULES_API_KEY != ''
+        id: get_issue
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ matrix.issue-number }}
+            });
+            return issue.data;
+
+      - name: Invoke Jules on Unblocked Issue
+        if: env.JULES_API_KEY != ''
+        uses: BeksOmega/jules-action@v1.0.0
+        with:
+          prompt: "${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}"
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
