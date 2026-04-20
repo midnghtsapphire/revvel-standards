@@ -26,6 +26,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | If the task involves... | Load this skill |
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| Forking/auditing upstream repos, scoring, presence/authority boost, OpenRank, Pull Shark | [`fork-audit-bot`](#fork-audit-bot) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
@@ -71,6 +72,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.
 - **Tags:** recurse-ml, autonomous-review, bug-detection, code-standards, pr-review, self-healing, github-actions
 - **Trigger:** Setting up code-review automation; integrating RecurseML; enforcing recurse-rules; self-healing PR loop.
+
+#### fork-audit-bot
+
+- **Path:** `skills/fork-audit-bot/`
+- **Files:** `SKILL.md`
+- **Description:** Cron-driven upstream-repo evaluator. Scores candidate repos against a transparent 0‑100 rubric, opens compliant mirror audit issues in `midnghtsapphire/revvel-standards` (routed to `@Copilot` / OpenRouter via the full routing-label set), and optionally opens upstream issues/PRs to boost the owner's GitHub presence metrics (contribution graph, Pull Shark, OpenRank, GitRank, CHAOSS).
+- **Tags:** fork-audit, upstream-eval, repo-scoring, presence-boost, github-authority, openrank, pull-shark, swarm-cron, openrouter-routing
+- **Trigger:** Researching / scoring / auditing external repos on a schedule; boosting GitHub presence / authority; automating upstream contributions.
 
 ---
 

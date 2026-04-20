@@ -176,3 +176,16 @@ labels:
   - name: "role:fixer"
     color: "ff6b35"
     description: "OpenRouter agent is acting as fixer on this item"
+
+  # ── Fork-Audit Bot (cron-driven upstream eval) ──────────────────────────────
+  - name: fork-audit
+    color: "bfdadc"
+    description: "Created by the Fork-Audit Bot (upstream repo eval)"
+
+  - name: upstream-contribution
+    color: "c5def5"
+    description: "Tracks a contribution opened in an external (upstream) repo"
+
+  - name: presence-boost
+    color: "fef2c0"
+    description: "Work that intentionally boosts GitHub presence/authority metrics"
