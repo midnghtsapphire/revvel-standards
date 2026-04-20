@@ -22,6 +22,8 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `deploy-android.yml` | Manual PWA → Play Store scaffold (inactive until Google Play account) | `.github/workflows/deploy-android.yml` |
 | `deploy-ios.yml` | Manual PWA → App Store scaffold (inactive until Apple Developer account) | `.github/workflows/deploy-ios.yml` |
 | `labels-as-parameters.yml` | Converts PR labels (`key:value`) into named step outputs for conditional deploys and feature flags | `.github/workflows/labels-as-parameters.yml` |
+| `eisenhower.yml` | Eisenhower Priority Labeler — auto-assigns `P1`–`P4` labels to issues using the Eisenhower Matrix (Impact × Urgency) | `.github/workflows/eisenhower.yml` |
+| `eisenhower-issue-template.yml` | Companion issue form with required `Impact` / `Urgency` dropdowns, consumed by `eisenhower.yml` | `.github/ISSUE_TEMPLATE/prioritized-issue.yml` |
 
 ---
 

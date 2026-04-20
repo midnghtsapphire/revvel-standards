@@ -70,3 +70,4 @@ ID,Tool,Category,What_It_Does,Flow_Phase,Cost,Required_Secret,Link
 69,Slack,Communication,Team chat and automated notifications (via MCP),Notifications,Free / $7.25 per user per month,SLACK_BOT_TOKEN,https://slack.com
 70,Waydev,Git Analytics,Developer activity analytics and reporting from git commits,Monitoring,Paid,,https://waydev.co
 71,Mermaid,Diagramming,Renders flow charts and sequence diagrams from text (used in MASTER_FLOW_3D.md),Documentation,Free (FOSS),,https://mermaid.js.org
+72,GeekZoneHQ/eisenhower,GitHub Action,Eisenhower Priority Labeler — auto-assigns P1-P4 labels to issues based on Impact x Urgency dropdowns in the issue body (Eisenhower Matrix),Phase 4,Free,GH_ACCESS_TOKEN or GITHUB_TOKEN,https://github.com/GeekZoneHQ/eisenhower
