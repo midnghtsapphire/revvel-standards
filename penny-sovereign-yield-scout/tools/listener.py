@@ -27,7 +27,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-import httpx
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.table import Table
