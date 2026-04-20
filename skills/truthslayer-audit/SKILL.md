@@ -57,6 +57,21 @@ raw      = 0.20·security + 0.15·authenticity + 0.10·help_intent
 TruthSlayerScore = round(raw * 10)   // 0–100
 ```
 
+### Confidence Level (required)
+
+Every audit must declare an overall **confidence level** alongside the score,
+matching the Revvel-standard research convention (`AI_RESEARCH_MODULE_STANDARD.md §8`):
+
+| Confidence | When to use |
+|---|---|
+| **high**   | All eight factors scored with direct, first-hand evidence (files read, scanners run, commits inspected). No material gaps. |
+| **medium** | ≥ 6 of 8 factors scored from direct evidence; the remainder scored from secondary signals (README claims, CI badges, activity graphs) that were not independently verified. |
+| **low**    | ≤ 5 of 8 factors have direct evidence, or the auditor could not access the artifact at the declared ref, or key scanners failed to run. A `low` audit is publishable but must be re-run before being used as a trust signal. |
+
+Individual sub-scores may also carry their own per-factor confidence in the JSON
+sidecar (`evidence_confidence: { security: "high", ... }`) when the auditor wants
+to be precise about which factors are well-evidenced and which are not.
+
 **Grade Bands**
 
 | Score | Grade | Badge Label |
@@ -166,6 +181,7 @@ Emit **both** a human-readable markdown report and a machine-readable JSON sidec
 - **Auditor:** <agent name>
 - **Date (UTC):** <ISO-8601 timestamp>
 - **Self-audit:** <true|false>
+- **Confidence:** <high | medium | low>
 
 ## TruthSlayer Score: <0–100>  ·  Grade: <A+|A|B|C|D|F>
 Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Recommended | Avoid>**
@@ -207,7 +223,7 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
 
 ```json
 {
-  "schema": "truthslayer-audit/v1",
+  "schema": "truthslayer-audit/v1.1",
   "target": "https://github.com/owner/repo",
   "ref": "a1b2c3d",
   "auditor": "openclaw",
@@ -216,6 +232,7 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
   "score": 82,
   "grade": "A",
   "badge": "TruthSlayer Verified — Silver",
+  "confidence": "high",
   "sub_scores": {
     "security": 9,
     "authenticity": 8,
@@ -225,6 +242,16 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
     "documentation": 8,
     "community": 7,
     "accessibility": 9
+  },
+  "evidence_confidence": {
+    "security": "high",
+    "authenticity": "high",
+    "help_intent": "medium",
+    "maintainability": "high",
+    "tests_ci": "high",
+    "documentation": "high",
+    "community": "medium",
+    "accessibility": "high"
   },
   "weights": {
     "security": 0.20, "authenticity": 0.15, "help_intent": 0.10,
@@ -237,6 +264,10 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
   "evidence": {
     "security": ["..."],
     "authenticity": ["..."]
+  },
+  "publication": {
+    "trust_community_path": "trust-community/audits/<slug>/",
+    "badge_url": "https://truthslayer.com/badge/owner/repo.svg"
   }
 }
 ```
@@ -276,6 +307,9 @@ Rules:
    defensible score and state what evidence would raise it.
 8. Be fair: self-audits (targets owned by Audrey / MIDNGHTSAPPHIRE) use
    the same rubric as third-party audits and are flagged self: true.
+9. Declare an overall confidence level (`high | medium | low`) per the
+   definitions in the "Confidence Level" section of SKILL.md. Optionally
+   include per-factor `evidence_confidence` in the JSON sidecar.
 
 Do not produce plans, proposals, or summaries of what you would do.
 Produce the report.
@@ -285,6 +319,13 @@ Produce the report.
 
 ## Integration Points
 
+- **Trust Community area.** Every published audit ships as a pair of files
+  (`truthslayer-report.md` + `truthslayer-report.json`) under
+  [`trust-community/audits/<slug>/`](../../trust-community/) in this repo.
+  The `trust-community/index.json` manifest is the machine-readable directory
+  the truthslayer.com badge widget and any creator/influencer surface should
+  read from. New audits are appended — never overwritten — so the history of
+  a target's trust signal is preserved.
 - **Creator / influencer surfaces.** Embed the grade badge + score on truthslayer.com, Audrey's creator profile, and any marketplace listing. The JSON sidecar powers the badge widget.
 - **GitHub.** A scored repo can ship `truthslayer-report.md` in its `/docs` folder and add the badge to the README:
 
@@ -299,4 +340,5 @@ Produce the report.
 
 ## Changelog
 
+- **1.1.0 (2026-04-20):** Added required overall `confidence` level (`high | medium | low`) matching the Revvel research convention in `AI_RESEARCH_MODULE_STANDARD.md §8`; added optional per-factor `evidence_confidence` map; added `publication` block referencing the new `trust-community/` area; bumped output schema to `truthslayer-audit/v1.1` (backward-compatible: `v1` consumers can ignore the new fields).
 - **1.0.0 (2026-04-20):** Initial release. Eight-factor weighted rubric, grade bands, output schema v1, Gemini-ready system prompt.

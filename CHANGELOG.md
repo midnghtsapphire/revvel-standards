@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-15
 
 ### Added
+- `trust-community/` — new root-level **Trust Community** area, Audrey's
+  public home for published TruthSlayer audits. Ships with `README.md`,
+  machine-readable `index.json` (schema `trust-community-index/v1`), and
+  the first seeded audit at `trust-community/audits/revvel-standards/`
+  (score 78 / Grade B / Bronze / confidence: high). Append-only layout
+  preserves trust-signal history over time.
+- `skills/truthslayer-audit/` — schema bumped to `truthslayer-audit/v1.1`
+  (skill `1.1.0`). Adds required overall `confidence` level
+  (`high | medium | low`) matching the Revvel research convention in
+  `AI_RESEARCH_MODULE_STANDARD.md §8`, optional per-factor
+  `evidence_confidence` map, and a `publication` block linking audits to
+  the new trust-community area. `skills/SKILLS_INDEX.yml` updated to the
+  new version. Backward-compatible with `v1` consumers.
 - `ui/freedom-angel-repo-manager/` — production GitHub-wired repository
   inventory and Revvel Standards audit dashboard. Zero-dependency
   (HTML/CSS/vanilla JS), read-only against the GitHub REST API, and

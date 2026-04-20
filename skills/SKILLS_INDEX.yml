@@ -42,7 +42,7 @@ skills:
 
   - name: truthslayer_audit
     title: "TruthSlayer Audit — Composite Code Scoring"
-    version: "1.0.0"
+    version: "1.1.0"
     path: "skills/truthslayer-audit/"
     skill_file: "skills/truthslayer-audit/truthslayer-audit.skill.yml"
     category: "Code Quality & Autonomous Review"
