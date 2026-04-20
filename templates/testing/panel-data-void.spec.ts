@@ -33,7 +33,7 @@ const PAGES_TO_CHECK: Array<{
     emptyStateSelector: '[data-testid="empty-state"]', // Default empty state selector
     requiresAuth: true,
   },
-  // TODO: Add all pages you want to validate
+  // INSTRUCTION: Add all pages you want to validate
   // {
   //   name: '[PAGE_NAME]',
   //   path: '[PAGE_PATH]',
