@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-20
 
 ### Added
+- `.gitbutler/config.json` — adds shared GitButler repo defaults (`baseBranch:
+  main`, `remote: origin`) so contributors can make faster small commits /
+  stacks before OpenRouter orchestration picks up issues and PRs.
 - `docs/GRAPHITE_INTEGRATION.md` — integration doc for the Graphite
   PR-stacking CLI + GitHub App. Explains how Graphite adds *granularity*
   to the existing `revvel-standards` test harness (see
@@ -21,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `graphite:stacked`) added to the repository label definition set.
 
 ### Changed
+- `.gitignore` — now ignores local GitButler state while still committing
+  `.gitbutler/config.json` as the team-shared config source.
 - `docs/revvel-standards/BOM.md` — appended a Graphite row to
   "Purchase Needed" at P1 / $0 / 🟡 Planned, linking to the new
   integration doc.
