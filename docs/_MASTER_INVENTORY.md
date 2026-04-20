@@ -158,6 +158,17 @@
 | universalsar.com (or similar) | Domain for Universal SAR App | Namecheap | Annual | ~$15/yr | Domain expiry date | ❌ Expired / Lapsed | Universal SAR App |
 | Cloudflare DNS | DNS management, CDN, and DDoS protection for all deployed domains | Cloudflare | N/A | $0 (free tier) | Need advanced WAF or DDoS protection (paid plan) | ✅ Active | All domains |
 
+### 1.14 Back-Office: ERP, CRM & Accounting (Cross-Entity)
+
+> Single shared system for every MIDNGHTSAPPHIRE legal entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews, and future brands). Authoritative specification: [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md).
+
+| Service | What It Does | Provider | Free Tier Limit | Est. Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Used By |
+|---|---|---|---|---|---|---|---|
+| Odoo Community Edition | Multi-company ERP + CRM + accounting in one database; contacts, leads, sales, purchase, stock, projects, invoicing, journals, tax reports | Odoo S.A. (LGPL-3.0) | Unlimited users & companies (self-hosted) | $0 licence + $0 incremental infra (shared droplet + managed Postgres) | Needs Enterprise-only module — must first evaluate OCA replacement | 🟡 Research Topic | All entities: Vine House, Vine House Capital, Revvel Tech, reese-reviews |
+| OCA `account_financial_report` | Free replacement for Enterprise-only advanced financial reports (P&L variants, partner ledger, aged balance) | Odoo Community Association | Free | $0 | N/A | 🟡 Research Topic | Odoo instance (all companies) |
+| OCA `mis_builder` | KPI dashboards and consolidated multi-company reports inside Odoo | Odoo Community Association | Free | $0 | N/A | 🟡 Research Topic | Phase 3 rollout per Odoo standard |
+| `revvel_odoo_bridge` (custom addon) | Thin Revvel-owned Odoo addon adding `x_external_system` / `x_external_id` fields and inbound webhook ingestion from Shopify, Stripe, Revvel apps, and reese-reviews | MIDNGHTSAPPHIRE | Free (internal) | $0 | N/A | 🟡 Research Topic | Source of truth for all Odoo ↔ Revvel integration |
+
 ---
 
 ## 2. Vine House — Products Business
@@ -212,8 +223,9 @@
 
 | Service | What It Does | Provider | Free Tier Limit | Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Notes |
 |---|---|---|---|---|---|---|---|
-| Wave Accounting | Free invoicing, bookkeeping, and income/expense tracking for small businesses | Wave | Unlimited (free) | $0 | Needs payroll or credit card payments feature | 🟡 Research Topic | Best free option — evaluate for rental accounting |
-| QuickBooks Online | Full accounting, bank sync, tax reports; rental-specific features available | Intuit | No free tier | $30+/mo | First use (no free tier) | 🟡 Research Topic | Evaluate once revenue justifies cost |
+| Wave Accounting | Free invoicing, bookkeeping, and income/expense tracking for small businesses | Wave | Unlimited (free) | $0 | Needs payroll or credit card payments feature | 🟡 Research Topic | Superseded by Odoo CE for consolidated books — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md) |
+| Odoo Community Edition (self-hosted) | Multi-company ERP + CRM + free accounting; authoritative back-office for Vine House Capital ledger | Odoo S.A. (LGPL-3.0) | Unlimited users, unlimited companies (self-hosted) | $0 licence + shared droplet/Postgres | Needs Enterprise-only module (e.g. advanced payroll) — evaluate against OCA first | 🟡 Research Topic | Planned default — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md) |
+| QuickBooks Online | Full accounting, bank sync, tax reports; rental-specific features available | Intuit | No free tier | $30+/mo | First use (no free tier) | 🟡 Research Topic | Deferred in favor of Odoo CE |
 | FreshBooks | Invoicing and expense tracking focused on service businesses | FreshBooks | No free tier | $19+/mo | First use (no free tier) | 🟡 Research Topic | Evaluate vs Wave |
 
 ### 3.3 Tenant Payments

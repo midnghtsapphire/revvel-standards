@@ -34,6 +34,7 @@
 | [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, funnels |
 | [`MASTER_APP_TEMPLATE.md`](MASTER_APP_TEMPLATE.md) | Master template for all Revvel application projects |
 | [`MCP_STANDARD.md`](MCP_STANDARD.md) | All 32 standard MCP servers + FastMCP custom server standard |
+| [`ODOO_INTEGRATION_STANDARD.md`](ODOO_INTEGRATION_STANDARD.md) | Multi-company Odoo CE as shared ERP + CRM + free accounting across all MIDNGHTSAPPHIRE entities; ERD, module matrix, bridge service, rollout plan |
 | [`OSINT_STANDARD.md`](OSINT_STANDARD.md) | Automated OSINT pipelines, threat intelligence, dark web monitoring |
 | [`PUBLIC_IDENTITY_STANDARD.md`](PUBLIC_IDENTITY_STANDARD.md) | Public-facing GitHub trust & integrity: profile README, pinned repos, collaboration, tool integrations, numerical User ID, no-reply email |
 | [`RECURSION_STANDARD.md`](RECURSION_STANDARD.md) | Recursion patterns, depth limits, and performance guidelines |
