@@ -58,6 +58,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Concurrent branches, merging, conflict resolution | [`concurrent-development`](#concurrent-development) |
 | Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
 | Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
+| Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
 
 ---
 
@@ -343,6 +344,19 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+### Bot Creation
+
+#### bot-creator
+- **Path:** `skills/bot-creator/`
+- **Files:** `SKILL.md` · `bot-creator.skill.yml`
+- **Description:** Turns a plain-language idea into a complete, scaffolded bot spec. Runs a 5-question interview, locks one functional category (adulting, creative, study, coding, productivity, social, finance, wellness, gaming, shopping, weaponized, guardian), and composes 1–2 visual styles from a 14-style library (dimensional: `1d`, `2d`, `3d`, `glassmorphic`, `pacman`; persona/culture: `weaponized`, `adulting`, `bt21`, `pretty-pony`, `memelord`, `genz`, `genx`, `millennial`, `boomer`). Enforces combo rules (max 2 styles, no `boomer × memelord`, etc.), defaults backgrounds to `minimal` (dioramas off by default), and emits a `bots/<bot-slug>/` scaffold with `BOT.md`, `bot.yml`, `persona.yml`, `theme.json`. Weaponized category ships with firm safety rails.
+- **Tags:** bot-creator, bot-factory, bot-scaffold, visual-style, glassmorphic, bt21, pretty-pony, memelord, genz, genx, millennial, boomer, pacman, adulting, weaponized
+- **Trigger:** "create a bot", "build a bot", "new bot", "bot builder", "scaffold bot", "bot spec", or any style-named bot request (e.g., "glassmorphic bot", "bt21 bot").
+- **Lifecycle:** Ephemeral — terminates after the bot spec is shipped and the scaffold is written.
+- **Persona:** 🔨 Forge
+
+---
+
 ## Mandatory Skills for Every Session
 
 These skills **must** be loaded at the start of every agent session:
@@ -369,4 +383,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 15, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 20, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator skills.*
