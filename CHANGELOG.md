@@ -17,9 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stack-aware context. Includes RFC-2119 requirements (R-GT-01..R-GT-G-03)
   and a 5-step rollout plan (PR-9..PR-13). Adopts the Graphite Free tier
   for public repos at $0.
-- `.github/labels.yml` — two new labels (`graphite`, `graphite:stacked`)
-  so `sync-labels.yml` propagates them to every Revvel repo that tracks
-  the canonical label set.
+- `.github/labels.yml` — two new canonical labels (`graphite`,
+  `graphite:stacked`) added to the repository label definition set.
 
 ### Changed
 - `docs/revvel-standards/BOM.md` — appended a Graphite row to
