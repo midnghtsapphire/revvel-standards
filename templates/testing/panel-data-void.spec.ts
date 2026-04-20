@@ -49,7 +49,7 @@ const PAGES_TO_CHECK: Array<{
 // -------------------------------------------------------------------------
 
 async function loginAsTestUser(page: import('@playwright/test').Page) {
-  // TODO: Replace with your actual login flow
+  // Replace with your actual login flow
   // await page.goto(`${BASE_URL}/login`);
   // await page.fill('[data-testid="email-input"]', process.env.TEST_USER_EMAIL!);
   // await page.fill('[data-testid="password-input"]', process.env.TEST_USER_PASSWORD!);
