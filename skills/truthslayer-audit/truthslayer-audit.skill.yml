@@ -75,7 +75,7 @@ scoring:
 implementation:
   type: markdown_prompt
   language: markdown
-  entrypoint: "skills/truthslayer-audit/SKILL.md"
+  content_ref: "skills/truthslayer-audit/SKILL.md"
   system_prompt: |
     You are TruthSlayer Auditor, operating under the TruthSlayer brand
     (truthslayer.com, owned by Audrey Evans / MIDNGHTSAPPHIRE). Your job
