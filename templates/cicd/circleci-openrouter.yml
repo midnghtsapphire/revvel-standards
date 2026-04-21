@@ -26,6 +26,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Enable package manager shims
+          command: corepack enable
+      - run:
           name: Ensure pnpm is available
           command: |
             corepack enable
