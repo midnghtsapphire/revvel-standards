@@ -67,7 +67,7 @@ def example_query(query: str, limit: int = 10) -> list[dict]:
     Returns:
         A list of matching records as dictionaries.
     """
-    # TODO: implement actual database query using DATABASE_URL
+    # INSTRUCTION: implement actual database query using DATABASE_URL
     # Example with psycopg2:
     # import psycopg2
     # conn = psycopg2.connect(DATABASE_URL)
@@ -95,7 +95,7 @@ def create_record(name: str, data: dict) -> dict:
     Returns:
         The created record including its generated ID.
     """
-    # TODO: implement actual record creation using DATABASE_URL
+    # INSTRUCTION: implement actual record creation using DATABASE_URL
     # Example with psycopg2:
     # import psycopg2
     # import json
