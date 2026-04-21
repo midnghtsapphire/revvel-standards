@@ -21,6 +21,10 @@ def test_compute_opportunity_score():
     assert compute_opportunity_score(-5, 1000, "none", 1) == 0.0
     assert compute_opportunity_score(10, 0, "none", 1) == 0.0
     assert compute_opportunity_score(10, -100, "none", 1) == 0.0
+    assert compute_opportunity_score(0, 0, "none", 1) == 0.0
+    assert compute_opportunity_score(-1, -1, "none", 1) == 0.0
+    assert compute_opportunity_score(0, -1, "none", 1) == 0.0
+    assert compute_opportunity_score(-1, 0, "none", 1) == 0.0
 
     # Varying risk levels
     score_high_risk = compute_opportunity_score(apy=10.0, tvl_usd=100_000, il_risk="high", tier=3)
