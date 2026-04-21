@@ -2,16 +2,22 @@ import math
 import pytest
 import sys
 import os
+from unittest.mock import patch, MagicMock
 
 # Add tools to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../tools')))
+
+# Mock numpy before importing il_shield to prevent ModuleNotFoundError
+sys.modules['numpy'] = MagicMock()
 
 from il_shield import (
     impermanent_loss_50_50,
     impermanent_loss_weighted,
     concentrated_liquidity_il,
     shield_check,
-    ShieldResult
+    ShieldResult,
+    simulate_il_range,
+    main
 )
 
 def test_impermanent_loss_50_50():
@@ -90,6 +96,10 @@ def test_shield_check():
     assert res.shield_approved is True
     assert math.isclose(res.estimated_il_pct, 4.2751, abs_tol=1e-4)
 
+    # Concentrated Approved
+    res = shield_check("ETH", "USDC", 1.0, pool_type="concentrated", price_lower=0.8, price_upper=1.2, max_il_pct=5.0)
+    assert res.shield_approved is True
+
     # Invalid pool type
     with pytest.raises(ValueError, match="Unknown pool_type: invalid"):
         shield_check("ETH", "USDC", 1.1, pool_type="invalid")
@@ -114,3 +124,41 @@ def test_shield_result_dataclass():
     d = res.to_dict()
     assert d["token0"] == "ETH"
     assert "timestamp" in d
+
+@patch('il_shield.console.print')
+def test_simulate_il_range(mock_print):
+    simulate_il_range(price_min=0.8, price_max=1.2, steps=3, pool_type="50_50")
+    # check that rich console.print was called with a Table object
+    assert mock_print.called
+    args, kwargs = mock_print.call_args
+    assert "Table" in str(type(args[0]))
+
+@patch('il_shield.console.print')
+def test_main_simulate(mock_print):
+    test_args = ["il_shield.py", "--simulate-range", "0.5", "10.0"]
+    with patch.object(sys, 'argv', test_args):
+        main()
+    assert mock_print.called
+
+@patch('il_shield.console.print')
+def test_main_check_all_positions(mock_print):
+    test_args = ["il_shield.py", "--check-all-positions"]
+    with patch.object(sys, 'argv', test_args):
+        main()
+    mock_print.assert_any_call("[yellow]No positions tracked yet. Enter positions via auto_compounder_api.py[/]")
+
+@patch('il_shield.console.print')
+def test_main_approved(mock_print):
+    test_args = ["il_shield.py", "--token0", "ETH", "--token1", "USDC", "--price-ratio", "1.1", "--max-il", "5.0"]
+    with patch.object(sys, 'argv', test_args):
+        main()
+    # Check that the result table was printed
+    assert mock_print.called
+
+@patch('il_shield.console.print')
+def test_main_blocked(mock_print):
+    test_args = ["il_shield.py", "--token0", "ETH", "--token1", "USDC", "--price-ratio", "2.0", "--max-il", "5.0"]
+    with patch.object(sys, 'argv', test_args):
+        main()
+    # Check that warning messages are printed
+    mock_print.assert_any_call("\n[bold red]⚠️  Position blocked by IL shield. Consider:[/]")

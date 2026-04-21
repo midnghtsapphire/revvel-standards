@@ -1,0 +1,168 @@
+name: OpenRouter Triage
+
+on:
+  issues:
+    types: [opened, reopened]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: openrouter-triage-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  route-new:
+    name: Route and triage new issue/PR
+    if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Apply triage labels (best effort)
+        id: labels
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
+            if (!issue_number) {
+              core.notice('No issue/PR number found; skipping.');
+              core.setOutput('skip_triage', 'true');
+              return;
+            }
+
+            const labelNames = (
+              context.payload.issue?.labels ||
+              context.payload.pull_request?.labels ||
+              []
+            ).map((l) => typeof l === 'string' ? l : l.name);
+
+            if (labelNames.includes('no-triage')) {
+              core.notice(`Skipping triage for #${issue_number} due to no-triage label.`);
+              core.setOutput('skip_triage', 'true');
+              return;
+            }
+
+            for (const label of ['openrouter', 'role:orchestrator', 'triage:new']) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                  labels: [label],
+                });
+              } catch (error) {
+                core.notice(`Could not add label "${label}" (ok if missing): ${error.message}`);
+              }
+            }
+
+            core.setOutput('skip_triage', 'false');
+
+      - name: Verify OPENROUTER_API_KEY
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage."
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: Run OpenRouter triage
+        if: env.OPENROUTER_API_KEY != '' && steps.labels.outputs.skip_triage != 'true'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
+          EVENT_KIND: ${{ github.event_name == 'issues' && 'issue' || 'pull_request' }}
+          MODEL: anthropic/claude-sonnet-4
+        run: node scripts/openrouter-triage.js
+
+  sweep-discover:
+    name: Discover triage:new items needing routing
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.collect.outputs.matrix }}
+      count: ${{ steps.collect.outputs.count }}
+    steps:
+      - name: Collect open triage:new items missing openrouter label
+        id: collect
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const items = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'triage:new',
+              per_page: 100,
+            });
+
+            const triageTargets = [];
+            for (const item of items) {
+              const labels = (item.labels || []).map((l) => typeof l === 'string' ? l : l.name);
+              if (labels.includes('openrouter') || labels.includes('no-triage')) continue;
+
+              for (const label of ['openrouter', 'role:orchestrator', 'triage:new']) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    labels: [label],
+                  });
+                } catch (error) {
+                  core.notice(`Could not add label "${label}" to #${item.number}: ${error.message}`);
+                }
+              }
+
+              triageTargets.push({
+                issue_number: String(item.number),
+                issue_title: item.title || '',
+                issue_body: item.body || '',
+                event_kind: item.pull_request ? 'pull_request' : 'issue',
+              });
+            }
+
+            core.setOutput('count', String(triageTargets.length));
+            core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
+
+  sweep-triage:
+    name: Sweep triage via OpenRouter
+    if: needs.sweep-discover.outputs.count != '0' && secrets.OPENROUTER_API_KEY != ''
+    needs: sweep-discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Cap parallel OpenRouter calls during the sweep so a large backlog
+      # (e.g. the initial drain of queued fork PRs) can't burst the
+      # OPENROUTER_API_KEY rate limit. Tune as needed.
+      max-parallel: 3
+      matrix: ${{ fromJson(needs.sweep-discover.outputs.matrix) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run OpenRouter triage for each queued item
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ matrix.issue_number }}
+          ISSUE_TITLE: ${{ matrix.issue_title }}
+          ISSUE_BODY: ${{ matrix.issue_body }}
+          EVENT_KIND: ${{ matrix.event_kind }}
+          MODEL: anthropic/claude-sonnet-4
+        run: node scripts/openrouter-triage.js

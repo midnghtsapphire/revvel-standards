@@ -119,7 +119,7 @@ def create_record(name: str, data: dict) -> dict:
 # Resources — read-only data endpoints (no side effects)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@mcp.resource("data://[app_name]/config")
+@mcp.resource("data://your-app-name/config")
 def get_config() -> dict:
     """Return the public configuration of this [APP_NAME] instance.
     
@@ -133,7 +133,7 @@ def get_config() -> dict:
     }
 
 
-@mcp.resource("data://[app_name]/schema")
+@mcp.resource("data://your-app-name/schema")
 def get_schema() -> dict:
     """Return the data schema for [APP_NAME].
     

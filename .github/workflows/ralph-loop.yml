@@ -126,17 +126,9 @@ jobs:
               }
             }
 
-            // Assign copilot
-            try {
-              await github.rest.issues.addAssignees({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr_number,
-                assignees: ['Copilot'],
-              });
-            } catch (err) {
-              console.log(`Could not assign Copilot: ${err.message}`);
-            }
+            // Routing is handled by .github/workflows/openrouter-triage.yml
+            // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md); do
+            // not assign @Copilot / copilot-swe-agent here.
 
       - name: Escalate to human (max retries exceeded)
         if: |

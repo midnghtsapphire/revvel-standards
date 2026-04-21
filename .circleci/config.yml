@@ -1,0 +1,5 @@
+# CircleCI is intentionally disabled for this repository.
+# Repository standards require GitHub Actions as the CI/CD system of record.
+# Keep this file minimal and inert to avoid duplicate or conflicting pipelines.
+# See: https://circleci.com/docs/reference/configuration-reference
+version: 2.1
