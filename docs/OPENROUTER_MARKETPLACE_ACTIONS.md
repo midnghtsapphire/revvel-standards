@@ -100,6 +100,14 @@ title (honored by `ai-pr-review-openrouter`, `ai-code-reviewer-pro`, and
 
 No changes to the template YAML are required for the default case.
 
+### CircleCI repos (non-GitHub-Actions path)
+
+GitHub Marketplace actions are GitHub Actions-specific. For repos that run CI on
+CircleCI, use [`templates/cicd/circleci-openrouter.yml`](../templates/cicd/circleci-openrouter.yml)
+as the drop-in `.circleci/config.yml` baseline. It keeps the same Revvel rule:
+OpenRouter diagnostics run on failure, and missing `OPENROUTER_API_KEY` degrades
+to a warning (no extra red build from the AI helper itself).
+
 ---
 
 ## Cost governance
