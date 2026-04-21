@@ -25,6 +25,7 @@
 | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
 | mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ CLI + GitHub App setup needed — see setup below |
 | Graphite (CLI + GitHub App, Free tier) | PR stacking + merge queue that adds granularity to the test harness and forwards stack metadata into the PR→OpenRouter first-line-of-sight comment. CLI is MIT-licensed FOSS; App is SaaS on the Free tier for public repos. | Graphite ([graphite.dev](https://graphite.dev)) | $0 (Free tier; re-confirm before provisioning) | P1 | 🟡 Planned — see [`docs/GRAPHITE_INTEGRATION.md`](../GRAPHITE_INTEGRATION.md) (rollout PR-10..PR-13) |
+| GitKraken (Client + `gk` CLI + GitLens) | Contributor-side multi-repo GUI: Workspaces group every MIDNGHTSAPPHIRE repo, Launchpad unifies PRs/issues/CI across the org, visual conflict editor, and GitLens inline blame. Opt-in, read-side only — passively surfaces `openrouter` / `graphite` / `graphite:stacked` labels. `gk` CLI is MIT-licensed FOSS; Client is Free for public repos. | GitKraken ([gitkraken.com](https://www.gitkraken.com)) | $0 (Free tier for public repos; re-confirm before provisioning) | P2 | 🟡 Planned — see [`docs/GITKRAKEN_INTEGRATION.md`](../GITKRAKEN_INTEGRATION.md) (rollout PR-1..PR-4) |
 
 ---
 
