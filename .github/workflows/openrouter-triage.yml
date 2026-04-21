@@ -146,6 +146,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Cap parallel OpenRouter calls during the sweep so a large backlog
+      # (e.g. the initial drain of queued fork PRs) can't burst the
+      # OPENROUTER_API_KEY rate limit. Tune as needed.
+      max-parallel: 3
       matrix: ${{ fromJson(needs.sweep-discover.outputs.matrix) }}
     steps:
       - name: Check out repository
