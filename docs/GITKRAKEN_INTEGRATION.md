@@ -78,7 +78,7 @@ PR opened ─► openrouter-assignee.yml ─► assignee = @Copilot
                                   └──────────────────────────────────┘
 ```
 
-GitKraken is a **passive consumer** of the existing labels. It adds no new automation or webhooks into `revvel-standards`. The `gitkraken` label is optional and contributor-applied; `gitkraken:workspace` is org-level metadata that marks a repo as included in the canonical Workspace definition.
+GitKraken is a **passive consumer** of the existing labels. It adds no new automation or webhooks into `revvel-standards`. The `gitkraken` label is optional and contributor-applied on PRs; `gitkraken:workspace` should be used on a dedicated tracking issue or PR that records which repositories are included in the canonical Workspace definition, rather than being applied directly to a repository.
 
 ---
 
@@ -118,9 +118,9 @@ Evaluated against the same criteria as other integrations in this repo:
 |---|---|
 | **R-GK-01** | A canonical **GitKraken Workspace definition** MUST live in this repo at `docs/revvel-standards/GITKRAKEN_WORKSPACE.md` (created in rollout PR-2 below) and MUST enumerate every repo that belongs in the "MIDNGHTSAPPHIRE Standards" Workspace, pulling the list from [`docs/REPO_CATALOG.md`](./REPO_CATALOG.md). |
 | **R-GK-02** | Contributors MAY use any Git GUI (or none); GitKraken MUST NOT be a required tool and MUST NOT gate any status check. Use is opt-in. |
-| **R-GK-03** | Two new labels — `gitkraken` and `gitkraken:workspace` — MUST exist in `.github/labels.yml` so `sync-labels.yml` propagates them to every repo. |
+| **R-GK-03** | Two new labels — `gitkraken` and `gitkraken:workspace` — MUST exist in `.github/labels.yml` so `sync-labels.yml` propagates them to every repo. These labels are issue/PR-scoped markers only; they do not define repository membership. |
 | **R-GK-04** | The `gitkraken` label is **contributor-applied** and advisory: it marks a PR a human is actively tracking in the GitKraken Launchpad. No workflow MAY set or require it. |
-| **R-GK-05** | The `gitkraken:workspace` label MAY be applied to repos (via repo topics or a tracking issue) to indicate they are in the canonical Workspace. `sync-labels.yml` propagation guarantees the label exists before it is used. |
+| **R-GK-05** | The repository topic `gitkraken-workspace` MAY be applied to repos to indicate they are in the canonical Workspace. If used, this topic is the sole repo-scoped marker for Workspace membership; the `gitkraken:workspace` label MAY be used only on tracking issues or PRs and MUST NOT be treated as a repo-scoped mechanism. |
 | **R-GK-06** | GitKraken MUST NOT be granted write access to `main` or to the merge queue. It is a **read-side** contributor surface; all write paths continue to flow through GitHub + Graphite + the existing CI. |
 | **R-GK-07** | If a contributor authenticates GitKraken to GitHub, they MUST use GitHub OAuth (no long-lived PATs committed anywhere). This mirrors [`docs/SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) guidance. |
 | **R-GK-08** | GitLens AI features (if any require sending diffs to third-party LLMs) MUST be disabled by default. Any contributor who enables them does so under their own account and does NOT route diffs on behalf of the org. |

@@ -191,7 +191,7 @@ labels:
   # See docs/GITKRAKEN_INTEGRATION.md for rationale and rollout.
   - name: gitkraken
     color: "179287"
-    description: "Contributor is tracking this item in GitKraken Launchpad"
+    description: "Tracked in GitKraken Launchpad"
 
   - name: "gitkraken:workspace"
     color: "5ac8b5"
