@@ -1,4 +1,6 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
+# CircleCI is intentionally disabled for this repository.
+# Repository standards require GitHub Actions as the CI/CD system of record.
+# Keep this file minimal and inert to avoid duplicate or conflicting pipelines.
 # See: https://circleci.com/docs/reference/configuration-reference
 
 # For a detailed guide to building and testing with Python, read the docs:

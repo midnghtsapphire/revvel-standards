@@ -126,6 +126,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 | **Codacy** | Static analysis, test coverage, code duplication | Free (open source) / $15/mo | ⭐⭐ Good alternative if RecurseML doesn't pan out | P1 |
 | **SonarQube Cloud** | SAST, code smell detection, security hotspots | Free (public repos) / $75/mo+ | ⭐⭐ Enterprise-grade SAST for security-sensitive projects | P1 |
 | **Snyk Code** | AI-powered security vulnerability scanner | Free tier / $25/mo | ⭐⭐⭐ Pairs with Snyk for dep + code scanning | P1 |
+| **API CraftPro** | Auto-generates Go + Gin backend REST API (CRUD, JWT/PASETO auth, tests, CI/CD, Docker, Postman) from a SQL schema and pushes it to GitHub ([eval](API_CRAFTPRO_EVAL_2026-04-20.md)) | Free trial / paid tier | ⭐ Stack mismatch — Revvel default is Node/TypeScript, not Go; prototype-only candidate | P3 — defer |
 
 ### 🔐 Security & Secrets Management
 

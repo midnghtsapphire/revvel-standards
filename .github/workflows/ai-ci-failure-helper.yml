@@ -32,6 +32,13 @@ permissions:
   contents: read
   pull-requests: write
 
+# Serialize helper runs for the same upstream workflow run so a retry
+# storm can't spawn unbounded parallel OpenRouter calls against the same
+# failure. `cancel-in-progress: false` preserves in-flight analysis.
+concurrency:
+  group: ai-ci-failure-helper-${{ github.event.inputs.workflow_run_id || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   ai-helper:
     name: AI failure helper

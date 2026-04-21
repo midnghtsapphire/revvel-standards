@@ -121,15 +121,15 @@ Yes. The chain is:
    - `fork-audit`
    - `upstream-contribution`
 
-2. The bot also sets `assignees: ['Copilot']` on creation, because `@Copilot`
-   is the GitHub-visible proxy for the OpenRouter orchestrator (see
-   [`OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIGNEE_PROCESS.md) §
-   "Why the GitHub assignee is `@Copilot` and not `@openrouter`").
+2. The bot does **not** set any `assignees` — routing is driven by the
+   `openrouter` / `role:orchestrator` / `triage:new` labels. Assigning
+   `@Copilot` / `copilot-swe-agent` is explicitly out of policy (see
+   [`OPENROUTER_TRIAGE_PROCESS.md`](./OPENROUTER_TRIAGE_PROCESS.md)).
 
-3. [`openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml)
-   still idempotently re-runs the routing step on issue-opened and on the
-   hourly cron sweep, so if either of the above calls fails the second line
-   of defence converges the state.
+3. [`openrouter-triage.yml`](../.github/workflows/openrouter-triage.yml)
+   idempotently re-applies routing labels on issue/PR open and on the hourly
+   cron sweep, and invokes `scripts/openrouter-triage.js` to post the
+   OpenRouter triage comment.
 
 4. When the mirror issue gets promoted to a PR (by the OpenRouter-driven
    orchestrator, by `ralph-loop.yml` after CI, or manually), the PR inherits
@@ -141,7 +141,7 @@ Yes. The chain is:
 5. Upstream issues carry the same labels on a best-effort basis (the bot
    swallows label-404s so it still works against repos that don't yet have
    our routing vocabulary). Any upstream repo that installs
-   `openrouter-assignee.yml` gets the same routing behaviour for free.
+   `openrouter-triage.yml` gets the same routing behaviour for free.
 
 No new secret is required; `GITHUB_TOKEN` (or `ADMIN_GITHUB_TOKEN` for
 cross-repo writes) is all the bot uses.

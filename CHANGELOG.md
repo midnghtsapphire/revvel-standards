@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-20
 
 ### Added
+- `.gitbutler/config.json` — adds shared GitButler repo defaults (`baseBranch:
+  main`, `remote: origin`) so contributors can make faster small commits /
+  stacks before OpenRouter orchestration picks up issues and PRs.
 - `docs/GRAPHITE_INTEGRATION.md` — integration doc for the Graphite
   PR-stacking CLI + GitHub App. Explains how Graphite adds *granularity*
   to the existing `revvel-standards` test harness (see
@@ -19,18 +22,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for public repos at $0.
 - `.github/labels.yml` — two new canonical labels (`graphite`,
   `graphite:stacked`) added to the repository label definition set.
+- `docs/GITKRAKEN_INTEGRATION.md` — integration doc wiring in the
+  GitKraken Client + `gk` CLI + GitLens as an opt-in, read-side
+  contributor GUI. Adds multi-repo Workspaces, a unified Launchpad that
+  surfaces existing `openrouter` / `graphite` / `graphite:stacked`
+  labels, and a visual conflict editor for Graphite-rebased stacks.
+  Free tier for public repos at $0; `gk` CLI is MIT-licensed FOSS.
+  Includes RFC-2119 requirements (R-GK-01..R-GK-G-03) and a 4-step
+  rollout plan (PR-1..PR-4). GitKraken is **not** granted write access
+  and **not** a required tool.
+- `.github/labels.yml` — two new canonical labels (`gitkraken`,
+  `gitkraken:workspace`) added to the repository label definition set.
 
 ### Changed
+- `.gitignore` — now ignores local GitButler state while still committing
+  `.gitbutler/config.json` as the team-shared config source.
 - `docs/revvel-standards/BOM.md` — appended a Graphite row to
   "Purchase Needed" at P1 / $0 / 🟡 Planned, linking to the new
   integration doc.
 - `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
   `GRAPHITE_INTEGRATION.md` in the "See also" section (append-only).
+- `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
+  `GITKRAKEN_INTEGRATION.md` in the "See also" section (append-only).
+- `docs/revvel-standards/BOM.md` — appended a GitKraken row to
+  "Purchase Needed" at P2 / $0 / 🟡 Planned, linking to the new
+  integration doc.
 
 ### Policy
 - **Append-only** — no existing files deleted or renamed. The existing
   `TEST_HARNESS_RESEARCH.md` v1.0.0 is left intact; Graphite is added as
   an extension (PR-9..PR-13) rather than an edit to that versioned doc.
+- Repository automation no longer relies on the paid GitHub Copilot Coding
+  Agent for issue/PR routing; OpenRouter API calls are now the routing path.
 
 ## [Unreleased] - 2026-04-15
 

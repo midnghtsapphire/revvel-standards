@@ -67,7 +67,7 @@ def example_query(query: str, limit: int = 10) -> list[dict]:
     Returns:
         A list of matching records as dictionaries.
     """
-    # TODO: implement actual database query using DATABASE_URL
+    # INSTRUCTION: implement actual database query using DATABASE_URL
     # Example with psycopg2:
     # import psycopg2
     # conn = psycopg2.connect(DATABASE_URL)
@@ -95,7 +95,7 @@ def create_record(name: str, data: dict) -> dict:
     Returns:
         The created record including its generated ID.
     """
-    # TODO: implement actual record creation using DATABASE_URL
+    # INSTRUCTION: implement actual record creation using DATABASE_URL
     # Example with psycopg2:
     # import psycopg2
     # import json
@@ -119,7 +119,7 @@ def create_record(name: str, data: dict) -> dict:
 # Resources — read-only data endpoints (no side effects)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@mcp.resource("data://[app_name]/config")
+@mcp.resource("data://your-app-name/config")
 def get_config() -> dict:
     """Return the public configuration of this [APP_NAME] instance.
     
@@ -133,7 +133,7 @@ def get_config() -> dict:
     }
 
 
-@mcp.resource("data://[app_name]/schema")
+@mcp.resource("data://your-app-name/schema")
 def get_schema() -> dict:
     """Return the data schema for [APP_NAME].
     

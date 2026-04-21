@@ -152,8 +152,12 @@ If the orchestrator cannot complete a routed item:
 
 ## See also
 
+- GitButler config: [`.gitbutler/config.json`](../.gitbutler/config.json) — shared
+  base-branch / remote defaults to speed small, stack-friendly commits before
+  OpenRouter routing; local GitButler state is ignored via [`.gitignore`](../.gitignore).
 - [`OPENROUTER_INSTANTIATION_CHECK.md`](./OPENROUTER_INSTANTIATION_CHECK.md) — automated daily probe that verifies `OPENROUTER_API_KEY` actually works, with a 👍 / ❌ signal, lifecycle labels (`openrouter:instantiating` / `instantiated` / `instantiation-failed` / `needs-key`), and a Ralph escalation after 24h.
 - [`GRAPHITE_INTEGRATION.md`](./GRAPHITE_INTEGRATION.md) — how the Graphite PR-stacking app augments the first-line-of-sight comment with stack metadata so the OpenRouter orchestrator receives stack-aware context instead of single-PR context.
+- [`GITKRAKEN_INTEGRATION.md`](./GITKRAKEN_INTEGRATION.md) — opt-in contributor GUI (Client + `gk` CLI + GitLens) whose Launchpad passively surfaces the `openrouter`, `role:orchestrator`, `graphite`, and `graphite:stacked` labels in a unified multi-repo view; read-side only, no write access to `main`.
 - [`PROOF_OF_LIFE_PROCESS.md`](./PROOF_OF_LIFE_PROCESS.md) — manually-triggered proof-of-life for the app-review `revvel-standards-run` pipeline, with operator choice of role (orchestrator / fixer) and assignee (openrouter / Copilot / codex).
 - `skills/openrouter-swarms/SKILL.md` — OpenRouter routing, model selection, agent registry.
 - `skills/ralph-loop/SKILL.md` — the Ralph self-healing pattern.
