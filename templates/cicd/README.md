@@ -28,6 +28,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `ai-pr-review-openrouter.yml` | Per-PR diff analysis posted as a sticky comment ([`maxlim0/AI-PR-Reviewer`](https://github.com/maxlim0/AI-PR-Reviewer)) | `.github/workflows/ai-pr-review-openrouter.yml` |
 | `ai-readme-translator.yml` | GitPolyglot — translates `README.md` → `README.<lang>.md` via OpenRouter ([`aboutexo04/git-polyglot`](https://github.com/aboutexo04/git-polyglot)) | `.github/workflows/ai-readme-translator.yml` |
 | `ai-ci-failure-helper.yml` | Post-failure AI root-cause analysis in a PR comment ([`maxlim0/actions-progci-fail`](https://github.com/maxlim0/actions-progci-fail)) | `.github/workflows/ai-ci-failure-helper.yml` |
+| `circleci-openrouter.yml` | CircleCI equivalent of AI CI failure analysis (calls OpenRouter directly on CircleCI `when: on_fail`) | `.circleci/config.yml` |
 | `ai-code-reviewer-pro.yml` | Inline AI review comments on changed lines + summary ([`VIVAAN-DHAWAN/ai-code-reviewer`](https://github.com/VIVAAN-DHAWAN/ai-code-reviewer)) | `.github/workflows/ai-code-reviewer-pro.yml` |
 | `android-resource-translator.yml` | Android `strings.xml` missing-translation → auto-PR ([`duartebarbosadev/AndroidResourceTranslator`](https://github.com/duartebarbosadev/AndroidResourceTranslator)) | `.github/workflows/android-resource-translator.yml` |
 | `mcp-server-evals.yml` | LLM-as-judge evaluations against an MCP server ([`mcp-use/eval-action`](https://github.com/mcp-use/eval-action)) | `.github/workflows/mcp-server-evals.yml` |
