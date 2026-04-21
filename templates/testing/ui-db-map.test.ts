@@ -42,7 +42,7 @@ vi.mock('@/db', () => ({
 
 const MOCK_TABLE_NAME_ROW = {
   id: 1,
-  // Replace with your actual field names and types
+  // INSTRUCTION: Replace with your actual field names and types
   '[FIELD_NAME_1]': '[mock value]',
   '[FIELD_NAME_2]': 42,
   '[FIELD_NAME_3]': true,
@@ -52,7 +52,7 @@ const MOCK_TABLE_NAME_ROW = {
 
 describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
   beforeAll(async () => {
-    // TODO: Set up test environment (e.g., mock auth context)
+    // INSTRUCTION: Set up test environment (e.g., mock auth context)
     // vi.mock('@/auth', () => ({
     //   auth: vi.fn().mockResolvedValue({ userId: 'test-user-1' }),
     // }));
@@ -60,7 +60,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
   });
 
   afterAll(async () => {
-    // TODO: Clean up
+    // INSTRUCTION: Clean up
     // vi.restoreAllMocks();
     // vi.unstubAllEnvs();
   });
@@ -91,7 +91,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
       expect(row).toHaveProperty('id');
       expect(typeof row.id).toBe('number');
 
-      // TODO: Add assertions for each field your UI components use
+      // INSTRUCTION: Add assertions for each field your UI components use
       expect(row).toHaveProperty('[FIELD_NAME_1]');
       expect(typeof row['[FIELD_NAME_1]']).toBe('string');
 
@@ -109,7 +109,7 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
     });
 
     it('should return an empty array when no records exist', async () => {
-      // TODO: Replace with your actual mock setup and caller
+      // INSTRUCTION: Replace with your actual mock setup and caller
       // const { db } = await import('@/db');
       // vi.mocked(db.query.[TABLE_NAME].findMany).mockResolvedValue([]);
 

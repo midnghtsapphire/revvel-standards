@@ -8,7 +8,7 @@ dependencies = [
 ]
 
 [project.scripts]
-[app_name]-mcp = "mcp_server.server:mcp.run"
+"[app_name]-mcp" = "mcp_server.server:mcp.run"
 
 [build-system]
 requires = ["hatchling"]

@@ -52,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Append-only** — no existing files deleted or renamed. The existing
   `TEST_HARNESS_RESEARCH.md` v1.0.0 is left intact; Graphite is added as
   an extension (PR-9..PR-13) rather than an edit to that versioned doc.
+- Repository automation no longer relies on the paid GitHub Copilot Coding
+  Agent for issue/PR routing; OpenRouter API calls are now the routing path.
 
 ## [Unreleased] - 2026-04-15
 
