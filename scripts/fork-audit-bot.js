@@ -279,16 +279,15 @@ async function createMirrorIssue(token, selfRepo, { title, body, labels }) {
     return { dry_run: true, title };
   }
   const [owner, repo] = selfRepo.split('/');
+  // Routing is handled by .github/workflows/openrouter-triage.yml via direct
+  // OpenRouter API calls (see docs/OPENROUTER_TRIAGE_PROCESS.md). We do not
+  // set @Copilot / copilot-swe-agent as an assignee anywhere in this repo.
   return ghFetch(token, `/repos/${owner}/${repo}/issues`, {
     method: 'POST',
     body: JSON.stringify({
       title,
       body,
       labels,
-      // Assign @Copilot so openrouter-assignee.yml's idempotency check
-      // (skip-if-assigned) doesn't short-circuit routing. The
-      // hourly cron sweep will still reconcile if this fails.
-      assignees: ['Copilot'],
     }),
   });
 }

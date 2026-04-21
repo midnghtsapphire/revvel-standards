@@ -349,7 +349,11 @@ async function main() {
   console.log(`   ${document.length.toLocaleString()} characters`);
 }
 
+if (require.main === module) {
 main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });
+}
+
+if (typeof module !== "undefined" && module.exports) { module.exports = { main, callOpenRouter }; }
