@@ -142,17 +142,21 @@ def test_scan_tickers_threshold(mock_scan_ticker):
             sig.sentiment_score = 0.60
         elif ticker == "TICK3":
             sig.sentiment_score = 0.40
+        elif ticker == "TICK4":
+            sig.sentiment_score = 0.50
         return sig
 
     mock_scan_ticker.side_effect = side_effect
 
-    results = scan_tickers(["TICK1", "TICK2", "TICK3"], threshold=0.50)
+    results = scan_tickers(["TICK1", "TICK2", "TICK3", "TICK4"], threshold=0.50)
 
-    # Assert only >0.50 are returned
-    assert len(results) == 2
+    # Assert only >=0.50 are returned
+    assert len(results) == 3
 
     # Assert they are sorted descending
     assert results[0].ticker == "TICK1"
     assert results[0].sentiment_score == 0.80
     assert results[1].ticker == "TICK2"
     assert results[1].sentiment_score == 0.60
+    assert results[2].ticker == "TICK4"
+    assert results[2].sentiment_score == 0.50
