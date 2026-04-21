@@ -26,6 +26,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Ensure pnpm is available
+          command: |
+            corepack enable
+            corepack prepare pnpm@latest --activate
+      - run:
           name: Install dependencies
           command: pnpm install --frozen-lockfile
       - run:
@@ -47,6 +52,8 @@ jobs:
             python3 - <<'PY'
             import json
             import os
+            import socket
+            import urllib.error
             import urllib.request
 
             log_tail = os.environ.get("LOG_TAIL", "No CI log captured.")
@@ -85,10 +92,24 @@ jobs:
             )
 
             try:
-                with urllib.request.urlopen(req, timeout=30) as res:
+                # Keep timeout short so CI failure feedback stays fast during
+                # OpenRouter network incidents.
+                with urllib.request.urlopen(req, timeout=20) as res:
                     body = json.loads(res.read().decode("utf-8"))
+            except urllib.error.HTTPError as err:
+                detail = err.read().decode("utf-8", "replace")
+                print(f"OpenRouter HTTP error {err.code}: {detail}")
+                raise SystemExit(0)
+            except urllib.error.URLError as err:
+                reason = getattr(err, "reason", None)
+                is_timeout = isinstance(reason, socket.timeout)
+                if is_timeout:
+                    print("OpenRouter request timed out.")
+                else:
+                    print(f"OpenRouter URL/network error: {err}")
+                raise SystemExit(0)
             except Exception as err:
-                print(f"OpenRouter request failed: {err}")
+                print(f"OpenRouter request failed (network/runtime): {err}")
                 raise SystemExit(0)
 
             choices = body.get("choices") or []
