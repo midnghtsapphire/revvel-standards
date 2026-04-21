@@ -182,6 +182,17 @@ def test_optimal_interval():
     # Invalid request (negative APY)
     res = client.get("/optimal-interval?position_usd=10000&apy=-5&gas_cost_usd=1.0")
     assert res.status_code == 400
+    assert res.json()["detail"] == "position_usd and apy must be > 0"
+
+    # Invalid request (zero position)
+    res = client.get("/optimal-interval?position_usd=0&apy=10&gas_cost_usd=1.0")
+    assert res.status_code == 400
+    assert res.json()["detail"] == "position_usd and apy must be > 0"
+
+    # Invalid request (negative position)
+    res = client.get("/optimal-interval?position_usd=-1000&apy=10&gas_cost_usd=1.0")
+    assert res.status_code == 400
+    assert res.json()["detail"] == "position_usd and apy must be > 0"
 
 def test_audit_verify_empty():
     # Without any logs

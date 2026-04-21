@@ -73,6 +73,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+
           git config user.name "revvel-automation[bot]"
           git config user.email "revvel-automation[bot]@users.noreply.github.com"
 
@@ -80,8 +82,41 @@ jobs:
 
           if git diff --staged --quiet; then
             echo "✅ Flow charts already up-to-date — nothing to commit."
-          else
-            git commit -m "chore: auto-sync flow charts [skip ci]"
-            git push
-            echo "✅ Flow charts updated and pushed."
+            exit 0
           fi
+
+          git commit -m "chore: auto-sync flow charts [skip ci]"
+
+          # Another commit may have landed on main while this workflow was
+          # running. Rebase onto the latest remote and retry the push so the
+          # auto-sync commit is never rejected as non-fast-forward, which
+          # previously caused changes to silently pile up behind main.
+          # GITHUB_REF_NAME is always set by Actions; fail fast if not to
+          # avoid silently pushing to the wrong branch.
+          branch="${GITHUB_REF_NAME:?GITHUB_REF_NAME is not set}"
+          attempts=5
+          for i in $(seq 1 "$attempts"); do
+            git fetch origin "$branch"
+            # Rebase our single auto-sync commit onto the latest remote tip.
+            if ! git rebase "origin/$branch"; then
+              echo "❌ Rebase onto origin/$branch failed (attempt $i/$attempts); aborting rebase."
+              git rebase --abort || true
+              if [ "$i" -eq "$attempts" ]; then
+                echo "❌ Giving up after $attempts attempts."
+                exit 1
+              fi
+              sleep $((i * 2))
+              continue
+            fi
+
+            if git push origin "HEAD:$branch"; then
+              echo "✅ Flow charts updated and pushed (attempt $i/$attempts)."
+              exit 0
+            fi
+
+            echo "⚠️  Push rejected (attempt $i/$attempts); remote moved — retrying after rebase."
+            sleep $((i * 2))
+          done
+
+          echo "❌ Failed to push flow-chart auto-sync after $attempts attempts."
+          exit 1

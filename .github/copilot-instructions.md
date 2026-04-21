@@ -2,6 +2,10 @@
 
 Full agent rules live in [`docs/AGENTS.md`](../docs/AGENTS.md). Read that file first.
 
+## Automation Routing Policy (OpenRouter)
+
+Automation in this repository is routed through OpenRouter via `OPENROUTER_API_KEY`, not through the paid GitHub Copilot Coding Agent. Do not add `@Copilot` or `copilot-swe-agent` as an assignee in any workflow.
+
 ## Default Issue Repository
 
 **The default issue repository for this workspace is `midnghtsapphire/revvel-standards`.**

@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for public repos at $0.
 - `.github/labels.yml` — two new canonical labels (`graphite`,
   `graphite:stacked`) added to the repository label definition set.
+- `scripts/openrouter-triage.js` — direct OpenRouter triage client using
+  built-in Node `https` only; posts model triage output as an issue/PR comment.
+- `docs/ISSUE_AUTOMATION_FLOW.md` — end-to-end issue→PR→CI→merge flow with
+  RFC-2119 requirements and Mermaid diagram.
+- `docs/OPENROUTER_TRIAGE_PROCESS.md` — primary process doc for direct
+  OpenRouter routing via `OPENROUTER_API_KEY`.
 
 ### Changed
 - `.gitignore` — now ignores local GitButler state while still committing
@@ -31,11 +37,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integration doc.
 - `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
   `GRAPHITE_INTEGRATION.md` in the "See also" section (append-only).
+- `.github/workflows/openrouter-assignee.yml` renamed/replaced by
+  `.github/workflows/openrouter-triage.yml`; automation now applies labels and
+  calls OpenRouter directly, without assigning `@Copilot`.
+
+### Removed
+- `.github/workflows/issue-automation.yml` — removed broken workflow that used
+  `Dtar380/AutomaticIssue@<FULL_40_CHARACTER_COMMIT_SHA_FOR_V2_0_0>`.
 
 ### Policy
 - **Append-only** — no existing files deleted or renamed. The existing
   `TEST_HARNESS_RESEARCH.md` v1.0.0 is left intact; Graphite is added as
   an extension (PR-9..PR-13) rather than an edit to that versioned doc.
+- Repository automation no longer relies on the paid GitHub Copilot Coding
+  Agent for issue/PR routing; OpenRouter API calls are now the routing path.
 
 ## [Unreleased] - 2026-04-15
 
