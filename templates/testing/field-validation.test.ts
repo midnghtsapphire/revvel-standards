@@ -4,18 +4,20 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { z } from 'zod';
 
-// TODO: Replace with your actual imports
+// Replace with your actual imports
 // import { db } from '@/db';
 // import { [TABLE_NAME] } from '@/db/schema';
 // import { setupTestDb, teardownTestDb } from '@/tests/helpers/db';
 
 describe('[TABLE_NAME] field validation', () => {
   beforeAll(async () => {
-    // TODO: await setupTestDb();
+    // Replace with your DB setup logic
+    // await setupTestDb();
   });
 
   afterAll(async () => {
-    // TODO: await teardownTestDb();
+    // Replace with your DB teardown logic
+    // await teardownTestDb();
   });
 
   // -------------------------------------------------------------------------
@@ -24,7 +26,7 @@ describe('[TABLE_NAME] field validation', () => {
 
   describe('required fields', () => {
     it('should reject insert when [FIELD_NAME] is null', async () => {
-      // TODO: Replace with your actual DB insert + Drizzle schema
+      // Replace with your actual DB insert + Drizzle schema
       // await expect(
       //   db.insert([TABLE_NAME]).values({ [FIELD_NAME]: null, ...otherRequiredFields })
       // ).rejects.toThrow();
@@ -32,7 +34,7 @@ describe('[TABLE_NAME] field validation', () => {
     });
 
     it('should reject insert when [FIELD_NAME] is an empty string', async () => {
-      // TODO: Replace with your actual validation logic
+      // Replace with your actual validation logic
       const schema = z.string().min(1);
       expect(schema.safeParse('').success).toBe(false);
     });
