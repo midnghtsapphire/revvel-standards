@@ -25,8 +25,13 @@ def extract_json_payload(text: str) -> dict[str, Any]:
     if not text:
         raise ValueError("OpenRouter returned empty content.")
 
-    fenced = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.DOTALL)
-    candidate = fenced.group(1) if fenced else text
+    for match in re.finditer(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text):
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+
+    candidate = text
 
     try:
         return json.loads(candidate)
@@ -76,7 +81,11 @@ def comment_issue(repo: str, issue_number: str, github_token: str, body: str) ->
         "User-Agent": "openrouter-coder-workflow",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    requests.post(url, headers=headers, json={"body": body}, timeout=30)
+    try:
+        response = requests.post(url, headers=headers, json={"body": body}, timeout=30)
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"Warning: failed to post issue comment: {exc}", file=sys.stderr)
 
 
 def build_system_prompt() -> str:
@@ -160,7 +169,7 @@ def main() -> int:
         Path(args.output_path).write_text(json.dumps(output_payload), encoding="utf-8")
         print(json.dumps(output_payload))
         return 0
-    except Exception as exc:  # noqa: BLE001
+    except (RuntimeError, ValueError, requests.RequestException, json.JSONDecodeError, OSError) as exc:
         message = (
             f"❌ OpenRouter coder failed for issue #{issue_number}.\n\n"
             f"Error: `{exc}`\n\n"
