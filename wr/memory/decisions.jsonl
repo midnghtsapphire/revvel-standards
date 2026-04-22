@@ -1,0 +1,10 @@
+{"ts":"2026-04-21","topic":"org-target","decision":"Freedom-Angel-Corp (no S, hyphenated slug) is the permanent GitHub org for business IP","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"canonical-name","decision":"Freedom Angel Corp (no S) is canonical legal + brand name","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"urgent-compliance","decision":"Renew CAGE 8ZRW3 by 2026-05-05 and CAGE 90SN0 by 2026-05-14","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"nonprofit-sequencing","decision":"Freedom Angel Foundation deferred until for-profit ≥$3K/mo","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"quiet-mode","decision":"Scaffold ships Quiet Mode ON — nothing runs until exit-quiet-mode issue opened","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"ai-hierarchy","decision":"Layer 0 local, Layer 1 OpenRouter, Layer 2 direct APIs, Layer 3 Copilot escalation only","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"copilot-usage","decision":"Copilot is escalation-only going forward, not daily driver","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"pr-cadence","decision":"Many small merged PRs over large unmerged ones","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"irs-backfiling","decision":"Call IRS 1-800-829-4933 to verify fax-filed returns for EIN 86-1209156","locked_by":"audrey"}
+{"ts":"2026-04-21","topic":"domain-plan","decision":"Acquire freedomangelcorp.com/.org/.co at normal pricing; freedomangelcorps.com redirects; no squatter premium","locked_by":"audrey"}

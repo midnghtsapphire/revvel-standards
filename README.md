@@ -1105,3 +1105,33 @@ Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 
 
 ---
 **END OF DOCUMENT**
+
+---
+
+## WR Framework
+
+This repository is now the **durable operational memory** for Audrey Evans / Freedom Angel Corp / Revvel.
+
+### Current State: QUIET MODE
+No automation runs. PR #2 will add optional cron — and even then nothing fires until an issue titled `exit-quiet-mode` is opened.
+
+### Cold-start reading order
+1. `wr/NORTH_STAR.md`
+2. `docs/BRAND_ARCHITECTURE.md`
+3. `projects/_self/GRANTS_AND_COMPLIANCE.md`
+4. `projects/_self/TAX_STRATEGY.md`
+5. `projects/_self/NONPROFIT_ROADMAP.md`
+6. `projects/_self/HUMAN_SUPPORT.md`
+7. `inventory/federal-and-state-records.md`
+8. `inventory/github-orgs.md`
+9. `inventory/ideas-found.md`
+10. `docs/STACK.md`
+11. `docs/MIGRATION_PLAN.md`
+12. `wr/memory/decisions.jsonl`
+
+### Compliance clock
+- 🔴 2026-05-05 — CAGE 8ZRW3 (XI Website Solutions LLC) renewal
+- 🔴 2026-05-14 — CAGE 90SN0 (Freedom Angel Corp) renewal
+- 🟡 IRS transcript call this quarter
+
+All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
