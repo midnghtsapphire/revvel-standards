@@ -1135,3 +1135,7 @@ No automation runs. PR #2 will add optional cron — and even then nothing fires
 - 🟡 IRS transcript call this quarter
 
 All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
+
+### OpenRouter Coding Agent
+
+Label any issue `wr:code` and OpenRouter writes the code. See [`docs/OPENROUTER_AGENT.md`](docs/OPENROUTER_AGENT.md).
