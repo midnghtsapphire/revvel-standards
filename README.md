@@ -1135,3 +1135,9 @@ No automation runs. PR #2 will add optional cron — and even then nothing fires
 - 🟡 IRS transcript call this quarter
 
 All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
+
+### Active Watchers
+- ✅ Always active: `compliance-watcher` (urgent compliance deadlines, including CAGE renewals)
+- ✅ Always active: `durability-mirror` (weekly durability backup)
+- 💤 Quiet Mode gated: `triage-cron` (wakes only when `exit-quiet-mode` is open)
+- 💤 Quiet Mode gated: `migration-cron` (wakes only when `exit-quiet-mode` is open)

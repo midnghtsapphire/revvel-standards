@@ -1,0 +1,34 @@
+name: triage-cron
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Quiet Mode gate
+        id: quiet
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+            const active = issues.some(i => i.title.trim().toLowerCase() === 'exit-quiet-mode');
+            core.setOutput('active', active ? 'true' : 'false');
+
+      - name: Quiet Mode active; skipping
+        if: steps.quiet.outputs.active != 'true'
+        run: echo "Quiet Mode active; skipping"
+
+      - name: Placeholder triage action
+        if: steps.quiet.outputs.active == 'true'
+        run: |
+          echo "Quiet Mode exit signal detected."
+          echo "TODO: Integrate OpenRouter triage agent; write one proposal/day to DECISIONS-TODAY.md."

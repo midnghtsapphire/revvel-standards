@@ -1,0 +1,61 @@
+name: durability-mirror
+
+on:
+  schedule:
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build repository archive
+        run: |
+          ts="$(date -u +%Y%m%dT%H%M%SZ)"
+          tar -czf "revvel-standards-${ts}.tar.gz" .
+          sha256sum "revvel-standards-${ts}.tar.gz" > mirror-checksum.txt
+          ls -lah "revvel-standards-${ts}.tar.gz" mirror-checksum.txt
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: durability-mirror
+          path: |
+            revvel-standards-*.tar.gz
+            mirror-checksum.txt
+          retention-days: 90
+
+      - name: Optional gist mirror
+        if: ${{ secrets.MIRROR_GIST_TOKEN != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.MIRROR_GIST_TOKEN }}
+          MIRROR_GIST_ID: ${{ secrets.MIRROR_GIST_ID }}
+        run: |
+          if [ -z "$MIRROR_GIST_ID" ]; then
+            echo "MIRROR_GIST_ID missing; skipping gist sync"
+            exit 0
+          fi
+          stamp="$(date -u +%F)"
+          summary="Durability mirror created ${stamp} UTC"
+          checksum="$(cat mirror-checksum.txt)"
+          gh api --method PATCH "/gists/${MIRROR_GIST_ID}" \
+            -f "description=Revvel durability mirror ${stamp}" \
+            -f "files[mirror-status.md][content]=${summary}\n\n${checksum}"
+
+      - name: Optional S3 upload
+        if: ${{ secrets.S3_BUCKET != '' }}
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          if ! command -v aws >/dev/null 2>&1; then
+            echo "aws CLI not available; skipping S3 upload"
+            exit 0
+          fi
+          file="$(ls revvel-standards-*.tar.gz | head -n1)"
+          aws s3 cp "$file" "s3://${S3_BUCKET}/${file}"
