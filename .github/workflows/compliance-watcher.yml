@@ -1,0 +1,89 @@
+name: compliance-watcher
+
+on:
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Evaluate deadlines and alert
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const assignee = 'midnghtsapphire';
+            const thresholds = new Set([60, 30, 14, 7, 3, 1]);
+            const today = new Date();
+            const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+            const MS_DAY = 24 * 60 * 60 * 1000;
+
+            const md = fs.readFileSync('wr/cron/COMPLIANCE_WATCHER.md', 'utf8');
+            const dated = [];
+            const lineRe = /^- \[(ACTIVE|PENDING|DEFERRED|ANNUAL)\] (.+?) — (\d{4}-\d{2}-\d{2})/gm;
+            for (const m of md.matchAll(lineRe)) {
+              dated.push({ name: m[2], due: m[3] });
+            }
+
+            const y = today.getUTCFullYear();
+            const annual = [
+              ['Tax calendar — quarterly estimates (Q4 prior year)', `${y}-01-15`],
+              ['Tax calendar — 1099 issuance', `${y}-01-31`],
+              ['Tax calendar — S-corp/partnership filings', `${y}-03-15`],
+              ['Tax calendar — individual/corporate filings', `${y}-04-15`],
+              ['Tax calendar — quarterly estimates (Q1)', `${y}-04-15`],
+              ['Tax calendar — quarterly estimates (Q2)', `${y}-06-15`],
+              ['Tax calendar — quarterly estimates (Q3)', `${y}-09-15`],
+              ['Tax calendar — Form 990-N checkpoint', `${y}-05-15`],
+              ['Tax calendar — extension checkpoint', `${y}-09-15`],
+              ['Tax calendar — final extension checkpoint', `${y}-10-15`]
+            ];
+            annual.forEach(([name, due]) => dated.push({ name, due }));
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: 'urgent-compliance' });
+            } catch (error) {
+              if (error.status === 404) {
+                await github.rest.issues.createLabel({ owner, repo, name: 'urgent-compliance', color: 'B60205', description: 'Urgent compliance deadline' });
+              } else {
+                throw error;
+              }
+            }
+
+            for (const item of dated) {
+              const dueUtc = Date.parse(`${item.due}T00:00:00Z`);
+              const days = Math.ceil((dueUtc - now) / MS_DAY);
+              if (!(thresholds.has(days) || days <= 0)) continue;
+
+              const title = `[COMPLIANCE] ${item.name} due ${item.due} (${days}d)`;
+              const { data: openIssues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+              if (openIssues.some(i => i.title === title)) {
+                core.info(`Existing issue found: ${title}`);
+                continue;
+              }
+
+              const body = [
+                `Automated compliance watcher alert.`,
+                ``,
+                `- Item: ${item.name}`,
+                `- Due date: ${item.due}`,
+                `- Days remaining: ${days}`,
+                `- Thresholds: 60/30/14/7/3/1`,
+                ``,
+                `Please resolve and apply \\`paperwork:compliance-handled\\` when complete.`
+              ].join('\n');
+
+              await github.rest.issues.create({ owner, repo, title, body, labels: ['urgent-compliance'], assignees: [assignee] });
+              core.info(`Opened issue: ${title}`);
+            }
