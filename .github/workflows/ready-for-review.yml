@@ -8,8 +8,11 @@
 #      for Review, any issues referenced with "Closes #N / Fixes #N / Resolves #N"
 #      in the PR title or body are labeled `in-review` so the project board
 #      moves them to the In Review column automatically.
-#   3. CHECKLIST COMMENT: A review-readiness checklist comment is posted to the PR
-#      when it first becomes ready for review.
+#   3. CHECKLIST COMMENT + AI REVIEWER HANDOFF: A review-readiness checklist
+#      comment is posted to the PR when it first becomes ready for review. The
+#      comment @-mentions the AI reviewer fleet (CodeRabbit, Copilot, Roo,
+#      Antigravity, …) and assigns each checklist section to a specific bot so
+#      the bots "take over" verification instead of the checklist sitting idle.
 #   4. CLEANUP: When a PR is merged or closed, the `in-review` label is removed
 #      from all linked issues (GitHub closes them automatically on merge).
 
@@ -233,11 +236,36 @@ jobs:
               : '';
 
             const body = [
-              '## 🟡 Ready for Review',
+              '## 🟡 Ready for Review — AI Reviewer Handoff',
               '',
-              'This PR is now open for review. Please verify the following before approving:',
+              'This PR is now open for review. The AI reviewer fleet is taking over the checklist below.',
+              'Human approval is still required at the end, but each bot should work its assigned section first.',
               '',
-              '### Code Quality',
+              '### 🤖 Reviewer roster (invoked automatically)',
+              '',
+              '| Bot | Trigger | Owns |',
+              '| --- | --- | --- |',
+              '| **CodeRabbit** | `@coderabbitai review` | Line-by-line diff review, style, anti-patterns |',
+              '| **Jules** | `jules-pr-reviewer.yml` (auto on PR) | Blocking-severity verdict on `jules/review` status |',
+              '| **PandaOps** | `panda-ops.yml` (auto on PR) | Full-diff AI reasoning, inline feedback |',
+              '| **OpenRouter** | `ai-pr-review-openrouter.yml` (auto on PR) | Diff summary via OpenRouter model |',
+              '| **Copilot** | `@copilot` mention below | Code Quality checklist section |',
+              '| **Roo** | `@roo` mention below | Testing checklist section |',
+              '| **Antigravity** | `@antigravity` mention below | Standards checklist section |',
+              '',
+              '_Any additional reviewer apps onboarded later should be added to the table above and assigned a section._',
+              '',
+              '### Invocation commands',
+              '',
+              '@coderabbitai review',
+              '',
+              '@copilot — please verify the **Code Quality** section below.',
+              '@roo — please verify the **Testing** section below.',
+              '@antigravity — please verify the **Standards** section below.',
+              '',
+              'Each bot: tick the boxes you have verified, and leave a comment explaining anything you cannot confirm.',
+              '',
+              '### Code Quality  _(owner: @copilot)_',
               '- [ ] No hardcoded secrets or credentials',
               '- [ ] All new API routes have input validation (Zod or equivalent)',
               '- [ ] All new API routes have auth / authorisation checks',
@@ -245,12 +273,12 @@ jobs:
               '- [ ] No `console.log` leaking sensitive data',
               '- [ ] No `eval()`, `Function()`, or dynamic `require()`',
               '',
-              '### Testing',
+              '### Testing  _(owner: @roo)_',
               '- [ ] Tests written for new functionality',
               '- [ ] Coverage thresholds maintained (80% statements/functions/lines, 75% branches)',
               '- [ ] All CI checks passing',
               '',
-              '### Standards',
+              '### Standards  _(owner: @antigravity)_',
               '- [ ] Follows `MASTER_APP_TEMPLATE.md` conventions',
               '- [ ] Coderabbit comments addressed',
               '- [ ] PR description references the linked issue(s) with `Closes #N`',
@@ -258,6 +286,7 @@ jobs:
               '',
               '---',
               '_This comment was posted automatically by the Ready for Review Automation workflow._',
+              '_Reviewer bots that are not yet installed in this repo will silently no-op; add them via their GitHub App / Action when available._',
             ].join('\n');
 
             await github.rest.issues.createComment({
