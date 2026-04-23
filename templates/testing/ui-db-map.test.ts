@@ -61,8 +61,8 @@ describe('[ROUTER_NAME] router — UI/DB shape validation', () => {
 
   afterAll(async () => {
     // INSTRUCTION: Clean up
-    // vi.restoreAllMocks();
-    // vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   // -------------------------------------------------------------------------
