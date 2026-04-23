@@ -35,3 +35,9 @@ The Play Store and App Store paths are documented in `MOBILE_DEPLOYMENT.md` and 
 - [ ] Fill in `fastlane/Appfile` with real app identifiers
 - [ ] Activate `deploy-android.yml` by replacing TODO steps
 - [ ] Activate `deploy-ios.yml` by replacing TODO steps
+
+---
+
+## Related Evaluations
+
+- [`../../docs/CI_APPS_MOBILE_EVAL_2026-04-23.md`](../../docs/CI_APPS_MOBILE_EVAL_2026-04-23.md) — Review of 20 GitHub Marketplace CI/CD apps (Codemagic, Bitrise, Appcircle, etc.) scored specifically for Play Store + App Store automation on top of this scaffold.
