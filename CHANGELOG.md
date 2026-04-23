@@ -48,6 +48,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   review.
 - `.github/labels.yml` — two new canonical labels (`antigravity`,
   `antigravity:agent-run`) added to the repository label definition set.
+- `docs/AUTOMATION_EXTENSIONS_INTEGRATION.md` — integration doc wiring in
+  the **automation extensions** lane (`automation-app-bot` Probot GitHub
+  App + Make.com SaaS scenarios + self-hosted n8n workflows) downstream
+  of the OpenRouter hand-off. Turns the Make.com + n8n references
+  already in the Marketing Automation Standard §5.4 into a live,
+  labelled, BOM-tracked lane. All three tools are **not** granted write
+  access to `main`; credentials flow through `skills/vault-agent`, and
+  the upstream `automation-app-bot` fork is gated by
+  `skills/fork-audit-bot`. Free tier / $0 for this repo. Includes
+  RFC-2119 requirements (R-AX-01..R-AX-G-03) and a 4-step rollout plan
+  (PR-1..PR-4).
+- `.github/labels.yml` — four new canonical labels (`automation-ext`,
+  `automation-ext:probot`, `automation-ext:make`, `automation-ext:n8n`)
+  added to the repository label definition set.
 
 ### Changed
 - `.gitignore` — now ignores local GitButler state while still committing
@@ -61,6 +75,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GITKRAKEN_INTEGRATION.md` in the "See also" section (append-only).
 - `docs/revvel-standards/BOM.md` — appended a GitKraken row to
   "Purchase Needed" at P2 / $0 / 🟡 Planned, linking to the new
+  integration doc.
+- `docs/OPENROUTER_ASSIGNEE_PROCESS.md` — appended a cross-reference to
+  `AUTOMATION_EXTENSIONS_INTEGRATION.md` in the "See also" section
+  (append-only).
+- `docs/revvel-standards/BOM.md` — appended an Automation Extensions
+  row to "Purchase Needed" at P2 / $0 / 🟡 Planned, linking to the new
   integration doc.
 
 ### Policy

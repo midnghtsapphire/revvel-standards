@@ -211,6 +211,24 @@ labels:
     color: "5a9bf0"
     description: "PR carries Antigravity agent artifacts (screenshots / recordings)"
 
+  # ── Automation Extensions (automation-app-bot / Make.com / n8n) ────────────
+  # See docs/AUTOMATION_EXTENSIONS_INTEGRATION.md for rationale and rollout.
+  - name: automation-ext
+    color: "0e8a16"
+    description: "Actioned by the automation-extensions lane"
+
+  - name: "automation-ext:probot"
+    color: "4cb854"
+    description: "Handled by automation-app-bot (Probot GitHub App)"
+
+  - name: "automation-ext:make"
+    color: "6f4ef2"
+    description: "Handled by a Make.com scenario"
+
+  - name: "automation-ext:n8n"
+    color: "ea4b71"
+    description: "Handled by a self-hosted n8n workflow"
+
   # ── Fork-Audit Bot (cron-driven upstream eval) ──────────────────────────────
   - name: fork-audit
     color: "bfdadc"
