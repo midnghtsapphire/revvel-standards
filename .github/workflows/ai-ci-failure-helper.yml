@@ -62,7 +62,9 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          model: x-ai/grok-4.1-fast:free
+          # NOTE: The `:free` variant was retired by OpenRouter in April 2026
+          # ("The free Grok 4.1 Fast period has ended"). Use the paid slug.
+          model: x-ai/grok-4.1-fast
           max_log_lines: 200
           prompt_template: |
             Workflow {{WORKFLOW_NAME}} failed at job {{JOB_NAME}},

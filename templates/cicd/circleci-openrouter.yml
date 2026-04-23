@@ -22,7 +22,9 @@ jobs:
     docker:
       - image: cimg/node:20.11
     environment:
-      OPENROUTER_MODEL: x-ai/grok-4.1-fast:free
+      # NOTE: The `:free` variant was retired by OpenRouter in April 2026.
+      # Use the paid slug (`x-ai/grok-4.1-fast`) or override via env.
+      OPENROUTER_MODEL: x-ai/grok-4.1-fast
     steps:
       - checkout
       - run:
@@ -60,7 +62,7 @@ jobs:
             import urllib.request
 
             log_tail = os.environ.get("LOG_TAIL", "No CI log captured.")
-            model = os.environ.get("OPENROUTER_MODEL", "x-ai/grok-4.1-fast:free")
+            model = os.environ.get("OPENROUTER_MODEL", "x-ai/grok-4.1-fast")
             api_key = os.environ["OPENROUTER_API_KEY"]
 
             payload = {

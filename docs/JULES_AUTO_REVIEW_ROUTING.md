@@ -34,7 +34,7 @@ following reviewers automatically (all triggered by
 | Workflow | Reviewer | What it does |
 | --- | --- | --- |
 | `.github/workflows/jules-pr-reviewer.yml` | Google Jules | Posts a review comment and a `jules/review` commit status. |
-| `.github/workflows/ai-pr-review-openrouter.yml` | OpenRouter model (`x-ai/grok-4.1-fast:free` by default) | Posts/updates a single summary comment on the diff. |
+| `.github/workflows/ai-pr-review-openrouter.yml` | OpenRouter model (`x-ai/grok-4.1-fast` by default) | Posts/updates a single summary comment on the diff. |
 | `.github/workflows/openrouter-triage.yml` | OpenRouter orchestrator | Applies triage labels and routes for human review. |
 | `.github/workflows/recurse-ml.yml` | Recurse ML | Recursive lint/code-quality feedback. |
 | `.github/workflows/jules-feedback.yml` | Jules (back-channel) | Propagates human PR reviews back to the Jules session. |

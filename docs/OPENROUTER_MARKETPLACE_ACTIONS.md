@@ -126,7 +126,9 @@ and these ten actions. Budget and model-selection guidance lives in
 - **`ai-weekly-changelog.yml`** — default model `openai/gpt-5-mini`,
   once per week. Tiny cost.
 - **`ai-pr-review-openrouter.yml`** — default model
-  `x-ai/grok-4.1-fast:free`. Free tier friendly.
+  `x-ai/grok-4.1-fast`. (The legacy `:free` slug was retired by OpenRouter
+  in April 2026 — "The free Grok 4.1 Fast period has ended" — so the paid
+  slug is now the default.)
 - **`ai-code-reviewer-pro.yml`** — default model
   `google/gemini-2.5-flash` (~$0.001/PR per the action's README).
 - **`ai-ci-failure-helper.yml`** — runs **only on failure**, `max_log_lines: 200`.
