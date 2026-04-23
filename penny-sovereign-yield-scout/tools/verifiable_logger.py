@@ -30,6 +30,7 @@ import hashlib
 import json
 import os
 import sys
+import threading
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -67,6 +68,7 @@ class VerifiableLogger:
         self.log_file = log_file or DEFAULT_LOG_FILE
         if auto_create:
             self.log_file.parent.mkdir(parents=True, exist_ok=True)
+        self._write_lock = threading.Lock()
         self._last_hash: str = self._read_last_hash()
 
     def _read_last_hash(self) -> str:
@@ -128,23 +130,27 @@ class VerifiableLogger:
         """
         Append an audit entry to the chain.
 
+        Thread-safe: concurrent calls are serialized via an internal lock so
+        that hash-chain linkage and file writes remain consistent.
+
         Returns:
             The entry_hash (SHA-256) of the new entry.
         """
-        entry: dict = {
-            "event": event,
-            "data": data,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "prev_hash": self._last_hash,
-        }
-        entry_hash = self._compute_hash(entry)
-        entry["entry_hash"] = entry_hash
+        with self._write_lock:
+            entry: dict = {
+                "event": event,
+                "data": data,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "prev_hash": self._last_hash,
+            }
+            entry_hash = self._compute_hash(entry)
+            entry["entry_hash"] = entry_hash
 
-        with open(self.log_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry, default=str) + "\n")
+            with open(self.log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(entry, default=str) + "\n")
 
-        self._last_hash = entry_hash
-        return entry_hash
+            self._last_hash = entry_hash
+            return entry_hash
 
     def read_entries(self) -> Iterator[dict]:
         """Iterate over all entries in the log file."""
