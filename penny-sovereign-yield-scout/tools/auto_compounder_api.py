@@ -18,19 +18,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import math
 import os
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # ─── App setup ────────────────────────────────────────────────────────────────
 
@@ -56,6 +61,22 @@ DEFILLAMA_BASE = os.getenv("DEFILLAMA_BASE_URL", "https://yields.llama.fi")
 LOG_DIR = Path(os.getenv("VERIFIABLE_LOG_DIR", "./logs"))
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE = LOG_DIR / "compound_audit.jsonl"
+
+# ─── ETH price feed config ────────────────────────────────────────────────────
+# Live ETH price via CoinGecko (free, no API key). Values are cached for
+# ETH_PRICE_CACHE_TTL_SECONDS seconds. If the API is unreachable or returns
+# an unexpected payload, we fall back to ETH_PRICE_FALLBACK_USD so the gas
+# estimator keeps working offline.
+ETH_PRICE_API_URL = os.getenv(
+    "ETH_PRICE_API_URL",
+    "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+)
+ETH_PRICE_FALLBACK_USD = float(os.getenv("ETH_PRICE_FALLBACK_USD", "3500.0"))
+ETH_PRICE_CACHE_TTL_SECONDS = float(os.getenv("ETH_PRICE_CACHE_TTL_SECONDS", "300"))
+ETH_PRICE_HTTP_TIMEOUT_SECONDS = float(os.getenv("ETH_PRICE_HTTP_TIMEOUT_SECONDS", "5"))
+
+# Cache: {"price": float, "fetched_at": float_epoch, "source": str}
+_eth_price_cache: dict = {}
 
 # In-memory position store (replace with DB in production)
 _positions: dict[str, dict] = {}
@@ -112,8 +133,76 @@ class HealthResponse(BaseModel):
 
 # ─── Gas guard ────────────────────────────────────────────────────────────────
 
-def estimate_gas_cost(gas_price_gwei: float, gas_units: int = 200_000, eth_price_usd: float = 3500.0) -> float:
-    """Estimate gas cost in USD for a compound transaction."""
+def fetch_eth_price_usd(force_refresh: bool = False) -> dict:
+    """
+    Return the current ETH/USD price using CoinGecko, with a 5-minute TTL cache
+    and a configurable fallback constant when the API is unreachable.
+
+    Returns a dict: {"price": float, "source": str, "fetched_at": iso_timestamp,
+    "cached": bool}. ``source`` is one of ``"coingecko"``, ``"cache"``,
+    ``"cache-stale"``, or ``"fallback"``.
+    """
+    now = time.time()
+    cached = "price" in _eth_price_cache
+    fresh = cached and (now - _eth_price_cache.get("fetched_at", 0)) < ETH_PRICE_CACHE_TTL_SECONDS
+
+    if fresh and not force_refresh:
+        return {
+            "price": _eth_price_cache["price"],
+            "source": "cache",
+            "fetched_at": datetime.fromtimestamp(
+                _eth_price_cache["fetched_at"], tz=timezone.utc
+            ).isoformat(),
+            "cached": True,
+        }
+
+    try:
+        resp = requests.get(ETH_PRICE_API_URL, timeout=ETH_PRICE_HTTP_TIMEOUT_SECONDS)
+        resp.raise_for_status()
+        payload = resp.json()
+        price = float(payload["ethereum"]["usd"])
+        if price <= 0:
+            raise ValueError(f"Non-positive price returned: {price}")
+        _eth_price_cache.update({"price": price, "fetched_at": now, "source": "coingecko"})
+        return {
+            "price": price,
+            "source": "coingecko",
+            "fetched_at": datetime.fromtimestamp(now, tz=timezone.utc).isoformat(),
+            "cached": False,
+        }
+    except (requests.RequestException, ValueError, KeyError, TypeError) as exc:
+        logger.warning("ETH price fetch failed (%s); using fallback $%.2f", exc, ETH_PRICE_FALLBACK_USD)
+        # Prefer a stale cached value over the static fallback, if one exists.
+        if cached:
+            return {
+                "price": _eth_price_cache["price"],
+                "source": "cache-stale",
+                "fetched_at": datetime.fromtimestamp(
+                    _eth_price_cache["fetched_at"], tz=timezone.utc
+                ).isoformat(),
+                "cached": True,
+            }
+        return {
+            "price": ETH_PRICE_FALLBACK_USD,
+            "source": "fallback",
+            "fetched_at": datetime.fromtimestamp(now, tz=timezone.utc).isoformat(),
+            "cached": False,
+        }
+
+
+def estimate_gas_cost(
+    gas_price_gwei: float,
+    gas_units: int = 200_000,
+    eth_price_usd: Optional[float] = None,
+) -> float:
+    """Estimate gas cost in USD for a compound transaction.
+
+    If ``eth_price_usd`` is not provided, the live CoinGecko price is used
+    (cached for 5 minutes), falling back to ``ETH_PRICE_FALLBACK_USD`` when
+    the API is unreachable.
+    """
+    if eth_price_usd is None:
+        eth_price_usd = fetch_eth_price_usd()["price"]
     gas_eth = gas_price_gwei * gas_units * 1e-9
     return gas_eth * eth_price_usd
 
@@ -179,6 +268,16 @@ def health() -> HealthResponse:
         compounds_executed=len(_compound_history),
         log_file=str(LOG_FILE),
     )
+
+
+@app.get("/eth-price", tags=["System"])
+def eth_price(force_refresh: bool = Query(default=False, description="Bypass the 5-minute cache")) -> dict:
+    """Return the current ETH/USD price used by the gas estimator.
+
+    Uses CoinGecko with a 5-minute TTL cache, falling back to
+    ``ETH_PRICE_FALLBACK_USD`` (default $3500) when the API is unreachable.
+    """
+    return fetch_eth_price_usd(force_refresh=force_refresh)
 
 
 @app.post("/compound", response_model=CompoundResponse, tags=["Compounding"])

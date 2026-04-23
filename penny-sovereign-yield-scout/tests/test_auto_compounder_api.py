@@ -2,6 +2,7 @@ import math
 import os
 import sys
 import json
+import time
 import pytest
 from fastapi.testclient import TestClient
 
@@ -13,6 +14,7 @@ from auto_compounder_api import (
     estimate_gas_cost,
     gas_guard_check,
     estimate_accumulated_yield,
+    fetch_eth_price_usd,
     _positions,
     _compound_history,
     LOG_FILE
@@ -28,6 +30,7 @@ def reset_state():
 
     import auto_compounder_api
     auto_compounder_api._last_hash = "0" * 64
+    auto_compounder_api._eth_price_cache.clear()
 
     # Backup and reset log file
     log_content = None
@@ -240,3 +243,141 @@ def test_audit_verify_with_logs():
     data = res.json()
     assert data["verified"] is False
     assert 1 in data["tampered_at_lines"]
+
+
+# --- ETH price feed tests ---
+
+class _FakeResponse:
+    def __init__(self, payload, status_code=200):
+        self._payload = payload
+        self.status_code = status_code
+
+    def json(self):
+        return self._payload
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            import requests
+            raise requests.HTTPError(f"status {self.status_code}")
+
+
+def test_fetch_eth_price_usd_live(monkeypatch):
+    """A successful CoinGecko response is parsed and cached."""
+    import auto_compounder_api as api
+
+    calls = {"n": 0}
+
+    def fake_get(url, timeout=None):
+        calls["n"] += 1
+        assert "coingecko" in url or url == api.ETH_PRICE_API_URL
+        return _FakeResponse({"ethereum": {"usd": 4242.5}})
+
+    monkeypatch.setattr(api.requests, "get", fake_get)
+
+    first = api.fetch_eth_price_usd()
+    assert first["price"] == 4242.5
+    assert first["source"] == "coingecko"
+    assert first["cached"] is False
+
+    # Second call within TTL must come from cache (no new HTTP call).
+    second = api.fetch_eth_price_usd()
+    assert second["price"] == 4242.5
+    assert second["source"] == "cache"
+    assert second["cached"] is True
+    assert calls["n"] == 1
+
+    # force_refresh bypasses the cache.
+    third = api.fetch_eth_price_usd(force_refresh=True)
+    assert third["source"] == "coingecko"
+    assert calls["n"] == 2
+
+
+def test_fetch_eth_price_usd_fallback_on_error(monkeypatch):
+    """When CoinGecko errors and there is no cache, fall back to the constant."""
+    import requests
+    import auto_compounder_api as api
+
+    def boom(url, timeout=None):
+        raise requests.ConnectionError("offline")
+
+    monkeypatch.setattr(api.requests, "get", boom)
+    monkeypatch.setattr(api, "ETH_PRICE_FALLBACK_USD", 3500.0)
+
+    result = api.fetch_eth_price_usd()
+    assert result["price"] == 3500.0
+    assert result["source"] == "fallback"
+
+
+def test_fetch_eth_price_usd_stale_cache_on_error(monkeypatch):
+    """A stale cache is preferred over the static fallback when the API fails."""
+    import requests
+    import auto_compounder_api as api
+
+    # Seed a stale cache entry.
+    api._eth_price_cache.update({
+        "price": 4000.0,
+        "fetched_at": time.time() - (api.ETH_PRICE_CACHE_TTL_SECONDS + 60),
+        "source": "coingecko",
+    })
+
+    def boom(url, timeout=None):
+        raise requests.Timeout("slow")
+
+    monkeypatch.setattr(api.requests, "get", boom)
+
+    result = api.fetch_eth_price_usd()
+    assert result["price"] == 4000.0
+    assert result["source"] == "cache-stale"
+
+
+def test_fetch_eth_price_usd_bad_payload(monkeypatch):
+    """Malformed payloads trigger the fallback path."""
+    import auto_compounder_api as api
+
+    monkeypatch.setattr(api.requests, "get", lambda url, timeout=None: _FakeResponse({"nope": 1}))
+    monkeypatch.setattr(api, "ETH_PRICE_FALLBACK_USD", 1234.0)
+
+    result = api.fetch_eth_price_usd()
+    assert result["price"] == 1234.0
+    assert result["source"] == "fallback"
+
+
+def test_estimate_gas_cost_uses_live_price(monkeypatch):
+    """estimate_gas_cost() with no explicit price consults fetch_eth_price_usd."""
+    import auto_compounder_api as api
+
+    monkeypatch.setattr(
+        api,
+        "fetch_eth_price_usd",
+        lambda force_refresh=False: {"price": 2000.0, "source": "coingecko", "fetched_at": "now", "cached": False},
+    )
+
+    # 1 gwei * 200_000 units * 1e-9 * 2000 = 0.4
+    assert math.isclose(api.estimate_gas_cost(1.0), 0.4, rel_tol=1e-5)
+
+
+def test_estimate_gas_cost_explicit_price_bypasses_feed(monkeypatch):
+    """Explicit eth_price_usd overrides the live feed (backward-compat)."""
+    import auto_compounder_api as api
+
+    def should_not_call(*a, **kw):
+        raise AssertionError("feed must not be called when price is passed explicitly")
+
+    monkeypatch.setattr(api, "fetch_eth_price_usd", should_not_call)
+    assert math.isclose(estimate_gas_cost(1.0, 200_000, 3500.0), 0.7, rel_tol=1e-5)
+
+
+def test_eth_price_endpoint(monkeypatch):
+    import auto_compounder_api as api
+
+    monkeypatch.setattr(
+        api.requests,
+        "get",
+        lambda url, timeout=None: _FakeResponse({"ethereum": {"usd": 3000.0}}),
+    )
+
+    res = client.get("/eth-price")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["price"] == 3000.0
+    assert data["source"] == "coingecko"
