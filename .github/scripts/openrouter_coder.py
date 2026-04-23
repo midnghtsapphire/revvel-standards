@@ -44,8 +44,12 @@ def extract_json_payload(text: str) -> dict[str, Any]:
 
 
 def validate_rel_path(path_value: str) -> Path:
-    rel_path = Path(path_value)
-    if rel_path.is_absolute() or ".." in rel_path.parts:
+    normalized_path = path_value.strip()
+    if not normalized_path:
+        raise ValueError("File path must not be empty.")
+
+    rel_path = Path(normalized_path)
+    if rel_path == Path(".") or rel_path.is_absolute() or ".." in rel_path.parts:
         raise ValueError(f"Unsafe file path: {path_value}")
     return rel_path
 
