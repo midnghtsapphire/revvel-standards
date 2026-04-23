@@ -18,7 +18,10 @@ const { EventEmitter } = require('events');
 
 // Set required env vars BEFORE requiring the module so it can also be run
 // directly via `node` without the module's require.main guard tripping.
-process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || 'sk-or-test-fixture-key';
+// NOTE: fixture token strings deliberately use a non-provider prefix
+// (`fake-token-*`) so secret scanners (e.g. GitGuardian) don't flag them as
+// leaked OpenRouter keys. The redaction logic under test is format-agnostic.
+process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || 'fake-token-test-fixture';
 process.env.QUESTION = process.env.QUESTION || 'test question';
 process.env.OUTPUT_FILE = process.env.OUTPUT_FILE || '/tmp/research-module-test-output.md';
 
@@ -73,10 +76,11 @@ test('truncateForError returns short bodies unchanged', () => {
 });
 
 test('redactSecrets scrubs Bearer tokens and Authorization headers', () => {
-  const input = 'Authorization: Bearer sk-or-v1-super-secret-token-abc123';
+  const fakeToken = 'fake-token-super-secret-abc123';
+  const input = `Authorization: Bearer ${fakeToken}`;
   const out = redactSecrets(input);
-  assert.ok(!/sk-or-v1-super-secret-token-abc123/.test(out), 'raw key must not appear');
-  assert.ok(!/Bearer\s+sk-or/i.test(out), 'Bearer token must be redacted');
+  assert.ok(!out.includes(fakeToken), 'raw token must not appear');
+  assert.ok(!/Bearer\s+fake-token/i.test(out), 'Bearer token must be redacted');
   assert.ok(/REDACTED/.test(out), 'should mark the redaction');
 });
 
@@ -89,10 +93,11 @@ test('redactSecrets scrubs x-api-key headers', () => {
 
 test('redactSecrets scrubs the OPENROUTER_API_KEY value if it leaks', () => {
   const prev = process.env.OPENROUTER_API_KEY;
-  process.env.OPENROUTER_API_KEY = 'sk-or-unique-leaked-value-xyz';
+  const fakeLeaked = 'fake-token-unique-leaked-value-xyz';
+  process.env.OPENROUTER_API_KEY = fakeLeaked;
   try {
-    const out = redactSecrets('body mentioning sk-or-unique-leaked-value-xyz in error');
-    assert.ok(!out.includes('sk-or-unique-leaked-value-xyz'));
+    const out = redactSecrets(`body mentioning ${fakeLeaked} in error`);
+    assert.ok(!out.includes(fakeLeaked));
     assert.ok(out.includes('[REDACTED]'));
   } finally {
     process.env.OPENROUTER_API_KEY = prev;
@@ -151,18 +156,19 @@ test('callOpenRouter: >2KB invalid-JSON body produces a truncated error message'
 
 test('callOpenRouter: no Authorization/Bearer string appears in thrown error', async () => {
   // A pathological response that echoes back the outbound auth header.
-  const leaky = 'Authorization: Bearer sk-or-v1-leaked-abc-XYZ-123 not-json-at-all {{{';
+  const fakeLeakedToken = 'fake-token-leaked-abc-XYZ-123';
+  const leaky = `Authorization: Bearer ${fakeLeakedToken} not-json-at-all {{{`;
   const restore = mockHttpsOnce(leaky);
   try {
     await assert.rejects(
       () => callOpenRouter('m', 's', 'u'),
       (err) => {
-        assert.ok(!/Bearer\s+sk-or/i.test(err.message), 'raw Bearer token leaked');
+        assert.ok(!/Bearer\s+fake-token/i.test(err.message), 'raw Bearer token leaked');
         assert.ok(
-          !/Authorization:\s*Bearer\s+sk-or/i.test(err.message),
+          !/Authorization:\s*Bearer\s+fake-token/i.test(err.message),
           'Authorization header value leaked'
         );
-        assert.ok(!err.message.includes('sk-or-v1-leaked-abc-XYZ-123'), 'raw key leaked');
+        assert.ok(!err.message.includes(fakeLeakedToken), 'raw token leaked');
         assert.ok(err.message.includes('[REDACTED]'), 'expected redaction marker');
         return true;
       }
