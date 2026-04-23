@@ -17,6 +17,52 @@ const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
 
+// Labels applied to an issue/PR to surface triage outcomes. Keep in sync with
+// `.github/labels.yml` so `sync-labels.yml` can propagate them to every repo.
+const FAILURE_LABELS = {
+  NEEDS_KEY: "openrouter:needs-key",
+  TRIAGE_FAILED: "openrouter:triage-failed",
+  NEEDS_HUMAN: "needs-human",
+};
+
+// Truncate captured error bodies so we never flood a GitHub comment with a
+// multi-megabyte OpenRouter response. 600 chars matches the instantiation
+// check's convention.
+const ERROR_BODY_LIMIT = 600;
+
+function truncateForComment(text, limit = ERROR_BODY_LIMIT) {
+  if (!text) return "";
+  const str = String(text);
+  if (str.length <= limit) return str;
+  return `${str.slice(0, limit)}\n…(truncated)`;
+}
+
+function buildFailureComment({ kind, detail, model, issueNumber, eventKind }) {
+  const header =
+    kind === "needs-key"
+      ? "⚠️ **OpenRouter triage skipped — `OPENROUTER_API_KEY` is not configured**"
+      : "❌ **OpenRouter triage failed**";
+  const body = [
+    header,
+    "",
+    `- Event: \`${eventKind}\` · Item: #${issueNumber}`,
+    `- Model: \`${model}\``,
+    "",
+    "**Detail:**",
+    "",
+    "```",
+    truncateForComment(detail),
+    "```",
+    "",
+    kind === "needs-key"
+      ? "Add the secret under *Settings → Secrets and variables → Actions* and re-run this workflow (or wait for the hourly sweep). " +
+        "This item has been labelled `openrouter:needs-key` + `needs-human` so it does not sit silently."
+      : "This item has been labelled `openrouter:triage-failed` + `needs-human` so it does not sit silently. " +
+        "Re-run the `OpenRouter Triage` workflow once the underlying issue is fixed; a subsequent success will clear these labels automatically.",
+  ].join("\n");
+  return body;
+}
+
 function parseLabelNamesFromYaml(labelsFilePath) {
   try {
     const raw = fs.readFileSync(labelsFilePath, "utf8");
@@ -144,9 +190,94 @@ async function postGitHubComment(commentBody) {
   });
 }
 
+async function addGitHubLabels(labels) {
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo || !ISSUE_NUMBER) return;
+  for (const label of labels) {
+    try {
+      await requestJson({
+        hostname: "api.github.com",
+        pathName: `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/labels`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          "User-Agent": "revvel-openrouter-triage-script",
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        payload: { labels: [label] },
+      });
+    } catch (err) {
+      console.log(`::warning::Could not add label "${label}" to #${ISSUE_NUMBER}: ${err.message}`);
+    }
+  }
+}
+
+async function removeGitHubLabels(labels) {
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo || !ISSUE_NUMBER) return;
+  for (const label of labels) {
+    try {
+      await requestJson({
+        hostname: "api.github.com",
+        pathName: `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/labels/${encodeURIComponent(label)}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          "User-Agent": "revvel-openrouter-triage-script",
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      });
+    } catch (err) {
+      // 404 is expected when the label wasn't set; swallow quietly.
+      if (!/HTTP 404/.test(err.message)) {
+        console.log(`::warning::Could not remove label "${label}" from #${ISSUE_NUMBER}: ${err.message}`);
+      }
+    }
+  }
+}
+
+async function reportTriageFailure({ kind, detail }) {
+  // Post a visible failure signal on the issue/PR so no item sits silently
+  // waiting on a manual "@github agent" assignment when OpenRouter is down or
+  // the key is missing. See docs/OPENROUTER_TRIAGE_PROCESS.md.
+  const failureLabel =
+    kind === "needs-key" ? FAILURE_LABELS.NEEDS_KEY : FAILURE_LABELS.TRIAGE_FAILED;
+
+  if (!GITHUB_TOKEN || !ISSUE_NUMBER) {
+    console.log("::warning::Cannot post triage failure signal — missing GITHUB_TOKEN or ISSUE_NUMBER.");
+    return;
+  }
+
+  const body = buildFailureComment({
+    kind,
+    detail,
+    model: MODEL,
+    issueNumber: ISSUE_NUMBER,
+    eventKind: EVENT_KIND,
+  });
+
+  try {
+    await postGitHubComment(body);
+  } catch (err) {
+    console.log(`::warning::Could not post triage failure comment to #${ISSUE_NUMBER}: ${err.message}`);
+  }
+  await addGitHubLabels([failureLabel, FAILURE_LABELS.NEEDS_HUMAN]);
+}
+
 async function main() {
   if (!OPENROUTER_API_KEY) {
     console.log("::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage.");
+    await reportTriageFailure({
+      kind: "needs-key",
+      detail:
+        "OPENROUTER_API_KEY is not configured in this repository's Actions secrets. " +
+        "The triage workflow cannot call OpenRouter without it.",
+    });
+    // Surface in the workflow UI but do not hard-fail the job — "needs-key"
+    // is an operator action, not a bug. A non-zero exit here would mask the
+    // visible signal we just posted on the issue/PR.
     process.exit(0);
   }
 
@@ -168,7 +299,19 @@ async function main() {
     body: ISSUE_BODY,
   });
 
-  const triage = await callOpenRouter(systemPrompt, userPrompt);
+  let triage;
+  try {
+    triage = await callOpenRouter(systemPrompt, userPrompt);
+  } catch (err) {
+    // OpenRouter unreachable, bad key, rate-limit, etc. — report visibly on
+    // the issue/PR and re-throw so the workflow run goes red too.
+    await reportTriageFailure({
+      kind: "triage-failed",
+      detail: `OpenRouter call failed: ${err.message}`,
+    });
+    throw err;
+  }
+
   const commentBody = [
     "🤖 **OpenRouter Triage**",
     "",
@@ -179,6 +322,9 @@ async function main() {
   ].join("\n");
 
   await postGitHubComment(commentBody);
+  // Success — clear any failure labels left over from a previous run so the
+  // signal on the issue/PR stays honest (self-heal).
+  await removeGitHubLabels([FAILURE_LABELS.TRIAGE_FAILED, FAILURE_LABELS.NEEDS_KEY]);
   console.log(`Posted triage comment to #${ISSUE_NUMBER}.`);
 }
 
@@ -193,4 +339,7 @@ module.exports = {
   buildSystemPrompt,
   buildUserPrompt,
   parseLabelNamesFromYaml,
+  buildFailureComment,
+  truncateForComment,
+  FAILURE_LABELS,
 };

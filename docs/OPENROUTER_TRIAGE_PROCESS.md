@@ -75,3 +75,23 @@ Source: [`skills/openrouter-swarms/SKILL.md`](../skills/openrouter-swarms/SKILL.
 - Keep output concise and actionable.
 - Hourly sweep only triages `triage:new` items missing `openrouter`.
 - Use `no-triage` to suppress unnecessary calls.
+
+## Failure signals (enhanced error checking)
+
+So no issue or PR sits silently because OpenRouter didn't run, the triage
+script [always leaves a visible signal on the item itself](../scripts/openrouter-triage.js)
+when it can't complete — you no longer have to dig through Actions logs to
+notice that nothing is moving.
+
+| Condition | Comment posted on item | Labels applied |
+|---|---|---|
+| `OPENROUTER_API_KEY` missing | ⚠️ "OpenRouter triage skipped — key not configured" with operator action | `openrouter:needs-key`, `needs-human` |
+| OpenRouter API / network error | ❌ "OpenRouter triage failed" with captured HTTP/error body (truncated to 600 chars) | `openrouter:triage-failed`, `needs-human` |
+| Successful re-run after a failure | 🤖 normal triage comment | Failure labels (`openrouter:triage-failed`, `openrouter:needs-key`) are automatically removed |
+
+The workflow run itself still goes red for genuine API failures (so the
+Actions UI reflects the problem), while the `needs-key` path exits 0
+because it's an operator action, not a bug. Either way, the issue or PR
+carries an explicit `needs-human` + `openrouter:*` label pair until the
+situation is resolved — which is the signal the hourly cron sweep and
+`ralph-loop.yml` rely on to avoid re-hammering a broken route.
