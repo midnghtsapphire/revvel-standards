@@ -393,7 +393,7 @@
 | **Infracost** | Terraform cloud-cost estimates in PRs — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#42-infracost--terraform-cost-estimates-in-prs) | Free (Cloud tier) | Enterprise SSO / policy needs | 🟡 Research Topic (on condition) | [marketplace.github.com](https://github.com/marketplace/infracost) |
 | **Argos Visual Testing** | Visual regression diffs on UI PRs — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#43-argos-visual-testing--visual-regression) | Free (5k screenshots/mo OSS) | Exceeds 5k screenshots/mo | 🟡 Research Topic (on condition) | [marketplace.github.com](https://github.com/marketplace/argos-ci) |
 | **Sourcery / DeepSource / Qlty Cloud / CodeFactor / CodeAnt AI / CR.GPT / Code Review Doctor** | AI / aggregator PR reviewers | varies | — | 🗑️ Removed — [duplicates RecurseML + OpenRouter reviewer](CODE_QUALITY_APPS_EVAL_2026-04-23.md#51-duplicate-recurseml--openrouter-ai-reviewer) | see eval |
-| **Aikido Security / DeepScan / Datree / Imgbot / CodeScene / Coveralls** | Security bundle / JS SAST / K8s policy / image optimizer / behavioral analysis / coverage | varies | — | 🗑️ Removed — [wrong stack or duplicates existing tooling](CODE_QUALITY_APPS_EVAL_2026-04-23.md#5-skip--defer-⭐⭐-and-below) | see eval |
+| **Aikido Security / DeepScan / Datree / Imgbot / CodeScene / Coveralls** | Security bundle / JS SAST / K8s policy / image optimizer / behavioral analysis / coverage | varies | — | 🗑️ Removed — [wrong stack or duplicates existing tooling](CODE_QUALITY_APPS_EVAL_2026-04-23.md#5-skip--defer--and-below) | see eval |
 
 > Full rationale for adoption / deferral / rejection of the 20 apps in the April 2026 code-quality sweep: [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](CODE_QUALITY_APPS_EVAL_2026-04-23.md).
 

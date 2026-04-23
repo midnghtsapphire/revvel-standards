@@ -15,7 +15,7 @@ OpenRouter-routed AI reviewers).
 - **Adopt conditionally:** SonarQube Cloud (only while repos are public — it's free for OSS); Infracost (only when a repo actually ships Terraform); Argos Visual Testing (only on the UI-heavy repos — `oaudrey`, `penny-sovereign-yield-scout`, `the-alt-text`).
 - **Skip — overlaps with what we already pay for:** Codacy, Sourcery, DeepSource, Qlty Cloud, CodeFactor, CodeAnt AI, CR.GPT, Code Review Doctor. These duplicate RecurseML + the OpenRouter AI PR reviewer without adding a unique signal.
 - **Skip — not in our stack / wrong shape:** Aikido Security (duplicates CodeQL + Dependabot + GitGuardian), CodeScene (enterprise pricing dominates the value), DeepScan (JS/TS only; ESLint + CodeQL already covers us), Datree (Kubernetes-only; we don't run K8s), Imgbot (cosmetic; we have no image-heavy repos).
-- **Coveralls:** pick **Codecov *or* Coveralls**, not both. Codecov wins for our stack (`.circleci` already emits `lcov.info`).
+- **Coveralls:** pick **Codecov *or* Coveralls**, not both. Codecov wins for our stack (GitHub Actions can emit `lcov.info` with a one-line step; Codecov's Action is the path of least resistance after the April 2026 CircleCI removal in [#285](https://github.com/midnghtsapphire/revvel-standards/pull/285)).
 
 **Net new tooling cost if we adopt the "Adopt now" set:** **$0** (all free for our current repo mix).
 
@@ -70,10 +70,13 @@ and "Fit" cell.
 ### 3.1 Codecov — Coverage reporting
 
 **Why adopt.** We currently have **zero coverage reporting** across the
-Revvel repos. CircleCI emits `coverage/lcov.info` in several projects
-(see [`.circleci/`](../.circleci)) but the file is dropped on the floor.
-Codecov's public-repo tier is free, integrates with CircleCI in two
-lines of YAML, and posts a coverage delta on every PR.
+Revvel repos. CI runs under [`.github/workflows/`](../.github/workflows)
+(the legacy `.circleci/config.yml` was removed in
+[#285](https://github.com/midnghtsapphire/revvel-standards/pull/285)), and
+individual projects emit `coverage/lcov.info` from their test runners,
+but the file is dropped on the floor. Codecov's public-repo tier is
+free, integrates with GitHub Actions in two lines of YAML, and posts a
+coverage delta on every PR.
 
 **Next step.** Add Codecov to `revvel-standards` first, verify the PR
 comment renders, then roll out to `oaudrey` and `penny-sovereign-yield-scout`.
@@ -142,7 +145,7 @@ Grouped by reason for skipping.
 
 RecurseML already posts autonomous PR reviews and enforces the rules
 in [`recurse-rules.md`](../recurse-rules.md) (trial runs through
-**April 28, 2026** per [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md#§6-ai-code-quality-and-review-tools)).
+**April 28, 2026** per [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md#111-code-quality--autonomous-review)).
 In parallel, the OpenRouter-routed AI PR reviewer templated in
 [`OPENROUTER_MARKETPLACE_ACTIONS.md`](./OPENROUTER_MARKETPLACE_ACTIONS.md)
 row 2 (`maxlim0/AI-PR-Reviewer`) and row 5 (`VIVAAN-DHAWAN/ai-code-reviewer`)
