@@ -74,10 +74,11 @@ jobs:
 
           commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()
           files_written = len(result.get("files_written") or [])
-          commit_message = commit_message.replace("%", "%25").replace("\n", "%0A").replace("\r", "%0D")
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write(f"commit_message={commit_message}\n")
+              out.write("commit_message<<__GITHUB_OUTPUT_EOF__\n")
+              out.write(f"{commit_message}\n")
+              out.write("__GITHUB_OUTPUT_EOF__\n")
               out.write(f"files_written={files_written}\n")
           PY
 
