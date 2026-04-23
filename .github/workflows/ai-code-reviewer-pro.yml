@@ -52,7 +52,9 @@ jobs:
 
       - name: AI Code Reviewer Pro
         if: env.OPENROUTER_API_KEY != ''
-        uses: VIVAAN-DHAWAN/ai-code-reviewer@v1
+        # Pinned to a commit SHA because the upstream repo publishes no tags/releases.
+        # Upstream: https://github.com/VIVAAN-DHAWAN/ai-code-reviewer/commits/main
+        uses: VIVAAN-DHAWAN/ai-code-reviewer@77b646ec5c322525fa288ddf0199b8cdab4a7ead
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           ai_provider: openrouter
