@@ -7,6 +7,21 @@ Format: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- `requirements-dev.txt` — separated dev/test dependency manifest
+  (`pytest>=8.0.0`, `pytest-mock>=3.12.0`). `pytest-mock` is required by the
+  existing test suite which uses the `mocker` fixture.
+
+### Changed
+
+- `requirements.txt` — removed `pytest` (moved to `requirements-dev.txt`) so
+  runtime installs no longer pull in test-only dependencies.
+
+---
+
 ## [1.0.0] — 2026-04-11
 
 ### Added
