@@ -2,5 +2,27 @@ node_modules/
 .gitbutler/*
 !.gitbutler/config.json
 
+# Python artifacts (applies repo-wide; sub-projects have their own ignores too)
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / env
+.env
+.env.local
+
+# Scratch files occasionally committed by automation (Jules, Copilot, etc.)
+pr-body.md
+.jules/
