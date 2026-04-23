@@ -13,15 +13,24 @@ class PrecognitiveMatrix:
     def __init__(self):
         """
         Initialize the PrecognitiveMatrix with necessary configurations.
+
+        EXPERIMENTAL — heuristic only, not production.
         """
+        # EXPERIMENTAL — heuristic only, not production.
         self.threshold = 0.6
 
     def pattern_recognition(self, data: List[float]) -> List[str]:
         """
         Analyzes input data for patterns.
+
+        EXPERIMENTAL — heuristic only, not production. This is a toy trend
+        detector (counts up/down ticks) and must not be used to drive
+        real trading, risk, or decision systems.
+
         :param data: Input data (list of numerical values) for analysis.
         :return: Detected patterns.
         """
+        # EXPERIMENTAL — heuristic only, not production.
         if not data or len(data) < 2:
             return []
 
@@ -48,10 +57,15 @@ class PrecognitiveMatrix:
     def confidence_assessment(self, patterns: List[str]) -> Dict[str, float]:
         """
         Assesses the confidence level of the detected patterns.
+
+        EXPERIMENTAL — heuristic only, not production. Confidence is a
+        naive frequency ratio, not a statistically grounded measure.
+
         :param patterns: Detected patterns from pattern recognition.
         :return: Confidence levels for each pattern (placeholder; returns
             ``None`` unless the ``PRECOG_MATRIX_ENABLED`` feature flag is set).
         """
+        # EXPERIMENTAL — heuristic only, not production.
         if not patterns:
             return {}
 
@@ -65,9 +79,16 @@ class PrecognitiveMatrix:
     def market_prediction(self, confidence_levels: Dict[str, float]) -> str:
         """
         Predicts future market trends based on confidence levels.
+
+        EXPERIMENTAL — heuristic only, not production. This returns a
+        hard-coded bucket label from fixed thresholds and is **not** a
+        market prediction model. Do not rely on it for any decision that
+        has real-world consequences.
+
         :param confidence_levels: Confidence levels assessed.
         :return: Market prediction string.
         """
+        # EXPERIMENTAL — heuristic only, not production.
         if not confidence_levels:
             return "unknown"
 
