@@ -78,6 +78,14 @@ def test_concentrated_liquidity_il():
     # Ratio 1.5, range [0.8, 1.2] -> base IL
     assert math.isclose(concentrated_liquidity_il(1.5, 0.8, 1.2), impermanent_loss_50_50(1.5), abs_tol=1e-9)
 
+    # Degenerate range: price_lower == price_upper -> ValueError (no zero division)
+    with pytest.raises(ValueError, match="price_lower must be < price_upper"):
+        concentrated_liquidity_il(1.0, 1.0, 1.0)
+
+    # Inverted range: price_lower > price_upper -> ValueError
+    with pytest.raises(ValueError, match="price_lower must be < price_upper"):
+        concentrated_liquidity_il(1.0, 1.2, 0.8)
+
 def test_shield_check():
     # Approved
     res = shield_check("ETH", "USDC", 1.1, max_il_pct=5.0)
