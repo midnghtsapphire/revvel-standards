@@ -70,8 +70,10 @@ function truncateForError(body, limit = MAX_ERROR_BODY_BYTES) {
 function redactSecrets(text) {
   if (text === undefined || text === null) return "";
   let s = typeof text === "string" ? text : String(text);
-  // Redact Bearer tokens in any casing, e.g. "Bearer sk-or-abc123"
-  s = s.replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [REDACTED]");
+  // Redact Bearer tokens in any casing, e.g. "Bearer sk-or-abc123".
+  // Use \S+ so we don't miss atypical token characters (per RFC 6750 token68
+  // plus any provider-specific extensions).
+  s = s.replace(/Bearer\s+\S+/gi, "Bearer [REDACTED]");
   // Redact Authorization header values if a full "Authorization: ..." line leaked
   s = s.replace(/Authorization\s*:\s*[^\r\n]+/gi, "Authorization: [REDACTED]");
   // Redact any x-api-key style headers
@@ -79,8 +81,9 @@ function redactSecrets(text) {
   // Redact the OpenRouter key itself if it somehow appears in the body.
   if (process.env.OPENROUTER_API_KEY) {
     const key = process.env.OPENROUTER_API_KEY;
-    // Escape regex metacharacters in the key before building a pattern.
-    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Escape regex metacharacters (including `-`) in the key before building
+    // a pattern so any literal key value is matched safely.
+    const escaped = key.replace(/[.*+?^${}()|[\]\\-]/g, "\\$&");
     s = s.replace(new RegExp(escaped, "g"), "[REDACTED]");
   }
   return s;
