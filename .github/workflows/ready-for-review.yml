@@ -222,12 +222,40 @@ jobs:
               }
             }
 
+      - name: Check out repository (base ref, for scanner script)
+        uses: actions/checkout@v4
+        with:
+          # Use the PR's base ref (target branch) rather than the PR head,
+          # so the scanner we execute is trusted code from the repository
+          # default branch, never code introduced by the PR being scanned.
+          ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
+
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
           script: |
+            const { scanDiff, renderCheckboxLine } = require(
+              `${process.env.GITHUB_WORKSPACE}/scripts/pr-review-scan.js`
+            );
+
+            // ── Fetch changed files (paginated) so the scanner can look
+            //    at the added lines of the diff.
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                per_page: 100,
+              }
+            );
+
+            const { checks } = scanDiff(files);
+
             const issueList = '${{ steps.find-issues.outputs.issue_list }}';
+            const closesAutoChecked = issueList ? '- [x]' : '- [ ]';
             const linkedSection = issueList
               ? `\n\n**Linked issue(s):** ${issueList.split(',').map(n => `#${n.trim()}`).join(', ')} — labeled \`in-review\` ✅`
               : '';
@@ -235,15 +263,15 @@ jobs:
             const body = [
               '## 🟡 Ready for Review',
               '',
-              'This PR is now open for review. Please verify the following before approving:',
+              'This PR is now open for review. Items marked `[x]` were verified automatically by scanning the PR diff; items marked `⚠️` failed an automated check and need attention; items left as `[ ]` require human judgment.',
               '',
               '### Code Quality',
-              '- [ ] No hardcoded secrets or credentials',
+              renderCheckboxLine('No hardcoded secrets or credentials', checks.secrets),
               '- [ ] All new API routes have input validation (Zod or equivalent)',
               '- [ ] All new API routes have auth / authorisation checks',
-              '- [ ] No raw SQL with user-supplied values',
-              '- [ ] No `console.log` leaking sensitive data',
-              '- [ ] No `eval()`, `Function()`, or dynamic `require()`',
+              renderCheckboxLine('No raw SQL with user-supplied values', checks.rawSql),
+              renderCheckboxLine('No `console.log` leaking sensitive data', checks.consoleLog),
+              renderCheckboxLine('No `eval()`, `Function()`, or dynamic `require()`', checks.dangerousEval),
               '',
               '### Testing',
               '- [ ] Tests written for new functionality',
@@ -253,7 +281,7 @@ jobs:
               '### Standards',
               '- [ ] Follows `MASTER_APP_TEMPLATE.md` conventions',
               '- [ ] Coderabbit comments addressed',
-              '- [ ] PR description references the linked issue(s) with `Closes #N`',
+              `${closesAutoChecked} PR description references the linked issue(s) with \`Closes #N\``,
               linkedSection,
               '',
               '---',
