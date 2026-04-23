@@ -149,7 +149,7 @@ def main() -> int:
     issue_number = env("ISSUE_NUMBER")
     issue_title = env("ISSUE_TITLE")
     issue_body = env("ISSUE_BODY")
-    model = env("WR_MODEL", "anthropic/claude-opus-4")
+    model = env("WR_MODEL", "anthropic/claude-opus-4.7")
 
     try:
         if not api_key:
