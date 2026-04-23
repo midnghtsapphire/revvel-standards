@@ -149,6 +149,10 @@ labels:
     color: "ff6b35"
     description: "Instantiation unresolved > 24h — Ralph loop escalated to humans"
 
+  - name: "openrouter:triage-failed"
+    color: "b60205"
+    description: "OpenRouter triage run failed — see failure comment for captured error"
+
   - name: needs-human
     color: "d93f0b"
     description: "Escalated — requires human intervention"
