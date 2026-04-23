@@ -197,6 +197,16 @@ labels:
     color: "5ac8b5"
     description: "Repo is part of the canonical GitKraken Workspace"
 
+  # ── Antigravity (agent-first IDE: editor + terminal + browser + MCP) ────────
+  # See docs/ANTIGRAVITY_INTEGRATION.md for rationale and rollout.
+  - name: antigravity
+    color: "1a73e8"
+    description: "PR authored from a Google Antigravity IDE session"
+
+  - name: "antigravity:agent-run"
+    color: "5a9bf0"
+    description: "PR carries Antigravity agent artifacts (screenshots / recordings)"
+
   # ── Fork-Audit Bot (cron-driven upstream eval) ──────────────────────────────
   - name: fork-audit
     color: "bfdadc"
