@@ -27,21 +27,68 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const QUESTION = process.env.QUESTION;
 const OUTPUT_FILE = process.env.OUTPUT_FILE;
 
-if (!OPENROUTER_API_KEY) {
-  console.error("ERROR: OPENROUTER_API_KEY environment variable is required.");
-  process.exit(1);
-}
-if (!QUESTION) {
-  console.error("ERROR: QUESTION environment variable is required.");
-  process.exit(1);
-}
-if (!OUTPUT_FILE) {
-  console.error("ERROR: OUTPUT_FILE environment variable is required.");
-  process.exit(1);
+// Only enforce required env vars when executed directly as a script.
+// This lets the module be `require()`'d from unit tests without exiting.
+if (require.main === module) {
+  if (!OPENROUTER_API_KEY) {
+    console.error("ERROR: OPENROUTER_API_KEY environment variable is required.");
+    process.exit(1);
+  }
+  if (!QUESTION) {
+    console.error("ERROR: QUESTION environment variable is required.");
+    process.exit(1);
+  }
+  if (!OUTPUT_FILE) {
+    console.error("ERROR: OUTPUT_FILE environment variable is required.");
+    process.exit(1);
+  }
 }
 
 const OPENROUTER_BASE = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
+
+// ---------------------------------------------------------------------------
+// Safe-logging helpers
+//
+// A malformed OpenRouter response can be megabytes of HTML (e.g. an edge
+// 502 page). We must never:
+//   - dump the full body into an Error / console.error / throw
+//   - leak the outbound Authorization header (Bearer <OPENROUTER_API_KEY>)
+//
+// These helpers keep error paths safe by construction.
+// ---------------------------------------------------------------------------
+
+const MAX_ERROR_BODY_BYTES = 2048; // ~2KB cap for any body echoed into errors
+
+function truncateForError(body, limit = MAX_ERROR_BODY_BYTES) {
+  if (body === undefined || body === null) return "";
+  const s = typeof body === "string" ? body : String(body);
+  if (s.length <= limit) return s;
+  return `${s.slice(0, limit)}... [truncated ${s.length - limit} chars]`;
+}
+
+function redactSecrets(text) {
+  if (text === undefined || text === null) return "";
+  let s = typeof text === "string" ? text : String(text);
+  // Redact Bearer tokens in any casing, e.g. "Bearer sk-or-abc123"
+  s = s.replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [REDACTED]");
+  // Redact Authorization header values if a full "Authorization: ..." line leaked
+  s = s.replace(/Authorization\s*:\s*[^\r\n]+/gi, "Authorization: [REDACTED]");
+  // Redact any x-api-key style headers
+  s = s.replace(/x-api-key\s*:\s*[^\r\n]+/gi, "x-api-key: [REDACTED]");
+  // Redact the OpenRouter key itself if it somehow appears in the body.
+  if (process.env.OPENROUTER_API_KEY) {
+    const key = process.env.OPENROUTER_API_KEY;
+    // Escape regex metacharacters in the key before building a pattern.
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    s = s.replace(new RegExp(escaped, "g"), "[REDACTED]");
+  }
+  return s;
+}
+
+function safeBodyForError(body) {
+  return redactSecrets(truncateForError(body));
+}
 
 // ---------------------------------------------------------------------------
 // HTTP helper (no external deps — uses Node built-in https)
@@ -83,7 +130,14 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
           const content = parsed.choices?.[0]?.message?.content ?? "";
           resolve(content);
         } catch (err) {
-          reject(new Error(`Failed to parse OpenRouter response: ${err.message}`));
+          // Include the raw body so operators can diagnose (e.g. an HTML 502
+          // from the edge), but truncate to ~2KB and redact anything that
+          // looks like an auth header or Bearer token. Request/response
+          // *headers* are never included here.
+          const safeBody = safeBodyForError(data);
+          reject(new Error(
+            `Failed to parse OpenRouter response: ${err.message}\nRaw (truncated, redacted): ${safeBody}`
+          ));
         }
       });
     });
@@ -271,7 +325,17 @@ async function main() {
   console.log(`   ${document.length.toLocaleString()} characters`);
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error("Fatal error:", err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  callOpenRouter,
+  truncateForError,
+  redactSecrets,
+  safeBodyForError,
+  MAX_ERROR_BODY_BYTES,
+};
