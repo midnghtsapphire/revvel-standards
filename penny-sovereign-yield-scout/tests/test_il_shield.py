@@ -2,13 +2,10 @@ import math
 import pytest
 import sys
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Add tools to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../tools')))
-
-# Mock numpy before importing il_shield to prevent ModuleNotFoundError
-sys.modules['numpy'] = MagicMock()
 
 from il_shield import (
     impermanent_loss_50_50,

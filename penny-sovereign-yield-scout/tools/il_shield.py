@@ -191,8 +191,6 @@ def simulate_il_range(
     pool_type: str = "50_50",
 ) -> None:
     """Print an IL reference table for a range of price ratios."""
-    import numpy as np
-
     ratios = [price_min * ((price_max / price_min) ** (i / (steps - 1))) for i in range(steps)]
 
     table = Table(title=f"IL Reference Table — {pool_type} pool", show_lines=True)
