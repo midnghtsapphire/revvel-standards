@@ -1,0 +1,125 @@
+name: OpenRouter Coder
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to process"
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  openrouter-coder:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'wr:code'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Resolve issue context
+        id: issue
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = context.eventName === 'workflow_dispatch'
+              ? Number('${{ inputs.issue_number }}')
+              : context.payload.issue?.number;
+            if (!issueNumber) {
+              core.setFailed('Issue number is required.');
+              return;
+            }
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('issue_title', issue.title || '');
+            core.setOutput('issue_body', issue.body || '');
+
+      - name: Generate code changes with OpenRouter
+        id: coder
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4' }}
+        run: |
+          python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
+          python - <<'PY'
+          import json
+          import os
+
+          result_path = "/tmp/openrouter-coder-result.json"
+          with open(result_path, "r", encoding="utf-8") as fh:
+              result = json.load(fh)
+
+          commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()
+          files_written = len(result.get("files_written") or [])
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write("commit_message<<__GITHUB_OUTPUT_EOF__\n")
+              out.write(f"{commit_message}\n")
+              out.write("__GITHUB_OUTPUT_EOF__\n")
+              out.write(f"files_written={files_written}\n")
+          PY
+
+      - name: Create pull request
+        id: cpr
+        if: steps.coder.outputs.files_written != '0'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: openrouter/issue-${{ steps.issue.outputs.issue_number }}
+          base: main
+          title: "OpenRouter: ${{ steps.issue.outputs.issue_title }}"
+          commit-message: ${{ steps.coder.outputs.commit_message }}
+          body: |
+            OpenRouter-generated code changes for issue #${{ steps.issue.outputs.issue_number }}.
+
+            ### Issue
+            ${{ steps.issue.outputs.issue_body }}
+
+            Closes #${{ steps.issue.outputs.issue_number }}
+
+      - name: Comment issue with PR link
+        if: steps.cpr.outputs.pull-request-url != ''
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
+              body: `✅ OpenRouter opened PR: ${{ steps.cpr.outputs.pull-request-url }}`,
+            });
+
+      - name: Comment issue when no changes were generated
+        if: steps.coder.outputs.files_written == '0'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
+              body: '⚠️ OpenRouter returned no file changes. Please refine the issue details and re-run.',
+            });
