@@ -33,6 +33,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and **not** a required tool.
 - `.github/labels.yml` — two new canonical labels (`gitkraken`,
   `gitkraken:workspace`) added to the repository label definition set.
+- `docs/ANTIGRAVITY_INTEGRATION.md` — integration plan for Google
+  Antigravity, the agent-first IDE (public preview, 2025-11). Answers
+  the originating issue's three questions — *where? how? BOM?* —
+  positioning Antigravity as the contributor-local, browser-aware,
+  artifact-producing counterpart to the existing Copilot / OpenRouter
+  server-side swarms. Composes with Graphite stacks and the GitKraken
+  Launchpad; PRs still traverse the unmodified `openrouter-assignee.yml`
+  hand-off. MCP client reads the existing `skills/REGISTRY.md`; no new
+  skills required and no CI role granted. Includes RFC-2119 requirements
+  (R-AG-01..R-AG-G-03) and a 4-step opt-in rollout plan (PR-1..PR-4).
+  Free / public-preview Individual tier at $0; Pro ~$20/mo and
+  Enterprise ~$250/mo+ would require a new BOM row and standards-owner
+  review.
+- `.github/labels.yml` — two new canonical labels (`antigravity`,
+  `antigravity:agent-run`) added to the repository label definition set.
 
 ### Changed
 - `.gitignore` — now ignores local GitButler state while still committing
