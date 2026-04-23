@@ -83,7 +83,7 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
           const content = parsed.choices?.[0]?.message?.content ?? "";
           resolve(content);
         } catch (err) {
-          reject(new Error(`Failed to parse OpenRouter response: ${err.message}`));
+          reject(new Error(`Failed to parse OpenRouter response: ${err.message}\nRaw: ${data}`));
         }
       });
     });
@@ -271,7 +271,10 @@ async function main() {
   console.log(`   ${document.length.toLocaleString()} characters`);
 }
 
+if (require.main === module) {
 main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });
+}
+if (typeof module !== 'undefined' && module.exports) { module.exports = { main, callOpenRouter }; }
