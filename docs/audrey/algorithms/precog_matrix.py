@@ -1,6 +1,15 @@
 from typing import List, Dict, Any
 
 class PrecognitiveMatrix:
+    """EXPERIMENTAL — heuristic only, not production.
+
+    Speculative placeholder for a pattern-recognition / market-prediction
+    pipeline. All methods are stubs and return ``None`` unless the
+    ``PRECOG_MATRIX_ENABLED`` environment variable is set, in which case
+    they still only return placeholder heuristic values. This class is
+    **not** suitable for production use.
+    """
+
     def __init__(self):
         """
         Initialize the PrecognitiveMatrix with necessary configurations.
@@ -40,7 +49,8 @@ class PrecognitiveMatrix:
         """
         Assesses the confidence level of the detected patterns.
         :param patterns: Detected patterns from pattern recognition.
-        :return: Confidence levels for each pattern.
+        :return: Confidence levels for each pattern (placeholder; returns
+            ``None`` unless the ``PRECOG_MATRIX_ENABLED`` feature flag is set).
         """
         if not patterns:
             return {}
@@ -74,10 +84,11 @@ class PrecognitiveMatrix:
         return "uncertain"
 
 if __name__ == "__main__":
+    # EXPERIMENTAL — heuristic only, not production.
     # Example data for testing
     sample_data = [10.5, 11.2, 10.8, 12.5, 13.1, 12.9, 14.2]
     matrix = PrecognitiveMatrix()
-    
+
     detected_patterns = matrix.pattern_recognition(sample_data)
     confidence_levels = matrix.confidence_assessment(detected_patterns)
     predictions = matrix.market_prediction(confidence_levels)
