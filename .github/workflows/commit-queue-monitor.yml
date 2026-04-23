@@ -132,7 +132,7 @@ jobs:
               preview.length > 0 ? preview.join('\n') : '_No queued PRs detected._',
               '',
               '### First responder actions',
-              '- @copilot: investigate why the merge queue is stalled and attempt auto-correction.',
+              '- OpenRouter orchestrator (via `openrouter-triage.yml`): investigate why the merge queue is stalled and attempt auto-correction.',
               '- Re-run or fix failing checks on queued PRs.',
               '- If queue remains above threshold, coordinate manual intervention.',
               '',
@@ -163,15 +163,10 @@ jobs:
               });
             }
 
-            try {
-              await github.rest.issues.addAssignees({
-                owner,
-                repo,
-                issue_number: existingAlert.number,
-                assignees: ['copilot'],
-              });
-            } catch (error) {
-              core.info(`Could not assign Copilot: ${error.message}`);
-            }
+            // Routing is handled by .github/workflows/openrouter-triage.yml
+            // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md). Do
+            // not assign @Copilot / copilot-swe-agent here — Automation Routing
+            // Policy (see .github/copilot-instructions.md) forbids paid
+            // GitHub Copilot Coding Agent routing.
 
             core.notice(`Queue depth ${queueCount} exceeds threshold ${threshold}. Alert issue #${existingAlert.number} updated.`);

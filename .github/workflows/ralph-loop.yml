@@ -1,7 +1,11 @@
 name: Ralph Loop — Self-Healing CI
 
 # Triggers on CI check completion or PR events.
-# When a check fails: posts @copilot comment, blocks merge with "won't-merge" label.
+# When a check fails: posts a Ralph Loop fix-request comment, blocks merge
+#   with "won't-merge" label. OpenRouter triage (openrouter-triage.yml) picks
+#   up the comment and routes the fix — we do NOT @-mention or assign
+#   @Copilot / copilot-swe-agent (Automation Routing Policy: OpenRouter only,
+#   see .github/copilot-instructions.md).
 # When a check passes: removes blocking label and unblocks merge.
 # After 5 failed attempts: escalates to human reviewer.
 #
@@ -20,7 +24,7 @@ permissions:
   contents: read
 
 jobs:
-  # ─── Trigger Copilot Fix on Failure ──────────────────────────────────────────
+  # ─── Trigger OpenRouter Fix on Failure ───────────────────────────────────────
   ralph-trigger:
     name: "Ralph Loop — Trigger Fix"
     runs-on: ubuntu-latest
@@ -77,7 +81,7 @@ jobs:
             console.log(`Ralph Loop has fired ${count} time(s) on PR #${pr_number}`);
             return count;
 
-      - name: Post @copilot fix request
+      - name: Post Ralph Loop fix request
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
@@ -101,8 +105,8 @@ jobs:
               issue_number: pr_number,
               body:
                 `🔄 **Ralph Loop** — Attempt ${attempt}/5\n\n` +
-                `@copilot The \`${workflow}\` check finished with status: \`${conclusion}\`.\n\n` +
-                `Please:\n` +
+                `The \`${workflow}\` check finished with status: \`${conclusion}\`.\n\n` +
+                `OpenRouter triage (\`openrouter-triage.yml\`) will pick this up and:\n` +
                 `1. Read the CI failure output\n` +
                 `2. Identify the root cause\n` +
                 `3. Make the **minimum** change required to fix it\n` +
