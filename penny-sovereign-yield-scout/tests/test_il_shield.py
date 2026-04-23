@@ -2,13 +2,10 @@ import math
 import pytest
 import sys
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Add tools to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../tools')))
-
-# Mock numpy before importing il_shield to prevent ModuleNotFoundError
-sys.modules['numpy'] = MagicMock()
 
 from il_shield import (
     impermanent_loss_50_50,
@@ -77,6 +74,14 @@ def test_concentrated_liquidity_il():
     # Outside range
     # Ratio 1.5, range [0.8, 1.2] -> base IL
     assert math.isclose(concentrated_liquidity_il(1.5, 0.8, 1.2), impermanent_loss_50_50(1.5), abs_tol=1e-9)
+
+    # Degenerate range: price_lower == price_upper -> ValueError (no zero division)
+    with pytest.raises(ValueError, match="price_lower must be < price_upper"):
+        concentrated_liquidity_il(1.0, 1.0, 1.0)
+
+    # Inverted range: price_lower > price_upper -> ValueError
+    with pytest.raises(ValueError, match="price_lower must be < price_upper"):
+        concentrated_liquidity_il(1.0, 1.2, 0.8)
 
 def test_shield_check():
     # Approved

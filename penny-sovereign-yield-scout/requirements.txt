@@ -24,7 +24,6 @@ tweepy>=4.14.0
 
 # ─── Data ────────────────────────────────────────────────────────────────────
 pandas>=2.0.0
-numpy>=1.26.0
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 python-dotenv>=1.0.0
@@ -38,4 +37,5 @@ jinja2>=3.1.0
 # reportlab>=4.0.0
 
 # ─── Testing ─────────────────────────────────────────────────────────────────
-pytest>=8.0.0
+# Test dependencies (pytest, pytest-mock) live in requirements-dev.txt.
+# Install with: pip install -r requirements.txt -r requirements-dev.txt

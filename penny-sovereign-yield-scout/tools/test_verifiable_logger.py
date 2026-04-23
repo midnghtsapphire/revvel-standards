@@ -83,5 +83,38 @@ class TestVerifiableLogger(unittest.TestCase):
         # Should skip entry without entry_hash and find the previous valid one
         self.assertEqual(logger2._read_last_hash(), expected_hash)
 
+    def test_concurrent_writes_preserve_chain(self):
+        """Concurrent log() calls must produce a valid, unbroken hash chain."""
+        import threading
+
+        logger = VerifiableLogger(log_file=self.test_log)
+        num_threads = 10
+        writes_per_thread = 20
+
+        def writer(tid: int) -> None:
+            for i in range(writes_per_thread):
+                logger.log("EVENT", {"tid": tid, "i": i})
+
+        threads = [threading.Thread(target=writer, args=(t,)) for t in range(num_threads)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        # Verify every line is valid JSON and the prev_hash chain is intact
+        prev_hash = "0" * 64
+        count = 0
+        with open(self.test_log, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                entry = json.loads(line)
+                self.assertEqual(entry["prev_hash"], prev_hash)
+                prev_hash = entry["entry_hash"]
+                count += 1
+
+        self.assertEqual(count, num_threads * writes_per_thread)
+
 if __name__ == "__main__":
     unittest.main()

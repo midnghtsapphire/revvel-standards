@@ -67,9 +67,16 @@ jobs:
           python - <<'PY'
           import json
           import os
+          from pathlib import Path
 
-          result_path = "/tmp/openrouter-coder-result.json"
-          with open(result_path, "r", encoding="utf-8") as fh:
+          output_path = Path("/tmp/openrouter-coder-result.json")
+          if not output_path.exists() or output_path.stat().st_size == 0:
+              raise RuntimeError(
+                  f"Coder step did not produce a usable output file at {output_path} "
+                  "(missing or empty). Aborting before downstream steps consume it."
+              )
+
+          with output_path.open("r", encoding="utf-8") as fh:
               result = json.load(fh)
 
           commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()

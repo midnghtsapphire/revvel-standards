@@ -76,7 +76,16 @@ def concentrated_liquidity_il(
 
     Returns:
         IL as a negative float (0.0 if price is within range)
+
+    Raises:
+        ValueError: If price_lower >= price_upper (degenerate range has no
+            liquidity and is undefined for IL calculations).
     """
+    if price_lower >= price_upper:
+        raise ValueError(
+            "price_lower must be < price_upper "
+            f"(got price_lower={price_lower}, price_upper={price_upper})"
+        )
     if price_lower <= price_ratio <= price_upper:
         # Price within range — calculate adjusted IL
         r = price_ratio
@@ -182,8 +191,6 @@ def simulate_il_range(
     pool_type: str = "50_50",
 ) -> None:
     """Print an IL reference table for a range of price ratios."""
-    import numpy as np
-
     ratios = [price_min * ((price_max / price_min) ** (i / (steps - 1))) for i in range(steps)]
 
     table = Table(title=f"IL Reference Table — {pool_type} pool", show_lines=True)
