@@ -198,8 +198,9 @@ landing page; keep it on `fieldwork.oaudrey.com` as planned in
 - Everything currently under `revvel-standards/fieldwork/`, with history.
 - *Add* `.github/workflows/pages.yml` (or equivalent) to deploy the static
   landing page to `fieldwork.oaudrey.com`.
-- *Symlink* `AGENTS.md` ↔ `CLAUDE.md` ↔ `GEMINI.md` per the universal agent
-  convention in `docs/AGENTS.md`.
+- *Symlink* `AGENTS.md` ↔ `CLAUDE.md` per the repo convention documented in
+  `docs/AGENTS.md`; handle any `GEMINI.md` alias separately if that
+  convention is added later.
 
 ### Section 7 — Rollback plan
 
