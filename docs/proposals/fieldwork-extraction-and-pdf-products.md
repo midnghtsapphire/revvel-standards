@@ -122,8 +122,9 @@ on `pdf.oaudrey.com` or similar) + Lemon Squeezy checkout embed. Defer path 3
 until proven demand.
 
 **Recommendation for `fieldwork` specifically:** it already has a static
-landing page; keep it on `fieldwork.oaudrey.com` as planned in
-`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`. This proposal does
+landing page; keep it on `fieldwork.oaudrey.com` in line with the live-test
+subdomain standard in `docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`
+and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 **not** change `fieldwork`'s product plan — only its repository location.
 
 ---
