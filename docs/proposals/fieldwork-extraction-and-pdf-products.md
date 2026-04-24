@@ -135,12 +135,13 @@ and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 
 - `fieldwork/` lives at the top level of `revvel-standards` (68K, 7 files
   total: 5 at the top level plus 2 under `fieldwork/docs/`).
-- Cross-references exist in `oaudrey/README.md` and
-  `docs/GITKRAKEN_INTEGRATION.md` (two `.md` files).
+- The human-maintained Markdown cross-references expected to need updating
+  during extraction are `oaudrey/README.md` and
+  `docs/GITKRAKEN_INTEGRATION.md`.
 - No CI is currently scoped to `fieldwork/` — extraction will not break
   existing workflows in `revvel-standards`.
-- `fieldwork/LICENSE` is "All Rights Reserved — Freedom Angel Corp" and must
-  travel with the code.
+- `fieldwork/LICENSE` contains an all-rights-reserved copyright notice for
+  Audrey Evans / Freedom Angel Corp and must travel with the code.
 
 ### Section 2 — Feature definition
 
@@ -165,17 +166,18 @@ and the `fieldwork` references in `oaudrey/README.md`. This proposal does
       fieldwork/`).
 - [ ] The new repo's default branch builds / serves the landing page
       (`python3 -m http.server 8080` smoke-test passes).
-- [ ] `revvel-standards` no longer contains `fieldwork/` at the top level.
+- [ ] `revvel-standards` no longer contains the `fieldwork/` source tree at
+      the top level, aside from an optional minimal redirect stub such as
+      `fieldwork/README.md`.
 - [ ] `oaudrey/README.md` links now point to
       `https://github.com/midnghtsapphire/fieldwork` instead of relative
       `../fieldwork/README.md`.
 - [ ] `docs/GITKRAKEN_INTEGRATION.md` "fieldwork-family" workspace entry
       references the extracted repo.
 - [ ] `CHANGELOG.md` of `revvel-standards` records the extraction.
-- [ ] A redirect stub `fieldwork/README.md` in `revvel-standards` (one file,
-      ~10 lines) points readers to the new repo **OR** the directory is
-      removed cleanly — Audrey to pick; default = redirect stub for 1
-      release cycle, then remove.
+- [ ] Audrey has chosen one transition path: either leave a one-file
+      `fieldwork/README.md` redirect stub in `revvel-standards` for 1 release
+      cycle, or remove the directory cleanly immediately.
 
 ### Section 5 — Out of scope
 
