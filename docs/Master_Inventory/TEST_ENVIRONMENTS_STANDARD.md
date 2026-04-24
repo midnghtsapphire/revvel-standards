@@ -388,7 +388,7 @@ A sixth **Synthesizer** agent aggregates all five reports into a single S.H.I.F.
 | `DATABASE_URL` | Local SQLite or dev DB | Test DB | Staging DB | Production DB (Vault) |
 | `STRIPE_SECRET_KEY` | `sk_test_...` | `sk_test_...` | `sk_test_...` | `sk_live_...` (Vault) |
 | `CLERK_SECRET_KEY` | Dev instance | CI instance | Staging instance | Production instance (Vault) |
-| `BASE_URL` | `http://localhost:3000` | CI-provided | `https://<app>.openaudrey.com` | `https://<app>.com` |
+| `BASE_URL` | `http://localhost:3000` | CI-provided | `https://<app>.oaudrey.com` | `https://<app>.com` |
 
 ---
 
