@@ -4,7 +4,7 @@
 **Owner:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp
 **Author (draft):** automation agent, drafted on behalf of Jules
 **Date:** 2026-04-24
-**Issue:** *[Jules] Fieldwork is residing off the main directory in revvel-standards needs to have it's own repository*
+**Issue:** *[Jules] Fieldwork is residing off the main directory in revvel-standards needs to have its own repository*
 **Related skills:** `skills/mvi-contract`, `skills/system-state`, `skills/wrap-up`, `skills/seo-metadata`
 
 > **Why this document exists.** The issue is two requests tangled together:
