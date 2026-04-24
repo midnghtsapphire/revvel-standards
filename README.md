@@ -463,7 +463,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
 
 ### Required Deployment Environments
-- **oAudrey UI (Live-Test Stage):** Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review. This is mandatory for all projects to enable Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
+- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
 
 ### Design & Prototyping Tools
 

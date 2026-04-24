@@ -197,7 +197,7 @@ Human acceptance testing against a live URL running production-equivalent config
 
 ### MANDATORY REQUIREMENT: oAudrey UI Deployment
 
-Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for all Revvel and MIDNGHTSAPPHIRE projects. The oAudrey UI enables Audrey Evans to test, review, and validate the application before production deployment. This requirement applies to:
+All Revvel and MIDNGHTSAPPHIRE projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain. The oAudrey UI enables Audrey Evans to test, review, and validate the application before production deployment. This requirement applies to:
 
 - Web applications
 - Mobile app web previews
