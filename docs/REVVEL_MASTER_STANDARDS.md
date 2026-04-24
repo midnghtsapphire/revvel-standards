@@ -516,6 +516,9 @@ Every app must have a deep About section with multiple sub-pages:
 - **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
 
+### Required Deployment Environments
+- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
+
 ### Design & Prototyping Tools
 
 **UI/UX Design:**

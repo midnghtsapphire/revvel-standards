@@ -291,7 +291,7 @@ All test environments must be isolated from public access:
 |---|---|---|---|
 | `dev` (local) | Developer machine only | No | Local development, no external access |
 | `staging` (midnghtsapphire) | Private GitHub Pages or password-protected | Yes | GitHub Actions deploy, HTTPS only |
-| `live-test` (openaudrey subdomain) | Password-protected subdomain | Yes | Live URL for acceptance testing only |
+| `live-test` (oaudrey subdomain) | Password-protected subdomain | Yes | Live URL for acceptance testing only |
 | `production` (Freedom Angel Corps / DigitalOcean) | Public (app users) or Private (internal tools) | App-level auth | DigitalOcean App Platform or Droplet |
 
 ---

@@ -12,7 +12,7 @@
 - [`AUTOMATED_AUDIT_AGENT_STANDARD.md`](docs/Master_Inventory/AUTOMATED_AUDIT_AGENT_STANDARD.md) — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
 - [`API_GATEKEEPER_STANDARD.md`](docs/Master_Inventory/API_GATEKEEPER_STANDARD.md) — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
 - [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](docs/Master_Inventory/REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) — **mandatory** process for making all repositories private, auditing git history for unauthorized contributors, and migrating from `midnghtsapphire` to the `Freedom Angel Corps` enterprise organization.
-- [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) — four-stage test pipeline (dev → staging → live-test → production), the **S.H.I.F.T. test harness**, and deployment targets (GitHub Actions/Pages → openaudrey subdomain → Freedom Angel Corps / DigitalOcean).
+- [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) — four-stage test pipeline (dev → staging → live-test → production), the **S.H.I.F.T. test harness**, and deployment targets (GitHub Actions/Pages → oaudrey subdomain → Freedom Angel Corps / DigitalOcean).
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
@@ -461,6 +461,9 @@ Every app must have a deep About section with multiple sub-pages:
 - **INVESTORS_PACK.md:** Business case, budget, and ROI analysis.
 - **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
+
+### Required Deployment Environments
+- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
 
 ### Design & Prototyping Tools
 
