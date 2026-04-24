@@ -4,11 +4,15 @@
 # Action repo: https://github.com/BeksOmega/jules-action
 #
 # Invoke Jules, Google's AI-powered coding agent, to perform tasks on the
-# codebase. This workflow supports two entry points:
+# codebase. This workflow supports three entry points:
 #
-#   1. `workflow_dispatch` — an operator supplies an ad-hoc prompt.
-#   2. `issues: [closed]`  — when an issue is closed, run Jules against any
-#      issues that become "unblocked" (per BeksOmega/on-unblocked).
+#   1. `workflow_dispatch`         — an operator supplies an ad-hoc prompt.
+#   2. `issues: [opened,reopened]` — auto-assign Jules to every new WR
+#      (any issue carrying the `jules` label, which the Deep-Research
+#      template always applies).
+#   3. `issues: [closed]`          — when an issue is closed, run Jules
+#      against any issues that become "unblocked"
+#      (per BeksOmega/on-unblocked).
 #
 # Secret required: JULES_API_KEY
 # Copy this file to: .github/workflows/jules-invoke.yml
@@ -38,7 +42,7 @@ on:
         type: boolean
         default: false
   issues:
-    types: [closed]
+    types: [opened, reopened, closed]
 
 concurrency:
   group: jules-invoke-${{ github.event.issue.number || github.run_id }}
@@ -76,7 +80,7 @@ jobs:
   # ─── Run Jules on issues that become unblocked when another closes ─────────
   detect-unblocked:
     name: Detect unblocked issues
-    if: github.event_name == 'issues'
+    if: github.event_name == 'issues' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     permissions:
       issues: read
@@ -128,4 +132,37 @@ jobs:
         uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: "${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}"
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+
+  # ─── Auto-assign Jules to every new WR (opened / reopened) ─────────────────
+  # Audrey's rule: every new work request is routed through the Deep-Research
+  # (Jules) issue template, which applies the `jules` label. When that label
+  # is present on an opened/reopened issue we invoke Jules automatically so
+  # she can deep-research and refine the request before any code is written.
+  invoke-on-opened:
+    name: Invoke Jules on new WR
+    if: >-
+      github.event_name == 'issues' &&
+      (github.event.action == 'opened' || github.event.action == 'reopened') &&
+      contains(github.event.issue.labels.*.name, 'jules')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    env:
+      JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+    steps:
+      - name: Verify JULES_API_KEY is configured
+        run: |
+          if [ -z "${JULES_API_KEY}" ]; then
+            echo "::warning::JULES_API_KEY is not set — skipping Jules Invoke."
+          else
+            echo "JULES_API_KEY is configured."
+          fi
+
+      - name: Invoke Jules on New WR
+        if: env.JULES_API_KEY != ''
+        uses: BeksOmega/jules-action@v1.0.0
+        with:
+          prompt: "${{ github.event.issue.title }}. ${{ github.event.issue.body }}"
           jules_api_key: ${{ secrets.JULES_API_KEY }}

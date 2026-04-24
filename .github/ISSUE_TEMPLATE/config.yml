@@ -1,13 +1,19 @@
 # Issue template picker configuration for midnghtsapphire/revvel-standards.
 #
-# When a user clicks "New issue" they see the templates in this directory as
-# selectable options. Each template is pre-scoped so Audrey doesn't have to
-# retype "review all of midnghtsapphire/revvel-standards" every time, and
-# @google-labs-jules (Google Jules) is mentioned in the body so she is pulled
-# in automatically to deep-research and refine the request before work starts.
+# Audrey's rule (2026-04): **one template to rule them all.** Every work
+# request (WR), bug, feature, or idea goes through the Deep-Research (Jules)
+# template so Jules is always auto-assigned (via the `jules` label + the
+# `@google-labs-jules` mention in the body) and auto-invoked by
+# `.github/workflows/jules-invoke.yml` on `issues: [opened, reopened]`.
 #
-# Keep `blank_issues_enabled: true` so power users can still open a blank
-# issue; the templates are the recommended default.
+# The other files in this directory (`daily-decision.md`, `exit-quiet-mode.md`,
+# `urgent-compliance.md`) are **operational** templates consumed by the
+# triage-cron / migration-cron / compliance-watcher workflows — they are not
+# intended as day-to-day user entry points.
+#
+# Keep `blank_issues_enabled: true` so power users / automation can still open
+# a blank issue; the Deep-Research template is the recommended default for
+# every WR.
 
 blank_issues_enabled: true
 contact_links:
