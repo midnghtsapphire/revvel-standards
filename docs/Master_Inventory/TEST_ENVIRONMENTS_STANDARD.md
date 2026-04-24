@@ -197,7 +197,7 @@ Human acceptance testing against a live URL running production-equivalent config
 
 ### MANDATORY REQUIREMENT: oAudrey UI Deployment
 
-**Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain.** This is a mandatory requirement for all Revvel and MIDNGHTSAPPHIRE projects. The oAudrey UI enables Audrey Evans to test, review, and validate the application before production deployment. This requirement applies to:
+Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for all Revvel and MIDNGHTSAPPHIRE projects. The oAudrey UI enables Audrey Evans to test, review, and validate the application before production deployment. This requirement applies to:
 
 - Web applications
 - Mobile app web previews
@@ -210,7 +210,7 @@ Without an oAudrey subdomain deployment, the project cannot graduate to producti
 ### Setup
 
 1. Point a subdomain on `oaudrey.com` to a DigitalOcean droplet or App Platform instance.
-2. Configure the subdomain: `<app-name>.oaudrey.com` (e.g., `growlingeyes.oaudrey.com`).
+2. Configure the subdomain: `<app>.oaudrey.com` (e.g., `growlingeyes.oaudrey.com`).
 3. Use Let's Encrypt (Certbot) or DigitalOcean's managed TLS for HTTPS.
 4. Protect the live-test URL with HTTP Basic Auth or Clerk's staging environment to prevent public access.
 
