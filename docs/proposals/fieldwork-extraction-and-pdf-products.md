@@ -133,7 +133,8 @@ and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 
 ### Section 1 — Context check
 
-- `fieldwork/` lives at the top level of `revvel-standards` (68K, 8 files).
+- `fieldwork/` lives at the top level of `revvel-standards` (68K, 7 files
+  total: 5 at the top level plus 2 under `fieldwork/docs/`).
 - Cross-references exist in `oaudrey/README.md` and
   `docs/GITKRAKEN_INTEGRATION.md` (two `.md` files).
 - No CI is currently scoped to `fieldwork/` — extraction will not break
