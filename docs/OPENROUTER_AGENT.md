@@ -39,7 +39,10 @@ Copy these files:
 
 - `.github/workflows/openrouter-coder.yml`
 - `.github/scripts/openrouter_coder.py`
-- `.github/ISSUE_TEMPLATE/wr-code.md`
+- Apply the `wr:code` label to any issue (e.g. one filed via the
+  Deep-Research template) to route it to OpenRouter. The stand-alone
+  `wr-code.md` issue template was retired in favour of a single
+  Deep-Research entry point (see `.github/ISSUE_TEMPLATE/config.yml`).
 
 Then add repository secret:
 

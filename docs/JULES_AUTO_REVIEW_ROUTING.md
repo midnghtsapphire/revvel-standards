@@ -18,11 +18,16 @@ called out below — doing so creates duplicate comments and review noise.
    - Adds the `openrouter`, `role:orchestrator`, and `triage:new` labels.
    - Lets the OpenRouter orchestrator pick up the work (see
      `docs/OPENROUTER_TRIAGE_PROCESS.md`).
-2. The Jules issue templates (`.github/ISSUE_TEMPLATE/deep-research.yml`,
-   `feature-request.yml`, `bug-report.yml`) already apply the `jules` label
-   and `@google-labs-jules`-mention Jules in the body, so Jules is invoked
+2. The Deep-Research (Jules) issue template
+   (`.github/ISSUE_TEMPLATE/deep-research.yml`) — Audrey's single
+   user-facing WR template — applies the `jules` label and
+   `@google-labs-jules`-mentions Jules in the body so Jules is pulled in
    alongside OpenRouter triage.
-3. `.github/workflows/priority-router.yml` applies Eisenhower/priority labels
+3. `.github/workflows/jules-invoke.yml` fires on `issues: [opened, reopened]`
+   and, when the `jules` label is present, invokes Jules automatically via
+   `BeksOmega/jules-action@v1.0.0` — so every new WR is auto-assigned to
+   Jules end-to-end, not just label-tagged.
+4. `.github/workflows/priority-router.yml` applies Eisenhower/priority labels
    for downstream routing.
 
 ### When Jules opens a pull request
