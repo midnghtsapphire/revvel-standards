@@ -461,6 +461,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **INVESTORS_PACK.md:** Business case, budget, and ROI analysis.
 - **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
+- **oAudrey UI Deployment:** Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review. This is mandatory for all projects to enable Audrey to test and review the application before production deployment.
 
 ### Design & Prototyping Tools
 

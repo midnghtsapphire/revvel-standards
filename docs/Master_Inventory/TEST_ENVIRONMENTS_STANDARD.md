@@ -22,7 +22,7 @@ The test harness used across all Revvel applications is the **S.H.I.F.T. framewo
 │                  Revvel Test Pipeline                        │
 │                                                             │
 │  [dev]  →  [staging]  →  [live-test]  →  [production]      │
-│   Local    midnghtsapphire  openaudrey     Freedom Angel    │
+│   Local    midnghtsapphire   oaudrey      Freedom Angel    │
 │   machine  GitHub Actions   subdomain      Corps / DO       │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -31,7 +31,7 @@ The test harness used across all Revvel applications is the **S.H.I.F.T. framewo
 |---|---|---|---|---|
 | 1 | **dev** | Local machine | `http://localhost:3000` | Developer only |
 | 2 | **staging** | GitHub Actions + Pages | `https://midnghtsapphire.github.io/<repo>` or private deploy | Team only (private repo) |
-| 3 | **live-test** | openaudrey subdomain | `https://<app>.openaudrey.com` | Invited testers only |
+| 3 | **live-test** | oaudrey subdomain | `https://<app>.oaudrey.com` | Invited testers only |
 | 4 | **production** | Freedom Angel Corps / DigitalOcean | `https://<app>.com` | End users |
 
 ---
@@ -187,7 +187,7 @@ Use a theme supported by GitHub Pages to avoid build failures.
 
 ---
 
-## 5. Stage 3 — live-test (openaudrey subdomain)
+## 5. Stage 3 — live-test (oaudrey subdomain)
 
 ### Purpose
 
@@ -195,10 +195,22 @@ Human acceptance testing against a live URL running production-equivalent config
 
 **This is where the S.H.I.F.T. Human Testing API runs.**
 
+### MANDATORY REQUIREMENT: oAudrey UI Deployment
+
+**Every project MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain.** This is a mandatory requirement for all Revvel and MIDNGHTSAPPHIRE projects. The oAudrey UI enables Audrey Evans to test, review, and validate the application before production deployment. This requirement applies to:
+
+- Web applications
+- Mobile app web previews
+- API documentation interfaces
+- Admin panels and dashboards
+- Any user-facing interface
+
+Without an oAudrey subdomain deployment, the project cannot graduate to production.
+
 ### Setup
 
-1. Point a subdomain on `openaudrey.com` to a DigitalOcean droplet or App Platform instance.
-2. Configure the subdomain: `<app-name>.openaudrey.com` (e.g., `growlingeyes.openaudrey.com`).
+1. Point a subdomain on `oaudrey.com` to a DigitalOcean droplet or App Platform instance.
+2. Configure the subdomain: `<app-name>.oaudrey.com` (e.g., `growlingeyes.oaudrey.com`).
 3. Use Let's Encrypt (Certbot) or DigitalOcean's managed TLS for HTTPS.
 4. Protect the live-test URL with HTTP Basic Auth or Clerk's staging environment to prevent public access.
 
@@ -207,10 +219,10 @@ Human acceptance testing against a live URL running production-equivalent config
 ```nginx
 server {
     listen 443 ssl;
-    server_name growlingeyes.openaudrey.com;
+    server_name growlingeyes.oaudrey.com;
 
-    ssl_certificate /etc/letsencrypt/live/openaudrey.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/openaudrey.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/oaudrey.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/oaudrey.com/privkey.pem;
 
     # Password-protect the live-test environment
     auth_basic "Live Test — Authorized Access Only";
@@ -236,7 +248,7 @@ Once the live-test URL is confirmed live, run the S.H.I.F.T. Human Testing API:
 ```bash
 # Run from the revvel-standards repo
 node scripts/run-human-testing-api.js \
-  --url https://growlingeyes.openaudrey.com \
+  --url https://growlingeyes.oaudrey.com \
   --app GrowlingEyes \
   --scenarios all
 ```
