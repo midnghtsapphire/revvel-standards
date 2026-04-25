@@ -1,0 +1,17 @@
+# CircleCI is intentionally disabled for this repository.
+# All CI/CD runs through GitHub Actions (see .github/workflows/).
+# This minimal config exists solely to prevent "no configuration found"
+# errors from the still-active CircleCI webhook.
+version: 2.1
+
+jobs:
+  noop:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - run: echo "CI for this repo runs via GitHub Actions. This job is a no-op."
+
+workflows:
+  placeholder:
+    jobs:
+      - noop

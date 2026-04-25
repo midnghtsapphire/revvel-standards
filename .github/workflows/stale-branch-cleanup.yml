@@ -1,0 +1,128 @@
+name: Stale Branch Cleanup
+
+# Deletes remote branches whose PRs have been merged or closed for 7+ days.
+# Protects main, master, develop, and production branches.
+# Runs weekly on Sunday at 06:00 UTC; can also be triggered manually.
+
+on:
+  schedule:
+    - cron: "0 6 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Log branches that would be deleted without deleting them"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    name: Delete stale branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged/closed branches
+        uses: actions/github-script@v8
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        with:
+          script: |
+            const dryRun = process.env.DRY_RUN === 'true';
+            const PROTECTED = new Set(['main', 'master', 'develop', 'production']);
+            const STALE_DAYS = 7;
+            const now = Date.now();
+
+            // Paginate through all branches
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            let deleted = 0;
+            let skipped = 0;
+
+            for (const branch of branches) {
+              if (PROTECTED.has(branch.name)) {
+                core.info(`SKIP (protected): ${branch.name}`);
+                skipped++;
+                continue;
+              }
+
+              // Check for open PRs first (cheap — usually 0-1 results)
+              const { data: openPRs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: `${context.repo.owner}:${branch.name}`,
+                state: 'open',
+                per_page: 1,
+              });
+
+              if (openPRs.length > 0) {
+                core.info(`SKIP (has open PR): ${branch.name}`);
+                skipped++;
+                continue;
+              }
+
+              // Only check closed PRs for branches with no open PR
+              const { data: closedPRs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: `${context.repo.owner}:${branch.name}`,
+                state: 'closed',
+                per_page: 10,
+              });
+
+              // Skip if any closed PR is still within the staleness window
+              // (prevents premature deletion when a branch is reused for a new PR)
+              const hasRecentPR = closedPRs.some(pr =>
+                pr.closed_at &&
+                (now - new Date(pr.closed_at).getTime()) <= STALE_DAYS * 86400000
+              );
+
+              if (hasRecentPR) {
+                core.info(`SKIP (has recently closed PR): ${branch.name}`);
+                skipped++;
+                continue;
+              }
+
+              const stalePR = closedPRs.find(pr =>
+                pr.state === 'closed' &&
+                pr.closed_at &&
+                (now - new Date(pr.closed_at).getTime()) > STALE_DAYS * 86400000
+              );
+
+              if (!stalePR) {
+                core.info(`SKIP (no stale closed PR): ${branch.name}`);
+                skipped++;
+                continue;
+              }
+
+              if (dryRun) {
+                core.info(`DRY RUN — would delete: ${branch.name} (PR #${stalePR.number} closed ${stalePR.closed_at})`);
+                deleted++;
+              } else {
+                try {
+                  await github.rest.git.deleteRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: `heads/${branch.name}`,
+                  });
+                  core.info(`DELETED: ${branch.name} (PR #${stalePR.number})`);
+                  deleted++;
+                } catch (err) {
+                  core.warning(`Failed to delete ${branch.name}: ${err.message}`);
+                }
+              }
+            }
+
+            core.summary.addHeading('Stale Branch Cleanup');
+            core.summary.addTable([
+              [{data: 'Metric', header: true}, {data: 'Count', header: true}],
+              ['Deleted', String(deleted)],
+              ['Skipped', String(skipped)],
+              ['Dry run', dryRun ? 'Yes' : 'No'],
+            ]);
+            await core.summary.write();
