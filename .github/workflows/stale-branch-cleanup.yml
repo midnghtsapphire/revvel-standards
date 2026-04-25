@@ -75,6 +75,19 @@ jobs:
                 per_page: 10,
               });
 
+              // Skip if any closed PR is still within the staleness window
+              // (prevents premature deletion when a branch is reused for a new PR)
+              const hasRecentPR = closedPRs.some(pr =>
+                pr.closed_at &&
+                (now - new Date(pr.closed_at).getTime()) <= STALE_DAYS * 86400000
+              );
+
+              if (hasRecentPR) {
+                core.info(`SKIP (has recently closed PR): ${branch.name}`);
+                skipped++;
+                continue;
+              }
+
               const stalePR = closedPRs.find(pr =>
                 pr.state === 'closed' &&
                 pr.closed_at &&
