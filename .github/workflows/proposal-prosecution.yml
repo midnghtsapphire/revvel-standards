@@ -8,6 +8,10 @@ permissions:
   issues: write
   contents: read
 
+concurrency:
+  group: proposal-prosecution-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   prosecute:
     if: (github.event.action == 'labeled' && github.event.label.name == 'proposal') || (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'proposal'))
