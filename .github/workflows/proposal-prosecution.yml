@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   prosecute:
-    if: contains(github.event.issue.labels.*.name, 'proposal')
+    if: (github.event.action == 'labeled' && github.event.label.name == 'proposal') || (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'proposal'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

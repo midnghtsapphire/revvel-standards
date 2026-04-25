@@ -125,7 +125,7 @@ jobs:
             BODY="${BODY}## 📋 Proposals in active/ >30 days\n${ACTIVE_PROPOSALS}\n\n"
           fi
 
-          if [ -z "$STALE_90" ] && [ -z "$STALE_60" ] && [ -z "$STALE_30" ] && [ -z "$NO_OWNER" ]; then
+          if [ -z "$STALE_90" ] && [ -z "$STALE_60" ] && [ -z "$STALE_30" ] && [ -z "$NO_OWNER" ] && [ -z "$NO_DEADLINE" ] && [ -z "$ACTIVE_PROPOSALS" ]; then
             BODY="${BODY}✅ All workstreams are healthy. No stale items, no unowned items.\n"
           fi
 
