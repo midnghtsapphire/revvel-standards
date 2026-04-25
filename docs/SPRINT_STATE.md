@@ -2,7 +2,14 @@
 
 > **Last Updated**: Feb 25, 2026 4:35 PM MST
 > **Sprint**: Sprint 1 — Foundation & Core Apps
-> **Status**: Active
+> **Status**: Snapshot (see note below)
+
+> [!NOTE]
+> **This document is a point-in-time snapshot from Feb 25, 2026.**
+> It is not automatically maintained. For live project status, see:
+> - [GitHub Projects board](https://github.com/orgs/midnghtsapphire/projects) (when configured)
+> - Open issues: `gh issue list --repo midnghtsapphire/revvel-standards`
+> - The `stale-docs-check.yml` workflow flags this file when it hasn't been updated in 30+ days.
 
 ---
 

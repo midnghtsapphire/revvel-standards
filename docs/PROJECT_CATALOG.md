@@ -4,6 +4,15 @@
 **Date:** 2026-02-25
 **Status:** Incomplete - Representative Sample
 
+> [!NOTE]
+> **This is a manually maintained snapshot.** For a complete, real-time list
+> of all repositories, use the GitHub API or the organization page:
+> ```bash
+> gh repo list midnghtsapphire --limit 500 --json name,description,updatedAt
+> ```
+> A future `generate-project-catalog.yml` workflow will auto-generate this file.
+> The `stale-docs-check.yml` workflow flags this file when it hasn't been updated in 30+ days.
+
 ---
 
 ## 1. Introduction
