@@ -97,7 +97,8 @@ jobs:
           if [ -d docs/proposals/active ]; then
             for f in docs/proposals/active/*.md; do
               [ -f "$f" ] || continue
-              FILE_AGE=$(( ($(date +%s) - $(stat -c %Y "$f")) / 86400 ))
+              ADDED_EPOCH=$(git log --diff-filter=A --format=%at -- "$f" | tail -1)
+              FILE_AGE=$(( ($(date +%s) - ${ADDED_EPOCH:-$(date +%s)}) / 86400 ))
               if [ "$FILE_AGE" -ge 30 ]; then
                 FNAME=$(basename "$f" .md)
                 ACTIVE_PROPOSALS="${ACTIVE_PROPOSALS}\n- **${FNAME}** — ${FILE_AGE} days in active/"

@@ -109,18 +109,20 @@ jobs:
           # Extract the response content
           VERDICT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "Error: No response from model"')
 
-          # Write to file for comment body
-          cat > /tmp/prosecution.md << EOF
+          # Write to file for comment body (unique delimiter to avoid collision with AI output)
+          cat > /tmp/prosecution.md << 'PROSECUTION_REVIEW_END'
           ## 🔴 Prosecution Review — Adversarial Analysis
 
           _This is an automated adversarial review. Its job is to find flaws, not to approve. Address the findings in your rebuttal._
 
-          ${VERDICT}
+          PROSECUTION_REVIEW_END
+          echo "${VERDICT}" >> /tmp/prosecution.md
+          cat >> /tmp/prosecution.md << PROSECUTION_REVIEW_END
 
           ---
           _Prosecution model: anthropic/claude-sonnet-4 via OpenRouter_
           _Triggered by: proposal label on #${{ github.event.issue.number }}_
-          EOF
+          PROSECUTION_REVIEW_END
 
       - name: Post findings to issue
         if: env.SKIP != 'true'
