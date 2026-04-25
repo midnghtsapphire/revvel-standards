@@ -2,13 +2,13 @@
 
 > Shared decision log for all agents and humans working in this repo.
 > Before asking a human a question, check here first. If your question is already answered, use that answer.
-> If you make an assumption, document it here so other agents don't contradict you.
+> If you make an assumption, document it in ASSUMPTIONS.md so other agents don't contradict you.
 
 ## How to Use This File
 
 **For agents:**
 1. Before asking the human a clarifying question, check if it's already answered here.
-2. If information is missing and the decision is **reversible**, make the most reasonable assumption, add it below as `[ASSUMED]`, and continue working.
+2. If information is missing and the decision is **reversible**, make the most reasonable assumption, document it in ASSUMPTIONS.md as `[ASSUMED]`, and continue working.
 3. If the decision is **irreversible** (e.g., deleting data, publishing to production, spending money), escalate to the human.
 4. When a human confirms or overrides an assumption, update the status to `[CONFIRMED]` or `[OVERRIDDEN]`.
 
