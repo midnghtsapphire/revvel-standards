@@ -81,6 +81,7 @@ jobs:
 
               if (dryRun) {
                 core.info(`DRY RUN — would delete: ${branch.name} (PR #${stalePR.number} closed ${stalePR.closed_at})`);
+                deleted++;
               } else {
                 try {
                   await github.rest.git.deleteRef({
