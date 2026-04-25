@@ -1,125 +1,66 @@
-# Secrets Management — "Did something delete my secrets?"
+# Secrets Management — Workflow ↔ Secret Matrix
 
-**Short answer: no.** No workflow, script, or skill in `revvel-standards`
-modifies, rotates, or deletes GitHub Actions secrets. This document exists to
-explain the invariant, document how to verify it, and give you a one-command
-recovery path when a secret appears to be "missing everywhere".
+> **Last audited:** 2026-04-25
+> **Source:** Gap analysis session ([link](https://app.devin.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
 
----
+This document maps every GitHub Actions workflow to the secrets it requires
+(excluding `GITHUB_TOKEN`, which is auto-provided). Use this to verify
+that all automations have the secrets they need to actually run.
 
-## The invariant
+## Secret Inventory
 
-> **Nothing in `revvel-standards` ever calls `gh secret delete` or issues
-> `DELETE /repos/{owner}/{repo}/actions/secrets/...`.**
+| Secret | Used By | Skip Guard? | Notes |
+|---|---|---|---|
+| `OPENROUTER_API_KEY` | ai-pr-review, ai-ci-failure-helper, ai-weekly-changelog, openrouter-triage, openrouter-coder, openrouter-instantiation-check, priority-router, proof-of-life, research-module, run-human-testing-api | Most have guards | Core LLM routing key — if missing, most AI features silently skip |
+| `JULES_API_KEY` | jules-invoke, jules-feedback, jules-pr-comment, jules-pr-reviewer | Yes (all guarded) | Google Jules agent integration |
+| `OPENAI_API_KEY` | panda-ops | Yes | PandaOps AI PR review |
+| `RECURSE_ML_API_KEY` | recurse-ml | No guard | RecurseML code review — will fail if missing |
+| `ADMIN_GITHUB_TOKEN` | fork-audit-bot, openrouter-instantiation-check, ready-for-review, saml-sso-registration | Varies | Fine-grained PAT with elevated repo permissions |
+| `READY_FOR_REVIEW_TOKEN` | ready-for-review | Yes | Fine-grained PAT for promoting drafts |
+| `APP_ID` | mabl, research-module, run-human-testing-api | No guard | GitHub App ID for app-based auth |
+| `APP_PRIVATE_KEY` | mabl, research-module, run-human-testing-api | No guard | GitHub App private key |
+| `MABL_API_KEY` | mabl | No guard | mabl testing platform API key |
+| `MIRROR_GIST_ID` | durability-mirror | Yes | Gist ID for durability mirror backup |
+| `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
 
-Every workflow, script, and skill in this repo treats Actions secrets as
-**read-only inputs**. Specifically:
+## Workflows Without Custom Secrets
 
-- `.github/workflows/ralph-loop.yml` manipulates only labels, comments, and
-  assignees — it never references `secrets.*` for anything except passing
-  `GITHUB_TOKEN` to `actions/github-script`.
-- `.github/workflows/run-human-testing-api.yml` and
-  `.github/workflows/research-module.yml` **read**
-  `OPENROUTER_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY` into environment
-  variables; they do not mutate them.
-- `.github/workflows/mabl.yml`, `panda-ops.yml`, `recurse-ml.yml`,
-  `saml-sso-registration.yml` all read secrets for their respective APIs;
-  none modify GitHub Actions secrets.
-- `scripts/bootstrap-repo.sh` **prints** a suggested `gh secret set` command
-  for the caller to run manually — it never deletes.
-- The `vault-agent` skill (`skills/vault-agent/SKILL.md`) documents
-  provisioning and rotation against **HashiCorp Vault**, not GitHub Actions
-  secrets. Rotation in Vault does not propagate to GitHub Actions secrets
-  automatically.
+These workflows only use `GITHUB_TOKEN` (auto-provided):
 
-You can re-verify this at any time with:
+- `arsc-labels.yml`
+- `auto-merge.yml`
+- `close-linked-issue.yml`
+- `commit-queue-monitor.yml`
+- `compliance-watcher.yml`
+- `create-issue-branch.yml`
+- `flow-chart-sync.yml`
+- `match-labels.yml`
+- `mergify-merge-queue-labels-copier.yml`
+- `migration-cron.yml`
+- `ralph-loop.yml`
+- `stale-branch-cleanup.yml`
+- `sync-labels.yml`
+- `triage-cron.yml`
 
-```bash
-# From the repo root — should return no matches.
-grep -RIn --exclude-dir=.git \
-  -E 'gh secret (delete|remove)|DELETE[[:space:]]+/repos/.*actions/secrets|deleteRepoSecret' .
-```
+## Workflows Missing Skip Guards
 
-### Why the workflows cannot delete secrets even if they wanted to
+These workflows will **fail hard** if their secrets are not configured
+(no graceful "skip if not set" check):
 
-The default `GITHUB_TOKEN` available to workflows does **not** include the
-admin permission required to manage Actions secrets. Deleting a repo secret
-requires either:
+| Workflow | Missing Guard For |
+|---|---|
+| `mabl.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY` |
+| `openrouter-coder.yml` | `OPENROUTER_API_KEY` |
+| `openrouter-instantiation-check.yml` | `OPENROUTER_API_KEY` |
+| `recurse-ml.yml` | `RECURSE_ML_API_KEY` |
+| `research-module.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `OPENROUTER_API_KEY` |
+| `run-human-testing-api.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `OPENROUTER_API_KEY` |
 
-1. A personal access token (classic) with the `repo` scope, owned by a user
-   with admin rights on the repo, or
-2. A GitHub App with `Secrets: Read & write` repository permission.
+**Recommendation:** Add skip guards to these workflows so they degrade
+gracefully instead of failing CI when secrets aren't configured.
 
-No workflow in this repo is configured with either. So even a compromised
-workflow run could not delete a secret through the provided token.
+## How to Verify
 
----
-
-## If secrets "disappear" from every repo at once
-
-The most common cause is **new-workflow-meets-unprovisioned-repo**:
-
-- A workflow that reads a secret (e.g. `OPENROUTER_API_KEY`) is added to the
-  org's `revvel-standards` template and propagated (via copy, clone, or
-  `sync-labels.yml`-style distribution) into downstream repos.
-- Actions secrets are scoped **per-repository / per-environment** and do not
-  travel with the workflow file. The first time the new workflow runs in a
-  repo that was never provisioned, it surfaces a warning — which, appearing
-  simultaneously across every downstream repo, reads like "all the secrets
-  were just deleted".
-
-Nothing was deleted. The secret was never provisioned in those repos. Use
-the helper below to fix it in one command.
-
-### Other causes worth checking before blaming automation
-
-- **An org admin ran `gh secret delete`** (or clicked Remove in Settings →
-  Secrets and variables → Actions). GitHub logs this in the org / repo
-  [audit log](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/reviewing-the-audit-log-for-your-organization)
-  — filter by `action:repo.actions_secret_delete` or
-  `action:org.actions_secret_delete`.
-- **The secret was scoped to an environment that was deleted.** Environment
-  secrets vanish with the environment.
-- **The repo was transferred** to a new owner. GitHub does not migrate
-  secrets across ownership changes.
-- **The secret's name changed** (e.g. `OPENROUTER_KEY` → `OPENROUTER_API_KEY`)
-  in a workflow without a corresponding rename in repo settings.
-
----
-
-## Re-provisioning secrets across many repos
-
-Use [`scripts/provision-repo-secrets.sh`](../scripts/provision-repo-secrets.sh):
-
-```bash
-# Provision OPENROUTER_API_KEY from Vault to a list of repos:
-OPENROUTER_API_KEY="$(vault kv get -field=api_key revvel/shared/llm/openrouter)" \
-  scripts/provision-repo-secrets.sh \
-    midnghtsapphire/oaudrey \
-    midnghtsapphire/revvel-standards \
-    midnghtsapphire/penny-sovereign-yield-scout
-
-# Dry-run first to see what would change:
-DRY_RUN=1 OPENROUTER_API_KEY="$(vault kv get -field=api_key revvel/shared/llm/openrouter)" \
-  scripts/provision-repo-secrets.sh midnghtsapphire/oaudrey
-
-# Multiple secrets in one pass — just export each variable:
-OPENROUTER_API_KEY=... OPENAI_API_KEY=... ANTHROPIC_API_KEY=... \
-  scripts/provision-repo-secrets.sh --secrets OPENROUTER_API_KEY,OPENAI_API_KEY,ANTHROPIC_API_KEY \
-    midnghtsapphire/oaudrey midnghtsapphire/revvel-standards
-```
-
-The script uses `gh secret set` exclusively — it **adds or overwrites**
-secrets, it never deletes them. See `scripts/provision-repo-secrets.sh --help`
-for the full contract.
-
----
-
-## See also
-
-- [`.env.example`](../.env.example) — canonical list of secret names and
-  their Vault paths.
-- [`skills/vault-agent/SKILL.md`](../skills/vault-agent/SKILL.md) — how
-  secrets are provisioned from / rotated in HashiCorp Vault.
-- [`docs/Master_Inventory/VAULT_AGENT_STANDARD.md`](Master_Inventory/VAULT_AGENT_STANDARD.md)
-  — the full standard for the vault-agent.
+Run the **Secrets Health Check** workflow (`.github/workflows/secrets-health-check.yml`)
+manually via `workflow_dispatch`. It reports which secrets are configured vs. missing
+without exposing any values.
