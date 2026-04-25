@@ -64,3 +64,88 @@ gracefully instead of failing CI when secrets aren't configured.
 Run the **Secrets Health Check** workflow (`.github/workflows/secrets-health-check.yml`)
 manually via `workflow_dispatch`. It reports which secrets are configured vs. missing
 without exposing any values.
+
+---
+
+## Doppler Integration
+
+[Doppler](https://doppler.com) is the recommended secrets management platform for
+provisioning and syncing secrets across environments.
+
+### Setup
+
+1. **Create a Doppler project** for `revvel-standards` at [dashboard.doppler.com](https://dashboard.doppler.com)
+2. **Create a "github" environment** (Options → Create Environment → name it `github`)
+3. **Add your secrets** in the Doppler dashboard for the `github` environment
+4. **Generate a service token**: Project Settings → Service Tokens → Generate → scope to `github` config
+5. **Add the service token to GitHub**: Repo Settings → Secrets and variables → Actions → `DOPPLER_TOKEN`
+
+### Installed GitHub Actions (from Doppler Marketplace)
+
+These official Doppler actions are already installed on this repo:
+
+| Action | What it does |
+|---|---|
+| **`dopplerhq/secrets-fetch-action@v2`** | Injects all Doppler secrets as masked env vars — **use this in most workflows** |
+| **`dopplerhq/cli-action@v3`** | Installs the Doppler CLI into `PATH` |
+
+### Verifying Doppler Connection
+
+Run the **Doppler Secrets Sync** workflow (Actions → "Doppler Secrets Sync" → Run)
+to verify connectivity and list all available secrets.
+
+### Using Doppler in Workflows
+
+**Option 1 — Environment Loader (recommended):** Injects all secrets as masked env vars.
+
+```yaml
+- name: Fetch secrets from Doppler
+  uses: dopplerhq/secrets-fetch-action@v2
+  with:
+    doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+
+- name: Use secrets (they're now env vars)
+  run: |
+    echo "OpenRouter key is set: ${OPENROUTER_API_KEY:+yes}"
+```
+
+**Option 2 — CLI (for `doppler run`):** Wraps a command with all secrets injected.
+
+```yaml
+- name: Install Doppler CLI
+  uses: dopplerhq/cli-action@v3
+
+- name: Run with Doppler secrets
+  env:
+    DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+  run: doppler run -- your-command-here
+```
+
+### Local Development
+
+```bash
+# Install Doppler CLI
+curl -Ls https://cli.doppler.com/install.sh | sh
+
+# Login and select project
+doppler login
+doppler setup    # select revvel-standards → dev
+
+# Run commands with secrets injected
+doppler run -- npm start
+doppler run -- node scripts/check-compliance.js .
+
+# View configured secrets (names only)
+doppler secrets --only-names
+```
+
+### Credential Gatekeeper
+
+The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`)
+scans issue bodies for credential requirements and generates a Bill of Materials:
+
+1. Label an issue with `ready-to-implement`
+2. The gatekeeper scans the issue text for keywords (openrouter, stripe, supabase, etc.)
+3. Posts a comment with the required secrets and Doppler provisioning commands
+4. Adds `credentials-missing` or `credentials-ready` label
+5. Implementation should not begin until `credentials-ready` is applied
