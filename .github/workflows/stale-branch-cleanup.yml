@@ -25,9 +25,11 @@ jobs:
     steps:
       - name: Delete merged/closed branches
         uses: actions/github-script@v8
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const dryRun = '${{ github.event.inputs.dry_run }}' === 'true';
+            const dryRun = process.env.DRY_RUN === 'true';
             const PROTECTED = new Set(['main', 'master', 'develop', 'production']);
             const STALE_DAYS = 7;
             const now = Date.now();
@@ -49,25 +51,31 @@ jobs:
                 continue;
               }
 
-              // Get all PRs for this branch (open + closed)
-              const prs = await github.paginate(github.rest.pulls.list, {
+              // Check for open PRs first (cheap — usually 0-1 results)
+              const { data: openPRs } = await github.rest.pulls.list({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 head: `${context.repo.owner}:${branch.name}`,
-                state: 'all',
-                per_page: 100,
+                state: 'open',
+                per_page: 1,
               });
 
-              // Never delete a branch that has an open PR
-              if (prs.some(pr => pr.state === 'open')) {
+              if (openPRs.length > 0) {
                 core.info(`SKIP (has open PR): ${branch.name}`);
                 skipped++;
                 continue;
               }
 
-              // Only delete if there is a closed/merged PR that has been
-              // closed for at least STALE_DAYS
-              const stalePR = prs.find(pr =>
+              // Only check closed PRs for branches with no open PR
+              const { data: closedPRs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: `${context.repo.owner}:${branch.name}`,
+                state: 'closed',
+                per_page: 10,
+              });
+
+              const stalePR = closedPRs.find(pr =>
                 pr.state === 'closed' &&
                 pr.closed_at &&
                 (now - new Date(pr.closed_at).getTime()) > STALE_DAYS * 86400000
