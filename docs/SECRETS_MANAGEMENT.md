@@ -15,7 +15,7 @@ that all automations have the secrets they need to actually run.
 | `JULES_API_KEY` | jules-invoke, jules-feedback, jules-pr-comment, jules-pr-reviewer | Yes (all guarded) | Google Jules agent integration |
 | `OPENAI_API_KEY` | panda-ops | Yes | PandaOps AI PR review |
 | `RECURSE_ML_API_KEY` | recurse-ml | No guard | RecurseML code review — will fail if missing |
-| `ADMIN_GITHUB_TOKEN` | fork-audit-bot, openrouter-instantiation-check, ready-for-review, saml-sso-registration | Varies | Fine-grained PAT with elevated repo permissions |
+| `ADMIN_GITHUB_TOKEN` | fork-audit-bot, openrouter-instantiation-check, project-board-sync, ready-for-review, saml-sso-registration | Varies | Fine-grained PAT with elevated repo permissions |
 | `READY_FOR_REVIEW_TOKEN` | ready-for-review | Yes | Fine-grained PAT for promoting drafts |
 | `APP_ID` | mabl, research-module, run-human-testing-api | No guard | GitHub App ID for app-based auth |
 | `APP_PRIVATE_KEY` | mabl, research-module, run-human-testing-api | No guard | GitHub App private key |
