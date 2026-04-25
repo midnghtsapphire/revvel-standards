@@ -64,17 +64,17 @@ jobs:
                 TOUCHED_EPOCH=$(date -d "$LAST_TOUCHED" +%s 2>/dev/null)
                 if [ -z "$TOUCHED_EPOCH" ]; then
                   echo "::warning::Could not parse date '$LAST_TOUCHED' for $ID — skipping staleness check"
-                  continue
-                fi
-                TODAY_EPOCH=$(date +%s)
-                DAYS_AGO=$(( (TODAY_EPOCH - TOUCHED_EPOCH) / 86400 ))
+                else
+                  TODAY_EPOCH=$(date +%s)
+                  DAYS_AGO=$(( (TODAY_EPOCH - TOUCHED_EPOCH) / 86400 ))
 
-                if [ "$DAYS_AGO" -ge 90 ]; then
-                  STALE_90="${STALE_90}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
-                elif [ "$DAYS_AGO" -ge 60 ]; then
-                  STALE_60="${STALE_60}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
-                elif [ "$DAYS_AGO" -ge 30 ]; then
-                  STALE_30="${STALE_30}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
+                  if [ "$DAYS_AGO" -ge 90 ]; then
+                    STALE_90="${STALE_90}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
+                  elif [ "$DAYS_AGO" -ge 60 ]; then
+                    STALE_60="${STALE_60}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
+                  elif [ "$DAYS_AGO" -ge 30 ]; then
+                    STALE_30="${STALE_30}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
+                  fi
                 fi
               fi
 
