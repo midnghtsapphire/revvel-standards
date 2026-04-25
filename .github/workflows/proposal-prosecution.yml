@@ -1,0 +1,132 @@
+name: Proposal Prosecution
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  prosecute:
+    if: contains(github.event.issue.labels.*.name, 'proposal')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run adversarial review
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::OPENROUTER_API_KEY not set. Skipping prosecution."
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          ISSUE_BODY=$(cat <<'ISSUE_EOF'
+          ${{ github.event.issue.body }}
+          ISSUE_EOF
+          )
+
+          # Check if there's a linked proposal file in docs/proposals/active/
+          PROPOSAL_CONTEXT=""
+          for f in docs/proposals/active/*.md; do
+            [ -f "$f" ] || continue
+            # Fuzzy match: if issue title words appear in filename
+            FNAME=$(basename "$f" .md | tr '-' ' ')
+            if echo "$ISSUE_TITLE" | grep -qi "$(echo "$FNAME" | cut -d' ' -f1)"; then
+              PROPOSAL_CONTEXT=$(cat "$f")
+              break
+            fi
+          done
+
+          FULL_CONTEXT="# Proposal: ${ISSUE_TITLE}
+
+          ## Issue Body
+          ${ISSUE_BODY}
+          "
+
+          if [ -n "$PROPOSAL_CONTEXT" ]; then
+            FULL_CONTEXT="${FULL_CONTEXT}
+
+          ## Linked Proposal Document
+          ${PROPOSAL_CONTEXT}
+          "
+          fi
+
+          PROMPT="You are the Prosecutor in a proposal review council. Your mandate is adversarial-first.
+
+          RULES:
+          - Assume this proposal is flawed. Your job is to protect the project from bad ideas.
+          - Find every weakness, unstated assumption, hidden cost, security risk, and failure mode.
+          - Be harsh but fair. Attack the idea, not the person.
+          - Identify what happens if this proposal is implemented AND fails.
+          - Check for: scope creep risk, dependency on things that don't exist yet, yak-shaving (building meta-tools instead of shipping product), missing acceptance criteria, unclear ownership.
+          - If the proposal references other systems/tools, verify they actually exist and work as claimed.
+          - End with a severity rating: BLOCK (do not proceed), CAUTION (proceed with changes), or CLEAR (no major issues found).
+
+          FORMAT your response as:
+          ## Prosecution Findings
+
+          ### Critical Issues (must address before approval)
+          - ...
+
+          ### Warnings (should address)
+          - ...
+
+          ### Observations (consider but not blocking)
+          - ...
+
+          ### Severity: [BLOCK | CAUTION | CLEAR]
+
+          ### Summary
+          One paragraph synthesis.
+
+          ---
+
+          HERE IS THE PROPOSAL TO PROSECUTE:
+
+          ${FULL_CONTEXT}"
+
+          # Call OpenRouter
+          RESPONSE=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${OPENROUTER_API_KEY}" \
+            -H "HTTP-Referer: https://github.com/${{ github.repository }}" \
+            -d "$(jq -n \
+              --arg model "anthropic/claude-sonnet-4" \
+              --arg prompt "$PROMPT" \
+              '{
+                model: $model,
+                messages: [{role: "user", content: $prompt}],
+                max_tokens: 2000,
+                temperature: 0.3
+              }')")
+
+          # Extract the response content
+          VERDICT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "Error: No response from model"')
+
+          # Write to file for comment body
+          cat > /tmp/prosecution.md << EOF
+          ## 🔴 Prosecution Review — Adversarial Analysis
+
+          _This is an automated adversarial review. Its job is to find flaws, not to approve. Address the findings in your rebuttal._
+
+          ${VERDICT}
+
+          ---
+          _Prosecution model: anthropic/claude-sonnet-4 via OpenRouter_
+          _Triggered by: proposal label on #${{ github.event.issue.number }}_
+          EOF
+
+      - name: Post findings to issue
+        if: env.SKIP != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file /tmp/prosecution.md
