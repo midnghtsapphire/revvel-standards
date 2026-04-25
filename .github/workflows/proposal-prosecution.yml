@@ -18,18 +18,14 @@ jobs:
       - name: Run adversarial review
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           if [ -z "$OPENROUTER_API_KEY" ]; then
             echo "::warning::OPENROUTER_API_KEY not set. Skipping prosecution."
             echo "SKIP=true" >> "$GITHUB_ENV"
             exit 0
           fi
-
-          ISSUE_TITLE="${{ github.event.issue.title }}"
-          ISSUE_BODY=$(cat <<'ISSUE_EOF'
-          ${{ github.event.issue.body }}
-          ISSUE_EOF
-          )
 
           # Check if there's a linked proposal file in docs/proposals/active/
           PROPOSAL_CONTEXT=""

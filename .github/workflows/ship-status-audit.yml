@@ -36,7 +36,7 @@ jobs:
           IN_ACTIVE=false
           while IFS= read -r line; do
             # Detect start of Active Workstreams table
-            if echo "$line" | grep -q "^| ID "; then
+            if echo "$line" | grep -q "^| ID " && echo "$line" | grep -q "Last Touched"; then
               IN_ACTIVE=true
               continue
             fi
