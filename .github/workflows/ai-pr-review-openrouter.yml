@@ -52,9 +52,10 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          # NOTE: The `:free` variant was retired by OpenRouter in April 2026
-          # ("The free Grok 4.1 Fast period has ended"). Use the paid slug.
-          model: "x-ai/grok-4.1-fast"
+          # Switched to Claude Sonnet 4 for reliability — the previous
+          # x-ai/grok-4.1-fast slug was returning 404s after the free tier
+          # was retired. Claude Sonnet 4 is already used by openrouter-triage.
+          model: "anthropic/claude-sonnet-4"
           prompt_template: |
             Analyze the next diff, flag problems if any, and describe them
             briefly. Keep it under 200 words:

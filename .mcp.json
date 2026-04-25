@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-config",
+  "_comment": "Revvel MCP configuration — see docs/Master_Inventory/MCP_STANDARD.md and docs/MCP_REVVEL_CATALOG.md for full details.",
+  "mcpServers": {
+    "rvvel-affiliate-links": {
+      "_comment": "8 tools for the Revvel affiliate link ecosystem. See AGENTS.md for tool list.",
+      "command": "node",
+      "args": ["${MCP_AFFILIATE_LINKS_PATH:-./mcp-servers/affiliate-links/index.js}"],
+      "env": {
+        "DATABASE_URL": "${AFFILIATE_DB_URL}",
+        "NODE_ENV": "production"
+      },
+      "disabled": true,
+      "disabledReason": "Server not yet deployed. Enable once mcp-servers/affiliate-links/ is built and DATABASE_URL is configured."
+    },
+    "code-review": {
+      "_comment": "10 tools for automated code quality enforcement. See AGENTS.md for tool list.",
+      "command": "node",
+      "args": ["${MCP_CODE_REVIEW_PATH:-./mcp-servers/code-review/index.js}"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "disabled": true,
+      "disabledReason": "Server not yet deployed. Enable once mcp-servers/code-review/ is built."
+    }
+  }
+}
