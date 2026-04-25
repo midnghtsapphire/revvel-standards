@@ -1,0 +1,75 @@
+name: Workflow Health Dashboard
+
+# Generates a summary of the last run status for every workflow in the repo.
+# Posts results to the GitHub Actions run summary. Run weekly or on demand.
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC (after secrets check)
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  dashboard:
+    name: Generate workflow health report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect workflow statuses
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            const rows = [];
+
+            for (const wf of workflows.workflows) {
+              const { data: runs } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: wf.id,
+                per_page: 1,
+              });
+
+              const lastRun = runs.workflow_runs[0];
+              let status = 'Never run';
+              let date = '—';
+              let icon = ':white_circle:';
+
+              if (lastRun) {
+                status = lastRun.conclusion || lastRun.status;
+                date = lastRun.updated_at?.split('T')[0] || '—';
+
+                if (status === 'success') icon = ':white_check_mark:';
+                else if (status === 'failure') icon = ':x:';
+                else if (status === 'cancelled') icon = ':no_entry_sign:';
+                else if (status === 'skipped') icon = ':fast_forward:';
+                else icon = ':hourglass:';
+              }
+
+              rows.push(`| ${icon} | \`${wf.name}\` | ${status} | ${date} |`);
+            }
+
+            const header = [
+              '## Workflow Health Dashboard',
+              '',
+              `_Generated: ${new Date().toISOString().split('T')[0]}_`,
+              '',
+              '| | Workflow | Last Status | Last Run |',
+              '|---|---|---|---|',
+            ];
+
+            const summary = [...header, ...rows].join('\n');
+            core.summary.addRaw(summary);
+            await core.summary.write();
+
+            const failed = rows.filter(r => r.includes(':x:'));
+            if (failed.length > 0) {
+              core.warning(`${failed.length} workflow(s) had their last run fail. Check the summary for details.`);
+            }
