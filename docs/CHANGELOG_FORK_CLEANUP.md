@@ -2,8 +2,8 @@
 
 **Performed by:** Devin (gap analysis session)
 **Total forks before cleanup:** 116
-**Deleted:** 56
-**Preserved:** 60
+**Deleted:** 94
+**Preserved:** 22
 
 ---
 
@@ -29,6 +29,44 @@ re-forked from the original source at any time.
 | `Specflow` | [Hulupeep/Specflow](https://github.com/Hulupeep/Specflow) | Specs that enforce themselves. Turn specs into contracts that can't be broken by helpful LLMs. |
 | `ThreatIngestor` | [InQuest/ThreatIngestor](https://github.com/InQuest/ThreatIngestor) | Extract and aggregate threat intelligence. |
 | `WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling` | [ForensicTools/WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling](https://github.com/ForensicTools/WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling) | Goal is to create a monitor of both Bluetooth and Wi-Fi traffic. Using this traffic we will attempt  |
+| `Z-IPED` (fork renamed from `IPED`) | [sepinf-inc/IPED](https://github.com/sepinf-inc/IPED) | IPED Digital Forensic Tool. It is an open source software that can be used to process and analyze di |
+| `Z-container` (fork renamed from `container`) | [apple/container](https://github.com/apple/container) | A tool for creating and running Linux containers using lightweight virtual machines on a Mac. It is  |
+| `Z-data-police-shootings` (fork renamed from `data-police-shootings`) | [washingtonpost/data-police-shootings](https://github.com/washingtonpost/data-police-shootings) | The Washington Post is compiling a database of every fatal shooting in the United States by a police |
+| `Z-datasheet-server` (fork renamed from `datasheet-server`) | [forensic-architecture/datasheet-server](https://github.com/forensic-architecture/datasheet-server) | Turn spreadsheet data into a structured, dynamic API. |
+| `Z-eui` (fork renamed from `eui`) | [elastic/eui](https://github.com/elastic/eui) | Elastic UI Framework 🙌 |
+| `Z-gh-aw` (fork renamed from `gh-aw`) | [github/gh-aw](https://github.com/github/gh-aw) | GitHub Agentic Workflows |
+| `Z-go-feature-flag` (fork renamed from `go-feature-flag`) | [thomaspoignant/go-feature-flag](https://github.com/thomaspoignant/go-feature-flag) | GO Feature Flag is a simple, complete and lightweight self-hosted feature flag solution 100% Open So |
+| `Z-gogcli` (fork renamed from `gogcli`) | [steipete/gogcli](https://github.com/steipete/gogcli) | Google Suite CLI: Gmail, GCal, GDrive, GContacts. |
+| `Z-google-api-python-client` (fork renamed from `google-api-python-client`) | [googleapis/google-api-python-client](https://github.com/googleapis/google-api-python-client) | 🐍 The official Python client library for Google's discovery based APIs. |
+| `Z-incidentfox` (fork renamed from `incidentfox`) | [incidentfox/incidentfox](https://github.com/incidentfox/incidentfox) | AI-powered SRE platform for automated incident investigation |
+| `Z-influxdb` (fork renamed from `influxdb`) | [influxdata/influxdb](https://github.com/influxdata/influxdb) | Scalable datastore for metrics, events, and real-time analytics |
+| `Z-kener` (fork renamed from `kener`) | [rajnandan1/kener](https://github.com/rajnandan1/kener) | Stunning status pages, batteries included! |
+| `Z-killbill` (fork renamed from `killbill`) | [killbill/killbill](https://github.com/killbill/killbill) | Open-Source Subscription Billing & Payments Platform |
+| `Z-lovable-mcp-server` (fork renamed from `lovable-mcp-server`) | [hiromima/lovable-mcp-server](https://github.com/hiromima/lovable-mcp-server) | Unofficial MCP server for analyzing Lovable-generated projects with Claude Desktop. Community-built  |
+| `Z-medusa` (fork renamed from `medusa`) | [medusajs/medusa](https://github.com/medusajs/medusa) | The world's most flexible commerce platform. |
+| `Z-moonshine` (fork renamed from `moonshine`) | [moonshine-ai/moonshine](https://github.com/moonshine-ai/moonshine) | Fast and accurate automatic speech recognition (ASR) for edge devices |
+| `Z-nautilus_trader` (fork renamed from `nautilus_trader`) | [nautechsystems/nautilus_trader](https://github.com/nautechsystems/nautilus_trader) | A high-performance algorithmic trading platform and event-driven backtester |
+| `Z-openclaw` (fork renamed from `openclaw`) | [openclaw/openclaw](https://github.com/openclaw/openclaw) | Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞  |
+| `Z-paypal-rest-api-specifications` (fork renamed from `paypal-rest-api-specifications`) | [paypal/paypal-rest-api-specifications](https://github.com/paypal/paypal-rest-api-specifications) | This repository contains the specification files for PayPal REST APIs. |
+| `Z-postiz-app` (fork renamed from `postiz-app`) | [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) | 📨 The ultimate social media scheduling tool, with a bunch of AI  🤖 |
+| `Z-prompt-optimizer` (fork renamed from `prompt-optimizer`) | [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) | 一款提示词优化器，助力于编写高质量的提示词 |
+| `Z-relivator` (fork renamed from `relivator`) | [reliverse/relivator](https://github.com/reliverse/relivator) | 🏬 relivator: next.js 15 react 19 ecommerce template ▲ better-auth polar shadcn/ui tailwind drizzle o |
+| `Z-reviewsup.io` (fork renamed from `reviewsup.io`) | [allenyan513/reviewsup.io](https://github.com/allenyan513/reviewsup.io) |  An open-source review and testimonial management system that helps you collect, manage, and showcas |
+| `Z-rowboat` (fork renamed from `rowboat`) | [rowboatlabs/rowboat](https://github.com/rowboatlabs/rowboat) | Open-source AI coworker, with memory |
+| `Z-saleor` (fork renamed from `saleor`) | [saleor/saleor](https://github.com/saleor/saleor) | Saleor Core: the high performance, composable, headless commerce API. |
+| `Z-scrapy` (fork renamed from `scrapy`) | [scrapy/scrapy](https://github.com/scrapy/scrapy) | Scrapy, a fast high-level web crawling & scraping framework for Python. |
+| `Z-steel-browser` (fork renamed from `steel-browser`) | [steel-dev/steel-browser](https://github.com/steel-dev/steel-browser) | 🔥 Open Source Browser API for AI Agents & Apps. Steel Browser is a batteries-included browser sandbo |
+| `Z-telegram-decoder` (fork renamed from `telegram-decoder`) | [sepinf-inc/telegram-decoder](https://github.com/sepinf-inc/telegram-decoder) | Telegram decoder plugin used by IPED project |
+| `Z-tensorzero` (fork renamed from `tensorzero`) | [tensorzero/tensorzero](https://github.com/tensorzero/tensorzero) | TensorZero is an open-source stack for industrial-grade LLM applications. It unifies an LLM gateway, |
+| `Z-tiktok-business-api-sdk` (fork renamed from `tiktok-business-api-sdk`) | [tiktok/tiktok-business-api-sdk](https://github.com/tiktok/tiktok-business-api-sdk) | An SDK built to facilitate application development to integrate with TikTok Business API. |
+| `Z-timemap` (fork renamed from `timemap`) | [forensic-architecture/timemap](https://github.com/forensic-architecture/timemap) | Exploration, monitoring and classification of incidents in time and space. |
+| `Z-tinyclaw` (fork renamed from `tinyagi`) | [TinyAGI/tinyagi](https://github.com/TinyAGI/tinyagi) | TinyClaw is a team of AI agents that acts as your 24/7 personal assistant |
+| `Z-trl` (fork renamed from `trl`) | [huggingface/trl](https://github.com/huggingface/trl) | Train transformer language models with reinforcement learning. |
+| `Z-umami` (fork renamed from `umami`) | [umami-software/umami](https://github.com/umami-software/umami) | Umami is a modern, privacy-focused analytics platform. An open-source alternative to Google Analytic |
+| `Z-up-mcp` (fork renamed from `up-mcp`) | [wakeless/up-mcp](https://github.com/wakeless/up-mcp) | This is an Up MCP server. It runs on the localhost with the CLI based on the need to have local acce |
+| `Z-wallpaper` (fork renamed from `wallpaper`) | [adampielak/wallpaper](https://github.com/adampielak/wallpaper) | My personal collection of wallpapers. Works great on all desktop environments. |
+| `Z-whisperX` (fork renamed from `whisperX`) | [sepinf-inc/whisperX](https://github.com/sepinf-inc/whisperX) | WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization) |
+| `Z-wifi-densepose` (fork renamed from `RuView`) | [ruvnet/RuView](https://github.com/ruvnet/RuView) | Production-ready implementation of InvisPose - a revolutionary WiFi-based dense human pose estimatio |
 | `agent-toolkit` | [paypal/agent-toolkit](https://github.com/paypal/agent-toolkit) | PayPal Agent |
 | `ai-vocal-removers` | [vpd0444/ai-vocal-removers](https://github.com/vpd0444/ai-vocal-removers) | No More Audio Mixing Nightmares! Recommend 12 AI Vocal Remover Game-Changers |
 | `aimeos-laravel` | [aimeos/aimeos-laravel](https://github.com/aimeos/aimeos-laravel) | Laravel ecommerce package for ultra fast online shops, scalable marketplaces, complex B2B applicatio |
@@ -106,46 +144,3 @@ re-forked from the original source at any time.
 | `chrome-devtools-mcp` | [ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Chrome DevTools for coding agents |
 | `sleuthkit` | [sepinf-inc/sleuthkit](https://github.com/sepinf-inc/sleuthkit) | The Sleuth Kit® (TSK) is a library and collection of command line digital forensics tools that allow |
 | `trawl` | [akdavidsson/trawl](https://github.com/akdavidsson/trawl) | No description |
-
-### Z-prefix Repos (evaluation forks)
-
-| Repo | Original Source | Description |
-|---|---|---|
-| `Z-IPED` | [sepinf-inc/IPED](https://github.com/sepinf-inc/IPED) | IPED Digital Forensic Tool. It is an open source software that can be used to process and analyze di |
-| `Z-container` | [apple/container](https://github.com/apple/container) | A tool for creating and running Linux containers using lightweight virtual machines on a Mac. It is  |
-| `Z-data-police-shootings` | [washingtonpost/data-police-shootings](https://github.com/washingtonpost/data-police-shootings) | The Washington Post is compiling a database of every fatal shooting in the United States by a police |
-| `Z-datasheet-server` | [forensic-architecture/datasheet-server](https://github.com/forensic-architecture/datasheet-server) | Turn spreadsheet data into a structured, dynamic API. |
-| `Z-eui` | [elastic/eui](https://github.com/elastic/eui) | Elastic UI Framework 🙌 |
-| `Z-gh-aw` | [github/gh-aw](https://github.com/github/gh-aw) | GitHub Agentic Workflows |
-| `Z-go-feature-flag` | [thomaspoignant/go-feature-flag](https://github.com/thomaspoignant/go-feature-flag) | GO Feature Flag is a simple, complete and lightweight self-hosted feature flag solution 100% Open So |
-| `Z-gogcli` | [steipete/gogcli](https://github.com/steipete/gogcli) | Google Suite CLI: Gmail, GCal, GDrive, GContacts. |
-| `Z-google-api-python-client` | [googleapis/google-api-python-client](https://github.com/googleapis/google-api-python-client) | 🐍 The official Python client library for Google's discovery based APIs. |
-| `Z-incidentfox` | [incidentfox/incidentfox](https://github.com/incidentfox/incidentfox) | AI-powered SRE platform for automated incident investigation |
-| `Z-influxdb` | [influxdata/influxdb](https://github.com/influxdata/influxdb) | Scalable datastore for metrics, events, and real-time analytics |
-| `Z-kener` | [rajnandan1/kener](https://github.com/rajnandan1/kener) | Stunning status pages, batteries included! |
-| `Z-killbill` | [killbill/killbill](https://github.com/killbill/killbill) | Open-Source Subscription Billing & Payments Platform |
-| `Z-lovable-mcp-server` | [hiromima/lovable-mcp-server](https://github.com/hiromima/lovable-mcp-server) | Unofficial MCP server for analyzing Lovable-generated projects with Claude Desktop. Community-built  |
-| `Z-medusa` | [medusajs/medusa](https://github.com/medusajs/medusa) | The world's most flexible commerce platform. |
-| `Z-moonshine` | [moonshine-ai/moonshine](https://github.com/moonshine-ai/moonshine) | Fast and accurate automatic speech recognition (ASR) for edge devices |
-| `Z-nautilus_trader` | [nautechsystems/nautilus_trader](https://github.com/nautechsystems/nautilus_trader) | A high-performance algorithmic trading platform and event-driven backtester |
-| `Z-openclaw` | [openclaw/openclaw](https://github.com/openclaw/openclaw) | Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞  |
-| `Z-paypal-rest-api-specifications` | [paypal/paypal-rest-api-specifications](https://github.com/paypal/paypal-rest-api-specifications) | This repository contains the specification files for PayPal REST APIs. |
-| `Z-postiz-app` | [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) | 📨 The ultimate social media scheduling tool, with a bunch of AI  🤖 |
-| `Z-prompt-optimizer` | [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) | 一款提示词优化器，助力于编写高质量的提示词 |
-| `Z-relivator` | [reliverse/relivator](https://github.com/reliverse/relivator) | 🏬 relivator: next.js 15 react 19 ecommerce template ▲ better-auth polar shadcn/ui tailwind drizzle o |
-| `Z-reviewsup.io` | [allenyan513/reviewsup.io](https://github.com/allenyan513/reviewsup.io) |  An open-source review and testimonial management system that helps you collect, manage, and showcas |
-| `Z-rowboat` | [rowboatlabs/rowboat](https://github.com/rowboatlabs/rowboat) | Open-source AI coworker, with memory |
-| `Z-saleor` | [saleor/saleor](https://github.com/saleor/saleor) | Saleor Core: the high performance, composable, headless commerce API. |
-| `Z-scrapy` | [scrapy/scrapy](https://github.com/scrapy/scrapy) | Scrapy, a fast high-level web crawling & scraping framework for Python. |
-| `Z-steel-browser` | [steel-dev/steel-browser](https://github.com/steel-dev/steel-browser) | 🔥 Open Source Browser API for AI Agents & Apps. Steel Browser is a batteries-included browser sandbo |
-| `Z-telegram-decoder` | [sepinf-inc/telegram-decoder](https://github.com/sepinf-inc/telegram-decoder) | Telegram decoder plugin used by IPED project |
-| `Z-tensorzero` | [tensorzero/tensorzero](https://github.com/tensorzero/tensorzero) | TensorZero is an open-source stack for industrial-grade LLM applications. It unifies an LLM gateway, |
-| `Z-tiktok-business-api-sdk` | [tiktok/tiktok-business-api-sdk](https://github.com/tiktok/tiktok-business-api-sdk) | An SDK built to facilitate application development to integrate with TikTok Business API. |
-| `Z-timemap` | [forensic-architecture/timemap](https://github.com/forensic-architecture/timemap) | Exploration, monitoring and classification of incidents in time and space. |
-| `Z-tinyclaw` | [TinyAGI/tinyagi](https://github.com/TinyAGI/tinyagi) | TinyClaw is a team of AI agents that acts as your 24/7 personal assistant |
-| `Z-trl` | [huggingface/trl](https://github.com/huggingface/trl) | Train transformer language models with reinforcement learning. |
-| `Z-umami` | [umami-software/umami](https://github.com/umami-software/umami) | Umami is a modern, privacy-focused analytics platform. An open-source alternative to Google Analytic |
-| `Z-up-mcp` | [wakeless/up-mcp](https://github.com/wakeless/up-mcp) | This is an Up MCP server. It runs on the localhost with the CLI based on the need to have local acce |
-| `Z-wallpaper` | [adampielak/wallpaper](https://github.com/adampielak/wallpaper) | My personal collection of wallpapers. Works great on all desktop environments. |
-| `Z-whisperX` | [sepinf-inc/whisperX](https://github.com/sepinf-inc/whisperX) | WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization) |
-| `Z-wifi-densepose` | [ruvnet/RuView](https://github.com/ruvnet/RuView) | Production-ready implementation of InvisPose - a revolutionary WiFi-based dense human pose estimatio |
