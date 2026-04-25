@@ -2,14 +2,15 @@
 
 **Performed by:** Devin (gap analysis session)
 **Total forks before cleanup:** 116
-**Deleted:** 66
-**Preserved:** 50
+**Deleted:** 56
+**Preserved:** 60
 
 ---
 
 ## Deleted Forks
 
-All deleted repos were clean forks with no custom commits. They can be re-forked from the original source at any time.
+All deleted repos were clean forks with no custom commits. They can be
+re-forked from the original source at any time.
 
 | Repo | Original Source | Description |
 |---|---|---|
@@ -23,38 +24,28 @@ All deleted repos were clean forks with no custom commits. They can be re-forked
 | `LetItRain-475-2161_Good_Rodgers` | [ForensicTools/LetItRain-475-2161_Good_Rodgers](https://github.com/ForensicTools/LetItRain-475-2161_Good_Rodgers) | This tool will take credentials or an API key for a cloud storage provider as input (Google Drive, D |
 | `MXTune` | [liuanlin-mx/MXTune](https://github.com/liuanlin-mx/MXTune) | pitch correction plugin for VST |
 | `MemCoin_474-2135_Andrews-Bornstein-Pagano` | [ForensicTools/MemCoin_474-2135_Andrews-Bornstein-Pagano](https://github.com/ForensicTools/MemCoin_474-2135_Andrews-Bornstein-Pagano) | MEMCoin will indicate if a bitcoin wallet exists, will pull the contents of memory and search for in |
-| `OpenClaw-Docs-Sync` | [TheSethRose/OpenClaw-Docs-Sync](https://github.com/TheSethRose/OpenClaw-Docs-Sync) | Synchronize OpenClaw, ClawHub, and Skills repository documentation into a local `docs/` mirror and i |
-| `OpenClaw-Medical-Skills` | [FreedomIntelligence/OpenClaw-Medical-Skills](https://github.com/FreedomIntelligence/OpenClaw-Medical-Skills) | The largest open-source medical AI skills library for OpenClaw🦞. |
-| `OpenMythos` | [kyegomez/OpenMythos](https://github.com/kyegomez/OpenMythos) | A theoretical reconstruction of the Claude Mythos architecture, built from first principles using th |
 | `RedditVideoMakerBot` | [elebumm/RedditVideoMakerBot](https://github.com/elebumm/RedditVideoMakerBot) | Create Reddit Videos with just✨ one command ✨ |
 | `RemoteNotify-475_2141-Coffie` | [ForensicTools/RemoteNotify-475_2141-Coffie](https://github.com/ForensicTools/RemoteNotify-475_2141-Coffie) | The tool will show notifications when the system is being remoted into with tools such as Powershell |
 | `Specflow` | [Hulupeep/Specflow](https://github.com/Hulupeep/Specflow) | Specs that enforce themselves. Turn specs into contracts that can't be broken by helpful LLMs. |
 | `ThreatIngestor` | [InQuest/ThreatIngestor](https://github.com/InQuest/ThreatIngestor) | Extract and aggregate threat intelligence. |
 | `WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling` | [ForensicTools/WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling](https://github.com/ForensicTools/WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling) | Goal is to create a monitor of both Bluetooth and Wi-Fi traffic. Using this traffic we will attempt  |
-| `agent-of-empires` | [njbrake/agent-of-empires](https://github.com/njbrake/agent-of-empires) | Claude Code, OpenCode, Mistral Vibe, Codex CLI, Gemini CLI Coding Agent Terminal Session manager via |
 | `agent-toolkit` | [paypal/agent-toolkit](https://github.com/paypal/agent-toolkit) | PayPal Agent |
 | `ai-vocal-removers` | [vpd0444/ai-vocal-removers](https://github.com/vpd0444/ai-vocal-removers) | No More Audio Mixing Nightmares! Recommend 12 AI Vocal Remover Game-Changers |
 | `aimeos-laravel` | [aimeos/aimeos-laravel](https://github.com/aimeos/aimeos-laravel) | Laravel ecommerce package for ultra fast online shops, scalable marketplaces, complex B2B applicatio |
-| `aios-core` | [SynkraAI/aiox-core](https://github.com/SynkraAI/aiox-core) | Synkra AIOS: AI-Orchestrated System for Full Stack Development - Core Framework v4.0 |
+| `aios-core` (fork renamed from `aiox-core`) | [SynkraAI/aiox-core](https://github.com/SynkraAI/aiox-core) | Synkra AIOS: AI-Orchestrated System for Full Stack Development - Core Framework v4.0 |
 | `aisearch-openai-rag-audio` | [Azure-Samples/aisearch-openai-rag-audio](https://github.com/Azure-Samples/aisearch-openai-rag-audio) | A simple example implementation of the VoiceRAG pattern to power interactive voice generative AI exp |
 | `alphafold` | [google-deepmind/alphafold](https://github.com/google-deepmind/alphafold) | Open source code for AlphaFold 2. |
 | `alphafold_non_docker` | [kalininalab/alphafold_non_docker](https://github.com/kalininalab/alphafold_non_docker) | AlphaFold2 non-docker setup |
 | `audacity-support` | [audacity/audacity-support](https://github.com/audacity/audacity-support) | No description |
 | `authlib` | [authlib/authlib](https://github.com/authlib/authlib) | The ultimate Python library in building OAuth, OpenID Connect clients and servers. JWS, JWE, JWK, JW |
-| `awesome-cli-coding-agents` | [bradAGI/awesome-cli-coding-agents](https://github.com/bradAGI/awesome-cli-coding-agents) | Curated directory of terminal-native AI coding agents and the harnesses that orchestrate them. Cover |
 | `awesome-cybersecurity-blueteam` | [fabacab/awesome-cybersecurity-blueteam](https://github.com/fabacab/awesome-cybersecurity-blueteam) | :computer:🛡️ A curated collection of awesome resources, tools, and other shiny things for cybersecur |
 | `awesome-github-pages-portfolios` | [guilyx/awesome-github-pages-portfolios](https://github.com/guilyx/awesome-github-pages-portfolios) | 😎 A curated list of awesome github pages porfolio templates 📝 |
-| `awesome-openclaw-skills` | [VoltAgent/awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) | The awesome collection of OpenClaw skills. 5,400+ skills filtered and categorized from the official  |
 | `azure-search-openai-demo` | [Azure-Samples/azure-search-openai-demo](https://github.com/Azure-Samples/azure-search-openai-demo) | A sample app for the Retrieval-Augmented Generation pattern running in Azure, using Azure AI Search  |
-| `babysitter` | [a5c-ai/babysitter](https://github.com/a5c-ai/babysitter) | Babysitter enables Claude Code to manage sophisticated development workflows through deterministic,  |
 | `binfmt` | [tonistiigi/binfmt](https://github.com/tonistiigi/binfmt) | Cross-platform emulator collection distributed with Docker images. |
 | `bmad-module-skill-forge` | [armelhbobdad/bmad-module-skill-forge](https://github.com/armelhbobdad/bmad-module-skill-forge) | A standalone BMAD module that transforms code repositories, documentation websites, and developer di |
 | `brave-browser` | [brave/brave-browser](https://github.com/brave/brave-browser) | Brave browser for Android, iOS, Linux, macOS, Windows. |
-| `claude-code-hooks-mastery` | [disler/claude-code-hooks-mastery](https://github.com/disler/claude-code-hooks-mastery) | Master Claude Code Hooks |
-| `claw-code` | [ultraworkers/claw-code](https://github.com/ultraworkers/claw-code) | The repo is finally unlocked. enjoy the party! The fastest repo in history to surpass 100K stars ⭐.  |
-| `clawe` | [getclawe/clawe](https://github.com/getclawe/clawe) | Multi-agent coordination system powered by OpenClaw.  |
 | `clickhouse-query-runner` | [gmr/clickhouse-query-runner](https://github.com/gmr/clickhouse-query-runner) | Async CLI for executing SQL queries from files against ClickHouse clusters with parallel round-robin |
-| `codex-terminal-agent` | [openai/codex](https://github.com/openai/codex) | Lightweight coding agent that runs in your terminal |
+| `codex-terminal-agent` (fork renamed from `codex`) | [openai/codex](https://github.com/openai/codex) | Lightweight coding agent that runs in your terminal |
 | `crime-data-api` | [fbi-cde/crime-data-api](https://github.com/fbi-cde/crime-data-api) | RESTful API service providing Uniform Crime Reporting (UCR) data for the United States |
 | `django-rest-framework` | [encode/django-rest-framework](https://github.com/encode/django-rest-framework) | Web APIs for Django. 🎸 |
 | `duotunnel` | [locustbaby/duotunnel](https://github.com/locustbaby/duotunnel) | A QUIC-based reverse tunnel system supporting bidirectional request forwarding with low-latency stre |
@@ -84,11 +75,26 @@ All deleted repos were clean forks with no custom commits. They can be re-forked
 
 ## Preserved Forks
 
-### Review Category (forensics, OSINT, compliance, multi-value)
+### Claude / OpenClaw / AI Agent Ecosystem
 
 | Repo | Original Source | Description |
 |---|---|---|
 | `Claude-Skills-Governance-Risk-and-Compliance` | [Sushegaad/Claude-Skills-Governance-Risk-and-Compliance](https://github.com/Sushegaad/Claude-Skills-Governance-Risk-and-Compliance) | Claude Skills for Governance, Risk & Compliance (GRC): Expert-level compliance guidance for ISO 2700 |
+| `OpenClaw-Docs-Sync` | [TheSethRose/OpenClaw-Docs-Sync](https://github.com/TheSethRose/OpenClaw-Docs-Sync) | Synchronize OpenClaw, ClawHub, and Skills repository documentation into a local `docs/` mirror and i |
+| `OpenClaw-Medical-Skills` | [FreedomIntelligence/OpenClaw-Medical-Skills](https://github.com/FreedomIntelligence/OpenClaw-Medical-Skills) | The largest open-source medical AI skills library for OpenClaw🦞. |
+| `OpenMythos` | [kyegomez/OpenMythos](https://github.com/kyegomez/OpenMythos) | A theoretical reconstruction of the Claude Mythos architecture, built from first principles using th |
+| `agent-of-empires` | [njbrake/agent-of-empires](https://github.com/njbrake/agent-of-empires) | Claude Code, OpenCode, Mistral Vibe, Codex CLI, Gemini CLI Coding Agent Terminal Session manager via |
+| `awesome-cli-coding-agents` | [bradAGI/awesome-cli-coding-agents](https://github.com/bradAGI/awesome-cli-coding-agents) | Curated directory of terminal-native AI coding agents and the harnesses that orchestrate them. Cover |
+| `awesome-openclaw-skills` | [VoltAgent/awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) | The awesome collection of OpenClaw skills. 5,400+ skills filtered and categorized from the official  |
+| `babysitter` | [a5c-ai/babysitter](https://github.com/a5c-ai/babysitter) | Babysitter enables Claude Code to manage sophisticated development workflows through deterministic,  |
+| `claude-code-hooks-mastery` | [disler/claude-code-hooks-mastery](https://github.com/disler/claude-code-hooks-mastery) | Master Claude Code Hooks |
+| `claw-code` | [ultraworkers/claw-code](https://github.com/ultraworkers/claw-code) | The repo is finally unlocked. enjoy the party! The fastest repo in history to surpass 100K stars ⭐.  |
+| `clawe` | [getclawe/clawe](https://github.com/getclawe/clawe) | Multi-agent coordination system powered by OpenClaw.  |
+
+### Forensics / OSINT / Security
+
+| Repo | Original Source | Description |
+|---|---|---|
 | `Digital-Forensics-Guide` | [mikeroyal/Digital-Forensics-Guide](https://github.com/mikeroyal/Digital-Forensics-Guide) | Digital Forensics Guide. Learn all about Digital Forensics, Computer Forensics, Mobile device Forens |
 | `ForensicsTools` | [mesquidar/ForensicsTools](https://github.com/mesquidar/ForensicsTools) | A list of free and open forensics analysis tools and other resources |
 | `OpenSourceArtifactollectionToolkit-OSACT-475_2141-Cifranic-Mercado-Simmonds-Voellmer` | [ForensicTools/OpenSourceArtifactollectionToolkit-OSACT-475_2141-Cifranic-Mercado-Simmonds-Voellmer](https://github.com/ForensicTools/OpenSourceArtifactollectionToolkit-OSACT-475_2141-Cifranic-Mercado-Simmonds-Voellmer) | OSACT is a collection of python modules aimed at the collection and analysis/presentation of forensi |
@@ -101,45 +107,45 @@ All deleted repos were clean forks with no custom commits. They can be re-forked
 | `sleuthkit` | [sepinf-inc/sleuthkit](https://github.com/sepinf-inc/sleuthkit) | The Sleuth Kit® (TSK) is a library and collection of command line digital forensics tools that allow |
 | `trawl` | [akdavidsson/trawl](https://github.com/akdavidsson/trawl) | No description |
 
-### Z- Repos (Audrey's own repos, not forks)
+### Z-prefix Repos (evaluation forks)
 
-| Repo | Description |
-|---|---|
-| `Z-IPED` | IPED Digital Forensic Tool. It is an open source software that can be used to process and analyze di |
-| `Z-container` | A tool for creating and running Linux containers using lightweight virtual machines on a Mac. It is  |
-| `Z-data-police-shootings` | The Washington Post is compiling a database of every fatal shooting in the United States by a police |
-| `Z-datasheet-server` | Turn spreadsheet data into a structured, dynamic API. |
-| `Z-eui` | Elastic UI Framework 🙌 |
-| `Z-gh-aw` | GitHub Agentic Workflows |
-| `Z-go-feature-flag` | GO Feature Flag is a simple, complete and lightweight self-hosted feature flag solution 100% Open So |
-| `Z-gogcli` | Google Suite CLI: Gmail, GCal, GDrive, GContacts. |
-| `Z-google-api-python-client` | 🐍 The official Python client library for Google's discovery based APIs. |
-| `Z-incidentfox` | AI-powered SRE platform for automated incident investigation |
-| `Z-influxdb` | Scalable datastore for metrics, events, and real-time analytics |
-| `Z-kener` | Stunning status pages, batteries included! |
-| `Z-killbill` | Open-Source Subscription Billing & Payments Platform |
-| `Z-lovable-mcp-server` | Unofficial MCP server for analyzing Lovable-generated projects with Claude Desktop. Community-built  |
-| `Z-medusa` | The world's most flexible commerce platform. |
-| `Z-moonshine` | Fast and accurate automatic speech recognition (ASR) for edge devices |
-| `Z-nautilus_trader` | A high-performance algorithmic trading platform and event-driven backtester |
-| `Z-openclaw` | Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞  |
-| `Z-paypal-rest-api-specifications` | This repository contains the specification files for PayPal REST APIs. |
-| `Z-postiz-app` | 📨 The ultimate social media scheduling tool, with a bunch of AI  🤖 |
-| `Z-prompt-optimizer` | 一款提示词优化器，助力于编写高质量的提示词 |
-| `Z-relivator` | 🏬 relivator: next.js 15 react 19 ecommerce template ▲ better-auth polar shadcn/ui tailwind drizzle o |
-| `Z-reviewsup.io` |  An open-source review and testimonial management system that helps you collect, manage, and showcas |
-| `Z-rowboat` | Open-source AI coworker, with memory |
-| `Z-saleor` | Saleor Core: the high performance, composable, headless commerce API. |
-| `Z-scrapy` | Scrapy, a fast high-level web crawling & scraping framework for Python. |
-| `Z-steel-browser` | 🔥 Open Source Browser API for AI Agents & Apps. Steel Browser is a batteries-included browser sandbo |
-| `Z-telegram-decoder` | Telegram decoder plugin used by IPED project |
-| `Z-tensorzero` | TensorZero is an open-source stack for industrial-grade LLM applications. It unifies an LLM gateway, |
-| `Z-tiktok-business-api-sdk` | An SDK built to facilitate application development to integrate with TikTok Business API. |
-| `Z-timemap` | Exploration, monitoring and classification of incidents in time and space. |
-| `Z-tinyclaw` | TinyClaw is a team of AI agents that acts as your 24/7 personal assistant |
-| `Z-trl` | Train transformer language models with reinforcement learning. |
-| `Z-umami` | Umami is a modern, privacy-focused analytics platform. An open-source alternative to Google Analytic |
-| `Z-up-mcp` | This is an Up MCP server. It runs on the localhost with the CLI based on the need to have local acce |
-| `Z-wallpaper` | My personal collection of wallpapers. Works great on all desktop environments. |
-| `Z-whisperX` | WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization) |
-| `Z-wifi-densepose` | Production-ready implementation of InvisPose - a revolutionary WiFi-based dense human pose estimatio |
+| Repo | Original Source | Description |
+|---|---|---|
+| `Z-IPED` | [sepinf-inc/IPED](https://github.com/sepinf-inc/IPED) | IPED Digital Forensic Tool. It is an open source software that can be used to process and analyze di |
+| `Z-container` | [apple/container](https://github.com/apple/container) | A tool for creating and running Linux containers using lightweight virtual machines on a Mac. It is  |
+| `Z-data-police-shootings` | [washingtonpost/data-police-shootings](https://github.com/washingtonpost/data-police-shootings) | The Washington Post is compiling a database of every fatal shooting in the United States by a police |
+| `Z-datasheet-server` | [forensic-architecture/datasheet-server](https://github.com/forensic-architecture/datasheet-server) | Turn spreadsheet data into a structured, dynamic API. |
+| `Z-eui` | [elastic/eui](https://github.com/elastic/eui) | Elastic UI Framework 🙌 |
+| `Z-gh-aw` | [github/gh-aw](https://github.com/github/gh-aw) | GitHub Agentic Workflows |
+| `Z-go-feature-flag` | [thomaspoignant/go-feature-flag](https://github.com/thomaspoignant/go-feature-flag) | GO Feature Flag is a simple, complete and lightweight self-hosted feature flag solution 100% Open So |
+| `Z-gogcli` | [steipete/gogcli](https://github.com/steipete/gogcli) | Google Suite CLI: Gmail, GCal, GDrive, GContacts. |
+| `Z-google-api-python-client` | [googleapis/google-api-python-client](https://github.com/googleapis/google-api-python-client) | 🐍 The official Python client library for Google's discovery based APIs. |
+| `Z-incidentfox` | [incidentfox/incidentfox](https://github.com/incidentfox/incidentfox) | AI-powered SRE platform for automated incident investigation |
+| `Z-influxdb` | [influxdata/influxdb](https://github.com/influxdata/influxdb) | Scalable datastore for metrics, events, and real-time analytics |
+| `Z-kener` | [rajnandan1/kener](https://github.com/rajnandan1/kener) | Stunning status pages, batteries included! |
+| `Z-killbill` | [killbill/killbill](https://github.com/killbill/killbill) | Open-Source Subscription Billing & Payments Platform |
+| `Z-lovable-mcp-server` | [hiromima/lovable-mcp-server](https://github.com/hiromima/lovable-mcp-server) | Unofficial MCP server for analyzing Lovable-generated projects with Claude Desktop. Community-built  |
+| `Z-medusa` | [medusajs/medusa](https://github.com/medusajs/medusa) | The world's most flexible commerce platform. |
+| `Z-moonshine` | [moonshine-ai/moonshine](https://github.com/moonshine-ai/moonshine) | Fast and accurate automatic speech recognition (ASR) for edge devices |
+| `Z-nautilus_trader` | [nautechsystems/nautilus_trader](https://github.com/nautechsystems/nautilus_trader) | A high-performance algorithmic trading platform and event-driven backtester |
+| `Z-openclaw` | [openclaw/openclaw](https://github.com/openclaw/openclaw) | Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞  |
+| `Z-paypal-rest-api-specifications` | [paypal/paypal-rest-api-specifications](https://github.com/paypal/paypal-rest-api-specifications) | This repository contains the specification files for PayPal REST APIs. |
+| `Z-postiz-app` | [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) | 📨 The ultimate social media scheduling tool, with a bunch of AI  🤖 |
+| `Z-prompt-optimizer` | [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) | 一款提示词优化器，助力于编写高质量的提示词 |
+| `Z-relivator` | [reliverse/relivator](https://github.com/reliverse/relivator) | 🏬 relivator: next.js 15 react 19 ecommerce template ▲ better-auth polar shadcn/ui tailwind drizzle o |
+| `Z-reviewsup.io` | [allenyan513/reviewsup.io](https://github.com/allenyan513/reviewsup.io) |  An open-source review and testimonial management system that helps you collect, manage, and showcas |
+| `Z-rowboat` | [rowboatlabs/rowboat](https://github.com/rowboatlabs/rowboat) | Open-source AI coworker, with memory |
+| `Z-saleor` | [saleor/saleor](https://github.com/saleor/saleor) | Saleor Core: the high performance, composable, headless commerce API. |
+| `Z-scrapy` | [scrapy/scrapy](https://github.com/scrapy/scrapy) | Scrapy, a fast high-level web crawling & scraping framework for Python. |
+| `Z-steel-browser` | [steel-dev/steel-browser](https://github.com/steel-dev/steel-browser) | 🔥 Open Source Browser API for AI Agents & Apps. Steel Browser is a batteries-included browser sandbo |
+| `Z-telegram-decoder` | [sepinf-inc/telegram-decoder](https://github.com/sepinf-inc/telegram-decoder) | Telegram decoder plugin used by IPED project |
+| `Z-tensorzero` | [tensorzero/tensorzero](https://github.com/tensorzero/tensorzero) | TensorZero is an open-source stack for industrial-grade LLM applications. It unifies an LLM gateway, |
+| `Z-tiktok-business-api-sdk` | [tiktok/tiktok-business-api-sdk](https://github.com/tiktok/tiktok-business-api-sdk) | An SDK built to facilitate application development to integrate with TikTok Business API. |
+| `Z-timemap` | [forensic-architecture/timemap](https://github.com/forensic-architecture/timemap) | Exploration, monitoring and classification of incidents in time and space. |
+| `Z-tinyclaw` | [TinyAGI/tinyagi](https://github.com/TinyAGI/tinyagi) | TinyClaw is a team of AI agents that acts as your 24/7 personal assistant |
+| `Z-trl` | [huggingface/trl](https://github.com/huggingface/trl) | Train transformer language models with reinforcement learning. |
+| `Z-umami` | [umami-software/umami](https://github.com/umami-software/umami) | Umami is a modern, privacy-focused analytics platform. An open-source alternative to Google Analytic |
+| `Z-up-mcp` | [wakeless/up-mcp](https://github.com/wakeless/up-mcp) | This is an Up MCP server. It runs on the localhost with the CLI based on the need to have local acce |
+| `Z-wallpaper` | [adampielak/wallpaper](https://github.com/adampielak/wallpaper) | My personal collection of wallpapers. Works great on all desktop environments. |
+| `Z-whisperX` | [sepinf-inc/whisperX](https://github.com/sepinf-inc/whisperX) | WhisperX:  Automatic Speech Recognition with Word-level Timestamps (& Diarization) |
+| `Z-wifi-densepose` | [ruvnet/RuView](https://github.com/ruvnet/RuView) | Production-ready implementation of InvisPose - a revolutionary WiFi-based dense human pose estimatio |
