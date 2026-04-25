@@ -19,7 +19,7 @@ jobs:
         id: audit
         run: |
           if [ ! -f SHIP_STATUS.md ]; then
-            echo "body=No SHIP_STATUS.md found in this repo." >> "$GITHUB_OUTPUT"
+            echo -e "No SHIP_STATUS.md found in this repo." > /tmp/audit-body.md
             exit 0
           fi
 
