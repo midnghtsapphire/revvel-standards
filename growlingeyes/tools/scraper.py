@@ -75,7 +75,12 @@ class ScrapedItem:
 
 # ─── FAA TFR scraper ─────────────────────────────────────────────────────────
 
-def scrape_faa_tfr(limit: int = 20) -> list[ScrapedItem]:
+def _el_text(el: Optional["ET.Element"]) -> str:
+    """Return element text or empty string if element is None."""
+    return el.text if el is not None else ""
+
+
+
     """Scrape FAA Temporary Flight Restriction notices."""
     items: list[ScrapedItem] = []
     try:
@@ -207,9 +212,9 @@ def scrape_un_sanctions(limit: int = 50) -> list[ScrapedItem]:
                 filter(
                     None,
                     [
-                        name_el.text if name_el is not None else "",
-                        last_el.text if last_el is not None else "",
-                        third_el.text if third_el is not None else "",
+                        _el_text(name_el),
+                        _el_text(last_el),
+                        _el_text(third_el),
                     ],
                 )
             )

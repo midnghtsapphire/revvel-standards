@@ -333,20 +333,22 @@ async def run_streams(
                 _drain_async(stream_rss(name, url, output_queue=queue), queue)
             ))
 
-    out_fh = open(output_file, "a", encoding="utf-8") if output_file else None
     try:
-        while True:
-            event: StreamEvent = await queue.get()
-            msg = (
-                f"[{event.stream.upper()}] [{event.severity}] {event.title}"
-            )
-            console.print(f"  [cyan]{msg}[/]")
+        out_fh = open(output_file, "a", encoding="utf-8") if output_file else None
+        try:
+            while True:
+                event: StreamEvent = await queue.get()
+                msg = (
+                    f"[{event.stream.upper()}] [{event.severity}] {event.title}"
+                )
+                console.print(f"  [cyan]{msg}[/]")
+                if out_fh:
+                    out_fh.write(event.to_jsonl() + "\n")
+                    out_fh.flush()
+        finally:
             if out_fh:
-                out_fh.write(event.to_jsonl() + "\n")
-                out_fh.flush()
+                out_fh.close()
     finally:
-        if out_fh:
-            out_fh.close()
         for task in tasks:
             task.cancel()
 

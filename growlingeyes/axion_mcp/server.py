@@ -43,7 +43,7 @@ from typing import Optional
 
 import numpy as np
 from fastmcp import FastMCP
-from PIL import Image
+from PIL import Image, ImageOps
 
 log = logging.getLogger("axion_mcp")
 
@@ -164,15 +164,14 @@ def _sar_to_optical_cpu(
         b = _normalise_band(ratio_db)
     else:
         # Single-polarisation fallback: derive pseudo-channels from VV alone
+        rng = np.random.default_rng(0)
         r = _normalise_band(vv_db)
-        g = _normalise_band(vv_db * 0.85 + np.random.normal(0, 0.5, vv_db.shape))
+        g = _normalise_band(vv_db * 0.85 + rng.normal(0, 0.5, vv_db.shape))
         b = _normalise_band(np.gradient(vv_db)[0])
 
     rgb = np.stack([r, g, b], axis=-1)
 
     if histogram_equalise:
-        from PIL import ImageOps  # type: ignore
-
         img_pil = Image.fromarray(rgb)
         img_pil = ImageOps.equalize(img_pil)
         rgb = np.array(img_pil)
