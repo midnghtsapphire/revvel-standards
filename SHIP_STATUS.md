@@ -18,7 +18,8 @@
 
 | ID | Title | Status | Owner | Last Touched | Deadline |
 |-----|-------|--------|------|------------|----------|
-| P001 | field-work extraction & PDF products | active | @midnghtsapphire | 2026-04-20 | 2026-05-01 |
+| P001 | field-work extraction & PDF products | active | @midnghtsapphire | 2026-04-20 |
+| P004 | Tax Navigator Agent (Odoo + multi-entity) | active | @openhands | 2026-04-25 | 2026-05-01 |
 
 ### PRs
 
