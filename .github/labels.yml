@@ -241,3 +241,16 @@ labels:
   - name: presence-boost
     color: "fef2c0"
     description: "Work that intentionally boosts GitHub presence/authority metrics"
+
+  # ── oAudrey Hub (landing page + subdomain deployment) ──────────────────────
+  - name: oaudrey
+    color: "7C5CFF"
+    description: "oAudrey hub landing page or subdomain work"
+
+  - name: deploy-failure
+    color: "d73a4a"
+    description: "Production deployment failure — needs immediate attention"
+
+  - name: retro
+    color: "0075ca"
+    description: "Post-deploy retrospective or gap analysis finding"

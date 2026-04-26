@@ -63,8 +63,55 @@ hub landing page.
 ```
 oaudrey/
 ├── README.md            ← You are here
-└── index.html           ← Hub landing page (static, Tailwind CDN)
+├── index.html           ← Hub landing page (static, Tailwind CDN)
+├── 404.html             ← Branded error page
+└── .do/
+    └── app.yaml         ← DigitalOcean App Platform spec
 ```
+
+---
+
+## Deployment
+
+The oAudrey hub deploys automatically to **DigitalOcean App Platform** on every push to `main` that touches `oaudrey/**` or `fieldwork/**`.
+
+### CI/CD Pipeline
+
+| Step | Workflow | Trigger |
+|---|---|---|
+| Deploy | `.github/workflows/deploy-oaudrey.yml` | push to `main` |
+| Health-check + retro | `.github/workflows/oaudrey-retro.yml` | after deploy; weekly Monday |
+
+### Required Secret
+
+Before the automated deploy can run, provision `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets:
+
+```bash
+gh secret set DIGITALOCEAN_API_TOKEN --repo midnghtsapphire/revvel-standards
+```
+
+### Manual Deploy
+
+```bash
+# Install doctl (one time)
+brew install doctl   # macOS
+doctl auth init      # paste your DO API token
+
+# Deploy or update
+doctl apps create --spec oaudrey/.do/app.yaml --wait
+# or update existing:
+APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep "oaudrey-hub" | awk '{print $1}')
+doctl apps update "$APP_ID" --spec oaudrey/.do/app.yaml
+```
+
+### DNS Setup (Namecheap → DigitalOcean)
+
+1. Log in to Namecheap (username: `uprisinghope`)
+2. Set nameservers to: `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`
+3. Add `oaudrey.com` in DigitalOcean → Networking → Domains
+4. Add CNAME for `fieldwork.oaudrey.com` → App Platform URL
+
+Full guide: `standards/OAUDREY_DEPLOYMENT_STANDARD.md`
 
 ---
 
@@ -108,5 +155,14 @@ respected.
 - [x] FieldWork tab linked to `fieldwork.oaudrey.com`
 - [x] Giving Pledge section (reskilling, recovery, restoration)
 - [x] Original oAudrey SVG monogram mark in nav (orbit + aperture + signal dot)
+- [x] Branded `404.html` error page
+- [x] DigitalOcean App Platform spec (`oaudrey/.do/app.yaml`)
+- [x] GitHub Actions deploy workflow (`deploy-oaudrey.yml`)
+- [x] Post-deploy health-check + retro workflow (`oaudrey-retro.yml`)
+- [x] BOM for BOM team (`docs/oaudrey/BOM.md`)
+- [x] Full deployment standard (`standards/OAUDREY_DEPLOYMENT_STANDARD.md`)
+- [ ] Provision `DIGITALOCEAN_API_TOKEN` secret in repo settings
+- [ ] Point Namecheap nameservers to DigitalOcean (`ns1–3.digitalocean.com`)
+- [ ] Verify `oaudrey.com` apex resolves to App Platform
 - [ ] Extend brand system: supporting illustrations, bot characters, product iconography — all original, **no third-party assets reused**.
 - [ ] Connect tabs to live metrics pulled from each product subdomain
