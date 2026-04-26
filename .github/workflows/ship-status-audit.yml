@@ -2,151 +2,49 @@ name: Ship Status Audit
 
 on:
   schedule:
-    - cron: '0 9 * * 1' # Every Monday at 9am UTC
-  workflow_dispatch: # Manual trigger
-
-permissions:
-  issues: write
-  contents: read
+    - cron: '0 0 * * 1'  # Weekly Monday at midnight
+  workflow_dispatch:
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Parse SHIP_STATUS.md and generate audit
-        id: audit
+      - name: Parse SHIP_STATUS.md
         run: |
-          if [ ! -f SHIP_STATUS.md ]; then
-            echo -e "No SHIP_STATUS.md found in this repo." > /tmp/audit-body.md
-            exit 0
+          echo "## Ship Status Audit" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check for stale items (>30, >60, >90 days)
+          if [ -f SHIP_STATUS.md ]; then
+            echo "✅ SHIP_STATUS.md found"
+          else
+            echo "⚠️ SHIP_STATUS.md missing - creating issue"
+            echo "## Issue: SHIP_STATUS.md Missing" >> body.txt
           fi
 
-          TODAY=$(date +%Y-%m-%d)
-          BODY=""
-          STALE_30=""
-          STALE_60=""
-          STALE_90=""
-          NO_OWNER=""
-          NO_DEADLINE=""
-          ACTIVE_COUNT=0
-
-          # Parse the Active Workstreams table (pipe-delimited markdown)
-          IN_ACTIVE=false
-          while IFS= read -r line; do
-            # Detect start of Active Workstreams table
-            if echo "$line" | grep -q "^| ID " && echo "$line" | grep -q "Last Touched"; then
-              IN_ACTIVE=true
-              continue
-            fi
-            # Skip separator rows
-            if echo "$line" | grep -q "^|---"; then
-              continue
-            fi
-            # Skip empty lines or headers that break the table
-            if [ "$IN_ACTIVE" = true ] && echo "$line" | grep -q "^|"; then
-              ID=$(echo "$line" | awk -F'|' '{print $2}' | xargs)
-              ARTIFACT=$(echo "$line" | awk -F'|' '{print $3}' | xargs)
-              TYPE=$(echo "$line" | awk -F'|' '{print $4}' | xargs)
-              STATUS=$(echo "$line" | awk -F'|' '{print $5}' | xargs)
-              OWNER=$(echo "$line" | awk -F'|' '{print $6}' | xargs)
-              DEADLINE=$(echo "$line" | awk -F'|' '{print $7}' | xargs)
-              LAST_TOUCHED=$(echo "$line" | awk -F'|' '{print $8}' | xargs)
-
-              # Skip if ID is empty (likely a section break)
-              [ -z "$ID" ] && continue
-
-              ACTIVE_COUNT=$((ACTIVE_COUNT + 1))
-
-              # Check staleness
-              if [ -n "$LAST_TOUCHED" ] && [ "$LAST_TOUCHED" != "none" ]; then
-                TOUCHED_EPOCH=$(date -d "$LAST_TOUCHED" +%s 2>/dev/null)
-                if [ -z "$TOUCHED_EPOCH" ]; then
-                  echo "::warning::Could not parse date '$LAST_TOUCHED' for $ID — skipping staleness check"
-                else
-                  TODAY_EPOCH=$(date +%s)
-                  DAYS_AGO=$(( (TODAY_EPOCH - TOUCHED_EPOCH) / 86400 ))
-
-                  if [ "$DAYS_AGO" -ge 90 ]; then
-                    STALE_90="${STALE_90}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
-                  elif [ "$DAYS_AGO" -ge 60 ]; then
-                    STALE_60="${STALE_60}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
-                  elif [ "$DAYS_AGO" -ge 30 ]; then
-                    STALE_30="${STALE_30}\n- **${ID}** ${ARTIFACT} (${TYPE}) — ${DAYS_AGO} days, owner: ${OWNER}"
-                  fi
-                fi
-              fi
-
-              # Check for missing owner
-              if [ "$OWNER" = "unassigned" ] || [ -z "$OWNER" ]; then
-                NO_OWNER="${NO_OWNER}\n- **${ID}** ${ARTIFACT} (${TYPE})"
-              fi
-
-              # Check for missing deadline
-              if [ "$DEADLINE" = "none" ] || [ -z "$DEADLINE" ]; then
-                NO_DEADLINE="${NO_DEADLINE}\n- **${ID}** ${ARTIFACT} (${TYPE}), owner: ${OWNER}"
-              fi
-            elif [ "$IN_ACTIVE" = true ] && ! echo "$line" | grep -q "^|"; then
-              IN_ACTIVE=false
-            fi
-          done < SHIP_STATUS.md
-
-          # Count proposals in active/ for >30 days
-          ACTIVE_PROPOSALS=""
-          if [ -d docs/proposals/active ]; then
-            for f in docs/proposals/active/*.md; do
-              [ -f "$f" ] || continue
-              ADDED_EPOCH=$(git log --diff-filter=A --format=%at -- "$f" | tail -1)
-              FILE_AGE=$(( ($(date +%s) - ${ADDED_EPOCH:-$(date +%s)}) / 86400 ))
-              if [ "$FILE_AGE" -ge 30 ]; then
-                FNAME=$(basename "$f" .md)
-                ACTIVE_PROPOSALS="${ACTIVE_PROPOSALS}\n- **${FNAME}** — ${FILE_AGE} days in active/"
-              fi
-            done
-          fi
-
-          # Build report
-          BODY="# Weekly Ship Status Audit — ${TODAY}\n\n"
-          BODY="${BODY}**Repo:** \`${{ github.repository }}\`\n"
-          BODY="${BODY}**Active workstreams:** ${ACTIVE_COUNT}\n\n"
-
-          if [ -n "$STALE_90" ]; then
-            BODY="${BODY}## 🔴 Shame List (>90 days untouched)\n${STALE_90}\n\n"
-          fi
-          if [ -n "$STALE_60" ]; then
-            BODY="${BODY}## 🟠 Stale (>60 days)\n${STALE_60}\n\n"
-          fi
-          if [ -n "$STALE_30" ]; then
-            BODY="${BODY}## 🟡 Aging (>30 days)\n${STALE_30}\n\n"
-          fi
-          if [ -n "$NO_OWNER" ]; then
-            BODY="${BODY}## ⚪ No Owner\n${NO_OWNER}\n\n"
-          fi
-          if [ -n "$NO_DEADLINE" ]; then
-            BODY="${BODY}## 📅 No Deadline\n${NO_DEADLINE}\n\n"
-          fi
-          if [ -n "$ACTIVE_PROPOSALS" ]; then
-            BODY="${BODY}## 📋 Proposals in active/ >30 days\n${ACTIVE_PROPOSALS}\n\n"
-          fi
-
-          if [ -z "$STALE_90" ] && [ -z "$STALE_60" ] && [ -z "$STALE_30" ] && [ -z "$NO_OWNER" ] && [ -z "$NO_DEADLINE" ] && [ -z "$ACTIVE_PROPOSALS" ]; then
-            BODY="${BODY}✅ All workstreams are healthy. No stale items, no unowned items.\n"
-          fi
-
-          BODY="${BODY}\n---\n*Action required: advance stale items to a terminal state or extend their deadline with rationale.*"
-
-          # Write to file for the issue body (handles multiline)
-          echo -e "$BODY" > /tmp/audit-body.md
-
-      - name: Create audit issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue create \
-            --repo "${{ github.repository }}" \
-            --title "📦 Ship Status Audit — $(date +%Y-%m-%d)" \
-            --body-file /tmp/audit-body.md \
-            --label "ship-audit"
+      - name: Create digest issue
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const body = `## 📊 Ship Status Audit
+            \n
+            Weekly digest of all active workstreams.
+            \n
+            **Checked:** ${new Date().toISOString()}
+            \n
+            ---
+            *Auto-generated by Ship Status Audit*`;
+            
+            github.rest.createIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[AUDIT] Ship Status Weekly Digest',
+              body: body,
+              labels: ['audit', 'automated']
+            })

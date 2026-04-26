@@ -1,45 +1,62 @@
-# Proposal: [Title]
+# Proposal Template
 
-**Author:** [GitHub handle]
-**Date:** [YYYY-MM-DD]
-**Status:** Active
-**Domain:** [growlingeyes | neurooz | revvel-standards | fidelity-trust | freedom-angel | org-wide]
+> Copy this template when submitting a new proposal.
+
+## Metadata
+
+| Field | Value |
+|-------|-------|
+| **ID** | P### |
+| **Title** | [Your title] |
+| **Author** | @author |
+| **Date** | YYYY-MM-DD |
+| **Status** | active |
+
+---
 
 ## Problem Statement
 
-What problem does this solve? Why does it matter now?
+> What problem does this solve? Why does it matter now?
 
-## Proposed Solution
+[Describe the problem clearly. Include metrics if available.]
 
-What are you proposing? Be specific enough that someone could implement it.
+---
 
 ## Alternatives Considered
 
-What else was considered and why was it rejected?
+| Option | Pros | Cons |
+|--------|-----|-----|
+| A | ... | ... |
+| B | ... | ... |
+| C (this) | ... | ... |
 
-## Scope & Acceptance Gates
+---
 
-- [ ] Gate 1: [specific measurable outcome]
-- [ ] Gate 2: [specific measurable outcome]
-- [ ] Gate 3: [specific measurable outcome]
+## Acceptance Gates
 
-## Effort Estimate
+- [ ] Gate 1
+- [ ] Gate 2
+- [ ] Gate 3
 
-- **Size:** [Small (hours) | Medium (days) | Large (weeks)]
-- **Dependencies:** [list any blockers]
-- **Risk:** [Low | Medium | High] — [brief rationale]
+---
 
 ## Prosecution Findings
 
-_Filled by adversarial review workflow. Do not edit manually._
+> To be filled by adversarial review.
+
+---
 
 ## Rebuttal
 
-_Author's response to prosecution findings._
+> Response to prosecution findings.
+
+---
 
 ## Decision
 
-- **Verdict:** [Pending | Approved | Rejected | Superseded]
-- **Decided by:** [who]
-- **Date:** [when]
-- **Rationale:** [why]
+> Approved / Rejected / Superseded
+
+**Rationale:** [Why]
+
+**Date:** YYYY-MM-DD
+**Decided by:** @owner

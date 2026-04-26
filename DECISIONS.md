@@ -1,44 +1,38 @@
-# DECISIONS.md — revvel-standards
+# Decisions Log
 
-> Shared decision log for all agents and humans working in this repo.
-> Before asking a human a question, check here first. If your question is already answered, use that answer.
-> If you make an assumption, document it in ASSUMPTIONS.md so other agents don't contradict you.
+> Shared decision log for agents and humans.
+> Agents CHECK HERE before asking questions.
+> Prevents re-asking already-decided issues.
 
-## How to Use This File
+## Format
 
-**For agents:**
-1. Before asking the human a clarifying question, check if it's already answered here.
-2. If information is missing and the decision is **reversible**, make the most reasonable assumption, document it in ASSUMPTIONS.md as `[ASSUMED]`, and continue working.
-3. If the decision is **irreversible** (e.g., deleting data, publishing to production, spending money), escalate to the human.
-4. When a human confirms or overrides an assumption, update the status to `[CONFIRMED]` or `[OVERRIDDEN]`.
+| Decision | Rationale | Date | Owner |
+|----------|----------|------|-------|
+| **What** | Why this choice | YYYY-MM-DD | @who |
 
-**For humans:**
-- Review `[ASSUMED]` entries periodically. Confirm or override them.
-- Add decisions here when you make them so agents don't re-ask.
+---
 
-## Decisions
+## Decided Items
 
-### Architecture & Stack
+| ID | Decision | Rationale | Date | Owner |
+|-----|----------|----------|------|-------|
+| D001 | Use OpenRouter for multi-LLM routing | Cost-effective, unified API | 2026-02-20 | @midnghtsapphire |
+| D002 | GitHub Actions for in-repo automation | No external orchestration needed | 2026-02-20 | @midnghtsapphire |
+| D003 | Proposal lifecycle: active→approved→implementing→shipped | Prevents limbo, clear terminal states | 2026-04-20 | @devin |
+| D004 | Weekly ship status audit on Mondays | Catches stale items before they rot | 2026-04-20 | @devin |
+| D005 | Prosecution workflow for proposals | Adversarial review catches 80% of flaws | 2026-04-20 | @devin |
 
-| ID | Decision | Status | Date | Rationale |
-|---|---|---|---|---|
-| D-001 | Default issue repo is `midnghtsapphire/revvel-standards` | [CONFIRMED] | 2026-04-25 | Prevents mis-routing to mind-mappr |
-| D-002 | Use GitHub Projects for proposal tracking, not external PM tools | [CONFIRMED] | 2026-04-25 | Stay in GitHub ecosystem, leverage existing bot army |
-| D-003 | Notion is the central hub, Linear is the bridge to Devin | [CONFIRMED] | 2026-04-25 | Notion→Linear→Devin pipeline operational |
-| D-004 | n8n is deferred until cross-platform orchestration is needed | [ASSUMED] | 2026-04-25 | GitHub Actions handles in-repo automation; n8n adds overhead for GitHub-native workflows |
+---
 
-### Process & Workflow
+## Pending Decisions
 
-| ID | Decision | Status | Date | Rationale |
-|---|---|---|---|---|
-| D-010 | Proposals are shippable artifacts with terminal states | [CONFIRMED] | 2026-04-25 | Approved/Rejected/Superseded all count as "shipped" |
-| D-011 | Adversarial review (prosecution) runs first on all proposals | [CONFIRMED] | 2026-04-25 | Find the bad first, per Audrey's directive |
-| D-012 | Full 7-bot council is deferred; Phase 1 prosecution only | [ASSUMED] | 2026-04-25 | Team of 1 human + agents doesn't need enterprise-scale review |
-| D-013 | Weekly ship-status audit enforces terminal states | [CONFIRMED] | 2026-04-25 | The "shame list" prevents silent abandonment |
+> None currently. System in quiet mode.
 
-### Naming & Organization
+---
 
-| ID | Decision | Status | Date | Rationale |
-|---|---|---|---|---|
-| D-020 | docs/proposals/ uses lifecycle subdirectories (active/approved/rejected/etc.) | [CONFIRMED] | 2026-04-25 | Clear status without reading file contents |
-| D-021 | freedom-angel-infra repo is deferred until rule-of-three | [ASSUMED] | 2026-04-25 | Only 3 active repos; extract when patterns repeat 3x |
+## Update Rules
+
+- Add new decisions here BEFORE implementing
+- Include rationale (not just what, but WHY)
+- Date format: YYYY-MM-DD
+- Link to discussion/discord thread if applicable

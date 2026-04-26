@@ -1,38 +1,64 @@
-# SHIP_STATUS.md — revvel-standards
+# Ship Status
 
-> Machine-readable status of every workstream. Updated by humans and agents.
-> Audited weekly by `ship-status-audit.yml`. Nothing sits in limbo.
+> Machine-readable tracking of every active workstream with terminal states.
+> Updated by agents before declaring done. Nothing sits in limbo.
 
-## Terminal States Reference
+## Format
 
-| Artifact Type | Terminal States |
-|---|---|
-| Proposal | `shipped`, `rejected`, `superseded` |
-| Bug | `fixed-deployed`, `wontfix-documented` |
-| Feature | `deployed`, `cancelled-documented` |
-| Research | `published`, `abandoned-documented` |
-| Decision (ADR) | `accepted`, `rejected`, `superseded` |
-| Refactor | `completed`, `abandoned-documented` |
+| Artifact | Active States | Terminal States |
+|----------|--------------|-----------------|
+| Proposal | `active`, `review`, `implementing` | `shipped`, `rejected`, `superseded` |
+| PR | `open`, `changes-requested` | `merged`, `closed` |
+| Issue | `open`, `in-progress` | `closed`, `wontfix`, `duplicate` |
+| Task | `todo`, `in-progress` | `done`, `blocked` |
 
 ## Active Workstreams
 
-<!-- STATUS: active | implementing | blocked | stale -->
-<!-- DEADLINE: ISO date or "none" -->
-<!-- OWNER: GitHub handle or "unassigned" -->
+### Proposals
 
-| ID | Artifact | Type | Status | Owner | Deadline | Last Touched | Notes |
-|---|---|---|---|---|---|---|---|
-| RS-001 | Skills Vault system | feature | active | @midnghtsapphire | none | 2026-04-25 | 30+ skills created, REGISTRY.md exists |
-| RS-002 | Fieldwork extraction proposal | proposal | active | @midnghtsapphire | none | 2026-04-25 | In docs/proposals/, needs council review |
-| RS-003 | Agent Factory standard | feature | active | @midnghtsapphire | none | 2026-04-25 | Template + commands exist |
-| RS-004 | Credential Gatekeeper + Doppler sync | feature | active | @midnghtsapphire | none | 2026-04-25 | PR #308 open |
-| RS-005 | Ship Everything structure | feature | implementing | @midnghtsapphire | none | 2026-04-25 | This PR |
+| ID | Title | Status | Owner | Last Touched | Deadline |
+|-----|-------|--------|------|------------|----------|
+| P001 | field-work extraction & PDF products | active | @midnghtsapphire | 2026-04-20 | 2026-05-01 |
 
-## Completed / Terminal
+### PRs
 
-| ID | Artifact | Type | Terminal State | Date | Notes |
-|---|---|---|---|---|---|
-| RS-100 | Gap analysis quick wins | feature | deployed | 2026-04-25 | PR #300 merged |
-| RS-101 | Gap analysis remaining items | feature | deployed | 2026-04-25 | PR #307 merged |
-| RS-102 | Fork cleanup changelog | docs | published | 2026-04-25 | PR #309 merged |
-| RS-103 | GrowlingEyes fork integration map | docs | published | 2026-04-25 | PR #310 merged |
+| ID | Title | Status | Owner | Last Touched |
+|-----|-------|--------|------|------------|
+| #311 | ship-everything structure | open | @devin | 2026-04-20 |
+
+### Issues
+
+| ID | Title | Status | Owner | Last Touched |
+|-----|-------|--------|------|------------|
+| #251 | add pytest-mock | open | — | 2026-04-01 |
+
+### Tasks
+
+| ID | Title | Status | Owner | Last Touched |
+|-----|-------|--------|------|------------|
+| TBD | Enable revvel-standards Pages | todo | @midnghtsapphire | — |
+
+---
+
+## Terminal State Definitions
+
+| Type | Terminal | Description |
+|------|----------|-------------|
+| Proposal | shipped | Decision made, work spawned |
+| Proposal | rejected | Declined with rationale |
+| Proposal | superseded | Replaced by newer proposal |
+| PR | merged | Code landed |
+| PR | closed | Withdrawn or declined |
+| Issue | closed | Resolved |
+| Issue | wontfix | Accepted as won't fix |
+| Issue | duplicate | Duplicate of another |
+| Task | done | Completed |
+| Task | blocked | Waiting on dependency |
+
+## Update Rules
+
+- Update `Last Touched` before declaring done
+- All artifacts must reach terminal state
+- Proposals: update in `docs/proposals/[status]/`
+- PRs: link to issue/PR ID
+- Issues: use labels for tracking

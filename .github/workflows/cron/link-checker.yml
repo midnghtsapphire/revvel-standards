@@ -1,0 +1,41 @@
+# Link Checker - Validates all outbound links
+
+name: Link Checker
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6am
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check outbound links
+        run: |
+          LINKS="
+            https://open.spotify.com
+            https://www.landr.com
+            https://soundcloud.com
+            https://make.com
+            https://www.gohighlevel.com
+            https://www.digitalocean.com
+          "
+          
+          WARNINGS=""
+          for url in $LINKS; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+            if [ "$status" != "200" ]; then
+              WARNINGS="$WARNINGS
+- $url: HTTP $status"
+            fi
+          done
+          
+          if [ -n "$WARNINGS" ]; then
+            echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Report
+        run: |
+          echo "## Link Check" >> $GITHUB_STEP_SUMMARY
+          echo "Checked at: $(date)" >> $GITHUB_STEP_SUMMARY

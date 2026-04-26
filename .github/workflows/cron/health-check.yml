@@ -1,0 +1,40 @@
+# Health Check Monitor
+# Checks /health endpoints on all backends
+
+name: Health Check
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Every 15 min
+  workflow_dispatch:
+
+jobs:
+  check-health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check health endpoints
+        run: |
+          # Define health endpoints to check
+          ENDPOINTS=(
+            "localhost:8080/health"
+            "localhost:8080/health/live"
+            "localhost:8080/health/ready"
+          )
+          
+          FAILED=""
+          for ep in "${ENDPOINTS[@]}"; do
+            url="https://$ep"
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+            if [ "$status" != "200" ]; then
+              FAILED="$FAILED
+- $ep: HTTP $status"
+            fi
+          done
+          
+          if [ -n "$FAILED" ]; then
+            echo "failed=$FAILED" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Report
+        run: echo "✅ All health endpoints OK"
