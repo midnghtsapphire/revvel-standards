@@ -36,7 +36,8 @@
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
-| TBD | Enable revvel-standards Pages | todo | @midnghtsapphire | — |
+| T001 | Enable revvel-standards Pages | todo | @midnghtsapphire | — |
+| T002 | Private → Public: 74 repos with licenses | in-progress | @openhands | 2026-04-25 |
 
 ---
 
