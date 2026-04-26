@@ -22,6 +22,17 @@
       },
       "disabled": true,
       "disabledReason": "Server not yet deployed. Enable once mcp-servers/code-review/ is built."
+    },
+    "axion-planetary": {
+      "_comment": "Axion Planetary MCP — SAR-to-optical foundation model for cloud-free Earth observation. See docs/AXION_PLANETARY_MCP.md. Tools: axion_sar2optical, axion_describe_sar, axion_batch_convert, axion_status.",
+      "command": "python",
+      "args": ["-m", "growlingeyes.axion_mcp.server"],
+      "env": {
+        "AXION_SAR2OPTICAL_WEIGHTS": "${AXION_SAR2OPTICAL_WEIGHTS}",
+        "AXION_OUTPUT_FORMAT": "${AXION_OUTPUT_FORMAT:-png}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once growlingeyes/ deps are installed: pip install -r growlingeyes/requirements.txt"
     }
   }
 }
