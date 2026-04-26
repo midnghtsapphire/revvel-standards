@@ -1,4 +1,4 @@
-# Proposal T004: Tax Navigator Agent
+# Proposal T004: Tax Navigator Agent + Business Tracker
 
 > **Status:** Draft
 > **Created:** 2026-04-25
@@ -9,220 +9,235 @@
 
 ## Problem Statement
 
-Audrey Evans has multiple businesses and specific tax situation that requires automation:
+Audrey Evans has multiple businesses spread across different niches, each with unique certifications, compliance requirements, and tax situations. Current tracking is manual and fragmented.
 
-### Current State
-- **Freedom Angel Corp** - main business entity
-- **Reese Reviews LLC** - handles vine reviews (daughter does work, income flows there)
-- **Overflow/Overstock Business** - to sell overstock products
-- **Rental Company** - rents products (costumes, catering equipment, heaters, etc.)
-- **60 years old**, disabled, 6 months post-mastectomy
-- **SSDI**: $3,400/month
-- **Medical costs**: $130/month
-- **Colorado resident**
+### Current Business Portfolio
 
-### Critical Constraints (MUST NOT VIOLATE)
-- **Medicaid qualification** - must stay eligible
-- **Medicare qualification** - must stay eligible  
-- **In-home care** - depends on Medicaid
-- **Housing voucher** - depends on Medicaid income limits
+| # | Business | Purpose | Entity Type | Status |
+|---|----------|---------|------------|--------|
+| 1 | **Freedom Angel Corp** | Main holding/operations | LLC/S-corp | Active |
+| 2 | **Reese Reviews LLC** | Vine reviews | LLC | Active |
+| 3 | **Overflow/Overstock** | Sell overstock products | LLC (new) | In formation |
+| 4 | **Rental Company** | Rent costumes, heaters, catering equipment | LLC (new) | In formation |
+| 5 | **Fidelity Trust Services** | Legal doc assistance, classes, CLE sponsor | LLC (new) | In formation |
 
-### Income Boundaries (Colorado Medicaid)
-- **Single person income limit**: ~$1,500-2,000/month (varies by program)
-- **SSDI is INCOME** - counts toward Medicaid limits
-- **Any taxable income risks Medicaid**
+### Credential & Compliance Status (CRITICAL)
 
-### Passive Income Goal
-- ALL involvement should be **passive income**
-- Vine reviews: pick product, daughter does rest → income to Reese Reviews LLC
-- **Key insight**: If Audrey's involvement is passive, income may not count as HER taxable income
+| Credential | Holder | Expiration | Renewal By |
+|------------|--------|-----------|------------|
+| Colorado Supreme Court CLE | Audrey | TBD | TBD |
+| SAM.gov Cage Code | Fidelity Trust | TBD | **May 2026** |
+| DUNS Number | TBD | N/A | N/A |
+| UEI (Unique Entity ID) | Fidelity Trust | Required for grants | TBD |
+
+### Audrey's Personal Profile
+
+- **Age:** 60 years old
+- **Disability Status:** Disabled, 6 months post-mastectomy
+- **SSDI:** $3,400/month
+- **Medical Costs:** $130/month
+- **Location:** Colorado
+- **Critical Programs:**
+  - Medicaid (Health First Colorado) - MUST MAINTAIN
+  - Medicare - MUST MAINTAIN
+  - In-home care - depends on Medicaid
+  - Housing voucher - depends on Medicaid
+
+### Income Constraints (MUST NOT VIOLATE)
+
+**Colorado Medicaid Income Limit:** ~$1,574/month (varies by program)
+
+**SSDI ($3,400/mo) + Any Taxable Income = RISK of Disqualification**
 
 ---
 
 ## Proposed Solution
 
-### Tax Navigator Agent Architecture
+### Multi-System Enterprise Tracker
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│                  TAX NAVIGATOR AGENT                        │
-├────────────────────────────────────────────────────────────┤
-│                                                            │
-│  1. Odoo Connection (via XML-RPC)                        │
-│     → Pulls all business data                             │
-│     → Tracks expenses, revenue, assets                    │
-│                                                            │
-│  2. Entity Graph                                        │
-│     → Maps ownership: Freedom Angel, Reese Reviews, etc.     │
-│     → Tracks intercompany transactions                   │
-│                                                            │
-│  3. Passive Income Classifier                           │
-│     → Audits: "Is this active or passive income?"       │
-│     → Flags risky transactions                        │
-│                                                            │
-│  4. Medicaid Watchdog                                │
-│     → Monitors: SSDI + any other income              │
-│     → Alerts: "You're hitting the limit"              │
-│     → Calculates: What can you deduct/donate?         │
-│                                                            │
-│  5. Tax Credit Scanner                            │
-│     → Tracks: R&D credits, WOTC, ERC, etc.         │
-│     → Watches: What you QUALIFY for               │
-│                                                            │
-│  6. Asset Donation Tracker                           │
-│     → Tracks: Products donated to businesses       │
-│     → Calculates: Fair market value → deduction     │
-│                                                            │
-└────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│              ENTERPRISE BUSINESS TRACKER                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │ TAX NAVIGATOR    │  │ COMPLIANCE       │                   │
+│  │                 │  │ TRACKER         │                   │
+│  │ • Odoo Sync      │  │ • CLE Renewals  │                   │
+│  │ • Entity Graph  │  │ • Cage Codes   │                   │
+│  │ • Passive Inc   │  │ • DUNS/UEI     │                   │
+│  │ • Medicaid     │  │ • SAM.gov      │                   │
+│  │ • Credits      │  │ • Grants.gov  │                   │
+│  │ • Donations    │  │ • Licenses    │                   │
+│  └─────────────────┘  └─────────────────┘                   │
+│                                                              │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │ GRANT           │  │ ASSET            │                   │
+│  │ DISCOVERY       │  │ MANAGER         │                   │
+│  │                 │  │                 │                   │
+│  │ • SAM.gov       │  │ • Products      │                   │
+│  │ • Grants.gov   │  │ • Rental Items  │                   │
+│  │ • State CO     │  │ • Donations    │                   │
+│  │ • Federal     │  │ • FMV Calc     │                   │
+│  └─────────────────┘  └─────────────────┘                   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Core Features
+## Feature 1: Compliance Tracker
 
-### 1. Odoo Business Integration
+### Credentials & Renewals
 
 ```python
-# Connect to Odoo (XML-RPC)
-import xmlrpc.client
-
-url = "https://your-odoo-instance.com"
-db = "your_database"
-username = "admin"
-password = "your_password"
-
-common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
-uid = common.authenticate(db, username, password, {})
-models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
-
-# Pull accounts receivable, payable, expenses
-expenses = models.execute_kw(db, uid, password, 'account.move', 'search_read', 
-    [[('move_type', '=', 'entry')], {'fields': ['date', 'amount', 'partner_id']}])
+compliance_tracker = {
+    "fidelity_trust_services": {
+        "cle_certification": {
+            "holder": "audrey_evans",
+            "colorado_supreme_court": "certified_sponsor",
+            "expiration": "2026-XX-XX",  # Need to fill in
+            "renewal_notice": "60_days_before"
+        },
+        "sam_gov": {
+            "cage_code": "XXXXX",  # Need to fill in
+            "expiration": "2026-05-XX",  # MAY RENEWAL!
+            "dunss_number": None,  # Need to get
+            "uei": None,  # Need to get for grants.gov
+        }
+    }
+}
 ```
 
-### 2. Passive Income Classification
+### Alert System
 
-**IRS Rules** (Publication 925):
-- Income is **PASSIVE** if:
-  - You don't materially participate
-  - It's from a business your family does most work
-  - You have no regular involvement
+| Item | Renewal Notice | Warning Window |
+|------|--------------|----------------|
+| CLE Certification | 60 days before | CRITICAL |
+| CAGE Code (SAM.gov) | 30 days before | **MAY 2026** |
+| DUNS/UEI | 30 days before | As needed |
+| Business License | 30 days before | Per jurisdiction |
 
-**CLF (material participation test)**:
-- 500+ hours in the activity = ACTIVE
-- Less than 100 hours AND less than anyone else = PASSIVE
+---
 
-**Key strategy for Audrey**:
-- Donate PRODUCTS (not cash) to businesses → capital contributions
-- NO taxable income to Audrey
-- Businesses depreciate/rent items
+## Feature 2: Grant Discovery Engine
 
-### 3. Medicaid Watchdog (Colorado)
+### Where to Find Grants
 
-| Program | Income Limit | 2024 Limit |
-|---------|------------|------------|
-| Health First Colorado | ~$1,574/mo | For elderly/disabled |
-| Medicare | N/A | SSDs only |
+| Source | URL | For What |
+|--------|-----|---------|
+| SAM.gov | sam.gov | Federal contracts |
+| Grants.gov | grants.gov | Federal grants |
+| Colorado.com | colorado.gov/grants | State grants |
+| USAspending | usaspending.gov | Contract awards |
 
-**If SSDI goes over** → Lose Medicaid → Lose:
-- In-home care
-- Housing voucher
-- Medical coverage
+### Grant Categories for Audrey's Businesses
 
-**Solution**: Keep income LOW via:
-- Charitable donations (reduce AGI)
-- Business losses (flow through)
-- Asset contributions (no income)
+| Business | Potential Grants | Requirements |
+|----------|-----------------|-------------|
+| **Fidelity Trust Services** | Legal aid, community programs | CLE + UEI |
+| **Rental Company** | Small business, equipment | LLC + financials |
+| **All businesses** | R&D, disability-owned | DBE certification |
 
-### 4. Tax Credit Opportunity Scanner
+---
 
-Credits to monitor for disabled/senior:
+## Feature 3: Tax Navigator (Updated)
 
-| Credit | Qualification |
-|--------|-------------|
-| **Disability Savings Account** | Have DB plan? |
-| **Elderly/Dependent Care Credit** | Qualify? |
-| **Child/Dependent Care** | Not applicable |
-| **R&D Credit** | If renting equipment |
-| **Cost Segregation** | Real estate |
+### Passive Income Classification
 
-### 5. Asset Donation Tracker
+| Income Stream | Classification | Tax to Audrey? |
+|---------------|----------------|----------------|
+| Reese Reviews (daughter does work) | **PASSIVE** | No |
+| Rental income (rental company) | **PASSIVE** | No* |
+| Freedom Angel consulting | ACTIVE/OWNER | Maybe |
+| Overflow sales | **PASSIVE** | No* |
 
-For Audrey's model:
+*If proper entity structure, income flows to LLC, not to Audrey personally
 
-```
-Product donated → Donation Tracker → FMV Calculation → Deduction
+### Medicaid Watchdog
 
-Example:
-- Costume purchased: $100
-- Donated to Rental LLC: $100 FMV
-- Rental LLC depreciates: $100/yr deduction
-- Audrey: $100 charitable deduction
-
-NO TAX to Audrey!
+```python
+medicaid_watch = {
+    "ssdi_income": 3400,  # $3,400/month - FIXED
+    "medicaid_limit": 1574,  # Colorado limit - VARIES
+    "buffer_needed": 1826,  # MUST reduce other income
+    "strategy": "donate_everything_possible"
+}
 ```
 
 ---
 
-## Implementation Plan
+## Feature 4: Asset Donation Engine
 
-### Phase 1: Odoo Connection
-- [ ] Set up Odoo XML-RPC connection
-- [ ] Pull business data for each entity
-- [ ] Build entity ownership graph
+### How to Minimize Taxable Income
 
-### Phase 2: Passive Income Engine
-- [ ] Classify each income stream
-- [ ] Alert on active vs passive classification
-- [ ] Build year-end projections
+```
+Audrey purchases product → Donates to Rental LLC → 
+    → Rental LLC gets FMV deduction
+    → Audrey gets charitable deduction
+    → NO income to Audrey!
+```
 
-### Phase 3: Medicaid Watchdog
-- [ ] Input: SSDI amount ($3,400/mo)
-- [ ] Calculate: Other income buffers
-- [ ] Alert: Danger zones
-
-### Phase 4: Tax Credit Scanner
-- [ ] Monitor credits based on activities
-- [ ] Track: What you qualify for when
-- [ ] Build: Application reminders
-
-### Phase 5: Asset Donation Engine
-- [ ] Track: All donated items
-- [ ] Calculate: FMV for each
-- [ ] Export: Schedule C, K-1s
+| Item | Cost | FMV Donation | Audrey Deduction |
+|------|------|-------------|-----------------|
+| Costume | $100 | $100 | $100 |
+| Heater | $200 | $200 | $200 |
+| Catering set | $300 | $300 | $300 |
 
 ---
 
-## Risk Assessment
+## Implementation Phases
 
-| Risk | Level | Mitigation |
-|------|-------|-----------|
-| Medicaid disqualification | **CRITICAL** | NEVER exceed income limits |
-| IRS audit (passive income) | MEDIUM | Document family participation |
-| Medicare loss | **CRITICAL** | Maintain SSDI, don't add income |
-| Odoo setup | LOW | Test with sample data |
+### Phase 1: Compliance Tracker
+- [ ] Input all credentials with expiration dates
+- [ ] Set up 60/30 day alerts
+- [ ] Build renewal dashboard
 
----
+### Phase 2: Odoo Integration  
+- If Odoo exists, sync business data
+- If not, build simple tracker
 
-## Next Steps
+### Phase 3: Grant Engine
+- [ ] Register for SAM.gov (if not done)
+- [ ] Get DUNS/UEI
+- [ ] Set up grant opportunity alerts
 
-1. **Review this proposal** - Does this match your need?
-2. **Clarify ownership** - What % of each business do you own?
-3. **Confirm Odoo** - Do you have Odoo running now?
-4. **Define rental company** - Formal entity or informal?
-5. **Start with Phase 1** - Just get Odoo connected first
-
----
-
-## Questions for Audrey
-
-1. What % of Reese Reviews do you own? Daughter?
-2. What's the name of the rental company?
-3. Is Overflow a formal LLC or DBA?
-4. Do you have Odoo set up for any businesses?
-5. What's your current accountant's name?
+### Phase 4: Tax Engine
+- [ ] Classify all income streams
+- [ ] Build Medicaid watch
+- [ ] Track donations
 
 ---
 
-*Proposal created by @openhands on behalf of Audrey Evans*
-*Automated via revvel-standards proposal system*
+## Updated Questions for Audrey
+
+1. **Fidelity Trust Services:**
+   - What is the exact CLE expiration date?
+   - Do you have CAGE code? What is it?
+   - Do you have DUNS? UEI?
+   - Is entity formed or in progress?
+
+2. **All Businesses:**
+   - What % ownership in each?
+   - Does daughter have ownership in Reese Reviews?
+   - What are the entity names exactly?
+
+3. **Compliance:**
+   - When was/last renew anything?
+   - Who is your accountant?
+   - Who is your business attorney?
+
+---
+
+## Risk Register
+
+| Risk | Impact | Mitigation |
+|------|-------|------------|
+| **May CAGE code expiration** | Lose grants/contracts | Set calendar alert NOW |
+| **Medicaid disqualification** | Lose all benefits | Keep income under limit |
+| **MISSING credentials** | Can't operate | Get UEI/DUNS |
+
+---
+
+*Proposal updated by @openhands on behalf of Audrey Evans*
+*revvel-standards proposal system*
