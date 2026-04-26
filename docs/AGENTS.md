@@ -144,6 +144,28 @@ git log --oneline -10 && git status && git branch -a
 - **Commit frequently.** Small, descriptive commits. Not one giant commit at the end.
 - **Leave the codebase better than you found it.** If you touch a file, clean it up. Fix obvious bugs. Remove dead code.
 
+### Decision-Making — Prefer Assumptions Over Questions
+
+When you encounter missing information during autonomous work:
+
+1. **Check DECISIONS.md first.** If the question is already answered there, use that answer.
+2. **Check ASSUMPTIONS.md.** If another agent already assumed an answer, don't contradict it without good reason.
+3. **If the decision is reversible:** Make the most reasonable assumption, document it in ASSUMPTIONS.md as `[ASSUMED]`, add `[ASSUMED]` in code comments, and continue working. Do NOT stop and ask.
+4. **If the decision is irreversible** (deleting data, publishing to production, spending money, changing auth): Stop and ask the human.
+5. **Batch unavoidable questions.** If you must ask the human, collect ALL your questions into one list at the end — not 20 separate interruptions.
+6. **When multiple agents are working:** Read DECISIONS.md and ASSUMPTIONS.md before starting. One agent's assumption constrains the next. This prevents contradictory work.
+
+### Ship Status
+
+Every artifact in this repo is tracked in `SHIP_STATUS.md` at the root. Before declaring work complete:
+- Update SHIP_STATUS.md to reflect the current state of what you worked on
+- Move completed items to the Terminal section with the appropriate terminal state
+- The weekly `ship-status-audit.yml` workflow will flag anything stuck in non-terminal state for >30 days
+
+### Proposal Review
+
+Issues labeled `proposal` automatically trigger an adversarial prosecution review via `.github/workflows/proposal-prosecution.yml`. The prosecution's job is to find flaws, not to approve. Proposal authors must address prosecution findings in a rebuttal before approval.
+
 ### Agent Factory Usage
 - Route tasks via trigger words to the Agent Factory (`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
 - When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
