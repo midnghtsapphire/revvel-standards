@@ -38,7 +38,7 @@
 |-----|-------|--------|------|------------|
 | T001 | Enable revvel-standards Pages | todo | @midnghtsapphire | — |
 | T002 | Private → Public: 74 repos with licenses | in-progress | @openhands | 2026-04-25 |
-| | **Tier 1: 7/74 repos DONE** | | | | |
+| | **Tier 2: 22/74 repos DONE** | | | | |
 
 ---
 
