@@ -42,20 +42,20 @@
 - [x] openclaw-ui
 - [x] revvel-expert-skills
 
-### Tier 2: Core Products (15 repos)
-- [ ] mindmappr
-- [ ] mindmappr-setup
-- [ ] ai-benchmarking-tool
-- [ ] ai-benchmarking-standalone
-- [ ] datascope-standalone
-- [ ] data-router-standalone
-- [ ] smart-ai-router
-- [ ] universal_oz
-- [ ] trusty-agents
-- [ ] openclaw-skills-hub
-- [ ] revvel-skill-runner
-- [ ] revvel-skills-vault
-- [ ] oz-prompt-library
+### Tier 2: Core Products (15 repos) - ✅ DONE
+- [x] mindmappr
+- [x] mindmappr-setup
+- [x] ai-benchmarking-tool
+- [x] ai-benchmarking-standalone
+- [x] datascope-standalone
+- [x] data-router-standalone
+- [x] smart-ai-router
+- [x] universal_oz
+- [x] trusty-agents
+- [x] openclaw-skills-hub
+- [x] revvel-skill-runner
+- [x] revvel-skills-vault
+- [x] oz-prompt-library
 
 ### Tier 3: Consumer Apps (25 repos)
 - [ ] Pawsitting
@@ -110,7 +110,7 @@
 - [ ] stellar-insight-archive-tool-93
 - [ ] tikiwash-autofill-frontend-kit
 - [ ] tikiwash-autofill-frontend-kit-93
-- [ ] ai-benchmarking-standalone
+- [x] ai-benchmarking-standalone
 - [ ] marketing-automation-standalone
 
 ### Tier 6: Archives (Keep Private)
