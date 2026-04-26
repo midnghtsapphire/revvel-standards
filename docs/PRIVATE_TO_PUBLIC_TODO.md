@@ -57,61 +57,61 @@
 - [x] revvel-skills-vault
 - [x] oz-prompt-library
 
-### Tier 3: Consumer Apps (25 repos)
-- [ ] Pawsitting
-- [ ] anime-ascend
-- [ ] anime-ascend-wellness
-- [ ] carbon-champions
-- [ ] climate-resilience-navigator
-- [ ] cozy-haven-hub
-- [ ] drive-easy-insure
-- [ ] drive-organizer
-- [ ] food-freedom-ai
-- [ ] gmail-organizer
-- [ ] guardaio
-- [ ] in-the-wild
-- [ ] instant-ordain-certificate-pro
-- [ ] lifeos-hub
-- [ ] longevity-insights
-- [ ] marketing-automation-standalone
-- [ ] muse-maker
-- [ ] neighborly-services
-- [ ] nomad-navigator
-- [ ] rent-anything-hub
-- [ ] talent-ladder
-- [ ] toastbot-ai-scribe
-- [ ] wedlock-wizard-mobile
+### Tier 3: Consumer Apps (23 repos) - ✅ DONE
+- [x] Pawsitting
+- [x] anime-ascend
+- [x] anime-ascend-wellness
+- [x] carbon-champions
+- [x] climate-resilience-navigator
+- [x] cozy-haven-hub
+- [x] drive-easy-insure
+- [x] drive-organizer
+- [x] food-freedom-ai
+- [x] gmail-organizer
+- [x] guardaio
+- [x] in-the-wild
+- [x] instant-ordain-certificate-pro
+- [x] lifeos-hub
+- [x] longevity-insights
+- [x] marketing-automation-standalone
+- [x] muse-maker
+- [x] neighborly-services
+- [x] nomad-navigator
+- [x] rent-anything-hub
+- [x] talent-ladder
+- [x] toastbot-ai-scribe
+- [x] wedlock-wizard-mobile
 
-### Tier 4: Utilities & Tools (20 repos)
-- [ ] code-review-mcp-server
-- [ ] code-review-repo
-- [ ] exact-match-display
-- [ ] meetaudreyevans-dashboard
-- [ ] oath-gate-connect
-- [ ] ocean2-v2-research
-- [ ] premolt
-- [ ] project-face-standalone
-- [ ] radiant-recommends-app
-- [ ] rags
-- [ ] revvel-forensic-studio
-- [ ] revvel-template-library
-- [ ] rvvel-affiliate-links-mcp
-- [ ] secret-sip-feed
-- [ ] skill-builder-mobile
-- [ ] skin-ai-advisor
-- [ ] soil-soul-map
-- [ ] sovereign-ai-hub
-- [ ] steel-white
-- [ ] stellar-insight-archive-tool
+### Tier 4: Utilities & Tools (20 repos) - ✅ DONE
+- [x] code-review-mcp-server
+- [x] code-review-repo
+- [x] exact-match-display
+- [x] meetaudreyevans-dashboard
+- [x] oath-gate-connect
+- [x] ocean2-v2-research
+- [x] premolt
+- [x] project-face-standalone
+- [x] radiant-recommends-app
+- [x] rags
+- [x] revvel-forensic-studio
+- [x] revvel-template-library
+- [x] rvvel-affiliate-links-mcp
+- [x] secret-sip-feed
+- [x] skill-builder-mobile
+- [x] skin-ai-advisor
+- [x] soil-soul-map
+- [x] sovereign-ai-hub
+- [x] steel-white
+- [x] stellar-insight-archive-tool
 
-### Tier 5: Duplicates (Consolidate Later)
-- [ ] rentiverse-finds-it-all
-- [ ] rentiverse-finds-it-all-30
-- [ ] stellar-insight-archive-tool-93
-- [ ] tikiwash-autofill-frontend-kit
-- [ ] tikiwash-autofill-frontend-kit-93
+### Tier 5: Duplicates (5 repos) - ✅ DONE
+- [x] rentiverse-finds-it-all
+- [x] rentiverse-finds-it-all-30
+- [x] stellar-insight-archive-tool-93
+- [x] tikiwash-autofill-frontend-kit
+- [x] tikiwash-autofill-frontend-kit-93
 - [x] ai-benchmarking-standalone
-- [ ] marketing-automation-standalone
+- [x] marketing-automation-standalone
 
 ### Tier 6: Archives (Keep Private)
 - [x] glowstarlabs-vault (KEEP PRIVATE - secrets!)
