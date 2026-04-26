@@ -36,7 +36,7 @@
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
-| T001 | Enable revvel-standards Pages | todo | @midnghtsapphire | — |
+| T001 | Revvel-standards Housekeeping | done | @openhands | 2026-04-25 |
 | T002 | Private → Public: 74 repos with licenses | done | @openhands | 2026-04-25 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
