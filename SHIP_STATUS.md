@@ -32,6 +32,7 @@
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
 | #251 | add pytest-mock | open | — | 2026-04-01 |
+| — | oAudrey hub deploy (DO App Platform) | in-progress | @copilot | 2026-04-26 |
 
 ### Tasks
 

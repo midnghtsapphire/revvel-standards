@@ -1,6 +1,6 @@
 # Secrets Management — Workflow ↔ Secret Matrix
 
-> **Last audited:** 2026-04-25
+> **Last audited:** 2026-04-26
 > **Source:** Gap analysis session ([link](https://app.devin.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
 
 This document maps every GitHub Actions workflow to the secrets it requires
@@ -22,6 +22,8 @@ that all automations have the secrets they need to actually run.
 | `MABL_API_KEY` | mabl | No guard | mabl testing platform API key |
 | `MIRROR_GIST_ID` | durability-mirror | Yes | Gist ID for durability mirror backup |
 | `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
+| `DIGITALOCEAN_API_TOKEN` | deploy-oaudrey | Yes (skips with warning) | DO personal access token for App Platform deploys; create at DO → API → Tokens |
+| `NAMECHEAP_API_KEY` | credential-gatekeeper (BOM detection only) | Yes | Namecheap API key for DNS automation; enable at Namecheap → Profile → API Access |
 
 ## Workflows Without Custom Secrets
 

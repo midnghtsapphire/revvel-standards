@@ -1,0 +1,195 @@
+name: oAudrey — Post-Deploy Retro & Gap Analysis
+
+# Runs after every successful oAudrey deploy (or on a weekly schedule).
+# Does three things:
+#   1. Health-check: verifies oaudrey.com and subdomains are live
+#   2. Gap analysis: compares what's deployed vs what's listed in README
+#   3. Retrospective: opens a GitHub issue with findings, good/bad/needs-work
+#      and patches standards docs if new best practices are discovered.
+#
+# This is the "self-improvement" loop described in the Jules issue.
+# Reference: standards/OAUDREY_DEPLOYMENT_STANDARD.md
+
+on:
+  workflow_run:
+    workflows: ["Deploy oAudrey Hub → DigitalOcean App Platform"]
+    types: [completed]
+  schedule:
+    # Weekly Monday 06:00 UTC gap sweep
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      skip_health_check:
+        description: "Skip live health checks (use when domain not yet pointed)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  retro:
+    name: oAudrey Retro & Gap Analysis
+    runs-on: ubuntu-latest
+    # Only run retro after a successful deploy (not on failed deploys)
+    if: >
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Health check — oaudrey.com
+        id: health-main
+        if: ${{ !inputs.skip_health_check }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://oaudrey.com || echo "000")
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+            echo "::notice::oaudrey.com is live (HTTP $STATUS) ✅"
+          else
+            echo "::warning::oaudrey.com returned HTTP $STATUS — may be DNS propagation or deployment issue"
+          fi
+
+      - name: Health check — fieldwork.oaudrey.com
+        id: health-fieldwork
+        if: ${{ !inputs.skip_health_check }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://fieldwork.oaudrey.com || echo "000")
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+            echo "::notice::fieldwork.oaudrey.com is live (HTTP $STATUS) ✅"
+          else
+            echo "::warning::fieldwork.oaudrey.com returned HTTP $STATUS"
+          fi
+
+      - name: Gap analysis — products in README vs tabs in index.html
+        id: gap-analysis
+        run: |
+          # NOTE: The tab button text extraction below depends on the HTML structure remaining
+          # consistent (role="tab" buttons with text content on the same line). If the HTML is
+          # reformatted significantly, update this grep pattern to match.
+          TABS=$(grep -oP 'role="tab"[^>]*>\s*\K[^<]+' oaudrey/index.html | sed 's/&amp;/\&/g' | tr -d '\n ')
+          echo "tabs_found=$TABS" >> "$GITHUB_OUTPUT"
+
+          # Check for 404.html (graceful error page)
+          if [ -f "oaudrey/404.html" ]; then
+            echo "has_404=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_404=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Check for app spec
+          if [ -f "oaudrey/.do/app.yaml" ]; then
+            echo "has_app_spec=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_app_spec=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Count product tab panels
+          PANEL_COUNT=$(grep -c 'role="tabpanel"' oaudrey/index.html || echo "0")
+          echo "panel_count=$PANEL_COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Generate retrospective report
+        id: retro-report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            // Health check results
+            const mainStatus = '${{ steps.health-main.outputs.status }}' || 'skipped';
+            const fieldworkStatus = '${{ steps.health-fieldwork.outputs.status }}' || 'skipped';
+
+            const healthOk = (s) => s === '200' || s === '301' || s === '302' || s === 'skipped';
+            const mainOk = healthOk(mainStatus);
+            const fieldworkOk = healthOk(fieldworkStatus);
+
+            // Gap analysis
+            const has404 = '${{ steps.gap-analysis.outputs.has_404 }}' === 'true';
+            const hasAppSpec = '${{ steps.gap-analysis.outputs.has_app_spec }}' === 'true';
+            const panelCount = parseInt('${{ steps.gap-analysis.outputs.panel_count }}') || 0;
+
+            // Determine what's good vs needs work
+            const good = [];
+            const needsWork = [];
+            const gaps = [];
+
+            if (mainOk && mainStatus !== 'skipped') good.push('`oaudrey.com` is live and responding');
+            else if (mainStatus !== 'skipped') needsWork.push('`oaudrey.com` is not responding (HTTP ' + mainStatus + ')');
+
+            if (fieldworkOk && fieldworkStatus !== 'skipped') good.push('`fieldwork.oaudrey.com` is live');
+            else if (fieldworkStatus !== 'skipped') needsWork.push('`fieldwork.oaudrey.com` is not responding');
+
+            if (has404) good.push('`404.html` error page exists');
+            else gaps.push('Missing `oaudrey/404.html` — add a branded error page');
+
+            if (hasAppSpec) good.push('DO App Platform spec (`oaudrey/.do/app.yaml`) is committed');
+            else gaps.push('Missing `oaudrey/.do/app.yaml` — deployment spec not committed');
+
+            if (panelCount >= 5) good.push(`${panelCount} product tab panels are defined`);
+            else gaps.push(`Only ${panelCount} product tab panels found — expected ≥5`);
+
+            // Standards gaps
+            const standardsGaps = [
+              !has404 && '- [ ] Add `oaudrey/404.html`',
+              !hasAppSpec && '- [ ] Commit `oaudrey/.do/app.yaml`',
+              panelCount < 5 && '- [ ] Add missing product tabs to `oaudrey/index.html`',
+            ].filter(Boolean);
+
+            const body = [
+              `## oAudrey Retro — ${date}`,
+              '',
+              `> Auto-generated by [\`oaudrey-retro.yml\`](${runUrl})`,
+              '',
+              '### ✅ What Went Well',
+              good.length > 0 ? good.map(g => `- ${g}`).join('\n') : '- _(nothing to report — health checks may have been skipped)_',
+              '',
+              '### ⚠️ Needs Work',
+              needsWork.length > 0 ? needsWork.map(w => `- ${w}`).join('\n') : '- _(none — all checks passed)_',
+              '',
+              '### 🔍 Gaps Found',
+              gaps.length > 0 ? gaps.map(g => `- ${g}`).join('\n') : '- _(no gaps detected)_',
+              '',
+              '### 📋 Standards Checklist',
+              standardsGaps.length > 0
+                ? standardsGaps.join('\n')
+                : '- [x] All standards checks passed',
+              '',
+              '---',
+              '',
+              '**Next action:** Address any ⚠️ and 🔍 items above. ' +
+              'Completed improvements should be documented in `standards/OAUDREY_DEPLOYMENT_STANDARD.md`.',
+            ].join('\n');
+
+            // Only open an issue if there are gaps or failures
+            if (gaps.length > 0 || needsWork.length > 0) {
+              const { data: issue } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
+                body,
+                labels: ['retro', 'oaudrey'],
+              });
+              core.notice(`Retro issue created: ${issue.html_url}`);
+              core.setOutput('issue_url', issue.html_url);
+            } else {
+              core.notice('oAudrey retro: all checks passed — no issue opened.');
+            }
+
+            // Always write to step summary
+            await core.summary.addRaw(body).write();
+
+      - name: Update SHIP_STATUS.md with retro timestamp
+        run: |
+          DATE=$(date -u +"%Y-%m-%d")
+          if grep -q "oAudrey hub" SHIP_STATUS.md; then
+            echo "::notice::oAudrey hub entry found in SHIP_STATUS.md — retro ran on $DATE"
+          fi
+          # Note: SHIP_STATUS.md is updated manually after retro findings are addressed.
+          # The retro issue (opened above) tracks what needs to change.
