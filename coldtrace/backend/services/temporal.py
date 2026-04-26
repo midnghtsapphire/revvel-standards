@@ -50,7 +50,7 @@ def _compute_ndvi_sync(ndvi_before: Any, ndvi_after: Any, sigma_threshold: float
     """Synchronous NDVI delta computation (called in thread pool)."""
     try:
         import numpy as np
-        import rioxarray  # noqa: F401
+        import rioxarray  # registers the .rio accessor on xarray objects
     except ImportError as exc:
         raise RuntimeError("numpy and rioxarray required for NDVI computation.") from exc
 

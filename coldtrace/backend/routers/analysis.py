@@ -6,6 +6,7 @@ import asyncio
 import uuid
 from typing import Annotated
 
+import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
 from ..models.analysis import (
@@ -108,6 +109,6 @@ async def _run_pipeline(job_id: str, params: AnalysisParams) -> None:
             heatmap=heatmap,
         )
 
-    except Exception as exc:  # noqa: BLE001
+    except (RuntimeError, ValueError, OSError, httpx.HTTPError) as exc:
         job.status = JobStatus.FAILED
         job.error = str(exc)

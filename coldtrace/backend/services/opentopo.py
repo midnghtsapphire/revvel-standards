@@ -43,8 +43,11 @@ async def fetch_dem(
     if settings.demo_mode or not settings.opentopography_api_key:
         return await _demo_dem(bbox)
 
+    if dataset not in _DATASET_MAP:
+        raise ValueError(f"Unknown dataset '{dataset}'. Allowed: {list(_DATASET_MAP)}")
+
+    dem_type = _DATASET_MAP[dataset]
     west, south, east, north = bbox
-    dem_type = _DATASET_MAP.get(dataset, "SRTMGL1")
 
     params = {
         "demtype": dem_type,
@@ -61,7 +64,8 @@ async def fetch_dem(
         resp.raise_for_status()
 
     tmp = Path(tempfile.mkdtemp())
-    dem_path = tmp / f"dem_{dataset}.tif"
+    # Use the validated dem_type (from allow-list) rather than raw user input as the filename.
+    dem_path = tmp / f"dem_{dem_type}.tif"
     dem_path.write_bytes(resp.content)
     return dem_path
 

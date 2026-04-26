@@ -26,7 +26,8 @@ WEIGHTS = {
     "elevation": 0.15,
 }
 
-# Lost-person behavioral profile: Koester 2008 distance distributions (km)
+# Lost-person behavioral profile: Koester 2008 distance distributions
+# Tuple: (min_km, max_km) — inner and outer distance bounds from last known location
 SUBJECT_DISTANCE_PROFILE: dict[str, tuple[float, float]] = {
     "person-healthy": (3.0, 8.0),
     "person-impaired": (1.0, 3.5),
