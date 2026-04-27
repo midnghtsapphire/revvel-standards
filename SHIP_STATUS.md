@@ -39,6 +39,7 @@
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
 | T003 | Tax AI Integration (OpenRouter) | done | @openhands | 2026-04-25 |
+| T004 | Automated Product Pipeline standard + skill + scaffold | in-progress | @copilot | 2026-04-27 |
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|

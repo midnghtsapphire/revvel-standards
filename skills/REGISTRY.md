@@ -59,6 +59,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
 | Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
 | Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
+| Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
 
 ---
 
@@ -354,6 +355,19 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** "create a bot", "build a bot", "new bot", "bot builder", "scaffold bot", "bot spec", or any style-named bot request (e.g., "glassmorphic bot", "bt21 bot").
 - **Lifecycle:** Ephemeral — terminates after the bot spec is shipped and the scaffold is written.
 - **Persona:** 🔨 Forge
+
+---
+
+### Product Operations
+
+#### product-pipeline
+- **Path:** `skills/product-pipeline/`
+- **Files:** `SKILL.md` · `skill.yml`
+- **Description:** Operates the daily Revvel product creation pipeline defined in [`standards/AUTOMATED_PRODUCT_PIPELINE.md`](../standards/AUTOMATED_PRODUCT_PIPELINE.md). Listens across X / Reddit / TikTok / YouTube / app-store / Amazon reviews for high-volume complaints, clusters and ranks them by `volume × payability × blue_ocean / age`, scans competitors and reviews for SEO/SEM gaps, runs an ROI gate that auto-approves only cheap reversible shapes (PDF, MCP, CLI, skill) and otherwise pings Audrey, routes the candidate to the cheapest viable solution shape (PDF / one-button app / extension / Alexa skill / API / CLI / MCP / booklet / full app), hands the per-product `BOM.md` to the BOM gatekeeper, builds with the shape-specific scaffold, runs every cert (code, security, a11y, store, tax/legal), wires Stripe idempotently keyed on `product_slug`, deploys to the highest-volume marketplaces for that shape (Gumroad/Etsy/App Store/Play/Chrome Web Store/RapidAPI/npm+brew+scoop/mcp.so/own domain), runs UTM-tagged SEM + paid social capped at `min($20, est_daily_revenue / 5)`, and rolls Stripe + analytics back into the next day's listening payability weights. Per-product folders live at `projects/agent-generated/<slug>/`, scaffolded by `scripts/init-product.sh` from `templates/agent-generated-product/`.
+- **Tags:** product-pipeline, social-listening, complaint-cluster, roi-gate, solution-shape, bom-gatekeeper, stripe-product, marketplace-deploy, paid-social-budget, agent-generated-product
+- **Trigger:** "product pipeline", "automated product", "ship a product", "daily listening", "social listening", "complaint cluster", "ROI gate", "solution shape", "BOM gatekeeper", "stripe product", "agent-generated product", "product-slug".
+- **Lifecycle:** Long-running (cron-driven); each step session is ephemeral.
+- **Persona:** 🛠️ Forge-Pipeline
 
 ---
 
