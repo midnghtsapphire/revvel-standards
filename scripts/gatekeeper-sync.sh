@@ -116,16 +116,16 @@ for name in "${SECRETS[@]}"; do
 
   value="$(fetch_doppler_value "$name" || true)"
   if [[ -z "$value" ]]; then
-    echo "  ⚠️  $name — not present in Doppler $PROJECT/$CONFIG"
+    echo "  ⚠️  $name — not present in Doppler $PROJECT/$CONFIG" >&2
     missing_in_doppler+=("$name")
     continue
   fi
 
   if printf '%s' "$value" | gh secret set "$name" --repo "$REPO" >/dev/null 2>&1; then
-    echo "  ✅ $name — synced to $REPO"
+    echo "  ✅ $name — synced to $REPO" >&2
     synced+=("$name")
   else
-    echo "  ❌ $name — gh secret set failed"
+    echo "  ❌ $name — gh secret set failed" >&2
     failed+=("$name")
   fi
   unset value
