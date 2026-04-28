@@ -1,7 +1,7 @@
 name: 🔬 Deep-Research Request (Jules)
 description: Ask Google Jules to deep-research best functionality & method, then refine this request before any code changes.
 title: "[Jules] "
-labels: ["jules", "triage", "triage:new"]
+labels: ["jules", "google-labs-jules", "triage", "triage:new"]
 body:
   - type: markdown
     attributes:
@@ -27,22 +27,19 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
+  - type: textarea
     id: scope
     attributes:
       label: Scope for Jules's deep research
-      description: These are the defaults. Uncheck any that don't apply; add extras in the "Other references" box below.
-      options:
-        - label: Review all of **midnghtsapphire/revvel-standards** (this repo — AGENTS.md, skills/, standards/, templates/, .github/).
-          required: false
-        - label: Cross-reference other repos in the **midnghtsapphire** org for consistency.
-          required: false
-        - label: Check the **skills vault** (`skills/REGISTRY.md`) for relevant skills to load before acting.
-          required: false
-        - label: Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules.
-          required: false
-        - label: Confirm the change honors the **Prime Directive** (ship working, tested code — not plans).
-          required: false
+      description: These are the defaults — all pre-checked. Uncheck any that don't apply, or add extras. (Pre-filled because GitHub Issue Forms `checkboxes` don't support default-selected options.)
+      value: |
+        - [x] Review all of **midnghtsapphire/revvel-standards** (this repo — AGENTS.md, skills/, standards/, templates/, .github/).
+        - [x] Cross-reference other repos in the **midnghtsapphire** org for consistency.
+        - [x] Check the **skills vault** (`skills/REGISTRY.md`) for relevant skills to load before acting.
+        - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules.
+        - [x] Confirm the change honors the **Prime Directive** (ship working, tested code — not plans).
+    validations:
+      required: false
 
   - type: textarea
     id: other_refs
