@@ -32,7 +32,7 @@ This standard defines how to integrate Apache Cordova into the Revvel CI/CD pipe
 | **Maintenance status** | Apache Foundation (stable) | Ionic (active) | Google (active) |
 | **Best for** | Projects needing broad plugin support, legacy hybrid apps | New hybrid apps using Ionic | PWAs targeting Play Store |
 
-**Recommendation:** Use Capacitor for new projects. Use Cordova when you need a specific plugin only available in the Cordova ecosystem, or when migrating an existing Cordova-based app.
+**Recommendation:** Use Capacitor for new projects. Use Cordova when you need a specific plugin only available in the Cordova ecosystem, or when migrating an existing Cordova-based app. The full standards-level rationale (rubric, scorecard, risks, rollout) is in [`../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md`](../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md).
 
 ---
 
@@ -531,6 +531,7 @@ cordova prepare
 | Document | Relevance |
 |---|---|
 | `templates/mobile/MOBILE_DEPLOYMENT.md` | Overall mobile deployment guide (PWA, TWA, Capacitor, Cordova) |
+| `docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md` | Standards-level evaluation that designates Capacitor as the primary PWA → native shell wrapper, with Cordova kept for legacy/migration |
 | `templates/cicd/deploy-cordova.yml` | Cordova GitHub Actions workflow template |
 | `templates/cicd/dependabot.yml` | Dependabot config (covers Cordova npm plugins automatically) |
 | `SECURITY_STANDARD.md` | Security requirements for mobile apps |
