@@ -5,6 +5,28 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-04-28
+
+### Added
+- `docs/YUMYUMCODE_EVAL_2026-04-28.md` — standards-level evaluation of
+  yumyumcode.com revitalization. Recommends **"NomNom Review"**, a
+  neurodivergent-friendly free AI code-review widget at
+  `https://yumyumcode.com/review/`, served from the existing GitHub Pages
+  host with the LLM call routed through **OpenRouter** per the repo's
+  `.github/copilot-instructions.md` Automation Routing Policy. Net-new
+  infra cost: $0 baseline. Implementation lives in a separate PR against
+  `MIDNGHTSAPPHIRE/yumyumcode` (scope defined in §6 of the eval).
+  Resolves the [Jules] "REVIEW YUMYUMCODE.COM FOR UPGRADES AND CUTTING
+  EDGE UTILITY" issue.
+
+### Changed
+- `docs/SPRINT_STATE.md` — replaced `yumyumcode.com | TBD | TBD` with
+  the now-documented GitHub Pages mapping and a cross-reference to the
+  new eval.
+- `docs/REPO_TODO_LIST.md` — row 8 (`yumyumcode`) now cross-references
+  the eval alongside the existing "Add license" TODO so standards-level
+  direction is discoverable from the TODO list.
+
 ## [Unreleased] - 2026-04-20
 
 ### Added

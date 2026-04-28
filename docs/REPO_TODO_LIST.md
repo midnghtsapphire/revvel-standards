@@ -106,7 +106,7 @@
 | 5 | **project-face** | AI skin analysis | [ ] Add license |
 | 6 | **universal-data-router** | AI file organizer | [ ] Add license |
 | 7 | **neurooz** | ADHD productivity app | [ ] Add license |
-| 8 | **yumyumcode** | Code review consulting | [ ] Add license |
+| 8 | **yumyumcode** | Code review consulting | [ ] Add license · [ ] Land "NomNom Review" relaunch per [`docs/YUMYUMCODE_EVAL_2026-04-28.md`](./YUMYUMCODE_EVAL_2026-04-28.md) |
 | 9 | **swl-agent** | Universal AI communication protocol | [ ] Add license |
 | 10 | **duotunnel** | QUIC reverse tunnel | [ ] Add license |
 | 11 | **incidentfox** | AI SRE platform | [ ] Add license |
