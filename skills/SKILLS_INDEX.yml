@@ -606,6 +606,31 @@ skills:
       - "mablhq"
       - "setup-mabl-cli"
 
+  - name: mobile_testing
+    title: "Mobile Testing Standard (iOS + Android)"
+    version: "1.0.0"
+    path: "skills/mobile-testing/"
+    skill_file: "skills/mobile-testing/mobile-testing.skill.yml"
+    category: "Testing & Quality"
+    access: all
+    triggers:
+      - "mobile test"
+      - "test mobile app"
+      - "test ios"
+      - "test android"
+      - "ios e2e"
+      - "android e2e"
+      - "expo testing"
+      - "react native testing"
+      - "jest-expo"
+      - "react native testing library"
+      - "rntl"
+      - "maestro"
+      - "maestro flow"
+      - "detox"
+      - "test mobile coverage"
+      - "eas preview build for tests"
+
   # ─── Product Analytics ────────────────────────────────────────────────────
 
   - name: mixpanel

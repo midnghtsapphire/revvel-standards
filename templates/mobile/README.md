@@ -12,6 +12,7 @@ This scaffold is **inactive**. See `MOBILE_DEPLOYMENT.md` for activation instruc
 | `pwa-audit.sh` | Shell script to audit PWA readiness |
 | `fastlane/Fastfile` | Fastlane lanes scaffold (inactive until accounts ready) |
 | `fastlane/Appfile` | Fastlane app identifiers (fill in with real values when ready) |
+| `testing/` | **Mobile test harness templates** — `jest-expo` + `@testing-library/react-native` + Maestro starter configs and a `mobile-test.yml` GH Actions workflow. See [`testing/README.md`](./testing/README.md). |
 
 ---
 

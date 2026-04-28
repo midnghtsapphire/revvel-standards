@@ -47,6 +47,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
+| Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
 | Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
@@ -334,6 +335,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Integrate the Mabl CLI (`mablhq/setup-mabl-cli@v1.5`) into any Revvel project for AI-powered, self-healing end-to-end, API, and cross-browser test automation via GitHub Actions deployment events.
 - **Tags:** mabl, e2e-testing, ai-testing, self-healing-tests, cross-browser, deployment-events, api-testing, github-actions
 - **Trigger:** Setting up Mabl; running AI-maintained E2E tests; cross-browser test automation; registering deployment events; integrating `mablhq/setup-mabl-cli`.
+
+---
+
+#### mobile-testing
+
+- **Path:** `skills/mobile-testing/`
+- **Files:** `SKILL.md` · `mobile-testing.skill.yml`
+- **Description:** Apply Revvel mobile testing standards: `jest-expo` + `@testing-library/react-native` for unit/component and **Maestro** for E2E on both iOS and Android. Runs entirely in the cloud via EAS Build + GitHub Actions runners (`macos-14` for iOS sim, `ubuntu-latest` + `reactivecircus/android-emulator-runner` for Android emulator) — no local Xcode or Android Studio required, matching the AGENTS.md mandate. Detox is allowed as an alternate tier; Appium is explicitly excluded.
+- **Tags:** mobile, ios, android, expo, react-native, maestro, jest-expo, rntl, eas, e2e, coverage
+- **Trigger:** Any mobile-test work in an Expo / React Native repo: "test ios", "test android", "maestro flow", "jest-expo", "rntl", "react native testing library", "expo testing", "test mobile coverage", "eas preview build for tests".
+- **Related:** [`standards/MOBILE_TESTING.md`](../standards/MOBILE_TESTING.md), [`docs/revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md`](../docs/revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md), [`templates/mobile/testing/`](../templates/mobile/testing/).
 
 ---
 
