@@ -143,6 +143,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 | **Railway** | One-click deploy for Node/Python with managed DBs | $5/mo hobby / $20/mo+ | ⭐ Faster to spin up than DO Droplets for rapid prototypes | P2 |
 | **Render** | App hosting (alternative to DigitalOcean App Platform) | Free tier / $7/mo | ⭐ Good for small apps, simpler than DO for some use cases | P2 |
 | **Doppler** | Secrets/config manager with GitHub Actions integration | Free (5 projects) / $10/mo | ⭐⭐ Simpler than Vault for env var management | P2 |
+| **LieberLieber `setup-LemonTree.Automation@v6`** | GitHub Action that installs LemonTree.Automation — Windows-only CLI for diff/merge/consistency-check of Sparx Enterprise Architect UML/SysML model files ([eval](LEMONTREE_AUTOMATION_EVAL_2026-04-28.md)) | Quote-based (no public pricing) + 2× Windows runner minutes | ⭐ Wrong stack — Revvel has zero Sparx EA models; action is inert without `.eapx`/`.qea`/`.qeax` files | P3 — skip / 🗑️ Removed |
 
 ### 📊 Monitoring & Observability
 
