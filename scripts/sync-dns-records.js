@@ -245,46 +245,116 @@ function buildGodaddyRequest({ domain, records, credentials }) {
 
 /**
  * Porkbun's API does not have a single "replace all records" call — instead
- * we list the existing records, delete the ones we manage, and create the
- * new set. To keep the script declarative *and* idempotent without doing a
- * read-modify-write cycle from a builder function, we return a list of
- * primitive operations the caller can execute in order.
+ * we retrieve the current records, delete the managed ones, and create the
+ * declarative set. The builder returns primitive operations the caller can
+ * execute in order.
+ *
+ * If `existingRecords` is not provided, the first operation is a
+ * `dns/retrieve` request so the caller can fetch the current zone and call
+ * this builder again with the returned records. If `existingRecords` is
+ * provided, this function emits a full sync plan:
  *
  *   [
- *     { method: 'POST', url: '.../dns/retrieve/<domain>', body: '{...}' },
- *     // (caller computes the diff and emits delete/create steps)
+ *     { method: 'POST', url: '.../dns/delete/<domain>/<id>', body: '{...}' },
  *     { method: 'POST', url: '.../dns/create/<domain>', body: '{...}' },
  *   ]
  *
- * For the common "first-time sync" path the caller can just emit a create
- * for every record. Porkbun supports ALIAS at the apex natively.
+ * Porkbun supports ALIAS at the apex natively, so apex CNAME inputs are
+ * translated to ALIAS for comparison and creation.
  */
-function buildPorkbunCreateRequests({ domain, records, credentials }) {
+function buildPorkbunCreateRequests({ domain, records, credentials, existingRecords }) {
   if (!credentials || !credentials.apiKey || !credentials.secretApiKey) {
     throw new Error("buildPorkbunCreateRequests: missing apiKey/secretApiKey");
   }
 
-  return records.map((r) => {
-    // Porkbun: empty `name` means apex. CNAME at apex is invalid DNS, so
-    // any caller-supplied apex CNAME is up-translated to ALIAS, which
-    // Porkbun supports natively.
-    const body = {
-      apikey: credentials.apiKey,
-      secretapikey: credentials.secretApiKey,
-      name: r.host === "@" ? "" : r.host,
-      type: r.type === "CNAME" && r.host === "@" ? "ALIAS" : r.type,
-      content: r.value,
+  const authBody = {
+    apikey: credentials.apiKey,
+    secretapikey: credentials.secretApiKey,
+  };
+
+  const retrieveRequest = {
+    method: "POST",
+    url: `https://api.porkbun.com/api/json/v3/dns/retrieve/${encodeURIComponent(domain)}`,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(authBody),
+  };
+
+  const normalizeDesiredRecord = (r) => {
+    const host = r.host === "@" ? "@" : r.host;
+    const type = r.type === "CNAME" && host === "@" ? "ALIAS" : r.type;
+
+    return {
+      host,
+      type,
+      value: r.value,
       ttl: String(r.ttl || DEFAULT_TTL),
+      body: {
+        apikey: credentials.apiKey,
+        secretapikey: credentials.secretApiKey,
+        name: host === "@" ? "" : host,
+        type,
+        content: r.value,
+        ttl: String(r.ttl || DEFAULT_TTL),
+      },
     };
+  };
+
+  const normalizeExistingHost = (name) => {
+    if (!name || name === domain) {
+      return "@";
+    }
+
+    const suffix = `.${domain}`;
+    if (typeof name === "string" && name.endsWith(suffix)) {
+      return name.slice(0, -suffix.length) || "@";
+    }
+
+    return name;
+  };
+
+  const recordKey = ({ host, type }) => `${host}::${type}`;
+
+  const desiredRecords = records.map(normalizeDesiredRecord);
+  const managedKeys = new Set(desiredRecords.map(recordKey));
+
+  const createRequests = desiredRecords.map((r) => {
     return {
       method: "POST",
       url: `https://api.porkbun.com/api/json/v3/dns/create/${encodeURIComponent(domain)}`,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(r.body),
       // record metadata for diffing / logging — never sent over the wire
       _record: { host: r.host, type: r.type, value: r.value },
     };
   });
+
+  if (!Array.isArray(existingRecords)) {
+    return [retrieveRequest];
+  }
+
+  const deleteRequests = existingRecords
+    .filter((record) => record && record.id != null)
+    .map((record) => {
+      const host = normalizeExistingHost(record.name);
+      const type = record.type === "CNAME" && host === "@" ? "ALIAS" : record.type;
+      return {
+        id: record.id,
+        host,
+        type,
+      };
+    })
+    .filter((record) => managedKeys.has(recordKey(record)))
+    .map((record) => {
+      return {
+        method: "POST",
+        url: `https://api.porkbun.com/api/json/v3/dns/delete/${encodeURIComponent(domain)}/${encodeURIComponent(String(record.id))}`,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(authBody),
+        _record: { host: record.host, type: record.type },
+      };
+    });
+
+  return [...deleteRequests, ...createRequests];
 }
 
 // ─── Dispatch ───────────────────────────────────────────────────────────
