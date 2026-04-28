@@ -434,8 +434,9 @@ would be `4xx`/`5xx`). Triage in this order:
    dig +short fieldwork.oaudrey.com
    ```
    Empty output → DNS not provisioned. Confirm Namecheap nameservers point
-   to DigitalOcean (`ns1–3.digitalocean.com`) and that the records exist in
-   DO → Networking → Domains. See [DNS Configuration](#dns-configuration-namecheap--digitalocean).
+   to DigitalOcean (`ns1.digitalocean.com`, `ns2.digitalocean.com`, and
+   `ns3.digitalocean.com`) and that the records exist in DO → Networking →
+   Domains. See [DNS Configuration](#dns-configuration-namecheap--digitalocean).
 
 2. **App Platform deploy state** — confirm the app exists and is healthy:
    ```bash
