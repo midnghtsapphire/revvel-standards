@@ -47,7 +47,13 @@ jobs:
         id: health-main
         if: ${{ !inputs.skip_health_check }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://oaudrey.com || echo "000")
+          # NOTE: `-w "%{http_code}"` always writes a 3-digit code (e.g. "000" on
+          # connection failure). Using `|| echo "000"` would double-emit on failure
+          # and produce "000000" in the retro report. Use `|| true` to swallow the
+          # non-zero exit while keeping curl's own status output, then default to
+          # "000" if nothing was captured.
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://oaudrey.com || true)
+          STATUS="${STATUS:-000}"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
           if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
             echo "::notice::oaudrey.com is live (HTTP $STATUS) ✅"
@@ -59,7 +65,9 @@ jobs:
         id: health-fieldwork
         if: ${{ !inputs.skip_health_check }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://fieldwork.oaudrey.com || echo "000")
+          # See note in the oaudrey.com health check above re: avoiding "000000".
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://fieldwork.oaudrey.com || true)
+          STATUS="${STATUS:-000}"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
           if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
             echo "::notice::fieldwork.oaudrey.com is live (HTTP $STATUS) ✅"

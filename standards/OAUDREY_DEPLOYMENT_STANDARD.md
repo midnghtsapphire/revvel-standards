@@ -416,6 +416,32 @@ Ensure the app name in `oaudrey/.do/app.yaml` matches exactly `oaudrey-hub`.
 - Confirm the CNAME / ALIAS record in DigitalOcean DNS points to the app's `ondigitalocean.app` URL
 - Check for SSL provisioning (DO automatically provisions Let's Encrypt — may take ~10 minutes)
 
+### Retro reports `HTTP 000` — domain not responding
+
+The `oaudrey-retro.yml` workflow records `HTTP 000` when `curl` cannot complete
+the request at all (DNS failure, TCP connect timeout, TLS handshake failure).
+This is **not** a server-side error code — it means the request never reached
+a server. Recovery checklist:
+
+1. **Confirm DNS resolves**
+   ```bash
+   dig +short oaudrey.com
+   dig +short fieldwork.oaudrey.com
+   ```
+   If empty or stale, see "DNS not propagating" above and re-run
+   `sync-oaudrey-dns.yml`.
+2. **Confirm the DO App Platform app is `ACTIVE`**
+   ```bash
+   doctl apps list --format ID,Spec.Name,ActiveDeployment.Phase --no-header
+   ```
+   If the deployment is `ERROR` or stuck, re-run `deploy-oaudrey.yml`.
+3. **Confirm the custom domain is attached to the app** (DO Dashboard → App →
+   Settings → Domains) and that SSL has finished provisioning (~10 min after
+   first attach).
+4. **If a retro shows `HTTP 000000`** (six zeros), that was a workflow-side
+   double-emit bug fixed in `oaudrey-retro.yml`; re-run the retro workflow
+   and the value should now be a clean three-digit code.
+
 ### DIGITALOCEAN_API_TOKEN not working
 
 Token requires **read** + **write** scopes on Apps. Create a new token at:  
