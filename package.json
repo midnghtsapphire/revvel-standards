@@ -4,7 +4,7 @@
   "private": true,
   "description": "SSOT standards, templates, and automation for MIDNGHTSAPPHIRE projects",
   "scripts": {
-    "test": "node tests/openrouter-triage.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/gatekeeper-sync.test.js"
+    "test": "node tests/openrouter-triage.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/gatekeeper-sync.test.js && node tests/sync-dns-records.test.js"
   },
   "devDependencies": {
     "yaml": "^2.7.0"
