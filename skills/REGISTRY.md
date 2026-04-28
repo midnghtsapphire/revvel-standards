@@ -49,6 +49,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
+| Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
 | CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
@@ -358,6 +359,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+#### amplitude-notion-agent
+
+- **Path:** `skills/amplitude-notion-agent/`
+- **Files:** `SKILL.md` · `amplitude-notion-agent.skill.yml`
+- **Description:** Scheduled GitHub Actions agent that pulls a daily snapshot from the **Amplitude Dashboard REST API** (saved chart) and appends a row to a **Notion database**, closing the loop GitHub → Amplitude → Notion. Read-side complement to `amplitude-events.yml` (the GitHub → Amplitude side). Pure Node (no npm deps, uses built-in `https`). Append-only — never reads or mutates Notion. Forwards only aggregate counts (no event-level data, no PII). Missing secrets log `::warning::` and exit 0 instead of failing the run. Ships `scripts/amplitude-to-notion.js`, `.github/workflows/amplitude-to-notion.yml` (daily cron + `workflow_dispatch` with `dry_run`), and `standards/AMPLITUDE_NOTION_AGENT_STANDARD.md`.
+- **Tags:** amplitude, notion, analytics, governance, scheduled-agent, dashboard-rest, notion-database, cross-tool-sync
+- **Trigger:** "amplitude to notion", "amplitude into notion", "amplitude notion", "notion analytics dashboard", "amplitude chart export to notion", "governance metrics in notion", "amplitude dashboard sync", "create agent using amplitude data in notion".
+
+---
+
 ### Bot Creation
 
 #### bot-creator
@@ -410,4 +421,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 28, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 28, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*

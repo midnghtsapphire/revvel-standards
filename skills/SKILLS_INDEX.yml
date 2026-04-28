@@ -628,6 +628,24 @@ skills:
       - "mixpanel.track"
       - "telemetry"
 
+  - name: amplitude_notion_agent
+    title: "Amplitude → Notion Agent"
+    version: "1.0.0"
+    path: "skills/amplitude-notion-agent/"
+    skill_file: "skills/amplitude-notion-agent/amplitude-notion-agent.skill.yml"
+    category: "Product Analytics"
+    access: all
+    triggers:
+      - "amplitude to notion"
+      - "amplitude into notion"
+      - "amplitude notion"
+      - "notion analytics dashboard"
+      - "amplitude chart export to notion"
+      - "governance metrics in notion"
+      - "amplitude dashboard sync"
+      - "create agent using amplitude data in notion"
+      - "amplitude notion agent"
+
   # ─── Bot Creation ─────────────────────────────────────────────────────────
 
   - name: bot_creator
