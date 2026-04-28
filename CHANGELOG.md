@@ -8,6 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-20
 
 ### Added
+- `docs/revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md` — research and
+  recommendation document for an Android + iOS test harness for Revvel apps.
+  Recommends **`jest-expo` + `@testing-library/react-native` + Maestro** as the
+  default stack with **Detox** as an opt-in alternate tier and **Appium**
+  explicitly excluded. Wires native execution to **EAS Build `--profile preview`**
+  + **GitHub Actions `macos-14` (iOS sim)** + **`ubuntu-latest` +
+  `reactivecircus/android-emulator-runner` (Android emu)** so no developer
+  needs Xcode or Android Studio installed locally — matching the
+  `docs/AGENTS.md` Expo / EAS mandate. Includes RFC-2119 requirements
+  (R-MTH-01..R-MTH-G-04) and an 8-PR per-app rollout plan. $0 for public repos.
+  Resolves [Jules] PLEASE RESEARCH A TEST HARNASS FOR ANDROID AND IOS AND IMPLEMENT.
+- `standards/MOBILE_TESTING.md` — short, normative mobile testing standard
+  derived from the research doc. Mirrors the structure of `standards/TESTING.md`
+  and reuses the 80/75/80/80 coverage thresholds from `skills/testing/SKILL.md`.
+- `skills/mobile-testing/SKILL.md` + `mobile-testing.skill.yml` — new
+  developer-facing skill so agents auto-load mobile-testing rules on Expo /
+  React Native repos. Registered in `skills/REGISTRY.md` and
+  `skills/SKILLS_INDEX.yml` under the `Testing & Quality` category.
+- `templates/mobile/testing/` — drop-in starter configs:
+  `jest.config.js` (jest-expo preset + coverage thresholds),
+  `jest.setup.ts`, `mocks/expo-secure-store.ts`,
+  `maestro/auth/sign-in.yaml` (reference flow for the mandatory Sign-In
+  E2E journey), and `mobile-test.yml` (GH Actions workflow matrix —
+  required status check name `mobile-test`).
+- `templates/mobile/README.md` — updated to link to the new `testing/`
+  subdirectory.
 - `.gitbutler/config.json` — adds shared GitButler repo defaults (`baseBranch:
   main`, `remote: origin`) so contributors can make faster small commits /
   stacks before OpenRouter orchestration picks up issues and PRs.

@@ -1,0 +1,127 @@
+# Mobile Test workflow — Revvel mobile testing template
+#
+# Drop this file at .github/workflows/mobile-test.yml in an Expo / React Native
+# app repo. The required GitHub status check name is `mobile-test`.
+#
+# Layers:
+#   1. unit + component (Jest) on ubuntu-latest — fast, runs on every PR
+#   2. Maestro on Android (ubuntu-latest + reactivecircus/android-emulator-runner)
+#   3. Maestro on iOS (macos-14 + xcrun simctl)
+#
+# Native binaries come from EAS Build `--profile preview` so no Xcode or
+# Android Studio install is required locally.
+#
+# Required repo secrets:
+#   EXPO_TOKEN     — Expo / EAS access token (https://expo.dev/accounts/.../settings/access-tokens)
+#   TEST_EMAIL     — credentials used by Maestro flows
+#   TEST_PASSWORD  — credentials used by Maestro flows
+
+name: mobile-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: mobile-test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  unit-component:
+    name: unit + component
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: npm test -- --ci --coverage --maxWorkers=2
+
+  e2e-android:
+    name: e2e — android
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: unit-component
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+      - name: Build Android preview APK on EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build \
+            --profile preview \
+            --platform android \
+            --non-interactive \
+            --no-wait=false \
+            --output build.apk
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot Android emulator and run Maestro
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_5
+          script: |
+            adb install -r build.apk
+            maestro test tests/e2e/maestro
+        env:
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
+  e2e-ios:
+    name: e2e — ios
+    runs-on: macos-14
+    timeout-minutes: 60
+    needs: unit-component
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+      - name: Build iOS preview .app on EAS (simulator)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build \
+            --profile preview \
+            --platform ios \
+            --non-interactive \
+            --no-wait=false \
+            --output build.tar.gz
+          mkdir -p ios-build && tar -xzf build.tar.gz -C ios-build
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot iOS simulator and install app
+        run: |
+          xcrun simctl boot "iPhone 15" || true
+          APP_PATH=$(find ios-build -name '*.app' -maxdepth 3 | head -n1)
+          xcrun simctl install booted "$APP_PATH"
+      - name: Run Maestro on iOS
+        env:
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: maestro test tests/e2e/maestro
