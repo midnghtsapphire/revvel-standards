@@ -637,3 +637,36 @@ skills:
       - "genz bot"
       - "adulting bot"
       - "weaponized bot"
+
+  # ─── Product Operations ───────────────────────────────────────────────────
+
+  - name: product_pipeline
+    title: "Automated Product Pipeline"
+    version: "1.0.0"
+    path: "skills/product-pipeline/"
+    skill_file: "skills/product-pipeline/skill.yml"
+    category: "Product Operations"
+    access: all
+    lifecycle: long-running
+    persona: forge-pipeline
+    related_standards:
+      - "standards/AUTOMATED_PRODUCT_PIPELINE.md"
+      - "standards/SAAS_PRODUCTS.md"
+      - "standards/ZERO_HUMAN_FRAMEWORK.md"
+      - "standards/PRICING.md"
+      - "standards/CRON_SYSTEM.md"
+      - "standards/OAUDREY_DEPLOYMENT_STANDARD.md"
+      - "standards/MVI_CONTRACT_STANDARD.md"
+    triggers:
+      - "product pipeline"
+      - "automated product"
+      - "ship a product"
+      - "daily listening"
+      - "social listening"
+      - "complaint cluster"
+      - "ROI gate"
+      - "solution shape"
+      - "BOM gatekeeper"
+      - "stripe product"
+      - "agent-generated product"
+      - "product-slug"
