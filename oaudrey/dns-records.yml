@@ -25,8 +25,8 @@ domain: oaudrey.com
 
 records:
   # Apex — most registrars do not allow CNAME at the apex, so we use ALIAS
-  # (Namecheap, Porkbun) or fall back to A records when only A is supported
-  # (GoDaddy). The sync script handles that translation automatically.
+  # where the current sync path supports it (for example, Porkbun) or fall
+  # back to A records when only A is supported (for example, GoDaddy).
   - host: "@"
     type: ALIAS
     value: "{{APP_TARGET}}"
