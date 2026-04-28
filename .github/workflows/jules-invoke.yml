@@ -8,8 +8,7 @@
 #
 #   1. `workflow_dispatch`         — an operator supplies an ad-hoc prompt.
 #   2. `issues: [opened,reopened]` — auto-assign Jules to every new WR
-#      (any issue carrying the `jules` label, which the Deep-Research
-#      template always applies).
+#      (any issue carrying `jules` or `deep-research` labels).
 #   3. `issues: [closed]`          — when an issue is closed, run Jules
 #      against any issues that become "unblocked"
 #      (per BeksOmega/on-unblocked).
@@ -136,15 +135,19 @@ jobs:
 
   # ─── Auto-assign Jules to every new WR (opened / reopened) ─────────────────
   # Audrey's rule: every new work request is routed through the Deep-Research
-  # (Jules) issue template, which applies the `jules` label. When that label
-  # is present on an opened/reopened issue we invoke Jules automatically so
-  # she can deep-research and refine the request before any code is written.
+  # issue template, which applies `deep-research` (and may also apply `jules`).
+  # When either label is present on an opened/reopened issue we invoke Jules
+  # automatically so she can deep-research and refine the request before any
+  # code is written.
   invoke-on-opened:
     name: Invoke Jules on new WR
     if: >-
       github.event_name == 'issues' &&
       (github.event.action == 'opened' || github.event.action == 'reopened') &&
-      contains(github.event.issue.labels.*.name, 'jules')
+      (
+        contains(github.event.issue.labels.*.name, 'deep-research') ||
+        contains(github.event.issue.labels.*.name, 'jules')
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read

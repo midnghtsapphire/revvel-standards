@@ -1,17 +1,20 @@
 name: Bug Report
-description: Report a bug with reproduction steps for fast triage. No Jules deep-research — goes straight to OpenRouter classification.
+description: Report a bug quickly. Deep research is still applied automatically.
 title: "[Bug] "
-labels: ["bug", "triage", "triage:new"]
+labels: ["bug", "triage", "triage:new", "deep-research"]
 body:
   - type: markdown
     attributes:
       value: |
         ## Report a Bug
 
-        Use this template for things that are **broken right now**. If you want
-        a new feature, research, or design work, use the
-        [Deep-Research Request](https://github.com/midnghtsapphire/revvel-standards/issues/new?template=deep-research.yml)
-        template instead.
+        Use this template for things that are **broken right now**.
+
+        You only need to fill out the basics. The same deep-research workflow
+        runs automatically to:
+        - check for known upstream issues / regressions
+        - find newly released tools or patches
+        - cross-check sources and trust signals
 
   - type: textarea
     id: description
