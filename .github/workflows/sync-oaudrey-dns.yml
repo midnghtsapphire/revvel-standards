@@ -185,5 +185,5 @@ jobs:
                 '3. Confirm the App Platform ingress is resolvable (`doctl apps get`)',
                 '4. See `standards/OAUDREY_DEPLOYMENT_STANDARD.md` for full troubleshooting guide',
               ].join('\n'),
-              labels: ['deploy-failure', 'oaudrey', 'dns'],
+              labels: ['deploy-failure', 'oaudrey'],
             });
