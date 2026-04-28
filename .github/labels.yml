@@ -169,10 +169,6 @@ labels:
     color: "4285f4"
     description: "Routed to Google Jules for deep-research and authoring"
 
-  - name: google-labs-jules
-    color: "4285f4"
-    description: "Auto-mention/route to @google-labs-jules (Google Jules bot)"
-
   - name: proof-of-life
     color: "2ea44f"
     description: "Proof-of-life run — app-review revvel-standards-run"
