@@ -196,7 +196,7 @@
         </div>
         <div class="py-6 px-6 md:border-r hairline">
           <dt class="font-mono text-[10px] uppercase tracking-widest text-mist">Product Tabs</dt>
-          <dd class="mt-2 text-xl md:text-2xl font-bold tracking-tightest">6<span class="text-mist">+ live</span></dd>
+          <dd class="mt-2 text-xl md:text-2xl font-bold tracking-tightest">7<span class="text-mist">+ live</span></dd>
         </div>
         <div class="py-6 md:px-6 border-t md:border-t-0 border-r hairline">
           <dt class="font-mono text-[10px] uppercase tracking-widest text-mist">Mission Share</dt>
@@ -248,6 +248,10 @@
         <button role="tab" id="tab-marketing"    aria-controls="panel-marketing"    aria-selected="false"
                 class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice">
           Marketing &amp; Ecommerce
+        </button>
+        <button role="tab" id="tab-coldtrace"   aria-controls="panel-coldtrace"   aria-selected="false"
+                class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice">
+          ColdTrace
         </button>
         <button role="tab" id="tab-more"         aria-controls="panel-more"         aria-selected="false"
                 class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice">
@@ -415,6 +419,67 @@
           <dl class="mt-6 space-y-4 text-sm">
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
+            </div>
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">Pledge</dt><dd class="text-gold">% to survivors</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+
+      <!-- ColdTrace panel -->
+      <div role="tabpanel" id="panel-coldtrace" aria-labelledby="tab-coldtrace" hidden class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-7 glass p-8 md:p-10">
+          <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
+            <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
+            coldtrace.oaudrey.com
+          </div>
+          <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
+            ColdTrace — temporal GIS for cold case investigations.
+          </h3>
+          <p class="mt-6 text-mist leading-relaxed">
+            Pick a date range, draw an area of interest, and drop a last-known
+            location pin. ColdTrace automatically fetches free LiDAR and
+            satellite data, runs viewshed / line-of-sight analysis, detects
+            temporal vegetation and terrain anomalies, and synthesizes a
+            weighted probability heat map to prioritize search zones — for
+            investigators, SAR coordinators, and forensic analysts.
+            Built on WhiteboxTools, PDAL, GDAL, and Sentinel-2. 100% FOSS stack.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="https://coldtrace.oaudrey.com"
+               class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-void hover:opacity-90">
+              Open ColdTrace →
+            </a>
+            <a href="../coldtrace/index.html"
+               class="inline-flex items-center border hairline px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-ice hover:bg-ice hover:text-void">
+              Preview Demo
+            </a>
+            <a href="https://github.com/midnghtsapphire/coldtrace"
+               target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center border hairline px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-mist hover:text-ice">
+              GitHub
+            </a>
+          </div>
+        </div>
+        <aside class="lg:col-span-5 glass p-8 md:p-10">
+          <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
+          <div class="mt-3 font-mono text-ice break-all">coldtrace.oaudrey.com</div>
+          <dl class="mt-6 space-y-4 text-sm">
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
+            </div>
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">Audience</dt><dd>Cold case investigators · SAR · Forensic analysts</dd>
+            </div>
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">Stack</dt><dd class="font-mono">FastAPI · WhiteboxTools · MapLibre · React</dd>
+            </div>
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">Data</dt><dd class="font-mono">OpenTopography · Sentinel-2 · USGS 3DEP</dd>
+            </div>
+            <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
+              <dt class="text-mist">License</dt><dd class="font-mono">FOSS (Community Free)</dd>
             </div>
             <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
               <dt class="text-mist">Pledge</dt><dd class="text-gold">% to survivors</dd>
