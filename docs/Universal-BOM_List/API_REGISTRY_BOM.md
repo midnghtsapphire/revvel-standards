@@ -173,7 +173,7 @@
 | **Plausible** | AGPL ✅ FOSS | ❌ No free tier | $9+/mo (hosted) / Free (self-host) | P1 | 🔵 Recommended | All websites | Privacy-first web analytics; GDPR-compliant by default; lightweight script |
 | **Umami** | MIT ✅ FOSS | ✅ Free | $0 (self-hosted) / $9+/mo | P1 | 🟡 Evaluate | All websites | FOSS Google Analytics alternative; simple; self-hostable |
 | **Mixpanel** | Proprietary | 🆓 Free (20M events/mo) | $20+/mo | P2 | 🟡 Evaluate | Growth/product analytics | Generous free tier; funnels, retention; PostHog preferred |
-| **Amplitude** | Proprietary | 🆓 Free (10M events/mo) | $61+/mo | P3 | 🟡 Evaluate | Enterprise analytics | PostHog or Mixpanel preferred |
+| **Amplitude** | Proprietary | 🆓 Free (10M events/mo) | $61+/mo | P3 | 🟡 Evaluate | Enterprise analytics; revvel-standards repo telemetry | PostHog or Mixpanel preferred. Repo telemetry wired via `.github/workflows/amplitude-events.yml`; secret `AMPLITUDE_API_KEY`. See `standards/AMPLITUDE_INTEGRATION_STANDARD.md`. |
 | **Google Analytics 4** | Proprietary | ✅ Free | $0 | P2 | 🟡 Evaluate | Web apps | Free; privacy concerns (GDPR); Plausible preferred for EU compliance |
 
 ---
