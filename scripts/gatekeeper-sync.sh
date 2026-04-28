@@ -80,6 +80,7 @@ if [[ "$JSON_OUT" -eq 1 || "$DRY_RUN" -ne 1 ]]; then
 fi
 
 if [[ "$DRY_RUN" -ne 1 ]]; then
+  command -v jq   >/dev/null || { echo "error: jq not found" >&2; exit 3; }
   command -v gh   >/dev/null || { echo "error: gh CLI not found" >&2; exit 3; }
   command -v curl >/dev/null || { echo "error: curl not found" >&2; exit 3; }
   [[ -n "${DOPPLER_TOKEN:-}" ]] || { echo "error: DOPPLER_TOKEN not set" >&2; exit 4; }
