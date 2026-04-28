@@ -126,7 +126,7 @@ This standards repo is *not* the implementation surface. The follow-up PR lands 
 3. **`/review/review.js`** — fetches POST `/api/review` on the proxy, renders the three cards, wires the "Explain like I'm tired" toggle.
 4. **Proxy (one file)** — `cloudflare-worker/review.ts` *or* `api/review.ts` (Vercel Edge). Reads `OPENROUTER_API_KEY` from the platform secret store, validates body size + per-IP rate limit, calls OpenRouter with a system prompt locked to the "calm, plain-language, neurodivergent-friendly" voice, returns JSON.
 5. **`/index.html` patch** — surface the new tool above the consulting fold and add a "Try the free review tool →" CTA.
-6. **`LICENSE`** — closes the existing `[ ] Add license` TODO from [`./REPO_TODO_LIST.md`](./REPO_TODO_LIST.md) row 8 in the same PR (suggest MIT, matching sibling Revvel public repos).
+6. **`LICENSE`** — closes the existing `[ ] Add license` TODO from [`./REPO_TODO_LIST.md`](./REPO_TODO_LIST.md) row 8 in the same PR using the repo-standard proprietary **All Rights Reserved** license format referenced by [`./REVVEL_MASTER_STANDARDS.md`](./REVVEL_MASTER_STANDARDS.md).
 7. **Lighthouse CI in `.github/workflows/`** — gate Pages deploy on Accessibility ≥ 95 and Best Practices ≥ 90. Use the existing GitHub-Actions-only lane; no new CI vendor.
 8. **README update** in `yumyumcode` — point first-time visitors at this evaluation document for "why".
 
