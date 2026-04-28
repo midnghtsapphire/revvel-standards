@@ -72,6 +72,8 @@ bundle exec fastlane android internal
 ### Technology: Capacitor → Xcode → App Store Connect
 
 Capacitor wraps your PWA in a native iOS WebView container with full access to native APIs.
+For the standards-level decision (Capacitor vs. Cordova vs. Bubblewrap vs. native, scored
+against the Revvel stack), see [`../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md`](../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md).
 
 ### Exact Commands (activate when account is ready)
 

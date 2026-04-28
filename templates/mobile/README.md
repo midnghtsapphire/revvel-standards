@@ -41,3 +41,4 @@ The Play Store and App Store paths are documented in `MOBILE_DEPLOYMENT.md` and 
 ## Related Evaluations
 
 - [`../../docs/CI_APPS_MOBILE_EVAL_2026-04-23.md`](../../docs/CI_APPS_MOBILE_EVAL_2026-04-23.md) — Review of 20 GitHub Marketplace CI/CD apps (Codemagic, Bitrise, Appcircle, etc.) scored specifically for Play Store + App Store automation on top of this scaffold.
+- [`../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md`](../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md) — Evaluation of Ionic Capacitor as the primary PWA → native shell wrapper for both Android and iOS, with rollout plan against the Fastlane + GitHub Actions scaffolds in this directory.
