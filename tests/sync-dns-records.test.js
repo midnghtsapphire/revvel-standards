@@ -266,7 +266,7 @@ test("buildSyncRequests dispatches to porkbun when asked", () => {
 });
 
 test("SUPPORTED_PROVIDERS lists all three registrars", () => {
-  assert.deepStrictEqual(SUPPORTED_PROVIDERS.sort(), ["godaddy", "namecheap", "porkbun"]);
+  assert.deepStrictEqual(SUPPORTED_PROVIDERS.slice().sort(), ["godaddy", "namecheap", "porkbun"]);
 });
 
 // ─── redaction ──────────────────────────────────────────────────────────
