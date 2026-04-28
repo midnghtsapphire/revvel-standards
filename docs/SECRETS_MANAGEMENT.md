@@ -24,6 +24,10 @@ that all automations have the secrets they need to actually run.
 | `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
 | `DIGITALOCEAN_API_TOKEN` | deploy-oaudrey | Yes (skips with warning) | DO personal access token for App Platform deploys; create at DO → API → Tokens |
 | `NAMECHEAP_API_KEY` | credential-gatekeeper (BOM detection only) | Yes | Namecheap API key for DNS automation; enable at Namecheap → Profile → API Access |
+| `REVENUECAT_PUBLIC_API_KEY_IOS` / `_ANDROID` / `_AMAZON` / `_WEB` | Downstream Revvel apps (not workflows in this repo) | N/A | Per-platform public SDK keys for RevenueCat; safe to ship in client bundles. Standard: [`standards/REVENUECAT.md`](../standards/REVENUECAT.md) |
+| `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
+| `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
+| `REVENUECAT_PROJECT_ID` | Downstream Revvel app tooling | N/A | RevenueCat project identifier required for v2 REST API calls |
 
 ## Workflows Without Custom Secrets
 
