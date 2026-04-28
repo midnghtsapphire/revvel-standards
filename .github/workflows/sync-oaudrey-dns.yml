@@ -122,11 +122,25 @@ jobs:
           echo "Resolved APP_TARGET: $INGRESS"
           echo "app_target=$INGRESS" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve GoDaddy apex target IP
+        if: steps.detect.outputs.skip != 'true' && steps.detect.outputs.provider == 'godaddy'
+        id: ingress_ip
+        run: |
+          set -e
+          INGRESS_HOST='${{ steps.ingress.outputs.app_target }}'
+          APP_TARGET_IP=$(getent ahostsv4 "$INGRESS_HOST" | awk 'NR == 1 { print $1; exit }')
+          if [ -z "$APP_TARGET_IP" ]; then
+            echo "::error::Could not resolve IPv4 address for GoDaddy apex target: $INGRESS_HOST"
+            exit 1
+          fi
+          echo "Resolved GoDaddy APP_TARGET IP: $APP_TARGET_IP"
+          echo "app_target_ip=$APP_TARGET_IP" >> "$GITHUB_OUTPUT"
+
       - name: Sync DNS records
         if: steps.detect.outputs.skip != 'true'
         env:
           DNS_PROVIDER: ${{ steps.detect.outputs.provider }}
-          APP_TARGET: ${{ steps.ingress.outputs.app_target }}
+          APP_TARGET: ${{ steps.detect.outputs.provider == 'godaddy' && steps.ingress_ip.outputs.app_target_ip || steps.ingress.outputs.app_target }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           NAMECHEAP_API_KEY: ${{ secrets.NAMECHEAP_API_KEY }}
           NAMECHEAP_API_USER: ${{ secrets.NAMECHEAP_API_USER }}
