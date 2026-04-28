@@ -70,7 +70,7 @@ The workflow triggers on the following GitHub events and emits one Amplitude eve
 
 Common properties on every event: `repo`, `workflow`, `run_id`, `github_event`, `github_action`, `ref`, `sha`, `actor`.
 
-`user_id` is set to `gh:<owner>/<repo>` so Amplitude groups events by repository. `insert_id` is derived from the run id + job + event name to guarantee idempotency on retries.
+`user_id` is set to `gh:<owner>/<repo>` so Amplitude groups events by repository. `insert_id` is set to `${runId}-${runNumber}-${eventName}` (that is: run id + run number + event name, with no job identifier) so deduplication/idempotency expectations match the workflow's actual payload construction.
 
 ### What is *not* sent
 
