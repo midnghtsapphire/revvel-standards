@@ -82,7 +82,7 @@ A single page at `https://yumyumcode.com/review/`:
 |---|---|---|
 | HTML / CSS / JS | Static, served by GitHub Pages from `MIDNGHTSAPPHIRE/yumyumcode/docs/` (or `/`, depending on the repo's existing Pages config) | Zero host change |
 | LLM call | A thin proxy (Cloudflare Worker or Vercel Edge Function on the free tier) that holds `OPENROUTER_API_KEY` server-side and rate-limits per IP | Browser must **never** see the API key; OpenRouter is the only sanctioned lane per `.github/copilot-instructions.md` |
-| Telemetry | Cloudflare Web Analytics (already covered by the Cloudflare account in [`./Master_Inventory/INFRASTRUCTURE_MAP.md`](./Master_Inventory/INFRASTRUCTURE_MAP.md)) — no third-party trackers | Cookie-free, GDPR-clean, on-brand for an accessibility property |
+| Telemetry | Optional privacy-preserving, cookie-free analytics; choose the implementation in the follow-up PR and add it to [`./Master_Inventory/INFRASTRUCTURE_MAP.md`](./Master_Inventory/INFRASTRUCTURE_MAP.md) if a new vendor is adopted | Preserves lightweight usage insight without claiming infra that is not yet documented in the SSOT |
 
 ### 3.3 Why this honors the Prime Directive
 
