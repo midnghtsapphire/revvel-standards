@@ -86,6 +86,35 @@ gh secret set DOPPLER_TOKEN --repo midnghtsapphire/revvel-standards
 gh secret list --repo midnghtsapphire/revvel-standards
 ```
 
+### Automated provisioning (no manual `gh secret set`)
+
+Once `DOPPLER_TOKEN` and `ADMIN_GITHUB_TOKEN` (a fine-grained PAT with
+`secrets: write` on this repo) are seeded, **you should not need to run
+`gh secret set` by hand again**. The Credential Gatekeeper does it for you:
+
+1. `.github/workflows/credential-gatekeeper.yml` runs on every issue
+   `opened` / `reopened` and on the `ready-to-implement` label, scans the
+   issue body for credential keywords, and emits the BOM as a job output.
+2. The `auto-provision` job invokes `scripts/gatekeeper-sync.sh`, which:
+   - `GET`s each required secret from the Doppler API
+     (`https://api.doppler.com/v3/configs/config/secret`)
+   - Pipes each value into `gh secret set <NAME> --repo <owner>/<repo>`
+     (which performs the libsodium-encrypted PUT to the GitHub Actions
+     secrets API)
+3. The job comments back on the issue with a per-secret `✅ synced`,
+   `⚠️ missing in Doppler`, or `❌ failed` table and flips the
+   `credentials-missing` → `credentials-ready` label when the BOM is fully
+   satisfied.
+
+Manual dry-run from any developer machine:
+
+```bash
+DRY_RUN=1 scripts/gatekeeper-sync.sh \
+  --secrets DIGITALOCEAN_API_TOKEN,NAMECHEAP_API_KEY \
+  --repo midnghtsapphire/revvel-standards \
+  --json
+```
+
 ---
 
 ## DigitalOcean App Platform Setup
