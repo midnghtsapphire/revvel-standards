@@ -132,7 +132,7 @@ Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 | meetaudreyevans.com | GitHub Pages (185.199.x.x) | GoDaddy |
 | www.meetaudreyevans.com | midnghtsapphire.github.io (CNAME) | GoDaddy |
 | reesereviews.com | TBD | TBD |
-| yumyumcode.com | TBD | TBD |
+| yumyumcode.com | GitHub Pages (`MIDNGHTSAPPHIRE/yumyumcode`) | GoDaddy / Namecheap — direction locked in [`YUMYUMCODE_EVAL_2026-04-28.md`](./YUMYUMCODE_EVAL_2026-04-28.md) |
 | growlingeyes.com | TBD | TBD |
 | truthslayer.com | TBD | TBD |
 | glowstarlabs.com | TBD | TBD |
