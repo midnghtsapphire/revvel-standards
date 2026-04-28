@@ -39,13 +39,29 @@ JSON_OUT=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|--help) usage 0 ;;
-    --secrets) SECRETS_CSV="${2:-}"; shift 2 ;;
+    --secrets)
+      [[ $# -ge 2 ]] || { echo "error: --secrets requires a value" >&2; exit 2; }
+      SECRETS_CSV="$2"
+      shift 2
+      ;;
     --secrets=*) SECRETS_CSV="${1#--secrets=}"; shift ;;
-    --repo) REPO="${2:-}"; shift 2 ;;
+    --repo)
+      [[ $# -ge 2 ]] || { echo "error: --repo requires a value" >&2; exit 2; }
+      REPO="$2"
+      shift 2
+      ;;
     --repo=*) REPO="${1#--repo=}"; shift ;;
-    --project) PROJECT="${2:-}"; shift 2 ;;
+    --project)
+      [[ $# -ge 2 ]] || { echo "error: --project requires a value" >&2; exit 2; }
+      PROJECT="$2"
+      shift 2
+      ;;
     --project=*) PROJECT="${1#--project=}"; shift ;;
-    --config) CONFIG="${2:-}"; shift 2 ;;
+    --config)
+      [[ $# -ge 2 ]] || { echo "error: --config requires a value" >&2; exit 2; }
+      CONFIG="$2"
+      shift 2
+      ;;
     --config=*) CONFIG="${1#--config=}"; shift ;;
     --json) JSON_OUT=1; shift ;;
     *) echo "error: unknown arg: $1" >&2; usage 2 ;;
