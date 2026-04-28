@@ -18,10 +18,14 @@ async def get_dem(
     east: float = Query(..., description="East longitude"),
     north: float = Query(..., description="North latitude"),
     dataset: str = Query("SRTMGL1", description="DEM dataset (SRTMGL1, COP30, USGS1m)"),
-) -> dict:
+) -> FileResponse:
     """Fetch a DEM tile for the given bounding box."""
     path = await fetch_dem(bbox=(west, south, east, north), dataset=dataset)
-    return {"dem_path": str(path), "dataset": dataset, "bbox": [west, south, east, north]}
+    return FileResponse(
+        path=path,
+        filename=path.name,
+        media_type="application/octet-stream",
+    )
 
 
 @router.get("/ndvi-diff")
