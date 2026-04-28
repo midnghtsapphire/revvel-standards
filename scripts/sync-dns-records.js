@@ -328,7 +328,7 @@ function buildPorkbunCreateRequests({ domain, records, credentials, existingReco
   });
 
   if (!Array.isArray(existingRecords)) {
-    return [retrieveRequest];
+    return createRequests;
   }
 
   const deleteRequests = existingRecords
