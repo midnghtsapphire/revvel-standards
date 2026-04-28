@@ -13,30 +13,10 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file: .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    volumes:
-      - ./backend:/app
-      - tmp_data:/tmp/coldtrace
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "5173:80"
-    depends_on:
-      - api
-
+  # `api` and `frontend` are intentionally disabled until their
+  # build contexts and Dockerfiles are added to the repository.
+  # Re-enable these services once `./backend/Dockerfile` and
+  # `./frontend/Dockerfile` (and the corresponding directories) exist.
 volumes:
   pgdata:
   tmp_data:
