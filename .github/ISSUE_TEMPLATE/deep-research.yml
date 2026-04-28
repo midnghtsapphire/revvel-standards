@@ -1,7 +1,7 @@
 name: 🔬 Deep-Research Request (Jules)
 description: Ask Google Jules to deep-research best functionality & method, then refine this request before any code changes.
 title: "[Jules] "
-labels: ["jules", "google-labs-jules", "triage", "triage:new"]
+labels: ["jules", "triage", "triage:new"]
 body:
   - type: markdown
     attributes:
