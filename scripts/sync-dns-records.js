@@ -144,13 +144,12 @@ function splitDomain(domain) {
  * Namecheap's setHosts call replaces ALL records for the domain in a single
  * atomic call, which is exactly what we want for declarative sync.
  *
- * Note: Namecheap does not support ALIAS at the apex via the public API —
- * we translate ALIAS to CNAME for non-apex hosts and to A (with the caller
- * resolving APP_TARGET to an IP beforehand) for apex hosts. For oAudrey we
- * keep the apex on a registrar that supports ALIAS (Porkbun) or move the
- * apex to DigitalOcean nameservers; this script preserves the original
- * record types so any unsupported combination surfaces as an explicit error
- * rather than silently producing a broken zone.
+ * Note: Namecheap does not support ALIAS at the apex via the public API.
+ * Non-apex ALIAS records may be represented as CNAMEs, but apex ALIAS is
+ * not translated by this script; unsupported combinations are preserved so
+ * validation/build logic can surface an explicit error rather than silently
+ * producing a broken zone. For oAudrey we keep the apex on a registrar that
+ * supports ALIAS (Porkbun) or move the apex to DigitalOcean nameservers.
  */
 function buildNamecheapRequest({ domain, records, credentials }) {
   if (!credentials || !credentials.apiKey || !credentials.apiUser) {
