@@ -81,7 +81,7 @@ Official Ionic-maintained plugins under `@capacitor/*` cover the native APIs Rev
 | Filesystem | `@capacitor/filesystem` | Sandboxed; safe by default |
 | Geolocation | `@capacitor/geolocation` | |
 | Local notifications | `@capacitor/local-notifications` | |
-| Preferences (KV) | `@capacitor/preferences` | Replaces `localStorage` for persistence across app reinstalls |
+| Preferences (KV) | `@capacitor/preferences` | More reliable than `localStorage` in WKWebView; persists across app runs and updates |
 | App / device info | `@capacitor/app`, `@capacitor/device` | |
 | Status bar / splash screen | `@capacitor/status-bar`, `@capacitor/splash-screen` | |
 
