@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-20"
+last_updated: "2026-04-28"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -605,6 +605,28 @@ skills:
       - "mabl test plan"
       - "mablhq"
       - "setup-mabl-cli"
+
+  # ─── Product Analytics ────────────────────────────────────────────────────
+
+  - name: mixpanel
+    title: "Mixpanel — User-Behavior Product Analytics"
+    version: "1.0.0"
+    path: "skills/mixpanel/"
+    skill_file: "skills/mixpanel/mixpanel.skill.yml"
+    category: "Product Analytics"
+    access: all
+    triggers:
+      - "mixpanel"
+      - "integrate mixpanel"
+      - "product analytics"
+      - "user behavior analytics"
+      - "track event"
+      - "funnel analysis"
+      - "retention analysis"
+      - "cohort analysis"
+      - "mixpanel-browser"
+      - "mixpanel.track"
+      - "telemetry"
 
   # ─── Bot Creation ─────────────────────────────────────────────────────────
 

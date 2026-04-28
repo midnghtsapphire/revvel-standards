@@ -48,6 +48,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
+| Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
 | CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
@@ -345,6 +346,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+### Product Analytics
+
+#### mixpanel
+
+- **Path:** `skills/mixpanel/`
+- **Files:** `SKILL.md` · `mixpanel.skill.yml`
+- **Description:** Integrate Mixpanel into any Revvel project (web, Node, mobile) for action-level user-behavior analytics — events, funnels, retention, cohorts. Ships a drop-in `mixpanel-init.ts` wrapper with Do-Not-Track honoring, persistent opt-out, PII property-key strip, EU-residency host swap, and a no-op fallback when `MIXPANEL_TOKEN` is unset. Includes a Revvel-standard event catalog (`App Loaded`, `User Signed Up`, `Purchase Completed`, etc.) with `Title Case With Spaces` event names and `snake_case` properties, plus a hard PII ban list enforced at both wrapper and PR-review layers.
+- **Tags:** mixpanel, product-analytics, user-behavior, events, funnels, retention, cohort-analysis, telemetry, mixpanel-browser, mixpanel-node
+- **Trigger:** "mixpanel", "integrate mixpanel", "product analytics", "user behavior analytics", "track event", "funnel analysis", "retention analysis", "cohort analysis", "mixpanel-browser", "telemetry".
+
+---
+
 ### Bot Creation
 
 #### bot-creator
@@ -397,4 +410,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 20, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 28, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel skills.*
