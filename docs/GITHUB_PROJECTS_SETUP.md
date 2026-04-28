@@ -440,6 +440,15 @@ bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION
 
 Create these issue templates in `.github/ISSUE_TEMPLATE/` of each app repo:
 
+### Deep Research (Universal)
+
+Use the universal deep-research issue form as the default entry point.
+
+```bash
+mkdir -p .github/ISSUE_TEMPLATE
+cp templates/github/ISSUE_TEMPLATE/deep-research.yml .github/ISSUE_TEMPLATE/deep-research.yml
+```
+
 ### Bug Report (`bug-report.yml`)
 
 ```yaml
