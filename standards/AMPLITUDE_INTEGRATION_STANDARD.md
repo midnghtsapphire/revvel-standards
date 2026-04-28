@@ -75,7 +75,8 @@ Common properties on every event: `repo`, `workflow`, `run_id`, `github_event`, 
 ### What is *not* sent
 
 * No issue/PR body text, comments, diffs, or file contents.
-* No PII beyond the public GitHub `actor` login already attached to every public event.
+* No PII is intentionally collected beyond public GitHub metadata already associated with the event.
+* Issue/PR titles and push `head_commit_message` are forwarded as-is by the workflow and may contain sensitive text, including PII, if authors include it.
 * No secret values, no environment dumps.
 
 ---
