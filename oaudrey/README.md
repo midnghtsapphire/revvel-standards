@@ -65,6 +65,7 @@ oaudrey/
 ├── README.md            ← You are here
 ├── index.html           ← Hub landing page (static, Tailwind CDN)
 ├── 404.html             ← Branded error page
+├── dns-records.yml      ← Declarative DNS records (registrar-agnostic)
 └── .do/
     └── app.yaml         ← DigitalOcean App Platform spec
 ```
@@ -80,6 +81,7 @@ The oAudrey hub deploys automatically to **DigitalOcean App Platform** on every 
 | Step | Workflow | Trigger |
 |---|---|---|
 | Deploy | `.github/workflows/deploy-oaudrey.yml` | push to `main` |
+| DNS Sync | `.github/workflows/sync-oaudrey-dns.yml` | after deploy; weekly Monday; manual |
 | Health-check + retro | `.github/workflows/oaudrey-retro.yml` | after deploy; weekly Monday |
 
 ### Required Secret
@@ -104,12 +106,36 @@ APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep "oaudrey-hub" 
 doctl apps update "$APP_ID" --spec oaudrey/.do/app.yaml
 ```
 
-### DNS Setup (Namecheap → DigitalOcean)
+### DNS Setup (multi-registrar — Namecheap / GoDaddy / Porkbun)
 
-1. Log in to Namecheap (username: `uprisinghope`)
-2. Set nameservers to: `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`
-3. Add `oaudrey.com` in DigitalOcean → Networking → Domains
-4. Add CNAME for `fieldwork.oaudrey.com` → App Platform URL
+`oaudrey.com` may live on Namecheap, GoDaddy, or Porkbun. The repo ships a
+**registrar-agnostic** sync that pushes the declarative record list in
+[`oaudrey/dns-records.yml`](./dns-records.yml) to whichever registrar is
+holding the domain — no code changes when you migrate.
+
+1. Provision the registrar's API credentials via the **Credential Gatekeeper**
+   (see `standards/OAUDREY_DEPLOYMENT_STANDARD.md` for exact secret names).
+2. Run the **Sync oAudrey DNS records** workflow
+   (`.github/workflows/sync-oaudrey-dns.yml`) — it auto-detects the active
+   registrar from whichever secrets are set, resolves the App Platform ingress
+   via `doctl`, and pushes every record in `oaudrey/dns-records.yml`.
+3. The workflow also runs automatically after every successful deploy and
+   weekly on Mondays as a drift-correction sweep.
+
+| Registrar | Credentials needed                                 | Apex strategy |
+|-----------|----------------------------------------------------|---------------|
+| Namecheap | `NAMECHEAP_API_KEY`, `NAMECHEAP_API_USER`, `NAMECHEAP_USERNAME`, `NAMECHEAP_CLIENT_IP` | move apex to DigitalOcean nameservers (Namecheap API rejects ALIAS at apex) |
+| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`            | resolve `APP_TARGET` to an IP — sync auto-translates apex `ALIAS` → `A` |
+| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`        | native `ALIAS` at apex |
+
+Local dry-run (no API calls):
+
+```bash
+DRY_RUN=true \
+  APP_TARGET=oaudrey-hub-abcde.ondigitalocean.app \
+  PORKBUN_API_KEY=test PORKBUN_SECRET_API_KEY=test \
+  node scripts/sync-dns-records.js
+```
 
 Full guide: `standards/OAUDREY_DEPLOYMENT_STANDARD.md`
 
@@ -161,8 +187,11 @@ respected.
 - [x] Post-deploy health-check + retro workflow (`oaudrey-retro.yml`)
 - [x] BOM for BOM team (`docs/oaudrey/BOM.md`)
 - [x] Full deployment standard (`standards/OAUDREY_DEPLOYMENT_STANDARD.md`)
+- [x] Multi-registrar DNS sync (`scripts/sync-dns-records.js` — Namecheap, GoDaddy, Porkbun)
+- [x] DNS sync workflow (`.github/workflows/sync-oaudrey-dns.yml`)
+- [x] Credential Gatekeeper detects GoDaddy + Porkbun keys
 - [ ] Provision `DIGITALOCEAN_API_TOKEN` secret in repo settings
-- [ ] Point Namecheap nameservers to DigitalOcean (`ns1–3.digitalocean.com`)
+- [ ] Provision a registrar credential set (Namecheap / GoDaddy / Porkbun) via the Gatekeeper
 - [ ] Verify `oaudrey.com` apex resolves to App Platform
 - [ ] Extend brand system: supporting illustrations, bot characters, product iconography — all original, **no third-party assets reused**.
 - [ ] Connect tabs to live metrics pulled from each product subdomain

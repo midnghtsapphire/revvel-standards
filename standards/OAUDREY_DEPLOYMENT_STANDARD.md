@@ -59,6 +59,8 @@ Secrets: GitHub Actions repo secrets → Doppler (revvel-standards project)
 | Namecheap credentials | Update DNS records (Namecheap API or dashboard) | Namecheap account `uprisinghope` | Vault: `revvel/shared/dns/namecheap` |
 | `NAMECHEAP_API_KEY` | Namecheap API for automated DNS updates | Namecheap → Profile → API Access | GitHub repo secret + Doppler |
 | `NAMECHEAP_USERNAME` | Namecheap username | `uprisinghope` | Doppler `NAMECHEAP_USERNAME` |
+| `GODADDY_API_KEY` / `GODADDY_API_SECRET` | GoDaddy API for automated DNS updates | [developer.godaddy.com](https://developer.godaddy.com/keys) → Production keys | GitHub repo secret + Doppler |
+| `PORKBUN_API_KEY` / `PORKBUN_SECRET_API_KEY` | Porkbun API for automated DNS updates | Porkbun → Account → API Access (enable per-domain too) | GitHub repo secret + Doppler |
 
 ### Doppler Provisioning
 
@@ -190,6 +192,38 @@ curl "https://api.namecheap.com/xml.response" \
   -d "TLD=com" \
   -d "HostName1=@&RecordType1=ALIAS&Address1=your-app.ondigitalocean.app&TTL1=300"
 ```
+
+### Automated DNS sync (registrar-agnostic)
+
+The repo ships a registrar-agnostic DNS sync that pushes the declarative
+record list in [`oaudrey/dns-records.yml`](../oaudrey/dns-records.yml) to
+whichever registrar `oaudrey.com` lives on:
+
+| Registrar | Credentials                                          | Notes |
+|-----------|------------------------------------------------------|-------|
+| Namecheap | `NAMECHEAP_API_KEY`, `NAMECHEAP_API_USER`, `NAMECHEAP_USERNAME`, `NAMECHEAP_CLIENT_IP` | API rejects ALIAS at apex — keep apex on DO nameservers |
+| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`              | Sync auto-translates apex `ALIAS` → `A` when value is an IP |
+| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`          | Native `ALIAS` at apex — recommended for oAudrey |
+
+The active registrar is **auto-detected** from whichever credential set is
+present (provisioned via the Credential Gatekeeper). Workflow:
+[`.github/workflows/sync-oaudrey-dns.yml`](../.github/workflows/sync-oaudrey-dns.yml).
+
+```bash
+# Local dry run — prints redacted requests, makes no API calls
+DRY_RUN=true \
+  APP_TARGET=oaudrey-hub-abcde.ondigitalocean.app \
+  PORKBUN_API_KEY=test PORKBUN_SECRET_API_KEY=test \
+  node scripts/sync-dns-records.js
+
+# Force a specific registrar
+DNS_PROVIDER=godaddy ... node scripts/sync-dns-records.js
+```
+
+Triggers:
+- After every successful `deploy-oaudrey.yml` run (via `workflow_run`)
+- Manual via `workflow_dispatch` (with optional `provider` and `dry_run`)
+- Weekly Mondays 06:30 UTC as a drift-correction sweep
 
 > **FOSS tools for DNS automation:**
 > - [octodns](https://github.com/octodns/octodns) — declarative DNS management (YAML config → push to any provider)
