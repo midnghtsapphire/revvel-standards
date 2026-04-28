@@ -1,7 +1,7 @@
 name: 🔬 Deep Research (Universal)
 description: Use for any issue — everything gets deep-researched before execution.
 title: "[Deep Research] "
-labels: ["deep-research", "triage", "triage:new"]
+labels: ["deep-research", "jules", "triage", "triage:new"]
 body:
   - type: markdown
     attributes:
