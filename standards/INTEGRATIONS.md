@@ -16,6 +16,7 @@ This standard defines integrations with communication platforms that can be sold
 | **OpenClaw** | OpenClaw Agent | Multi-platform management | $1,000-5,000 |
 | **Notion** | Notion Sync | Project tracking, docs | $500-2,000 |
 | **Okta** | Okta SSO | Enterprise authentication | $2,000-10,000 |
+| **RevenueCat** | Subscriptions / IAP | Cross-platform billing, paywalls, entitlements | See [REVENUECAT.md](REVENUECAT.md) |
 
 ---
 
