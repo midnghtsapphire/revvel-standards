@@ -416,36 +416,53 @@ Ensure the app name in `oaudrey/.do/app.yaml` matches exactly `oaudrey-hub`.
 - Confirm the CNAME / ALIAS record in DigitalOcean DNS points to the app's `ondigitalocean.app` URL
 - Check for SSL provisioning (DO automatically provisions Let's Encrypt — may take ~10 minutes)
 
-### Retro reports `HTTP 000` — domain not responding
-
-The `oaudrey-retro.yml` workflow records `HTTP 000` when `curl` cannot complete
-the request at all (DNS failure, TCP connect timeout, TLS handshake failure).
-This is **not** a server-side error code — it means the request never reached
-a server. Recovery checklist:
-
-1. **Confirm DNS resolves**
-   ```bash
-   dig +short oaudrey.com
-   dig +short fieldwork.oaudrey.com
-   ```
-   If empty or stale, see "DNS not propagating" above and re-run
-   `sync-oaudrey-dns.yml`.
-2. **Confirm the DO App Platform app is `ACTIVE`**
-   ```bash
-   doctl apps list --format ID,Spec.Name,ActiveDeployment.Phase --no-header
-   ```
-   If the deployment is `ERROR` or stuck, re-run `deploy-oaudrey.yml`.
-3. **Confirm the custom domain is attached to the app** (DO Dashboard → App →
-   Settings → Domains) and that SSL has finished provisioning (~10 min after
-   first attach).
-4. **If a retro shows `HTTP 000000`** (six zeros), that was a workflow-side
-   double-emit bug fixed in `oaudrey-retro.yml`; re-run the retro workflow
-   and the value should now be a clean three-digit code.
-
 ### DIGITALOCEAN_API_TOKEN not working
 
 Token requires **read** + **write** scopes on Apps. Create a new token at:  
 DO Dashboard → API → Personal Access Tokens → Generate New Token → check **Read** + **Write**
+
+### Retro health check reports `HTTP 000` for `oaudrey.com` / `fieldwork.oaudrey.com`
+
+`HTTP 000` from `oaudrey-retro.yml` means `curl` could not complete the TLS
+handshake at all — DNS did not resolve, the connection was refused, or it
+timed out. It does **not** mean the site is returning an error page (that
+would be `4xx`/`5xx`). Triage in this order:
+
+1. **DNS resolution** — from any shell:
+   ```bash
+   dig +short oaudrey.com
+   dig +short fieldwork.oaudrey.com
+   ```
+   Empty output → DNS not provisioned. Confirm Namecheap nameservers point
+   to DigitalOcean (`ns1.digitalocean.com`, `ns2.digitalocean.com`, and
+   `ns3.digitalocean.com`) and that the records exist in DO → Networking →
+   Domains. See [DNS Configuration](#dns-configuration-namecheap--digitalocean).
+
+2. **App Platform deploy state** — confirm the app exists and is healthy:
+   ```bash
+   doctl apps list --format ID,Spec.Name,DefaultIngress,ActiveDeployment.Phase
+   ```
+   If `ActiveDeployment.Phase` is not `ACTIVE`, re-run `deploy-oaudrey.yml`
+   and inspect its logs.
+
+3. **Required secrets** — if no deploy has ever succeeded, the apex won't
+   resolve. Verify `DIGITALOCEAN_API_TOKEN` is set:
+   ```bash
+   gh secret list --repo midnghtsapphire/revvel-standards | grep DIGITALOCEAN_API_TOKEN
+   ```
+
+4. **Re-run the retro after fixing** — once DNS resolves and the deploy is
+   `ACTIVE`, manually trigger the retro to confirm:
+   ```bash
+   gh workflow run oaudrey-retro.yml --repo midnghtsapphire/revvel-standards
+   ```
+   A successful retro will close the loop with `200`/`301`/`302` and no
+   `⚠️ Needs Work` items.
+
+> **Note:** The retro's health-check step relies on curl's `-w "%{http_code}"`
+> formatter, which always emits `000` on connection failure. Do not add a
+> fallback `|| echo "000"` — that double-prints and produces invalid status
+> strings like `HTTP 000000` in the retro report.
 
 ---
 
