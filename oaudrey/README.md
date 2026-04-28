@@ -5,6 +5,15 @@
 **Status:** Concept / Landing Page
 **License:** All Rights Reserved — Copyright 2010-2026 Freedom Angel Corp / Audrey Evans
 
+| Where | Link |
+|---|---|
+| Source (this directory) | https://github.com/midnghtsapphire/revvel-standards/tree/main/oaudrey |
+| Hub repo | https://github.com/midnghtsapphire/revvel-standards |
+| Live hub (apex) | https://oaudrey.com |
+| Live FieldWork tab | https://fieldwork.oaudrey.com |
+| Deploy workflow | [`.github/workflows/deploy-oaudrey.yml`](../.github/workflows/deploy-oaudrey.yml) |
+| Credential automation | [`.github/workflows/credential-gatekeeper.yml`](../.github/workflows/credential-gatekeeper.yml) + [`scripts/gatekeeper-sync.sh`](../scripts/gatekeeper-sync.sh) |
+
 ---
 
 ## What Is This?
