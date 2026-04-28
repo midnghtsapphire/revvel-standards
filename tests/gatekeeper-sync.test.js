@@ -34,10 +34,12 @@ function assertEq(a, b, msg) {
   }
 }
 
-test('script file exists and is executable', () => {
+test('script file exists and is executable on non-Windows platforms', () => {
   const stat = fs.statSync(SCRIPT);
   assert(stat.isFile(), 'not a file');
-  assert((stat.mode & 0o111) !== 0, 'not executable');
+  if (process.platform !== 'win32') {
+    assert((stat.mode & 0o111) !== 0, 'not executable');
+  }
 });
 
 test('--help exits 0 and prints usage', () => {
