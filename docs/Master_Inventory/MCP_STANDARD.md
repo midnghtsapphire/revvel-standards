@@ -9,7 +9,7 @@
 
 ## 1. Introduction
 
-Model Context Protocol (MCP) is the universal open standard for connecting AI models to external tools, data sources, and services. Every Revvel and MIDNGHTSAPPHIRE project **must** configure MCP servers to unlock full AI coding agent capabilities across databases, search, finance, communication, memory, productivity, filesystem, and code execution.
+Model Context Protocol (MCP) is the universal open standard for connecting AI models to external tools, data sources, and services. Every Revvel and MIDNGHTSAPPHIRE project **must** configure MCP servers to unlock full AI coding agent capabilities across databases, search, finance, communication, memory, productivity, filesystem, code execution, and creative design.
 
 MCP servers are configured at the project root in `.mcp.json` and consumed automatically by Claude Code, Cursor, GitHub Copilot, Windsurf, Cline, and all other AI coding agents.
 
@@ -35,14 +35,14 @@ Templates are stored in `revvel-standards/templates/mcp/`. Copy the appropriate 
 
 | Template | Servers Included | Use Case |
 |---|---|---|
-| `mcp.full.json` | All 32 servers | Maximum capability — use for full-stack projects |
-| `mcp.web.json` | 18 servers | Web apps — DB, search, memory, productivity, filesystem, coding |
-| `mcp.mobile.json` | 14 servers | Mobile/Expo apps — DB, search, memory, communication, filesystem |
+| `mcp.full.json` | All 33 servers | Maximum capability — use for full-stack projects |
+| `mcp.web.json` | 19 servers | Web apps — DB, search, memory, productivity, filesystem, coding, creative |
+| `mcp.mobile.json` | 15 servers | Mobile/Expo apps — DB, search, memory, communication, filesystem, creative |
 | `mcp.minimal.json` | 8 servers | Lightweight — DB, search, memory, filesystem only |
 
 ---
 
-## 4. The 32 Standard MCP Servers
+## 4. The 33 Standard MCP Servers
 
 ### 4.1. Database Servers
 
@@ -547,6 +547,25 @@ Code execution, generation, debugging, and semantic editing.
   {
     "command": "uvx",
     "args": ["serena", "--context", "ide-assistant", "--project", "${PROJECT_ROOT}"]
+  }
+  ```
+
+---
+
+### 4.9. Creative & Design Servers
+
+Tools for creative work, design automation, and visual content generation.
+
+#### 33. Adobe Express Developer MCP Server
+- **Repository:** Adobe official (closed source)
+- **Package:** `@adobe/express-developer-mcp`
+- **Required Env:** None
+- **Use Case:** Adobe Express Add-on development support — access SDK documentation, code examples, and API references directly in AI coding tools. Essential for building Adobe Express add-ons and extensions.
+- **Command:**
+  ```json
+  {
+    "command": "npx",
+    "args": ["-y", "@adobe/express-developer-mcp"]
   }
   ```
 
