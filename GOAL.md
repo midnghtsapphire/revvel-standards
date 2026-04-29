@@ -1,31 +1,57 @@
 # GOAL.md — ONE SOURCE OF TRUTH
 
-**Version:** 4.0.0  
-**Status:** MANDATORY — Execute without questions.  
-**Owner:** Audrey Evans (@midnghtsapphire)
+**Version:** 5.0.0  
+**Status:** EXECUTE. NO QUESTIONS. NO DISPUTES.  
+**Owner:** Audrey Evans
 
 ---
 
-# THE MISSION — $10M IN 3 YEARS
+# TARGET
 
-```
-Target: $10,000,000 (Ten Million Dollars)
-Timeline: 3 years
-First Milestone: $3,000/month revenue
-Current: $0 → Target: $10,000,000
-```
+$10,000,000 in 3 years.
+
+$3,000/month minimum. Increase by $3,000 every month.
 
 ---
 
-# THE NORTH STAR (wr/NORTH_STAR.md)
+# NORTH STAR
 
-**Rules above ALL other rules:**
+1. Revenue first. $3,000/mo before anything else.
+2. Audrey decides. Agents execute.
+3. Quiet mode default.
+4. Many small commits.
+5. This repo is truth.
 
-1. **Revenue before mission** — $3,000/mo FIRST, THEN mission work
-2. **Audrey is final authority** — Agents propose/warn, Audrey decides
-3. **Quiet mode** — Nothing runs on cron until Audrey opens "exit-quiet-mode"
-4. **Commit cadence** — Many small PRs > few large PRs
-5. **Durability** — This repo is single source of truth
+---
+
+# $3,000/MONTH REVENUE PLAN
+
+## MONTH 1: $0 → $3,000
+
+| Week | Action | Revenue Target |
+|------|--------|---------------|
+| 1 | Deploy Reese-Reviews dashboard, list on Gumroad | $500 |
+| 2 | Finish video pipeline, upsell existing clients | $500 |
+| 3 | Launch PDF guides on Gumroad (5 guides x $100) | $500 |
+| 4 | Upsell 2 new clients at $750 each | $1,500 |
+
+## MONTH 2: $3,000 → $6,000
+
+| Week | Action | Revenue Target |
+|------|--------|---------------|
+| 1 | Add 3 new digital products | $750 |
+| 2 | Raise prices 20%, upsell existing | $750 |
+| 3 | Launch affiliate links page | $750 |
+| 4 | New clients x3 | $750 |
+
+## MONTH 3: $6,000 → $9,000
+
+| Week | Action | Revenue Target |
+|------|--------|---------------|
+| 1 | Launch second product line | $750 |
+| 2 | Subscription tier ($50/mo x 20) | $1,000 |
+| 3 | Enterprise upsell | $1,000 |
+| 4 | Scale what works | $1,000 |
 
 ---
 
