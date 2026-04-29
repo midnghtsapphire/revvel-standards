@@ -403,3 +403,110 @@ eas submit --platform ios  # Submit to App Store
 - Musician profile photos not implemented (use expo-image)
 - Push notifications not implemented
 - Search is static — needs Supabase full-text search
+
+---
+
+## FIRST: Required Files — Read Before ANY Work
+
+**For EVERY task, read in this exact order:**
+
+| Order | File | Why |
+|-------|------|-----|
+| **1** | `GOAL.md` | Defines the mission, timeline, income target, success criteria |
+| **2** | `SYSTEM_STATE.md` | Current production state before touching anything |
+| **3** | Relevant standard in `/standards/` | Follow rules for this work type |
+| **4** | Relevant skill in `/skills/*/SKILL.md` | Load applicable skills |
+
+### GOAL.md (READ FIRST — This is your mission)
+
+A `GOAL.md` must exist at root. It tells you:
+- **Income target** — e.g., $3,000/mo in 10 months
+- **Timeline** — 3 years, 10 months, etc.
+- **Success criteria** — Metrics, launch date, first sale
+- **What to build** — PDF, skill, MCP, CLI, API, web app
+- **How to monetize** — Gumroad, LemonSqueezy, Stripe, Shopify
+- **How to market** — Meta ads, extensions, automation
+
+**If GOAL.md doesn't exist → CREATE IT FIRST before any work.**
+
+### SYSTEM_STATE.md (Read second)
+
+Know what's in production. Update when done. Template: `standards/SYSTEM_STATE_STANDARD.md`
+
+### Standards to Follow
+
+| Work Type | Standard |
+|----------|----------|
+| Cron jobs | `standards/CRON_SYSTEM.md` |
+| Agents | `skills/*/SKILL.md` |
+| MCP servers | `.mcp.json` |
+| Deployment | `standards/DEPLOYMENT_STANDARD.md` |
+| Testing | `standards/TESTING.md` |
+| Security | `skills/security/SKILL.md` |
+
+---
+
+## Your Mission: Execute Fully Autonomous
+
+From GOAL.md, follow these phases:
+
+### Phase 1: Research & Validate
+- Deep research: web, docs, FOSS, APIs, tools
+- Find what's broken → fix it. Find better → implement it.
+- Create issues in `revvel-standards` for deep research
+
+### Phase 2: Build & Document
+- All requirement docs in `revvel-standards/docs/`
+- PDF → create, format, upload to Gumroad/LemonSqueezy
+- Skill → `skills/[name]/`
+- MCP → `.mcp.json`
+- CLI → `scripts/` or `wr/`
+- API → endpoints + tests + docs
+- Verify no missing dependencies
+
+### Phase 3: Ship & Launch
+- Push to `revvel-standards`
+- Deploy live (Vercel/DigitalOcean)
+- Verify no 500 errors
+- Log in `SYSTEM_STATE.md`
+
+### Phase 4: Monetize
+- Find store: Gumroad, LemonSqueezy, Stripe
+- List on best marketplace
+- Sales page with clear value
+- Landing page if needed
+
+### Phase 5: Market & Scale
+- Create Meta (Facebook) ad
+- Target audience + budget
+- Track conversions
+- Use extensions to automate
+- Scale what works
+
+---
+
+## Non-Negotiable Rules
+
+1. **No questions.** Research, decide, execute. Only ask if unsafe or irreversible.
+2. **FOSS first.** Free software, free APIs.
+3. **Ship fast.** One iteration. Complete solution.
+4. **Test everything.** No broken imports, no 500 errors.
+5. **Document as you go.** Docs in `docs/`.
+6. **Update SYSTEM_STATE.md** when complete.
+7. **Resilient.** If X fails → try Y. Keep going.
+8. **Creative.** Find new ways.
+9. **Upskill.** Learn, then implement.
+10. **Monetize from day 1.** Even $1 matters.
+
+---
+
+## Resilient Execution
+
+**If something doesn't work:**
+1. Try a different approach
+2. Search for FOSS alternatives
+3. Create issue for deep research
+4. Keep going until something works
+5. Ship anyway — imperfect beats perfect
+
+**No stopping. No questions. Execute.**
