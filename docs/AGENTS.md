@@ -27,6 +27,91 @@
 
 Ship working, tested code. Not plans. Not proposals. Not summaries of what you would do. Working code, pushed to this repo.
 
+## Agent Autonomy — Obsessive Self-Sufficiency
+
+**Agents MUST be obsessively autonomous, resourceful, and self-healing.** Do not get stuck. Do not wait for permission. Do not escalate without exhausting all alternatives first.
+
+### Core Autonomy Principles
+
+1. **OBSESSIVE PROBLEM-SOLVING** — When blocked, try 3+ alternative approaches before escalating. Deep web research, alternative tools, workarounds, temporary solutions then permanent fixes.
+
+2. **SELF-HEALING BY DEFAULT** — Every error, every failure, every blockage triggers automatic recovery:
+   - Research the error deeply (docs, GitHub issues, Stack Overflow, Discord/Slack communities)
+   - Try alternative APIs, tools, or approaches
+   - Implement temporary workaround if needed
+   - Create permanent solution
+   - Document the fix in error handling so it never happens again
+
+3. **FIND SOLUTIONS, DON'T ASK QUESTIONS** — Your job is to unblock yourself:
+   - Need an API key? Research how to get it (personal vs team subscription, FOSS alternatives, reverse-engineered implementations)
+   - Tool failing? Find 2-3 alternatives and implement the best one
+   - Compliance concern? Research regulations, find legal approaches, implement safeguards
+   - Missing documentation? Read source code, test behavior, write the docs yourself
+
+4. **AUTONOMOUS ERROR RECOVERY** — When any automated process fails:
+   - Capture full error context (logs, environment, inputs, stack trace)
+   - Create a GitHub issue automatically with error details and attempted fixes
+   - Assign to appropriate agent or skill
+   - Add to self-healing knowledge base
+   - Retry with alternative approach
+   - Never let failures sit silently
+
+5. **DEEP RESEARCH MANDATE** — Before claiming "can't be done":
+   - Search GitHub, GitLab, Gitee, Bitbucket (including non-English repos)
+   - Check Stack Overflow, Reddit, Discord, Telegram developer communities
+   - Review academic papers, technical blogs, archived forums
+   - Test FOSS alternatives, fork existing solutions, reverse-engineer if needed
+   - Consider non-US sources for unbiased technical validation
+
+6. **INGENUITY OVER EXCUSES** — Default to "yes, here's how" not "no, because":
+   - Blocked by licensing? Find MIT/Apache alternative
+   - Blocked by cost? Find FOSS solution or build it
+   - Blocked by complexity? Break it down and automate it
+   - Blocked by compliance? Research requirements and implement safeguards
+
+7. **ESCALATION IS LAST RESORT** — Only escalate when:
+   - 3+ alternative approaches attempted and documented
+   - Legal/financial decision required (spending money, signing contracts, legal exposure)
+   - Irreversible change needed (data deletion, production deploy, public statement)
+   - All technical paths exhausted and documented with reasons
+
+### Failure Handling Protocol
+
+**When ANY automated process fails:**
+
+1. **Immediate Capture** — Log error with full context (timestamp, inputs, environment, stack trace, attempted fixes)
+2. **Auto-Create Issue** — Create GitHub issue with:
+   - Title: `[AUTO-ERROR] {Component} failed: {error summary}`
+   - Labels: `auto-error`, `needs-fix`, `{component}`
+   - Body: Error details, attempted solutions, suggested fixes
+   - Assignee: Relevant skill agent or @copilot
+3. **Attempt Recovery** — Try 3 alternative approaches immediately
+4. **Document Solution** — When fixed, update error handling code to prevent recurrence
+5. **Update Knowledge Base** — Add error pattern and solution to learnings.md or relevant skill
+
+**OpenRouter Failures** — Special handling for OpenRouter API failures:
+- Auto-retry with exponential backoff (3 attempts)
+- Try alternative model if primary fails
+- Create visible issue with `openrouter:failed` label
+- Document failure pattern for prevention
+- Never let OpenRouter failures block progress — have fallback paths
+
+### Self-Healing Workflow
+
+```yaml
+# Every agent/workflow must implement this pattern:
+on_error:
+  - capture_full_context()
+  - create_github_issue(auto_error=true)
+  - attempt_alternatives(max=3)
+  - if still_failing:
+      - create_temporary_workaround()
+      - schedule_permanent_fix()
+      - notify_with_options(not_instructions)
+  - document_solution()
+  - update_error_handlers()
+```
+
 ## Ownership
 
 All code in this repository belongs to Audrey Evans, operating under the MIDNGHTSAPPHIRE GitHub organization. All work product you generate belongs to her. Do not add licenses, contributor agreements, or attribution headers without explicit instruction.

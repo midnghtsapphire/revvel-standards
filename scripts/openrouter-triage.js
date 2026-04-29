@@ -238,6 +238,47 @@ async function removeGitHubLabels(labels) {
   }
 }
 
+async function triggerAutoErrorWorkflow({ errorType, errorMessage, errorContext, attemptedFixes }) {
+  // Trigger the auto-error-handler workflow to create an issue and attempt recovery
+  // This implements the obsessive self-healing protocol from AGENTS.md
+  
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo || !GITHUB_TOKEN) {
+    console.log("::warning::Cannot trigger auto-error workflow - missing GITHUB_TOKEN or GITHUB_REPOSITORY");
+    return;
+  }
+  
+  try {
+    const payload = {
+      ref: "main", // or process.env.GITHUB_REF
+      inputs: {
+        error_type: errorType,
+        error_message: errorMessage.substring(0, 500), // Limit length
+        error_context: errorContext ? errorContext.substring(0, 2000) : "",
+        attempted_fixes: JSON.stringify(attemptedFixes || []),
+        workflow_run_id: process.env.GITHUB_RUN_ID || "",
+      },
+    };
+    
+    await requestJson({
+      hostname: "api.github.com",
+      pathName: `/repos/${owner}/${repo}/actions/workflows/auto-error-handler.yml/dispatches`,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        "User-Agent": "revvel-openrouter-triage-script",
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      payload: payload,
+    });
+    
+    console.log("::notice::Auto-error workflow triggered for automatic recovery");
+  } catch (err) {
+    console.log(`::warning::Could not trigger auto-error workflow: ${err.message}`);
+  }
+}
+
 async function reportTriageFailure({ kind, detail }) {
   // Post a visible failure signal on the issue/PR so no item sits silently
   // waiting on a manual "@github agent" assignment when OpenRouter is down or
@@ -264,6 +305,16 @@ async function reportTriageFailure({ kind, detail }) {
     console.log(`::warning::Could not post triage failure comment to #${ISSUE_NUMBER}: ${err.message}`);
   }
   await addGitHubLabels([failureLabel, FAILURE_LABELS.NEEDS_HUMAN]);
+  
+  // Trigger auto-error workflow for automatic recovery attempts
+  await triggerAutoErrorWorkflow({
+    errorType: "openrouter",
+    errorMessage: kind === "needs-key" 
+      ? "OPENROUTER_API_KEY not configured"
+      : `OpenRouter triage failed: ${detail}`,
+    errorContext: detail,
+    attemptedFixes: [],
+  });
 }
 
 async function main() {
