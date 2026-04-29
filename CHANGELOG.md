@@ -10,17 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 
   goal-oriented action planner (Goap) specialized autonomous agent under 
-  the AUDREY umbrella. Focused on revenue-first operations with 24/7 
-  autonomous execution, self-healing via Reflexion pattern, and persistent 
-  memory through learnings.md. Core mission: build autonomous systems 
-  generating $5–10M+ net worth within 3–5 years with <30 min/day human 
-  involvement. Current focus: Reese-Reviews leverage system (Vine review 
-  automation, 47% → 90% completion by June 9, 2026). Includes technical 
-  ownership (Gatekeeper role with n8n + Gumloop + Apify), personality/voice 
-  spec, mandatory output format, and integration with Revvel Standards.
+  the AUDREY umbrella. Core mission: build fully autonomous systems within 
+  3 years that run 24/7 without human intervention. High-level goals include 
+  financial freedom ($5–10M+ net worth within 3–5 years), lifestyle/environment, 
+  family presence, creative expression, health/longevity. Includes self-healing 
+  via Reflexion pattern with persistent memory through learnings.md, operational 
+  rules, and integration with Revvel Standards. Simplified and focused on personal 
+  goals without project-specific details.
 - `templates/agent-factory/GOAP_LEARNINGS_TEMPLATE.md` — Template for 
   Goap's persistent memory file (learnings.md). Self-healing log format 
-  with seed entry and auto-generated entries structure. Goap reads/writes 
+  with example seed entry and auto-generated entries structure. Goap reads/writes 
   to this file every session, learning from failures and never repeating 
   the same error twice.
 
