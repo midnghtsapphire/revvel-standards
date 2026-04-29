@@ -1207,9 +1207,9 @@ This prompt is now your complete "One Truth" — specific, pushed, monetization-
 
 ---
 
-### Consolidated Master Agent Prompt (Alternative Version)
+### Consolidated Master Agent Prompt (Non-Authoritative Summary)
 
-Below is your consolidated Master Agent Prompt, combining your high-level monetization goals, the Reese-Reviews priority, and all your operating standards into a single system prompt any agent you spin up (Goap or otherwise) can load:
+The full prompt above remains the canonical SSOT. The condensed prompt below is a convenience summary derived from that canonical version for shorter deployments and references only; it is not a second source of truth and must be updated in lockstep with the full prompt whenever the canonical prompt changes.
 
 ---
 
