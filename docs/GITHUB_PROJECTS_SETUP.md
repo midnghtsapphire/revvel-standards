@@ -309,19 +309,60 @@ label: "security"     →  GITHUB_PR_LABEL_SECURITY=true
 label: "bom-purchase" →  GITHUB_PR_LABEL_BOM_PURCHASE=true
 ```
 
-### Link Issues to a Project
+---
 
-When creating issues in your app repo, assign them to the project using:
+## 4. PR Review Status Automation Workflow
+
+The `pr-review-status.yml` workflow (copy from `templates/cicd/pr-review-status.yml`) automatically manages PR review status labels and displays visual status badges.
+
+**What it does:**
+
+| Trigger | Automation |
+|---|---|
+| PR opened (non-draft) | Adds `awaiting-approval` label and posts status badge comment |
+| Review submitted | Updates label based on review state (`approved`, `changes-requested`, `review-started`) |
+| Review dismissed | Recalculates status and updates label accordingly |
+| Multiple reviewers | Aggregates all reviews to determine overall status |
+
+**Review Status Labels:**
+
+| Label | Meaning | Color |
+|---|---|---|
+| `awaiting-approval` | PR needs review | Yellow (`#fbca04`) |
+| `review-started` | Review in progress | Blue (`#0075ca`) |
+| `changes-requested` | Reviewer requested changes | Red (`#d93f0b`) |
+| `approved` | PR has been approved | Green (`#0e8a16`) |
+
+**Label Priority:** If multiple states exist, `changes-requested` > `approved` > `review-started` > `awaiting-approval`
+
+**Setup:**
+
 ```bash
-# Via GitHub CLI
-gh issue create --title "..." --body "..." --project "GrowlingEyes — Active Development"
+# Copy to your app repo
+cp templates/cicd/pr-review-status.yml .github/workflows/pr-review-status.yml
 ```
 
-Or link manually from the issue sidebar → **Projects** → select project.
+No secrets or configuration changes are required — the workflow uses `GITHUB_TOKEN` throughout.
+
+**Status Badge:** The workflow posts/updates a comment on each PR showing:
+
+```markdown
+## 📊 PR Review Status
+
+![Status](https://img.shields.io/badge/status-approved-green?style=for-the-badge)
+
+**Current State:** PR has been approved ✅
+
+**Reviewers:**
+✅ **@reviewer1** — Approved
+🔴 **@reviewer2** — Changes Requested
+```
+
+**Complete Documentation:** See [`PR_REVIEW_STATUS_AUTOMATION.md`](PR_REVIEW_STATUS_AUTOMATION.md) for full setup guide, customization options, and troubleshooting.
 
 ---
 
-## 4. Project-First Intake (Required)
+## 5. Project-First Intake (Required)
 
 **Do not create issues directly in the repo.** Issues must be created from the **Project board** so the Project, Status, Milestone, and Labels are attached at creation time.
 
@@ -334,6 +375,7 @@ Or link manually from the issue sidebar → **Projects** → select project.
 | Milestone | Yes | EXRUP phase tracking |
 | Labels | Yes | Type + routing (e.g., `triage`, `bug`, `enhancement`, `blocked`) |
 | Assignee | Optional | Ownership (human or orchestrator) |
+
 | Linked PR | Required before closing | Enables automation and lifecycle transitions |
 
 ### Create from Project (preferred)
@@ -372,7 +414,7 @@ Suggested building blocks:
 
 ---
 
-## 5. End-to-End Flow (Project → Issue → Milestone → PR → Automation)
+## 6. End-to-End Flow (Project → Issue → Milestone → PR → Automation)
 
 1. **Project created** and default repo set
 2. **Issue created from Project** with Milestone + Labels
@@ -384,7 +426,7 @@ Suggested building blocks:
 
 ---
 
-## 6. Per-App Error Label
+## 7. Per-App Error Label
 
 Each app repo must have a project-specific error label for the `monitored()` system:
 
@@ -399,7 +441,7 @@ See `standards/ERROR_REPORTING_STANDARD.md` — Section 6 for full details on th
 
 ---
 
-## 7. Complete New Repo Setup Checklist
+## 8. Complete New Repo Setup Checklist
 
 When creating a new Revvel application repository:
 
@@ -436,7 +478,7 @@ bash scripts/bootstrap-new-project.sh $APP_NAME 164.90.148.7 https://[PRODUCTION
 
 ---
 
-## 8. Issue Templates
+## 9. Issue Templates
 
 Create these issue templates in `.github/ISSUE_TEMPLATE/` of each app repo:
 
