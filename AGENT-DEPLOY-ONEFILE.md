@@ -83,11 +83,11 @@ $3,000/month minimum. Increase by $3,000 every month.
 
 ## $3,000/MONTH REVENUE PLAN
 
-### MONTH 1: $0 → $3,000
+### MONTH 1: $0 → $3,000 examples and doing better is required
 
 | Week | Action | Revenue Target |
 |------|--------|---------------|
-| 1 | Deploy Reese-Reviews dashboard, list on Gumroad | $500 |
+| 1 | Deploy growlingeyes.com, list on Gumroad | $500 |
 | 2 | Finish video pipeline, upsell existing clients | $500 |
 | 3 | Launch PDF guides on Gumroad (5 guides x $100) | $500 |
 | 4 | Upsell 2 new clients at $750 each | $1,500 |
