@@ -215,9 +215,12 @@ Before creating ANY new project:
 4. **Complete those first** before creating new ones
 
 If project not shipped with revenue:
-- Escalate to OTHER agents (not Audrey)
-- Create WR (Work Rule) if needed
 - **NEVER escalate to Audrey**
+- Escalate to OTHER agents
+- Create WR (Work Rule) if needed
+- Try 3 more times
+- If 3 Issues/PRs don't resolve → Assign to GOAP with label `goap-escalation`
+- Keep creating PRs and WRs until it works
 
 ### COMPLETE DIRECTORY RULE
 
