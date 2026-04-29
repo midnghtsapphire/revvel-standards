@@ -46,14 +46,17 @@ This didn't cover git-unsafe characters like:
 
 Git has strict rules for ref (branch) names per [git-check-ref-format](https://git-scm.com/docs/git-check-ref-format):
 
-**Forbidden characters/patterns:**
+**Git-prohibited characters/patterns:**
 - ASCII control characters (< \040)
 - Space, tilde `~`, caret `^`, colon `:`, question mark `?`, asterisk `*`, brackets `[]`
 - Consecutive dots `..`, slash-dot sequences `/./` or `/../`
 - Multiple consecutive slashes `//`
 - Ending with dot `.` or `.lock`
-- At sign `@` (except as first char in special refs)
-- Various shell operators: `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``
+- At sign `@` in the sequence `@{` (reserved for ref syntax)
+
+**Additionally sanitized for shell safety and usability:**
+- Shell operators and special characters: `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``, `$`, `%`, `+`, `=`, `,`
+- Forward slash `/` (problematic in certain ref patterns)
 
 The branch naming tool was only sanitizing a small subset of these characters, causing creation to fail when issue titles contained URLs or special characters.
 

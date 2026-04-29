@@ -527,7 +527,7 @@ Every time a workflow, automation, or process fails during your work:
 3. **Document your solution** — what you changed, why it works, how to prevent recurrence
 4. **Create an issue** using the template:
 
-```markdown
+````markdown
 ## Problem
 [Clear description of what was failing]
 
@@ -548,7 +548,7 @@ Every time a workflow, automation, or process fails during your work:
 ## Links
 - PR: #[PR number]
 - Related issues: #[if any]
-```
+````
 
 5. **Tag appropriately** — `bug`, `auto-fix`, `documentation`, `workflow`, `automation`
 6. **Close immediately** — these are for documentation, not for work tracking

@@ -58,7 +58,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 
 ### GOAP Template for Complex Tasks
 
-```markdown
+````markdown
 ## Task: [Clear description]
 
 ### Goal State
@@ -97,7 +97,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 - [ ] Test 2 passes
 - [ ] No regressions
 - [ ] Documentation updated
-```
+````
 
 ## Swarm Coordination
 
