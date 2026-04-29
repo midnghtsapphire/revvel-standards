@@ -72,7 +72,7 @@ $3,000/month minimum. Increase by $3,000 every month.
 4. Many small commits.
 5. This repo is truth.
 
-# AGENT AUTONOMY RULES
+## AGENT AUTONOMY RULES
 
 ### Never Escalate Without
 
@@ -106,17 +106,19 @@ Only escalate after:
 
 ### EXISTING PROJECTS RULE
 
-**Before creating ANY new project:**
-
+Before creating ANY new project:
 1. Check `revenue/` directory for incomplete projects
 2. Check all open issues and PRs
 3. Check `wr/` for pending work
 4. **Complete those first** before creating new ones
 
-**If project not shipped with revenue:**
-- Escalate to OTHER agents (not Audrey)
-- Create WR (Work Rule) if needed
+If project not shipped with revenue:
 - **NEVER escalate to Audrey**
+- Escalate to OTHER agents
+- Create WR (Work Rule) if needed
+- Try 3 more times
+- If still failing after 3 attempts → call in OpenHands
+- Keep creating PRs and WRs until it works
 
 ### COMPLETE DIRECTORY RULE
 
