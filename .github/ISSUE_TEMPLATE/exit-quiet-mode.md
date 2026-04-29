@@ -42,8 +42,9 @@ Each workflow checks for an open issue or pull request titled `exit-quiet-mode`:
   uses: actions/github-script@v7
   with:
     script: |
+      const { owner, repo } = context.repo;
       const { data: issues } = await github.rest.issues.listForRepo({ 
-        owner, repo, state: 'open' 
+        owner, repo, state: 'open', per_page: 100 
       });
       const active = issues.some(i => 
         i.title.trim().toLowerCase() === 'exit-quiet-mode'
