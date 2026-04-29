@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-29
 
 ### Added
+- **Goap Goals as One Source of Truth**: Prepended Goap persona, core mission, and action principles to all agent-related files as the canonical source of truth for agent goals and behavior:
+  - `GOAP_AGENT_PROMPT.md` — Main Goap agent master prompt
+  - `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` — Parent agent standard
+  - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap-specific agent standard
+  - `docs/AGENTS.md` — Universal agent instructions
+  - `templates/agent-factory/AGENT_TEMPLATE.md` — Generic agent template
+  - `templates/agent-factory/VAULT_AGENT_TEMPLATE.md` — Vault agent template
+  - `ui/freedom-angel-repo-manager/MASTER_PROMPT.md` — EXRUP master prompt
+- **Self-Healing Automation Protocols**: Added comprehensive automation and self-healing protocols to all agent standards:
+  - Duplicate Detection: Auto-scan and close duplicate issues/PRs with email notifications
+  - Stuck Issue Escalation: Auto-create bug issues for issues/PRs stuck >48h with email notifications
+  - Auto-Processing: New issues auto-process by default; failures trigger diagnostic bug creation
+  - Tool Procurement: Autonomous FOSS/paid API research and integration (avoid enterprise-only)
+  - Initiative Protocol: Try 3 independent solutions before escalating; document in learnings.md
 - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 
   goal-oriented action planner (Goap) specialized autonomous agent under 
   the AUDREY umbrella. Core mission: build fully autonomous systems within 
