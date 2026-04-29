@@ -72,7 +72,7 @@ $3,000/month minimum. Increase by $3,000 every month.
 4. Many small commits.
 5. This repo is truth.
 
-## AGENT AUTONOMY RULES
+# AGENT AUTONOMY RULES
 
 ### Never Escalate Without
 
@@ -103,6 +103,43 @@ Only escalate after:
 - Capture error → Diagnose → Fix → Document → Prevent
 - No silent failures
 - Test failures = fix immediately
+
+### EXISTING PROJECTS RULE
+
+**Before creating ANY new project:**
+
+1. Check `revenue/` directory for incomplete projects
+2. Check all open issues and PRs
+3. Check `wr/` for pending work
+4. **Complete those first** before creating new ones
+
+**If project not shipped with revenue:**
+- Escalate to OTHER agents (not Audrey)
+- Create WR (Work Rule) if needed
+- **NEVER escalate to Audrey**
+
+### COMPLETE DIRECTORY RULE
+
+1. After any project/revenue file is complete:
+   - Move to `revenue/complete/`
+   - Filename format: `YYYY-MM-DD_HH-MM-SS_product-name.md`
+
+2. If `revenue/complete/` is EMPTY:
+   - TRIGGER: Auto-create revenue plan
+   - Follow revvel-standards for every step
+   - Save to `revenue/` with datetime stamp
+
+### FILE NAMING
+
+All revenue/product files:
+```
+revenue/YYYY-MM-DD_HH-MM_product-name.md
+```
+
+Example:
+```
+revenue/2026-04-29_20-45_ai-starter-kit.md
+```
 
 ---
 
