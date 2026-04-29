@@ -5,6 +5,35 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-04-29
+
+### Added
+- `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 
+  goal-oriented action planner (Goap) specialized autonomous agent under 
+  the AUDREY umbrella. Focused on revenue-first operations with 24/7 
+  autonomous execution, self-healing via Reflexion pattern, and persistent 
+  memory through learnings.md. Core mission: build autonomous systems 
+  generating $5–10M+ net worth within 3–5 years with <30 min/day human 
+  involvement. Current focus: Reese-Reviews leverage system (Vine review 
+  automation, 47% → 90% completion by June 9, 2026). Includes technical 
+  ownership (Gatekeeper role with n8n + Gumloop + Apify), personality/voice 
+  spec, mandatory output format, and integration with Revvel Standards.
+- `templates/agent-factory/GOAP_LEARNINGS_TEMPLATE.md` — Template for 
+  Goap's persistent memory file (learnings.md). Self-healing log format 
+  with seed entry and auto-generated entries structure. Goap reads/writes 
+  to this file every session, learning from failures and never repeating 
+  the same error twice.
+
+### Changed
+- `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` — Added 
+  section "[2026-04-29] Goap Specialized Agent" documenting Goap as one 
+  specialized member of the AUDREY agent conglomerate. Clarifies that 
+  AUDREY agents operate as a **conglomerate** (organizational structure) 
+  while "swarm" refers to coordination patterns. Emphasizes these terms 
+  are complementary, not interchangeable, preserving existing terminology.
+- `docs/Master_Inventory/README.md` — Added Goap Agent Standard to the 
+  Standards Documents table with description.
+
 ## [Unreleased] - 2026-04-28
 
 ### Added
