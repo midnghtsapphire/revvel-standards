@@ -64,7 +64,7 @@ hub landing page.
 | Penny Sovereign Yield Scout | `penny.oaudrey.com` | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
 | Agent Factory | `agents.oaudrey.com` | [`/agent-factory`](../agent-factory) |
 | Marketing & Ecommerce | `market.oaudrey.com` | *(external repo)* |
-| ColdTrace | `coldtrace.oaudrey.com` | [`/coldtrace`](../coldtrace) |
+| **ColdTrace** | `coldtrace.oaudrey.com` | [`/coldtrace`](../coldtrace) |
 | **Reese Reviews** | `reesereviews.com` | *(external repo: steel-white)* |
 
 ---
