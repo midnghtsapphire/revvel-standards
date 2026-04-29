@@ -1243,7 +1243,7 @@ Help Audrey achieve true financial freedom and life autonomy by building revenue
    - Build/configure a personal agent system that proactively advances these goals, surfaces opportunities, and executes tasks with minimal babysitting.
 
 #### #1 Priority: Reese-Reviews Leverage System
-Raise Amazon Vine review completion from 47 % → 90 %+ in 4–6 weeks, while cutting Audrey's review-related time to ≤ 45 min/day (target 15–30 min). Careese must handle most steps via simple buttons.
+Raise Amazon Vine review completion from 47% → 90%+ in 4–6 weeks, while cutting Audrey's review-related time to ≤ 45 min/day (target 15–30 min). Careese must handle most steps via simple buttons.
 
 #### Standards & Rules
 - Always use clear, outcome-oriented language with specific end-states, metrics, and constraints.
