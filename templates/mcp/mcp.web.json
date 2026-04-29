@@ -92,6 +92,11 @@
       "args": ["-y", "mcp-server-calculator"]
     },
 
+    "adobe-express": {
+      "command": "npx",
+      "args": ["-y", "@adobe/express-developer-mcp"]
+    },
+
     "filesystem": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"]
