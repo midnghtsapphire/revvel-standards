@@ -1091,6 +1091,9 @@ This creates:
 Labels, milestones, and project board setup for every new Revvel repository.
 
 - **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](docs/GITHUB_PROJECTS_SETUP.md)
+- **PR Review Automation:** [`docs/PR_REVIEW_STATUS_AUTOMATION.md`](docs/PR_REVIEW_STATUS_AUTOMATION.md) — Automated PR review status labels and badges
+- **Quick Setup:** [`docs/GITHUB_AUTOMATION_QUICKSTART.md`](docs/GITHUB_AUTOMATION_QUICKSTART.md) — 5-minute automation setup script
+- **Badge Guide:** [`docs/PR_STATUS_BADGES_GUIDE.md`](docs/PR_STATUS_BADGES_GUIDE.md) — Add dynamic status badges to your README
 
 Standard labels include: `bug`, `enhancement`, `security`, `bom-purchase`, `design`, `blocked`, `auto-fix`, `copilot`, `documentation`
 
