@@ -21,6 +21,7 @@ This factory mirrors the AITMPL / Claude Code template stack (agents, commands, 
 - Use the recovery agent for any non-zero exit; run `/diagnose` then `/patch`.
 - Hooks must capture the failing command, exit code, and log tail; store under `artifacts/` or CI artifacts.
 - After recovery, rerun only the impacted checks (lint/test/build scope) before swapping back.
+- Read and append to [`agent-factory/learnings.md`](./learnings.md) — the Goap Agent Memory & Self-Healing Log — on every autonomous run so the swarm never repeats the same mistake twice.
 
 ## Governance
 - Settings define guardrails (tool allowlist, network limits, redaction rules).
