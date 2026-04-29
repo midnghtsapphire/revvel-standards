@@ -17,6 +17,7 @@
 | [`AI_RESEARCH_MODULE_STANDARD.md`](AI_RESEARCH_MODULE_STANDARD.md) | AI-powered research modules and multi-agent research pipelines |
 | [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md) | API security control plane: validation, tokens, RBAC/ABAC, rate limiting |
 | [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](AUDREY_AUTONOMOUS_AGENT_STANDARD.md) | Audrey autonomous agent architecture and capabilities |
+| [`GOAP_AGENT_STANDARD.md`](GOAP_AGENT_STANDARD.md) | Goap goal-oriented action planner — revenue-focused autonomous agent with self-healing |
 | [`AUTOMATED_AUDIT_AGENT_STANDARD.md`](AUTOMATED_AUDIT_AGENT_STANDARD.md) | 24/7 autonomous code review, security audit, and self-healing agents |
 | [`AUTO_DOCUMENTATION_STANDARD.md`](AUTO_DOCUMENTATION_STANDARD.md) | Automatic documentation generation and maintenance standards |
 | [`CODE_REVIEW_STANDARD.md`](CODE_REVIEW_STANDARD.md) | Code review process, checklist, and automated gate criteria |

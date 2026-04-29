@@ -41,7 +41,7 @@
 
 | Service | What It Does | Provider | Free Tier Limit | Est. Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Used By |
 |---|---|---|---|---|---|---|---|
-| Anthropic Claude API | Primary reasoning LLM for all autonomous agents; handles coding, planning, research tasks | Anthropic | No free tier | $20–100/mo | First production agent run (no free tier — costs from first token) | ❌ Expired / Lapsed | Audrey Agent, Agent Factory, all agents |
+| Anthropic Claude API | Primary reasoning LLM for all autonomous agents; handles coding, planning, research tasks | Anthropic | No free tier | $20–100/mo | First production agent run (no free tier — costs from first token) | ❌ Expired / Lapsed | Audrey Agent, Goap Agent, Agent Factory, all agents |
 | OpenAI API | AI and LLM features for Neurooz; GPT-4o for reasoning, GPT-4o mini for cost-efficient tasks | OpenAI | No free tier | $10–100/mo | First production call (no free tier — costs from first token) | ❌ Expired / Lapsed | Neurooz |
 | Google Gemini API | Multi-modal reasoning; free tier covers high-volume lower-priority tasks | Google AI Studio | 15 RPM / 1M tokens/day (free) | $0 free / $0.075+/M tokens | Exceeds 1M tokens/day or requires higher RPM | 🟡 Research Topic | Agent Factory (evaluate) |
 | Groq API | Ultra-fast LLM inference (Llama, Mixtral); low-latency tasks | Groq | Rate-limited free tier | $0 free / $0.06+/M tokens | Rate limit hit on free tier during production | 🟡 Research Topic | Neurooz real-time features (evaluate) |
