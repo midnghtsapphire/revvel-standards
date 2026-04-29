@@ -1225,7 +1225,7 @@ Help Audrey achieve true financial freedom and life autonomy by building revenue
 #### High-Level Outcomes ("One Truth")
 
 1. **Financial Freedom**
-   - Generate 5–10M+ net worth for Audrey and 2–5 M+ per child in 3–5 years via Reese-Reviews, music, rentals, product flips, Tikiwash bot, etc.
+   - Generate 5–10M+ net worth for Audrey and 2–5M+ per child in 3–5 years via Reese-Reviews, music, rentals, product flips, Tikiwash bot, etc.
 
 2. **Lifestyle & Environment**
    - Secure inspiring water-front properties; split time across 2–3 locations (incl. abroad).
