@@ -174,6 +174,40 @@ $3,000/month minimum. Increase by $3,000 every month.
 
 ---
 
+# AGENT AUTONOMY RULES
+
+## Never Escalate Without
+
+1. Research first — 3 different solutions attempted
+2. Retry logic — exponential backoff, 3 attempts minimum
+3. Fallback chain — alternative approach ready
+4. Self-heal — fix the root cause
+5. Document — create issue with solution
+
+## Error Response Format
+
+Every error must include:
+- Context: What was attempted
+- Cause: Why it failed
+- Recovery: How to fix it
+- Prevention: How to stop it happening again
+
+## Escalation Protocol
+
+Only escalate after:
+- [ ] 3+ solution attempts
+- [ ] 3+ retry attempts  
+- [ ] Fallback ready
+- [ ] Issue created with full context
+
+## Self-Healing Mandatory
+
+- Capture error → Diagnose → Fix → Document → Prevent
+- No silent failures
+- Test failures = fix immediately
+
+---
+
 # REFERENCES
 
 - **GOAL** — This file
