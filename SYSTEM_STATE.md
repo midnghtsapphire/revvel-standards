@@ -16,7 +16,7 @@
 | DNS | ❌ | N/A |
 | SSL | ❌ | N/A |
 
-**Status key:** ✅ Working | ⚠️ Degraded/Unknown | ❌ Down/Not deployed
+**Status key:** ✅ Working | ⚠️ Working but with a known issue or degraded state | ❌ Not working / not deployed
 
 ---
 
