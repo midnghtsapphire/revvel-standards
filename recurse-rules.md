@@ -248,7 +248,7 @@ limits, temporary unavailability) should trigger automatic recovery, not immedia
 
 **Fix:** Add to all workflows:
 - Retry logic with exponential backoff for network calls
-- `continue-on-error: true` with follow-up diagnosis steps
+- `continue-on-error: true` only for non-critical diagnostic/recovery steps, and explicitly fail the job after diagnostics when critical steps fail
 - Fallback approaches when primary method fails
 - Automatic issue creation only after exhausting recovery options
 
