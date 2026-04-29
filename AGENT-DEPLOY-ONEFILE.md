@@ -117,7 +117,7 @@ If project not shipped with revenue:
 - Escalate to OTHER agents
 - Create WR (Work Rule) if needed
 - Try 3 more times
-- If still failing after 3 attempts → call in OpenHands
+- If 3 Issues/PRs don't resolve → Assign to GOAP with label `goap-escalation`
 - Keep creating PRs and WRs until it works
 
 ### COMPLETE DIRECTORY RULE
