@@ -10,11 +10,11 @@
 
 | Component | Status | Details |
 |---|---|---|
-| Production server | ❌ | N/A (standards repo) |
-| Database | ❌ | N/A |
+| Production server | ❌ | Not deployed (standards repo) |
+| Database | ❌ | Not deployed (standards repo) |
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
-| DNS | ❌ | N/A |
-| SSL | ❌ | N/A |
+| DNS | ❌ | Not deployed (standards repo) |
+| SSL | ❌ | Not deployed (standards repo) |
 
 **Status key:** ✅ Working | ⚠️ Working but with a known issue or degraded state | ❌ Not working / not deployed
 
