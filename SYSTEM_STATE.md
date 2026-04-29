@@ -10,11 +10,11 @@
 
 | Component | Status | Details |
 |---|---|---|
-| Production server | ⚠️ | N/A (standards repo) |
-| Database | ⚠️ | N/A |
-| CI/CD | ⚠️ | GitHub Actions workflows exist in `.github/workflows/`; last successful run not verified in this document |
-| DNS | ⚠️ | N/A |
-| SSL | ⚠️ | N/A |
+| Production server | ❌ | N/A (standards repo) |
+| Database | ❌ | N/A |
+| CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
+| DNS | ❌ | N/A |
+| SSL | ❌ | N/A |
 
 **Status key:** ✅ Working | ⚠️ Degraded/Unknown | ❌ Down/Not deployed
 
