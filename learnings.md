@@ -1,5 +1,14 @@
 # Goap Agent Memory & Self-Healing Log
 
+<!-- AGENT USAGE NOTE: This is the ONE source-of-truth log for all Goap executions.
+  - Before writing: check this file exists at this path. Do NOT create a duplicate.
+  - Writes must be append-only and atomic (write to a temp file, then rename/move).
+  - On lock or write failure: save entry to learnings.tmp as a rollback buffer; retry on next run.
+  - Malformed entries (missing required fields) must be flagged with a [MALFORMED] prefix and NOT deleted.
+  - Archive entries older than 90 days to DigitalOcean Spaces under goap-logs/archive/.
+  - Never delete the [Template Entry] section below.
+-->
+
 This file tracks autonomous executions, failures, root causes, and locked-in solutions so mistakes are never repeated.
 
 ## [Template Entry - Do not delete]
@@ -19,6 +28,4 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 ---
 
 ## [Auto-Generated Entries Begin Below]
-
-Create a file named learnings.md in your agent's workspace/folder. The agent will read and write to this file to get smarter over time.
 
