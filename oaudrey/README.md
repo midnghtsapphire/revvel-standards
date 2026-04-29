@@ -64,6 +64,8 @@ hub landing page.
 | Penny Sovereign Yield Scout | `penny.oaudrey.com` | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
 | Agent Factory | `agents.oaudrey.com` | [`/agent-factory`](../agent-factory) |
 | Marketing & Ecommerce | `market.oaudrey.com` | *(external repo)* |
+| ColdTrace | `coldtrace.oaudrey.com` | [`/coldtrace`](../coldtrace) |
+| **Reese Reviews** | `reesereviews.com` | *(external repo: steel-white)* |
 
 ---
 
@@ -188,6 +190,7 @@ respected.
 
 - [x] Hub landing page v1.0 (static, single file)
 - [x] FieldWork tab linked to `fieldwork.oaudrey.com`
+- [x] Reese Reviews tab linked to `reesereviews.com`
 - [x] Giving Pledge section (reskilling, recovery, restoration)
 - [x] Original oAudrey SVG monogram mark in nav (orbit + aperture + signal dot)
 - [x] Branded `404.html` error page
