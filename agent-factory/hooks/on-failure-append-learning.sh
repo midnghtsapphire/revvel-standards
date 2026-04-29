@@ -19,8 +19,12 @@ TIMESTAMP="${TIMESTAMP:-$(date -u '+%Y-%m-%dT%H:%M:%SZ')}"
 AGENT_NAME="${AGENT_NAME:-unknown-agent}"
 TASK_ATTEMPTED="${TASK_ATTEMPTED:-unspecified task}"
 EXIT_CODE="${EXIT_CODE:-1}"
-ROOT_CAUSE="${ROOT_CAUSE:-Exit code ${EXIT_CODE}. See LOG_TAIL for details.}"
 LOG_TAIL="${LOG_TAIL:-}"
+DEFAULT_ROOT_CAUSE="Exit code ${EXIT_CODE}."
+if [[ -n "$LOG_TAIL" ]]; then
+  DEFAULT_ROOT_CAUSE="${DEFAULT_ROOT_CAUSE} See LOG_TAIL for details."
+fi
+ROOT_CAUSE="${ROOT_CAUSE:-$DEFAULT_ROOT_CAUSE}"
 SELF_HEALING_FIX="${SELF_HEALING_FIX:-Pending — agent must fill in after diagnosis.}"
 NEXT_ACTION="${NEXT_ACTION:-Run /diagnose then /patch; update this entry with locked-in fix.}"
 
