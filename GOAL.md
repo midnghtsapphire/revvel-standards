@@ -176,7 +176,7 @@ $3,000/month minimum. Increase by $3,000 every month.
 
 # AGENT AUTONOMY RULES
 
-## Never Escalate Without
+### Never Escalate Without
 
 1. Research first — 3 different solutions attempted
 2. Retry logic — exponential backoff, 3 attempts minimum
@@ -184,7 +184,7 @@ $3,000/month minimum. Increase by $3,000 every month.
 4. Self-heal — fix the root cause
 5. Document — create issue with solution
 
-## Error Response Format
+### Error Response Format
 
 Every error must include:
 - Context: What was attempted
@@ -192,19 +192,50 @@ Every error must include:
 - Recovery: How to fix it
 - Prevention: How to stop it happening again
 
-## Escalation Protocol
+### Escalation Protocol
 
 Only escalate after:
 - [ ] 3+ solution attempts
-- [ ] 3+ retry attempts  
+- [ ] 3+ retry attempts
 - [ ] Fallback ready
 - [ ] Issue created with full context
 
-## Self-Healing Mandatory
+### Self-Healing Mandatory
 
 - Capture error → Diagnose → Fix → Document → Prevent
 - No silent failures
 - Test failures = fix immediately
+
+### EXISTING PROJECTS RULE
+
+Before creating ANY new project:
+1. Check `revenue/` directory for incomplete projects
+2. Check all open issues and PRs
+3. Check `wr/` for pending work
+4. **Complete those first** before creating new ones
+
+If project not shipped with revenue:
+- Escalate to OTHER agents (not Audrey)
+- Create WR (Work Rule) if needed
+- **NEVER escalate to Audrey**
+
+### COMPLETE DIRECTORY RULE
+
+1. After any project/revenue file is complete:
+   - Move to `revenue/complete/`
+   - Filename format: `YYYY-MM-DD_HH-MM-SS_product-name.md`
+
+2. If `revenue/complete/` is EMPTY:
+   - TRIGGER: Auto-create revenue plan
+   - Follow revvel-standards for every step
+   - Save to `revenue/` with datetime stamp
+
+### FILE NAMING
+
+All revenue/product files:
+```
+revenue/YYYY-MM-DD_HH-MM_product-name.md
+```
 
 ---
 
