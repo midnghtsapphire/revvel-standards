@@ -40,6 +40,9 @@ mode: immediate
 
 branchName: 'issue-${issue.number}-${issue.title,}'
 gitSafeReplacementChar: '-'
+# Note: Period (.) is included even though it's only invalid at the END of refs
+# This is intentional to prevent any edge cases with trailing periods
+# File extensions in branch names are preserved in the middle (e.g., config-yaml)
 gitReplaceChars: "'\"()[]{}!?/:@~^*\\#|&;<>`$%+=.,"
 
 # ── Label-based prefixes ──────────────────────────────────────────────────────
