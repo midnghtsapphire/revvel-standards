@@ -293,6 +293,18 @@ Issues labeled `proposal` automatically trigger an adversarial prosecution revie
 - Route tasks via trigger words to the Agent Factory (`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
 - When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
 - On any non-zero exit, run the self-heal loop: `/diagnose` → `/patch` → rerun targeted checks.
+- For complex tasks requiring GOAP planning or swarm coordination, see `docs/AGENT_AUTONOMY_PROTOCOLS.md`.
+
+### Autonomy Protocols & Advanced Patterns
+
+For detailed guidance on:
+- **GOAP (Goal-Oriented Action Planning)** — systematic approach to complex tasks
+- **Swarm Coordination** — parallel execution across multiple agents
+- **Self-Healing Workflows** — automatic error detection and recovery
+- **OpenRouter Failure Handling** — fallback chains and circuit breakers
+- **Automatic Issue Creation** — documenting solved problems
+
+**Read:** `docs/AGENT_AUTONOMY_PROTOCOLS.md`
 
 ## Commit Messages
 

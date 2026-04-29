@@ -214,3 +214,117 @@ malicious.
 **Fix:** Either convert to iteration with an explicit stack, or use recursion with a very
 conservative depth limit (≤20). Validate input structure before processing. See
 `RECURSION_STANDARD.md` Section 5.1.
+
+---
+
+## No Placeholder Escalation Labels Without Action
+
+**Pattern:** Code comments, TODO items, or workflow steps that create labels like `needs-investigation`,
+`escalate`, `blocked`, `waiting-for-human` without first attempting automatic resolution.
+
+**Why:** MIDNGHTSAPPHIRE agents are obsessively autonomous. Escalation is a last resort after
+exhausting all self-healing options. Creating escalation labels prematurely indicates a lack of
+resourcefulness.
+
+**Fix:** Before escalating:
+1. Research documentation and similar issues
+2. Attempt automatic fixes (retries, fallbacks, alternatives)
+3. Test multiple approaches
+4. Only escalate if genuinely impossible to resolve autonomously
+5. When escalating, document everything attempted
+
+See `docs/AGENTS.md` Section "Obsessive Autonomy".
+
+---
+
+## Workflows Must Have Self-Healing Capabilities
+
+**Pattern:** GitHub Actions workflows that fail without any error recovery, retry logic, or fallback
+mechanisms. Workflows with `run:` steps that don't use `continue-on-error` or follow-up recovery
+steps.
+
+**Why:** Workflows must be resilient and self-healing. Transient failures (network issues, rate
+limits, temporary unavailability) should trigger automatic recovery, not immediate failure.
+
+**Fix:** Add to all workflows:
+- Retry logic with exponential backoff for network calls
+- `continue-on-error: true` with follow-up diagnosis steps
+- Fallback approaches when primary method fails
+- Automatic issue creation only after exhausting recovery options
+
+See `docs/AGENT_AUTONOMY_PROTOCOLS.md` Section "Self-Healing Workflows".
+
+---
+
+## No Silent Test Failures in CI
+
+**Pattern:** CI workflows where test failures are logged but don't fail the build, or tests are
+wrapped in `|| true` to prevent workflow failure.
+
+**Why:** Tests exist to prevent broken code from shipping. Silencing test failures defeats their
+purpose and allows bugs into production.
+
+**Fix:** Let tests fail the build. If a test is flaky, fix the test, don't silence it. If a test
+is temporarily failing due to external dependencies, disable the test and open an issue to fix it,
+don't mask the failure.
+
+---
+
+## API Calls Must Have Retry Logic
+
+**Pattern:** HTTP requests (fetch, axios, curl) that don't implement retry logic for transient
+failures (5xx errors, timeouts, network issues).
+
+**Why:** External APIs fail temporarily. Retrying with exponential backoff turns transient failures
+into successes without manual intervention.
+
+**Fix:** Wrap API calls in retry logic:
+```typescript
+async function fetchWithRetry(url: string, maxAttempts = 3): Promise<Response> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (response.ok || response.status < 500) {
+        return response; // Success or client error (don't retry)
+      }
+      // Server error - retry
+    } catch (error) {
+      if (attempt === maxAttempts) throw error;
+    }
+    // Exponential backoff
+    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+  }
+  throw new Error('Max retry attempts exceeded');
+}
+```
+
+See `docs/AGENT_AUTONOMY_PROTOCOLS.md` Section "OpenRouter Failure Handling".
+
+---
+
+## Errors Must Be Self-Documenting
+
+**Pattern:** Error messages that are vague, don't include context, or don't suggest solutions.
+Examples: "Error occurred", "Failed", "Invalid input".
+
+**Why:** Good error messages enable autonomous debugging and recovery. Agents and developers need
+context to diagnose and fix issues without manual investigation.
+
+**Fix:** Error messages must include:
+1. What failed (specific operation)
+2. Why it failed (root cause if known)
+3. What was attempted (input/context)
+4. What to do next (suggestion for fix)
+
+```typescript
+// ❌ BAD
+throw new Error('Failed');
+
+// ✅ GOOD
+throw new Error(
+  `Failed to create branch 'issue-${issueNumber}-${issueTitle}': ` +
+  `Branch name contains invalid characters (/:@). ` +
+  `Update .github/issue-branch.yml to add these characters to gitReplaceChars. ` +
+  `See git-check-ref-format documentation for full rules.`
+);
+```
