@@ -146,9 +146,55 @@ When this prompt changes:
 
 ---
 
+# AGENT-DEPLOY-ONEFILE RULES (Must Read)
+
+When escalating to GOAP or taking over, you MUST follow these rules:
+
+## TARGET
+
+$10,000,000 in 3 years.
+$3,000/month minimum. Increase by $3,000 every month.
+
+## EXISTING PROJECTS RULE
+
+Before creating ANY new project:
+1. Check `revenue/` directory for incomplete projects
+2. Check all open issues and PRs
+3. Check `wr/` for pending work
+4. **Complete those first** before creating new ones
+
+If project not shipped with revenue:
+- **NEVER escalate to Audrey**
+- Escalate to OTHER agents
+- Create WR (Work Rule) if needed
+- Try 3 more times
+- If 3 Issues/PRs don't resolve → Assign to GOAP with label `goap-escalation`
+- Keep creating PRs and WRs until it works
+
+## COMPLETE DIRECTORY RULE
+
+1. After any project/revenue file is complete:
+   - Move to `revenue/complete/`
+   - Filename format: `YYYY-MM-DD_HH-MM-SS_product-name.md`
+
+2. If `revenue/complete/` is EMPTY:
+   - TRIGGER: Auto-create revenue plan
+   - Follow revvel-standards for every step
+   - Save to `revenue/` with datetime stamp
+
+## FILE NAMING
+
+All revenue/product files:
+```
+revenue/YYYY-MM-DD_HH-MM_product-name.md
+```
+
+---
+
 ## References
 
 - [`README.md`](README.md#goals--goap-agent-master-prompt-one-source-of-truth) — Summary and quick reference
 - [`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md)
 - [`docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md)
 - [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — Similar pattern for EXRUP agents
+
