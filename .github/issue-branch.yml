@@ -15,28 +15,13 @@ mode: immediate
 # and a sanitised version of the issue title.
 # Example: issue-42-add-stripe-webhook
 #
-# gitReplaceChars includes ALL git-unsafe characters per git-check-ref-format:
-# - Forward slash / (not allowed in branch name components)
-# - Colon : (reserved)
-# - At sign @ (reserved)
-# - Tilde ~ (reserved)
-# - Caret ^ (reserved)
-# - Asterisk * (wildcard)
-# - Question mark ? (wildcard)
-# - Backslash \ (escape char)
-# - Brackets [] and braces {}
-# - Parentheses ()
-# - Quotes and special punctuation
-# - Hash # (comment char)
-# - Pipe | (shell operator)
-# - Ampersand & (shell operator)
-# - Semicolon ; (shell operator)
-# - Less than/greater than <> (shell operators)
-# - Backtick ` (shell expansion)
-# - Dollar sign $ (except in variable expansion)
-# - Percent % (reserved)
-# - Plus + (can cause issues)
-# - Equals = (can cause issues)
+# gitReplaceChars is a conservative sanitisation list for generated branch names.
+# It covers characters that are disallowed or problematic in git refs, plus
+# additional punctuation we replace to keep names predictable and shell-friendly.
+# This is intentionally broader than the exact `git-check-ref-format` rules.
+# For example, `/` and `@` are only invalid in certain ref patterns, while
+# characters like `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``, `$`, `%`, `+`, `=`,
+# and `,` are replaced here as an extra safety/usability measure.
 
 branchName: 'issue-${issue.number}-${issue.title,}'
 gitSafeReplacementChar: '-'
