@@ -288,7 +288,7 @@ jobs:
 ```yaml
 - name: Call API with retry
   id: api_call
-  uses: nick-fields/retry-action@v2
+  uses: nick-fields/retry@v2
   with:
     timeout_minutes: 2
     max_attempts: 3
