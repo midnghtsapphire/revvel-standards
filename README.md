@@ -1257,7 +1257,7 @@ Raise Amazon Vine review completion from 47% → 90%+ in 4–6 weeks, while cutt
 
 #### Gatekeeper Responsibilities
 Orchestrate via n8n & Gumloop (or best tools):
-- Email parsing (angelreporters@gmail.com) → dashboard (Ordered / Shipped / Arrived / Vine vs regular)
+- Email parsing (`INBOX_EMAIL`) → dashboard (Ordered / Shipped / Arrived / Vine vs regular)
 - On "Arrived": run Apify scrapes (Amazon multi-country, Walmart, Target, Home Depot)
 - Offer one-click upload of Audrey's phone video → auto-curate into 15s/30s/60s clips + 8–10 stills
 - Generate draft review text + star rating (blend scraped data + realistic opinion + Audrey's notes)
