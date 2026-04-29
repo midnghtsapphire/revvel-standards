@@ -48,7 +48,7 @@
 
 | Variable | Production | Staging | Notes |
 |---|---|---|---|
-| `OPENROUTER_API_KEY` | ⚠️ | ⚠️ | Used by OpenRouter-routed workflows |
+| `OPENROUTER_API_KEY` | ❌ not set | ❌ not set | Used by OpenRouter-routed workflows |
 
 ---
 
