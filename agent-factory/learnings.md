@@ -13,7 +13,7 @@ Agents (and the Gatekeeper recovery agent) read and append to this file to get s
 
 ## [Template Entry - Do not delete]
 **Date/Time:**
-**Task Attempted:** [e.g., n8n email parse for angelreporters@gmail.com]
+**Task Attempted:** [e.g., n8n email parse for name@example.com]
 **Outcome:** [Success / Failed]
 **Root Cause of Failure (If any):** [e.g., IMAP connection timed out after 30s]
 **Self-Healing Fix / Learned Lesson:** [e.g., Added an automatic 3-minute retry node in n8n; switched Apify actor to use residential proxies]
