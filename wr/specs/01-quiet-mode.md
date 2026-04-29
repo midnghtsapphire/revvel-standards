@@ -59,8 +59,8 @@ Current workflows that respect Quiet Mode:
 
 | Workflow | Schedule | Purpose | File |
 |----------|----------|---------|------|
-| **migration-cron** | Daily 1 PM UTC | Migrates one repository per day by priority tier | `.github/workflows/migration-cron.yml` |
-| **triage-cron** | Daily 12 PM UTC | Proposes one decision to DECISIONS-TODAY.md | `.github/workflows/triage-cron.yml` |
+| **migration-cron** | Daily 1 PM UTC | ⏳ Placeholder — will migrate one repository per day by priority tier | `.github/workflows/migration-cron.yml` |
+| **triage-cron** | Daily 12 PM UTC | ⏳ Placeholder — will propose one decision to DECISIONS-TODAY.md | `.github/workflows/triage-cron.yml` |
 
 ### Exception
 
