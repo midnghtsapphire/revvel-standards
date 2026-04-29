@@ -80,17 +80,39 @@ $3,000/month minimum. Increase by $3,000 every month.
 
 ## Phase Roadmap
 
-| Phase | Deliverable | Due |
-|-------|-------------|-----|
-| 0 | Baseline metrics logged | Apr 28 2026 |
-| 1 | Email parser + Dashboard live | May 6 2026 |
-| 2 | Apify actors (Amazon, Walmart, Target, Home Depot) | May 14 2026 |
-| 3 | Video/Stills auto-curation | May 22 2026 |
-| 4 | Review draft generator | May 30 2026 |
-| 5 | UI + FB Marketplace drafts | Jun 7 2026 |
-| 6 | n8n retry + learnings.md | Jun 15 2026 |
-| 7 | 80% completion, ≤45 min/day | Jun 23 2026 |
-| 8 | 90%+ optimization | Jul 1 2026 |
+| Phase | Deliverable | Owner | Start | Due |
+|-------|-------------|-------|-------|-----|
+| 0. Kickoff | Baseline metrics (47% Vine completion) logged | Goap | Apr 28 2026 | Apr 28 2026 |
+| 1. Email & Dashboard | • IMAP parser on angelreporters@gmail.com<br>• "Ordered / Shipped / Arrived / Vine vs Regular" dashboard live | Gatekeeper + Team | Apr 29 2026 | May 6 2026 |
+| 2. Scraping Integration | • Chain Apify actors (Amazon, Walmart, Target, Home Depot)<br>• Test on 10 SKUs | Scraper Agent | May 7 2026 | May 14 2026 |
+| 3. Video & Stills Pipeline | • One-click upload for Audrey's phone clip<br>• Auto-curate 15/30/60 s cuts + 8–10 stills | Video Agent | May 15 2026 | May 22 2026 |
+| 4. Review Draft Generator | • Balanced text + star rating drafts<br>• Human-in-loop approval button | Review Writer Agent | May 23 2026 | May 30 2026 |
+| 5. UI & Listing Drafts | • Polish 5 business tabs to one branding (no purple)<br>• FB Marketplace/OfferUp draft listings | UI/Listing Agent | May 31 2026 | Jun 7 2026 |
+| 6. Retry Logic & Journaling | • n8n retry workflows<br>• Append reflections to learnings.md<br>• Auto-load last learnings each run | Gatekeeper | Jun 8 2026 | Jun 15 2026 |
+| 7. Ramp & Measure | • Hit 80% Vine completion rate<br>• Daily time ≤ 45 min | All Agents | Jun 16 2026 | Jun 23 2026 |
+| 8. Optimize to 90%+ | • Tweak scraping, video, draft flows<br>• Final metrics review | All Agents | Jun 24 2026 | Jul 1 2026 |
+
+## Weekly Cadences
+
+**For every agent:**
+
+• **Mon AM**: "What's new?"—parse & dashboard update.  
+• **Fri PM**: "Weekly in Review"—items processed, completion %, blockers, journal entries.
+
+## Bi-weekly Retrospectives
+
+• Deep dive failures, update Apify actors or ffmpeg scripts, adjust UI as needed.
+
+## Monthly Checkpoints
+
+**1st of each month:**
+
+• Compare metrics vs targets.  
+• Decide if we scale to other product streams or move on to next high-level goal.
+
+## Notes on Infrastructure
+
+**Doppler Status**: Doppler integration is configured in workflows but not required for core functionality. Workflows will emit warnings if `DOPPLER_TOKEN` is not provisioned but will continue with fallback mechanisms. To enable full Doppler integration, see `docs/SECRETS_MANAGEMENT.md` for setup instructions.
 
 ## Success Metrics
 - [ ] Vine completion ≥ 90%
