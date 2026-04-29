@@ -2,6 +2,8 @@
 
 Quiet Mode is the default operating state.
 
+> **Note**: For common questions about what "exit-quiet-mode" does, see [01-quiet-mode-FAQ.md](./01-quiet-mode-FAQ.md)
+
 ## Default behavior
 - Quiet Mode is ON unless an open issue titled `exit-quiet-mode` exists.
 - Every cron/workflow must check for that open issue before doing work.
