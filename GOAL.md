@@ -1,130 +1,170 @@
-# GOAL.md — Agent Mission Brief
+# GOAL.md — ONE SOURCE OF TRUTH
 
-**Version:** 2.0.0  
-**Status:** EXECUTE ONLY — No questions. Ship, Launch, Monetize.
-
----
-
-## MISSION PARAMETERS
-
-### Target Outcome
-```
-Income Goal: $[AMOUNT] per month
-Timeline: [TIMEFRAME] — e.g., 10 months, 3 years
-Current: $0 → Target: $[TARGET]
-```
-
-### Success Metrics
-| Metric | Target | Status |
-|--------|--------|--------|
-| Monthly Revenue | $[TARGET]/mo | → |
-| Active Users | [NUMBER] | → |
-| Launch Date | [DATE] | → |
-| First Sale | [DATE] | → |
+**Version:** 4.0.0  
+**Status:** MANDATORY — Execute without questions.  
+**Owner:** Audrey Evans (@midnghtsapphire)
 
 ---
 
-## YOUR MISSION (EXECUTE FULLY AUTONOMOUSLY)
+# THE MISSION — $10M IN 3 YEARS
 
-### Phase 1: Research & Validate
-- [ ] Deep research: web, docs, FOSS alternatives, APIs, tools
-- [ ] Find what's broken → fix it
-- [ ] Find better solutions → implement them
-- [ ] Create issues for deep research in `revvel-standards`
-- [ ] Validate via real users/testers
+```
+Target: $10,000,000 (Ten Million Dollars)
+Timeline: 3 years
+First Milestone: $3,000/month revenue
+Current: $0 → Target: $10,000,000
+```
 
-### Phase 2: Build & Document
-- [ ] All requirement docs in `revvel-standards/docs/`
-- [ ] If PDF → create, format, upload to Gumroad/LemonSqueezy
-- [ ] If skill → create in `skills/[skill-name]/`
-- [ ] If MCP → create servers in `.mcp.json`
-- [ ] If CLI → create in `scripts/` or `wr/`
-- [ ] If API → create endpoints, test, document
-- [ ] No missing dependencies — verify all imports work
-- [ ] Test everything locally before push
+---
 
-### Phase 3: Ship & Launch
-- [ ] Push to `revvel-standards` (main or branch)
-- [ ] Deploy live — Vercel/DigitalOcean/Supabase
-- [ ] If web app → verify URL loads, no 500 errors
-- [ ] If API → verify endpoints return correct data
-- [ ] Log in `SYSTEM_STATE.md`
+# THE NORTH STAR (wr/NORTH_STAR.md)
 
-### Phase 4: Monetize
-- [ ] Find correct store: Gumroad, LemonSqueezy, Shopify, Stripe
-- [ ] List on highest-traffic marketplace for your category
-- [ ] Create sales page with clear value proposition
-- [ ] Set up Stripe/LemonSqueezy for payments
-- [ ] Create landing page if needed
-- [ ] Write sales copy that converts
+**Rules above ALL other rules:**
 
-### Phase 5: Market & Scale
-- [ ] Create Meta (Facebook) ad under [ACCOUNT NAME]
-- [ ] Target: [DEMOGRAPHIC/INTEREST]
-- [ ] Budget: $[AMOUNT]/day
-- [ ] Track pixels and conversions
-- [ ] Use extensions to automate where possible
-- [ ] Test ad variations
+1. **Revenue before mission** — $3,000/mo FIRST, THEN mission work
+2. **Audrey is final authority** — Agents propose/warn, Audrey decides
+3. **Quiet mode** — Nothing runs on cron until Audrey opens "exit-quiet-mode"
+4. **Commit cadence** — Many small PRs > few large PRs
+5. **Durability** — This repo is single source of truth
+
+---
+
+# HIGH-LEVEL GOALS (ONE TRUTH)
+
+## Priority Order:
+
+| # | Goal | Target | Timeline |
+|---|------|--------|----------|
+| 1 | **Reese-Reviews** | 47% → 90%+ Vine completion, $3-8k/week revenue | 6 weeks |
+| 2 | **Revenue Engine** | $3,000/mo → $10M total | 3 years |
+| 3 | **Music/Songwriting** | Monetize original songs | Q3 2026 |
+| 4 | **Rental Business** | Build systematic rental income | 2026 |
+| 5 | **Tikiwash Grants** | Secure funding | 2026 |
+| 6 | **Life** | Lakefront property, travel, family time | 3 years |
+| 7 | **Health** | Longevity, outdoor movement, feel good | Ongoing |
+
+---
+
+# REESE-REVIEWS — IMMEDIATE PRIORITY
+
+## Current State (as of Apr 28, 2026)
+- Vine completion: **47%**
+- Daily time: **24/7** (manual work)
+- Target daily time: **≤30 minutes**
+
+## Phase Roadmap
+
+| Phase | Deliverable | Due |
+|-------|-------------|-----|
+| 0 | Baseline metrics logged | Apr 28 2026 |
+| 1 | Email parser + Dashboard live | May 6 2026 |
+| 2 | Apify actors (Amazon, Walmart, Target, Home Depot) | May 14 2026 |
+| 3 | Video/Stills auto-curation | May 22 2026 |
+| 4 | Review draft generator | May 30 2026 |
+| 5 | UI + FB Marketplace drafts | Jun 7 2026 |
+| 6 | n8n retry + learnings.md | Jun 15 2026 |
+| 7 | 80% completion, ≤45 min/day | Jun 23 2026 |
+| 8 | 90%+ optimization | Jul 1 2026 |
+
+## Success Metrics
+- [ ] Vine completion ≥ 90%
+- [ ] Daily time ≤ 30 minutes
+- [ ] Revenue: $3k-8k/week
+- [ ] Careese can run most workflow
+
+---
+
+# FINANCIAL TARGETS
+
+| Metric | Current | Target | By |
+|-------|---------|--------|-----|
+| Monthly Revenue | $0 | $3,000 | Jun 2026 |
+| Monthly Revenue | $3,000 | $10,000 | Dec 2026 |
+| Net Worth | $0 | $1,000,000 | 2027 |
+| Net Worth | $0 | $10,000,000 | 2029 |
+
+---
+
+# PROJECTS TO BUILD & MONETIZE
+
+## Active Projects
+| Project | Status | Revenue Target |
+|---------|--------|---------------|
+| Reese-Reviews | In Progress | $3k-8k/week |
+| Music/Songwriting | Research | TBD |
+| Rental Business | Planning | TBD |
+| Tikiwash Grants | Research | TBD |
+
+---
+
+# EXECUTE FULLY AUTONOMOUS
+
+## Phase 1: Research & Validate
+- [ ] Deep research: web, docs, FOSS, APIs, tools
+- [ ] Find broken → fix. Find better → implement.
+- [ ] Create issues for deep research
+
+## Phase 2: Build & Document
+- [ ] All docs in `revvel-standards/docs/`
+- [ ] PDF → create → Gumroad/LemonSqueezy
+- [ ] Skill → `skills/`
+- [ ] MCP → `.mcp.json`
+- [ ] CLI → `scripts/`
+- [ ] API → endpoints + tests
+- [ ] Test everything. No broken imports.
+
+## Phase 3: Ship & Launch
+- [ ] Push to `revvel-standards`
+- [ ] Deploy live (Vercel/DigitalOcean/Supabase)
+- [ ] Verify no 500 errors
+- [ ] Update `SYSTEM_STATE.md`
+
+## Phase 4: Monetize
+- [ ] Find store: Gumroad, LemonSqueezy, Stripe
+- [ ] List on best marketplace
+- [ ] Sales page with value proposition
+- [ ] Landing page if needed
+
+## Phase 5: Market & Scale
+- [ ] Create Meta (Facebook) ad
+- [ ] Target audience + budget
+- [ ] Track conversions
 - [ ] Scale what works
 
 ---
 
-## TOOLS & RESOURCES (USE ALL)
+# NON-NEGOTIABLE RULES
 
-### Free First (FOSS)
-- Search: Tavily, Brave Search, DuckDuckGo
-- Docs: developer.mozilla.org, docs.*.com
-- Code: github.com, gitlab.com, stack Overflow
-- APIs: RapidAPI, public APIs
-
-### Paid (Only if Free Doesn't Work)
-- OpenRouter for LLM routing
-- Doppler for secrets
-- DigitalOcean for hosting
-- Use after exhausting free options — get approval if over $[AMOUNT]
-
-### Your Accounts
-| Service | Access |
-|---------|--------|
-| Facebook/Meta | [LINK or NOTE] |
-| Gumroad | [LINK] |
-| LemonSqueezy | [LINK] |
-| Stripe | [LINK] |
-| Vercel | [LINK] |
-| GitHub Org | midnghtsapphire |
-
----
-
-## NON-NEGOTIABLE RULES
-
-1. **No questions.** Research, decide, execute. Only ask if unsafe or irreversible.
-2. **FOSS first.** Free software, free APIs, open source.
-3. **Ship fast.** One iteration. Complete solution.
-4. **Test everything.** No missing imports, no broken links.
-5. **Document as you go.** Docs in `revvel-standards/docs/`
-6. **Update SYSTEM_STATE.md** when complete.
-7. **Resilient.** If X doesn't work → try Y. Keep going.
-8. **Creative.** Find new ways. Don't give up.
-9. **Upskill.** Learn what you need. Implement.
+1. **No questions.** Research, decide, execute. Only ask if unsafe.
+2. **FOSS first.** Free software, free APIs.
+3. **Ship fast.** One iteration. Complete.
+4. **Test everything.** No broken code.
+5. **Document as you go.** Docs in `docs/`.
+6. **Update SYSTEM_STATE.md** when done.
+7. **Resilient.** If X fails → try Y. Keep going.
+8. **Creative.** Find new ways.
+9. **Upskill.** Learn → implement.
 10. **Monetize from day 1.** Even $1 matters.
 
 ---
 
-## REFERENCES
+# REFERENCES
 
-- Standards: `revvel-standards/standards/`
-- Skills: `revvel-standards/skills/`
-- Templates: `revvel-standards/templates/`
-- MCP: `.mcp.json` at project root
+- **GOAL** — This file
+- **NORTH STAR** — wr/NORTH_STAR.md
+- **System State** — SYSTEM_STATE.md
+- **Standards** — standards/
+- **Skills** — skills/
+- **Work Rules** — wr/ (agents, cron, memory, specs)
+- **MCP** — .mcp.json
 
 ---
 
-## UPDATES
+# UPDATES
 
 ```
-Created: [DATE]
-Updated: [DATE]
-Status: [researching|building|shipping|monetizing|scaled]
-Session: [NUMBER]
-Last Action: [WHAT YOU DID]
+Created: 2026-04-29
+Updated: 2026-04-29
+Status: active
+Milestone: Reese-Reviews 90% + $3k/mo
 ```
