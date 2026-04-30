@@ -305,7 +305,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 #### ada-compliance-agent
 - **Path:** `skills/ada-compliance-agent/`
-- **Files:** `SKILL.md` · `ada-compliance-agent.skill.yml` · `README.md`
+- **Files:** `SKILL.md` · `ada-compliance-agent.skill.yml` · `README.md` · `EXAMPLES.md` · `IMPLEMENTATION_SUMMARY.md` · `.github/workflows/ada-compliance-check.yml`
 - **Description:** Autonomous agent for researching, learning, and enforcing ADA compliance. Monitors for new certifications, audits code for WCAG 2.2 AA/AAA compliance, and ensures all accessibility standards are met. Can run on-demand, scheduled, or 24/7 via OpenRouter. Tracks free and paid ADA certification courses, auto-fixes safe violations, and continuously learns from new courses and standards updates.
 - **Tags:** ada, wcag, accessibility, a11y, section-508, compliance-agent, autonomous, certifications, continuous-learning, screen-reader, aria, tty, openrouter-24-7
 - **Trigger:** `ada`, `ada certification`, `free ada cert`, `accessibility audit`, `compliance check`, `wcag`, `section 508`, or any accessibility compliance task. Also when researching ADA training courses or monitoring for new accessibility standards.

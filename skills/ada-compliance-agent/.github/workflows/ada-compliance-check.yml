@@ -106,13 +106,12 @@ jobs:
             http://localhost:3000
           uploadArtifacts: true
           temporaryPublicStorage: true
-          configPath: '.lighthouserc.json'
         continue-on-error: true
       
       - name: Parse audit results
         id: parse
         run: |
-          # Count violations
+          # Count critical and serious violations
           AXE_VIOLATIONS=$(jq '[.violations[] | select(.impact == "critical" or .impact == "serious")] | length' ada-reports/axe-results.json 2>/dev/null || echo "0")
           
           # Extract Lighthouse score
@@ -132,10 +131,11 @@ jobs:
         if: always()
         run: |
           mkdir -p docs
-          cat > docs/ada-compliance-report-$(date +%Y-%m-%d).md << 'EOF'
+          REPORT_DATE=$(date +%Y-%m-%d)
+          cat > docs/ada-compliance-report-${REPORT_DATE}.md << EOF
           # ADA Compliance Report
           
-          **Date:** $(date +%Y-%m-%d)
+          **Date:** ${REPORT_DATE}
           **Workflow:** ${{ github.workflow }}
           **Trigger:** ${{ github.event_name }}
           **Branch:** ${{ github.ref_name }}
@@ -149,7 +149,7 @@ jobs:
           ## Minimum Requirements
           
           - Lighthouse score ≥ 90: ${{ steps.parse.outputs.lighthouse_score >= 90 && '✅' || '❌' }}
-          - Zero critical violations: ${{ steps.parse.outputs.axe_violations == 0 && '✅' || '❌' }}
+          - Zero critical/serious violations: ${{ steps.parse.outputs.axe_violations == 0 && '✅' || '❌' }}
           
           ## Detailed Reports
           
@@ -192,7 +192,7 @@ jobs:
             let comment = `## ${emoji} ADA Compliance Check ${status}\n\n`;
             comment += `### Scores\n\n`;
             comment += `- **Lighthouse Accessibility:** ${lighthouseScore}/100 ${lighthouseScore >= 90 ? '✅' : '❌'}\n`;
-            comment += `- **Critical Violations:** ${axeViolations} ${axeViolations === 0 ? '✅' : '❌'}\n\n`;
+            comment += `- **Critical/Serious Violations:** ${axeViolations} ${axeViolations === 0 ? '✅' : '❌'}\n\n`;
             
             if (!passed) {
               comment += `### Action Required\n\n`;
@@ -218,8 +218,8 @@ jobs:
               body: comment
             });
       
-      - name: Create issue on failure
-        if: failure() && github.event_name == 'schedule'
+      - name: Create issue on failure or violations
+        if: (failure() || steps.parse.outputs.audit_passed != 'true') && github.event_name == 'schedule'
         uses: actions/github-script@v7
         with:
           script: |
@@ -233,7 +233,7 @@ jobs:
               The scheduled accessibility audit on \`${context.ref}\` detected violations.
               
               **Lighthouse Score:** ${{ steps.parse.outputs.lighthouse_score }}/100
-              **Critical Violations:** ${{ steps.parse.outputs.axe_violations }}
+              **Critical/Serious Violations:** ${{ steps.parse.outputs.axe_violations }}
               
               ### Action Required
               
@@ -259,7 +259,7 @@ jobs:
         run: |
           echo "❌ ADA compliance check failed"
           echo "Lighthouse score: ${{ steps.parse.outputs.lighthouse_score }}/100 (minimum: 90)"
-          echo "Critical violations: ${{ steps.parse.outputs.axe_violations }} (maximum: 0)"
+          echo "Critical/serious violations: ${{ steps.parse.outputs.axe_violations }} (maximum: 0)"
           exit 1
       
       - name: Check for new certifications

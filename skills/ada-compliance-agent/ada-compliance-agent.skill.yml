@@ -32,7 +32,7 @@ dependencies:
   skills: 
     - "accessibility"
     - "testing"
-    - "code-review"
+    - "code_review"
   tools:
     - "axe-core"
     - "pa11y"

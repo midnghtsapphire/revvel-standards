@@ -103,7 +103,6 @@ jobs:
               repo: context.repo.repo,
               title: '[ADA] Accessibility violations detected',
               labels: ['accessibility', 'ada-compliance', 'auto-error'],
-              assignee: 'copilot',
               body: 'See CI logs for details. Auto-fix attempted.'
             })
 ```
@@ -177,14 +176,16 @@ Activate this skill when encountering:
 
 4. **Violation Remediation**
    - **Auto-fix where possible:**
-     - Add missing alt text with AI-generated descriptions
+     - Add `alt=""` to decorative images (images with adjacent text labels)
+     - Generate descriptive alt text using thealttext.com API for content images
      - Fix color contrast issues (darken/lighten automatically)
      - Add missing ARIA labels
      - Associate orphaned form labels
      - Add skip navigation links
    - **Create issues for manual fixes:**
      - Complex ARIA patterns needing review
-     - Content requiring human alt text
+     - Content images where thealttext.com confidence is low (< 0.8)
+     - Images requiring domain-specific context
      - Interaction patterns needing redesign
      - Third-party components with embedded violations
 
@@ -243,6 +244,7 @@ Activate this skill when encountering:
 
 **ALWAYS auto-fix (safe):**
 - Adding `alt=""` to decorative images (icons with adjacent text)
+- Generating descriptive alt text for content images via thealttext.com API (confidence ≥ 0.8)
 - Increasing color contrast (darken text, lighten backgrounds)
 - Adding `aria-label` to icon-only buttons
 - Adding `for`/`id` associations to orphaned labels
@@ -253,7 +255,7 @@ Activate this skill when encountering:
 - Removing interactive elements (may break functionality)
 - Changing ARIA roles on complex widgets (may break screen reader UX)
 - Modifying semantic HTML structure (may break CSS/JS dependencies)
-- Adding alt text to non-decorative images (requires human judgment)
+- Adding alt text when thealttext.com confidence < 0.8 (create issue instead)
 - Changing focus order (may break expected UX)
 - Disabling animations globally (may break brand requirements)
 
