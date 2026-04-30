@@ -468,6 +468,37 @@ skills:
 
   # ─── Content & Marketing ───────────────────────────────────────────────────
 
+  - name: openclaw_eeat
+    title: "OpenClaw E-E-A-T Content Distribution"
+    version: "1.0.0"
+    path: "skills/openclaw-eeat/"
+    skill_file: "skills/openclaw-eeat/openclaw-eeat.skill.yml"
+    category: "Content & Marketing"
+    access: all
+    lifecycle: ephemeral
+    persona: echo
+    dependencies:
+      - vault_agent
+      - seo_metadata
+      - system_state
+      - model_router
+    triggers:
+      - "openclaw eeat"
+      - "eeat agent"
+      - "distribute brand content"
+      - "knowledge graph"
+      - "wikidata entity"
+      - "orcid update"
+      - "researchgate profile"
+      - "brand distribution"
+      - "platform content"
+      - "deep web presence"
+      - "osint profile"
+      - "intelligence community"
+      - "google knowledge panel"
+      - "eeat signals"
+      - "expertise signals"
+
   - name: seo_metadata
     title: "SEO Metadata"
     version: "1.0.0"

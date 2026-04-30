@@ -45,6 +45,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
@@ -305,6 +306,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Content & Marketing
+
+#### openclaw-eeat
+- **Path:** `skills/openclaw-eeat/`
+- **Files:** `SKILL.md` · `openclaw-eeat.skill.yml` · `README.md` · `templates/` · `tests/promptfoo.yml`
+- **Description:** Automated brand content distribution across 12 high-value platforms (ORCID, Wikidata, ResearchGate, Internet Archive, MISP, Bellingcat, etc.) to establish E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) signals for Google Knowledge Graph eligibility and OSINT community presence. Generates platform-specific schemas (JSON-LD, ORCID XML, Wikidata RDF), auto-submits where APIs permit, and drafts manual submissions with step-by-step instructions.
+- **Tags:** eeat, openclaw, brand-distribution, knowledge-graph, wikidata, orcid, researchgate, osint, json-ld, schema-org, misp, bellingcat
+- **Trigger:** OpenClaw E-E-A-T, distribute brand content, knowledge graph, Wikidata entity, ORCID update, ResearchGate profile, deep web presence, OSINT profile, intelligence community, Google Knowledge Panel.
+- **Persona:** 🌐 Echo
+- **Lifecycle:** Ephemeral
 
 #### seo-metadata
 - **Path:** `skills/seo-metadata/`
