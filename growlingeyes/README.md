@@ -90,16 +90,16 @@ and surfaces weak signals that may indicate emerging threats or trends.
 python growlingeyes/tools/weak_signal_finder.py
 
 # Scan specific domains
-python tools/weak_signal_finder.py --domains cyber maritime conflict
+python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime conflict
 
 # Adjust sensitivity threshold (higher = fewer, stronger signals)
-python tools/weak_signal_finder.py --threshold 5
+python growlingeyes/tools/weak_signal_finder.py --threshold 5
 
 # Save results to file
-python tools/weak_signal_finder.py --output my_signals.json
+python growlingeyes/tools/weak_signal_finder.py --output my_signals.json
 
 # Run continuously (daemon mode, scan every hour)
-python tools/weak_signal_finder.py --daemon --interval 3600
+python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
 ```
 
 ### Output Format

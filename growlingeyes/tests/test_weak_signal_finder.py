@@ -8,7 +8,7 @@ import os
 import sys
 
 _module_path = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     'growlingeyes', 'tools', 'weak_signal_finder.py',
 )
 _spec = importlib.util.spec_from_file_location("weak_signal_finder", _module_path)

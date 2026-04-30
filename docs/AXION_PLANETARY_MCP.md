@@ -202,7 +202,7 @@ intelligence into the GrowlingEyes data pipeline:
 | `apt_signals.py` | APT threat-intel scanner (CISA KEV, NVD, OTX, CISA RSS) | httpx, feedparser |
 | `stream_listener.py` | Real-time streams: AIS vessels, NOAA weather, USGS quakes, RSS | websockets, httpx, feedparser |
 | `scraper.py` | HTML/XML intelligence scrapers: FAA TFR, NIFC fires, OFAC SDN, UN sanctions | httpx, BeautifulSoup |
-| `weak_signal_finder.py` | Weak signal detection from RSS feeds (NLP-based emerging themes) | feedparser, NLP |
+| `weak_signal_finder.py` | Weak signal detection from RSS feeds (regex/token-based emerging themes) | feedparser, Rich |
 
 All tools read from `.env` and follow the GrowlingEyes error handling standards:
 no uncaught exceptions, empty list fallback on failure, Rich CLI output.

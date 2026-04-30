@@ -22,9 +22,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import time
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -46,11 +45,21 @@ log_dir.mkdir(parents=True, exist_ok=True)
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-fh = logging.FileHandler(
-    log_dir / f"weak_signals_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
+# Only add file handler if not already present (avoid duplicate handlers on re-import)
+log_path = log_dir / f"weak_signals_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
+existing_file_handler = next(
+    (
+        handler
+        for handler in log.handlers
+        if isinstance(handler, logging.FileHandler)
+        and Path(handler.baseFilename) == log_path.resolve()
+    ),
+    None,
 )
-fh.setFormatter(logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s"))
-log.addHandler(fh)
+if existing_file_handler is None:
+    fh = logging.FileHandler(log_path)
+    fh.setFormatter(logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s"))
+    log.addHandler(fh)
 
 # ─── Feed configuration ───────────────────────────────────────────────────────
 
@@ -175,6 +184,8 @@ def compute_word_frequency(articles: list[dict]) -> Counter:
 
 def compute_contextual_pairs(articles: list[dict], top_words: set[str]) -> list[tuple[str, str]]:
     """Find word pairs that appear near each other (within 3 words)."""
+    from itertools import combinations
+    
     pairs = Counter()
     
     for article in articles:
@@ -184,12 +195,12 @@ def compute_contextual_pairs(articles: list[dict], top_words: set[str]) -> list[
         # Create sliding window of size 3
         for i in range(len(words) - 2):
             window = words[i:i+3]
-            # Find pairs of important words in the window
+            # Find all important words in the window
             important_in_window = [w for w in window if w in top_words]
+            # Count all unique pairs of important words in this window
             if len(important_in_window) >= 2:
-                # Sort to avoid duplicate pairs
-                pair = tuple(sorted(important_in_window[:2]))
-                pairs[pair] += 1
+                for pair in combinations(sorted(set(important_in_window)), 2):
+                    pairs[pair] += 1
     
     # Return pairs with at least 2 occurrences
     return [pair for pair, count in pairs.most_common(20) if count >= 2]
