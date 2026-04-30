@@ -11,10 +11,10 @@ signals that may indicate emerging threats, trends, or changes in the intelligen
 Inspired by: https://github.com/LittleViewer/WeakSignalFinder
 
 Usage:
-    python tools/weak_signal_finder.py
-    python tools/weak_signal_finder.py --domains cyber maritime conflict
-    python tools/weak_signal_finder.py --threshold 5 --output signals.json
-    python tools/weak_signal_finder.py --daemon --interval 3600
+    python growlingeyes/tools/weak_signal_finder.py
+    python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime conflict
+    python growlingeyes/tools/weak_signal_finder.py --threshold 5 --output signals.json
+    python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
 """
 
 from __future__ import annotations
@@ -117,7 +117,7 @@ STOPWORDS = {
     # Generic media/institutional words
     "said", "says", "report", "reports", "reported", "article", "news", "new",
     "according", "official", "officials", "statement", "announced", "year", "years",
-    "more", "other", "also", "told", "said",
+    "more", "other", "also", "told",
 }
 
 
@@ -159,7 +159,7 @@ CONTEXT_WEIGHT = 0.2    # Weight for contextual relationship component
 def clean_text(text: str) -> list[str]:
     """Basic text cleaning and tokenization."""
     import re
-    
+
     # Remove URLs
     text = re.sub(r'http\S+|www\S+', '', text)
     # Remove special characters, keep only alphanumeric and spaces
@@ -178,20 +178,20 @@ def compute_word_frequency(articles: list[dict]) -> Counter:
         text = article.get("title", "") + " " + article.get("summary", "")
         words = clean_text(text)
         all_words.extend(words)
-    
+
     return Counter(all_words)
 
 
 def compute_contextual_pairs(articles: list[dict], top_words: set[str]) -> list[tuple[str, str]]:
     """Find word pairs that appear near each other (within 3 words)."""
     from itertools import combinations
-    
+
     pairs = Counter()
-    
+
     for article in articles:
         text = article.get("title", "") + " " + article.get("summary", "")
         words = clean_text(text)
-        
+
         # Create sliding window of size 3
         for i in range(len(words) - 2):
             window = words[i:i+3]
@@ -201,7 +201,7 @@ def compute_contextual_pairs(articles: list[dict], top_words: set[str]) -> list[
             if len(important_in_window) >= 2:
                 for pair in combinations(sorted(set(important_in_window)), 2):
                     pairs[pair] += 1
-    
+
     # Return pairs with at least 2 occurrences
     return [pair for pair, count in pairs.most_common(20) if count >= 2]
 
@@ -212,32 +212,32 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
     - Number of high-frequency terms (intensity)
     - Diversity of emerging themes (variety)
     - Strength of contextual relationships (connections)
-    
+
     Returns a score from 0-100.
     """
     if not intensity:
         return 0.0
-    
+
     # Component 1: Intensity score (max word frequency)
     # Normalize to 0-1 range using configurable threshold
     max_freq = max(intensity.values())
     intensity_score = min(max_freq / INTENSITY_THRESHOLD, 1.0)
-    
+
     # Component 2: Diversity score (number of distinct themes)
     # More distinct themes = stronger signal
     diversity_score = min(len(intensity) / DIVERSITY_THRESHOLD, 1.0)
-    
+
     # Component 3: Contextual strength (number of word pairs)
     # More contextual relationships = stronger signal
     context_score = min(len(pairs) / CONTEXT_THRESHOLD, 1.0)
-    
+
     # Weighted combination using configurable weights
     final_score = (
         intensity_score * INTENSITY_WEIGHT +
         diversity_score * DIVERSITY_WEIGHT +
         context_score * CONTEXT_WEIGHT
     ) * 100.0
-    
+
     return final_score
 
 
@@ -248,11 +248,11 @@ def fetch_feed(feed_name: str, feed_url: str) -> list[dict]:
     try:
         log.info(f"Fetching {feed_name}: {feed_url}")
         feed = feedparser.parse(feed_url)
-        
+
         if not feed.entries:
             log.warning(f"No entries found in {feed_name}")
             return []
-        
+
         articles = []
         for entry in feed.entries[:20]:  # Limit to recent 20
             articles.append({
@@ -262,10 +262,10 @@ def fetch_feed(feed_name: str, feed_url: str) -> list[dict]:
                 "link": entry.get("link", ""),
                 "published": entry.get("published", entry.get("updated", "")),
             })
-        
+
         log.info(f"Fetched {len(articles)} articles from {feed_name}")
         return articles
-        
+
     except Exception as e:
         log.error(f"Error fetching {feed_name}: {e}")
         return []
@@ -275,12 +275,12 @@ def fetch_domain_feeds(domain: str, feed_list: list[tuple[str, str]]) -> list[di
     """Fetch all feeds for a domain in parallel."""
     with ThreadPoolExecutor(max_workers=5) as executor:
         results = list(executor.map(lambda f: fetch_feed(f[0], f[1]), feed_list))
-    
+
     # Flatten results
     all_articles = []
     for articles in results:
         all_articles.extend(articles)
-    
+
     return all_articles
 
 
@@ -289,11 +289,11 @@ def fetch_domain_feeds(domain: str, feed_list: list[tuple[str, str]]) -> list[di
 def detect_weak_signals(domain: str, threshold: int = 2) -> Optional[WeakSignal]:
     """
     Detect weak signals for a given intelligence domain.
-    
+
     Args:
         domain: Intelligence domain (cyber, maritime, conflict, etc.)
         threshold: Minimum word frequency to include in signals
-    
+
     Returns:
         WeakSignal object with detected themes and patterns
     """
@@ -301,39 +301,39 @@ def detect_weak_signals(domain: str, threshold: int = 2) -> Optional[WeakSignal]
     if not feed_list:
         log.error(f"Unknown domain: {domain}")
         return None
-    
+
     # Fetch all articles for the domain
     articles = fetch_domain_feeds(domain, feed_list)
-    
+
     if not articles:
         log.warning(f"No articles fetched for {domain}")
         return None
-    
+
     # Compute word frequency
     word_freq = compute_word_frequency(articles)
-    
+
     # Filter by threshold and get top words
     intensity_words = {
         word: count for word, count in word_freq.most_common(30)
         if count >= threshold
     }
-    
+
     if not intensity_words:
         log.warning(f"No significant words found for {domain} with threshold {threshold}")
         return None
-    
+
     # Get top words for contextual analysis
     top_words = set(intensity_words.keys())
-    
+
     # Compute contextual pairs
     contextual_pairs = compute_contextual_pairs(articles, top_words)
-    
+
     # Extract top themes
     top_themes = list(intensity_words.keys())[:10]
-    
+
     # Score the signal
     signal_score = score_signal_strength(intensity_words, contextual_pairs)
-    
+
     signal = WeakSignal(
         domain=domain,
         signal_timestamp=datetime.now(timezone.utc).isoformat(),
@@ -343,12 +343,12 @@ def detect_weak_signals(domain: str, threshold: int = 2) -> Optional[WeakSignal]
         signal_score=signal_score,
         article_count=len(articles),
     )
-    
+
     log.info(
         f"Detected signal for {domain}: score={signal_score:.2f}, "
         f"themes={len(top_themes)}, articles={len(articles)}"
     )
-    
+
     return signal
 
 
@@ -356,12 +356,12 @@ def detect_all_signals(domains: Optional[list[str]] = None, threshold: int = 2) 
     """Detect signals across all domains."""
     target_domains = domains or list(OSINT_FEED_MAP.keys())
     signals = []
-    
+
     for domain in target_domains:
         signal = detect_weak_signals(domain, threshold)
         if signal:
             signals.append(signal)
-    
+
     # Sort by signal score descending
     signals.sort(key=lambda s: s.signal_score, reverse=True)
     return signals
@@ -374,13 +374,13 @@ def display_signals(signals: list[WeakSignal]) -> None:
     if not signals:
         console.print("[yellow]No signals detected.[/]")
         return
-    
+
     table = Table(title="🔍 Weak Signals Detected", show_header=True, header_style="bold cyan")
     table.add_column("Domain", style="cyan", width=12)
     table.add_column("Score", justify="right", style="yellow", width=8)
     table.add_column("Articles", justify="right", style="dim", width=8)
     table.add_column("Top Emerging Themes", style="green")
-    
+
     for sig in signals:
         themes_str = ", ".join(sig.top_emerging_themes[:5])
         table.add_row(
@@ -389,23 +389,23 @@ def display_signals(signals: list[WeakSignal]) -> None:
             str(sig.article_count),
             themes_str,
         )
-    
+
     console.print(table)
     console.print()
-    
+
     # Display top signal details
     if signals:
         top_signal = signals[0]
         console.print(f"[bold]🎯 Strongest Signal: [cyan]{top_signal.domain.upper()}[/][/]")
         console.print()
-        
+
         # Display word intensity
         console.print("[bold]Word Intensity:[/]")
         for word, count in list(top_signal.intensity_words.items())[:10]:
             bar = "█" * min(count, 50)
             console.print(f"  {word:<20} {bar} {count}")
         console.print()
-        
+
         # Display contextual pairs
         if top_signal.contextual_pairs:
             console.print("[bold]Contextual Relationships:[/]")
@@ -450,7 +450,7 @@ def main() -> None:
         default=3600,
         help="Interval between scans in daemon mode (seconds, default: 3600)",
     )
-    
+
     args = parser.parse_args()
 
     if args.interval <= 0:
@@ -460,7 +460,7 @@ def main() -> None:
         domains = list(OSINT_FEED_MAP.keys())
     else:
         domains = args.domains
-    
+
     def run_once() -> None:
         console.rule("[bold red]🔍 GrowlingEyes — Weak Signal Finder[/]")
         console.print(
@@ -468,32 +468,32 @@ def main() -> None:
             f"threshold=[yellow]{args.threshold}[/]"
         )
         console.print()
-        
+
         signals = detect_all_signals(domains, threshold=args.threshold)
-        
+
         if not signals:
             console.print("[yellow]No weak signals detected. Try lowering the threshold.[/]")
             return
-        
+
         display_signals(signals)
-        
+
         if args.output:
             output_path = args.output
         else:
             output_path = (
                 log_dir / f"weak_signals_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
             )
-        
+
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump([s.to_dict() for s in signals], f, indent=2, default=str)
-        
+
         console.print(f"  💾 Results saved to [cyan]{output_path}[/]")
-    
+
     if args.daemon:
         console.print(f"[bold yellow]⚠️  Daemon mode enabled — scanning every {args.interval}s[/]")
         console.print("[dim]Press Ctrl+C to stop[/]")
         console.print()
-        
+
         while True:
             try:
                 run_once()
@@ -504,6 +504,11 @@ def main() -> None:
             except KeyboardInterrupt:
                 console.print("\n[yellow]Daemon stopped by user.[/]")
                 break
+            except Exception as e:
+                log.error(f"Daemon iteration failed: {e}")
+                console.print(f"[red]Error during scan: {e}[/]")
+                console.print(f"[dim]Retrying in {args.interval} seconds...[/]")
+                time.sleep(args.interval)
     else:
         run_once()
 
