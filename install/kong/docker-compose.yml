@@ -75,8 +75,9 @@ services:
       # Proxy listener — external traffic
       KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
 
-      # Admin API — localhost only (NEVER expose to internet)
-      KONG_ADMIN_LISTEN: "127.0.0.1:8001"
+      # Admin API — bind to all interfaces inside container,
+      # but host port mapping restricts to 127.0.0.1 (see ports below)
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
 
       # Logging
       KONG_PROXY_ACCESS_LOG: /dev/stdout
@@ -93,8 +94,8 @@ services:
     ports:
       - "${KONG_PROXY_PORT:-8000}:8000"
       - "${KONG_PROXY_SSL_PORT:-8443}:8443"
-      # Admin API bound to localhost via KONG_ADMIN_LISTEN above
-      # Access via: docker exec kong-gateway curl localhost:8001
+      # Admin API — host-side bound to 127.0.0.1 only (NEVER expose to 0.0.0.0)
+      - "127.0.0.1:8001:8001"
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 30s

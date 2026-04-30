@@ -153,6 +153,13 @@ kong_api POST /plugins \
 # ── Per-Service Plugins ────────────────────────────────────────
 log "Enabling per-service plugins..."
 
+# Explicit domain map — avoids bash string munging bugs
+declare -A CORS_DOMAINS=(
+  [growlingeyes]=growlingeyes.com
+  [neurooz]=neurooz.com
+  [reese-reviews]=reese-reviews.com
+)
+
 for SERVICE in growlingeyes neurooz reese-reviews; do
   # Rate limiting: 100 req/min per IP
   kong_api POST "/services/${SERVICE}/plugins" \
@@ -165,7 +172,7 @@ for SERVICE in growlingeyes neurooz reese-reviews; do
   # CORS
   kong_api POST "/services/${SERVICE}/plugins" \
     -d "name=cors" \
-    -d "config.origins[]=https://${SERVICE//-/.}.com" \
+    -d "config.origins[]=https://${CORS_DOMAINS[$SERVICE]}" \
     -d "config.methods[]=GET" \
     -d "config.methods[]=POST" \
     -d "config.methods[]=PUT" \
