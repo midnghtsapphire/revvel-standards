@@ -247,13 +247,13 @@ Every Revvel service behind Kong MUST have these plugins enabled:
 | `rate-limiting` | Prevent abuse | Per-service |
 | `cors` | Control cross-origin access | Per-service |
 | `request-size-limiting` | Block oversized payloads | Global |
-| `ip-restriction` | Block known-bad IPs | Global |
 | `bot-detection` | Block scrapers/bots | Global |
 
 ### 6.2 Recommended Plugins
 
 | Plugin | Purpose | When to Use |
 |--------|---------|-------------|
+| `ip-restriction` | Block known-bad IPs | When OSINT blocklists are populated |
 | `key-auth` | API key authentication | Service-to-service APIs |
 | `jwt` | JWT validation | User-facing APIs |
 | `oauth2` | OAuth 2.0 flows | Third-party integrations |
