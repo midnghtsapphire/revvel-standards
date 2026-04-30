@@ -153,17 +153,20 @@ The router output is a single string (`shape`) that selects the build standard a
 
 ## 6. BOM Gatekeeper Integration
 
+> **Full standard:** [`GATEKEEPER.md`](GATEKEEPER.md) — covers BOM validation, API/MCP registry, auto-provisioning, rotation scheduling, Kong integration, and drift detection.
+
 Every candidate product MUST emit a `BOM.md` listing every required dependency (API key, hardware, font, asset, account, integration) before step 7 runs.
 
-The BOM gatekeeper (already enforced repo-wide via [`.github/workflows/credential-gatekeeper.yml`](../.github/workflows/credential-gatekeeper.yml) and [`templates/cicd/bom-self-heal.yml`](../templates/cicd/bom-self-heal.yml)) runs against the product's `BOM.md`:
+The Gatekeeper (enforced via [`.github/workflows/credential-gatekeeper.yml`](../.github/workflows/credential-gatekeeper.yml), [`templates/cicd/bom-self-heal.yml`](../templates/cicd/bom-self-heal.yml), and the central [`docs/_GATEKEEPER_REGISTRY.json`](../docs/_GATEKEEPER_REGISTRY.json)) runs against the product's `BOM.md`:
 
 1. Reads `BOM.md`.
-2. Cross-references the org-wide [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md) and [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md).
+2. Cross-references [`docs/_GATEKEEPER_REGISTRY.json`](../docs/_GATEKEEPER_REGISTRY.json), [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md), and [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md).
 3. For every line:
-   - **already-have:** mark `✅ on hand`.
-   - **purchasable autonomously** (free APIs, FOSS, ≤ $20/mo budgeted): trigger `vault-agent` skill to provision and store creds in vault.
+   - **already-have:** mark `✅ on hand`, add product to registry entry's `used_by`.
+   - **purchasable autonomously** (free APIs, FOSS, ≤ $20/mo budgeted): Provisioner auto-procures, stores in Doppler, registers in Gatekeeper registry, syncs to GitHub Secrets.
    - **needs purchase or human action:** open an issue on `midnghtsapphire/revvel-standards` labeled `bom-block` with the missing item; pipeline pauses for that product only.
 4. When all items are `✅`, the gatekeeper sets `bom_ready: true` in the product's `state.json` and the pipeline resumes.
+5. **Post-build:** All provisioned credentials are tracked for rotation per [`GATEKEEPER.md`](GATEKEEPER.md) §4 (Rotator).
 
 **Mandatory rule:** No build step may run while `bom_ready: false`.
 
