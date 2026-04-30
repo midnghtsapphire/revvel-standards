@@ -50,6 +50,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
+| Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets | [`schema-rich-results`](#schema-rich-results) |
 | E-E-A-T, Google trust signals, Knowledge Panel, schema.org authority, brand identity, ORCID | [`eeat-trust-authority`](#eeat-trust-authority) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
@@ -352,6 +353,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
 - **Tags:** seo, metadata, open-graph, twitter-cards, json-ld, lighthouse
 - **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
+
+#### schema-rich-results
+- **Path:** `skills/schema-rich-results/`
+- **Files:** `SKILL.md` · `schema-rich-results.skill.yml`
+- **Script:** `scripts/schema-rich-results-checker.js`
+- **Tests:** `tests/schema-rich-results-checker.test.js`
+- **Description:** Validate JSON-LD structured data markup against schema.org rules and Google Rich Results eligibility. Exports pure functions (`parseJsonLd`, `validateSchema`, `checkRichResults`, `runChecks`, `generateReport`) that can be called from CI or GitHub Actions. Covers 20+ `@type` definitions (Organization, Article, Product, FAQPage, BreadcrumbList, WebApplication, Event, JobPosting, Recipe, VideoObject, etc.) with required and recommended property checks, deep property-shape validation (headline length, ListItem positions, FAQPage Question nodes, Offer pricing), and a five-tool reference catalog (Google Rich Results Test, Schema Markup Validator, Bing, Merkle, SEO Site Checkup).
+- **Tags:** schema-org, json-ld, rich-results, structured-data, seo, google-rich-results, schema-validation, faqpage, product-schema, article-schema, breadcrumb
+- **Trigger:** "schema validation", "json-ld", "structured data", "rich results", "rich snippets", "schema.org", "google structured data", "schema markup", "faqpage schema", "product schema", "article schema", "breadcrumb schema", "organization schema".
 
 #### eeat-trust-authority
 - **Path:** `skills/eeat-trust-authority/`
