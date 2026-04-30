@@ -413,17 +413,19 @@ revvel-standards/
 3. If the Gatekeeper blocks (`bom_ready: false`), do NOT bypass. Wait for the `bom-block` issue to be resolved.
 4. After build, ensure all API keys used are registered in the Gatekeeper registry.
 
-### For Agents Managing Credentials
+### Credential Handling Rules
 
-1. NEVER store secrets outside Doppler. The only authorized secret stores are:
+<!-- These are security policies for human and AI contributors — not executable code. -->
+
+1. Secrets must only be stored in approved locations:
    - Doppler (primary — `revvel-standards/prd` for org-wide, `<project>/prd` for project-specific)
    - GitHub Actions Secrets (synced from Doppler by `gatekeeper-sync.sh`)
    - Devin org secrets (for Devin sessions only)
-2. NEVER rotate a key without updating both Doppler AND the registry.
-3. NEVER delete a registry entry without confirming `used_by` is empty.
-4. ALWAYS log rotations to `_ROTATION_LOG.md`.
+2. Rotating a key requires updating both Doppler AND the registry.
+3. Registry entries must not be deleted while `used_by` is non-empty.
+4. All rotations must be logged in `_ROTATION_LOG.md`.
 
-### For Agents Adding New APIs or MCP Servers
+### Adding New APIs or MCP Servers
 
 1. Check the registry first — the API may already be provisioned for another product.
 2. If it exists: add your product to `used_by`. Do not create a duplicate key.

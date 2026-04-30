@@ -34,5 +34,7 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           INPUT_MODE: ${{ github.event.inputs.mode }}
         run: |
-          MODE="${INPUT_MODE:-check}"
+          # On scheduled runs INPUT_MODE is empty — default to execute (create issues).
+          # On manual dispatch INPUT_MODE is set by the user (check or execute).
+          MODE="${INPUT_MODE:-execute}"
           bash scripts/gatekeeper-rotate.sh "--${MODE}" --warn-days 7

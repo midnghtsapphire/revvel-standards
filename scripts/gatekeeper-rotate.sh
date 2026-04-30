@@ -45,6 +45,12 @@ if [[ ! -f "$REGISTRY_FILE" ]]; then
   exit 4
 fi
 
+# Validate registry JSON before processing
+if ! jq empty "$REGISTRY_FILE" 2>/dev/null; then
+  echo "error: $REGISTRY_FILE is not valid JSON" >&2
+  exit 5
+fi
+
 NOW_EPOCH=$(date +%s)
 WARN_EPOCH=$((NOW_EPOCH + WARN_DAYS * 86400))
 
@@ -85,8 +91,19 @@ while IFS= read -r entry; do
     OVERDUE=$((OVERDUE + 1))
 
     if [[ "$MODE" == "execute" && "$DRY_RUN" != "1" ]]; then
-      echo "  → Creating rotation issue for $id..."
+      # Check for existing open issue to avoid duplicates
+      EXISTING=""
       if command -v gh >/dev/null && [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        EXISTING=$(gh issue list \
+          --repo "${GITHUB_REPOSITORY:-midnghtsapphire/revvel-standards}" \
+          --label "rotation-due" \
+          --search "[ROTATE] $name" \
+          --state open --limit 1 --json number -q '.[0].number' 2>/dev/null || echo "")
+      fi
+      if [[ -n "$EXISTING" ]]; then
+        echo "  → Issue #$EXISTING already open for $id — skipping"
+      elif command -v gh >/dev/null && [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        echo "  → Creating rotation issue for $id..."
         gh issue create \
           --repo "${GITHUB_REPOSITORY:-midnghtsapphire/revvel-standards}" \
           --title "[ROTATE] $name — rotation overdue" \

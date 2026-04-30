@@ -35,6 +35,11 @@ jobs:
             exit 0
           fi
 
+          if ! jq empty "$REGISTRY" 2>/dev/null; then
+            echo "::error::$REGISTRY is not valid JSON"
+            exit 1
+          fi
+
           DRIFT_COUNT=0
           SKIPPED=0
           REPORT=""
