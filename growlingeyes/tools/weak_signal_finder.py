@@ -20,7 +20,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import os
@@ -132,6 +131,20 @@ class WeakSignal:
         return asdict(self)
 
 
+# ─── Scoring configuration ────────────────────────────────────────────────────
+
+# Signal scoring algorithm configuration
+# These values control how signals are scored and can be tuned based on domain characteristics
+INTENSITY_THRESHOLD = 10.0  # Normalization divisor for max word frequency
+DIVERSITY_THRESHOLD = 20.0  # Normalization divisor for distinct theme count
+CONTEXT_THRESHOLD = 10.0    # Normalization divisor for contextual pair count
+
+# Scoring weights (must sum to 1.0)
+INTENSITY_WEIGHT = 0.5  # Weight for word frequency component
+DIVERSITY_WEIGHT = 0.3  # Weight for theme diversity component
+CONTEXT_WEIGHT = 0.2    # Weight for contextual relationship component
+
+
 # ─── Text processing ──────────────────────────────────────────────────────────
 
 def clean_text(text: str) -> list[str]:
@@ -185,25 +198,36 @@ def compute_contextual_pairs(articles: list[dict], top_words: set[str]) -> list[
 def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]]) -> float:
     """
     Score the signal strength based on:
-    - Number of high-frequency terms
-    - Diversity of emerging themes
-    - Strength of contextual relationships
+    - Number of high-frequency terms (intensity)
+    - Diversity of emerging themes (variety)
+    - Strength of contextual relationships (connections)
+    
+    Returns a score from 0-100.
     """
     if not intensity:
         return 0.0
     
     # Component 1: Intensity score (max word frequency)
+    # Normalize to 0-1 range using configurable threshold
     max_freq = max(intensity.values())
-    intensity_score = min(max_freq / 10.0, 1.0)  # Normalize to 0-1
+    intensity_score = min(max_freq / INTENSITY_THRESHOLD, 1.0)
     
     # Component 2: Diversity score (number of distinct themes)
-    diversity_score = min(len(intensity) / 20.0, 1.0)  # Normalize to 0-1
+    # More distinct themes = stronger signal
+    diversity_score = min(len(intensity) / DIVERSITY_THRESHOLD, 1.0)
     
     # Component 3: Contextual strength (number of word pairs)
-    context_score = min(len(pairs) / 10.0, 1.0)  # Normalize to 0-1
+    # More contextual relationships = stronger signal
+    context_score = min(len(pairs) / CONTEXT_THRESHOLD, 1.0)
     
-    # Weighted combination
-    return (intensity_score * 0.5 + diversity_score * 0.3 + context_score * 0.2) * 100.0
+    # Weighted combination using configurable weights
+    final_score = (
+        intensity_score * INTENSITY_WEIGHT +
+        diversity_score * DIVERSITY_WEIGHT +
+        context_score * CONTEXT_WEIGHT
+    ) * 100.0
+    
+    return final_score
 
 
 # ─── Feed fetching ────────────────────────────────────────────────────────────
