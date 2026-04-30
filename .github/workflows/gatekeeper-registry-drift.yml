@@ -26,8 +26,8 @@ jobs:
       - name: Compare registry to Doppler
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-          DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT || 'revvel-standards' }}
-          DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG || 'prd' }}
+          DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT != '' && vars.DOPPLER_PROJECT || 'revvel-standards' }}
+          DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG != '' && vars.DOPPLER_CONFIG || 'prd' }}
         run: |
           REGISTRY="docs/_GATEKEEPER_REGISTRY.json"
           if [[ ! -f "$REGISTRY" ]]; then

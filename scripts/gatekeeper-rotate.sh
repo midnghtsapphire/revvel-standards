@@ -123,6 +123,8 @@ while IFS= read -r entry; do
 5. Append a row to \`docs/_ROTATION_LOG.md\`.
 
 _Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not create issue (gh CLI or permissions)"
+      else
+        echo "  ⚠️  Cannot create issue: gh CLI or GITHUB_TOKEN missing"
       fi
     fi
 
