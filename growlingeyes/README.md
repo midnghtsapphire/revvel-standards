@@ -1,6 +1,6 @@
 # GrowlingEyes Python Intelligence Tooling
 
-**Product:** GrowlingEyes — Freedom Angel Corp — "We believe you."  
+**Product:** GrowlingEyes — Freedom Angel Corp — "We believe you."
 **Standards Repo:** `midnghtsapphire/revvel-standards`
 
 ---
@@ -16,7 +16,13 @@ growlingeyes/
 │   ├── apt_signals.py            # APT signal scanner (CISA KEV, NVD, OTX, CISA RSS)
 │   ├── stream_listener.py        # Real-time streams: AIS, NOAA weather, USGS quakes, RSS
 │   ├── scraper.py                # Intelligence scrapers: FAA TFR, NIFC fires, OFAC, UN
-│   └── weak_signal_finder.py    # Weak signal detection from RSS feeds (NLP-based)
+│   ├── trigger_extractor.py      # Trigger extraction engine with scoring & correlation
+│   └── weak_signal_finder.py     # Weak signal detection from RSS feeds (NLP-based)
+├── patterns/
+│   ├── cyber_threats.yml         # Trigger patterns for cyber domain
+│   ├── kinetic_events.yml        # Trigger patterns for conflict/military domain
+│   ├── environmental.yml         # Trigger patterns for disasters/weather
+│   └── README.md                 # Pattern configuration guide
 ├── axion_mcp/
 │   ├── server.py                 # Axion Planetary MCP — axion_sar2optical foundation model
 │   ├── pyproject.toml
@@ -44,10 +50,14 @@ python growlingeyes/tools/stream_listener.py --streams noaa_weather usgs_quakes
 # Intelligence scrapers
 python growlingeyes/tools/scraper.py --targets faa_tfr nifc_fires
 
+# Trigger extraction
+python growlingeyes/tools/trigger_extractor.py --domains cyber_threats kinetic_events --top 50
+
 # Weak signal detection (emerging themes from RSS feeds)
 python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime
 python growlingeyes/tools/weak_signal_finder.py --threshold 3 --output signals.json
 python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
+
 
 # Axion Planetary MCP server
 python -m growlingeyes.axion_mcp.server
@@ -122,6 +132,36 @@ python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
     ["patch", "security"]
   ]
 }
+```
+
+---
+
+## Trigger Extraction Engine
+
+GrowlingEyes includes an advanced trigger extraction engine that converts raw OSINT data into actionable intelligence alerts.
+
+**Key Features:**
+- **Pattern Recognition:** Keyword, regex, threshold, and anomaly detection
+- **Multi-Domain Support:** Cyber threats, kinetic events, environmental disasters, dark web
+- **Scoring & Prioritization:** 0-100 score with temporal, geographic, and correlation boosts
+- **Correlation Engine:** Links triggers from multiple sources for multi-source confirmation
+- **Configurable Patterns:** YAML pattern files for each intelligence domain
+
+**Documentation:**
+- Methodology: [`docs/TRIGGER_EXTRACTION_METHODOLOGY.md`](../docs/TRIGGER_EXTRACTION_METHODOLOGY.md)
+- Database Schema: [`docs/growlingeyes/TRIGGER_DATABASE_SCHEMA.md`](../docs/growlingeyes/TRIGGER_DATABASE_SCHEMA.md)
+- Pattern Configs: [`patterns/`](patterns/)
+
+**Usage:**
+```bash
+# Extract triggers from all domains
+python growlingeyes/tools/trigger_extractor.py
+
+# Extract from specific domains
+python growlingeyes/tools/trigger_extractor.py --domains cyber_threats kinetic_events
+
+# Save to JSON
+python growlingeyes/tools/trigger_extractor.py --output triggers.json --top 50
 ```
 
 ---

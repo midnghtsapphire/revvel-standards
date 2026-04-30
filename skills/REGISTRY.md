@@ -1,8 +1,8 @@
 # Revvel Skills Registry
 
-**Version:** 1.0.0  
-**Date:** April 12, 2026  
-**Status:** Active  
+**Version:** 1.0.0
+**Date:** April 12, 2026
+**Status:** Active
 **Scope:** All Revvel/MIDNGHTSAPPHIRE agents — OpenClaw, GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and all temporary agents
 
 ---
@@ -29,6 +29,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
+| 49Agents, agentic IDE, visual monitoring, parallel research, agent HQ, desktop agents | [`49agents`](#49agents) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
 | OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight | [`openclaw-self-eval`](#openclaw-self-eval) |
@@ -44,6 +45,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Security, OWASP, secrets, API keys, auth | [`security`](#security) |
 | API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
+| ADA compliance audits, free certifications, autonomous monitoring, accessibility agent | [`ada-compliance-agent`](#ada-compliance-agent) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
@@ -51,6 +53,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
+| PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations | [`posthog`](#posthog) |
 | Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
@@ -88,6 +91,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Audit and evaluate code on GitHub or a marketplace using TruthSlayer's **eight-factor composite rubric** (Security 20%, Authenticity 15%, Help-Intent 10%, Maintainability 10%, Tests & CI 15%, Documentation 10%, Community 10%, Accessibility 10%). Emits a single 0–100 **TruthSlayer Score**, letter grade (A+–F), canonical badge label (`TruthSlayer Verified — Gold`, `TruthSlayer Verified — Silver`, `TruthSlayer Verified — Bronze`, `Conditional — Fix Required`, `Not Recommended — Significant Concerns`, or `Avoid — Material Issues`), and an evidence-cited markdown report + JSON sidecar. P0 findings (live secrets, malware, license fraud, data exfiltration, RCE-on-install) auto-cap the grade to F. Ships a drop-in Gemini-ready system prompt so any model can act as TruthSlayer Auditor. Designed to power a public trust/authenticity signal on creator pages, portfolios, and marketplace listings.
 - **Tags:** truthslayer, code-audit, code-rating, trust-score, authenticity, composite-score, creator-trust, marketplace-audit
 - **Trigger:** "truthslayer audit", "truthslayer score", "rate this repo", "audit this repo", "trust score", "authenticity score", "marketplace audit", "creator trust badge".
+
+#### 49agents
+
+- **Path:** `skills/49agents/`
+- **Files:** `SKILL.md`
+- **Description:** Integration with 49Agents, an open-source "agentic IDE" providing a unified 2D canvas interface for managing multiple AI agents, terminals, projects, and machines. Enables visual agent monitoring, parallel multi-agent research coordination, and desktop agent workflows. Complements existing OpenRouter/GitHub Actions automation with real-time visual dashboards and parallel research capabilities.
+- **Tags:** 49agents, agentic-ide, multi-agent, visual-dashboard, parallel-research, agent-hq, desktop-agent
+- **Trigger:** "49agents", "agentic IDE", "agent dashboard", "visual monitoring", "parallel research", "agent HQ", "desktop agent".
+- **Persona:** 🔭 Scout
 
 ---
 
@@ -304,6 +316,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** accessibility, wcag, ada, screen-reader, tty, aria
 - **Trigger:** Building any UI component; insurance/financial app features; public-facing pages.
 
+#### ada-compliance-agent
+- **Path:** `skills/ada-compliance-agent/`
+- **Files:** `SKILL.md` · `ada-compliance-agent.skill.yml` · `README.md` · `EXAMPLES.md` · `IMPLEMENTATION_SUMMARY.md` · `.github/workflows/ada-compliance-check.yml`
+- **Description:** Autonomous agent for researching, learning, and enforcing ADA compliance. Monitors for new certifications, audits code for WCAG 2.2 AA/AAA compliance, and ensures all accessibility standards are met. Can run on-demand, scheduled, or 24/7 via OpenRouter. Tracks free and paid ADA certification courses, auto-fixes safe violations, and continuously learns from new courses and standards updates.
+- **Tags:** ada, wcag, accessibility, a11y, section-508, compliance-agent, autonomous, certifications, continuous-learning, screen-reader, aria, tty, openrouter-24-7
+- **Trigger:** `ada`, `ada certification`, `free ada cert`, `accessibility audit`, `compliance check`, `wcag`, `section 508`, or any accessibility compliance task. Also when researching ADA training courses or monitoring for new accessibility standards.
+- **Lifecycle:** Ephemeral (on-demand audits) or Continuous (24/7 monitoring mode via OpenRouter)
+
 ---
 
 ### Content & Marketing
@@ -382,6 +402,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+#### posthog
+
+- **Path:** `skills/posthog/`
+- **Files:** `SKILL.md` · `posthog.skill.yml`
+- **Description:** Integrate PostHog into any Revvel project (web, Node, mobile) for all-in-one product analytics, session replay, feature flags, A/B testing, and error tracking with source maps. Ships a drop-in `posthog-init.ts` wrapper with Do-Not-Track honoring, persistent opt-out, PII property-key strip, EU-residency host swap, session replay masking, and a no-op fallback when `POSTHOG_API_KEY` is unset. Includes a Revvel-standard event catalog (`app_loaded`, `user_signed_up`, `purchase_completed`, etc.) with `snake_case` event names and properties, plus a hard PII ban list enforced at both wrapper and PR-review layers. Also ships three GitHub Actions templates for annotations (mark deployments on analytics charts), source map uploads (readable error stack traces), and custom CI/CD events.
+- **Tags:** posthog, product-analytics, session-replay, feature-flags, ab-testing, error-tracking, source-maps, user-behavior, events, telemetry, posthog-js, posthog-node, annotations, github-actions
+- **Trigger:** "posthog", "integrate posthog", "product analytics", "session replay", "feature flags", "ab testing", "a/b testing", "error tracking", "source maps", "user behavior analytics", "track event", "posthog-js", "telemetry", "annotations", "deployment annotations".
+
+---
+
 #### amplitude-notion-agent
 
 - **Path:** `skills/amplitude-notion-agent/`
@@ -456,4 +486,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
