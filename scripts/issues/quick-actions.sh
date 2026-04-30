@@ -46,6 +46,8 @@ issue_create_with_pr() {
     --json number \
     --jq .number)
   
+  # Branch name pattern: issue-{number}-{title-sanitized-40-chars}
+  # Steps: lowercase → keep only alphanumeric+hyphen → limit 40 chars → remove trailing hyphens
   BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | cut -c1-40 | sed 's/-$//')"
   
   git fetch origin main
