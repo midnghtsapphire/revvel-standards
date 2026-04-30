@@ -776,6 +776,40 @@ skills:
       - "create agent using amplitude data in notion"
       - "amplitude notion agent"
 
+  # ─── Marketing Automation ─────────────────────────────────────────────────
+
+  - name: noimosai
+    title: "NoimosAI — Autonomous Marketing Team"
+    version: "1.0.0"
+    path: "skills/noimosai/"
+    skill_file: "skills/noimosai/SKILL.md"
+    category: "Marketing Automation"
+    platform: "NoimosAI"
+    platform_url: "https://noimosai.com"
+    workflow: ".github/workflows/noimosai.yml"
+    standard: "standards/NOIMOSAI_INTEGRATION_STANDARD.md"
+    access: all
+    secrets:
+      - NOIMOSAI_API_KEY
+    vars:
+      - NOIMOSAI_WORKSPACE_ID
+    triggers:
+      - "noimosai"
+      - "noimos ai"
+      - "marketing automation"
+      - "autonomous marketing"
+      - "seo agent"
+      - "seo automation"
+      - "content agent"
+      - "content automation"
+      - "social media automation"
+      - "affiliate optimization"
+      - "affiliate agent"
+      - "email campaign"
+      - "email marketing automation"
+      - "marketing"
+      - "noimosai.com"
+
   # ─── Automation & Finance ─────────────────────────────────────────────────
 
   - name: grant_mgmt_agent

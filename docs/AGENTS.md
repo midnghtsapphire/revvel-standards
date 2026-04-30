@@ -174,6 +174,33 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 - No alerts for normal fallbacks (working as designed)
 - Alerts only if all agents fail
 
+### NoimosAI — Autonomous Marketing Agent
+
+[NoimosAI](https://noimosai.com) is the autonomous marketing team for all Revvel projects. It is **wired in and always-on** — available in every repository automatically, exactly like Jules.
+
+**Trigger points:**
+
+1. **Label-driven** — Any issue with labels `noimosai`, `marketing`, `seo`, `content`, or `affiliate` invokes NoimosAI immediately via `.github/workflows/noimosai.yml`.
+2. **Daily schedule** — 08:00 UTC cron runs SEO audit, content refresh, and affiliate health-check across all active projects.
+3. **Manual dispatch** — GitHub Actions → NoimosAI → Run workflow, with custom prompt, project name, and task type.
+
+**Configuration:**
+- Requires `NOIMOSAI_API_KEY` secret in every repo (obtain at noimosai.com → Settings → API Keys; vault path: `revvel/shared/marketing/noimosai`)
+- Optional `NOIMOSAI_WORKSPACE_ID` repository variable for multi-team setups
+- See [`standards/NOIMOSAI_INTEGRATION_STANDARD.md`](../standards/NOIMOSAI_INTEGRATION_STANDARD.md) for full setup
+- See [`skills/noimosai/SKILL.md`](../skills/noimosai/SKILL.md) for agent skill instructions
+
+**NoimosAI agent capabilities:**
+- SEO Agent — keyword research, on-page audits, backlink analysis, technical SEO
+- Content Agent — blog posts, landing copy, product descriptions, FAQs
+- Social Agent — Twitter/X, Instagram, LinkedIn, TikTok content and scheduling
+- Affiliate Agent — Amazon link management, commission auditing, link refresh
+- Email Agent — newsletters, drip campaigns, subscriber segmentation
+
+**To apply NoimosAI to a new issue:**
+- Apply any of these labels: `noimosai`, `marketing`, `seo`, `content`, `affiliate`
+- The workflow fires automatically. No additional steps needed.
+
 ### Compliance & Legal Concerns
 
 When you encounter a potential compliance or legal issue:

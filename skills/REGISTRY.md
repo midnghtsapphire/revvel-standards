@@ -57,6 +57,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
 | PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations | [`posthog`](#posthog) |
 | Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
+| NoimosAI, autonomous marketing team, SEO, content, social media, affiliate links, email marketing, marketing automation | [`noimosai`](#noimosai) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
 | CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
@@ -352,6 +353,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
 - **Tags:** seo, metadata, open-graph, twitter-cards, json-ld, lighthouse
 - **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
+
+#### noimosai
+
+- **Path:** `skills/noimosai/`
+- **Files:** `SKILL.md`
+- **Platform:** [NoimosAI](https://noimosai.com) — Autonomous AI Marketing Team
+- **Description:** Wire NoimosAI's autonomous marketing agent fleet into any Revvel project. NoimosAI handles SEO audits, content creation, social media scheduling, affiliate link management, and email marketing automatically. Triggered by GitHub issue labels (`noimosai`, `marketing`, `seo`, `content`, `affiliate`) and a daily 08:00 UTC cron. Ships `.github/workflows/noimosai.yml`, `standards/NOIMOSAI_INTEGRATION_STANDARD.md`, and `.env.example` entries for `NOIMOSAI_API_KEY` / `NOIMOSAI_WORKSPACE_ID`.
+- **Tags:** noimosai, marketing-automation, autonomous-marketing, seo, content, social-media, affiliate, email-marketing, marketing-agent
+- **Trigger:** "noimosai", "marketing automation", "autonomous marketing", "seo agent", "content agent", "social media automation", "affiliate optimization", "email campaign", any issue labelled `marketing`, `seo`, `content`, `affiliate`, or `noimosai`.
 
 #### eeat-trust-authority
 - **Path:** `skills/eeat-trust-authority/`
