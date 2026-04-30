@@ -9,14 +9,14 @@
 
 ## 1. Overview
 
-All AI agents that need to manage the growlingeyes droplet (164.90.148.7) use a shared `agent-access` SSH key pair. This key is stored in two places so every agent platform can retrieve it:
+All AI agents that need to manage the MIDNGHTSAPPHIRE droplet (164.90.148.7) use a shared `agent-access` SSH key pair. This key is stored in two places so every agent platform can retrieve it:
 
 | Agent Platform | How to Get the Key |
 |---|---|
 | **Devin** | `$SSH_PRIVATE_KEY` org secret (auto-injected) |
-| **Claude Code / Cursor / Windsurf** | DoppleMCP → `doppler_secrets_get(project=growlingeyes, config=prd, name=SSH_PRIVATE_KEY)` |
+| **Claude Code / Cursor / Windsurf** | DoppleMCP → `doppler_secrets_get(project=revvel-standards, config=prd, name=SSH_PRIVATE_KEY)` |
 | **GitHub Actions (Copilot)** | `${{ secrets.SSH_PRIVATE_KEY }}` repository secret |
-| **Any agent with shell** | `doppler secrets get SSH_PRIVATE_KEY --project growlingeyes --config prd --plain` |
+| **Any agent with shell** | `doppler secrets get SSH_PRIVATE_KEY --project revvel-standards --config prd --plain` |
 
 ---
 
@@ -29,7 +29,7 @@ All AI agents that need to manage the growlingeyes droplet (164.90.148.7) use a 
 | **Droplet IP** | `164.90.148.7` |
 | **Droplet user** | `root` |
 | **Key storage (Devin)** | Org secret: `SSH_PRIVATE_KEY` |
-| **Key storage (Doppler)** | `growlingeyes/prd/SSH_PRIVATE_KEY` |
+| **Key storage (Doppler)** | `revvel-standards/prd/SSH_PRIVATE_KEY` |
 | **Key storage (GitHub)** | Repository secret: `SSH_PRIVATE_KEY` |
 
 ---
@@ -72,7 +72,7 @@ scp -i ~/.ssh/agent-access -o StrictHostKeyChecking=no \
 ```python
 # For agents using DoppleMCP server
 key = await doppler_secrets_get(
-    project="growlingeyes",
+    project="revvel-standards",
     config="prd",
     name="SSH_PRIVATE_KEY"
 )
@@ -98,7 +98,7 @@ print(result.stdout)
 ```bash
 # Requires DOPPLER_TOKEN in environment
 doppler secrets get SSH_PRIVATE_KEY \
-  --project growlingeyes --config prd --plain > ~/.ssh/agent-access
+  --project revvel-standards --config prd --plain > ~/.ssh/agent-access
 chmod 600 ~/.ssh/agent-access
 ssh -i ~/.ssh/agent-access -o StrictHostKeyChecking=no root@164.90.148.7
 ```
@@ -166,7 +166,7 @@ ssh -i ~/.ssh/agent-access -o StrictHostKeyChecking=no root@164.90.148.7 \
     curl -s -X POST https://api.doppler.com/v3/configs/config/secrets \
       -H "Authorization: Bearer $DOPPLER_TOKEN" \
       -H "Content-Type: application/json" \
-      -d "{\"project\":\"growlingeyes\",\"config\":\"prd\",\"secrets\":{\"$key\":\"$val\"}}"
+      -d "{\"project\":\"revvel-standards\",\"config\":\"prd\",\"secrets\":{\"$key\":\"$val\"}}"
 done
 ```
 
@@ -184,12 +184,12 @@ done
 
 ## 7. Setup Checklist (One-Time)
 
-- [ ] Generate `agent-access` Ed25519 key pair
-- [ ] Add public key to droplet: `echo "PUBLIC_KEY" >> /root/.ssh/authorized_keys`
-- [ ] Store private key in Devin org secret as `SSH_PRIVATE_KEY`
-- [ ] Store private key in Doppler `growlingeyes/prd` as `SSH_PRIVATE_KEY`
+- [x] Generate `agent-access` Ed25519 key pair
+- [x] Add public key to droplet: `echo "PUBLIC_KEY" >> /root/.ssh/authorized_keys`
+- [x] Store private key in Devin org secret as `SSH_PRIVATE_KEY`
+- [x] Store private key in Doppler `revvel-standards/prd` as `SSH_PRIVATE_KEY`
 - [ ] Add private key as GitHub repository secret `SSH_PRIVATE_KEY` (all 3 repos)
-- [ ] Test: `ssh -i ~/.ssh/agent-access root@164.90.148.7 uptime`
+- [x] Test: `ssh -i ~/.ssh/agent-access root@164.90.148.7 uptime`
 
 ---
 
