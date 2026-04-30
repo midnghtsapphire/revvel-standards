@@ -485,7 +485,7 @@ growlingeyes/
 | **Phase 4** | AI agent + Telegram bot + GrowlingEyes integration | 3-4 days | OpenRouter API key, Telegram token |
 | **Phase 5** | Axion satellite/geospatial intelligence + chat commands | 1-2 days | Axion API key (optional) or Docker |
 
-**Total estimated build time:** 11-15 days of agent work
+**Total estimated build time:** 10-15 days of agent work
 
 ---
 
