@@ -323,3 +323,24 @@ labels:
   - name: "goap:executing"
     color: "8b5cf6"
     description: "GOAP executing planned actions"
+
+  # ── NoimosAI (Autonomous Marketing Team) ──────────────────────────────────
+  - name: noimosai
+    color: "7C5CFF"
+    description: "Route to NoimosAI autonomous marketing team"
+
+  - name: marketing
+    color: "FF6B6B"
+    description: "Marketing task — auto-routed to NoimosAI"
+
+  - name: seo
+    color: "3DDCFF"
+    description: "SEO task — handled by NoimosAI SEO agent"
+
+  - name: content
+    color: "F7C948"
+    description: "Content creation task — handled by NoimosAI content agent"
+
+  - name: affiliate
+    color: "4CAF50"
+    description: "Affiliate link / revenue task — handled by NoimosAI affiliate agent"
