@@ -321,6 +321,10 @@ jobs:
 on:
   schedule:
     - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
+permissions:
+  issues: write
+  contents: write
+  pull-requests: write
 jobs:
   create-issue:
     runs-on: ubuntu-latest

@@ -235,16 +235,7 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
           echo "🤖 Attempting to use Devin AI..."
-
-          # TODO: Implement actual Devin API integration when available
-          # For now, this is a placeholder that demonstrates the pattern
-
-          # Simulate Devin API call
-          # In production, this would call: scripts/call-devin-api.sh
-
-          echo "⚠️  Devin API integration not yet implemented"
-          echo "Falling back to next agent in chain..."
-          exit 1
+          bash scripts/call-devin-api.sh
 
       - name: Fallback to Cursor
         if: >-
@@ -263,16 +254,7 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
           echo "🔧 Attempting to use Cursor..."
-
-          # TODO: Implement actual Cursor API integration when available
-          # For now, this is a placeholder that demonstrates the pattern
-
-          # Simulate Cursor API call
-          # In production, this would call: scripts/call-cursor-api.sh
-
-          echo "⚠️  Cursor API integration not yet implemented"
-          echo "Falling back to OpenRouter..."
-          exit 1
+          bash scripts/call-cursor-api.sh
 
       - name: Fallback to OpenRouter
         if: >-
@@ -309,8 +291,8 @@ jobs:
             fi
           else
             # Use the full OpenRouter coder
-            python -m pip install --disable-pip-version-check requests
-            python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-result.json || exit 1
+            python3 -m pip install --disable-pip-version-check requests
+            python3 .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-result.json || exit 1
 
             # Check if files were written
             if [ -f "/tmp/openrouter-result.json" ]; then
