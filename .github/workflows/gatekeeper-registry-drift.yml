@@ -78,7 +78,7 @@ jobs:
               --data-urlencode "config=$config" \
               --data-urlencode "name=$env_var" \
               -H "Authorization: Bearer $DOPPLER_TOKEN" \
-              -H "Accept: application/json" 2>/dev/null || echo "000")
+              -H "Accept: application/json" 2>/dev/null) || HTTP_CODE="000"
 
             if [[ "$HTTP_CODE" != "200" ]]; then
               echo "🔴 DRIFT: $name ($id) — env_var=$env_var NOT found in Doppler $project/$config (HTTP $HTTP_CODE)"
