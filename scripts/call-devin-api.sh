@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 MAX_RETRIES=3
-RETRY_DELAY=10  # seconds
+RETRY_DELAY=10  # initial delay in seconds (doubles each retry)
 TIMEOUT=60      # seconds
 
 # Validate required environment variables
@@ -42,6 +42,10 @@ call_devin() {
     --argjson timeout "$TIMEOUT" \
     '{task: {title: $title, description: $desc, repository: $repo, issue_number: $issue_num}, options: {timeout: $timeout, auto_commit: true, create_pr: true}}')
 
+  if [ -z "${PAYLOAD}" ]; then
+    echo "❌ Failed to construct JSON payload"
+    return 1
+  fi
 
   # Make API call
   RESPONSE=$(curl -s -w "\n%{http_code}" \
@@ -109,9 +113,11 @@ for i in $(seq 1 ${MAX_RETRIES}); do
     exit ${EXIT_CODE}
   fi
 
-  # Wait before retry (except on last attempt)
+  # Wait before retry with exponential backoff (except on last attempt)
   if [ ${i} -lt ${MAX_RETRIES} ]; then
-    sleep ${RETRY_DELAY}
+    DELAY=$((RETRY_DELAY * (2 ** (i - 1))))
+    echo "Waiting ${DELAY}s before retry..."
+    sleep ${DELAY}
   fi
 done
 

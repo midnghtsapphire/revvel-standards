@@ -14,8 +14,9 @@ on:
     inputs:
       task_description:
         description: "Description of the task to execute"
-        required: true
+        required: false
         type: string
+        default: ""
       issue_number:
         description: "GitHub issue number"
         required: true
@@ -49,6 +50,10 @@ on:
         type: string
         default: "auto"
 
+concurrency:
+  group: agent-fallback-${{ github.repository }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pull-requests: write
@@ -65,7 +70,7 @@ jobs:
     # 4. Called as reusable workflow
     if: |
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'workflow_call' ||
+      inputs.issue_number ||
       (github.event_name == 'issues' &&
        (github.event.label.name == 'wr:code' ||
         github.event.label.name == 'wr:auto' ||
@@ -161,12 +166,10 @@ jobs:
             let issueTitle = '';
             let issueBody = '';
 
+            const taskDescription = '${{ inputs.task_description }}';
+
             // Determine issue number based on event type
-            if (context.eventName === 'workflow_dispatch') {
-              issueNumber = Number('${{ inputs.issue_number }}');
-            } else if (context.eventName === 'workflow_call') {
-              issueNumber = Number('${{ inputs.issue_number }}') || undefined;
-            } else if (context.eventName === 'issues') {
+            if (context.eventName === 'issues') {
               issueNumber = context.payload.issue.number;
               issueTitle = context.payload.issue.title || '';
               issueBody = context.payload.issue.body || '';
@@ -174,9 +177,13 @@ jobs:
               issueNumber = context.payload.pull_request.number;
               issueTitle = context.payload.pull_request.title || '';
               issueBody = context.payload.pull_request.body || '';
+            } else {
+              // workflow_dispatch, workflow_call, or any caller event
+              const raw = '${{ inputs.issue_number }}';
+              issueNumber = raw ? Number(raw) : undefined;
             }
 
-            if (!issueNumber) {
+            if (issueNumber === undefined || issueNumber === null) {
               core.setFailed('Could not determine issue/PR number');
               return;
             }
@@ -194,6 +201,11 @@ jobs:
               } catch (error) {
                 core.warning(`Could not fetch issue details: ${error.message}`);
               }
+            }
+
+            // Use task_description as fallback for body
+            if (!issueBody && taskDescription) {
+              issueBody = taskDescription;
             }
 
             core.setOutput('issue_number', String(issueNumber));
