@@ -19,10 +19,10 @@ def secrets():
     pass
 
 
-@secrets.command()
+@secrets.command(name="list")
 @click.option("--project", default=None, help="Doppler project name")
 @click.option("--config", "config_name", default=None, help="Doppler config name")
-def list(project: str, config_name: str):
+def list_secrets(project: str, config_name: str):
     """List all secrets in a config."""
     token = config.get_doppler_token()
     if not token:

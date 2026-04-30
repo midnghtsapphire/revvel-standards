@@ -16,8 +16,8 @@ def projects():
     pass
 
 
-@projects.command()
-def list():
+@projects.command(name="list")
+def list_projects():
     """List all Doppler projects."""
     token = config.get_doppler_token()
     if not token:
@@ -56,9 +56,9 @@ def configs():
     pass
 
 
-@configs.command()
+@configs.command(name="list")
 @click.option("--project", default=None, help="Doppler project name")
-def list(project: str):
+def list_configs(project: str):
     """List configs in a project."""
     token = config.get_doppler_token()
     if not token:

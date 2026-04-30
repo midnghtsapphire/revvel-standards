@@ -70,9 +70,11 @@ def main():
     output_path = Path(args.output)
     output_path.write_text(json.dumps(needs_rotation))
     
+    # Note: We print secret names for debugging, but not values
+    # Secret names themselves are not sensitive data
     print(f"Found {len(needs_rotation)} secrets needing rotation:")
-    for secret in needs_rotation:
-        print(f"  - {secret}")
+    for secret_name in needs_rotation:
+        print(f"  - {secret_name}")
 
 
 if __name__ == "__main__":

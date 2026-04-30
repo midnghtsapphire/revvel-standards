@@ -74,8 +74,26 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
     console.print(f"Repo: {repo}\n")
 
     try:
-        # Use the existing gatekeeper-sync.sh script
-        script_path = "/home/runner/work/revvel-standards/revvel-standards/scripts/gatekeeper-sync.sh"
+        # Use the existing gatekeeper-sync.sh script (try to find it relative to repo root)
+        import os
+        from pathlib import Path
+        
+        # Try to find script relative to current directory or common locations
+        script_candidates = [
+            Path("scripts/gatekeeper-sync.sh"),
+            Path("../scripts/gatekeeper-sync.sh"),
+            Path("/home/runner/work/revvel-standards/revvel-standards/scripts/gatekeeper-sync.sh"),
+        ]
+        
+        script_path = None
+        for candidate in script_candidates:
+            if candidate.exists():
+                script_path = str(candidate.resolve())
+                break
+        
+        if not script_path:
+            raise FileNotFoundError("gatekeeper-sync.sh script not found")
+        
         cmd = [
             script_path,
             "--project", project,

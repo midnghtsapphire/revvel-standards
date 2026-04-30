@@ -42,10 +42,10 @@ def create(name: str, project: str, config_name: str, access: str):
         raise click.Abort()
 
 
-@tokens.command()
+@tokens.command(name="list")
 @click.option("--project", default=None, help="Doppler project name")
 @click.option("--config", "config_name", default=None, help="Doppler config name")
-def list(project: str, config_name: str):
+def list_tokens(project: str, config_name: str):
     """List service tokens."""
     token = config.get_doppler_token()
     if not token:

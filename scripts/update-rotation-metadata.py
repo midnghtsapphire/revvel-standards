@@ -66,18 +66,21 @@ def update_metadata(file_path: Path, secret_name: str, status: str):
         content += f"  - {now.strftime('%Y-%m-%d')}: Automatic rotation\n"
     
     file_path.write_text(content)
+    # Note: Secret name is not sensitive data, only the value is
     print(f"✓ Updated metadata for {secret_name}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Update secret rotation metadata")
-    parser.add_argument("--secret", required=True, help="Secret name")
+    parser.add_argument("--secret", required=True, help="Secret name (not the value)")
     parser.add_argument("--status", required=True, help="Rotation status")
     parser.add_argument("--metadata-file", required=True, help="Path to metadata file")
     
     args = parser.parse_args()
     
     metadata_path = Path(args.metadata_file)
+    # Note: secret argument is the secret name, not the secret value
+    # Secret names are identifiers and not sensitive data
     update_metadata(metadata_path, args.secret, args.status)
 
 
