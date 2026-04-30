@@ -8,6 +8,12 @@ Audrey almost forgot she pays for GitHub Enterprise. This file ensures it never 
 | midnghtsapphire | Pro / Copilot Pro | Personal creative sandbox; current home |
 | Freedom-Angel-Corp | Enterprise (verify) | Underutilized — target for PR #2 migration |
 
+## Planned Repositories
+
+| Name | Status | Purpose | Target Date | Owner |
+|------|--------|---------|-------------|-------|
+| devina-imposter | Planning | Evaluation framework for AI coding agents | 2026-Q2 | midnghtsapphire |
+
 ## Paid infrastructure (seed)
 - GitHub Enterprise (verify tier + cost)
 - OpenRouter (~$300 prepaid credits) — primary cron LLM
