@@ -50,6 +50,11 @@ jobs:
               { name: 'in-review',         color: 'fbca04', description: 'Linked PR is open and ready for review' },
               { name: 'blocked',           color: 'e4e669', description: 'Blocked by external dependency' },
               { name: 'wontfix',           color: 'ffffff', description: 'This will not be worked on' },
+              // PR Review Status
+              { name: 'awaiting-approval', color: 'fbca04', description: 'PR is awaiting review and approval' },
+              { name: 'changes-requested', color: 'd93f0b', description: 'PR has changes requested by reviewers' },
+              { name: 'approved',          color: '0e8a16', description: 'PR has been approved by reviewers' },
+              { name: 'review-started',    color: '0075ca', description: 'PR review has been initiated' },
               // Merge Control
               { name: 'auto-merge',        color: '0e8a16', description: 'Merge automatically once approved and CI passes' },
               { name: "won't-merge",       color: 'b60205', description: "Block auto-merge — human review required" },
