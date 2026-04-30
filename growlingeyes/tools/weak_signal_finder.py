@@ -508,7 +508,11 @@ def main() -> None:
                 log.error(f"Daemon iteration failed: {e}")
                 console.print(f"[red]Error during scan: {e}[/]")
                 console.print(f"[dim]Retrying in {args.interval} seconds...[/]")
-                time.sleep(args.interval)
+                try:
+                    time.sleep(args.interval)
+                except KeyboardInterrupt:
+                    console.print("\n[yellow]Daemon stopped by user.[/]")
+                    break
     else:
         run_once()
 
