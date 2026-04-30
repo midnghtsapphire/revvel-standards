@@ -105,7 +105,7 @@ jobs:
         with:
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
-            
+
             const welcomeComment = `👋 **Weekly Research (WR) task detected**
 
 This issue has been identified as a Weekly Research task and will receive enhanced deep-research treatment.
@@ -126,7 +126,7 @@ This issue has been identified as a Weekly Research task and will receive enhanc
 - [x] Cross-reference other repos in the **midnghtsapphire** org for consistency
 - [x] Check the **skills vault** (\`skills/REGISTRY.md\`) for relevant skills
 - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules
-- [x] Check what's new *today* — tools, extensions, upstream fixes, model releases
+- [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
 - [x] Consider non-US sources for cross-validation
 - [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
 
