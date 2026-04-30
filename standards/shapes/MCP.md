@@ -51,7 +51,7 @@ build/mcp/
   package.json
   tsconfig.json
   README.md
-  LICENSE               # Proprietary (Audrey Evans / GlowStarLabs) unless explicitly approved otherwise
+  LICENSE               # Proprietary (Audrey Evans / GlowStarLabs)
 ```
 
 ### MCP SDK
