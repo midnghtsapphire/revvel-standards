@@ -3,6 +3,10 @@ name: Gatekeeper — Registry Drift Check
 # Daily check that the Gatekeeper registry matches what's actually
 # provisioned in Doppler. Alerts on mismatches (secret exists in registry
 # but not Doppler, or vice versa).
+#
+# Note: DOPPLER_TOKEN is a service token scoped to a single project/config.
+# Entries from other Doppler projects are skipped (logged as INFO).
+# For cross-project drift detection, use a workplace-scoped token.
 
 on:
   schedule:
@@ -22,7 +26,8 @@ jobs:
       - name: Compare registry to Doppler
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT || 'revvel-standards' }}
+          DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG || 'prd' }}
         run: |
           REGISTRY="docs/_GATEKEEPER_REGISTRY.json"
           if [[ ! -f "$REGISTRY" ]]; then
@@ -31,6 +36,7 @@ jobs:
           fi
 
           DRIFT_COUNT=0
+          SKIPPED=0
           REPORT=""
 
           # Check each registry entry with a Doppler path
@@ -53,6 +59,13 @@ jobs:
               continue
             fi
 
+            # Skip entries outside the token's project scope to avoid false positives
+            if [[ "$project" != "$DOPPLER_PROJECT" || "$config" != "$DOPPLER_CONFIG" ]]; then
+              echo "ℹ️  SKIP: $name ($id) — $project/$config is outside token scope ($DOPPLER_PROJECT/$DOPPLER_CONFIG)"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
             # Check if secret exists in Doppler
             HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' \
               --get "https://api.doppler.com/v3/configs/config/secret" \
@@ -72,8 +85,9 @@ jobs:
           done < <(jq -c '.entries[]' "$REGISTRY")
 
           echo ""
-          echo "Drift check complete: $DRIFT_COUNT mismatches found"
+          echo "Drift check complete: $DRIFT_COUNT mismatches, $SKIPPED skipped (out of scope)"
 
           if [[ "$DRIFT_COUNT" -gt 0 ]]; then
             echo "::warning::Registry has $DRIFT_COUNT entries not found in Doppler"
+            echo -e "\n## Drift Report\n$REPORT"
           fi
