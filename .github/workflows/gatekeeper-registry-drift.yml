@@ -76,21 +76,27 @@ jobs:
               continue
             fi
 
-            # Check if secret exists in Doppler
+            # Check if secret exists in Doppler; prefer the name from doppler_path, fallback to env_var
+            SECRET_NAME="${_secret_name:-$env_var}"
             HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' \
               --get "https://api.doppler.com/v3/configs/config/secret" \
               --data-urlencode "project=$project" \
               --data-urlencode "config=$config" \
-              --data-urlencode "name=$env_var" \
+              --data-urlencode "name=$SECRET_NAME" \
               -H "Authorization: Bearer $DOPPLER_TOKEN" \
               -H "Accept: application/json" 2>/dev/null) || HTTP_CODE="000"
 
-            if [[ "$HTTP_CODE" != "200" ]]; then
-              echo "🔴 DRIFT: $name ($id) — env_var=$env_var NOT found in Doppler $project/$config (HTTP $HTTP_CODE)"
-              DRIFT_COUNT=$((DRIFT_COUNT + 1))
-              REPORT="${REPORT}\n- **$name** (\`$env_var\`): not found in Doppler \`$project/$config\`"
-            else
+            if [[ "$HTTP_CODE" == "200" ]]; then
               echo "✅ $name ($id) — present in Doppler"
+            elif [[ "$HTTP_CODE" == "404" ]]; then
+              echo "🔴 DRIFT: $name ($id) — $SECRET_NAME NOT found in Doppler $project/$config (404)"
+              DRIFT_COUNT=$((DRIFT_COUNT + 1))
+              REPORT="${REPORT}\n- **$name** (\`$SECRET_NAME\`): not found in Doppler \`$project/$config\`"
+            elif [[ "$HTTP_CODE" == "401" || "$HTTP_CODE" == "403" ]]; then
+              echo "::error::Doppler auth failed for $name ($id) — HTTP $HTTP_CODE. Verify DOPPLER_TOKEN is valid and scoped to $project/$config."
+              exit 1
+            else
+              echo "::warning::Unexpected HTTP $HTTP_CODE checking $name ($id) in Doppler — skipping"
             fi
           done < <(jq -c '.entries[]' "$REGISTRY")
 

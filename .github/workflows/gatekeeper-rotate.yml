@@ -31,7 +31,6 @@ jobs:
       - name: Check for overdue rotations
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           INPUT_MODE: ${{ github.event.inputs.mode }}
         run: |
           # On scheduled runs INPUT_MODE is empty — default to execute (create issues).

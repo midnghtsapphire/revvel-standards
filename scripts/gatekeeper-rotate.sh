@@ -52,6 +52,11 @@ if ! jq empty "$REGISTRY_FILE" 2>/dev/null; then
 fi
 
 NOW_EPOCH=$(date +%s)
+# Validate WARN_DAYS is a non-negative integer
+if ! [[ "$WARN_DAYS" =~ ^[0-9]+$ ]]; then
+  echo "error: --warn-days must be a non-negative integer, got: $WARN_DAYS" >&2
+  exit 2
+fi
 WARN_EPOCH=$((NOW_EPOCH + WARN_DAYS * 86400))
 
 echo "=== Gatekeeper Rotation Check ==="
@@ -87,7 +92,8 @@ while IFS= read -r entry; do
   fi
 
   if [[ "$next_epoch" -le "$NOW_EPOCH" ]]; then
-    echo "🔴 OVERDUE: $name ($id) — was due $(date -d "$next_rotation" +%Y-%m-%d)"
+    next_fmt=$(date -d "$next_rotation" +%Y-%m-%d 2>/dev/null || echo "$next_rotation")
+    echo "🔴 OVERDUE: $name ($id) — was due $next_fmt"
     OVERDUE=$((OVERDUE + 1))
 
     if [[ "$MODE" == "execute" && "$DRY_RUN" != "1" ]]; then
@@ -123,6 +129,8 @@ while IFS= read -r entry; do
 5. Append a row to \`docs/_ROTATION_LOG.md\`.
 
 _Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not create issue (gh CLI or permissions)"
+        # Append to rotation log (last 4 chars unknown at this point; requires manual completion)
+        echo "| $(date -u +%Y-%m-%d) | $name | (prev) | ...???? | script-flagged | gatekeeper-rotate.sh |" >> "$ROTATION_LOG"
       else
         echo "  ⚠️  Cannot create issue: gh CLI or GITHUB_TOKEN missing"
       fi
@@ -130,11 +138,13 @@ _Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not
 
   elif [[ "$next_epoch" -le "$WARN_EPOCH" ]]; then
     days_until=$(( (next_epoch - NOW_EPOCH) / 86400 ))
-    echo "⚠️  WARNING: $name ($id) — due in ${days_until} days ($(date -d "$next_rotation" +%Y-%m-%d))"
+    next_fmt=$(date -d "$next_rotation" +%Y-%m-%d 2>/dev/null || echo "$next_rotation")
+    echo "⚠️  WARNING: $name ($id) — due in ${days_until} days ($next_fmt)"
     WARNING=$((WARNING + 1))
 
   else
-    echo "✅ OK: $name ($id) — next rotation $(date -d "$next_rotation" +%Y-%m-%d)"
+    next_fmt=$(date -d "$next_rotation" +%Y-%m-%d 2>/dev/null || echo "$next_rotation")
+    echo "✅ OK: $name ($id) — next rotation $next_fmt"
     OK=$((OK + 1))
   fi
 done < <(jq -c '.entries[]' "$REGISTRY_FILE")
@@ -143,5 +153,11 @@ echo ""
 echo "Summary: overdue=$OVERDUE, warning=$WARNING, ok=$OK"
 
 if [[ "$OVERDUE" -gt 0 ]]; then
-  exit 1
+  if [[ "$MODE" == "execute" ]]; then
+    # In execute mode, exit non-zero so the CI run is marked failed and draws attention
+    exit 1
+  else
+    # In check mode, report overdue items but exit 0 so scheduled checks don't fail the workflow
+    echo "ℹ️  Check mode: $OVERDUE overdue item(s) found. Run with --execute to create rotation issues."
+  fi
 fi
