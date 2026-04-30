@@ -1,8 +1,8 @@
 name: Gatekeeper — Registry Drift Check
 
-# Daily check that the Gatekeeper registry matches what's actually
-# provisioned in Doppler. Alerts on mismatches (secret exists in registry
-# but not Doppler, or vice versa).
+# Daily check that every active registry entry with a Doppler path is
+# actually present in Doppler. Entries outside the token's project/config
+# scope are skipped (logged as INFO).
 #
 # Note: DOPPLER_TOKEN is a service token scoped to a single project/config.
 # Entries from other Doppler projects are skipped (logged as INFO).
@@ -23,11 +23,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install jq
+        run: |
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update -q && sudo apt-get install -y -q jq
+          fi
+
       - name: Compare registry to Doppler
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-          DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT != '' && vars.DOPPLER_PROJECT || 'revvel-standards' }}
-          DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG != '' && vars.DOPPLER_CONFIG || 'prd' }}
+          DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT || 'revvel-standards' }}
+          DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG || 'prd' }}
         run: |
           if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
             echo "::error::DOPPLER_TOKEN is not set — cannot check Doppler for drift"
@@ -58,8 +64,8 @@ jobs:
             status=$(echo "$entry" | jq -r '.status')
 
             [[ "$status" != "active" ]] && continue
-            [[ -z "$doppler_path" || "$doppler_path" == "null" ]] && continue
-            [[ -z "$env_var" || "$env_var" == "null" ]] && continue
+            [[ -z "$doppler_path" ]] && continue
+            [[ -z "$env_var" ]] && continue
 
             # Parse project/config from doppler_path (format: project/config/name)
             IFS='/' read -r project config _secret_name <<< "$doppler_path"

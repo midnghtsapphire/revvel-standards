@@ -110,11 +110,10 @@ while IFS= read -r entry; do
         echo "  → Issue #$EXISTING already open for $id — skipping"
       elif command -v gh >/dev/null && [[ -n "${GITHUB_TOKEN:-}" ]]; then
         echo "  → Creating rotation issue for $id..."
-        gh issue create \
-          --repo "${GITHUB_REPOSITORY:-midnghtsapphire/revvel-standards}" \
-          --title "[ROTATE] $name — rotation overdue" \
-          --label "rotation-due" \
-          --body "## Rotation Required
+        # Write body to a temp file to safely handle names/values with special characters
+        _body_file=$(mktemp)
+        cat > "$_body_file" <<BODY
+## Rotation Required
 
 **Item:** $name
 **Registry ID:** \`$id\`
@@ -128,7 +127,14 @@ while IFS= read -r entry; do
 4. Update \`docs/_GATEKEEPER_REGISTRY.json\` with new \`last_rotated\` and \`next_rotation\`.
 5. Append a row to \`docs/_ROTATION_LOG.md\`.
 
-_Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not create issue (gh CLI or permissions)"
+_Auto-created by gatekeeper-rotate.sh_
+BODY
+        gh issue create \
+          --repo "${GITHUB_REPOSITORY:-midnghtsapphire/revvel-standards}" \
+          --title "[ROTATE] $name — rotation overdue" \
+          --label "rotation-due" \
+          --body-file "$_body_file" 2>/dev/null || echo "  ⚠️  Could not create issue (gh CLI or permissions)"
+        rm -f "$_body_file"
         # Append to rotation log (new suffix is unknown at script time; operator must update)
         # TODO: operator should update docs/_ROTATION_LOG.md with the actual last-4 chars after rotating
         echo "| $(date -u +%Y-%m-%d) | $name | (prev) | ...???? | script-flagged | gatekeeper-rotate.sh |" >> "$ROTATION_LOG"
