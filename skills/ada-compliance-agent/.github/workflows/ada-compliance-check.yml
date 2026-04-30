@@ -228,7 +228,6 @@ jobs:
               repo: context.repo.repo,
               title: '[ADA] Scheduled compliance check failed',
               labels: ['accessibility', 'ada-compliance', 'auto-error'],
-              assignee: 'copilot',
               body: `## ADA Compliance Check Failed
               
               The scheduled accessibility audit on \`${context.ref}\` detected violations.
