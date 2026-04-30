@@ -203,7 +203,8 @@ function validateSchema(obj) {
   } else {
     const ctx = obj['@context'];
     const ctxStr = typeof ctx === 'string' ? ctx : JSON.stringify(ctx);
-    if (!ctxStr.includes('schema.org')) {
+    // Match schema.org as a proper domain (not a subdomain of schema.org.evil.com etc.)
+    if (!/(?:^|[./])schema\.org(?:[/"#]|$)/.test(ctxStr)) {
       warnings.push({ property: '@context', message: `@context "${ctxStr}" does not reference schema.org` });
     }
   }

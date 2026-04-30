@@ -372,8 +372,8 @@ test('runChecks counts errors from invalid schemas', () => {
 
 test('runChecks includes toolLinks in output', () => {
   const result = runChecks([]);
-  assert.ok(result.toolLinks.googleRichResults.url.includes('google.com'));
-  assert.ok(result.toolLinks.schemaOrgValidator.url.includes('schema.org'));
+  assert.ok(result.toolLinks.googleRichResults.url.startsWith('https://search.google.com/'));
+  assert.ok(result.toolLinks.schemaOrgValidator.url.startsWith('https://validator.schema.org'));
 });
 
 test('runChecks handles null input gracefully', () => {
