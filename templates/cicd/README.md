@@ -35,11 +35,21 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `gass-scoring.yml` | On-chain PR quality score via O2 Oracle ([`michael-bey/gass`](https://github.com/michael-bey/gass)) | `.github/workflows/gass-scoring.yml` |
 | `iara-code-reviewer.yml` | Iara AI reviewer — bugs / SAST / performance ([`felipefernandes/iara`](https://github.com/felipefernandes/iara)) | `.github/workflows/iara-code-reviewer.yml` |
 | `bc-ai-code-reviewer.yml` | Business Central AL-specific AI review ([`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer)) | `.github/workflows/bc-ai-code-reviewer.yml` |
+| `hog-heaven-release-annotations.yml` | PostHog release annotations via Hog Heaven — marks releases on analytics charts ([`joggrdocs/hog-heaven`](https://github.com/joggrdocs/hog-heaven)) | `.github/workflows/hog-heaven-release-annotations.yml` |
+| `posthog-annotations.yml` | PostHog annotations — marks PR merges, releases, deployments on analytics charts | `.github/workflows/posthog-annotations.yml` |
+| `posthog-send-event.yml` | PostHog custom events — track CI/CD pipeline events (reusable workflow) | `.github/workflows/posthog-send-event.yml` |
+| `posthog-upload-sourcemaps.yml` | PostHog source maps upload — enables readable error stack traces | `.github/workflows/posthog-upload-sourcemaps.yml` |
 
 > **OpenRouter-backed actions.** The last ten templates above all share the
 > single `OPENROUTER_API_KEY` secret (Vault path `revvel/shared/llm/openrouter`).
 > See [`docs/OPENROUTER_MARKETPLACE_ACTIONS.md`](../../docs/OPENROUTER_MARKETPLACE_ACTIONS.md)
 > for rollout steps, cost governance, and per-action extra secrets.
+
+> **PostHog integrations.** The PostHog templates (`hog-heaven-release-annotations.yml`, 
+> `posthog-annotations.yml`, `posthog-send-event.yml`, `posthog-upload-sourcemaps.yml`) 
+> require `POSTHOG_API_KEY`, `POSTHOG_PROJECT_ID`, and (for annotations/sourcemaps) 
+> `POSTHOG_PERSONAL_API_KEY` secrets. See `skills/posthog/SKILL.md` and 
+> `templates/standards/posthog-events.md` for setup instructions.
 
 ---
 
