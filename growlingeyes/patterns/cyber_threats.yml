@@ -1,0 +1,47 @@
+# Cyber Threats Trigger Patterns
+# Domain: Cybersecurity, APT, Vulnerabilities, Exploits
+
+keywords:
+  - zero-day
+  - exploit in the wild
+  - ransomware
+  - critical vulnerability
+  - active exploitation
+  - supply chain attack
+  - nation-state
+  - advanced persistent threat
+  - data breach
+  - critical infrastructure
+  - remote code execution
+  - privilege escalation
+  - authentication bypass
+
+regex:
+  - name: CVE_ID
+    pattern: CVE-\d{4}-\d{4,7}
+    score: 40
+    description: Common Vulnerabilities and Exposures identifier
+  
+  - name: HIGH_CVSS
+    pattern: CVSS:\s*([89]\.\d|10\.0)
+    score: 70
+    description: Critical CVSS score (8.0+)
+  
+  - name: APT_GROUP
+    pattern: (APT\d+|Lazarus|Sandworm|Fancy Bear|Cozy Bear|Volt Typhoon|Kimsuky|APT28|APT29)
+    score: 60
+    description: Known Advanced Persistent Threat groups
+
+thresholds:
+  - field: cvss_score
+    threshold: 8.0
+    score: 70
+    scale: true
+    description: CVSS base score
+
+severity_multipliers:
+  critical_infrastructure: 1.5
+  active_exploitation: 1.4
+  zero_day: 1.3
+  ransomware: 1.3
+  nation_state: 1.2
