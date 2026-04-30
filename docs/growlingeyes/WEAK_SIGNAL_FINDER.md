@@ -56,9 +56,9 @@ RSS Feeds (by domain) → Feed Aggregation → Text Processing → Frequency Ana
    - Builds contextual neighborhoods
 
 5. **Signal Scoring** — Scores signals based on multiple factors
-   - **Intensity score** (40%): Maximum word frequency
+   - **Intensity score** (50%): Maximum word frequency
    - **Diversity score** (30%): Number of distinct themes
-   - **Context score** (30%): Strength of word relationships
+   - **Context score** (20%): Strength of word relationships
    - Final score: 0-100 scale
 
 6. **Output** — Produces JSON reports with:
@@ -308,18 +308,26 @@ STOPWORDS = {
 
 ### Scoring Algorithm Tuning
 
-Adjust the signal scoring weights:
+Adjust the signal scoring weights via the module-level constants:
 
 ```python
-def score_signal_strength(intensity, pairs):
-    intensity_score = min(max_freq / 10.0, 1.0)
-    diversity_score = min(len(intensity) / 20.0, 1.0)
-    context_score = min(len(pairs) / 10.0, 1.0)
-    
-    # Adjust these weights (must sum to 1.0)
-    return (intensity_score * 0.4 + 
-            diversity_score * 0.3 + 
-            context_score * 0.3) * 100.0
+INTENSITY_THRESHOLD = 10.0
+DIVERSITY_THRESHOLD = 20.0
+CONTEXT_THRESHOLD = 10.0
+
+INTENSITY_WEIGHT = 0.5
+DIVERSITY_WEIGHT = 0.3
+CONTEXT_WEIGHT = 0.2
+
+def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]]) -> float:
+    max_freq = max(intensity.values())
+    intensity_score = min(max_freq / INTENSITY_THRESHOLD, 1.0)
+    diversity_score = min(len(intensity) / DIVERSITY_THRESHOLD, 1.0)
+    context_score = min(len(pairs) / CONTEXT_THRESHOLD, 1.0)
+
+    return (intensity_score * INTENSITY_WEIGHT +
+            diversity_score * DIVERSITY_WEIGHT +
+            context_score * CONTEXT_WEIGHT) * 100.0
 ```
 
 ---
