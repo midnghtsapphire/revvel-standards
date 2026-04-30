@@ -33,6 +33,18 @@
       },
       "disabled": true,
       "disabledReason": "Enable once growlingeyes/ deps are installed: pip install -r growlingeyes/requirements.txt"
+    },
+    "doppler": {
+      "_comment": "DoppleMCP — 11 tools for Doppler secrets management: secrets CRUD, projects, tokens, health. See growlingeyes/doppemcp/README.md.",
+      "command": "python",
+      "args": ["-m", "doppemcp.server"],
+      "env": {
+        "DOPPLER_TOKEN": "${DOPPLER_TOKEN}",
+        "DOPPLER_PROJECT": "${DOPPLER_PROJECT:-revvel-standards}",
+        "DOPPLER_CONFIG": "${DOPPLER_CONFIG:-prd}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once doppemcp is installed: cd growlingeyes/doppemcp && pip install -e . — then set DOPPLER_TOKEN."
     }
   }
 }
