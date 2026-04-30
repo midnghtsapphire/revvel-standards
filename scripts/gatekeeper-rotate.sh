@@ -75,6 +75,11 @@ while IFS= read -r entry; do
 
   next_epoch=$(date -d "$next_rotation" +%s 2>/dev/null || echo "0")
 
+  if [[ "$next_epoch" == "0" ]]; then
+    echo "⚠️  SKIP: $name ($id) — could not parse next_rotation: $next_rotation"
+    continue
+  fi
+
   if [[ "$next_epoch" -le "$NOW_EPOCH" ]]; then
     echo "🔴 OVERDUE: $name ($id) — was due $(date -d "$next_rotation" +%Y-%m-%d)"
     OVERDUE=$((OVERDUE + 1))
