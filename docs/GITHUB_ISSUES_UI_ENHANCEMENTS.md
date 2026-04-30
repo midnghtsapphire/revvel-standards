@@ -776,8 +776,8 @@ Create a web-based dashboard for enhanced issue management (similar to ops-board
 
     // Load issues on page load
     loadIssues();
-    // Refresh every 30 seconds
-    setInterval(loadIssues, 30000);
+    // Refresh every 60 seconds to respect GitHub API rate limits
+    setInterval(loadIssues, 60000);
   </script>
 </body>
 </html>
