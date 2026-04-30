@@ -268,13 +268,13 @@ jobs:
             
             **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             **Trigger:** ${{ github.event_name }}
-            **Date:** ${{ env.GITHUB_ACTION_TIMESTAMP }}
+            **Date:** ${new Date().toISOString()}
             
             ### Failed Checks
             
-            ${steps['check-apis'].outputs.apis_status === 'failed' ? '- ❌ Required APIs are not enabled' : ''}
-            ${steps['verify-pools'].outputs.pool_status === 'failed' ? '- ❌ Workforce pool verification failed' : ''}
-            ${steps['verify-providers'].outputs.providers_status === 'failed' ? '- ❌ Provider verification failed' : ''}
+            ${'${{ steps.check-apis.outputs.apis_status }}' === 'failed' ? '- ❌ Required APIs are not enabled' : ''}
+            ${'${{ steps.verify-pools.outputs.pool_status }}' === 'failed' ? '- ❌ Workforce pool verification failed' : ''}
+            ${'${{ steps.verify-providers.outputs.providers_status }}' === 'failed' ? '- ❌ Provider verification failed' : ''}
             
             ### Details
             

@@ -276,7 +276,7 @@ echo "1. Configure your IdP application to use this provider"
 echo "2. Test authentication with a pilot user"
 echo "3. Configure IAM bindings to grant access to Google Cloud resources"
 
-if [[ "$IDP_TYPE" == "entra-"* ]] && [[ "$IDP_TYPE" != "okta-"* ]]; then
+if [[ "$IDP_TYPE" == "entra-"* ]]; then
     echo "4. Consider setting up SCIM provisioning for automatic user/group sync"
     echo "   See: https://cloud.google.com/iam/docs/configure-scim-ms-entra"
 fi
