@@ -30,6 +30,7 @@
 | [`DEPLOYMENT_STANDARD.md`](DEPLOYMENT_STANDARD.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD pipeline |
 | [`FIELD_MAPPING_STANDARD.md`](FIELD_MAPPING_STANDARD.md) | Field mapping conventions for database-to-UI data flow |
 | [`GITHUB_APP_INTEGRATION_STANDARD.md`](GITHUB_APP_INTEGRATION_STANDARD.md) | GitHub App integration patterns and standards |
+| [`GOOGLE_CLOUD_IDENTITY_STANDARD.md`](GOOGLE_CLOUD_IDENTITY_STANDARD.md) | Google Cloud Identity & Workforce Identity Federation configuration, attribute mappings, SCIM provisioning |
 | [`LEADS_STANDARD.md`](LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up |
 | [`GITHUB_PROJECTS_SETUP.md`](../GITHUB_PROJECTS_SETUP.md) | Full guide: labels, milestones, project boards, CI/CD automation |
 | [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, funnels |
