@@ -1,0 +1,455 @@
+# Weekly Research (WR) Process
+
+**Version:** 1.0.0  
+**Status:** Active  
+**Owner:** @midnghtsapphire  
+**Last Updated:** April 30, 2026
+
+---
+
+## Overview
+
+Weekly Research (WR) tasks are deep-dive investigations that require comprehensive analysis across multiple repositories, documentation sources, and external resources. WR issues receive automated routing to specialized research agents and enhanced coordination through the OpenRouter orchestrator.
+
+---
+
+## Identifying WR Issues
+
+### Automatic Detection
+
+Issues are automatically identified as WR tasks if they:
+
+1. **Title starts with `[WR]` prefix**
+   - Example: `[WR] EVAluate if you think it works implement`
+   - Example: `[WR] Research migration path from Lodash to native ES methods`
+
+2. **Have the `weekly-research` label applied**
+   - Manually applied or auto-detected from title
+
+3. **Have the `deep-research` label applied**
+   - Escalated from standard triage to deep research
+
+### Manual Triggering
+
+You can manually trigger WR processing for any issue:
+
+```bash
+# Via GitHub CLI
+gh workflow run weekly-research.yml -f issue_number=123
+
+# Via GitHub Actions UI
+# Actions → Weekly Research (WR) Automation → Run workflow → Enter issue number
+```
+
+---
+
+## Automation Flow
+
+### Step 1: Detection & Labeling
+
+**Workflow:** `.github/workflows/weekly-research.yml`  
+**Trigger:** Issue opened/reopened with [WR] prefix
+
+**Actions:**
+1. Detect [WR] prefix in title
+2. Apply labels:
+   - `weekly-research`
+   - `wr:in-progress`
+   - `deep-research`
+   - `openrouter`
+   - `role:orchestrator`
+3. Post welcome comment with research checklist
+
+### Step 2: Triage & Routing
+
+**Workflow:** `openrouter-triage.yml` (automatically triggered)
+
+**Actions:**
+1. OpenRouter analyzes issue scope
+2. Suggests additional labels (e.g., `jules`, `codex`, `49agents`)
+3. Recommends research approach
+4. Posts triage comment with classification
+
+### Step 3: Research Execution
+
+**Multiple paths depending on configuration:**
+
+#### Path A: OpenRouter Sequential Research (Default)
+
+- Single orchestrator agent coordinates research
+- Subtasks executed sequentially
+- Findings documented in issue comments
+- **Duration:** 2-4 hours
+
+#### Path B: 49Agents Parallel Research (If Configured)
+
+- Multiple research agents (scout-1, scout-2, scout-3) work in parallel
+- Visual coordination via 49Agents canvas
+- Findings consolidated by dedicated agent
+- **Duration:** 30-60 minutes
+
+### Step 4: Progress Tracking
+
+**Automated progress tracker comment includes:**
+
+- Research phases checklist
+- Agent assignment status
+- Findings summary (updated in real-time)
+- Completion estimate
+
+### Step 5: Completion
+
+**When research is complete:**
+
+1. Final findings posted to issue
+2. Label changes:
+   - Remove `wr:in-progress`
+   - Add `wr:complete`
+3. Implementation recommendations provided
+4. Next steps documented
+
+---
+
+## Research Checklist
+
+Every WR task follows this standard checklist:
+
+- [ ] **Review repository documentation**
+  - [ ] `AGENTS.md` — Agent rules and protocols
+  - [ ] `skills/` — Relevant skills in the vault
+  - [ ] `standards/` — Applicable standards
+  - [ ] `templates/` — Reusable templates
+  - [ ] `.github/` — Workflow automation
+
+- [ ] **Cross-reference other repositories**
+  - [ ] Check consistency across midnghtsapphire org
+  - [ ] Identify patterns and best practices
+  - [ ] Note any conflicts or discrepancies
+
+- [ ] **Review skills vault**
+  - [ ] `skills/REGISTRY.md` — Available skills
+  - [ ] Load relevant skills for context
+  - [ ] Check for related skills to reuse
+
+- [ ] **Check repo-wide rules**
+  - [ ] `recurse-rules.md` — Code quality rules
+  - [ ] `docs/AGENTS.md` — Agent operating principles
+
+- [ ] **Research external developments**
+  - [ ] New tools and extensions released today
+  - [ ] Upstream project updates
+  - [ ] Model releases (OpenRouter, Anthropic, OpenAI, Google)
+  - [ ] Security advisories
+
+- [ ] **Cross-validate sources**
+  - [ ] Consider non-US sources (Gitee, GitLab, Bitbucket)
+  - [ ] Check multiple perspectives
+  - [ ] Avoid vendor bias
+
+- [ ] **Prime Directive compliance**
+  - [ ] Ensure recommendations result in working, tested code
+  - [ ] Not just plans or proposals
+  - [ ] Actionable implementation steps
+
+---
+
+## Research Findings Format
+
+### Structure
+
+```markdown
+## Research Findings: [WR Topic]
+
+**Research Date:** YYYY-MM-DD  
+**Researcher(s):** [Agent names]  
+**Issue:** #[number]
+
+---
+
+### Executive Summary
+
+[2-3 sentence summary of key findings and recommendation]
+
+---
+
+### Detailed Findings
+
+#### 1. [Finding Category 1]
+
+**What we found:**
+[Description]
+
+**Evidence:**
+- [Link/reference 1]
+- [Link/reference 2]
+
+**Assessment:**
+[Analysis]
+
+#### 2. [Finding Category 2]
+
+[Repeat structure]
+
+---
+
+### Recommendations
+
+#### Immediate Actions (P0)
+
+1. [Action 1]
+   - **Why:** [Rationale]
+   - **How:** [Implementation steps]
+   - **Effort:** [Hours/days estimate]
+
+2. [Action 2]
+
+#### Short-Term Actions (P1)
+
+[Within 1-2 weeks]
+
+#### Long-Term Actions (P2)
+
+[Within 1-2 months]
+
+---
+
+### Risks & Considerations
+
+| Risk | Severity | Mitigation |
+|------|----------|------------|
+| [Risk 1] | High/Med/Low | [How to mitigate] |
+
+---
+
+### Alternatives Considered
+
+1. **[Alternative 1]**
+   - Pros: [...]
+   - Cons: [...]
+   - Decision: [Accepted/Rejected because...]
+
+---
+
+### Next Steps
+
+1. [ ] [Action item 1]
+2. [ ] [Action item 2]
+3. [ ] [Action item 3]
+
+---
+
+### References
+
+- [Link 1]: [Description]
+- [Link 2]: [Description]
+
+---
+
+**Research Status:** ✅ Complete  
+**Implementation Priority:** P0/P1/P2  
+**Approval Required:** @midnghtsapphire
+```
+
+---
+
+## Agent Assignment
+
+### OpenRouter Orchestrator (Primary)
+
+**Model:** Claude Sonnet 4  
+**Role:** Coordinates overall research effort  
+**Responsibilities:**
+- Task decomposition
+- Sub-agent coordination
+- Findings consolidation
+- Final report generation
+
+### Jules (Google) — Optional
+
+**Model:** Gemini 2.5 Pro  
+**Role:** Deep research and authoring  
+**Trigger:** Add `jules` label  
+**Responsibilities:**
+- Comprehensive web research
+- Multi-source synthesis
+- Long-form documentation
+
+### Codex — Optional
+
+**Model:** GPT-5.2-Codex (via OpenRouter)  
+**Role:** Code analysis and implementation  
+**Trigger:** Add `codex` label  
+**Responsibilities:**
+- Code review
+- Implementation prototypes
+- Technical feasibility assessment
+
+### 49Agents Scouts — Optional
+
+**Models:** Claude Sonnet 4 (x3)  
+**Role:** Parallel investigation  
+**Trigger:** `AGENT_HQ_TOKEN` configured  
+**Responsibilities:**
+- Parallel research streams
+- Independent subtask execution
+- Real-time findings sharing
+
+---
+
+## Integration with 49Agents
+
+### Visual Research Dashboard
+
+When AGENT_HQ_TOKEN is configured, WR issues automatically trigger a 49Agents canvas:
+
+**Canvas Layout:**
+- **Orchestrator pane** — Coordinates research
+- **Scout-1 pane** — Repository review
+- **Scout-2 pane** — Cross-repo analysis
+- **Scout-3 pane** — External research
+- **Consolidator pane** — Report generation
+- **Monitor pane** — Progress tracking
+
+**Real-time Updates:**
+- Agent status indicators
+- Live terminal output
+- Shared findings notes
+- GitHub sync every 5 minutes
+
+See `skills/49agents/SKILL.md` for setup instructions.
+
+---
+
+## Examples
+
+### Example 1: Tool Evaluation WR
+
+**Issue:** `[WR] Evaluate 49Agents for integration`
+
+**Research performed:**
+1. ✅ Reviewed 49Agents documentation
+2. ✅ Compared with current automation
+3. ✅ Identified integration opportunities
+4. ✅ Assessed risks and costs
+5. ✅ Provided implementation roadmap
+
+**Outcome:** `docs/49AGENTS_EVALUATION.md` created with detailed analysis
+
+### Example 2: Standards Migration WR
+
+**Issue:** `[WR] Research migration from Lodash to native ES`
+
+**Research performed:**
+1. ✅ Audited Lodash usage across repos
+2. ✅ Identified native ES equivalents
+3. ✅ Performance comparison
+4. ✅ Migration script development
+5. ✅ Testing strategy
+
+**Outcome:** Migration guide + automated refactoring script
+
+---
+
+## Metrics
+
+### Research Effectiveness
+
+- **Average WR duration:** 2-4 hours (sequential) / 30-60 min (parallel)
+- **Findings quality:** Measured by implementation success rate
+- **Automation coverage:** % of WR tasks completing without human intervention
+- **Time to completion:** From issue open to `wr:complete` label
+
+### Success Criteria
+
+A WR task is successful if:
+
+1. ✅ All checklist items completed
+2. ✅ Findings documented in standard format
+3. ✅ Recommendations are actionable
+4. ✅ Implementation plan provided
+5. ✅ Risks identified and mitigated
+6. ✅ `wr:complete` label applied
+7. ✅ Stakeholder approval obtained
+
+---
+
+## Troubleshooting
+
+### WR Issue Not Auto-Detected
+
+**Problem:** Issue with [WR] prefix didn't trigger automation
+
+**Solutions:**
+1. Check workflow run logs: `gh run list --workflow=weekly-research.yml`
+2. Manually trigger: `gh workflow run weekly-research.yml -f issue_number=XXX`
+3. Verify workflow file is syntactically correct
+4. Check if `no-triage` label is applied (blocks automation)
+
+### OpenRouter Triage Failed
+
+**Problem:** Triage step failed with error
+
+**Solutions:**
+1. Check `OPENROUTER_API_KEY` is configured
+2. Verify OpenRouter API status: https://openrouter.ai/status
+3. Review triage script logs in workflow run
+4. Check for API rate limiting
+
+### 49Agents Integration Not Working
+
+**Problem:** Parallel research didn't trigger
+
+**Solutions:**
+1. Check `AGENT_HQ_TOKEN` is configured
+2. Verify 49Agents instance is running
+3. Test webhook endpoint: `curl https://agent-hq.revvel.co/api/health`
+4. Review webhook payload in workflow logs
+
+---
+
+## Best Practices
+
+### For Issue Authors
+
+1. **Use [WR] prefix** for automatic routing
+2. **Provide clear scope** in issue description
+3. **Include acceptance criteria** for research completion
+4. **Link relevant context** (prior art, related issues)
+5. **Set priority** if time-sensitive
+
+### For Researchers
+
+1. **Follow the checklist** systematically
+2. **Document as you go** (don't wait until the end)
+3. **Cite sources** for all findings
+4. **Be objective** (present alternatives fairly)
+5. **Ship working code** (not just recommendations)
+
+### For Reviewers
+
+1. **Check evidence quality** (are sources credible?)
+2. **Verify completeness** (all checklist items done?)
+3. **Assess feasibility** (can recommendations be implemented?)
+4. **Review risks** (are they adequately mitigated?)
+5. **Approve or request changes** within 24 hours
+
+---
+
+## Related Documentation
+
+- **49Agents Evaluation:** `docs/49AGENTS_EVALUATION.md`
+- **Automation Audit:** `docs/AUTOMATION_AUDIT.md`
+- **OpenRouter Swarms:** `skills/openrouter-swarms/SKILL.md`
+- **49Agents Integration:** `skills/49agents/SKILL.md`
+- **Agent Factory Standard:** `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`
+
+---
+
+## Changelog
+
+### 2026-04-30 — v1.0.0
+- Initial WR process documentation
+- Created `.github/workflows/weekly-research.yml`
+- Added `weekly-research`, `wr:in-progress`, `wr:complete` labels
+- Integrated with 49Agents parallel research
+- Defined standard research checklist and findings format

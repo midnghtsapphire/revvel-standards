@@ -275,3 +275,51 @@ labels:
   - name: retro
     color: "0075ca"
     description: "Post-deploy retrospective or gap analysis finding"
+
+  # ── 49Agents (agentic IDE integration) ────────────────────────────────────
+  - name: 49agents
+    color: "1a73e8"
+    description: "Related to 49Agents agentic IDE integration"
+
+  - name: "49agents:active"
+    color: "0e8a16"
+    description: "Currently being handled by 49Agents instance"
+
+  - name: "49agents:visual-dashboard"
+    color: "5a9bf0"
+    description: "Visible on 49Agents monitoring dashboard"
+
+  # ── Weekly Research (WR) workflow ──────────────────────────────────────────
+  - name: weekly-research
+    color: "fbca04"
+    description: "Weekly research task requiring deep investigation"
+
+  - name: "wr:in-progress"
+    color: "f9d71c"
+    description: "WR task actively being researched"
+
+  - name: "wr:complete"
+    color: "0e8a16"
+    description: "WR task completed with findings documented"
+
+  # ── Agent HQ / Desktop Agent ───────────────────────────────────────────────
+  - name: agent-hq
+    color: "6f42c1"
+    description: "Handled by Agent HQ desktop agent system"
+
+  - name: desktop-agent
+    color: "7057ff"
+    description: "Task for local desktop agent execution"
+
+  # ── GOAP (Goal-Oriented Action Planning) ───────────────────────────────────
+  - name: goap
+    color: "5319e7"
+    description: "GOAP agent task — goal-oriented action planning"
+
+  - name: "goap:planning"
+    color: "a78bfa"
+    description: "GOAP in planning phase — analyzing goals and actions"
+
+  - name: "goap:executing"
+    color: "8b5cf6"
+    description: "GOAP executing planned actions"

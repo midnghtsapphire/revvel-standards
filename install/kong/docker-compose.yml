@@ -1,0 +1,117 @@
+version: "3.9"
+
+# Kong Gateway OSS — Revvel Standard Deployment
+# See: standards/KONG_GATEWAY.md
+#
+# Usage:
+#   cp .env.example .env   # then edit with real values
+#   docker compose up -d
+#   bash bootstrap.sh      # run once after first deploy
+#
+# With Doppler:
+#   doppler run --project growlingeyes --config prd -- docker compose up -d
+
+services:
+  # ──────────────────────────────────────────────
+  # Kong PostgreSQL datastore
+  # ──────────────────────────────────────────────
+  kong-db:
+    image: postgres:16-alpine
+    container_name: kong-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${KONG_PG_USER:-kong}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:?Set KONG_PG_PASSWORD in .env or Doppler}
+      POSTGRES_DB: ${KONG_PG_DATABASE:-kong}
+    volumes:
+      - kong-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER:-kong}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kong-net
+
+  # ──────────────────────────────────────────────
+  # Kong database migrations (run once, then exit)
+  # ──────────────────────────────────────────────
+  kong-migrations:
+    image: kong:3.9
+    container_name: kong-migrations
+    command: kong migrations bootstrap
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:?}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+    restart: "no"
+    networks:
+      - kong-net
+
+  # ──────────────────────────────────────────────
+  # Kong Gateway
+  # ──────────────────────────────────────────────
+  kong:
+    image: kong:3.9
+    container_name: kong-gateway
+    restart: unless-stopped
+    depends_on:
+      kong-db:
+        condition: service_healthy
+      kong-migrations:
+        condition: service_completed_successfully
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:?}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+
+      # Proxy listener — external traffic
+      KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+
+      # Admin API — bind to all interfaces inside container,
+      # but host port mapping restricts to 127.0.0.1 (see ports below)
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+
+      # Logging
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+
+      # DNS resolver for Docker service names
+      KONG_DNS_RESOLVER: "127.0.0.11:53"
+
+      # Performance
+      KONG_NGINX_WORKER_PROCESSES: auto
+      KONG_UPSTREAM_KEEPALIVE_POOL_SIZE: 64
+    ports:
+      - "${KONG_PROXY_PORT:-8000}:8000"
+      - "${KONG_PROXY_SSL_PORT:-8443}:8443"
+      # Admin API — host-side bound to 127.0.0.1 only (NEVER expose to 0.0.0.0)
+      - "127.0.0.1:8001:8001"
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - kong-net
+      # Also needs host network access to reach PM2/local services
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  kong-pg-data:
+    driver: local
+
+networks:
+  kong-net:
+    driver: bridge

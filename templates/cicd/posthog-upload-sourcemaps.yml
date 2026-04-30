@@ -1,0 +1,127 @@
+name: PostHog Upload Source Maps
+
+# Upload JavaScript source maps to PostHog for readable error stack traces.
+#
+# Why: PostHog error tracking captures JavaScript errors, but minified stack traces
+# are unreadable. Uploading source maps lets PostHog map minified code back to
+# original source files and line numbers, making error debugging vastly easier.
+#
+# Required secrets:
+#   POSTHOG_PERSONAL_API_KEY  — PostHog Personal API Key (Settings → Personal API Keys)
+#   POSTHOG_PROJECT_ID        — PostHog Project ID (Settings → Project Settings)
+#
+# Optional repo variables (Settings → Variables → Actions):
+#   POSTHOG_ENABLED  — "true" (default) or "false" to disable without removing
+#
+# IMPORTANT: This workflow should run AFTER your build step that generates source maps.
+# Adjust the `directory` input to point to your build output (e.g., dist, build, .next).
+#
+# See: skills/posthog/SKILL.md, https://posthog.com/docs/error-tracking/upload-source-maps/github-actions
+
+on:
+  push:
+    branches: [main, production]
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      directory:
+        description: "Directory containing source maps (e.g., dist, build, .next)"
+        type: string
+        required: false
+        default: "dist"
+      version:
+        description: "Version or release tag (defaults to commit SHA)"
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: posthog-sourcemaps-${{ github.ref }}
+  cancel-in-progress: true  # Cancel previous runs for the same ref
+
+jobs:
+  upload-sourcemaps:
+    name: Upload source maps to PostHog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify configuration
+        id: verify
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+          POSTHOG_ENABLED: ${{ vars.POSTHOG_ENABLED }}
+        run: |
+          enabled="${POSTHOG_ENABLED:-true}"
+          if [ "${enabled}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::POSTHOG_ENABLED=${enabled} — skipping source map upload."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_PERSONAL_API_KEY}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_PERSONAL_API_KEY is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_PROJECT_ID}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_PROJECT_ID is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        if: steps.verify.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        if: steps.verify.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Build project (generates source maps)
+        if: steps.verify.outputs.skip != 'true'
+        run: npm run build
+        # IMPORTANT: Your build script must generate source maps.
+        # For Vite: set `build.sourcemap: true` in vite.config.ts
+        # For Next.js: set `productionBrowserSourceMaps: true` in next.config.js
+        # For Webpack: set `devtool: 'source-map'` in webpack.config.js
+
+      - name: Determine version
+        if: steps.verify.outputs.skip != 'true'
+        id: version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          if [ -z "${version}" ]; then
+            # Default to short commit SHA if no version provided
+            version="${GITHUB_SHA:0:7}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Using version: ${version}"
+
+      - name: Upload source maps to PostHog
+        if: steps.verify.outputs.skip != 'true'
+        uses: PostHog/upload-source-maps@v1
+        with:
+          directory: ${{ github.event.inputs.directory || 'dist' }}
+          project-id: ${{ secrets.POSTHOG_PROJECT_ID }}
+          api-key: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          version: ${{ steps.version.outputs.version }}
+          # Optional: for EU cloud, uncomment:
+          # host: https://eu.posthog.com
+          # Optional: for self-hosted, set your host:
+          # host: https://posthog.your-domain.com
+
+      - name: Summary
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          echo "✅ Uploaded source maps to PostHog"
+          echo "   Directory: ${{ github.event.inputs.directory || 'dist' }}"
+          echo "   Version: ${{ steps.version.outputs.version }}"
+          echo "   Project ID: ${{ secrets.POSTHOG_PROJECT_ID }}"
