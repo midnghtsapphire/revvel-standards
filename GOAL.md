@@ -274,6 +274,15 @@ revenue/YYYY-MM-DD_HH-MM_product-name.md
 - **Work Rules** — wr/ (agents, cron, memory, specs)
 - **MCP** — .mcp.json
 
+## Goap Documentation
+
+- **Master Timeline** — docs/GOAP_MASTER_TIMELINE.md (Complete 2026-2029 timeline)
+- **Careese Quickstart** — docs/GOAP_CAREESE_QUICKSTART.md (Simple one-page guide)
+- **Weekly Report Template** — docs/GOAP_WEEKLY_REPORT_TEMPLATE.md (Friday reports)
+- **Agent Standard** — docs/Master_Inventory/GOAP_AGENT_STANDARD.md
+- **Learnings Template** — templates/agent-factory/GOAP_LEARNINGS_TEMPLATE.md
+- **Agent Prompt** — GOAP_AGENT_PROMPT.md
+
 ---
 
 # UPDATES

@@ -182,7 +182,9 @@ Audrey is no longer the bottleneck. System runs 24/7. Daily involvement ≤ 15 m
 
 ## REFERENCES
 
-- **GOAL.md** — Detailed phase roadmap (Apr 28 - Jul 1, 2026)
+- **GOAL.md** — Detailed phase roadmap (Apr 28 - Jul 1, 2026) with 8 sub-phases
+  - Note: GOAL.md breaks down the 4 main phases above into 8 detailed sub-phases with weekly milestones
+  - Both timelines are complementary: Use GOAP_MASTER_TIMELINE for major milestones, GOAL.md for detailed weekly execution
 - **learnings.md** — Self-healing log for all Goap executions
 - **GOAP_AGENT_PROMPT.md** — Complete master prompt and operating standards
 - **GOAP_WEEKLY_REPORT_TEMPLATE.md** — Weekly reporting format
