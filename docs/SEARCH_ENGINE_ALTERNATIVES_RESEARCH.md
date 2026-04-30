@@ -31,7 +31,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 | Engine | Best For | License | Cost | Recommendation |
 |--------|----------|---------|------|----------------|
-| **Elasticsearch** | Petabyte-scale, log analytics | ELv2/SSPL | $$$$ | ❌ Overkill for most Revvel apps |
+| **Elasticsearch** | Petabyte-scale, log analytics | ELv2/SSPL/AGPL | $$$$ | ❌ Overkill for most Revvel apps |
 | **OpenSearch** | AWS integration, logs | Apache 2.0 | $-$$ | ⚠️ Only if already on AWS |
 | **MeiliSearch** ⭐ | Instant search UX | MIT | $-$$ | ✅ Ideal for product search |
 | **Typesense** | Real-time, simplicity | GPL 3 | $-$$ | ✅ Good alternative |
@@ -50,7 +50,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 **Cost:** $X00+/month for cloud - pricing is opaque and complex.
 
 **Problems:**
-- Licensing changed from Apache 2.0 to dual licensing (Elastic License 2.0 and SSPL) in 2021
+- Licensing changed from Apache 2.0 to dual licensing (Elastic License 2.0 and SSPL) in 2021; AGPL added as a third option in 2024, restoring OSI-approved open-source status
 - Expensive for small-to-medium use cases
 - Complex operational overhead (cluster management, shard optimization, memory tuning)
 - Pricing is not transparent
@@ -406,21 +406,21 @@ User Query → MeiliSearch (instant search, typo tolerance)
 ## 9. Action Items
 
 ### Immediate (This Week)
-1. **Migrate off Elastic Cloud** - cancel subscription after migration complete
-2. **Set up MeiliSearch POC** - test with sample data
-3. **Document current search usage patterns** - queries, volumes, performance requirements
+1. **Migrate off Elastic Cloud** - cancel subscription after migration complete ([#436](https://github.com/midnghtsapphire/revvel-standards/issues/436))
+2. **Set up MeiliSearch POC** - test with sample data ([#437](https://github.com/midnghtsapphire/revvel-standards/issues/437))
+3. **Document current search usage patterns** - queries, volumes, performance requirements ([#438](https://github.com/midnghtsapphire/revvel-standards/issues/438))
 
 ### Short-Term (Next 2-4 Weeks)
-1. **Implement MeiliSearch** for primary product search use case
-2. **Create migration scripts** for data transfer
-3. **Update application code** to use MeiliSearch API
-4. **Set up monitoring** for search performance and quality
+1. **Implement MeiliSearch** for primary product search use case ([#439](https://github.com/midnghtsapphire/revvel-standards/issues/439))
+2. **Create migration scripts** for data transfer ([#439](https://github.com/midnghtsapphire/revvel-standards/issues/439))
+3. **Update application code** to use MeiliSearch API ([#439](https://github.com/midnghtsapphire/revvel-standards/issues/439))
+4. **Set up monitoring** for search performance and quality ([#439](https://github.com/midnghtsapphire/revvel-standards/issues/439))
 
 ### Medium-Term (1-2 Months)
-1. **Add OpenRouter integration** as semantic enhancement layer
-2. **A/B test search quality** with and without AI enhancement
-3. **Optimize costs** through caching and query optimization
-4. **Document lessons learned** and update this research doc
+1. **Add OpenRouter integration** as semantic enhancement layer ([#440](https://github.com/midnghtsapphire/revvel-standards/issues/440))
+2. **A/B test search quality** with and without AI enhancement ([#440](https://github.com/midnghtsapphire/revvel-standards/issues/440))
+3. **Optimize costs** through caching and query optimization ([#440](https://github.com/midnghtsapphire/revvel-standards/issues/440))
+4. **Document lessons learned** and update this research doc ([#440](https://github.com/midnghtsapphire/revvel-standards/issues/440))
 
 ---
 
