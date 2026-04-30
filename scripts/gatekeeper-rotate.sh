@@ -98,7 +98,7 @@ while IFS= read -r entry; do
           --repo "${GITHUB_REPOSITORY:-midnghtsapphire/revvel-standards}" \
           --label "rotation-due" \
           --search "[ROTATE] $name" \
-          --state open --limit 1 --json number -q '.[0].number' 2>/dev/null || echo "")
+          --state open --limit 1 --json number -q '.[0].number // empty' 2>/dev/null || echo "")
       fi
       if [[ -n "$EXISTING" ]]; then
         echo "  → Issue #$EXISTING already open for $id — skipping"
