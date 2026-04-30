@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-28"
+last_updated: "2026-04-30"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -465,6 +465,36 @@ skills:
       - "tty"
       - "aria"
       - "color contrast"
+
+  - name: ada_compliance_agent
+    title: "ADA Compliance Agent"
+    version: "1.0.0"
+    path: "skills/ada-compliance-agent/"
+    skill_file: "skills/ada-compliance-agent/ada-compliance-agent.skill.yml"
+    category: "Accessibility & Compliance"
+    access: all
+    lifecycle: "ephemeral-or-continuous"
+    run_modes:
+      - "on-demand"
+      - "scheduled"
+      - "continuous-24-7"
+    triggers:
+      - "ada"
+      - "ada certification"
+      - "free ada cert"
+      - "ada training"
+      - "accessibility audit"
+      - "compliance check"
+      - "wcag audit"
+      - "section 508"
+      - "a11y"
+      - "autonomous accessibility"
+      - "accessibility agent"
+      - "ada compliance agent"
+    dependencies:
+      - accessibility
+      - testing
+      - code_review
 
   # ─── Content & Marketing ───────────────────────────────────────────────────
 
