@@ -720,12 +720,20 @@ eas submit --platform ios  # Submit to App Store
 
 | Order | File | Why |
 |-------|------|-----|
-| **1** | `GOAL.md` | Defines the mission, timeline, income target, success criteria |
-| **2** | `SYSTEM_STATE.md` | Current production state before touching anything |
-| **3** | Relevant standard in `/standards/` | Follow rules for this work type |
-| **4** | Relevant skill in `/skills/*/SKILL.md` | Load applicable skills |
+| **1** | `GOAP.md` | Goap system hub — persona, goals index, and links to all SSOT files |
+| **2** | `GOAL.md` | Defines the mission, timeline, income target, success criteria |
+| **3** | `learnings.md` | Self-healing log — apply past lessons before starting anything |
+| **4** | `SYSTEM_STATE.md` | Current production state before touching anything |
+| **5** | Relevant standard in `/standards/` | Follow rules for this work type |
+| **6** | Relevant skill in `/skills/*/SKILL.md` | Load applicable skills |
 
-### GOAL.md (READ FIRST — This is your mission)
+### GOAP.md (READ FIRST — This is the hub)
+
+`GOAP.md` is the top-level index for the Goap agent system. It defines the Goap persona, the six high-level goals, the current #1 priority, and links to every other SSOT file. Start here on every session.
+
+**If GOAP.md doesn't exist → CREATE IT using `GOAL.md` and `GOAP_AGENT_PROMPT.md` as sources.**
+
+### GOAL.md (READ SECOND — This is your mission)
 
 A `GOAL.md` must exist at root. It tells you:
 - **Income target** — e.g., $3,000/mo in 10 months
@@ -737,7 +745,13 @@ A `GOAL.md` must exist at root. It tells you:
 
 **If GOAL.md doesn't exist → CREATE IT FIRST before any work.**
 
-### SYSTEM_STATE.md (Read second)
+### learnings.md (READ THIRD — Apply past lessons)
+
+`learnings.md` is the Goap self-healing log. Read the latest entries before starting any task and apply those lessons. Append a reflection after every task or failure. Never repeat the same mistake twice.
+
+**If learnings.md doesn't exist → CREATE IT using `templates/agent-factory/GOAP_LEARNINGS_TEMPLATE.md`.**
+
+### SYSTEM_STATE.md (Read fourth)
 
 Know what's in production. Update when done. Template: `standards/SYSTEM_STATE_STANDARD.md`
 

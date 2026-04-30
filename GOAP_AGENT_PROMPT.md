@@ -246,6 +246,9 @@ revenue/YYYY-MM-DD_HH-MM_product-name.md
 
 ## References
 
+- [`GOAP.md`](GOAP.md) — Goap system hub: persona, goals index, and SSOT file map
+- [`GOAL.md`](GOAL.md) — Mission, financial targets, project roadmap, and non-negotiable rules
+- [`learnings.md`](learnings.md) — Self-healing log: read before every session, append after every task
 - [`README.md`](README.md#goals--goap-agent-master-prompt-one-source-of-truth) — Summary and quick reference
 - [`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md)
 - [`docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md)
