@@ -40,8 +40,9 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `posthog-send-event.yml` | PostHog custom events — track CI/CD pipeline events (reusable workflow) | `.github/workflows/posthog-send-event.yml` |
 | `posthog-upload-sourcemaps.yml` | PostHog source maps upload — enables readable error stack traces | `.github/workflows/posthog-upload-sourcemaps.yml` |
 
-> **OpenRouter-backed actions.** The last ten templates above all share the
-> single `OPENROUTER_API_KEY` secret (Vault path `revvel/shared/llm/openrouter`).
+> **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
+> `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
+> (Vault path `revvel/shared/llm/openrouter`).
 > See [`docs/OPENROUTER_MARKETPLACE_ACTIONS.md`](../../docs/OPENROUTER_MARKETPLACE_ACTIONS.md)
 > for rollout steps, cost governance, and per-action extra secrets.
 
