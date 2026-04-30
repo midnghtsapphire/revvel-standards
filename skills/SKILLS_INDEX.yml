@@ -776,6 +776,36 @@ skills:
       - "create agent using amplitude data in notion"
       - "amplitude notion agent"
 
+  # ─── Automation & Finance ─────────────────────────────────────────────────
+
+  - name: grant_mgmt_agent
+    title: "Grant Management Agent — Complete Automation Pipeline"
+    version: "1.0.0"
+    path: "skills/grant-mgmt-agent/"
+    skill_file: "skills/grant-mgmt-agent/grant-mgmt-agent.skill.yml"
+    category: "Automation & Finance"
+    access: all
+    lifecycle: long-running
+    persona: scout
+    triggers:
+      - "grant management"
+      - "grant automation"
+      - "grant discovery"
+      - "grant proposal"
+      - "instrumentl"
+      - "grants.gov"
+      - "sam.gov"
+      - "grant tracking"
+      - "proposal writing"
+      - "grant application"
+      - "grant pipeline"
+      - "grant workflow"
+      - "grant compliance"
+      - "grant reporting"
+      - "rfp automation"
+      - "proposal automation"
+      - "grant ai"
+
   # ─── Bot Creation ─────────────────────────────────────────────────────────
 
   - name: bot_creator

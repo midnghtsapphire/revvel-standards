@@ -467,6 +467,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Lifecycle:** Long-running (cron-driven); each step session is ephemeral.
 - **Persona:** 🛠️ Forge-Pipeline
 
+#### grant-mgmt-agent
+
+- **Path:** `skills/grant-mgmt-agent/`
+- **Files:** `SKILL.md` · `grant-mgmt-agent.skill.yml`
+- **Description:** End-to-end grant management automation: discovery (Instrumentl, Grants.gov, SAM.gov), AI-powered proposal writing (OpenRouter), document automation (DocSpring/Anvil), workflow orchestration (n8n/Zapier/Make), tracking (Supabase/Airtable), and compliance reporting. Complete stack for automating the grant lifecycle from discovery through award and compliance, reducing manual work by 80%+ while maintaining high-quality applications.
+- **Tags:** grant-management, grant-automation, grants-gov, sam-gov, instrumentl, openrouter, proposal-writing, rfp-automation, n8n, zapier, make, supabase, airtable, document-automation, compliance-tracking
+- **Trigger:** "grant management", "grant automation", "grant discovery", "grant proposal", "instrumentl", "grants.gov", "sam.gov", "grant tracking", "proposal writing", "rfp automation".
+- **Persona:** 🔍 Scout
+
 ---
 
 ## Mandatory Skills for Every Session
