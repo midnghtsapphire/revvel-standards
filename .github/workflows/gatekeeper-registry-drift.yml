@@ -90,4 +90,5 @@ jobs:
           if [[ "$DRIFT_COUNT" -gt 0 ]]; then
             echo "::warning::Registry has $DRIFT_COUNT entries not found in Doppler"
             echo -e "\n## Drift Report\n$REPORT"
+            exit 1
           fi
