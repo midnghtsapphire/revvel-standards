@@ -42,6 +42,7 @@ services:
         config:
           origins:
             - "https://growlingeyes.com"
+            - "https://www.growlingeyes.com"
           methods:
             - GET
             - POST
@@ -87,6 +88,7 @@ services:
         config:
           origins:
             - "https://neurooz.com"
+            - "https://www.neurooz.com"
           methods:
             - GET
             - POST
@@ -132,6 +134,7 @@ services:
         config:
           origins:
             - "https://reese-reviews.com"
+            - "https://www.reese-reviews.com"
           methods:
             - GET
             - POST

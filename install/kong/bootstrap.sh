@@ -173,6 +173,7 @@ for SERVICE in growlingeyes neurooz reese-reviews; do
   kong_api POST "/services/${SERVICE}/plugins" \
     -d "name=cors" \
     -d "config.origins[]=https://${CORS_DOMAINS[$SERVICE]}" \
+    -d "config.origins[]=https://www.${CORS_DOMAINS[$SERVICE]}" \
     -d "config.methods[]=GET" \
     -d "config.methods[]=POST" \
     -d "config.methods[]=PUT" \
