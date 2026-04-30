@@ -158,7 +158,8 @@
         "conditions": {
           "string": [
             {
-              "value1": "={{ $json.email }}",
+              "value1": "={{ $node[\"Generate Report\"].json.email }}",
+              "operation": "notEqual",
               "value2": ""
             }
           ]
@@ -173,9 +174,9 @@
     {
       "parameters": {
         "fromEmail": "noreply@usdaloanhelper.com",
-        "toEmail": "={{ $json.email }}",
+        "toEmail": "={{ $node[\"Generate Report\"].json.email }}",
         "subject": "Your USDA Loan Eligibility Report",
-        "text": "=Hello {{ $json.applicantName }},\n\nHere is your USDA Loan Eligibility Report:\n\nProperty: {{ $json.address }}\nState: {{ $json.state }} | County: {{ $json.county }}\nHousehold Size: {{ $json.householdSize }}\nYour Income: ${{ $json.userIncome }}\nIncome Limit: ${{ $json.incomeLimit }}\n\nRural Eligibility: {{ $json.ruralStatus }}\nIncome Eligibility: {{ $json.incomeStatus }}\nOverall: {{ $json.overallEligible ? 'ELIGIBLE' : 'INELIGIBLE' }}\n\nNext Steps:\n{{ $json.nextSteps.join('\\n') }}\n\nDocument Checklist:\n{{ $json.documentChecklist.join('\\n- ') }}\n\nRecommendations:\n{{ $json.recommendations.join('\\n- ') }}\n\n---\nUSDA Loan Eligibility Checker\nPowered by Revvel Standards",
+        "text": "=Hello {{ $node[\"Generate Report\"].json.applicantName }},\n\nHere is your USDA Loan Eligibility Report:\n\nProperty: {{ $node[\"Generate Report\"].json.address }}\nState: {{ $node[\"Generate Report\"].json.state }} | County: {{ $node[\"Generate Report\"].json.county }}\nHousehold Size: {{ $node[\"Generate Report\"].json.householdSize }}\nYour Income: ${{ $node[\"Generate Report\"].json.userIncome }}\nIncome Limit: ${{ $node[\"Generate Report\"].json.incomeLimit }}\n\nRural Eligibility: {{ $node[\"Generate Report\"].json.ruralStatus }}\nIncome Eligibility: {{ $node[\"Generate Report\"].json.incomeStatus }}\nOverall: {{ $node[\"Generate Report\"].json.overallEligible ? 'ELIGIBLE' : 'INELIGIBLE' }}\n\nNext Steps:\n{{ $node[\"Generate Report\"].json.nextSteps.join('\\n') }}\n\nDocument Checklist:\n{{ $node[\"Generate Report\"].json.documentChecklist.join('\\n- ') }}\n\nRecommendations:\n{{ $node[\"Generate Report\"].json.recommendations.join('\\n- ') }}\n\n---\nUSDA Loan Eligibility Checker\nPowered by Revvel Standards",
         "options": {}
       },
       "name": "Email Report",
@@ -187,7 +188,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({\n  success: true,\n  message: 'Eligibility report generated',\n  eligible: $json.overallEligible,\n  report: $json\n}) }}"
+        "responseBody": "={{ JSON.stringify({\n  success: true,\n  message: 'Eligibility report generated',\n  eligible: $node[\"Generate Report\"].json.overallEligible,\n  report: $node[\"Generate Report\"].json\n}) }}"
       },
       "name": "Respond Success",
       "type": "n8n-nodes-base.respondToWebhook",
