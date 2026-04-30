@@ -3,10 +3,10 @@
 weak_signal_finder.py — Weak Signal Detection for OSINT Intelligence
 GrowlingEyes | Freedom Angel Corp / Audrey Evans
 
-Detects emerging themes and weak signals from RSS news feeds using NLP.
-Aggregates articles by topic/domain, cleans and lemmatizes text, computes
-word frequency scores, builds semantic neighborhoods, and surfaces signals
-that may indicate emerging threats, trends, or changes in the intelligence landscape.
+Detects emerging themes and weak signals from RSS news feeds using lightweight text processing.
+Aggregates articles by topic/domain, performs basic text cleaning and tokenization,
+computes word frequency scores, analyzes contextual co-occurrence windows, and surfaces
+signals that may indicate emerging threats, trends, or changes in the intelligence landscape.
 
 Inspired by: https://github.com/LittleViewer/WeakSignalFinder
 
