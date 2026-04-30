@@ -30,6 +30,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | 49Agents, agentic IDE, visual monitoring, parallel research, agent HQ, desktop agents | [`49agents`](#49agents) |
+| Agent fallback, Devin backup, Cursor, rate limits, high availability | [`agent-fallback`](#agent-fallback) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
 | OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight | [`openclaw-self-eval`](#openclaw-self-eval) |
@@ -105,6 +106,13 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Agent Operations
+
+#### agent-fallback
+- **Path:** `.github/workflows/agent-fallback.yml` · `docs/AGENT_FALLBACK_PROCESS.md`
+- **Description:** Automatic agent fallback system that switches between Devin AI, Cursor, and OpenRouter when rate limits are reached or agents are unavailable. Implements the fallback chain: Devin → Cursor → OpenRouter → Manual escalation. Monitors agent health, logs fallback events, and creates visibility issues for tracking. Ensures zero-downtime automation.
+- **Tags:** agent-fallback, devin, cursor, openrouter, rate-limit, backup, high-availability, automation
+- **Trigger:** Any automated task that requires AI agent execution; automatically used by workflows when Devin hits limits.
+- **Lifecycle:** System-level — always active as part of automation infrastructure.
 
 #### persona-engine
 - **Path:** `skills/persona-engine/`

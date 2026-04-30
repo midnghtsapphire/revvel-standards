@@ -140,6 +140,40 @@ OpenRouter failures are **not acceptable blockers**:
    - Add monitoring and alerting
    - Document the failure mode and recovery process
 
+### Agent Fallback System (Devin → Cursor → OpenRouter)
+
+This repository implements an **automatic agent fallback chain** to ensure zero-downtime automation when primary agents hit rate limits:
+
+**Fallback Chain:** Devin AI → Cursor → OpenRouter (multi-model) → Manual escalation
+
+**When to use:**
+- Any automated code generation task
+- CI/CD workflows requiring AI assistance
+- Issue/PR automation that generates code changes
+
+**How it works:**
+1. **Try Devin AI first** (most capable, handles complex multi-file changes)
+2. **If Devin fails** (rate limit, quota exceeded, unavailable):
+   - Automatically switch to **Cursor** (faster, good for smaller changes)
+3. **If Cursor fails**:
+   - Fall back to **OpenRouter** (multi-model, effectively unlimited)
+   - Try Sonnet → Opus → GPT-4 until one succeeds
+4. **If all agents fail**:
+   - Create `needs-human` issue with full context
+   - Log detailed diagnostics for troubleshooting
+
+**Configuration:**
+- See [`docs/AGENT_FALLBACK_PROCESS.md`](./AGENT_FALLBACK_PROCESS.md) for complete setup
+- Requires `DEVIN_API_KEY`, `CURSOR_API_KEY`, `OPENROUTER_API_KEY` in secrets
+- Workflows use `.github/workflows/agent-fallback.yml` automatically
+- Scripts: `scripts/call-devin-api.sh`, `scripts/call-cursor-api.sh`
+
+**Monitoring:**
+- Fallback events create issues with `auto-fallback` label
+- Track metrics in workflow health dashboard
+- No alerts for normal fallbacks (working as designed)
+- Alerts only if all agents fail
+
 ### Compliance & Legal Concerns
 
 When you encounter a potential compliance or legal issue:

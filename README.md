@@ -6,6 +6,44 @@
 
 ---
 
+## 🚀 Agent Fallback System (NEW!)
+
+**Automatic Devin → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
+
+### Quick Setup
+```bash
+./scripts/setup-agent-fallback.sh midnghtsapphire/YOUR-REPO
+gh secret set DEVIN_API_KEY --repo YOUR-REPO
+gh secret set CURSOR_API_KEY --repo YOUR-REPO
+```
+
+**Automatic Triggers:**
+- ✅ Issues labeled with `wr:code`, `wr:auto`, or `agent-fallback`
+- ✅ PRs opened or marked ready for review
+- ✅ Manual via GitHub Actions UI or `gh` CLI
+- ✅ Reusable from other workflows
+
+**Fallback Chain:**
+1. **Devin AI** (primary) — Complex multi-file changes, full autonomy
+2. **Cursor** (secondary) — Fast iteration, smaller features  
+3. **OpenRouter** (tertiary) — Multi-model backup, effectively unlimited
+4. **Manual escalation** — Creates `needs-human` issue with full diagnostics
+
+📖 **Documentation:**
+- [`docs/AGENT_FALLBACK_QUICKSTART.md`](docs/AGENT_FALLBACK_QUICKSTART.md) — Quick start guide
+- [`docs/AGENT_FALLBACK_PROCESS.md`](docs/AGENT_FALLBACK_PROCESS.md) — Complete documentation
+- [`.github/workflows/agent-fallback.yml`](.github/workflows/agent-fallback.yml) — Implementation
+
+**Use in workflows:**
+```yaml
+- uses: ./.github/workflows/agent-fallback.yml
+  with:
+    task_description: ${{ github.event.issue.body }}
+    issue_number: ${{ github.event.issue.number }}
+```
+
+---
+
 **Key Standards** — All standards live in [`docs/Master_Inventory/`](docs/Master_Inventory/)
 - [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
 - [`OSINT_STANDARD.md`](docs/Master_Inventory/OSINT_STANDARD.md) — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
