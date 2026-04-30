@@ -167,6 +167,69 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   }
   ```
 
+#### 9. MeiliSearch MCP Server
+- **Repository:** `mcp-servers/meilisearch-mcp` (revvel-standards/mcp-servers/meilisearch-mcp)
+- **Package:** `meilisearch-mcp` (Python)
+- **Required Env:** `MEILI_HOST`, `MEILI_KEY`
+- **Use Case:** **HIGH PRIORITY** — Product/user-facing search with instant results, typo tolerance, and relevance tuning. Revenue blocker (search affects conversions).
+- **Tools Available:**
+  - `meili_index_create` — Create a search index
+  - `meili_index_list` — List all indexes
+  - `meili_index_delete` — Delete an index
+  - `meili_documents_add` — Add/update documents in bulk
+  - `meili_documents_search` — Search with filters and ranking
+  - `meili_documents_get` — Retrieve a document by ID
+  - `meili_settings_update` — Configure search relevance, typo tolerance, ranking rules
+  - `meili_health` — Check MeiliSearch instance health
+- **Setup:**
+  1. **Self-hosted:** Install MeiliSearch locally or on DigitalOcean: https://www.meilisearch.com/docs/learn/getting_started/quick_start
+  2. **MeiliCloud:** Sign up at https://www.meilisearch.com/cloud (free tier available)
+  3. Install the MCP server:
+     ```bash
+     cd mcp-servers/meilisearch-mcp
+     pip install -e .
+     ```
+  4. Set environment variables in `.env`:
+     ```bash
+     MEILI_HOST=http://localhost:7700  # or your MeiliCloud URL
+     MEILI_KEY=yourMasterKey
+     ```
+- **Command:**
+  ```json
+  {
+    "command": "python",
+    "args": ["-m", "meilisearch_mcp.server"],
+    "env": {
+      "MEILI_HOST": "${MEILI_HOST}",
+      "MEILI_KEY": "${MEILI_KEY}"
+    }
+  }
+  ```
+- **Integration Example:**
+  ```python
+  # Sync product data to MeiliSearch
+  import meilisearch
+  client = meilisearch.Client('http://localhost:7700', 'masterKey')
+  index = client.index('products')
+  
+  # Add products
+  products = [
+    {'id': 1, 'name': 'Soul Bowl', 'category': 'entree', 'price': 1295},
+    {'id': 2, 'name': 'Fried Rice', 'category': 'side', 'price': 595}
+  ]
+  index.add_documents(products)
+  
+  # Configure search settings
+  index.update_settings({
+    'searchableAttributes': ['name', 'category', 'description'],
+    'filterableAttributes': ['category', 'price'],
+    'sortableAttributes': ['price', 'name']
+  })
+  
+  # Search (instant results, typo tolerant)
+  results = index.search('soul bowls')  # finds "Soul Bowl" even with typo
+  ```
+
 ---
 
 ### 4.3. Finance Servers

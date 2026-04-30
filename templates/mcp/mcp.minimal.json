@@ -25,6 +25,15 @@
       }
     },
 
+    "meilisearch": {
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST}",
+        "MEILI_KEY": "${MEILI_KEY}"
+      }
+    },
+
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"]
