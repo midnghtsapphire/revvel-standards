@@ -11,7 +11,7 @@ that all automations have the secrets they need to actually run.
 
 | Secret | Used By | Skip Guard? | Notes |
 |---|---|---|---|
-| `OPENROUTER_API_KEY` | ai-pr-review, ai-ci-failure-helper, ai-weekly-changelog, openrouter-triage, openrouter-coder, openrouter-instantiation-check, priority-router, proof-of-life, research-module, run-human-testing-api | Most have guards | Core LLM routing key — if missing, most AI features silently skip |
+| `OPENROUTER_API_KEY` | ai-pr-review, ai-ci-failure-helper, ai-weekly-changelog, openrouter-triage, openrouter-coder, openrouter-instantiation-check, priority-router, proof-of-life, research-module, run-human-testing-api, eeat-trust-cron | Most have guards | Core LLM routing key — if missing, most AI features silently skip |
 | `JULES_API_KEY` | jules-invoke, jules-feedback, jules-pr-comment, jules-pr-reviewer | Yes (all guarded) | Google Jules agent integration |
 | `OPENAI_API_KEY` | panda-ops | Yes | PandaOps AI PR review |
 | `RECURSE_ML_API_KEY` | recurse-ml | No guard | RecurseML code review — will fail if missing |
@@ -24,6 +24,10 @@ that all automations have the secrets they need to actually run.
 | `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
 | `DIGITALOCEAN_API_TOKEN` | deploy-oaudrey | Yes (skips with warning) | DO personal access token for App Platform deploys; create at DO → API → Tokens |
 | `NAMECHEAP_API_KEY` | credential-gatekeeper (BOM detection only) | Yes | Namecheap API key for DNS automation; enable at Namecheap → Profile → API Access |
+| `GOOGLE_SEARCH_CONSOLE_KEY` | eeat-trust-cron | Yes (degrades gracefully) | Google Search Console API for E-E-A-T automation; create at Google Cloud Console |
+| `GOOGLE_BUSINESS_PROFILE_KEY` | eeat-trust-cron | Yes (optional) | Google Business Profile API for E-E-A-T automation; create at Google Cloud Console |
+| `LINKEDIN_ACCESS_TOKEN` | eeat-trust-cron | Yes (optional) | LinkedIn API access token for profile sync; optional E-E-A-T feature |
+| `ORCID_API_KEY` | eeat-trust-cron | Yes (optional) | ORCID API key for publication sync; optional E-E-A-T feature |
 | `REVENUECAT_PUBLIC_API_KEY_IOS` / `_ANDROID` / `_AMAZON` / `_WEB` | Downstream Revvel apps (not workflows in this repo) | N/A | Per-platform public SDK keys for RevenueCat; safe to ship in client bundles. Standard: [`standards/REVENUECAT.md`](../standards/REVENUECAT.md) |
 | `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
 | `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
