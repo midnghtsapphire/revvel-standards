@@ -1,0 +1,75 @@
+2026-04-30 16:33:58,456 | INFO     | Fetching CISA Alerts: https://www.cisa.gov/cybersecurity-advisories/all.xml
+2026-04-30 16:33:58,457 | INFO     | Fetching US-CERT Alerts: https://www.cisa.gov/news.xml
+2026-04-30 16:33:58,457 | INFO     | Fetching Krebs on Security: https://krebsonsecurity.com/feed/
+2026-04-30 16:33:58,458 | INFO     | Fetching The Hacker News: https://feeds.feedburner.com/TheHackersNews
+2026-04-30 16:33:58,459 | INFO     | Fetching Bleeping Computer: https://www.bleepingcomputer.com/feed/
+2026-04-30 16:33:58,526 | WARNING  | No entries found in Bleeping Computer
+2026-04-30 16:33:58,526 | WARNING  | No entries found in Krebs on Security
+2026-04-30 16:33:58,526 | WARNING  | No entries found in US-CERT Alerts
+2026-04-30 16:33:58,539 | WARNING  | No entries found in The Hacker News
+2026-04-30 16:33:58,540 | WARNING  | No entries found in CISA Alerts
+2026-04-30 16:33:58,541 | WARNING  | No articles fetched for cyber
+2026-04-30 16:34:04,285 | INFO     | Fetching CISA Alerts: https://www.cisa.gov/cybersecurity-advisories/all.xml
+2026-04-30 16:34:04,285 | INFO     | Fetching US-CERT Alerts: https://www.cisa.gov/news.xml
+2026-04-30 16:34:04,286 | INFO     | Fetching Krebs on Security: https://krebsonsecurity.com/feed/
+2026-04-30 16:34:04,286 | INFO     | Fetching The Hacker News: https://feeds.feedburner.com/TheHackersNews
+2026-04-30 16:34:04,287 | INFO     | Fetching Bleeping Computer: https://www.bleepingcomputer.com/feed/
+2026-04-30 16:34:04,349 | WARNING  | No entries found in US-CERT Alerts
+2026-04-30 16:34:04,349 | WARNING  | No entries found in CISA Alerts
+2026-04-30 16:34:04,350 | WARNING  | No entries found in Bleeping Computer
+2026-04-30 16:34:04,365 | WARNING  | No entries found in Krebs on Security
+2026-04-30 16:34:04,366 | WARNING  | No entries found in The Hacker News
+2026-04-30 16:34:04,366 | WARNING  | No articles fetched for cyber
+2026-04-30 16:34:57,542 | INFO     | Fetching CISA Alerts: https://www.cisa.gov/cybersecurity-advisories/all.xml
+2026-04-30 16:34:57,543 | INFO     | Fetching US-CERT Alerts: https://www.cisa.gov/news.xml
+2026-04-30 16:34:57,543 | INFO     | Fetching Krebs on Security: https://krebsonsecurity.com/feed/
+2026-04-30 16:34:57,543 | INFO     | Fetching The Hacker News: https://feeds.feedburner.com/TheHackersNews
+2026-04-30 16:34:57,543 | INFO     | Fetching Bleeping Computer: https://www.bleepingcomputer.com/feed/
+2026-04-30 16:34:57,610 | WARNING  | No entries found in CISA Alerts
+2026-04-30 16:34:57,610 | WARNING  | No entries found in Krebs on Security
+2026-04-30 16:34:57,610 | WARNING  | No entries found in US-CERT Alerts
+2026-04-30 16:34:57,625 | WARNING  | No entries found in The Hacker News
+2026-04-30 16:34:57,625 | WARNING  | No entries found in Bleeping Computer
+2026-04-30 16:34:57,626 | WARNING  | No articles fetched for cyber
+2026-04-30 16:34:57,626 | INFO     | Fetching gCaptain: https://gcaptain.com/feed
+2026-04-30 16:34:57,626 | INFO     | Fetching Splash247: https://splash247.com/feed
+2026-04-30 16:34:57,627 | INFO     | Fetching Maritime Executive: https://maritime-executive.com/rss
+2026-04-30 16:34:57,627 | INFO     | Fetching FreightWaves: https://www.freightwaves.com/news/feed
+2026-04-30 16:34:57,698 | WARNING  | No entries found in gCaptain
+2026-04-30 16:34:57,698 | WARNING  | No entries found in FreightWaves
+2026-04-30 16:34:57,699 | WARNING  | No entries found in Splash247
+2026-04-30 16:34:57,699 | WARNING  | No entries found in Maritime Executive
+2026-04-30 16:34:57,700 | WARNING  | No articles fetched for maritime
+2026-04-30 16:34:57,700 | INFO     | Fetching Crisis Group: https://www.crisisgroup.org/rss.xml
+2026-04-30 16:34:57,700 | INFO     | Fetching ReliefWeb: https://reliefweb.int/updates/rss.xml
+2026-04-30 16:34:57,700 | INFO     | Fetching ACLED: https://acleddata.com/feed/
+2026-04-30 16:34:57,738 | WARNING  | No entries found in Crisis Group
+2026-04-30 16:34:57,750 | WARNING  | No entries found in ReliefWeb
+2026-04-30 16:34:57,750 | WARNING  | No entries found in ACLED
+2026-04-30 16:34:57,750 | WARNING  | No articles fetched for conflict
+2026-04-30 16:34:57,750 | INFO     | Fetching Foreign Policy: https://foreignpolicy.com/feed/
+2026-04-30 16:34:57,751 | INFO     | Fetching Defense One: https://www.defenseone.com/rss/
+2026-04-30 16:34:57,751 | INFO     | Fetching War on the Rocks: https://warontherocks.com/feed/
+2026-04-30 16:34:57,791 | WARNING  | No entries found in Foreign Policy
+2026-04-30 16:34:57,803 | WARNING  | No entries found in Defense One
+2026-04-30 16:34:57,803 | WARNING  | No entries found in War on the Rocks
+2026-04-30 16:34:57,804 | WARNING  | No articles fetched for geopolitical
+2026-04-30 16:34:57,804 | INFO     | Fetching IOM News: https://www.iom.int/news-rss
+2026-04-30 16:34:57,804 | INFO     | Fetching UNHCR: https://www.unhcr.org/rss.xml
+2026-04-30 16:34:57,805 | INFO     | Fetching Mixed Migration: https://mixedmigration.org/feed/
+2026-04-30 16:34:57,842 | WARNING  | No entries found in Mixed Migration
+2026-04-30 16:34:57,855 | WARNING  | No entries found in IOM News
+2026-04-30 16:34:57,855 | WARNING  | No entries found in UNHCR
+2026-04-30 16:34:57,856 | WARNING  | No articles fetched for migration
+2026-04-30 16:34:57,856 | INFO     | Fetching NOAA News: https://www.noaa.gov/feed
+2026-04-30 16:34:57,856 | INFO     | Fetching Climate Central: https://www.climatecentral.org/feed
+2026-04-30 16:34:57,860 | INFO     | Fetching Carbon Brief: https://www.carbonbrief.org/feed/
+2026-04-30 16:34:57,897 | WARNING  | No entries found in Climate Central
+2026-04-30 16:34:57,910 | WARNING  | No entries found in NOAA News
+2026-04-30 16:34:57,910 | WARNING  | No entries found in Carbon Brief
+2026-04-30 16:34:57,910 | WARNING  | No articles fetched for climate
+2026-04-30 16:34:57,910 | INFO     | Fetching Supply Chain Dive: https://www.supplychaindive.com/feeds/news/
+2026-04-30 16:34:57,911 | INFO     | Fetching Logistics Management: https://www.logisticsmgmt.com/rss/topic/1-all-topics
+2026-04-30 16:34:57,947 | WARNING  | No entries found in Supply Chain Dive
+2026-04-30 16:34:57,947 | WARNING  | No entries found in Logistics Management
+2026-04-30 16:34:57,947 | WARNING  | No articles fetched for supply_chain
