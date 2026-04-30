@@ -118,7 +118,7 @@ body:
       label: Scope for the deep-research pass
       description: |
         ✅ **These checkboxes are AUTOMATICALLY PRE-FILLED for you** — no copy-paste needed!
-        
+
         The defaults below are already checked. Just uncheck any that don't apply, or add extras.
         (This uses a textarea with pre-filled markdown because GitHub Issue Forms `checkboxes` type doesn't support default-selected options.)
       value: |
