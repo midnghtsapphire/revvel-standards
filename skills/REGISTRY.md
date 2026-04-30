@@ -1,8 +1,8 @@
 # Revvel Skills Registry
 
-**Version:** 1.0.0  
-**Date:** April 12, 2026  
-**Status:** Active  
+**Version:** 1.0.0
+**Date:** April 12, 2026
+**Status:** Active
 **Scope:** All Revvel/MIDNGHTSAPPHIRE agents — OpenClaw, GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and all temporary agents
 
 ---
@@ -45,6 +45,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Security, OWASP, secrets, API keys, auth | [`security`](#security) |
 | API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
+| ADA compliance audits, free certifications, autonomous monitoring, accessibility agent | [`ada-compliance-agent`](#ada-compliance-agent) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
@@ -315,6 +316,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** accessibility, wcag, ada, screen-reader, tty, aria
 - **Trigger:** Building any UI component; insurance/financial app features; public-facing pages.
 
+#### ada-compliance-agent
+- **Path:** `skills/ada-compliance-agent/`
+- **Files:** `SKILL.md` · `ada-compliance-agent.skill.yml` · `README.md` · `EXAMPLES.md` · `IMPLEMENTATION_SUMMARY.md` · `.github/workflows/ada-compliance-check.yml`
+- **Description:** Autonomous agent for researching, learning, and enforcing ADA compliance. Monitors for new certifications, audits code for WCAG 2.2 AA/AAA compliance, and ensures all accessibility standards are met. Can run on-demand, scheduled, or 24/7 via OpenRouter. Tracks free and paid ADA certification courses, auto-fixes safe violations, and continuously learns from new courses and standards updates.
+- **Tags:** ada, wcag, accessibility, a11y, section-508, compliance-agent, autonomous, certifications, continuous-learning, screen-reader, aria, tty, openrouter-24-7
+- **Trigger:** `ada`, `ada certification`, `free ada cert`, `accessibility audit`, `compliance check`, `wcag`, `section 508`, or any accessibility compliance task. Also when researching ADA training courses or monitoring for new accessibility standards.
+- **Lifecycle:** Ephemeral (on-demand audits) or Continuous (24/7 monitoring mode via OpenRouter)
+
 ---
 
 ### Content & Marketing
@@ -477,4 +486,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
