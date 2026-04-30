@@ -67,12 +67,6 @@ A chat-first OSINT toolkit for Gen Z and gamer audiences. No traditional web das
 │  │  ├── Unified events table                    │        │
 │  │  ├── Entity extraction pipeline              │        │
 │  │  └── Tactical map geo-pinning                │        │
-│  │                                              │        │
-│  │  Phase 5: Geospatial / Satellite Intel       │        │
-│  │  ├── Axion MCP (satellite imagery)           │        │
-│  │  ├── NDVI/NDWI/urban index mapping           │        │
-│  │  ├── ML land-cover classification            │        │
-│  │  └── Temporal change detection               │        │
 │  └──────────────────────────────────────────────┘        │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -291,82 +285,6 @@ bot.command("recon", async (ctx) => {
 
 ---
 
-## Phase 5: Geospatial & Satellite Intelligence (Axion)
-
-Axion is an MCP server providing satellite imagery search, map generation, and ML-based land-cover classification. It pulls free data from Sentinel-2, Landsat 8/9, and NAIP — giving users geospatial intelligence via chat commands.
-
-### Tools
-
-| Tool | Source | Purpose | Integration |
-|------|--------|---------|-------------|
-| **Axion MCP** | [github.com/dhenenjay/axion-planetary-mcp](https://github.com/dhenenjay/axion-planetary-mcp) | Satellite imagery search, map generation, ML classification | MCP server (self-hosted Docker or hosted with API key) |
-
-### Deployment Options
-
-| Option | Setup | API Key Required | Capabilities |
-|--------|-------|-----------------|-------------|
-| **Self-hosted (Docker)** | `docker run -p 3000:3000 dhenenjay/axion-planetary-mcp:latest` | No (uses free public STAC API) | Data search, map generation, classification |
-| **Hosted (cloud)** | `npx -y axion-mcp` with `AXION_API_KEY` env var | Yes | All above + SAR-to-optical AI conversion |
-
-### MCP Tool Definitions
-
-```typescript
-// Phase 5 tools — thin wrappers that delegate to the Axion MCP server
-server.tool("satellite_search", "Search satellite imagery for a location and date range", {
-  location: z.string().describe("Location name or lat,lon coordinates"),
-  start_date: z.string().optional().describe("Start date (YYYY-MM-DD)"),
-  end_date: z.string().optional().describe("End date (YYYY-MM-DD)"),
-  max_cloud_cover: z.number().optional().describe("Max cloud cover percentage (0-100)"),
-}, async ({ location, start_date, end_date, max_cloud_cover }) => {
-  // Forward to Axion axion_data tool
-});
-
-server.tool("satellite_map", "Generate an interactive map with vegetation/water/urban indices", {
-  location: z.string().describe("Location name or lat,lon coordinates"),
-  index: z.enum(["ndvi", "ndwi", "built_up"]).optional().describe("Map index type"),
-}, async ({ location, index }) => {
-  // Forward to Axion axion_map tool
-});
-
-server.tool("satellite_classify", "Run ML land-cover classification on satellite imagery", {
-  location: z.string().describe("Location name or lat,lon coordinates"),
-}, async ({ location }) => {
-  // Forward to Axion axion_classification tool
-});
-```
-
-### Output Format
-
-```json
-{
-  "query": "Seattle urban expansion",
-  "location": { "lat": 47.6062, "lon": -122.3321 },
-  "imagery": [
-    {
-      "source": "sentinel-2",
-      "date": "2024-03-15",
-      "resolution": "10m",
-      "cloud_cover": 12,
-      "thumbnail_url": "https://..."
-    }
-  ],
-  "indices": {
-    "ndvi": { "mean": 0.42, "description": "Moderate vegetation" },
-    "ndwi": { "mean": 0.18, "description": "Low water content" },
-    "built_up": { "mean": 0.65, "description": "High urban density" }
-  },
-  "classification": {
-    "urban": 45.2,
-    "vegetation": 30.1,
-    "water": 12.4,
-    "bare_soil": 8.3,
-    "other": 4.0
-  }
-}
-```
-
----
-
 ## Slash Commands Reference
 
 | Command | Platforms | Description |
@@ -380,8 +298,6 @@ server.tool("satellite_classify", "Run ML land-cover classification on satellite
 | `/server [server_id]` | Discord only | Discord server social link scan |
 | `/deleted [reddit_user]` | Discord, Telegram | Deleted/removed Reddit content recovery |
 | `/monitor [hashtag]` | Discord, Telegram | TikTok hashtag monitoring |
-| `/satellite [location]` | Discord, Telegram | Satellite imagery search for a location |
-| `/map [location]` | Discord, Telegram | Generate interactive vegetation/water/urban map |
 
 ---
 
@@ -436,7 +352,6 @@ growlingeyes/
             reddit.ts         # Think-Pol + SnooSnoop + Reveddit
             tiktok.ts         # TikSpyder + Urlebird
             correlate.ts      # Identity correlation engine
-            axion.ts          # Axion satellite/geospatial intelligence
         package.json
       discord-bot/            # Discord.js bot
         src/
@@ -447,8 +362,6 @@ growlingeyes/
             discord-lookup.ts
             reddit.ts
             tiktok.ts
-            satellite.ts
-            map.ts
         package.json
       telegram-bot/           # Telegram bot
         src/
@@ -471,7 +384,6 @@ growlingeyes/
 | **Steam API Key** | Steam profile lookups | Doppler `growlingeyes/prd/STEAM_API_KEY` |
 | **OpenRouter API Key** | LLM for AI agent reasoning | Doppler `growlingeyes/prd/OPENROUTER_API_KEY` |
 | **Reddit API credentials** | Reddit data access (optional — some tools don't need it) | Doppler `growlingeyes/prd/REDDIT_CLIENT_ID` + `REDDIT_CLIENT_SECRET` |
-| **Axion API Key** | Satellite imagery via Axion MCP (optional — self-hosted works without) | Doppler `growlingeyes/prd/AXION_API_KEY` |
 
 ---
 
@@ -483,9 +395,8 @@ growlingeyes/
 | **Phase 2** | Discord recon tools + Discord bot | 2-3 days | Discord bot token |
 | **Phase 3** | Reddit + TikTok tools | 2-3 days | Minimal (most tools are keyless) |
 | **Phase 4** | AI agent + Telegram bot + GrowlingEyes integration | 3-4 days | OpenRouter API key, Telegram token |
-| **Phase 5** | Axion satellite/geospatial intelligence + chat commands | 1-2 days | Axion API key (optional) or Docker |
 
-**Total estimated build time:** 11-15 days of agent work
+**Total estimated build time:** 10-13 days of agent work
 
 ---
 
@@ -512,5 +423,3 @@ growlingeyes/
 - [ ] No secrets in source (gitleaks clean)
 - [ ] Discord bot registered and running in at least one server
 - [ ] Telegram bot registered and responding to commands
-- [ ] Axion MCP tools respond to satellite data and map generation requests
-- [ ] `/satellite` and `/map` commands work in Discord and Telegram
