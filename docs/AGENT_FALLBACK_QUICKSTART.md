@@ -64,13 +64,13 @@ The agent-fallback workflow **automatically triggers** on:
 
 ## 📋 Features
 
-✅ **Automatic triggering** — No manual workflow dispatch needed  
-✅ **Automatic fallback** — No manual intervention when Devin hits limits  
-✅ **Zero downtime** — Always have a working agent  
-✅ **Rate limit detection** — Smart retry with exponential backoff  
-✅ **Monitoring** — Track fallback events automatically  
-✅ **Cost optimization** — Route simple tasks to cheaper agents  
-✅ **Health checks** — Pre-flight verification before expensive operations  
+✅ **Automatic triggering** — No manual workflow dispatch needed
+✅ **Automatic fallback** — No manual intervention when Devin hits limits
+✅ **Zero downtime** — Always have a working agent
+✅ **Rate limit detection** — Smart retry with exponential backoff
+✅ **Monitoring** — Track fallback events automatically
+✅ **Cost optimization** — Route simple tasks to cheaper agents
+✅ **Health checks** — Pre-flight verification before expensive operations
 
 ---
 
@@ -322,11 +322,28 @@ on:
   schedule:
     - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
 jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.issue.outputs.number }}
+    steps:
+      - uses: actions/github-script@v8
+        id: issue
+        with:
+          script: |
+            const { data } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[SCHEDULED] Refactor deprecated patterns',
+              labels: ['agent-fallback', 'scheduled'],
+            });
+            core.setOutput('number', data.number);
   refactor:
+    needs: create-issue
     uses: ./.github/workflows/agent-fallback.yml
     with:
       task_description: "Refactor deprecated patterns"
-      issue_number: 0  # No specific issue
+      issue_number: ${{ needs.create-issue.outputs.issue_number }}
 ```
 
 ---

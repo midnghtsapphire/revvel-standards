@@ -81,7 +81,7 @@ call_cursor() {
     500|502|503|504)
       echo "⚠️  Server error (${HTTP_CODE})"
       if [ ${attempt} -lt ${MAX_RETRIES} ]; then
-        echo "Retrying in ${RETRY_DELAY} seconds..."
+        echo "Will retry with exponential backoff..."
         return 3
       else
         return 1

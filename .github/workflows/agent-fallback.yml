@@ -77,6 +77,9 @@ jobs:
         github.event.label.name == 'agent-fallback')) ||
       (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
+       (github.event.pull_request.author_association == 'MEMBER' ||
+        github.event.pull_request.author_association == 'OWNER' ||
+        github.event.pull_request.author_association == 'COLLABORATOR') &&
        (github.event.action == 'opened' ||
         github.event.action == 'reopened' ||
         github.event.action == 'ready_for_review'))
@@ -160,13 +163,15 @@ jobs:
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v8
+        env:
+          INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
+          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
             let issueNumber;
             let issueTitle = '';
             let issueBody = '';
-
-            const taskDescription = '${{ inputs.task_description }}';
+            const taskDescription = process.env.INPUT_TASK_DESCRIPTION || '';
 
             // Determine issue number based on event type
             if (context.eventName === 'issues') {
@@ -179,7 +184,7 @@ jobs:
               issueBody = context.payload.pull_request.body || '';
             } else {
               // workflow_dispatch, workflow_call, or any caller event
-              const raw = '${{ inputs.issue_number }}';
+              const raw = process.env.INPUT_ISSUE_NUMBER || '';
               issueNumber = raw ? Number(raw) : undefined;
             }
 
@@ -373,10 +378,14 @@ jobs:
       - name: Comment on issue with success
         if: steps.result.outputs.success == 'true'
         uses: actions/github-script@v8
+        env:
+          AGENT: ${{ steps.result.outputs.agent }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
         with:
           script: |
-            const agent = '${{ steps.result.outputs.agent }}';
-            const prUrl = '${{ steps.cpr.outputs.pull-request-url }}';
+            const agent = process.env.AGENT;
+            const prUrl = process.env.PR_URL || '';
 
             let agentIcon = '🤖';
             if (agent === 'cursor') agentIcon = '🔧';
@@ -389,17 +398,22 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
+              issue_number: Number(process.env.ISSUE_NUM),
               body: body
             });
 
       - name: Create fallback event issue
         if: steps.result.outputs.agent != 'devin' && steps.result.outputs.agent != 'none'
         uses: actions/github-script@v8
+        env:
+          AGENT: ${{ steps.result.outputs.agent }}
+          ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
+          TASK_SUCCESS: ${{ steps.result.outputs.success }}
         with:
           script: |
-            const agent = '${{ steps.result.outputs.agent }}';
-            const originalIssue = '${{ steps.issue.outputs.issue_number }}';
+            const agent = process.env.AGENT;
+            const originalIssue = process.env.ORIGINAL_ISSUE;
+            const success = process.env.TASK_SUCCESS;
 
             await github.rest.issues.create({
               owner: context.repo.owner,
@@ -411,7 +425,7 @@ jobs:
               **Original task:** #${originalIssue}
               **Timestamp:** ${new Date().toISOString()}
               **Agent used:** ${agent}
-              **Success:** ${{ steps.result.outputs.success }}
+              **Success:** ${success}
 
               No action required — fallback is working as designed. This issue is for monitoring purposes only.`
             });
@@ -419,18 +433,24 @@ jobs:
       - name: Comment on issue with failure
         if: steps.result.outputs.success == 'false'
         uses: actions/github-script@v8
+        env:
+          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
+          DEVIN_OUTCOME: ${{ steps.devin.outcome }}
+          CURSOR_OUTCOME: ${{ steps.cursor.outcome }}
+          OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
         with:
           script: |
+            const issueNum = Number(process.env.ISSUE_NUM);
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
+              issue_number: issueNum,
               body: `❌ All agents failed to complete this task.
 
               **Attempted:**
-              - Devin AI: ${{ steps.devin.outcome }}
-              - Cursor: ${{ steps.cursor.outcome }}
-              - OpenRouter: ${{ steps.openrouter.outcome }}
+              - Devin AI: ${process.env.DEVIN_OUTCOME}
+              - Cursor: ${process.env.CURSOR_OUTCOME}
+              - OpenRouter: ${process.env.OPENROUTER_OUTCOME}
 
               **Next steps:**
               1. Check agent status pages
@@ -444,6 +464,6 @@ jobs:
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
+              issue_number: issueNum,
               labels: ['needs-human']
             });
