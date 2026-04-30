@@ -1,0 +1,80 @@
+name: Gatekeeper — Registry Drift Check
+
+# Daily check that the Gatekeeper registry matches what's actually
+# provisioned in Doppler. Alerts on mismatches (secret exists in registry
+# but not Doppler, or vice versa).
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # Daily 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  drift-check:
+    name: Detect registry vs Doppler drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare registry to Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REGISTRY="docs/_GATEKEEPER_REGISTRY.json"
+          if [[ ! -f "$REGISTRY" ]]; then
+            echo "Registry file not found — skipping drift check"
+            exit 0
+          fi
+
+          DRIFT_COUNT=0
+          REPORT=""
+
+          # Check each registry entry with a Doppler path
+          while IFS= read -r entry; do
+            id=$(echo "$entry" | jq -r '.id')
+            name=$(echo "$entry" | jq -r '.name')
+            env_var=$(echo "$entry" | jq -r '.env_var // empty')
+            doppler_path=$(echo "$entry" | jq -r '.doppler_path // empty')
+            status=$(echo "$entry" | jq -r '.status')
+
+            [[ "$status" != "active" ]] && continue
+            [[ -z "$doppler_path" || "$doppler_path" == "null" ]] && continue
+            [[ -z "$env_var" || "$env_var" == "null" ]] && continue
+
+            # Parse project/config from doppler_path (format: project/config/name)
+            IFS='/' read -r project config _secret_name <<< "$doppler_path"
+
+            if [[ -z "$project" || -z "$config" ]]; then
+              echo "⚠️  $id — malformed doppler_path: $doppler_path"
+              continue
+            fi
+
+            # Check if secret exists in Doppler
+            HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' \
+              --get "https://api.doppler.com/v3/configs/config/secret" \
+              --data-urlencode "project=$project" \
+              --data-urlencode "config=$config" \
+              --data-urlencode "name=$env_var" \
+              -H "Authorization: Bearer $DOPPLER_TOKEN" \
+              -H "Accept: application/json" 2>/dev/null || echo "000")
+
+            if [[ "$HTTP_CODE" != "200" ]]; then
+              echo "🔴 DRIFT: $name ($id) — env_var=$env_var NOT found in Doppler $project/$config (HTTP $HTTP_CODE)"
+              DRIFT_COUNT=$((DRIFT_COUNT + 1))
+              REPORT="${REPORT}\n- **$name** (\`$env_var\`): not found in Doppler \`$project/$config\`"
+            else
+              echo "✅ $name ($id) — present in Doppler"
+            fi
+          done < <(jq -c '.entries[]' "$REGISTRY")
+
+          echo ""
+          echo "Drift check complete: $DRIFT_COUNT mismatches found"
+
+          if [[ "$DRIFT_COUNT" -gt 0 ]]; then
+            echo "::warning::Registry has $DRIFT_COUNT entries not found in Doppler"
+          fi
