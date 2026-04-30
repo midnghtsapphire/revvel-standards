@@ -174,7 +174,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const results = {
           issue: issue.data,
-          automation: {},
+          automation: {
+            requested: {
+              createBranch: args.automation?.createBranch || false,
+              createPR: args.automation?.createPR || false,
+              addToProject: args.automation?.addToProject || false,
+              notifySlack: args.automation?.notifySlack || false,
+            },
+            completed: {},
+            errors: {},
+          },
         };
 
         // Trigger automation workflows
@@ -189,7 +198,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const branchName = `issue-${issue.data.number}-${issue.data.title
               .toLowerCase()
               .replace(/[^a-z0-9]/g, "-")
-              .substring(0, 40)}`;
+              .substring(0, 40)
+              .replace(/-+$/, "")}`;
 
             await octokit.git.createRef({
               owner: args.owner,
@@ -198,7 +208,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               sha: mainBranch.data.commit.sha,
             });
 
-            results.automation.branch = branchName;
+            results.automation.completed.branch = branchName;
 
             await octokit.issues.createComment({
               owner: args.owner,
@@ -207,7 +217,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               body: `🌿 Branch created: \`${branchName}\`\n\nYou can start working on this issue!`,
             });
           } catch (error) {
-            results.automation.branchError = error.message;
+            results.automation.errors.branch = error.message;
           }
         }
 

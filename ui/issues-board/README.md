@@ -85,11 +85,13 @@ Click any card to open the issue in GitHub.
 The dashboard uses the GitHub REST API without authentication, which is subject to rate limits:
 - 60 requests per hour for unauthenticated requests
 - Auto-refresh is set to 30 seconds (120 requests per hour)
+- **Important**: The current auto-refresh rate will hit GitHub's rate limit after ~30 minutes
 
-To avoid rate limits, you can:
-1. Increase the refresh interval in the code
-2. Add GitHub authentication (requires backend service)
-3. Use this primarily when actively managing issues
+To avoid rate limits:
+1. **Recommended**: Increase the refresh interval in `index.html` to 60 seconds or more
+2. Add GitHub authentication (requires backend service or browser extension)
+3. Use the dashboard intermittently rather than leaving it open continuously
+4. Consider implementing exponential backoff when rate limits are hit
 
 ## Design Principles
 

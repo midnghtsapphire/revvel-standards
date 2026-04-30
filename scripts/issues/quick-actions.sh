@@ -46,7 +46,7 @@ issue_create_with_pr() {
     --json number \
     --jq .number)
   
-  BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | cut -c1-40)"
+  BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | cut -c1-40 | sed 's/-$//')"
   
   git fetch origin main
   git checkout -b "$BRANCH" origin/main

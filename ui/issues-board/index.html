@@ -249,8 +249,9 @@
 
     // Load issues on page load
     loadIssues();
-    // Refresh every 30 seconds
-    setInterval(loadIssues, 30000);
+    // Refresh every 60 seconds to respect GitHub API rate limits
+    // (60 requests/hour for unauthenticated requests)
+    setInterval(loadIssues, 60000);
   </script>
 </body>
 </html>
