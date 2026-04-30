@@ -345,7 +345,7 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 
 1. **Large feed lists:** Increase ThreadPoolExecutor workers
 2. **High-frequency scanning:** Use daemon mode with appropriate intervals
-3. **Resource constraints:** Reduce `perPage` limit in feed fetching
+3. **Resource constraints:** Reduce the per-feed article cap (`feed.entries[:20]`) in `fetch_feed`
 4. **Network issues:** Implement retry logic with exponential backoff
 
 ---
