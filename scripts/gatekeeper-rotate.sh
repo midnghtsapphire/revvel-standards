@@ -58,7 +58,7 @@ OVERDUE=0
 WARNING=0
 OK=0
 
-jq -c '.entries[]' "$REGISTRY_FILE" | while IFS= read -r entry; do
+while IFS= read -r entry; do
   id=$(echo "$entry" | jq -r '.id')
   name=$(echo "$entry" | jq -r '.name')
   next_rotation=$(echo "$entry" | jq -r '.next_rotation // empty')
@@ -113,7 +113,7 @@ _Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not
     echo "✅ OK: $name ($id) — next rotation $(date -d "$next_rotation" +%Y-%m-%d)"
     OK=$((OK + 1))
   fi
-done
+done < <(jq -c '.entries[]' "$REGISTRY_FILE")
 
 echo ""
 echo "Summary: overdue=$OVERDUE, warning=$WARNING, ok=$OK"
