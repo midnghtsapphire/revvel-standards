@@ -266,7 +266,7 @@ const results = await index.search('', {
 
 ```typescript
 // Get facet counts
-index.update_settings({
+await index.updateSettings({
   filterableAttributes: ['category', 'tags', 'inStock'],
 });
 
@@ -285,7 +285,7 @@ console.log(results.facetDistribution);
 
 ```typescript
 // Enable geo search
-index.update_settings({
+await index.updateSettings({
   sortableAttributes: ['_geo'],
 });
 
@@ -308,7 +308,7 @@ const results = await index.search('soul bowl', {
 
 ```typescript
 // Configure synonyms
-index.update_settings({
+await index.updateSettings({
   synonyms: {
     'chicken': ['chkn', 'poultry'],
     'rice': ['fried rice', 'white rice'],
@@ -580,7 +580,7 @@ await analytics.track({
 ### Typo Tolerance Too Aggressive
 
 ```typescript
-index.update_settings({
+await index.updateSettings({
   typoTolerance: {
     enabled: true,
     minWordSizeForTypos: {
