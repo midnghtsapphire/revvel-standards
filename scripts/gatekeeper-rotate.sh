@@ -112,6 +112,7 @@ while IFS= read -r entry; do
         echo "  → Creating rotation issue for $id..."
         # Write body to a temp file to safely handle names/values with special characters
         _body_file=$(mktemp)
+        trap 'rm -f "$_body_file"' EXIT
         cat > "$_body_file" <<BODY
 ## Rotation Required
 
