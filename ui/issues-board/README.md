@@ -8,7 +8,7 @@ Interactive web-based dashboard for enhanced GitHub Issues UI management.
 - **Advanced Filtering**: Filter by state, label, assignee, and sort by various criteria
 - **Quick Actions**: Create issues, view documentation, access workflows, export data
 - **Visual Issue Cards**: Click any issue card to open it in GitHub
-- **Auto-refresh**: Dashboard updates every 30 seconds
+- **Auto-refresh**: Dashboard updates every 60 seconds (respects GitHub API rate limits)
 - **CSV Export**: Export all issues to CSV for analysis
 
 ## Usage
@@ -84,14 +84,13 @@ Click any card to open the issue in GitHub.
 
 The dashboard uses the GitHub REST API without authentication, which is subject to rate limits:
 - 60 requests per hour for unauthenticated requests
-- Auto-refresh is set to 30 seconds (120 requests per hour)
-- **Important**: The current auto-refresh rate will hit GitHub's rate limit after ~30 minutes
+- Auto-refresh is set to 60 seconds (60 requests per hour)
+- This respects GitHub's rate limit without requiring authentication
 
-To avoid rate limits:
-1. **Recommended**: Increase the refresh interval in `index.html` to 60 seconds or more
+To further reduce API calls:
+1. Increase the refresh interval in `index.html` to 120 seconds or more
 2. Add GitHub authentication (requires backend service or browser extension)
-3. Use the dashboard intermittently rather than leaving it open continuously
-4. Consider implementing exponential backoff when rate limits are hit
+3. Implement exponential backoff when rate limits are hit
 
 ## Design Principles
 

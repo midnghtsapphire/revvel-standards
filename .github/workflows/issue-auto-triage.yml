@@ -73,7 +73,8 @@ jobs:
             const branchName = `issue-${issue.number}-${issue.title
               .toLowerCase()
               .replace(/[^a-z0-9]/g, '-')
-              .substring(0, 40)}`;
+              .substring(0, 40)
+              .replace(/-+$/, '')}`;
             
             const mainBranch = await github.rest.repos.getBranch({
               owner: context.repo.owner,
@@ -93,7 +94,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: `🌿 Branch created: \`${branchName}\`\n\nYou can start working on this issue!`
+                body: `Branch created: \`${branchName}\`\n\nYou can start working on this issue!`
               });
             } catch (error) {
               console.log('Branch creation skipped (may already exist):', error.message);
