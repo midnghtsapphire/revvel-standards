@@ -3,24 +3,24 @@
 Test script for weak_signal_finder.py with mock data
 """
 
-import sys
+import importlib.util
 import os
-from collections import Counter
+import sys
 
-# Add the parent directory to path to enable imports
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-tools_dir = os.path.join(parent_dir, 'growlingeyes', 'tools')
-sys.path.insert(0, tools_dir)
+_module_path = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    'growlingeyes', 'tools', 'weak_signal_finder.py',
+)
+_spec = importlib.util.spec_from_file_location("weak_signal_finder", _module_path)
+_wsf = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = _wsf
+_spec.loader.exec_module(_wsf)
 
-# Import the module properly
-import weak_signal_finder
-
-# Extract the functions we need
-clean_text = weak_signal_finder.clean_text
-compute_word_frequency = weak_signal_finder.compute_word_frequency
-compute_contextual_pairs = weak_signal_finder.compute_contextual_pairs
-score_signal_strength = weak_signal_finder.score_signal_strength
-WeakSignal = weak_signal_finder.WeakSignal
+clean_text = _wsf.clean_text
+compute_word_frequency = _wsf.compute_word_frequency
+compute_contextual_pairs = _wsf.compute_contextual_pairs
+score_signal_strength = _wsf.score_signal_strength
+WeakSignal = _wsf.WeakSignal
 
 # Mock articles for testing
 mock_articles = [
