@@ -37,6 +37,14 @@ body:
         do the research, and rewrite this into a clear, system-design-quality
         spec *before* any code is written.
 
+        ---
+
+        **💡 Template features:**
+        - ✅ The **Scope for the deep-research pass** section below is **AUTOMATICALLY PRE-FILLED** with standard checkboxes
+        - ✅ You can uncheck items or add more, but you never have to copy-paste the defaults
+        - ✅ Default severity is set to "Unknown — let the research pass decide"
+
+
   - type: dropdown
     id: task_type
     attributes:
@@ -108,7 +116,11 @@ body:
     id: scope
     attributes:
       label: Scope for the deep-research pass
-      description: Defaults are pre-checked. Uncheck any that don't apply, or add extras. (Pre-filled because GitHub Issue Forms `checkboxes` don't support default-selected options.)
+      description: |
+        ✅ **These checkboxes are AUTOMATICALLY PRE-FILLED for you** — no copy-paste needed!
+        
+        The defaults below are already checked. Just uncheck any that don't apply, or add extras.
+        (This uses a textarea with pre-filled markdown because GitHub Issue Forms `checkboxes` type doesn't support default-selected options.)
       value: |
         - [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/).
         - [x] Cross-reference other repos in the **midnghtsapphire** org for consistency.

@@ -100,5 +100,53 @@ diff .github/ISSUE_TEMPLATE/issue.yml  templates/issue-template/issue.yml
 diff .github/ISSUE_TEMPLATE/config.yml templates/issue-template/config.yml
 ```
 
-Both `diff` calls must produce no output. A follow-up issue may add a CI
-check that runs these `diff`s and fails the PR if they drift.
+Both `diff` calls must produce no output.
+
+**Automation:** The `.github/workflows/template-sync-check.yml` workflow
+automatically verifies that both copies stay in sync on every PR or push
+that touches these files. If they drift, the workflow will fail and show
+the differences.
+
+---
+
+## Troubleshooting
+
+### "The scope checkboxes aren't pre-filled when I create an issue"
+
+**This is almost certainly a GitHub template cache issue.** The template IS
+configured to auto-fill the "Scope for the deep-research pass" section with
+pre-checked checkboxes.
+
+**Solutions:**
+
+1. **Hard-refresh the new-issue page:**
+   - Windows/Linux: `Ctrl+Shift+R` or `Ctrl+F5`
+   - Mac: `Cmd+Shift+R` or `Cmd+Option+R`
+
+2. **Clear GitHub cookies/cache** for `github.com` in your browser settings
+
+3. **Wait 5-10 minutes** — GitHub's CDN can take time to propagate template
+   changes to all edge nodes
+
+4. **Try incognito/private mode** to rule out local caching
+
+5. **Verify on another browser** to confirm it's not browser-specific
+
+If none of these work, check:
+- Is the template actually at `.github/ISSUE_TEMPLATE/issue.yml` in the repo?
+- Does it have a `value:` attribute with the markdown checklist on lines
+  112–119?
+- Run `git log .github/ISSUE_TEMPLATE/issue.yml` — when was it last
+  updated? Template changes committed recently might still be propagating.
+
+### "The template works in revvel-standards but not in my other repo"
+
+You need to **copy the template files** into that repo. See the "Install in
+a new repo" section above. The template lives in two places:
+
+- `.github/ISSUE_TEMPLATE/issue.yml` — active in **revvel-standards**
+- `templates/issue-template/issue.yml` — portable copy to **install elsewhere**
+
+Each repo needs its own copy of the template in its own
+`.github/ISSUE_TEMPLATE/` directory.
+
