@@ -1,6 +1,6 @@
 # GrowlingEyes Python Intelligence Tooling
 
-**Product:** GrowlingEyes — Freedom Angel Corp — "We believe you."  
+**Product:** GrowlingEyes — Freedom Angel Corp — "We believe you."
 **Standards Repo:** `midnghtsapphire/revvel-standards`
 
 ---
@@ -16,7 +16,8 @@ growlingeyes/
 │   ├── apt_signals.py            # APT signal scanner (CISA KEV, NVD, OTX, CISA RSS)
 │   ├── stream_listener.py        # Real-time streams: AIS, NOAA weather, USGS quakes, RSS
 │   ├── scraper.py                # Intelligence scrapers: FAA TFR, NIFC fires, OFAC, UN
-│   └── trigger_extractor.py      # NEW: Trigger extraction engine with scoring & correlation
+│   ├── trigger_extractor.py      # Trigger extraction engine with scoring & correlation
+│   └── weak_signal_finder.py     # Weak signal detection from RSS feeds (NLP-based)
 ├── patterns/
 │   ├── cyber_threats.yml         # Trigger patterns for cyber domain
 │   ├── kinetic_events.yml        # Trigger patterns for conflict/military domain
@@ -49,8 +50,14 @@ python growlingeyes/tools/stream_listener.py --streams noaa_weather usgs_quakes
 # Intelligence scrapers
 python growlingeyes/tools/scraper.py --targets faa_tfr nifc_fires
 
-# Trigger extraction (NEW)
+# Trigger extraction
 python growlingeyes/tools/trigger_extractor.py --domains cyber_threats kinetic_events --top 50
+
+# Weak signal detection (emerging themes from RSS feeds)
+python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime
+python growlingeyes/tools/weak_signal_finder.py --threshold 3 --output signals.json
+python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
+
 
 # Axion Planetary MCP server
 python -m growlingeyes.axion_mcp.server
@@ -58,9 +65,80 @@ python -m growlingeyes.axion_mcp.server
 
 ---
 
+## Weak Signal Finder
+
+The **Weak Signal Finder** detects emerging themes and patterns from RSS news feeds
+using NLP-based text analysis. It aggregates articles across intelligence domains,
+computes word frequency scores, identifies contextual relationships between terms,
+and surfaces weak signals that may indicate emerging threats or trends.
+
+**Inspired by:** [LittleViewer/WeakSignalFinder](https://github.com/LittleViewer/WeakSignalFinder)
+
+### How It Works
+
+1. **Feed Aggregation** — Fetches RSS feeds from domain-specific sources (cyber, maritime, conflict, etc.)
+2. **Text Processing** — Cleans and tokenizes article text, removes stopwords
+3. **Frequency Analysis** — Computes word intensity scores across all articles
+4. **Contextual Analysis** — Identifies word pairs that appear near each other
+5. **Signal Scoring** — Scores signals based on intensity, diversity, and contextual strength
+6. **Output** — Produces JSON reports with top emerging themes and contextual relationships
+
+### Supported Domains
+
+- **cyber** — CISA, US-CERT, Krebs on Security, The Hacker News, Bleeping Computer
+- **maritime** — gCaptain, Splash247, Maritime Executive, FreightWaves
+- **conflict** — Crisis Group, ReliefWeb, ACLED
+- **geopolitical** — Foreign Policy, Defense One, War on the Rocks
+- **migration** — IOM News, UNHCR, Mixed Migration
+- **climate** — NOAA News, Climate Central, Carbon Brief
+- **supply_chain** — Supply Chain Dive, Logistics Management
+
+### Usage Examples
+
+```bash
+# Scan all domains
+python growlingeyes/tools/weak_signal_finder.py
+
+# Scan specific domains
+python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime conflict
+
+# Adjust sensitivity threshold (higher = fewer, stronger signals)
+python growlingeyes/tools/weak_signal_finder.py --threshold 5
+
+# Save results to file
+python growlingeyes/tools/weak_signal_finder.py --output my_signals.json
+
+# Run continuously (daemon mode, scan every hour)
+python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
+```
+
+### Output Format
+
+```json
+{
+  "domain": "cyber",
+  "signal_timestamp": "2026-04-30T16:30:00Z",
+  "signal_score": 82.5,
+  "article_count": 47,
+  "top_emerging_themes": ["ransomware", "vulnerability", "patch", "exploit", "zero-day"],
+  "intensity_words": {
+    "ransomware": 23,
+    "vulnerability": 18,
+    "patch": 15
+  },
+  "contextual_pairs": [
+    ["ransomware", "vulnerability"],
+    ["zero-day", "exploit"],
+    ["patch", "security"]
+  ]
+}
+```
+
+---
+
 ## Trigger Extraction Engine
 
-**NEW:** GrowlingEyes now includes an advanced trigger extraction engine that converts raw OSINT data into actionable intelligence alerts.
+GrowlingEyes includes an advanced trigger extraction engine that converts raw OSINT data into actionable intelligence alerts.
 
 **Key Features:**
 - **Pattern Recognition:** Keyword, regex, threshold, and anomaly detection

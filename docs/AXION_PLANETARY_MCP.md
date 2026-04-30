@@ -193,7 +193,7 @@ colorisation pipeline, which is deterministic and does not require GPU hardware.
 
 ## GrowlingEyes Intelligence Tool Wiring
 
-The `growlingeyes/tools/` directory exposes four Python tools that feed
+The `growlingeyes/tools/` directory exposes five Python tools that feed
 intelligence into the GrowlingEyes data pipeline:
 
 | Tool | Description | Primary Library |
@@ -202,6 +202,7 @@ intelligence into the GrowlingEyes data pipeline:
 | `apt_signals.py` | APT threat-intel scanner (CISA KEV, NVD, OTX, CISA RSS) | httpx, feedparser |
 | `stream_listener.py` | Real-time streams: AIS vessels, NOAA weather, USGS quakes, RSS | websockets, httpx, feedparser |
 | `scraper.py` | HTML/XML intelligence scrapers: FAA TFR, NIFC fires, OFAC SDN, UN sanctions | httpx, BeautifulSoup |
+| `weak_signal_finder.py` | Weak signal detection from RSS feeds (regex/token-based emerging themes) | feedparser, Rich |
 
 All tools read from `.env` and follow the GrowlingEyes error handling standards:
 no uncaught exceptions, empty list fallback on failure, Rich CLI output.
@@ -225,6 +226,7 @@ python growlingeyes/tools/news_feed.py --topics apt cyber military
 python growlingeyes/tools/apt_signals.py --sources cisa nvd
 python growlingeyes/tools/stream_listener.py --streams noaa_weather usgs_quakes gdacs
 python growlingeyes/tools/scraper.py --targets faa_tfr nifc_fires
+python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime
 ```
 
 ---
