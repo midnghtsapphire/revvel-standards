@@ -46,6 +46,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
+| E-E-A-T, Google trust signals, Knowledge Panel, schema.org authority, brand identity, ORCID | [`eeat-trust-authority`](#eeat-trust-authority) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
@@ -312,6 +313,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
 - **Tags:** seo, metadata, open-graph, twitter-cards, json-ld, lighthouse
 - **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
+
+#### eeat-trust-authority
+- **Path:** `skills/eeat-trust-authority/`
+- **Files:** `SKILL.md` · `eeat-trust-authority.skill.yml`
+- **Agent Name:** TrustForge
+- **Description:** Automated Google E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) management across all MIDNGHTSAPPHIRE properties. Generates schema.org Organization and Person markup, maintains brand statement consistency, builds Google Knowledge Panel presence, manages ORCID integration, monitors trust signals, and enforces entity hierarchy from Freedom Angel Corp (founded 2010) to all child properties. Runs daily via cron with Quiet Mode control.
+- **Tags:** eeat, google, schema-org, knowledge-panel, seo, trust, authority, brand-identity, orcid, freedom-angel-corp
+- **Trigger:** Setting up a new website or app; updating brand identity or professional profiles; auditing E-E-A-T signals; implementing schema.org markup; building or updating Google Knowledge Panel presence; linking to ORCID or professional affiliations.
 
 ---
 
