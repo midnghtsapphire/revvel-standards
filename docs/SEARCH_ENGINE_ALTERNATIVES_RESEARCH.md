@@ -347,6 +347,8 @@ User Query → MeiliSearch (instant search, typo tolerance)
 
 ## 7. Cost Analysis
 
+> **Note:** Cost values marked with `$X` placeholders are intentionally generalized as specific pricing varies by usage, region, and changes over time. Readers should consult current vendor pricing pages for exact figures. The comparative relationships (e.g., "Elasticsearch is significantly more expensive than MeiliSearch") remain accurate.
+
 ### Current State: Elasticsearch Cloud
 - **Monthly Cost:** $X00+/month (estimate based on typical usage)
 - **Annual Cost:** $X,XXX+/year
@@ -452,5 +454,5 @@ User Query → MeiliSearch (instant search, typo tolerance)
 
 ---
 
-*This document was created based on research issue #[NUMBER] and follows the Revvel AI Research Module Standard.*  
+*This document was created based on the research completed in the original issue and follows the Revvel AI Research Module Standard.*  
 *Review and validate findings before implementing recommendations. Update this document as new information becomes available.*
