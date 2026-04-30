@@ -44,7 +44,7 @@
         "DOPPLER_CONFIG": "${DOPPLER_CONFIG:-prd}"
       },
       "disabled": true,
-      "disabledReason": "COMMENTED OUT until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
+      "disabledReason": "Disabled until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
     },
     "github-issues-enhanced": {
       "_comment": "Enhanced GitHub Issues MCP — 6 tools for issue automation: create_issue_with_automation, bulk_label_issues, smart_issue_search, issue_timeline_summary, auto_triage_issue, issue_metrics. See mcp-servers/github-issues/README.md and docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md.",

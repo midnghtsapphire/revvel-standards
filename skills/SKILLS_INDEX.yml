@@ -6,7 +6,7 @@
 
 schema_version: "1.0"
 vault_version: "1.0.0"
-last_updated: "2026-04-28"
+last_updated: "2026-04-30"
 maintainer: "Audrey Evans (MIDNGHTSAPPHIRE)"
 
 mandatory_session_start:
@@ -538,6 +538,29 @@ skills:
       - "obbba"
       - "1040"
       - "1099"
+
+  - name: usda_loan_agent
+    title: "USDA Loan & Packager Agent"
+    version: "1.0.0"
+    path: "skills/usda-loan-agent/"
+    skill_file: "skills/usda-loan-agent/usda_loan_agent.skill.yml"
+    category: "Real Estate & Finance"
+    access: all
+    triggers:
+      - "usda loan"
+      - "rural development"
+      - "section 502"
+      - "guaranteed loan"
+      - "direct loan"
+      - "loan packager"
+      - "loan packaging"
+      - "income limits"
+      - "property eligibility"
+      - "inground pool"
+      - "rural area"
+      - "usda rules"
+      - "state usda"
+      - "packager license"
 
   # ─── Skill Building & Personas ────────────────────────────────────────────
 
