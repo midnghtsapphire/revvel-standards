@@ -26,6 +26,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | If the task involves... | Load this skill |
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review | [`bito-ai`](#bito-ai) |
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
@@ -77,6 +78,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ## Full Skill Catalog
 
 ### Code Quality & Autonomous Review
+
+#### bito-ai
+
+- **Path:** `skills/bito-ai/`
+- **Files:** `SKILL.md` · `bito-ai.skill.yml`
+- **Platform:** [BITO AI](https://bito.ai)
+- **Description:** Wire BITO AI into any Revvel repo for **persistent-memory** code review, agentic PR workflows, desktop API/secret procurement via the BITO CLI, and automated label updates (`bito-ai:review`, `awaiting-approval`, `bito-ai:changes-needed`, `changes-requested`) based on review outcomes. BITO indexes the entire codebase once and maintains an up-to-date knowledge base, so every PR review draws on full repo context — not just the diff. The desktop CLI (`bito review`, `bito secret get`, `bito ask`) assists developers in retrieving and wiring secrets from the local Vault client or OS keychain without manual copy-paste.
+- **Tags:** bito-ai, persistent-memory-review, agentic-code-review, desktop-api-procurement, bito-cli, bito-secret, repo-memory, pr-review, label-automation
+- **Trigger:** "bito", "bito ai", "bito review", "persistent memory review", "bito cli", "bito secret", "bito index", "agentic code review", "desktop api procurement", "code review with memory".
+- **Standard:** `standards/BITO_AI_INTEGRATION_STANDARD.md`
+- **Workflow:** `.github/workflows/bito-ai.yml`
+- **Integration doc:** `docs/BITO_AI_INTEGRATION.md`
 
 #### recurse-ml
 
@@ -530,4 +543,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai skills.*

@@ -353,3 +353,17 @@ labels:
   - name: affiliate
     color: "4CAF50"
     description: "Affiliate link / revenue task — handled by NoimosAI affiliate agent"
+
+  # ── BITO AI (Persistent-Memory Code Review & Desktop API Assistant) ────────
+  # See docs/BITO_AI_INTEGRATION.md for rationale and rollout.
+  - name: bito-ai
+    color: "0B6FFF"
+    description: "PR or issue touched by BITO AI review"
+
+  - name: "bito-ai:review"
+    color: "4D94FF"
+    description: "BITO AI review complete — see review comment"
+
+  - name: "bito-ai:changes-needed"
+    color: "D93F0B"
+    description: "BITO found blocking issues — address before merge"

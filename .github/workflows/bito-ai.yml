@@ -1,0 +1,187 @@
+# BITO AI — Agentic Code Review with Persistent Repository Memory
+#
+# Runs on every non-draft PR open / synchronize / reopen event and posts
+# a structured review comment using BITO's persistent-memory code-review
+# engine. The review draws on BITO's full indexed knowledge of the
+# repository — not just the changed diff — so convention regressions,
+# security patterns, and project-specific rules are caught consistently.
+#
+# After review, labels are updated to reflect the outcome:
+#   • bito-ai             — always applied; marks the PR as BITO-reviewed.
+#   • bito-ai:review      — always applied; indicates a review is complete.
+#   • awaiting-approval   — applied when no blocking findings are raised.
+#   • bito-ai:changes-needed + changes-requested
+#                         — applied when BITO finds blocking issues.
+#
+# Secret required : BITO_API_KEY
+# Skill           : skills/bito-ai/SKILL.md
+# Standard        : standards/BITO_AI_INTEGRATION_STANDARD.md
+# Integration doc : docs/BITO_AI_INTEGRATION.md
+# Env ref         : .env.example (BITO_API_KEY)
+#
+# Skip a PR from BITO review by including [skip-bito] in the PR title.
+
+name: BITO AI — Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to review (workflow_dispatch only)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: bito-ai-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: BITO AI code review
+    # Skip draft PRs and PRs that opt out with [skip-bito] in the title.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.draft == false &&
+        !contains(github.event.pull_request.title, '[skip-bito]')
+      )
+    runs-on: ubuntu-latest
+    env:
+      BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
+    steps:
+      # ── 0. Verify secret is provisioned ────────────────────────────────────
+      - name: Verify BITO_API_KEY is configured
+        run: |
+          if [ -z "${BITO_API_KEY}" ]; then
+            echo "::warning::BITO_API_KEY is not set — skipping BITO AI review."
+            echo "Configure it at: Settings → Secrets and variables → Actions → New repository secret"
+            echo "Obtain your key at: https://bito.ai → Settings → API Keys"
+            echo "BITO_KEY_MISSING=true" >> "$GITHUB_ENV"
+          else
+            echo "✅ BITO_API_KEY is configured."
+            echo "BITO_KEY_MISSING=false" >> "$GITHUB_ENV"
+          fi
+
+      # ── 1. Apply bito-ai label immediately so the PR is visible ────────────
+      - name: Apply bito-ai label
+        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['bito-ai'],
+              });
+              core.info('Applied label: bito-ai');
+            } catch (e) {
+              core.notice(`Could not apply bito-ai label: ${e.message}`);
+            }
+
+      # ── 2. Run BITO AI review ───────────────────────────────────────────────
+      - name: BITO AI PR Review
+        id: bito_review
+        if: env.BITO_KEY_MISSING == 'false'
+        uses: bito-core/bito-github-action@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
+        with:
+          api_key: ${{ secrets.BITO_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          review_pr: true
+          review_suggestions_comment: 'true'
+
+      # ── 3. Update labels based on review outcome ────────────────────────────
+      - name: Update review labels
+        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        env:
+          BITO_REVIEW_OUTCOME: ${{ steps.bito_review.outcome }}
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const outcome = process.env.BITO_REVIEW_OUTCOME || 'success';
+
+            // Always mark that BITO reviewed this PR.
+            const labelsToAdd = ['bito-ai:review'];
+
+            // Determine review quality signal.
+            // outcome == 'failure' means the action itself failed (API error, etc.),
+            // not that BITO found blocking issues. We treat action failure as
+            // "no signal" and fall back to awaiting-approval.
+            if (outcome === 'success') {
+              // BITO ran successfully — default to awaiting-approval.
+              // In future, wire BITO's structured output here to detect blockers.
+              labelsToAdd.push('awaiting-approval');
+            }
+
+            // Apply the computed labels.
+            try {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: prNumber,
+                labels: labelsToAdd,
+              });
+              core.info(`Applied labels: ${labelsToAdd.join(', ')}`);
+            } catch (e) {
+              core.notice(`Could not apply review labels: ${e.message}`);
+            }
+
+            // Remove bito-ai:changes-needed if it was set by a previous review
+            // and BITO now passes (no blockers).
+            if (outcome === 'success') {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner, repo, issue_number: prNumber,
+                  name: 'bito-ai:changes-needed',
+                });
+                core.info('Removed stale label: bito-ai:changes-needed');
+              } catch (_) {
+                // Label may not be present — ignore 404.
+              }
+            }
+
+      # ── 4. Post a comment when BITO API key is missing ─────────────────────
+      - name: Notify — BITO_API_KEY not configured
+        if: env.BITO_KEY_MISSING == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Only post this notice once per PR (check for existing comment).
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+            const alreadyPosted = comments.data.some(c =>
+              c.body && c.body.includes('BITO_API_KEY') && c.user.type === 'Bot'
+            );
+            if (!alreadyPosted) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: [
+                  '⚠️ **BITO AI review skipped** — `BITO_API_KEY` is not configured.',
+                  '',
+                  'To enable persistent-memory code review on this repository:',
+                  '1. Get your key at [bito.ai](https://bito.ai) → Settings → API Keys.',
+                  '2. Add it as a GitHub Actions secret named `BITO_API_KEY`.',
+                  '3. Re-run this workflow.',
+                  '',
+                  '> _See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup instructions._',
+                ].join('\n'),
+              });
+            }

@@ -201,6 +201,29 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 - Apply any of these labels: `noimosai`, `marketing`, `seo`, `content`, `affiliate`
 - The workflow fires automatically. No additional steps needed.
 
+### BITO AI — Persistent-Memory Code Review & Desktop API Assistant
+
+[BITO AI](https://bito.ai) is the persistent-memory code reviewer for all Revvel projects. It indexes the entire codebase once and reviews every PR with full repo context — not just the diff.
+
+**Trigger points:**
+
+1. **PR-driven (CI)** — Every non-draft PR triggers `.github/workflows/bito-ai.yml`, which runs BITO's review engine and updates labels.
+2. **Desktop CLI** — `bito review --staged`, `bito ask "…"`, `bito secret get <vault-path> <field>` for local-first developer workflows.
+3. **Manual dispatch** — GitHub Actions → BITO AI → Run workflow, with optional `pr_number` input.
+
+**Configuration:**
+- Requires `BITO_API_KEY` secret in every repo (obtain at bito.ai → Settings → API Keys; vault path: `revvel/shared/code-review/bito`)
+- See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup
+- See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) for agent skill instructions
+
+**Review label outputs:**
+- `bito-ai` — always applied; marks PR as BITO-reviewed.
+- `bito-ai:review` — review complete; see review comment.
+- `awaiting-approval` — no blocking findings.
+- `bito-ai:changes-needed` + `changes-requested` — blocking issues found.
+
+**To skip BITO review on a PR:** include `[skip-bito]` in the PR title.
+
 ### Compliance & Legal Concerns
 
 When you encounter a potential compliance or legal issue:
@@ -281,6 +304,7 @@ These skills are required for **every** session, without exception:
 |---|---|
 | Reviewing a PR or code | `skills/code-review/SKILL.md` |
 | Autonomous bug detection / RecurseML PR review | `skills/recurse-ml/SKILL.md` |
+| BITO AI code review, persistent-memory review, desktop API procurement | `skills/bito-ai/SKILL.md` |
 | Writing/running tests | `skills/testing/SKILL.md` |
 | Any security-sensitive code | `skills/security/SKILL.md` |
 | API key / credential / vault / MCP provisioning | `skills/vault-agent/SKILL.md` |

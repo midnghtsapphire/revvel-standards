@@ -23,6 +23,32 @@ skills:
 
   # ─── Code Quality & Autonomous Review ─────────────────────────────────────
 
+  - name: bito_ai
+    title: "BITO AI — Agentic Code Review & Desktop API Assistant"
+    version: "1.0.0"
+    path: "skills/bito-ai/"
+    skill_file: "skills/bito-ai/bito-ai.skill.yml"
+    category: "Code Quality & Autonomous Review"
+    platform: "https://bito.ai"
+    standard: "standards/BITO_AI_INTEGRATION_STANDARD.md"
+    workflow: ".github/workflows/bito-ai.yml"
+    integration_doc: "docs/BITO_AI_INTEGRATION.md"
+    access: all
+    persona: reviewer
+    triggers:
+      - "bito"
+      - "bito ai"
+      - "bito review"
+      - "persistent memory review"
+      - "bito cli"
+      - "bito secret"
+      - "bito index"
+      - "agentic code review"
+      - "desktop api procurement"
+      - "bito-ai label"
+      - "code review with memory"
+      - "repo memory review"
+
   - name: recurse_ml
     title: "RecurseML — Autonomous Code Review"
     version: "1.0.0"
