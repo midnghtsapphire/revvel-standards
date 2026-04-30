@@ -447,7 +447,7 @@ OLD_KEY_ID=$(curl -s http://localhost:8001/consumers/agent-devin/key-auth | pyth
 import sys, json
 keys = json.load(sys.stdin)['data']
 if len(keys) > 1:
-    print(keys[-1]['id'])  # oldest key
+    print(keys[0]['id'])  # oldest key
 ")
 curl -s -X DELETE "http://localhost:8001/consumers/agent-devin/key-auth/$OLD_KEY_ID"
 ```

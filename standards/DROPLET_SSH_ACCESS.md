@@ -166,7 +166,7 @@ ssh -i ~/.ssh/agent-access -o StrictHostKeyChecking=no root@164.90.148.7 \
     curl -s -X POST https://api.doppler.com/v3/configs/config/secrets \
       -H "Authorization: Bearer $DOPPLER_TOKEN" \
       -H "Content-Type: application/json" \
-      -d "{\"project\":\"growlingeyes\",\"config\":\"prd\",\"secrets\":{\"$key\":$val}}"
+      -d "{\"project\":\"growlingeyes\",\"config\":\"prd\",\"secrets\":{\"$key\":\"$val\"}}"
 done
 ```
 
