@@ -60,8 +60,8 @@ These documents contain AI-powered research analysis following the [AI Research 
 | :--- | :--- | :--- | :--- | :--- |
 | **Search Engine Alternatives** | 2026-04-30 | Complete | Comprehensive analysis of search engine options (Elasticsearch, OpenSearch, MeiliSearch, Typesense, Algolia, Solr, Vespa). Recommends MeiliSearch for product search with OpenRouter enhancement. | [SEARCH_ENGINE_ALTERNATIVES_RESEARCH.md](SEARCH_ENGINE_ALTERNATIVES_RESEARCH.md) |
 | **GitHub Enterprise** | 2026-04-14 | Complete | Analysis of GitHub Enterprise vs Personal GitHub for cross-account access and automation. | [GITHUB_ENTERPRISE_RESEARCH.md](GITHUB_ENTERPRISE_RESEARCH.md) |
-| **Test Harness** | 2026-04-19 | Complete | Evaluation of test harness options for the revvel-standards repository. | [TEST_HARNESS_RESEARCH.md](revvel-standards/TEST_HARNESS_RESEARCH.md) |
-| **Mobile Test Harness** | 2026-04-19 | Complete | Mobile testing framework research and recommendations. | [MOBILE_TEST_HARNESS_RESEARCH.md](revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md) |
+| **Test Harness** | 2026-04-19 | Complete | Evaluation of test harness options for the revvel-standards repository. | [TEST_HARNESS_RESEARCH.md](TEST_HARNESS_RESEARCH.md) |
+| **Mobile Test Harness** | 2026-04-19 | Complete | Mobile testing framework research and recommendations. | [MOBILE_TEST_HARNESS_RESEARCH.md](MOBILE_TEST_HARNESS_RESEARCH.md) |
 
 ## 5. Data & Research Repositories
 
@@ -73,4 +73,3 @@ These repositories contain datasets, research papers, and archives of valuable i
 | **SSRN_Whitepapers** | Archived | A collection of academic and technical whitepapers, primarily for submission to SSRN (Social Science Research Network). | [SSRN_Whitepapers](https://github.com/MIDNGHTSAPPHIRE/SSRN_Whitepapers) |
 | **business-ideas-vault** | Archived | A master collection of business concepts, plans, and validation research. | [business-ideas-vault](https://github.com/MIDNGHTSAPPHIRE/business-ideas-vault) |
 | **cyber-security-turn-business** | Archived | Business plans, research, and documentation related to cybersecurity ventures. | [cyber-security-turn-business](https://github.com/MIDNGHTSAPPHIRE/cyber-security-turn-business) |
-

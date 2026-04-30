@@ -1,10 +1,10 @@
 # Search Engine Alternatives Research: OpenSearch, MeiliSearch, Typesense vs Elasticsearch
 
-**Version:** 1.0.0  
-**Date:** 2026-04-30  
-**Status:** Research Document  
-**Author:** Audrey Evans (MIDNGHTSAPPHIRE)  
-**Confidence:** High  
+**Version:** 1.0.0
+**Date:** 2026-04-30
+**Status:** Research Document
+**Author:** Audrey Evans (MIDNGHTSAPPHIRE)
+**Confidence:** High
 **Related Standard:** `AI_RESEARCH_MODULE_STANDARD.md`
 
 ---
@@ -19,6 +19,8 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 ## 1. Current Context & Problem Statement
 
+**Core Question:** What search engine should Revvel applications use instead of Elasticsearch to reduce costs, simplify operations, and maintain or improve search quality?
+
 - **Current Setup:** Elastic Cloud with OpenRouter integration
 - **Pain Point:** High cost relative to revenue targets, complex operational overhead, licensing concerns
 - **Goal:** Identify affordable, performant alternatives that maintain or improve search quality while reducing costs
@@ -29,7 +31,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 | Engine | Best For | License | Cost | Recommendation |
 |--------|----------|---------|------|----------------|
-| **Elasticsearch** | Petabyte-scale, log analytics | SSPL/Proprietary | $$$$ | ❌ Overkill for most Revvel apps |
+| **Elasticsearch** | Petabyte-scale, log analytics | ELv2/SSPL | $$$$ | ❌ Overkill for most Revvel apps |
 | **OpenSearch** | AWS integration, logs | Apache 2.0 | $-$$ | ⚠️ Only if already on AWS |
 | **MeiliSearch** ⭐ | Instant search UX | MIT | $-$$ | ✅ Ideal for product search |
 | **Typesense** | Real-time, simplicity | GPL 3 | $-$$ | ✅ Good alternative |
@@ -48,7 +50,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 **Cost:** $X00+/month for cloud - pricing is opaque and complex.
 
 **Problems:**
-- Licensing changed from Apache 2.0 to SSPL (source-available) in 2021
+- Licensing changed from Apache 2.0 to dual licensing (Elastic License 2.0 and SSPL) in 2021
 - Expensive for small-to-medium use cases
 - Complex operational overhead (cluster management, shard optimization, memory tuning)
 - Pricing is not transparent
@@ -68,8 +70,8 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 **What it is:** AWS-maintained fork of Elasticsearch 7.10.2 (the last Apache 2.0 version before licensing change).
 
-**Cost:** 
-- Free self-hosted 
+**Cost:**
+- Free self-hosted
 - ~$X00/month via Amazon OpenSearch Service (managed)
 
 **Pros:**
@@ -80,12 +82,12 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 - Active development by AWS
 
 **Cons:**
-- Performance trails Elasticsearch by 40-140% according to Elastic's benchmarks (biased source, but directionally accurate)
+- Performance may trail Elasticsearch in some benchmarks (Elastic's own tests claim 40-140% gaps, though as a biased source this should be taken directionally)
 - Smaller community and plugin ecosystem than Elasticsearch
 - Still inherits Elasticsearch's operational complexity
 - Requires DevOps expertise for proper tuning
 
-**Best For:** 
+**Best For:**
 - Organizations already heavily invested in AWS ecosystem
 - Log analytics and observability use cases
 - Teams needing Elasticsearch API compatibility
@@ -116,7 +118,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 **Cons:**
 - Not designed for petabyte-scale log analytics
-- Maximum index size limited by available RAM (scales up to 24TB+ with proper hardware)
+- Maximum index size constrained by OS/storage limits (not strictly RAM-bound; RAM primarily affects indexing and search performance)
 - Fewer advanced features than Elasticsearch for analytics use cases
 - Smaller plugin ecosystem
 
@@ -142,7 +144,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 **What it is:** Open-source search engine built for speed, developer experience, and real-time updates.
 
-**Cost:** 
+**Cost:**
 - Free self-hosted (open source)
 - ~$X/month via Typesense Cloud (managed)
 
@@ -246,7 +248,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 **What it is:** LLM API gateway that can enhance search results with semantic understanding and natural language processing.
 
-**How it works:** 
+**How it works:**
 - Traditional search engine (e.g., MeiliSearch) handles indexing and basic retrieval
 - OpenRouter processes queries to understand intent
 - LLM generates embeddings for semantic search
@@ -326,13 +328,13 @@ User Query → MeiliSearch (instant search, typo tolerance)
 ## 6. Security Considerations
 
 ### MeiliSearch Security
-- **Authentication:** API keys required for all operations
+- **Authentication:** MeiliSearch Cloud is protected by default; self-hosted instances are **unprotected unless started with a master key** (`--master-key` flag). Always set a master key in production
 - **HTTPS:** Enable TLS for all connections (mandatory in production)
-- **API Key Management:** 
+- **API Key Management:**
   - Use read-only keys for search endpoints
   - Restrict admin keys to backend services only
   - Rotate keys regularly
-- **Network Security:** 
+- **Network Security:**
   - Deploy in private network/VPC
   - Use firewall rules to restrict access
   - Consider using a reverse proxy (Nginx, Caddy) for additional security layer
@@ -371,7 +373,7 @@ User Query → MeiliSearch (instant search, typo tolerance)
 ### Break-Even Analysis
 - **Cost Reduction:** 60-85% depending on configuration
 - **Break-Even Time:** Immediate (lower monthly costs from month 1)
-- **Additional Benefits:** 
+- **Additional Benefits:**
   - Reduced operational complexity
   - Faster development velocity
   - Better developer experience
@@ -395,7 +397,7 @@ User Query → MeiliSearch (instant search, typo tolerance)
    - **Recommendation:** Start with query understanding and semantic search, expand based on value
 
 5. **Backup Strategy:** How to handle MeiliSearch backups?
-   - **Recommendation:** 
+   - **Recommendation:**
      - Daily snapshots of MeiliSearch data
      - Maintain authoritative data in primary database (MeiliSearch is cache/index)
 
@@ -448,11 +450,9 @@ User Query → MeiliSearch (instant search, typo tolerance)
 ## 11. Related Revvel Standards
 
 - `AI_RESEARCH_MODULE_STANDARD.md` - Research methodology used for this analysis
-- `OPENROUTER_INTEGRATION_STANDARD.md` - LLM integration patterns (if exists)
-- `COST_OPTIMIZATION_STANDARD.md` - Cost management policies (if exists)
 - `DEPLOYMENT_GUIDE.md` - Deployment procedures
 
 ---
 
-*This document was created based on the research completed in the original issue and follows the Revvel AI Research Module Standard.*  
+*This document was created based on the research completed in the original issue and follows the Revvel AI Research Module Standard.*
 *Review and validate findings before implementing recommendations. Update this document as new information becomes available.*
