@@ -61,6 +61,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Concurrent branches, merging, conflict resolution | [`concurrent-development`](#concurrent-development) |
 | Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
 | Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
+| USDA loans, rural development, loan packagers, property eligibility, income limits | [`usda-loan-agent`](#usda-loan-agent) |
 | Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
 | Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
 
@@ -381,6 +382,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+### Real Estate & Finance
+
+#### usda-loan-agent
+
+- **Path:** `skills/usda-loan-agent/`
+- **Files:** `SKILL.md` · `usda_loan_agent.skill.yml`
+- **Description:** Comprehensive USDA rural development loan specialist covering Section 502 Guaranteed and Direct loan programs, loan packaging services, property eligibility (including inground pool restrictions, square footage misconceptions, acreage limits), state-by-state income limits, DTI/credit requirements, and legal compliance (RESPA, TILA). Includes step-by-step guidance for becoming a loan packager, state licensing variations (MLO requirements in CA/NY/TX vs. no license in CO/MO), and automated eligibility tool specifications. Features deep research on legal loopholes (NEMT → utility → special district formation) with current status and similar active loopholes (tribal sovereignty, HOA police powers, MUD formation).
+- **Tags:** usda, rural-development, loan-packager, mortgage, housing, real-estate, section-502, income-limits, property-eligibility, respa, compliance, state-licensing
+- **Trigger:** "usda loan", "rural development", "section 502", "guaranteed loan", "direct loan", "loan packager", "loan packaging", "income limits", "property eligibility", "inground pool", "rural area", "state usda", "packager license", "usda rules".
+
+---
+
 ### Bot Creation
 
 #### bot-creator
@@ -433,4 +446,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 28, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
