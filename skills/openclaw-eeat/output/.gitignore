@@ -1,0 +1,4 @@
+# Ignore generated output files (except state.json template)
+*
+!state.json
+!.gitignore

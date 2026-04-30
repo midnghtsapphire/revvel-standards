@@ -136,16 +136,18 @@ Decisions are logged in [`DECISIONS-TODAY.md`](../DECISIONS-TODAY.md) and the lo
 
 | Shape | Pick when… | Build standard |
 |---|---|---|
-| **PDF / booklet** | One-shot reference content; no state; SEO-driven discovery | `templates/agent-generated-product/build/pdf/` |
-| **One-button app** | Single deterministic action with output | `SAAS_PRODUCTS.md` Cat-2 + Expo (mobile) or React+Vite (web) |
+| **PDF / booklet** | One-shot reference content; no state; SEO-driven discovery | [`shapes/PDF.md`](shapes/PDF.md) |
+| **CLI** | Developers; one binary; brew/scoop install | [`shapes/CLI.md`](shapes/CLI.md) |
+| **MCP server** | LLM agents will call it | [`shapes/MCP.md`](shapes/MCP.md) |
+| **API** | Other devs will call it; recurring revenue likely | [`shapes/API.md`](shapes/API.md) |
+| **Agent skill** | Reusable procedure for ClawBot / Devin / other agents | [`shapes/SKILL.md`](shapes/SKILL.md) |
+| **Excel / spreadsheet** | Business users; template-driven; data-heavy | [`shapes/EXCEL.md`](shapes/EXCEL.md) |
+| **Token / credits** | Usage-based access; prepaid credits; gated content | [`shapes/TOKEN.md`](shapes/TOKEN.md) |
+| **Full app** | Only when ROI gate strongly justifies | [`shapes/APP.md`](shapes/APP.md) |
 | **Browser extension** | In-page action against a vendor site | `templates/agent-generated-product/build/extension/` |
 | **Alexa/Google skill** | Voice-first, hands-free, household | shape-specific publish step |
-| **API** | Other devs will call it; recurring revenue likely | Node/Fastify or Python/FastAPI |
-| **CLI** | Developers; one binary; brew/scoop install | Go or Bun + npm |
-| **MCP server** | LLM agents will call it | `MCP_STANDARD.md` template |
-| **Full app** | Only when ROI gate strongly justifies | `SAAS_PRODUCTS.md` |
 
-The router output is a single string (`shape`) that selects the build standard and the deploy targets for steps 7 and 10.
+The router output is a single string (`shape`) that selects the build standard and the deploy targets for steps 7 and 10. Each shape standard in [`shapes/`](shapes/README.md) defines the full lifecycle: research, create, design (Figma), publish, and required connections.
 
 ---
 

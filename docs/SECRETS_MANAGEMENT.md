@@ -75,10 +75,15 @@ without exposing any values.
 
 ## Doppler Integration
 
-[Doppler](https://doppler.com) is the recommended secrets management platform for
-provisioning and syncing secrets across environments.
+> **NOTE:** Doppler integration is **OPTIONAL**. All workflows function with or without Doppler.
+> Secrets can be managed directly in GitHub Settings → Secrets and variables → Actions.
+> Doppler provides centralized management if you prefer it, but is not required.
 
-### Setup
+[Doppler](https://doppler.com) is the recommended (but optional) secrets management platform for
+provisioning and syncing secrets across environments. **You must acquire credentials independently** — 
+sign up at doppler.com and create your own account.
+
+### Setup (Optional)
 
 1. **Create a Doppler project** for `revvel-standards` at [dashboard.doppler.com](https://dashboard.doppler.com)
 2. **Create a "github" environment** (Options → Create Environment → name it `github`)

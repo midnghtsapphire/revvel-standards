@@ -2,7 +2,7 @@
 
 This is the canonical folder layout for any product spawned by the
 [Automated Product Pipeline](../../standards/AUTOMATED_PRODUCT_PIPELINE.md).
-Use `scripts/init-product.sh <slug> [--shape pdf|app|extension|skill|api|cli|mcp|booklet|full-app]`
+Use `scripts/init-product.sh <slug> [--shape pdf|app|extension|skill|api|cli|mcp|booklet|full-app|excel|token]`
 to scaffold a new product into `projects/agent-generated/<slug>/`.
 
 ```
