@@ -32,7 +32,24 @@ vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_
 vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY
 ```
 
-### 3. Use in your workflows
+### 3. Automatic triggers (no configuration needed!)
+
+The agent-fallback workflow **automatically triggers** on:
+
+✅ **Issues labeled with:**
+- `wr:code` — Code generation requests
+- `wr:auto` — Automated tasks
+- `agent-fallback` — Explicit fallback requests
+
+✅ **Pull requests:**
+- Opened (non-draft)
+- Reopened
+- Ready for review
+
+✅ **Manual trigger:**
+- Via GitHub Actions UI or `gh` CLI
+
+### 4. Use in your workflows (optional)
 
 ```yaml
 # In your workflow:
@@ -47,6 +64,7 @@ vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROU
 
 ## 📋 Features
 
+✅ **Automatic triggering** — No manual workflow dispatch needed  
 ✅ **Automatic fallback** — No manual intervention when Devin hits limits  
 ✅ **Zero downtime** — Always have a working agent  
 ✅ **Rate limit detection** — Smart retry with exponential backoff  
@@ -144,27 +162,55 @@ revvel/shared/llm/openrouter   # OpenRouter API key
 
 ## 🧪 Testing
 
-### Test the fallback chain
+### Test automatic triggers
 
-1. Create a test issue:
+#### 1. Test with an issue label
 ```bash
+# Create a test issue
 gh issue create --title "[TEST] Agent fallback test" \
-  --body "Test issue for fallback system. Close after testing."
-```
+  --body "Test issue for agent fallback system"
 
-2. Trigger the workflow:
-```bash
-gh workflow run agent-fallback.yml -f issue_number=<ISSUE_NUMBER>
-```
+# Label it to trigger the workflow
+gh issue edit <ISSUE_NUMBER> --add-label "wr:code"
 
-3. Monitor the run:
-```bash
+# Watch the workflow run
 gh run watch
 ```
 
-4. Check which agent was used:
+#### 2. Test with a PR
 ```bash
+# Create a branch and PR
+git checkout -b test-agent-fallback
+echo "test" > test.txt
+git add test.txt
+git commit -m "test: trigger agent fallback"
+git push origin test-agent-fallback
+
+# Create PR (will auto-trigger if not draft)
+gh pr create --title "[TEST] Agent fallback" \
+  --body "Test PR for agent fallback system"
+
+# Watch the workflow run
+gh run watch
+```
+
+#### 3. Test manual trigger
+```bash
+# Trigger manually with an issue number
+gh workflow run agent-fallback.yml -f issue_number=123
+
+# Watch the run
+gh run watch
+```
+
+### Check which agent was used
+
+```bash
+# Check issue/PR comments for agent used
 gh issue view <ISSUE_NUMBER> --comments
+
+# Or check workflow logs
+gh run view <RUN_ID> --log
 ```
 
 ---

@@ -96,13 +96,70 @@ gh secret set CURSOR_API_KEY --repo midnghtsapphire/revvel-standards
 gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
 ```
 
-### 2. Workflow Integration
+### 2. Automatic Triggers
 
-The `agent-fallback.yml` workflow handles automatic switching:
+The agent-fallback workflow **automatically triggers** on the following events:
+
+#### Issue Labels
+When an issue is labeled with:
+- `wr:code` — Triggers code generation
+- `wr:auto` — Triggers automated task execution
+- `agent-fallback` — Explicitly requests fallback system
+
+Example:
+```bash
+gh issue create --title "Add new feature" --body "Description..."
+gh issue edit 123 --add-label "wr:code"
+# Workflow automatically starts!
+```
+
+#### Pull Request Events
+When a PR is:
+- **Opened** (non-draft)
+- **Reopened**
+- **Ready for review** (converted from draft)
+
+The workflow analyzes the PR and generates suggestions/improvements automatically.
+
+Example:
+```bash
+gh pr create --title "New feature" --body "Implementation"
+# Workflow automatically starts if PR is not a draft!
+```
+
+#### Manual Trigger
+Can still be triggered manually via:
+```bash
+gh workflow run agent-fallback.yml -f issue_number=123
+```
+
+#### Reusable Workflow
+Can be called from other workflows:
+```yaml
+jobs:
+  my-job:
+    uses: ./.github/workflows/agent-fallback.yml
+    with:
+      task_description: "..."
+      issue_number: 123
+```
+
+### 3. Workflow Integration
+
+The complete workflow handles all trigger types automatically:
 
 ```yaml
 name: Agent Fallback Handler
 on:
+  # Automatic issue triggers
+  issues:
+    types: [labeled]
+  
+  # Automatic PR triggers
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+  
+  # Reusable workflow
   workflow_call:
     inputs:
       task_description:
@@ -113,49 +170,52 @@ on:
         type: number
     outputs:
       agent_used:
-        description: "Which agent completed the task"
         value: ${{ jobs.execute.outputs.agent_used }}
       success:
-        description: "Whether the task completed successfully"
         value: ${{ jobs.execute.outputs.success }}
 
 jobs:
   execute:
     runs-on: ubuntu-latest
-    outputs:
-      agent_used: ${{ steps.result.outputs.agent }}
-      success: ${{ steps.result.outputs.success }}
+    # Only run if:
+    # - Issue labeled with wr:code, wr:auto, or agent-fallback, OR
+    # - PR ready for review, OR
+    # - Manual/reusable workflow call
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_call' ||
+      (github.event_name == 'issues' && 
+       (github.event.label.name == 'wr:code' || 
+        github.event.label.name == 'wr:auto' || 
+        github.event.label.name == 'agent-fallback')) ||
+      (github.event_name == 'pull_request_target' && 
+       github.event.pull_request.draft == false)
     steps:
+      # Resolve issue context from different event types
+      - name: Resolve issue context
+        id: issue
+        run: |
+          # Handles: issues, pull_request_target, workflow_dispatch, workflow_call
+          # Automatically detects event type and extracts issue/PR number
+          
       - name: Try Devin AI
         id: devin
         continue-on-error: true
-        env:
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
-        run: |
-          # Devin API call with retry logic
-          # See scripts/call-devin-api.sh
+        run: scripts/call-devin-api.sh
           
       - name: Fallback to Cursor
-        if: steps.devin.outcome == 'failure' && secrets.CURSOR_API_KEY != ''
+        if: steps.devin.outcome == 'failure'
         id: cursor
         continue-on-error: true
-        env:
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-        run: |
-          # Cursor API call
-          # See scripts/call-cursor-api.sh
+        run: scripts/call-cursor-api.sh
           
       - name: Fallback to OpenRouter
-        if: steps.cursor.outcome == 'failure' && secrets.OPENROUTER_API_KEY != ''
+        if: steps.cursor.outcome == 'failure'
         id: openrouter
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
-          # OpenRouter with model fallback chain
-          # See scripts/call-openrouter-with-fallback.js
+        run: node scripts/call-openrouter-with-fallback.js
 ```
 
-### 3. Scripts
+### 4. Scripts
 
 Three scripts implement the agent calls:
 

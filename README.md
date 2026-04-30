@@ -17,6 +17,12 @@ gh secret set DEVIN_API_KEY --repo YOUR-REPO
 gh secret set CURSOR_API_KEY --repo YOUR-REPO
 ```
 
+**Automatic Triggers:**
+- ✅ Issues labeled with `wr:code`, `wr:auto`, or `agent-fallback`
+- ✅ PRs opened or marked ready for review
+- ✅ Manual via GitHub Actions UI or `gh` CLI
+- ✅ Reusable from other workflows
+
 **Fallback Chain:**
 1. **Devin AI** (primary) — Complex multi-file changes, full autonomy
 2. **Cursor** (secondary) — Fast iteration, smaller features  

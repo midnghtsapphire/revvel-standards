@@ -1,6 +1,15 @@
 name: Agent Fallback Handler
 
 on:
+  # Automatic triggers for issues with specific labels
+  issues:
+    types: [labeled]
+  
+  # Automatic triggers for PRs ready for review
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+  
+  # Reusable workflow (can be called from other workflows)
   workflow_call:
     inputs:
       task_description:
@@ -26,6 +35,8 @@ on:
       pr_url:
         description: "Pull request URL if created"
         value: ${{ jobs.execute.outputs.pr_url }}
+  
+  # Manual trigger
   workflow_dispatch:
     inputs:
       issue_number:
@@ -47,6 +58,23 @@ jobs:
   health-check:
     name: Check agent availability
     runs-on: ubuntu-latest
+    # Only run if:
+    # 1. Issue labeled with wr:code, wr:auto, or agent-fallback label, OR
+    # 2. PR ready for review (opened/reopened/ready_for_review), OR
+    # 3. Manual workflow_dispatch, OR
+    # 4. Called as reusable workflow
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_call' ||
+      (github.event_name == 'issues' && 
+       (github.event.label.name == 'wr:code' || 
+        github.event.label.name == 'wr:auto' || 
+        github.event.label.name == 'agent-fallback')) ||
+      (github.event_name == 'pull_request_target' && 
+       github.event.pull_request.draft == false &&
+       (github.event.action == 'opened' || 
+        github.event.action == 'reopened' || 
+        github.event.action == 'ready_for_review'))
     outputs:
       devin_available: ${{ steps.check.outputs.devin_available }}
       cursor_available: ${{ steps.check.outputs.cursor_available }}
@@ -129,19 +157,48 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const issueNumber = context.eventName === 'workflow_dispatch'
-              ? Number('${{ inputs.issue_number }}')
-              : ${{ inputs.issue_number }};
+            let issueNumber;
+            let issueTitle = '';
+            let issueBody = '';
             
-            const { data: issue } = await github.rest.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-            });
+            // Determine issue number based on event type
+            if (context.eventName === 'workflow_dispatch') {
+              issueNumber = Number('${{ inputs.issue_number }}');
+            } else if (context.eventName === 'workflow_call') {
+              issueNumber = ${{ inputs.issue_number }};
+            } else if (context.eventName === 'issues') {
+              issueNumber = context.payload.issue.number;
+              issueTitle = context.payload.issue.title || '';
+              issueBody = context.payload.issue.body || '';
+            } else if (context.eventName === 'pull_request_target') {
+              issueNumber = context.payload.pull_request.number;
+              issueTitle = context.payload.pull_request.title || '';
+              issueBody = context.payload.pull_request.body || '';
+            }
             
-            core.setOutput('issue_number', String(issue.number));
-            core.setOutput('issue_title', issue.title || '');
-            core.setOutput('issue_body', issue.body || '');
+            if (!issueNumber) {
+              core.setFailed('Could not determine issue/PR number');
+              return;
+            }
+            
+            // Fetch full details if we don't have them yet
+            if (!issueTitle || !issueBody) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                issueTitle = issue.title || '';
+                issueBody = issue.body || '';
+              } catch (error) {
+                core.warning(`Could not fetch issue details: ${error.message}`);
+              }
+            }
+            
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('issue_title', issueTitle);
+            core.setOutput('issue_body', issueBody);
 
       - name: Try Devin AI
         if: needs.health-check.outputs.devin_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'devin')
