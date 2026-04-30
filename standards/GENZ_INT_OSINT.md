@@ -3,7 +3,7 @@
 **Status:** Active
 **Owner:** @midnghtsapphire
 **Target repo:** `midnghtsapphire/growlingeyes`
-**Related:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`shapes/MCP.md`](shapes/MCP.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md)
+**Related:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`MCP_STANDARD.md`](../docs/Master_Inventory/MCP_STANDARD.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md)
 
 ---
 
@@ -318,14 +318,14 @@ GenZ-INT feeds into the existing GrowlingEyes OSINT platform:
 ```typescript
 // server/genzIntRouter.ts — tRPC router for GenZ-INT data
 export const genzIntRouter = router({
-  recon: publicProcedure
+  recon: protectedProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {
       // Orchestrate MCP tool calls
       // Return consolidated brief
     }),
 
-  identityGraph: publicProcedure
+  identityGraph: protectedProcedure
     .input(z.object({ handles: z.array(z.string()) }))
     .query(async ({ input }) => {
       // Cross-reference handles across platforms
