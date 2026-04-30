@@ -19,6 +19,9 @@ on:
       - 'templates/issue-template/issue.yml'
       - 'templates/issue-template/config.yml'
 
+permissions:
+  contents: read
+
 jobs:
   check-sync:
     name: Verify template files are in sync

@@ -134,8 +134,8 @@ pre-checked checkboxes.
 
 If none of these work, check:
 - Is the template actually at `.github/ISSUE_TEMPLATE/issue.yml` in the repo?
-- Does it have a `value:` attribute with the markdown checklist on lines
-  112–119?
+- Does it have a `value:` attribute with the markdown checklist? Look for the
+  `id: scope` section (around lines 116–132).
 - Run `git log .github/ISSUE_TEMPLATE/issue.yml` — when was it last
   updated? Template changes committed recently might still be propagating.
 
