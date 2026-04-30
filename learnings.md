@@ -9,6 +9,9 @@
   - Never delete the [Template Entry] section below.
 -->
 
+**SSOT Links:** [`GOAP.md`](GOAP.md) · [`GOAL.md`](GOAL.md) · [`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md)  
+**Rule:** Read this file at the start of every session. Append after every task or failure. Never repeat the same mistake twice.
+
 This file tracks autonomous executions, failures, root causes, and locked-in solutions so mistakes are never repeated.
 
 ## [Template Entry - Do not delete]

@@ -239,7 +239,10 @@ And these domain skills as needed:
 
 ## References
 
-- Master System Prompt: [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../../ui/freedom-angel-repo-manager/MASTER_PROMPT.md)
+- **Goap Hub (SSOT):** [`GOAP.md`](../../GOAP.md) — Top-level Goap system index and persona definition
+- **Mission (SSOT):** [`GOAL.md`](../../GOAL.md) — Financial targets, project roadmap, and rules
+- **Self-Healing Log (SSOT):** [`learnings.md`](../../learnings.md) — Read before every session; append after every task
+- Master System Prompt: [`GOAP_AGENT_PROMPT.md`](../../GOAP_AGENT_PROMPT.md)
 - Agent Factory: [`AGENT_FACTORY_STANDARD.md`](./AGENT_FACTORY_STANDARD.md)
 - AUDREY Agent: [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](./AUDREY_AUTONOMOUS_AGENT_STANDARD.md)
 - Revvel Standards: [`../REVVEL_MASTER_STANDARDS.md`](../REVVEL_MASTER_STANDARDS.md)
