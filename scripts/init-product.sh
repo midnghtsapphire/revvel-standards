@@ -6,7 +6,7 @@
 # templates/agent-generated-product/.
 #
 # Usage:
-#   scripts/init-product.sh <slug> [--shape pdf|app|extension|skill|api|cli|mcp|booklet|full-app]
+#   scripts/init-product.sh <slug> [--shape pdf|app|extension|skill|api|cli|mcp|booklet|full-app|excel|token]
 #
 # Examples:
 #   scripts/init-product.sh cpap-mask-leak-finder --shape app
