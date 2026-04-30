@@ -226,15 +226,15 @@ This Organization schema MUST appear in the `<head>` of every public-facing page
     },
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "3645 Knoll Ln Apt 169",
-      "addressLocality": "Colorado Springs",
-      "addressRegion": "CO",
-      "postalCode": "80917",
+      "streetAddress": "[STREET_ADDRESS]",
+      "addressLocality": "[CITY]",
+      "addressRegion": "[STATE]",
+      "postalCode": "[ZIP_CODE]",
       "addressCountry": "US"
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+1-719-659-9165",
+      "telephone": "[PHONE_NUMBER]",
       "contactType": "Customer Service"
     }
   }

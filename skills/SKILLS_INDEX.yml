@@ -485,6 +485,25 @@ skills:
       - "page title"
       - "meta description"
 
+  - name: eeat_trust_authority
+    title: "E-E-A-T Trust Authority"
+    version: "1.0.0"
+    path: "skills/eeat-trust-authority/"
+    skill_file: "skills/eeat-trust-authority/eeat-trust-authority.skill.yml"
+    category: "Content & Marketing"
+    access: all
+    triggers:
+      - "eeat"
+      - "e-e-a-t"
+      - "trust signals"
+      - "google knowledge panel"
+      - "schema.org markup"
+      - "brand authority"
+      - "seo authority"
+      - "orcid"
+      - "professional identity"
+      - "citation network"
+
   # ─── Tax & Legal ───────────────────────────────────────────────────────────
 
   - name: tax_legal_agent

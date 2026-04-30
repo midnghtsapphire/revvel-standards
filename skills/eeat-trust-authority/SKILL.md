@@ -113,7 +113,7 @@ Use this canonical identity across all properties:
 - Legal office environments · case management (Meruscase, LexisNexis, Foundation AI)
 - AI document automation implementation
 - Investigative research · forensic geospatial analysis · OSINT
-- Freelance history: Fiverr · oDesk/Upwork · Evans Digital · Freedom Angel Corps (CO entity)
+- Freelance history: Fiverr · oDesk/Upwork · Evans Digital · Freedom Angel Corp (CO entity)
 
 ### Professional Affiliations
 
@@ -166,15 +166,15 @@ This JSON-LD MUST appear in the `<head>` of every public-facing page:
     },
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "3645 Knoll Ln Apt 169",
-      "addressLocality": "Colorado Springs",
-      "addressRegion": "CO",
-      "postalCode": "80917",
+      "streetAddress": "[STREET_ADDRESS]",
+      "addressLocality": "[CITY]",
+      "addressRegion": "[STATE]",
+      "postalCode": "[ZIP_CODE]",
       "addressCountry": "US"
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+1-719-659-9165",
+      "telephone": "[PHONE_NUMBER]",
       "contactType": "Customer Service"
     }
   }

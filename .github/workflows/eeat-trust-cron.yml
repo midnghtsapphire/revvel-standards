@@ -29,13 +29,14 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const { data: issues } = await github.rest.issues.listForRepo({ 
-              owner, 
-              repo, 
-              state: 'open', 
-              per_page: 100 
+            
+            // Use Search API to find the exact issue by title (no pagination issues)
+            const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:issue is:open "exit-quiet-mode" in:title`,
+              per_page: 1
             });
-            const active = issues.some(i => i.title.trim().toLowerCase() === 'exit-quiet-mode');
+            
+            const active = searchResults.total_count > 0;
             core.setOutput('active', active ? 'true' : 'false');
             
             if (!active) {
@@ -135,7 +136,6 @@ jobs:
         env:
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENROUTER_API_KEY: ${{ env.OPENROUTER_API_KEY }}
           RUN_NUMBER: ${{ github.run_number }}
           RUN_ID: ${{ github.run_id }}
           CONFIG_FILE: ${{ steps.config.outputs.config_file }}

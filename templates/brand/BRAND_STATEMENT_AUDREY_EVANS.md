@@ -84,7 +84,7 @@ Systems builder, legal-tech operator, intelligence researcher. Building platform
 - Legal office environments · case management (Meruscase, LexisNexis, Foundation AI)
 - AI document automation implementation — spearheaded adoption in legal settings
 - Investigative research · forensic geospatial analysis · OSINT
-- Freelance history: Fiverr · oDesk/Upwork · Evans Digital · Freedom Angel Corps (CO entity)
+- Freelance history: Fiverr · oDesk/Upwork · Evans Digital · Freedom Angel Corp (CO entity)
 
 ---
 

@@ -13,11 +13,10 @@ metadata:
 
 dependencies:
   skills:
-    - seo-metadata
+    - seo_metadata
   tools:
     - lighthouse
     - linkchecker
-    - schema-validator
   pip_packages:
     - linkchecker
   npm_packages:
