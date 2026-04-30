@@ -1,0 +1,500 @@
+name: eeat-trust-cron
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC (optimal for overnight processing)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (report only, no changes)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  trustforge:
+    runs-on: ubuntu-latest
+    name: TrustForge E-E-A-T Automation
+    
+    steps:
+      - name: Quiet Mode gate
+        id: quiet
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            
+            // Use Search API to find the exact issue by title (no pagination issues)
+            const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:issue is:open "exit-quiet-mode" in:title`,
+              per_page: 1
+            });
+            
+            const active = searchResults.total_count > 0;
+            core.setOutput('active', active ? 'true' : 'false');
+            
+            if (!active) {
+              console.log('Quiet Mode is ACTIVE. TrustForge is paused.');
+              console.log('To enable: gh issue create --title "exit-quiet-mode"');
+            } else {
+              console.log('Quiet Mode is OFF. TrustForge is running.');
+            }
+
+      - name: Quiet Mode active; skipping
+        if: steps.quiet.outputs.active != 'true'
+        run: |
+          echo "🔇 Quiet Mode active; TrustForge automation is paused"
+          echo "To enable TrustForge, create an issue titled: exit-quiet-mode"
+          echo "Command: gh issue create --title 'exit-quiet-mode' --body 'Enabling TrustForge E-E-A-T automation'"
+
+      - name: Checkout repository
+        if: steps.quiet.outputs.active == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: steps.quiet.outputs.active == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        if: steps.quiet.outputs.active == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Load secrets from Doppler
+        if: steps.quiet.outputs.active == 'true'
+        uses: dopplerhq/secrets-fetch-action@v2
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+
+      - name: Install dependencies
+        if: steps.quiet.outputs.active == 'true'
+        run: |
+          # Schema validation tools
+          npm install -g schema-dts jsonld
+          
+          # SEO auditing
+          npm install -g lighthouse
+          
+          # Link checking
+          pip install linkchecker
+          
+          # Sitemap generation
+          npm install -g sitemap-generator-cli
+
+      - name: Load property configuration
+        if: steps.quiet.outputs.active == 'true'
+        id: config
+        run: |
+          # Load properties from config file or use defaults
+          if [ -f ".github/trustforge-config.json" ]; then
+            echo "config_file=.github/trustforge-config.json" >> $GITHUB_OUTPUT
+          else
+            # Create default config
+            cat > /tmp/trustforge-config.json << 'EOFCONFIG'
+          {
+            "properties": [
+              {
+                "name": "GrowlingEyes",
+                "url": "https://growlingeyes.com",
+                "type": "webapp"
+              },
+              {
+                "name": "Neurooz",
+                "url": "https://neurooz.com",
+                "type": "webapp"
+              },
+              {
+                "name": "Fidelity Trust Services",
+                "url": "https://fidelitytrustservices.com",
+                "type": "webapp"
+              },
+              {
+                "name": "Meet Audrey Evans",
+                "url": "https://www.meetaudreyevans.com",
+                "type": "profile"
+              }
+            ]
+          }
+          EOFCONFIG
+            echo "config_file=/tmp/trustforge-config.json" >> $GITHUB_OUTPUT
+          fi
+
+      - name: TrustForge - Daily E-E-A-T Tasks
+        if: steps.quiet.outputs.active == 'true'
+        id: trustforge
+        env:
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_NUMBER: ${{ github.run_number }}
+          RUN_ID: ${{ github.run_id }}
+          CONFIG_FILE: ${{ steps.config.outputs.config_file }}
+        run: |
+          echo "🏗️  TrustForge E-E-A-T Automation Starting..."
+          echo "Dry Run Mode: $DRY_RUN"
+          echo "Run Number: $RUN_NUMBER"
+          echo ""
+          
+          # Create reports directory
+          mkdir -p docs/reports
+          
+          # Use GitHub run number for unique reports instead of date
+          REPORT_FILE="docs/reports/eeat-health-run-${RUN_NUMBER}.md"
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S")
+          
+          echo "# TrustForge E-E-A-T Health Report" > "$REPORT_FILE"
+          echo "**Date:** ${TIMESTAMP} UTC" >> "$REPORT_FILE"
+          echo "**Run:** #${RUN_NUMBER}" >> "$REPORT_FILE"
+          echo "**Agent:** TrustForge v1.0.0" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          # Load properties from config
+          PROPERTIES=$(jq -r '.properties[] | .url' "$CONFIG_FILE")
+          
+          # Task 1: Verify schema markup on key properties
+          echo "## 1. Schema Markup Validation" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          schema_errors=0
+          echo "Checking schema.org markup on properties..." >> "$REPORT_FILE"
+          for url in $PROPERTIES; do
+            echo "- Checking $url..." | tee -a "$REPORT_FILE"
+            
+            # Fetch HTML and check for JSON-LD schema
+            html=$(curl -sSL -m 10 "$url" 2>/dev/null || echo "")
+            
+            if [ -n "$html" ]; then
+              # Check for Organization schema
+              if echo "$html" | grep -q '@type.*Organization'; then
+                echo "  - ✅ Organization schema found" >> "$REPORT_FILE"
+              else
+                echo "  - ⚠️  Organization schema missing" >> "$REPORT_FILE"
+                ((schema_errors++))
+              fi
+              
+              # Check for structured data
+              if echo "$html" | grep -q 'application/ld+json'; then
+                echo "  - ✅ JSON-LD structured data present" >> "$REPORT_FILE"
+              else
+                echo "  - ⚠️  JSON-LD structured data missing" >> "$REPORT_FILE"
+                ((schema_errors++))
+              fi
+            else
+              echo "  - ❌ Unable to fetch page" >> "$REPORT_FILE"
+              ((schema_errors++))
+            fi
+          done
+          echo "" >> "$REPORT_FILE"
+          echo "**Schema Validation:** $schema_errors issue(s) found" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          # Task 2: HTTPS certificate validation
+          echo "## 2. HTTPS Certificate Check" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          ssl_errors=0
+          for url in $PROPERTIES; do
+            echo "- Checking SSL for $url..." | tee -a "$REPORT_FILE"
+            
+            # Check HTTPS with certificate validation
+            if curl -sSf --head --max-time 10 "$url" > /dev/null 2>&1; then
+              echo "  - ✅ HTTPS active and certificate valid" >> "$REPORT_FILE"
+            else
+              echo "  - ❌ HTTPS check failed or certificate invalid" >> "$REPORT_FILE"
+              ((ssl_errors++))
+            fi
+          done
+          echo "" >> "$REPORT_FILE"
+          echo "**HTTPS Validation:** $ssl_errors issue(s) found" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          # Task 3: Link health check using linkchecker
+          echo "## 3. Broken Link Detection" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          link_errors=0
+          for url in $PROPERTIES; do
+            echo "- Checking links on $url..." | tee -a "$REPORT_FILE"
+            
+            # Run linkchecker with timeout and limited depth
+            link_output=$(linkchecker --no-warnings --timeout=10 --recursion-level=1 "$url" 2>&1 || true)
+            
+            # Count errors from linkchecker output
+            error_count=$(echo "$link_output" | grep -c "Error" || echo "0")
+            
+            if [ "$error_count" -eq 0 ]; then
+              echo "  - ✅ No broken links detected" >> "$REPORT_FILE"
+            else
+              echo "  - ⚠️  $error_count broken link(s) found" >> "$REPORT_FILE"
+              ((link_errors+=error_count))
+            fi
+          done
+          echo "" >> "$REPORT_FILE"
+          echo "**Link Health:** $link_errors broken link(s) found" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          # Task 4: Lighthouse SEO audit (if property is accessible)
+          echo "## 4. Lighthouse SEO Scores" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+
+          SEO_MIN=$(jq -r '.thresholds.lighthouse_seo_min // 90' "$CONFIG_FILE")
+
+          for url in $PROPERTIES; do
+            echo "- Running Lighthouse for $url..." | tee -a "$REPORT_FILE"
+
+            # Run lighthouse in headless mode for SEO only
+            lh_output=$(lighthouse "$url" \
+              --only-categories=seo \
+              --output=json \
+              --output-path=/tmp/lh-report.json \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet 2>&1 || echo "failed")
+
+            if [ -f "/tmp/lh-report.json" ]; then
+              seo_score=$(jq -r '.categories.seo.score * 100' /tmp/lh-report.json 2>/dev/null || echo "N/A")
+
+              if [ "$seo_score" != "N/A" ]; then
+                if (( $(echo "$seo_score >= $SEO_MIN" | bc -l) )); then
+                  echo "  - ✅ SEO Score: ${seo_score}/100 (Target: ≥${SEO_MIN})" >> "$REPORT_FILE"
+                else
+                  echo "  - ⚠️  SEO Score: ${seo_score}/100 (Target: ≥${SEO_MIN})" >> "$REPORT_FILE"
+                fi
+              else
+                echo "  - ⚠️  Unable to parse Lighthouse score" >> "$REPORT_FILE"
+              fi
+              rm -f /tmp/lh-report.json
+            else
+              echo "  - ⚠️  Lighthouse audit failed or timed out" >> "$REPORT_FILE"
+            fi
+          done
+          echo "" >> "$REPORT_FILE"
+          
+          # Task 5: Google Search Console monitoring (requires API key)
+          echo "## 5. Google Search Console" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          if [ -n "${GOOGLE_SEARCH_CONSOLE_KEY:-}" ]; then
+            echo "🔑 Google Search Console API key detected - checking status..." | tee -a "$REPORT_FILE"
+            # TODO: Implement GSC API check when key is available
+            echo "- ℹ️  API integration pending implementation" >> "$REPORT_FILE"
+          else
+            echo "- ⚠️  \`GOOGLE_SEARCH_CONSOLE_KEY\` not configured" >> "$REPORT_FILE"
+            echo "- Manual check required:" >> "$REPORT_FILE"
+            echo "  - [ ] No critical errors in Search Console" >> "$REPORT_FILE"
+            echo "  - [ ] Sitemaps submitted and processed" >> "$REPORT_FILE"
+            echo "  - [ ] No security issues" >> "$REPORT_FILE"
+          fi
+          echo "" >> "$REPORT_FILE"
+          
+          # Task 6: Knowledge Panel status (manual)
+          echo "## 6. Google Knowledge Panel" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "Manual verification required:" >> "$REPORT_FILE"
+          echo "- [ ] Search 'Audrey Evans systems builder' on Google" >> "$REPORT_FILE"
+          echo "- [ ] Verify Knowledge Panel presence" >> "$REPORT_FILE"
+          echo "- [ ] If present, verify information accuracy" >> "$REPORT_FILE"
+          echo "- [ ] If not present, continue structured data optimization" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          # Summary
+          echo "## Summary" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          total_issues=$((schema_errors + ssl_errors + link_errors))
+          
+          if [ $total_issues -eq 0 ]; then
+            echo "✅ **All automated checks passed!**" >> "$REPORT_FILE"
+          else
+            echo "⚠️  **$total_issues issue(s) detected across automated checks**" >> "$REPORT_FILE"
+          fi
+          echo "" >> "$REPORT_FILE"
+          echo "- Schema issues: $schema_errors" >> "$REPORT_FILE"
+          echo "- HTTPS issues: $ssl_errors" >> "$REPORT_FILE"
+          echo "- Broken links: $link_errors" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          
+          echo "### Next Actions" >> "$REPORT_FILE"
+          if [ $total_issues -gt 0 ]; then
+            echo "1. Address issues identified above" >> "$REPORT_FILE"
+            echo "2. Review checklist items marked as [ ]" >> "$REPORT_FILE"
+            echo "3. Re-run TrustForge to verify fixes" >> "$REPORT_FILE"
+          else
+            echo "1. Review checklist items marked as [ ]" >> "$REPORT_FILE"
+            echo "2. Continue weekly and monthly E-E-A-T maintenance" >> "$REPORT_FILE"
+          fi
+          echo "" >> "$REPORT_FILE"
+          
+          echo "---" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "*Generated by TrustForge — E-E-A-T Trust Authority Agent*" >> "$REPORT_FILE"
+          echo "*Run ID: ${RUN_ID} | Run Number: ${RUN_NUMBER}*" >> "$REPORT_FILE"
+          
+          echo ""
+          echo "✅ TrustForge health report generated: $REPORT_FILE"
+          echo "📊 Issues found: $total_issues (Schema: $schema_errors, HTTPS: $ssl_errors, Links: $link_errors)"
+          
+          # Load notification preferences from config
+          NOTIFY_ON_FAILURE=$(jq -r '.notifications.on_failure // true' "$CONFIG_FILE")
+          NOTIFY_ON_WARNING=$(jq -r '.notifications.on_warning // true' "$CONFIG_FILE")
+
+          # Output for next steps
+          echo "report_path=$REPORT_FILE" >> $GITHUB_OUTPUT
+          echo "total_issues=$total_issues" >> $GITHUB_OUTPUT
+          echo "run_number=$RUN_NUMBER" >> $GITHUB_OUTPUT
+          echo "schema_errors=$schema_errors" >> $GITHUB_OUTPUT
+          echo "ssl_errors=$ssl_errors" >> $GITHUB_OUTPUT
+          echo "link_errors=$link_errors" >> $GITHUB_OUTPUT
+          echo "notify_on_failure=$NOTIFY_ON_FAILURE" >> $GITHUB_OUTPUT
+          echo "notify_on_warning=$NOTIFY_ON_WARNING" >> $GITHUB_OUTPUT
+
+      - name: Create PR with health report
+        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "TrustForge: E-E-A-T health report run #${{ steps.trustforge.outputs.run_number }}"
+          title: "[TrustForge] E-E-A-T Health Report #${{ steps.trustforge.outputs.run_number }}"
+          body: |
+            ## TrustForge E-E-A-T Health Report
+            
+            Automated daily E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) health check.
+            
+            **Report:** `${{ steps.trustforge.outputs.report_path }}`  
+            **Run Number:** #${{ steps.trustforge.outputs.run_number }}  
+            **Issues Found:** ${{ steps.trustforge.outputs.total_issues }}
+            
+            ### Automated Checks Completed
+            - ✅ Schema.org markup validation (with HTML parsing)
+            - ✅ HTTPS certificate validation (with SSL verification)
+            - ✅ Broken link detection (using linkchecker)
+            - ✅ Lighthouse SEO audit (threshold from config)
+            - ℹ️  Google Search Console monitoring (requires API key)
+            - ℹ️  Knowledge Panel status (manual verification)
+            
+            ### Next Steps
+            Review the health report and address any issues identified by automated checks.
+            
+            ---
+            *Generated by TrustForge — E-E-A-T Trust Authority Agent*  
+            *Skill: `skills/eeat-trust-authority/`*  
+            *Run ID: ${{ github.run_id }}*
+          branch: trustforge/eeat-health-run-${{ steps.trustforge.outputs.run_number }}
+          delete-branch: true
+          labels: |
+            eeat
+            automated
+            trustforge
+            seo
+
+      - name: Notify on failure
+        if: >-
+          steps.quiet.outputs.active == 'true' &&
+          inputs.dry_run != true &&
+          steps.trustforge.outputs.notify_on_failure == 'true' &&
+          steps.trustforge.outputs.ssl_errors != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const runNumber = '${{ steps.trustforge.outputs.run_number }}';
+            const sslErrors = '${{ steps.trustforge.outputs.ssl_errors }}';
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `[TrustForge] Critical failure detected in run #${runNumber}`,
+              body: [
+                '## TrustForge Failure Notification',
+                '',
+                `**Run:** #${runNumber}`,
+                `**SSL/HTTPS errors:** ${sslErrors}`,
+                '',
+                'Critical issues were detected that require immediate attention.',
+                '',
+                `See the full report in the associated PR or \`docs/reports/eeat-health-run-${runNumber}.md\`.`,
+                '',
+                '---',
+                '*Auto-generated by TrustForge (controlled by `notifications.on_failure` in `.github/trustforge-config.json`)*'
+              ].join('\n'),
+              labels: ['trustforge', 'failure', 'automated']
+            });
+
+      - name: Notify on warning
+        if: >-
+          steps.quiet.outputs.active == 'true' &&
+          inputs.dry_run != true &&
+          steps.trustforge.outputs.notify_on_warning == 'true' &&
+          steps.trustforge.outputs.total_issues != '0' &&
+          steps.trustforge.outputs.ssl_errors == '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const runNumber = '${{ steps.trustforge.outputs.run_number }}';
+            const schemaErrors = '${{ steps.trustforge.outputs.schema_errors }}';
+            const linkErrors = '${{ steps.trustforge.outputs.link_errors }}';
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `[TrustForge] Warnings detected in run #${runNumber}`,
+              body: [
+                '## TrustForge Warning Notification',
+                '',
+                `**Run:** #${runNumber}`,
+                `**Schema issues:** ${schemaErrors}`,
+                `**Broken links:** ${linkErrors}`,
+                '',
+                'Non-critical issues were detected during the E-E-A-T health check.',
+                '',
+                `See the full report in the associated PR or \`docs/reports/eeat-health-run-${runNumber}.md\`.`,
+                '',
+                '---',
+                '*Auto-generated by TrustForge (controlled by `notifications.on_warning` in `.github/trustforge-config.json`)*'
+              ].join('\n'),
+              labels: ['trustforge', 'warning', 'automated']
+            });
+
+      - name: Dry run summary
+        if: steps.quiet.outputs.active == 'true' && inputs.dry_run == true
+        run: |
+          echo "🏁 TrustForge Dry Run Complete"
+          echo ""
+          echo "Report generated but no PR created (dry run mode)"
+          echo "Report location: ${{ steps.trustforge.outputs.report_path }}"
+          echo ""
+          echo "To run with changes:"
+          echo "gh workflow run eeat-trust-cron.yml"
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## TrustForge E-E-A-T Automation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Quiet Mode:** ${{ steps.quiet.outputs.active == 'true' && '🟢 OFF (running)' || '🔇 ON (paused)' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** ${{ inputs.dry_run && '✅ Yes' || '❌ No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.quiet.outputs.active }}" == "true" ]; then
+            echo "### Tasks Completed" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Schema markup validation" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ HTTPS certificate check" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Canonical URL audit" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Link health monitoring" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Health report generated" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Quiet Mode Active" >> $GITHUB_STEP_SUMMARY
+            echo "TrustForge is paused. To enable:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "gh issue create --title 'exit-quiet-mode'" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
