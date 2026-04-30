@@ -275,7 +275,7 @@ def fetch_domain_feeds(domain: str, feed_list: list[tuple[str, str]]) -> list[di
 
 # ─── Signal detection ─────────────────────────────────────────────────────────
 
-def detect_weak_signals(domain: str, threshold: int = 2) -> WeakSignal:
+def detect_weak_signals(domain: str, threshold: int = 2) -> Optional[WeakSignal]:
     """
     Detect weak signals for a given intelligence domain.
     
