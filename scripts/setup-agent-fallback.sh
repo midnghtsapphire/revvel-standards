@@ -1,7 +1,7 @@
 #!/bin/bash
 # Setup Agent Fallback System
 # Configures Devin → Cursor → OpenRouter fallback chain
-# Usage: ./setup-agent-fallback.sh [--repo OWNER/REPO]
+# Usage: ./setup-agent-fallback.sh [OWNER/REPO]
 
 set -e
 

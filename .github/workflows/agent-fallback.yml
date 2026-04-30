@@ -165,7 +165,7 @@ jobs:
             if (context.eventName === 'workflow_dispatch') {
               issueNumber = Number('${{ inputs.issue_number }}');
             } else if (context.eventName === 'workflow_call') {
-              issueNumber = ${{ inputs.issue_number }};
+              issueNumber = Number('${{ inputs.issue_number }}') || undefined;
             } else if (context.eventName === 'issues') {
               issueNumber = context.payload.issue.number;
               issueTitle = context.payload.issue.title || '';
@@ -256,10 +256,12 @@ jobs:
 
       - name: Fallback to OpenRouter
         if: >-
+          steps.devin.outcome != 'success' &&
           (steps.cursor.outcome == 'failure' ||
           steps.cursor.outcome == 'skipped') &&
           needs.health-check.outputs.openrouter_available == 'true'
         id: openrouter
+        continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -302,6 +304,7 @@ jobs:
           fi
 
       - name: Determine result
+        if: always()
         id: result
         run: |
           if [ "${{ steps.devin.outcome }}" = "success" ]; then
