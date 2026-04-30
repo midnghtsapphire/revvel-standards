@@ -24,6 +24,12 @@
       "goal_tags": ["ai", "jules", "automation"],
       "strategic_value": 7,
       "notes": "Used by .github/workflows/jules-invoke.yml"
+    },
+    {
+      "repo": "Sushegaad/Claude-Skills-Governance-Risk-and-Compliance",
+      "goal_tags": ["compliance", "grc", "claude-code", "iso27001", "soc2", "fedramp", "gdpr", "hipaa", "nist-csf", "pci-dss"],
+      "strategic_value": 8,
+      "notes": "Forked as midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance. Registered in skills/grc-compliance/. Sync when upstream releases new version (currently v0.3.0)."
     }
   ]
 }

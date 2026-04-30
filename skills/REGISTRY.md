@@ -314,6 +314,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** security, owasp, helmet, csp, rate-limiting, secrets, auth
 - **Trigger:** Any work touching authentication, API keys, user inputs, or data storage.
 
+#### grc-compliance
+- **Path:** `skills/grc-compliance/`
+- **Files:** `SKILL.md` · `grc-compliance.skill.yml`
+- **Fork:** [`midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance`](https://github.com/midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance) (upstream: `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0)
+- **Description:** Expert-level Governance, Risk, and Compliance (GRC) guidance for nine regulatory frameworks — ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered via the Claude Code plugin marketplace. Benchmarked at 94% accuracy across 18 test cases. Covers gap analyses, policy drafting, audit evidence, control mapping, risk registers, and compliance document generation for each framework.
+- **Tags:** grc, compliance, governance, risk, iso27001, soc2, fedramp, gdpr, hipaa, nist-csf, pci-dss, tsa-cybersecurity, iso42001, claude-code-plugin, audit, regulatory, security-policy, isms, ato, privacy
+- **Trigger:** `ISO 27001`, `SOC 2`, `FedRAMP`, `GDPR`, `HIPAA`, `NIST CSF`, `PCI DSS`, `TSA cybersecurity`, `ISO 42001`, `compliance framework`, `gap analysis`, `audit readiness`, `GRC`, `regulatory compliance`, `risk register`, `security policy`, `control mapping`.
+
 ---
 
 ### Accessibility & Compliance

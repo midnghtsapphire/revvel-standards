@@ -52,6 +52,14 @@ These repositories define the standards, documentation, and infrastructure for t
 | **revvel-app-template** | In Development | A working boilerplate repository for all new applications, pre-configured with the required stack and features. | [revvel-app-template](https://github.com/MIDNGHTSAPPHIRE/revvel-app-template) |
 | **rvvel** | Live | The source code for the main portfolio and hub website, `meetaudreyevans.com`, deployed via GitHub Pages. | [rvvel](https://github.com/MIDNGHTSAPPHIRE/rvvel) |
 
+## 3a. AI Skills & Plugin Repositories
+
+These repositories contain agent skills, Claude Code plugins, and AI extension marketplaces.
+
+| Repository | Status | Description | Skill Entry | Link |
+| :--- | :--- | :--- | :--- | :--- |
+| **Claude-Skills-Governance-Risk-and-Compliance** | Active (Fork) | Expert-level GRC compliance guidance for ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered as a Claude Code plugin marketplace. Fork of `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0. Benchmarked at 94% accuracy across 18 test cases. | [`skills/grc-compliance/`](../skills/grc-compliance/) | [Claude-Skills-GRC](https://github.com/MIDNGHTSAPPHIRE/Claude-Skills-Governance-Risk-and-Compliance) |
+
 ## 4. Research Documents
 
 These documents contain AI-powered research analysis following the [AI Research Module Standard](Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md).
