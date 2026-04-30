@@ -52,6 +52,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
+| PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations | [`posthog`](#posthog) |
 | Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
@@ -389,6 +390,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Integrate Mixpanel into any Revvel project (web, Node, mobile) for action-level user-behavior analytics — events, funnels, retention, cohorts. Ships a drop-in `mixpanel-init.ts` wrapper with Do-Not-Track honoring, persistent opt-out, PII property-key strip, EU-residency host swap, and a no-op fallback when `MIXPANEL_TOKEN` is unset. Includes a Revvel-standard event catalog (`App Loaded`, `User Signed Up`, `Purchase Completed`, etc.) with `Title Case With Spaces` event names and `snake_case` properties, plus a hard PII ban list enforced at both wrapper and PR-review layers.
 - **Tags:** mixpanel, product-analytics, user-behavior, events, funnels, retention, cohort-analysis, telemetry, mixpanel-browser, mixpanel-node
 - **Trigger:** "mixpanel", "integrate mixpanel", "product analytics", "user behavior analytics", "track event", "funnel analysis", "retention analysis", "cohort analysis", "mixpanel-browser", "telemetry".
+
+---
+
+#### posthog
+
+- **Path:** `skills/posthog/`
+- **Files:** `SKILL.md` · `posthog.skill.yml`
+- **Description:** Integrate PostHog into any Revvel project (web, Node, mobile) for all-in-one product analytics, session replay, feature flags, A/B testing, and error tracking with source maps. Ships a drop-in `posthog-init.ts` wrapper with Do-Not-Track honoring, persistent opt-out, PII property-key strip, EU-residency host swap, session replay masking, and a no-op fallback when `POSTHOG_API_KEY` is unset. Includes a Revvel-standard event catalog (`app_loaded`, `user_signed_up`, `purchase_completed`, etc.) with `snake_case` event names and properties, plus a hard PII ban list enforced at both wrapper and PR-review layers. Also ships three GitHub Actions templates for annotations (mark deployments on analytics charts), source map uploads (readable error stack traces), and custom CI/CD events.
+- **Tags:** posthog, product-analytics, session-replay, feature-flags, ab-testing, error-tracking, source-maps, user-behavior, events, telemetry, posthog-js, posthog-node, annotations, github-actions
+- **Trigger:** "posthog", "integrate posthog", "product analytics", "session replay", "feature flags", "ab testing", "a/b testing", "error tracking", "source maps", "user behavior analytics", "track event", "posthog-js", "telemetry", "annotations", "deployment annotations".
 
 ---
 
