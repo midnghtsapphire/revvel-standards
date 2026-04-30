@@ -43,8 +43,8 @@ if [ -f "${REPO_ROOT}/.cursorrules" ] || [ -L "${REPO_ROOT}/.cursorrules" ]; the
 else
   echo -e "${YELLOW}Creating .cursorrules symlink...${NC}"
   cd "${REPO_ROOT}"
-  ln -sf AGENTS.md .cursorrules
-  echo -e "${GREEN}✅ Created .cursorrules → AGENTS.md${NC}"
+  ln -sf docs/AGENTS.md .cursorrules
+  echo -e "${GREEN}✅ Created .cursorrules → docs/AGENTS.md${NC}"
 fi
 
 # Step 2: Check .env.example
@@ -119,7 +119,7 @@ echo ""
 if [ "${DEVIN_OK}" = false ] || [ "${CURSOR_OK}" = false ] || [ "${OPENROUTER_OK}" = false ]; then
   echo -e "${YELLOW}⚠️  Some secrets are missing. To configure:${NC}"
   echo ""
-  
+
   if [ "${DEVIN_OK}" = false ]; then
     echo "  # Devin API Key"
     echo "  gh secret set DEVIN_API_KEY --repo ${TARGET_REPO}"
@@ -127,7 +127,7 @@ if [ "${DEVIN_OK}" = false ] || [ "${CURSOR_OK}" = false ] || [ "${OPENROUTER_OK
     echo "  vault kv get -field=api_key revvel/shared/llm/devin | gh secret set DEVIN_API_KEY --repo ${TARGET_REPO}"
     echo ""
   fi
-  
+
   if [ "${CURSOR_OK}" = false ]; then
     echo "  # Cursor API Key"
     echo "  gh secret set CURSOR_API_KEY --repo ${TARGET_REPO}"
@@ -135,7 +135,7 @@ if [ "${DEVIN_OK}" = false ] || [ "${CURSOR_OK}" = false ] || [ "${OPENROUTER_OK
     echo "  vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_KEY --repo ${TARGET_REPO}"
     echo ""
   fi
-  
+
   if [ "${OPENROUTER_OK}" = false ]; then
     echo "  # OpenRouter API Key"
     echo "  gh secret set OPENROUTER_API_KEY --repo ${TARGET_REPO}"
@@ -143,7 +143,7 @@ if [ "${DEVIN_OK}" = false ] || [ "${CURSOR_OK}" = false ] || [ "${OPENROUTER_OK
     echo "  vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY --repo ${TARGET_REPO}"
     echo ""
   fi
-  
+
   echo -e "${YELLOW}Or use the credential-gatekeeper workflow (recommended):${NC}"
   echo "  gh workflow run credential-gatekeeper.yml --repo ${TARGET_REPO}"
 else

@@ -30,26 +30,19 @@ echo "Issue #${ISSUE_NUMBER}: ${ISSUE_TITLE}"
 # Function to call Cursor API
 call_cursor() {
   local attempt=$1
-  
+
   echo "Attempt ${attempt}/${MAX_RETRIES}..."
-  
-  # Prepare request payload
-  PAYLOAD=$(cat <<EOF
-{
-  "task": {
-    "title": "${ISSUE_TITLE}",
-    "description": "${ISSUE_BODY}",
-    "repository": "${GITHUB_REPOSITORY:-unknown}",
-    "issue_number": ${ISSUE_NUMBER}
-  },
-  "options": {
-    "timeout": ${TIMEOUT},
-    "auto_commit": true
-  }
-}
-EOF
-)
-  
+
+  # Prepare request payload using jq to safely escape special characters
+  PAYLOAD=$(jq -n \
+    --arg title "$ISSUE_TITLE" \
+    --arg desc "${ISSUE_BODY:-}" \
+    --arg repo "${GITHUB_REPOSITORY:-unknown}" \
+    --argjson issue_num "$ISSUE_NUMBER" \
+    --argjson timeout "$TIMEOUT" \
+    '{task: {title: $title, description: $desc, repository: $repo, issue_number: $issue_num}, options: {timeout: $timeout, auto_commit: true}}')
+
+
   # Make API call
   RESPONSE=$(curl -s -w "\n%{http_code}" \
     -X POST "${CURSOR_API_URL}" \
@@ -58,13 +51,13 @@ EOF
     -H "User-Agent: Revvel-Standards/1.0" \
     --max-time ${TIMEOUT} \
     -d "${PAYLOAD}")
-  
+
   # Extract HTTP status code (last line)
   HTTP_CODE=$(echo "${RESPONSE}" | tail -n1)
   RESPONSE_BODY=$(echo "${RESPONSE}" | sed '$d')
-  
+
   echo "HTTP Status: ${HTTP_CODE}"
-  
+
   # Check response
   case ${HTTP_CODE} in
     200|201|202)
@@ -104,17 +97,18 @@ EOF
 
 # Retry loop
 for i in $(seq 1 ${MAX_RETRIES}); do
-  if call_cursor ${i}; then
+  EXIT_CODE=0
+  call_cursor ${i} || EXIT_CODE=$?
+
+  if [ ${EXIT_CODE} -eq 0 ]; then
     exit 0
   fi
-  
-  EXIT_CODE=$?
-  
+
   # Don't retry on auth errors
   if [ ${EXIT_CODE} -eq 2 ]; then
     exit ${EXIT_CODE}
   fi
-  
+
   # Wait before retry (except on last attempt)
   if [ ${i} -lt ${MAX_RETRIES} ]; then
     sleep ${RETRY_DELAY}

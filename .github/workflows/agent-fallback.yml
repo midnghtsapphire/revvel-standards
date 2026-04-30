@@ -4,11 +4,11 @@ on:
   # Automatic triggers for issues with specific labels
   issues:
     types: [labeled]
-  
+
   # Automatic triggers for PRs ready for review
   pull_request_target:
     types: [opened, reopened, ready_for_review]
-  
+
   # Reusable workflow (can be called from other workflows)
   workflow_call:
     inputs:
@@ -35,7 +35,7 @@ on:
       pr_url:
         description: "Pull request URL if created"
         value: ${{ jobs.execute.outputs.pr_url }}
-  
+
   # Manual trigger
   workflow_dispatch:
     inputs:
@@ -66,14 +66,14 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'workflow_call' ||
-      (github.event_name == 'issues' && 
-       (github.event.label.name == 'wr:code' || 
-        github.event.label.name == 'wr:auto' || 
+      (github.event_name == 'issues' &&
+       (github.event.label.name == 'wr:code' ||
+        github.event.label.name == 'wr:auto' ||
         github.event.label.name == 'agent-fallback')) ||
-      (github.event_name == 'pull_request_target' && 
+      (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
-       (github.event.action == 'opened' || 
-        github.event.action == 'reopened' || 
+       (github.event.action == 'opened' ||
+        github.event.action == 'reopened' ||
         github.event.action == 'ready_for_review'))
     outputs:
       devin_available: ${{ steps.check.outputs.devin_available }}
@@ -95,28 +95,28 @@ jobs:
           DEVIN_AVAILABLE="false"
           CURSOR_AVAILABLE="false"
           OPENROUTER_AVAILABLE="false"
-          
+
           if [ -n "${DEVIN_API_KEY}" ]; then
             DEVIN_AVAILABLE="true"
             echo "✅ Devin API key configured"
           else
             echo "⚠️  Devin API key not configured"
           fi
-          
+
           if [ -n "${CURSOR_API_KEY}" ]; then
             CURSOR_AVAILABLE="true"
             echo "✅ Cursor API key configured"
           else
             echo "⚠️  Cursor API key not configured"
           fi
-          
+
           if [ -n "${OPENROUTER_API_KEY}" ]; then
             OPENROUTER_AVAILABLE="true"
             echo "✅ OpenRouter API key configured"
           else
             echo "⚠️  OpenRouter API key not configured"
           fi
-          
+
           # Determine recommended agent based on availability and preference
           RECOMMENDED="openrouter"  # Safe default
           if [ "$DEVIN_AVAILABLE" = "true" ]; then
@@ -124,12 +124,12 @@ jobs:
           elif [ "$CURSOR_AVAILABLE" = "true" ]; then
             RECOMMENDED="cursor"
           fi
-          
+
           echo "devin_available=${DEVIN_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
-          
+
           echo ""
           echo "📊 Recommended agent: ${RECOMMENDED}"
 
@@ -140,7 +140,7 @@ jobs:
     outputs:
       agent_used: ${{ steps.result.outputs.agent }}
       success: ${{ steps.result.outputs.success }}
-      pr_url: ${{ steps.result.outputs.pr_url }}
+      pr_url: ${{ steps.pr-url.outputs.pr_url }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -160,7 +160,7 @@ jobs:
             let issueNumber;
             let issueTitle = '';
             let issueBody = '';
-            
+
             // Determine issue number based on event type
             if (context.eventName === 'workflow_dispatch') {
               issueNumber = Number('${{ inputs.issue_number }}');
@@ -175,12 +175,12 @@ jobs:
               issueTitle = context.payload.pull_request.title || '';
               issueBody = context.payload.pull_request.body || '';
             }
-            
+
             if (!issueNumber) {
               core.setFailed('Could not determine issue/PR number');
               return;
             }
-            
+
             // Fetch full details if we don't have them yet
             if (!issueTitle || !issueBody) {
               try {
@@ -195,13 +195,17 @@ jobs:
                 core.warning(`Could not fetch issue details: ${error.message}`);
               }
             }
-            
+
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', issueTitle);
             core.setOutput('issue_body', issueBody);
 
       - name: Try Devin AI
-        if: needs.health-check.outputs.devin_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'devin')
+        if: >-
+          needs.health-check.outputs.devin_available == 'true' &&
+          (inputs.prefer_agent == 'auto' ||
+          inputs.prefer_agent == 'devin' ||
+          inputs.prefer_agent == '')
         id: devin
         continue-on-error: true
         env:
@@ -211,19 +215,25 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
           echo "🤖 Attempting to use Devin AI..."
-          
+
           # TODO: Implement actual Devin API integration when available
           # For now, this is a placeholder that demonstrates the pattern
-          
+
           # Simulate Devin API call
           # In production, this would call: scripts/call-devin-api.sh
-          
+
           echo "⚠️  Devin API integration not yet implemented"
           echo "Falling back to next agent in chain..."
           exit 1
 
       - name: Fallback to Cursor
-        if: (steps.devin.outcome == 'failure' || steps.devin.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor')
+        if: >-
+          (steps.devin.outcome == 'failure' ||
+          steps.devin.outcome == 'skipped') &&
+          needs.health-check.outputs.cursor_available == 'true' &&
+          (inputs.prefer_agent == 'auto' ||
+          inputs.prefer_agent == 'cursor' ||
+          inputs.prefer_agent == '')
         id: cursor
         continue-on-error: true
         env:
@@ -233,19 +243,22 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
           echo "🔧 Attempting to use Cursor..."
-          
+
           # TODO: Implement actual Cursor API integration when available
           # For now, this is a placeholder that demonstrates the pattern
-          
+
           # Simulate Cursor API call
           # In production, this would call: scripts/call-cursor-api.sh
-          
+
           echo "⚠️  Cursor API integration not yet implemented"
           echo "Falling back to OpenRouter..."
           exit 1
 
       - name: Fallback to OpenRouter
-        if: (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.openrouter_available == 'true'
+        if: >-
+          (steps.cursor.outcome == 'failure' ||
+          steps.cursor.outcome == 'skipped') &&
+          needs.health-check.outputs.openrouter_available == 'true'
         id: openrouter
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -257,14 +270,14 @@ jobs:
           MODEL: anthropic/claude-sonnet-4
         run: |
           echo "🌐 Using OpenRouter as fallback..."
-          
+
           # OpenRouter is already implemented in the repository
           # Use the existing openrouter-coder workflow logic
-          
+
           if [ ! -f ".github/scripts/openrouter_coder.py" ]; then
             echo "⚠️  OpenRouter coder script not found"
             echo "Using simple OpenRouter triage instead..."
-            
+
             # Fallback to basic OpenRouter call
             if [ -f "scripts/openrouter-triage.js" ]; then
               node scripts/openrouter-triage.js
@@ -276,7 +289,7 @@ jobs:
             # Use the full OpenRouter coder
             python -m pip install --disable-pip-version-check requests
             python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-result.json || exit 1
-            
+
             # Check if files were written
             if [ -f "/tmp/openrouter-result.json" ]; then
               echo "✅ OpenRouter completed successfully"
@@ -291,7 +304,6 @@ jobs:
       - name: Determine result
         id: result
         run: |
-          # Determine which agent succeeded
           if [ "${{ steps.devin.outcome }}" = "success" ]; then
             echo "agent=devin" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
@@ -316,22 +328,29 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
+          branch: >-
+            agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
-          title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"
-          commit-message: "feat: apply ${{ steps.result.outputs.agent }} changes for #${{ steps.issue.outputs.issue_number }}"
+          title: >-
+            [${{ steps.result.outputs.agent }}]
+            ${{ steps.issue.outputs.issue_title }}
+          commit-message: >-
+            feat: apply ${{ steps.result.outputs.agent }}
+            changes for #${{ steps.issue.outputs.issue_number }}
           body: |
-            Automated code changes for issue #${{ steps.issue.outputs.issue_number }}.
-            
+            Automated code changes for
+            issue #${{ steps.issue.outputs.issue_number }}.
+
             **Agent used:** ${{ steps.result.outputs.agent }}
             **Fallback chain:** Devin → Cursor → OpenRouter
-            
+
             ### Issue
             ${{ steps.issue.outputs.issue_body }}
-            
+
             Closes #${{ steps.issue.outputs.issue_number }}
 
-      - name: Update result with PR URL
+      - name: Capture PR URL
+        id: pr-url
         if: steps.cpr.outputs.pull-request-url != ''
         run: |
           echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
@@ -343,15 +362,15 @@ jobs:
           script: |
             const agent = '${{ steps.result.outputs.agent }}';
             const prUrl = '${{ steps.cpr.outputs.pull-request-url }}';
-            
+
             let agentIcon = '🤖';
             if (agent === 'cursor') agentIcon = '🔧';
             if (agent === 'openrouter') agentIcon = '🌐';
-            
+
             const body = prUrl
               ? `${agentIcon} **${agent}** opened PR: ${prUrl}`
               : `${agentIcon} **${agent}** completed the task successfully.`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -366,19 +385,19 @@ jobs:
           script: |
             const agent = '${{ steps.result.outputs.agent }}';
             const originalIssue = '${{ steps.issue.outputs.issue_number }}';
-            
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `[AUTO-FALLBACK] Devin → ${agent.charAt(0).toUpperCase() + agent.slice(1)} (#${originalIssue})`,
               labels: ['auto-fallback', 'agent-monitoring', 'devin-limit'],
               body: `Devin AI was unavailable or reached rate limit. Automatically failed over to ${agent}.
-              
+
               **Original task:** #${originalIssue}
               **Timestamp:** ${new Date().toISOString()}
               **Agent used:** ${agent}
               **Success:** ${{ steps.result.outputs.success }}
-              
+
               No action required — fallback is working as designed. This issue is for monitoring purposes only.`
             });
 
@@ -392,21 +411,21 @@ jobs:
               repo: context.repo.repo,
               issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
               body: `❌ All agents failed to complete this task.
-              
+
               **Attempted:**
               - Devin AI: ${{ steps.devin.outcome }}
               - Cursor: ${{ steps.cursor.outcome }}
               - OpenRouter: ${{ steps.openrouter.outcome }}
-              
+
               **Next steps:**
               1. Check agent status pages
               2. Verify API keys are configured correctly
               3. Review task complexity (may require human intervention)
               4. See [Agent Fallback Process](docs/AGENT_FALLBACK_PROCESS.md) for troubleshooting
-              
+
               Adding \`needs-human\` label for manual review.`
             });
-            
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
