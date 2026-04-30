@@ -29,6 +29,11 @@ jobs:
           DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT != '' && vars.DOPPLER_PROJECT || 'revvel-standards' }}
           DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG != '' && vars.DOPPLER_CONFIG || 'prd' }}
         run: |
+          if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
+            echo "::error::DOPPLER_TOKEN is not set — cannot check Doppler for drift"
+            exit 1
+          fi
+
           REGISTRY="docs/_GATEKEEPER_REGISTRY.json"
           if [[ ! -f "$REGISTRY" ]]; then
             echo "Registry file not found — skipping drift check"
