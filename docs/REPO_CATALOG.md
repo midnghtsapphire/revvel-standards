@@ -103,6 +103,7 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | certifixes |  | Active | Library/Other | PUBLIC |
 | chrome-devtools-mcp | Chrome DevTools for coding agents | Fork | MCP Server | PUBLIC |
 | claude-code-hooks-mastery | Master Claude Code Hooks | Fork | Library/Other | PUBLIC |
+| Claude-Skills-Governance-Risk-and-Compliance | Expert-level GRC compliance guidance (ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF, PCI DSS, TSA Cybersecurity, ISO 42001) delivered as Claude Code plugins via a marketplace. Fork of Sushegaad/Claude-Skills-Governance-Risk-and-Compliance v0.3.0. Benchmarked at 94% accuracy across 18 test cases. Registered in skills/grc-compliance/. | Fork | Claude Code Marketplace | PUBLIC |
 | clawe | Multi-agent coordination system powered by OpenClaw.  | Fork | Library/Other | PUBLIC |
 | clickhouse-query-runner | Async CLI for executing SQL queries from files against ClickHouse clusters with parallel round-robin dispatch, Valkey checkpointing, and Rich progress UI. | Fork | Library/Other | PUBLIC |
 | climate-resilience-navigator |  | Active | Library/Other | PUBLIC |
