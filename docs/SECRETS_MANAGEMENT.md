@@ -79,12 +79,13 @@ without exposing any values.
 
 ## Doppler Integration
 
-> **NOTE:** Doppler integration is **OPTIONAL**. All workflows function with or without Doppler.
+> **NOTE:** Doppler integration is **OPTIONAL**. Core repository functionality works without Doppler.
 > Secrets can be managed directly in GitHub Settings → Secrets and variables → Actions.
 > Doppler provides centralized management if you prefer it, but is not required.
+> Doppler-specific workflows (e.g., "Doppler Secrets Sync") will not run without a valid `DOPPLER_TOKEN`.
 
 [Doppler](https://doppler.com) is the recommended (but optional) secrets management platform for
-provisioning and syncing secrets across environments. **You must acquire credentials independently** — 
+provisioning and syncing secrets across environments. **You must acquire credentials independently** —
 sign up at doppler.com and create your own account.
 
 ### Setup (Optional)

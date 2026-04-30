@@ -44,7 +44,7 @@
         "DOPPLER_CONFIG": "${DOPPLER_CONFIG:-prd}"
       },
       "disabled": true,
-      "disabledReason": "COMMENTED OUT until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
+      "disabledReason": "Disabled until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
     },
     "meilisearch": {
       "_comment": "MeiliSearch MCP — 8 tools for product/user-facing search: index management, document CRUD, search, settings. See mcp-servers/meilisearch-mcp/README.md. HIGH PRIORITY — Revenue blocker (search affects conversions).",
