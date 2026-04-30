@@ -140,26 +140,26 @@ The tool monitors 7 intelligence domains, each with curated RSS feed sources:
 
 ```bash
 # Scan all domains
-python tools/weak_signal_finder.py
+python growlingeyes/tools/weak_signal_finder.py
 
 # Scan specific domains
-python tools/weak_signal_finder.py --domains cyber maritime conflict
+python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime conflict
 
 # Adjust sensitivity threshold (higher = fewer, stronger signals)
-python tools/weak_signal_finder.py --threshold 5
+python growlingeyes/tools/weak_signal_finder.py --threshold 5
 
 # Save results to file
-python tools/weak_signal_finder.py --output my_signals.json
+python growlingeyes/tools/weak_signal_finder.py --output my_signals.json
 ```
 
 ### Daemon Mode (Continuous Monitoring)
 
 ```bash
 # Run continuously, scan every hour (3600 seconds)
-python tools/weak_signal_finder.py --daemon --interval 3600
+python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
 
 # Scan every 6 hours
-python tools/weak_signal_finder.py --daemon --interval 21600
+python growlingeyes/tools/weak_signal_finder.py --daemon --interval 21600
 ```
 
 ### CLI Options
