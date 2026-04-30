@@ -14,10 +14,21 @@ mode: immediate
 # Branches are lowercase, dash-separated, and include both the issue number
 # and a sanitised version of the issue title.
 # Example: issue-42-add-stripe-webhook
+#
+# gitReplaceChars is a conservative sanitisation list for generated branch names.
+# It covers characters that are disallowed or problematic in git refs, plus
+# additional punctuation we replace to keep names predictable and shell-friendly.
+# This is intentionally broader than the exact `git-check-ref-format` rules.
+# For example, `/` and `@` are only invalid in certain ref patterns, while
+# characters like `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``, `$`, `%`, `+`, `=`,
+# and `,` are replaced here as an extra safety/usability measure.
 
 branchName: 'issue-${issue.number}-${issue.title,}'
 gitSafeReplacementChar: '-'
-gitReplaceChars: "'\"()[]{}!?"
+# Note: Period (.) is included even though it's only invalid at the END of refs
+# This is intentional to prevent any edge cases with trailing periods
+# File extensions in branch names are preserved in the middle (e.g., config-yaml)
+gitReplaceChars: "'\"()[]{}!?/:@~^*\\#|&;<>`$%+=.,"
 
 # ── Label-based prefixes ──────────────────────────────────────────────────────
 # Maps standard GitHub labels to conventional branch prefixes so the history
