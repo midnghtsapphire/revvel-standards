@@ -87,7 +87,7 @@ and surfaces weak signals that may indicate emerging threats or trends.
 
 ```bash
 # Scan all domains
-python tools/weak_signal_finder.py
+python growlingeyes/tools/weak_signal_finder.py
 
 # Scan specific domains
 python tools/weak_signal_finder.py --domains cyber maritime conflict
