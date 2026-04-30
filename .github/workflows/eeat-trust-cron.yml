@@ -246,10 +246,12 @@ jobs:
           # Task 4: Lighthouse SEO audit (if property is accessible)
           echo "## 4. Lighthouse SEO Scores" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
-          
+
+          SEO_MIN=$(jq -r '.thresholds.lighthouse_seo_min // 90' "$CONFIG_FILE")
+
           for url in $PROPERTIES; do
             echo "- Running Lighthouse for $url..." | tee -a "$REPORT_FILE"
-            
+
             # Run lighthouse in headless mode for SEO only
             lh_output=$(lighthouse "$url" \
               --only-categories=seo \
@@ -257,15 +259,15 @@ jobs:
               --output-path=/tmp/lh-report.json \
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
               --quiet 2>&1 || echo "failed")
-            
+
             if [ -f "/tmp/lh-report.json" ]; then
               seo_score=$(jq -r '.categories.seo.score * 100' /tmp/lh-report.json 2>/dev/null || echo "N/A")
-              
+
               if [ "$seo_score" != "N/A" ]; then
-                if (( $(echo "$seo_score >= 90" | bc -l) )); then
-                  echo "  - ✅ SEO Score: ${seo_score}/100 (Target: ≥90)" >> "$REPORT_FILE"
+                if (( $(echo "$seo_score >= $SEO_MIN" | bc -l) )); then
+                  echo "  - ✅ SEO Score: ${seo_score}/100 (Target: ≥${SEO_MIN})" >> "$REPORT_FILE"
                 else
-                  echo "  - ⚠️  SEO Score: ${seo_score}/100 (Target: ≥90)" >> "$REPORT_FILE"
+                  echo "  - ⚠️  SEO Score: ${seo_score}/100 (Target: ≥${SEO_MIN})" >> "$REPORT_FILE"
                 fi
               else
                 echo "  - ⚠️  Unable to parse Lighthouse score" >> "$REPORT_FILE"
@@ -366,7 +368,7 @@ jobs:
             - ✅ Schema.org markup validation (with HTML parsing)
             - ✅ HTTPS certificate validation (with SSL verification)
             - ✅ Broken link detection (using linkchecker)
-            - ✅ Lighthouse SEO audit (target: ≥90)
+            - ✅ Lighthouse SEO audit (threshold from config)
             - ℹ️  Google Search Console monitoring (requires API key)
             - ℹ️  Knowledge Panel status (manual verification)
             
