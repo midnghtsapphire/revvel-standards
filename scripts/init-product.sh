@@ -61,9 +61,9 @@ if [ -z "$SLUG" ]; then
 fi
 
 case "$SHAPE" in
-  pdf|app|extension|skill|api|cli|mcp|booklet|full-app) ;;
+  pdf|app|extension|skill|api|cli|mcp|booklet|full-app|excel|token) ;;
   *)
-    echo "error: invalid --shape '$SHAPE' (expected one of: pdf, app, extension, skill, api, cli, mcp, booklet, full-app)" >&2
+    echo "error: invalid --shape '$SHAPE' (expected one of: pdf, app, extension, skill, api, cli, mcp, booklet, full-app, excel, token)" >&2
     exit 1
     ;;
 esac

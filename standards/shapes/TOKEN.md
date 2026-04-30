@@ -212,7 +212,7 @@ Credits ARE the monetization. Key economics:
 | Credit cost to user | $0.05-0.50 per credit (depending on value) |
 | Cost of goods sold | < 30% of credit price |
 | Margin per credit | ≥ 70% |
-| Bonus tiers | 10% at 500, 20% at 1000, 30% at 5000 |
+| Bonus tiers | 20% at 500, 30% at 1000 |
 | Expiration | Optional — 12 months is common |
 
 ---
