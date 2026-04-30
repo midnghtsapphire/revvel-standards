@@ -129,8 +129,10 @@ while IFS= read -r entry; do
 5. Append a row to \`docs/_ROTATION_LOG.md\`.
 
 _Auto-created by gatekeeper-rotate.sh_" 2>/dev/null || echo "  ⚠️  Could not create issue (gh CLI or permissions)"
-        # Append to rotation log (last 4 chars unknown at this point; requires manual completion)
+        # Append to rotation log (new suffix is unknown at script time; operator must update)
+        # TODO: operator should update docs/_ROTATION_LOG.md with the actual last-4 chars after rotating
         echo "| $(date -u +%Y-%m-%d) | $name | (prev) | ...???? | script-flagged | gatekeeper-rotate.sh |" >> "$ROTATION_LOG"
+        echo "  ⚠️  Rotation log entry added with placeholder suffix '...????'; update docs/_ROTATION_LOG.md with the actual last 4 chars after completing the rotation."
       else
         echo "  ⚠️  Cannot create issue: gh CLI or GITHUB_TOKEN missing"
       fi

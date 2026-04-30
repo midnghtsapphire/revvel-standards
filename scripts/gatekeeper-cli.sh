@@ -56,7 +56,7 @@ today_iso() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 next_rotation_date() {
   local days="$1"
   date -u -d "+${days} days" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null \
-    || python3 -c "from datetime import datetime, timedelta; print((datetime.utcnow()+timedelta(days=${days})).strftime('%Y-%m-%dT%H:%M:%SZ'))"
+    || python3 -c "from datetime import datetime, timezone, timedelta; print((datetime.now(timezone.utc)+timedelta(days=${days})).strftime('%Y-%m-%dT%H:%M:%SZ'))"
 }
 
 # ---------------------------------------------------------------------------
@@ -225,7 +225,9 @@ cmd_validate() {
     # Skip header and separator rows
     local env_col
     env_col="${cols[4]:-}"
-    env_col="${env_col// /}"   # trim spaces
+    # Trim leading and trailing whitespace
+    env_col="${env_col#"${env_col%%[![:space:]]*}"}"
+    env_col="${env_col%"${env_col##*[![:space:]]}"}"
     [[ -z "$env_col" || "$env_col" == "Env Var" || "$env_col" =~ ^[-]+$ ]] && continue
     [[ "$env_col" == "—" || "$env_col" == "-" ]] && continue
 
