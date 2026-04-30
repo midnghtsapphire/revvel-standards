@@ -2,6 +2,10 @@ node_modules/
 .gitbutler/*
 !.gitbutler/config.json
 
+# Logs
+logs/
+*.log
+
 # Python artifacts (applies repo-wide; sub-projects have their own ignores too)
 __pycache__/
 *.py[cod]
