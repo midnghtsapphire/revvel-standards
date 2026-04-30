@@ -45,6 +45,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
@@ -61,6 +62,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Concurrent branches, merging, conflict resolution | [`concurrent-development`](#concurrent-development) |
 | Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
 | Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
+| USDA loans, rural development, loan packagers, property eligibility, income limits | [`usda-loan-agent`](#usda-loan-agent) |
 | Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
 | Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
 
@@ -306,6 +308,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### Content & Marketing
 
+#### openclaw-eeat
+- **Path:** `skills/openclaw-eeat/`
+- **Files:** `SKILL.md` · `openclaw-eeat.skill.yml` · `README.md` · `templates/` · `tests/promptfoo.yml`
+- **Description:** Automated brand content distribution across 12 high-value platforms (ORCID, Wikidata, ResearchGate, Internet Archive, MISP, Bellingcat, etc.) to establish E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) signals for Google Knowledge Graph eligibility and OSINT community presence. Generates platform-specific schemas (JSON-LD, ORCID XML, Wikidata RDF), auto-submits where APIs permit, and drafts manual submissions with step-by-step instructions.
+- **Tags:** eeat, openclaw, brand-distribution, knowledge-graph, wikidata, orcid, researchgate, osint, json-ld, schema-org, misp, bellingcat
+- **Trigger:** OpenClaw E-E-A-T, distribute brand content, knowledge graph, Wikidata entity, ORCID update, ResearchGate profile, deep web presence, OSINT profile, intelligence community, Google Knowledge Panel.
+- **Persona:** 🌐 Echo
+- **Lifecycle:** Ephemeral
+
 #### seo-metadata
 - **Path:** `skills/seo-metadata/`
 - **Files:** `SKILL.md` · `seo-metadata.skill.yml`
@@ -381,6 +392,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ---
 
+### Real Estate & Finance
+
+#### usda-loan-agent
+
+- **Path:** `skills/usda-loan-agent/`
+- **Files:** `SKILL.md` · `usda_loan_agent.skill.yml`
+- **Description:** Comprehensive USDA rural development loan specialist covering Section 502 Guaranteed and Direct loan programs, loan packaging services, property eligibility (including inground pool restrictions, square footage misconceptions, acreage limits), state-by-state income limits, DTI/credit requirements, and legal compliance (RESPA, TILA). Includes step-by-step guidance for becoming a loan packager, state licensing variations (MLO requirements in CA/NY/TX vs. no license in CO/MO), and automated eligibility tool specifications. Features deep research on legal loopholes (NEMT → utility → special district formation) with current status and similar active loopholes (tribal sovereignty, HOA police powers, MUD formation).
+- **Tags:** usda, rural-development, loan-packager, mortgage, housing, real-estate, section-502, income-limits, property-eligibility, respa, compliance, state-licensing
+- **Trigger:** "usda loan", "rural development", "section 502", "guaranteed loan", "direct loan", "loan packager", "loan packaging", "income limits", "property eligibility", "inground pool", "rural area", "state usda", "packager license", "usda rules".
+
+---
+
 ### Bot Creation
 
 #### bot-creator
@@ -433,4 +456,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 28, 2026. Added: gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*

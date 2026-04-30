@@ -1,0 +1,358 @@
+{
+  "name": "USDA Loan Eligibility Checker",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "usda-eligibility",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "usda-eligibility-webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Validate required fields\nconst requiredFields = ['address', 'income', 'householdSize'];\nconst missingFields = [];\n\nfor (const field of requiredFields) {\n  if (!$json.body[field]) {\n    missingFields.push(field);\n  }\n}\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      error: true,\n      message: `Missing required fields: ${missingFields.join(', ')}`,\n      statusCode: 400\n    }\n  }];\n}\n\n// Sanitize inputs\nconst data = {\n  address: $json.body.address.trim(),\n  income: parseFloat($json.body.income),\n  householdSize: parseInt($json.body.householdSize),\n  email: $json.body.email?.trim() || '',\n  name: $json.body.name?.trim() || 'Applicant'\n};\n\n// Validate income and household size\nif (isNaN(data.income) || data.income <= 0) {\n  return [{\n    json: {\n      error: true,\n      message: 'Invalid income value',\n      statusCode: 400\n    }\n  }];\n}\n\nif (isNaN(data.householdSize) || data.householdSize < 1 || data.householdSize > 8) {\n  return [{\n    json: {\n      error: true,\n      message: 'Household size must be between 1 and 8',\n      statusCode: 400\n    }\n  }];\n}\n\nreturn [{ json: data }];"
+      },
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://eligibility.sc.egov.usda.gov/eligibility/api/check",
+        "authentication": "none",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={{ JSON.stringify({ address: $json.address }) }}"
+      },
+      "name": "Check USDA Eligibility",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300],
+      "notes": "NOTE: This API endpoint is illustrative. USDA does not provide a public API. In production, you would need to scrape the eligibility map or use geocoding + manual rural area database."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.eligible }}",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "name": "Is Rural Area?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Rural area - eligible to proceed\nreturn [{\n  json: {\n    ...($node[\"Validate Input\"].json),\n    ruralStatus: 'eligible',\n    ruralEligible: true\n  }\n}];"
+      },
+      "name": "Set Rural Eligible",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Not rural area - ineligible\nreturn [{\n  json: {\n    ...($node[\"Validate Input\"].json),\n    ruralStatus: 'ineligible',\n    ruralEligible: false,\n    reason: 'Property is not in a USDA-eligible rural area',\n    alternatives: ['FHA loans', 'Conventional loans', 'VA loans (if veteran)']\n  }\n}];"
+      },
+      "name": "Set Rural Ineligible",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/geocode/json",
+        "authentication": "none",
+        "qs": {
+          "address": "={{ $json.address }}",
+          "key": "={{ $credentials.googleMapsApiKey }}"
+        }
+      },
+      "name": "Geocode Address",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 200],
+      "notes": "Use Google Maps Geocoding API to get state and county"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract state and county from geocoding result\nconst addressComponents = $json.results[0].address_components;\n\nlet state = '';\nlet county = '';\n\nfor (const component of addressComponents) {\n  if (component.types.includes('administrative_area_level_1')) {\n    state = component.long_name;\n  }\n  if (component.types.includes('administrative_area_level_2')) {\n    county = component.long_name.replace(' County', '');\n  }\n}\n\nreturn [{\n  json: {\n    ...($node[\"Set Rural Eligible\"].json),\n    state: state,\n    county: county\n  }\n}];"
+      },
+      "name": "Extract State & County",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT income_limit_1_4, income_limit_5_8 FROM usda_income_limits WHERE state = $1 AND county = $2 AND year = 2026",
+        "options": {},
+        "parameters": {
+          "parameter": [
+            {
+              "name": "$1",
+              "value": "={{ $json.state }}"
+            },
+            {
+              "name": "$2",
+              "value": "={{ $json.county }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Income Limit",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1650, 200],
+      "notes": "Query PostgreSQL database with USDA income limits (scraped annually)"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Compare user income to USDA limit\nconst householdSize = $json.householdSize;\nconst userIncome = $json.income;\n\n// Determine which income limit applies\nconst incomeLimit = householdSize <= 4 \n  ? $json.income_limit_1_4 \n  : $json.income_limit_5_8;\n\nconst isEligible = userIncome <= incomeLimit;\nconst incomePercentage = (userIncome / incomeLimit * 100).toFixed(1);\n\nreturn [{\n  json: {\n    ...($json),\n    incomeLimit: incomeLimit,\n    userIncome: userIncome,\n    incomeEligible: isEligible,\n    incomePercentage: incomePercentage,\n    overBy: isEligible ? 0 : userIncome - incomeLimit\n  }\n}];"
+      },
+      "name": "Compare Income to Limit",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1850, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Generate eligibility report\nconst data = $json;\n\nconst report = {\n  applicantName: data.name,\n  address: data.address,\n  state: data.state,\n  county: data.county,\n  householdSize: data.householdSize,\n  userIncome: data.userIncome,\n  incomeLimit: data.incomeLimit,\n  incomePercentage: data.incomePercentage,\n  \n  // Overall eligibility\n  overallEligible: data.ruralEligible && data.incomeEligible,\n  \n  // Status breakdown\n  ruralStatus: data.ruralEligible ? 'ELIGIBLE' : 'INELIGIBLE',\n  incomeStatus: data.incomeEligible ? 'ELIGIBLE' : 'INELIGIBLE',\n  \n  // Next steps\n  nextSteps: [],\n  documentChecklist: [\n    '2 years of tax returns (Form 1040)',\n    '2 months of pay stubs (all household earners)',\n    '2 months of bank statements (all accounts)',\n    'Credit report (will be pulled by lender)',\n    'Photo ID (driver\\'s license or passport)',\n    'Social Security card',\n    'Proof of citizenship (if applicable)'\n  ],\n  \n  // Recommendations\n  recommendations: []\n};\n\nif (report.overallEligible) {\n  report.nextSteps = [\n    '1. Gather required documents (see checklist)',\n    '2. Contact a USDA-approved lender for pre-qualification',\n    '3. Get pre-approved (soft credit check, no commitment)',\n    '4. Start house hunting in your eligible area',\n    '5. Make an offer and begin the underwriting process'\n  ];\n  report.recommendations = [\n    'Contact a local credit union or rural bank (often best USDA rates)',\n    'Consider working with a loan packager to streamline the process',\n    'Ask about USDA Direct Loan if income is below 80% area median'\n  ];\n} else if (!data.ruralEligible) {\n  report.nextSteps = [\n    'Property is not in a USDA-eligible rural area',\n    'Consider these alternatives:',\n    '  - FHA loans (3.5% down, more flexible credit)',\n    '  - Conventional loans (3-5% down, good credit required)',\n    '  - VA loans (0% down, veterans only)',\n    'Or look for properties in nearby USDA-eligible areas'\n  ];\n} else if (!data.incomeEligible) {\n  report.nextSteps = [\n    `Income ($${data.userIncome.toLocaleString()}) exceeds limit ($${data.incomeLimit.toLocaleString()})`,\n    'Consider these options:',\n    '  - Lower-income spouse applies alone (other added to title later)',\n    '  - Look for nearby counties with higher income limits',\n    '  - FHA/Conventional loans have no income limits (only DTI matters)',\n    '  - If self-employed, maximize business deductions to lower AGI'\n  ];\n  report.recommendations = [\n    `You are ${data.incomePercentage}% of the income limit (over by $${data.overBy.toLocaleString()})`,\n    'Talk to a tax professional about strategies to lower adjusted gross income'\n  ];\n}\n\nreturn [{ json: report }];"
+      },
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [2050, 200]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "application": "={{ $json.spreadsheetId }}",
+        "sheet": "Leads",
+        "options": {},
+        "values": "={{ JSON.stringify([[\n  new Date().toISOString(),\n  $json.applicantName,\n  $json.address,\n  $json.state,\n  $json.county,\n  $json.householdSize,\n  $json.userIncome,\n  $json.incomeLimit,\n  $json.overallEligible ? 'ELIGIBLE' : 'INELIGIBLE'\n]]) }}"
+      },
+      "name": "Save Lead to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [2250, 100],
+      "notes": "Store lead data for follow-up"
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@usdaloanhelper.com",
+        "toEmail": "={{ $json.email || 'default@example.com' }}",
+        "subject": "Your USDA Loan Eligibility Report",
+        "text": "=Please see attached PDF report with your USDA loan eligibility results.",
+        "options": {
+          "attachments": "={{ JSON.stringify([{\n    filename: 'USDA_Eligibility_Report.pdf',\n    contentType: 'application/pdf',\n    data: $json.pdfBase64\n  }]) }}"
+        }
+      },
+      "name": "Email Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2250, 300],
+      "notes": "Send eligibility report to applicant"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  success: true,\n  message: 'Eligibility report generated',\n  eligible: $json.overallEligible,\n  report: $json\n}) }}"
+      },
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2450, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  success: true,\n  message: 'Property not in USDA-eligible area',\n  eligible: false,\n  ruralStatus: 'ineligible',\n  alternatives: $json.alternatives\n}) }}"
+      },
+      "name": "Respond Ineligible",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 400]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Check USDA Eligibility",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check USDA Eligibility": {
+      "main": [
+        [
+          {
+            "node": "Is Rural Area?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Rural Area?": {
+      "main": [
+        [
+          {
+            "node": "Set Rural Eligible",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Rural Ineligible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Rural Eligible": {
+      "main": [
+        [
+          {
+            "node": "Geocode Address",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Rural Ineligible": {
+      "main": [
+        [
+          {
+            "node": "Respond Ineligible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geocode Address": {
+      "main": [
+        [
+          {
+            "node": "Extract State & County",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract State & County": {
+      "main": [
+        [
+          {
+            "node": "Get Income Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Income Limit": {
+      "main": [
+        [
+          {
+            "node": "Compare Income to Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare Income to Limit": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Report": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "meta": {
+    "instanceId": "usda-loan-eligibility-checker"
+  },
+  "id": "usda-loan-eligibility-checker",
+  "createdAt": "2026-04-30T00:00:00.000Z",
+  "updatedAt": "2026-04-30T00:00:00.000Z"
+}

@@ -35,7 +35,7 @@
       "disabledReason": "Enable once growlingeyes/ deps are installed: pip install -r growlingeyes/requirements.txt"
     },
     "doppler": {
-      "_comment": "DoppleMCP — 11 tools for Doppler secrets management: secrets CRUD, projects, tokens, health. See growlingeyes/doppemcp/README.md.",
+      "_comment": "DoppleMCP — 11 tools for Doppler secrets management: secrets CRUD, projects, tokens, health. See growlingeyes/doppemcp/README.md. OPTIONAL: Doppler integration is not required for core functionality. Enable only when you have acquired Doppler credentials independently.",
       "command": "python",
       "args": ["-m", "doppemcp.server"],
       "env": {
@@ -44,7 +44,7 @@
         "DOPPLER_CONFIG": "${DOPPLER_CONFIG:-prd}"
       },
       "disabled": true,
-      "disabledReason": "Enable once doppemcp is installed: cd growlingeyes/doppemcp && pip install -e . — then set DOPPLER_TOKEN."
+      "disabledReason": "COMMENTED OUT until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
     },
     "github-issues-enhanced": {
       "_comment": "Enhanced GitHub Issues MCP — 6 tools for issue automation: create_issue_with_automation, bulk_label_issues, smart_issue_search, issue_timeline_summary, auto_triage_issue, issue_metrics. See mcp-servers/github-issues/README.md and docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md.",
