@@ -43,6 +43,15 @@
       }
     },
 
+    "meilisearch": {
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST}",
+        "MEILI_KEY": "${MEILI_KEY}"
+      }
+    },
+
     "slack": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-slack"],

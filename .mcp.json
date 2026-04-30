@@ -46,6 +46,17 @@
       "disabled": true,
       "disabledReason": "COMMENTED OUT until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
     },
+    "meilisearch": {
+      "_comment": "MeiliSearch MCP — 8 tools for product/user-facing search: index management, document CRUD, search, settings. See mcp-servers/meilisearch-mcp/README.md. HIGH PRIORITY — Revenue blocker (search affects conversions).",
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST:-http://localhost:7700}",
+        "MEILI_KEY": "${MEILI_KEY}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once MeiliSearch is installed and configured. To enable: (1) Install MeiliSearch (self-hosted or MeiliCloud), (2) Set MEILI_HOST and MEILI_KEY env vars, (3) Install: cd mcp-servers/meilisearch-mcp && pip install -e ."
+    },
     "github-issues-enhanced": {
       "_comment": "Enhanced GitHub Issues MCP — 6 tools for issue automation: create_issue_with_automation, bulk_label_issues, smart_issue_search, issue_timeline_summary, auto_triage_issue, issue_metrics. See mcp-servers/github-issues/README.md and docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md.",
       "command": "node",
