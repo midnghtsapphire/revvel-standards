@@ -1050,3 +1050,46 @@ Create scenarios that trigger on issue events. See [`docs/AUTOMATION_EXTENSIONS_
 - [GitHub Redesign Blog Post](https://tonsky.me/blog/github-redesign/)
 - [`docs/AUTOMATION_EXTENSIONS_INTEGRATION.md`](./AUTOMATION_EXTENSIONS_INTEGRATION.md)
 - [`standards/CLI_MCP_AUTOMATION.md`](../standards/CLI_MCP_AUTOMATION.md)
+
+---
+
+## 11. Technical Notes
+
+### Branch Naming Pattern
+
+The branch name sanitization logic is intentionally duplicated across three files for operational reasons:
+
+1. `scripts/issues/quick-actions.sh` (line 49) - Bash context
+2. `mcp-servers/github-issues/index.js` (line 198-202) - Node.js context
+3. `.github/workflows/issue-auto-triage.yml` (line 73-77) - GitHub Actions context
+
+**Standard Pattern:**
+```
+issue-{number}-{title-lowercase-alphanumeric-only-40-chars-no-trailing-hyphens}
+```
+
+**Implementation:**
+```javascript
+// JavaScript/Node.js
+const branchName = `issue-${issueNumber}-${title
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, '-')
+  .substring(0, 40)
+  .replace(/-+$/, '')}`;
+```
+
+```bash
+# Bash
+BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | cut -c1-40 | sed 's/-$//')"
+```
+
+**Rationale for Duplication:**
+- Each file operates in a different runtime environment
+- Extracting to a shared function would require additional infrastructure
+- Pattern is simple (4 lines) and stable
+- Runtime-specific optimizations are appropriate
+
+**Maintenance:**
+If the pattern changes, update all three locations to maintain consistency.
+
+---

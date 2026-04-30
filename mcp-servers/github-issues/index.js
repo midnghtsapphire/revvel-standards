@@ -214,7 +214,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               owner: args.owner,
               repo: args.repo,
               issue_number: issue.data.number,
-              body: `Branch created: \`${branchName}\`\n\nYou can start working on this issue!`,
+              body: `Branch created: \`${branchName}\`.\n\nYou can start working on this issue!`,
             });
           } catch (error) {
             results.automation.errors.branch = error.message;
