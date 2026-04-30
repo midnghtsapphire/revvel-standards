@@ -539,6 +539,8 @@ skills:
       - "1040"
       - "1099"
 
+  # ─── Real Estate & Finance ───────────────────────────────────────────────
+
   - name: usda_loan_agent
     title: "USDA Loan & Packager Agent"
     version: "1.0.0"

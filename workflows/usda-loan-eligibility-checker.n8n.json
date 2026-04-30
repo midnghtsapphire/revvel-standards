@@ -118,7 +118,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [1650, 200],
-      "notes": "Query PostgreSQL database with USDA income limits (scraped annually)"
+      "alwaysOutputData": true,
+      "notes": "Query PostgreSQL database with USDA income limits (scraped annually). alwaysOutputData ensures downstream nodes execute even when no rows match."
     },
     {
       "parameters": {

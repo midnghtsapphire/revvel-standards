@@ -241,9 +241,21 @@ Content-Type: application/json
                                  YES     │              │    NO
                                          ▼              ▼
                               ┌──────────────┐   ┌──────────────┐
+                              │ Set Rural    │   │ Set Rural    │
+                              │ Eligible     │   │ Ineligible   │
+                              └──────────────┘   └──────────────┘
+                                     │                  │
+                                     ▼                  ▼
+                              ┌──────────────┐   ┌──────────────┐
                               │ Geocode      │   │ Return       │
                               │ Address      │   │ Ineligible   │
                               └──────────────┘   └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Extract      │
+                              │ State/County │
+                              └──────────────┘
                                      │
                                      ▼
                               ┌──────────────┐
