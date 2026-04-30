@@ -70,8 +70,8 @@ call_cursor() {
       return 0
       ;;
     429)
-      echo "⚠️  Rate limit exceeded (429)"
-      return 1
+      echo "⚠️  Rate limit exceeded (429) — skipping retries for faster fallback"
+      return 4
       ;;
     401|403)
       echo "❌ Authentication failed (${HTTP_CODE})"
@@ -108,9 +108,9 @@ for i in $(seq 1 ${MAX_RETRIES}); do
     exit 0
   fi
 
-  # Don't retry on auth errors
-  if [ ${EXIT_CODE} -eq 2 ]; then
-    exit ${EXIT_CODE}
+  # Don't retry on auth errors or rate limits (429)
+  if [ ${EXIT_CODE} -eq 2 ] || [ ${EXIT_CODE} -eq 4 ]; then
+    exit 1
   fi
 
   # Wait before retry with exponential backoff (except on last attempt)

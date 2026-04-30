@@ -1,8 +1,8 @@
 # Agent Fallback Process — Devin → Cursor → OpenRouter
 
-**Version:** 1.0.0  
-**Date:** April 30, 2026  
-**Status:** Active  
+**Version:** 1.0.0
+**Date:** April 30, 2026
+**Status:** Active
 **Scope:** All Revvel/MIDNGHTSAPPHIRE automation workflows
 
 ---
@@ -154,17 +154,18 @@ on:
   # Automatic issue triggers
   issues:
     types: [labeled]
-  
+
   # Automatic PR triggers
   pull_request_target:
     types: [opened, reopened, ready_for_review]
-  
+
   # Reusable workflow
   workflow_call:
     inputs:
       task_description:
-        required: true
+        required: false
         type: string
+        default: ""
       issue_number:
         required: true
         type: number
@@ -184,11 +185,11 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'workflow_call' ||
-      (github.event_name == 'issues' && 
-       (github.event.label.name == 'wr:code' || 
-        github.event.label.name == 'wr:auto' || 
+      (github.event_name == 'issues' &&
+       (github.event.label.name == 'wr:code' ||
+        github.event.label.name == 'wr:auto' ||
         github.event.label.name == 'agent-fallback')) ||
-      (github.event_name == 'pull_request_target' && 
+      (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false)
     steps:
       # Resolve issue context from different event types
@@ -197,18 +198,18 @@ jobs:
         run: |
           # Handles: issues, pull_request_target, workflow_dispatch, workflow_call
           # Automatically detects event type and extracts issue/PR number
-          
+
       - name: Try Devin AI
         id: devin
         continue-on-error: true
         run: scripts/call-devin-api.sh
-          
+
       - name: Fallback to Cursor
         if: steps.devin.outcome == 'failure'
         id: cursor
         continue-on-error: true
         run: scripts/call-cursor-api.sh
-          
+
       - name: Fallback to OpenRouter
         if: steps.cursor.outcome == 'failure'
         id: openrouter
@@ -283,7 +284,7 @@ Check agent availability before starting expensive operations:
     else
       echo "agent=devin" >> $GITHUB_OUTPUT
     fi
-    
+
 - name: Use recommended agent
   env:
     AGENT: ${{ steps.health.outputs.agent }}
@@ -310,11 +311,11 @@ Every fallback event is logged and creates a GitHub issue for visibility:
         title: `[AUTO-FALLBACK] Devin → Cursor (#${inputs.issue_number})`,
         labels: ['auto-fallback', 'agent-monitoring', 'devin-limit'],
         body: `Devin AI rate limit reached. Automatically failed over to Cursor.
-        
+
         **Original task:** #${inputs.issue_number}
         **Timestamp:** ${new Date().toISOString()}
         **Reason:** ${steps.devin.outputs.error || 'Rate limit or quota exceeded'}
-        
+
         No action required — fallback is working as designed.`
       });
 ```
@@ -328,7 +329,7 @@ Track fallback frequency in the `workflow-health-dashboard.yml`:
   run: |
     # Count fallback events in the last 30 days
     gh issue list --label auto-fallback --state all --created ">=$(date -d '30 days ago' +%Y-%m-%d)"
-    
+
     # Calculate Devin success rate
     # Calculate Cursor usage percentage
     # Identify patterns (time of day, task type)
@@ -347,7 +348,7 @@ Not all tasks require Devin's full capabilities. Route intelligently:
   id: route
   run: |
     TASK_COMPLEXITY=$(python scripts/estimate-task-complexity.py)
-    
+
     if [ "$TASK_COMPLEXITY" = "simple" ]; then
       echo "agent=openrouter" >> $GITHUB_OUTPUT  # Cheapest
     elif [ "$TASK_COMPLEXITY" = "medium" ]; then
@@ -370,7 +371,7 @@ Monitor Devin usage to avoid surprise overages:
 # Check remaining Devin quota (hypothetical API)
 curl -H "Authorization: Bearer $DEVIN_API_KEY" \
   https://api.devin.ai/v1/quota
-  
+
 # Response:
 # { "used": 450, "limit": 500, "resets_at": "2026-05-01T00:00:00Z" }
 ```
