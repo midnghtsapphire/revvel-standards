@@ -51,7 +51,8 @@ on:
         default: "auto"
 
 concurrency:
-  group: agent-fallback-${{ github.repository }}
+  # yamllint disable-line rule:line-length
+  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 
 permissions:
@@ -173,19 +174,21 @@ jobs:
             let issueBody = '';
             const taskDescription = process.env.INPUT_TASK_DESCRIPTION || '';
 
-            // Determine issue number based on event type
+            // Determine issue number — explicit input takes priority
+            const raw = process.env.INPUT_ISSUE_NUMBER || '';
+            if (raw) {
+              issueNumber = Number(raw);
+            }
+
+            // Fill in title/body from event payload when available
             if (context.eventName === 'issues') {
-              issueNumber = context.payload.issue.number;
+              if (!issueNumber) issueNumber = context.payload.issue.number;
               issueTitle = context.payload.issue.title || '';
               issueBody = context.payload.issue.body || '';
             } else if (context.eventName === 'pull_request_target') {
-              issueNumber = context.payload.pull_request.number;
+              if (!issueNumber) issueNumber = context.payload.pull_request.number;
               issueTitle = context.payload.pull_request.title || '';
               issueBody = context.payload.pull_request.body || '';
-            } else {
-              // workflow_dispatch, workflow_call, or any caller event
-              const raw = process.env.INPUT_ISSUE_NUMBER || '';
-              issueNumber = raw ? Number(raw) : undefined;
             }
 
             if (issueNumber === undefined || issueNumber === null) {
@@ -312,8 +315,6 @@ jobs:
             # Check if files were written
             if [ -f "/tmp/openrouter-result.json" ]; then
               echo "✅ OpenRouter completed successfully"
-              echo "success=true" >> $GITHUB_OUTPUT
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
             else
               echo "❌ OpenRouter did not produce output"
               exit 1
