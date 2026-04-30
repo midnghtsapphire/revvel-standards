@@ -32,6 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          INPUT_MODE: ${{ github.event.inputs.mode }}
         run: |
-          MODE="${{ github.event.inputs.mode || 'check' }}"
+          MODE="${INPUT_MODE:-check}"
           bash scripts/gatekeeper-rotate.sh "--${MODE}" --warn-days 7
