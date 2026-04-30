@@ -74,7 +74,7 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
    - Community review process
    
    Based on awesome-devins but focused on honest evaluation
-   vs. catalog. Closes midnghtsapphire/revvel-standards#XXX"
+   vs. catalog. Spec created in midnghtsapphire/revvel-standards"
    
    git branch -M main
    git push -u origin main
