@@ -79,7 +79,7 @@ Workflows will activate on their next scheduled run.
 
 ### To Disable Automation (Enter Quiet Mode)
 
-**Close the `exit-quiet-mode` issue.**
+**Close any open issue or pull request titled `exit-quiet-mode`.**
 
 Workflows will check for the gate on their next run, find it closed, and skip execution.
 
