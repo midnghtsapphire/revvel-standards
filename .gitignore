@@ -26,3 +26,4 @@ Thumbs.db
 # Scratch files occasionally committed by automation (Jules, Copilot, etc.)
 pr-body.md
 .jules/
+*.egg-info/
