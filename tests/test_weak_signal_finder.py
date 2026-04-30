@@ -109,13 +109,36 @@ def test_full_pipeline():
     print(f"  - Themes: {signal.top_emerging_themes}")
     print(f"  - Pairs: {signal.contextual_pairs[:3]}")
 
+main = _wsf.main
+
+
+def test_interval_validation():
+    """Test that --interval rejects zero and negative values"""
+    import unittest.mock
+
+    for bad_value in ["0", "-1", "-100"]:
+        with unittest.mock.patch(
+            "sys.argv", ["weak_signal_finder", "--daemon", "--interval", bad_value]
+        ):
+            try:
+                main()
+                assert False, f"Expected SystemExit for --interval {bad_value}"
+            except SystemExit as exc:
+                assert exc.code == 2, (
+                    f"Expected exit code 2 for --interval {bad_value}, got {exc.code}"
+                )
+
+    print("✓ Interval validation rejects zero and negative values")
+
+
 if __name__ == "__main__":
     print("Testing Weak Signal Finder components...\n")
-    
+
     test_text_processing()
     test_word_frequency()
     test_contextual_pairs()
     test_signal_scoring()
     test_full_pipeline()
-    
+    test_interval_validation()
+
     print("\n✅ All tests passed!")

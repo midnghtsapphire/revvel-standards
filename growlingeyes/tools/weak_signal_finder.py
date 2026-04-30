@@ -441,8 +441,10 @@ def main() -> None:
     )
     
     args = parser.parse_args()
-    
-    # Resolve domains
+
+    if args.interval <= 0:
+        parser.error("--interval must be a positive integer")
+
     if "all" in args.domains:
         domains = list(OSINT_FEED_MAP.keys())
     else:
