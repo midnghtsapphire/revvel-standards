@@ -367,3 +367,33 @@ labels:
   - name: "bito-ai:changes-needed"
     color: "D93F0B"
     description: "BITO found blocking issues — address before merge"
+
+  # ── Auto-Error & Self-Healing ──────────────────────────────────────────────
+  - name: auto-error
+    color: "d73a4a"
+    description: "Automatically created error report from self-healing system"
+
+  - name: needs-fix
+    color: "d93f0b"
+    description: "Identified issue that needs fixing"
+
+  - name: goap-escalation
+    color: "b60205"
+    description: "Escalated to GOAP for goal-oriented action planning"
+
+  - name: urgent
+    color: "b60205"
+    description: "Urgent issue requiring immediate attention"
+
+  # ── Credentials Management ────────────────────────────────────────────────
+  - name: credentials-missing
+    color: "d93f0b"
+    description: "Required credentials not yet provisioned"
+
+  - name: credentials-ready
+    color: "0e8a16"
+    description: "All required credentials are provisioned"
+
+  - name: ready-to-implement
+    color: "0e8a16"
+    description: "Issue is ready for implementation (all blockers resolved)"
