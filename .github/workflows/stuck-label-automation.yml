@@ -198,7 +198,8 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const items = JSON.parse('${{ matrix.items }}' || '[]');
+            const itemsRaw = '${{ matrix.items }}' || '[]';
+            const items = JSON.parse(itemsRaw);
             const dry_run = process.env.DRY_RUN === 'true';
             
             for (const item of items) {
