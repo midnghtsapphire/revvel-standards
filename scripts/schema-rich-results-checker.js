@@ -276,7 +276,7 @@ function _validatePropertyShapes(type, obj) {
   }
 
   // Article / BlogPosting: headline max 110 chars (Google limit)
-  if (obj.headline && typeof obj.headline === 'string' && obj.headline.length > 110) {
+  if (['Article', 'NewsArticle', 'BlogPosting'].includes(type) && obj.headline && typeof obj.headline === 'string' && obj.headline.length > 110) {
     errors.push({ property: 'headline', message: `headline exceeds 110 characters (${obj.headline.length}) — Google will truncate or reject` });
   }
 
