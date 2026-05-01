@@ -367,3 +367,20 @@ labels:
   - name: "bito-ai:changes-needed"
     color: "D93F0B"
     description: "BITO found blocking issues — address before merge"
+
+  # ── Secrets / Credentials ─────────────────────────────────────────────────────
+  - name: secrets-missing
+    color: "b60205"
+    description: "One or more required secrets are absent — auto-heal pending"
+
+  - name: credentials-ready
+    color: "0e8a16"
+    description: "All required credentials are provisioned"
+
+  - name: credentials-missing
+    color: "d93f0b"
+    description: "One or more required credentials are missing"
+
+  - name: goap-escalation
+    color: "b60205"
+    description: "GOAP escalation — requires human intervention after auto-retry failure"
