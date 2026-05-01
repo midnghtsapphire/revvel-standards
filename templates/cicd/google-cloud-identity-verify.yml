@@ -4,7 +4,7 @@
 # Runs weekly and on-demand to ensure identity setup remains valid
 #
 # Required secrets:
-#   GCP_SERVICE_ACCOUNT_KEY - Service account with iam.workforcePools.viewer permission
+#   GCP_SERVICE_ACCOUNT_KEY - Service account with iam.workforcePools.viewer and serviceusage.services.list permissions
 #   GCP_PROJECT_ID - Google Cloud project ID
 #
 # See docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md for full context
@@ -259,10 +259,24 @@ jobs:
       
       - name: Create issue on verification failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const title = '🔴 Google Cloud Identity Configuration Verification Failed';
+            
+            // Check if an open issue already exists to avoid spam
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'infrastructure,identity,auto-error',
+              per_page: 100
+            });
+            
+            const existingIssue = existingIssues.data.find(issue => 
+              issue.title === title
+            );
+            
             const body = `
             ## Google Cloud Identity Configuration Verification Failed
             
@@ -286,20 +300,33 @@ jobs:
             
             Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed error messages.
             
-            Refer to [Google Cloud Identity Standard](docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md) for troubleshooting guidance.
+            Refer to the [Google Cloud Identity Standard](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md) for troubleshooting guidance.
             
             ---
             
             *This issue was created automatically by the Google Cloud Identity verification workflow.*
             `;
             
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['infrastructure', 'identity', 'auto-error']
-            });
+            if (existingIssue) {
+              // Update existing issue with a new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body
+              });
+              console.log(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['infrastructure', 'identity', 'auto-error']
+              });
+              console.log('Created new issue');
+            }
       
       - name: Summary
         if: always()

@@ -201,66 +201,73 @@ esac
 
 # Prompt for IdP metadata
 echo -e "${YELLOW}Creating workforce identity provider...${NC}"
-echo ""
-echo "To complete provider setup, you need your IdP configuration:"
 
-if [[ "$IDP_TYPE" == *"oidc"* ]]; then
-    echo "  - Issuer URI"
-    echo "  - Client ID"
-    echo "  - Client Secret (optional but recommended)"
-    echo ""
-    read -p "Enter Issuer URI: " ISSUER_URI
-    read -p "Enter Client ID: " CLIENT_ID
-    
-    if [[ -z "$ISSUER_URI" ]] || [[ -z "$CLIENT_ID" ]]; then
-        echo -e "${RED}Error: Issuer URI and Client ID are required${NC}"
-        exit 1
-    fi
-    
-    # Create OIDC provider
-    gcloud iam workforce-pools providers create-oidc "$PROVIDER_ID" \
-        --workforce-pool="$WORKFORCE_POOL_ID" \
-        --location="$LOCATION" \
-        --display-name="$PROVIDER_ID" \
-        --description="OIDC provider for $IDP_TYPE" \
-        --issuer-uri="$ISSUER_URI" \
-        --client-id="$CLIENT_ID" \
-        --attribute-mapping="$ATTRIBUTE_MAPPING"
-    
+# Check if provider already exists
+if gcloud iam workforce-pools providers describe "$PROVIDER_ID" \
+    --workforce-pool="$WORKFORCE_POOL_ID" \
+    --location="$LOCATION" &>/dev/null; then
+    echo -e "${YELLOW}Provider '$PROVIDER_ID' already exists, skipping creation${NC}"
 else
-    echo "  - IdP Metadata URL (or path to downloaded XML file)"
     echo ""
-    read -p "Enter IdP Metadata URL or file path: " IDP_METADATA
-    
-    if [[ -z "$IDP_METADATA" ]]; then
-        echo -e "${RED}Error: IdP metadata is required${NC}"
-        exit 1
-    fi
-    
-    # Create SAML provider
-    if [[ "$IDP_METADATA" == http* ]]; then
-        # URL provided
-        gcloud iam workforce-pools providers create-saml "$PROVIDER_ID" \
-            --workforce-pool="$WORKFORCE_POOL_ID" \
-            --location="$LOCATION" \
-            --display-name="$PROVIDER_ID" \
-            --description="SAML provider for $IDP_TYPE" \
-            --idp-metadata-url="$IDP_METADATA" \
-            --attribute-mapping="$ATTRIBUTE_MAPPING"
-    else
-        # File path provided
-        gcloud iam workforce-pools providers create-saml "$PROVIDER_ID" \
-            --workforce-pool="$WORKFORCE_POOL_ID" \
-            --location="$LOCATION" \
-            --display-name="$PROVIDER_ID" \
-            --description="SAML provider for $IDP_TYPE" \
-            --idp-metadata-path="$IDP_METADATA" \
-            --attribute-mapping="$ATTRIBUTE_MAPPING"
-    fi
-fi
+    echo "To complete provider setup, you need your IdP configuration:"
 
-echo -e "${GREEN}✓ Workforce identity provider created${NC}"
-echo ""
+    if [[ "$IDP_TYPE" == *"oidc"* ]]; then
+        echo "  - Issuer URI"
+        echo "  - Client ID"
+        echo ""
+        read -p "Enter Issuer URI: " ISSUER_URI
+        read -p "Enter Client ID: " CLIENT_ID
+        
+        if [[ -z "$ISSUER_URI" ]] || [[ -z "$CLIENT_ID" ]]; then
+            echo -e "${RED}Error: Issuer URI and Client ID are required${NC}"
+            exit 1
+        fi
+        
+        # Create OIDC provider
+        gcloud iam workforce-pools providers create-oidc "$PROVIDER_ID" \
+            --workforce-pool="$WORKFORCE_POOL_ID" \
+            --location="$LOCATION" \
+            --display-name="$PROVIDER_ID" \
+            --description="OIDC provider for $IDP_TYPE" \
+            --issuer-uri="$ISSUER_URI" \
+            --client-id="$CLIENT_ID" \
+            --attribute-mapping="$ATTRIBUTE_MAPPING"
+        
+    else
+        echo "  - IdP Metadata URL (or path to downloaded XML file)"
+        echo ""
+        read -p "Enter IdP Metadata URL or file path: " IDP_METADATA
+        
+        if [[ -z "$IDP_METADATA" ]]; then
+            echo -e "${RED}Error: IdP metadata is required${NC}"
+            exit 1
+        fi
+        
+        # Create SAML provider
+        if [[ "$IDP_METADATA" == http* ]]; then
+            # URL provided
+            gcloud iam workforce-pools providers create-saml "$PROVIDER_ID" \
+                --workforce-pool="$WORKFORCE_POOL_ID" \
+                --location="$LOCATION" \
+                --display-name="$PROVIDER_ID" \
+                --description="SAML provider for $IDP_TYPE" \
+                --idp-metadata-url="$IDP_METADATA" \
+                --attribute-mapping="$ATTRIBUTE_MAPPING"
+        else
+            # File path provided
+            gcloud iam workforce-pools providers create-saml "$PROVIDER_ID" \
+                --workforce-pool="$WORKFORCE_POOL_ID" \
+                --location="$LOCATION" \
+                --display-name="$PROVIDER_ID" \
+                --description="SAML provider for $IDP_TYPE" \
+                --idp-metadata-path="$IDP_METADATA" \
+                --attribute-mapping="$ATTRIBUTE_MAPPING"
+        fi
+    fi
+
+    echo -e "${GREEN}✓ Workforce identity provider created${NC}"
+    echo ""
+fi
 
 # Get provider resource name
 PROVIDER_NAME="locations/$LOCATION/workforcePools/$WORKFORCE_POOL_ID/providers/$PROVIDER_ID"

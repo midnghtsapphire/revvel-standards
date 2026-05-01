@@ -217,7 +217,7 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 
 ## Resources
 
-- **Full Standard:** [docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md](../docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md)
+- **Full Standard:** [docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md](../../docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md)
 - **Setup Script:** [templates/standards/google-cloud-identity-setup.sh](google-cloud-identity-setup.sh)
 - **SCIM Config:** [templates/standards/google-cloud-scim-config.md](google-cloud-scim-config.md)
 - **Official Docs:**

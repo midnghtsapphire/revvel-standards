@@ -344,7 +344,7 @@ gcloud iam workforce-pools providers list-workforce-group-memberships PROVIDER_I
 - [Configure SCIM in Microsoft Entra ID](https://cloud.google.com/iam/docs/configure-scim-ms-entra)
 - [Workforce Identity Federation SCIM](https://cloud.google.com/iam/docs/workforce-identity-federation-scim)
 - [Microsoft Entra ID Automatic User Provisioning](https://learn.microsoft.com/en-us/azure/active-directory/app-provisioning/user-provisioning)
-- [Google Cloud Identity Standard](../docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md)
+- [Google Cloud Identity Standard](../../docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md)
 
 ---
 
