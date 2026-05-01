@@ -379,7 +379,7 @@ function renderTable(products) {
     const listPrice = p.listingPrice ?? pricePreview(p);
     const basis = p.isVine ? (p.vineTaxValue || p.paidPrice) : p.paidPrice;
     const imgCell = p.imageUrl
-      ? `<img class="thumb" src="${escHtml(p.imageUrl)}" alt="" loading="lazy">`
+      ? `<img class="thumb" src="${escHtml(p.imageUrl)}" alt="${escHtml(p.productTitle)}" loading="lazy">`
       : `<div class="thumb-placeholder">📦</div>`;
     const vineTag = p.isVine ? '<span class="badge badge-vine">Vine</span> ' : '';
     const checked = selectedOrders.has(p.orderId) ? 'checked' : '';

@@ -23,12 +23,6 @@ const IMAP_PORT = parseInt(process.env.GMAIL_IMAP_PORT || '993', 10);
 const GMAIL_USER = process.env.GMAIL_USER || '';
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
 
-// Amazon sender patterns to filter by — match full domain to avoid spoofed senders
-const AMAZON_FROM_PATTERNS = [
-  '@amazon.com',
-  '.amazon.com',
-];
-
 /**
  * Build IMAP search criteria to find Amazon emails optionally filtered by date range.
  * @param {Date|null} since
@@ -145,8 +139,14 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
  */
 function filterAmazonEmails(mails) {
   return mails.filter((mail) => {
-    const from = mail.from?.text?.toLowerCase() || '';
-    return AMAZON_FROM_PATTERNS.some((pattern) => from.includes(pattern));
+    const from = mail.from?.text || '';
+    const lower = from.toLowerCase();
+    const emailTokens = lower.match(/[\w.+-]+@([\w.-]+)/g) || [];
+    return emailTokens.some((token) => {
+      const atIdx = token.lastIndexOf('@');
+      const domain = atIdx !== -1 ? token.slice(atIdx + 1) : '';
+      return domain === 'amazon.com' || domain.endsWith('.amazon.com');
+    });
   });
 }
 

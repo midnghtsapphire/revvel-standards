@@ -64,6 +64,21 @@ function extract(pattern, text) {
 }
 
 /**
+ * Return true only if the sender's domain is exactly amazon.com or *.amazon.com.
+ * Prevents spoofed senders like attacker@amazon.com.evil.com from passing.
+ */
+function isAmazonSender(fromText = '') {
+  const lower = fromText.toLowerCase();
+  // Extract all email-like tokens (handles "Display Name <email@domain>" format)
+  const emailTokens = lower.match(/[\w.+-]+@([\w.-]+)/g) || [];
+  return emailTokens.some((token) => {
+    const atIdx = token.lastIndexOf('@');
+    const domain = atIdx !== -1 ? token.slice(atIdx + 1) : '';
+    return domain === 'amazon.com' || domain.endsWith('.amazon.com');
+  });
+}
+
+/**
  * Parse a single email (parsed by mailparser) into a product record.
  *
  * @param {object} mail  — mailparser ParsedMail object
@@ -71,11 +86,11 @@ function extract(pattern, text) {
  */
 function parseAmazonEmail(mail) {
   const subject = mail.subject || '';
-  const from = (mail.from?.text || '').toLowerCase();
+  const from = mail.from?.text || '';
   const text = mail.text || mail.html?.replace(/<[^>]+>/g, ' ') || '';
 
-  // Only process emails from Amazon
-  if (!from.includes('@amazon.com') && !from.endsWith('.amazon.com')) {
+  // Only process emails from verified Amazon domains
+  if (!isAmazonSender(from)) {
     return null;
   }
 

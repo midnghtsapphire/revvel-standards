@@ -141,7 +141,8 @@ async function addToCatalog(product, listingPrice) {
     availability: 'in stock',
     condition: 'new',
     image_url: imageUrl || '',
-    url: imageUrl || `https://www.amazon.com/dp/${asin || 'unknown'}`,
+    // Only include a URL if we have a valid ASIN; otherwise omit to avoid broken links
+    ...(asin ? { url: `https://www.amazon.com/dp/${asin}` } : {}),
     access_token: PAGE_TOKEN,
   };
 

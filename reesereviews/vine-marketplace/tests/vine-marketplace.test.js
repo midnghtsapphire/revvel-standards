@@ -231,6 +231,65 @@ test('getByDateRange filters correctly', () => {
   assert.ok(results.length >= 0);
 });
 
+test('markListed throws for unknown orderId', () => {
+  assert.throws(
+    () => inventoryModule.markListed('NONEXISTENT-999', 'FB-ID', 10),
+    /not found/i
+  );
+});
+
+test('markSold throws for unknown orderId', () => {
+  assert.throws(
+    () => inventoryModule.markSold('NONEXISTENT-999', 5),
+    /not found/i
+  );
+});
+
+test('recordRepost throws for unknown orderId', () => {
+  assert.throws(
+    () => inventoryModule.recordRepost('NONEXISTENT-999'),
+    /not found/i
+  );
+});
+
+test('getByOrderId returns null for unknown orderId', () => {
+  const result = inventoryModule.getByOrderId('TOTALLY-UNKNOWN');
+  assert.strictEqual(result, null);
+});
+
+// ── Sender domain validation ───────────────────────────────────────────────
+
+console.log('\n🔒  Sender Domain Validation');
+
+test('parseAmazonEmail: rejects spoofed amazon.com.evil.com sender', () => {
+  const mail = {
+    subject: 'Your package has been delivered',
+    from: { text: 'spoof@amazon.com.evil.com' },
+    text: 'Order Total: $10.00\nASIN: B00AAAAAA0\n112-0000000-0000000',
+  };
+  assert.strictEqual(parseAmazonEmail(mail), null);
+});
+
+test('parseAmazonEmail: accepts auto-confirm@amazon.com', () => {
+  const mail = {
+    subject: 'Your package has been delivered',
+    from: { text: 'auto-confirm@amazon.com' },
+    text: 'Order Total: $15.00\n112-1111111-1111111',
+  };
+  const result = parseAmazonEmail(mail);
+  assert.ok(result !== null);
+});
+
+test('parseAmazonEmail: accepts ship-confirm@marketplace.amazon.com subdomain', () => {
+  const mail = {
+    subject: 'Your order has been delivered',
+    from: { text: 'ship-confirm@marketplace.amazon.com' },
+    text: 'Order Total: $20.00\n112-2222222-2222222',
+  };
+  const result = parseAmazonEmail(mail);
+  assert.ok(result !== null);
+});
+
 // ── Results ────────────────────────────────────────────────────────────────
 
 console.log(`\n──────────────────────────────────────────`);
