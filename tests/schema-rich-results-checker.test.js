@@ -512,6 +512,62 @@ test('SCHEMA_RULES covers all major SEO types', () => {
   }
 });
 
+test('SCHEMA_RULES covers all Google Rich Result types — no eligibility gap', () => {
+  for (const t of GOOGLE_RICH_RESULT_TYPES) {
+    assert.ok(
+      Object.hasOwn(SCHEMA_RULES, t),
+      `SCHEMA_RULES missing @type "${t}" — checkRichResults would report it as ineligible without rules`,
+    );
+  }
+});
+
+test('validateSchema passes valid Dataset (newly added type)', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: 'Climate Data 2026',
+    description: 'Monthly temperature records',
+  };
+  const result = validateSchema(obj);
+  assert.strictEqual(result.pass, true);
+  assert.strictEqual(result.type, 'Dataset');
+});
+
+test('validateSchema errors on Dataset missing required description', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: 'Climate Data 2026',
+  };
+  const result = validateSchema(obj);
+  assert.strictEqual(result.pass, false);
+  assert.ok(result.errors.some(e => e.property === 'description'));
+});
+
+test('checkRichResults marks valid Dataset as eligible', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: 'Climate Data 2026',
+    description: 'Monthly temperature records',
+  };
+  const result = checkRichResults(obj);
+  assert.strictEqual(result.eligible, true);
+  assert.strictEqual(result.type, 'Dataset');
+});
+
+test('checkRichResults marks valid SoftwareApplication as eligible', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Revvel CLI',
+    operatingSystem: 'macOS',
+    applicationCategory: 'DeveloperApplication',
+  };
+  const result = checkRichResults(obj);
+  assert.strictEqual(result.eligible, true);
+});
+
 test('GOOGLE_RICH_RESULT_TYPES includes core types', () => {
   const coreTypes = ['Article', 'FAQPage', 'Product', 'BreadcrumbList', 'Organization', 'VideoObject', 'Event'];
   for (const t of coreTypes) {

@@ -117,6 +117,57 @@ const SCHEMA_RULES = {
     required:    ['url', 'potentialAction'],
     recommended: [],
   },
+  // ── Additional Google Rich Results types ─────────────────────
+  // Minimal rules for types that are eligible for Google Rich Results
+  // but have no detailed Revvel validation rules yet.
+  CourseList: {
+    required:    ['name', 'hasPart'],
+    recommended: ['description', 'url'],
+  },
+  Dataset: {
+    required:    ['name', 'description'],
+    recommended: ['url', 'sameAs', 'keywords', 'license', 'creator'],
+  },
+  EmployerAggregateRating: {
+    required:    ['itemReviewed', 'ratingValue', 'ratingCount'],
+    recommended: ['bestRating', 'worstRating'],
+  },
+  EstimatedSalary: {
+    required:    ['name', 'estimatedSalary'],
+    recommended: ['sameAs'],
+  },
+  ImageObject: {
+    required:    ['contentUrl'],
+    recommended: ['name', 'description', 'author', 'license'],
+  },
+  LearningResource: {
+    required:    ['name', 'description'],
+    recommended: ['url', 'provider', 'teaches', 'educationalLevel'],
+  },
+  Movie: {
+    required:    ['name'],
+    recommended: ['image', 'description', 'dateCreated', 'director'],
+  },
+  ProductGroup: {
+    required:    ['name', 'hasVariant'],
+    recommended: ['description', 'url', 'image'],
+  },
+  ProfilePage: {
+    required:    ['name'],
+    recommended: ['url', 'description', 'image', 'mainEntity'],
+  },
+  QAPage: {
+    required:    ['mainEntity'],
+    recommended: [],
+  },
+  SoftwareApplication: {
+    required:    ['name', 'operatingSystem', 'applicationCategory'],
+    recommended: ['url', 'description', 'offers', 'aggregateRating'],
+  },
+  SpecialAnnouncement: {
+    required:    ['name', 'text', 'datePosted', 'category'],
+    recommended: ['expires', 'url', 'announcementLocation'],
+  },
 };
 
 // ─── Google Rich Results eligible @types ─────────────────────
@@ -139,9 +190,12 @@ const GOOGLE_RICH_RESULT_TYPES = new Set([
 // ─── JSON-LD parser ───────────────────────────────────────────
 /**
  * Extract all JSON-LD blocks from an HTML string.
- * Returns an array of parsed objects (silently skips invalid JSON).
+ * Returns an array of parsed JSON-LD nodes. For blocks with invalid
+ * JSON, a synthetic sentinel object with `_parseError: true` and a
+ * truncated `_raw` snippet is included in the array instead of
+ * silently skipping the block, so callers can surface parse errors.
  * @param {string} html
- * @returns {Array<object>}
+ * @returns {Array<object|{_parseError:true,_raw:string}>}
  */
 function parseJsonLd(html) {
   if (!html || typeof html !== 'string') return [];
@@ -358,6 +412,16 @@ function checkRichResults(obj, precomputedValidation) {
         eligible: false,
         type: primaryType,
         reason: `Has required-property errors — fix ${validation.errors.map(e => `"${e.property}"`).join(', ')} first`,
+      };
+    }
+    // Guard: if no SCHEMA_RULES entry exists for this type, we cannot
+    // reliably confirm eligibility — report as unknown rather than
+    // a potentially misleading true.
+    if (!Object.hasOwn(SCHEMA_RULES, primaryType)) {
+      return {
+        eligible: false,
+        type: primaryType,
+        reason: `@type "${primaryType}" is in the Google Rich Results list but has no Revvel validation rules — validate manually at https://search.google.com/test/rich-results`,
       };
     }
     return {
