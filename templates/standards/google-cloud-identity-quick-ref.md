@@ -69,13 +69,13 @@ gcloud iam workforce-pools providers create-oidc PROVIDER_ID \
   --attribute-mapping="google.subject=assertion.email,google.groups=assertion.groups"
 ```
 
-### Create SAML Provider
+### Create SAML Provider (Microsoft Entra ID)
 ```bash
 gcloud iam workforce-pools providers create-saml PROVIDER_ID \
   --workforce-pool=POOL_ID \
   --location=global \
-  --idp-metadata-url="https://idp.example.com/metadata" \
-  --attribute-mapping="google.subject=assertion.subject,google.groups=assertion.attributes['groups']"
+  --idp-metadata-url="https://login.microsoftonline.com/TENANT_ID/federationmetadata/2007-06/federationmetadata.xml" \
+  --attribute-mapping="google.subject=assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0],google.groups=assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']"
 ```
 
 ---

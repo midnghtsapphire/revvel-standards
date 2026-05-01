@@ -43,6 +43,7 @@ jobs:
     
     permissions:
       contents: read
+      id-token: write  # Required for Workload Identity Federation OIDC token exchange
       issues: write  # To create issues if verification fails
     
     steps:
@@ -266,7 +267,7 @@ jobs:
             echo "✅ SCIM provisioning is enabled"
           else
             echo "scim_status=not_enabled" >> $GITHUB_OUTPUT
-            echo "ℹ️ SCIM provisioning is not enabled (may be expected for Okta or small group sets)"
+            echo "ℹ️ SCIM provisioning is not enabled (may be expected for small group sets)"
           fi
       
       - name: Create issue on verification failure
