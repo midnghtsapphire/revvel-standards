@@ -1,11 +1,34 @@
 # Secrets Management — Workflow ↔ Secret Matrix
 
-> **Last audited:** 2026-04-26
+> **Last audited:** 2026-05-01
 > **Source:** Gap analysis session ([link](https://app.devin.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
+> **NEW:** 🛡️ Secret Persistence Guard now active — hourly monitoring & auto-recovery
 
 This document maps every GitHub Actions workflow to the secrets it requires
 (excluding `GITHUB_TOKEN`, which is auto-provided). Use this to verify
 that all automations have the secrets they need to actually run.
+
+## 🛡️ Secret Protection & Monitoring
+
+**NEW as of 2026-05-01:** The repository now includes automated secret protection:
+
+- ✅ **Secret Persistence Guard** (`.github/workflows/secret-persistence-guard.yml`)
+  - Blocks deletion of critical secrets
+  - Monitors availability every hour
+  - Auto-recovers missing secrets from Doppler
+  - Creates P0 issues when recovery fails
+
+- ✅ **Protected Secrets** (cannot be deleted):
+  - `OPENROUTER_API_KEY`
+  - `DOPPLER_TOKEN`
+  - `ADMIN_GITHUB_TOKEN`
+  - `GITHUB_TOKEN`
+
+- ✅ **Monitored Secrets** (checked hourly):
+  - All protected secrets plus
+  - `JULES_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY`
+
+See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md) for complete details.
 
 ## Secret Inventory
 
