@@ -46,6 +46,7 @@ See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AU
 | `MIRROR_GIST_ID` | durability-mirror | Yes | Gist ID for durability mirror backup |
 | `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
 | `DIGITALOCEAN_API_TOKEN` | deploy-oaudrey | Yes (skips with warning) | DO personal access token for App Platform deploys; create at DO → API → Tokens |
+| `VERCEL_TOKEN` | deployment-health-check, Soul2Bowl CI (downstream) | Yes (health check degrades gracefully) | Vercel API token for deployment triggers and project access; create at vercel.com/account/tokens. Also add `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (see `docs/Soul2Bowl/VERCEL_DEPLOYMENT.md`) |
 | `NAMECHEAP_API_KEY` | credential-gatekeeper (BOM detection only) | Yes | Namecheap API key for DNS automation; enable at Namecheap → Profile → API Access |
 | `GOOGLE_SEARCH_CONSOLE_KEY` | eeat-trust-cron | Yes (degrades gracefully) | Google Search Console API for E-E-A-T automation; create at Google Cloud Console |
 | `GOOGLE_BUSINESS_PROFILE_KEY` | eeat-trust-cron | Yes (optional) | Google Business Profile API for E-E-A-T automation; create at Google Cloud Console |
@@ -66,6 +67,7 @@ These workflows only use `GITHUB_TOKEN` (auto-provided):
 - `commit-queue-monitor.yml`
 - `compliance-watcher.yml`
 - `create-issue-branch.yml`
+- `deployment-health-check.yml`
 - `flow-chart-sync.yml`
 - `match-labels.yml`
 - `mergify-merge-queue-labels-copier.yml`
