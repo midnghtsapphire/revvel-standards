@@ -160,10 +160,12 @@ function parseJsonLd(html) {
       } else if (parsed['@graph'] && Array.isArray(parsed['@graph'])) {
         const parentContext = parsed['@context'];
         for (const node of parsed['@graph']) {
-          if (parentContext && !node['@context']) {
-            node['@context'] = parentContext;
+          if (node && typeof node === 'object' && !Array.isArray(node)) {
+            if (parentContext && !node['@context']) {
+              node['@context'] = parentContext;
+            }
+            blocks.push(node);
           }
-          blocks.push(node);
         }
       } else {
         blocks.push(parsed);
@@ -195,8 +197,9 @@ function validateSchema(obj) {
   }
 
   if (obj._parseError) {
+    const safeRaw = String(obj._raw || '').replace(/[`\n\r|[\]]/g, ' ').trim();
     return { type: 'unknown', pass: false,
-      errors: [{ property: 'json', message: `JSON parse error near: ${obj._raw}` }],
+      errors: [{ property: 'json', message: `JSON parse error near: ${safeRaw}` }],
       warnings: [] };
   }
 
