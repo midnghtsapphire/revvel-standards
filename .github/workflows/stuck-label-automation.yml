@@ -198,8 +198,8 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const itemsRaw = '${{ matrix.items }}' || '[]';
-            const items = JSON.parse(itemsRaw);
+            const itemsRaw = '${{ matrix.items }}';
+            const items = JSON.parse(itemsRaw || '[]');
             const dry_run = process.env.DRY_RUN === 'true';
             
             for (const item of items) {
@@ -350,8 +350,8 @@ jobs:
           STUCK_PRS: ${{ needs.detect-stuck.outputs.stuck_prs }}
         with:
           script: |
-            const issues = JSON.parse(process.env.STUCK_ISSUES || '[]');
-            const prs = JSON.parse(process.env.STUCK_PRS || '[]');
+            const issues = JSON.parse(process.env.STUCK_ISSUES ? process.env.STUCK_ISSUES : '[]');
+            const prs = JSON.parse(process.env.STUCK_PRS ? process.env.STUCK_PRS : '[]');
             const total = issues.length + prs.length;
             
             core.summary.addHeading('Stuck Label Automation Report');

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Quick validation script for new automation workflows
 
-set -e
+set -euo pipefail
 
 echo "🔍 Validating Secret Persistence & Label Automation..."
 echo ""
