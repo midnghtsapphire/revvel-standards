@@ -201,9 +201,9 @@ function parseJsonLd(html) {
   if (!html || typeof html !== 'string') return [];
 
   const blocks = [];
-  // [^>]* (zero-or-more) on the first group allows `type` to be the
-  // first attribute right after `script` with no preceding attributes.
-  // The second [^>]* tolerates any remaining attributes after `type="..."`.
+  // The first [^>]* allows `type` to appear anywhere in the opening tag
+  // (e.g., <script async type="...">). The second [^>]* tolerates any
+  // remaining attributes after the type declaration (e.g., id="schema1").
   const re = /<script[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   let m;
   while ((m = re.exec(html)) !== null) {
@@ -360,7 +360,7 @@ function _validatePropertyShapes(type, obj) {
       if (!li || li['@type'] !== 'ListItem') {
         errors.push({ property: `itemListElement[${i}]`, message: 'BreadcrumbList items must have @type "ListItem"' });
       } else {
-        if (typeof li.position !== 'number' || li.position < 1) errors.push({ property: `itemListElement[${i}].position`, message: '"position" must be a positive integer (≥ 1) on each ListItem' });
+        if (!Number.isInteger(li.position) || li.position < 1) errors.push({ property: `itemListElement[${i}].position`, message: '"position" must be a positive integer (≥ 1) on each ListItem' });
         if (!li.name && !li.item) errors.push({ property: `itemListElement[${i}].name`, message: '"name" or "item" is required on each ListItem' });
       }
     }

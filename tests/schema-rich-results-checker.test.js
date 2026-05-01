@@ -308,6 +308,17 @@ test('validateSchema errors on BreadcrumbList ListItem with non-numeric position
   assert.ok(result.errors.some(e => e.property.includes('position')));
 });
 
+test('validateSchema errors on BreadcrumbList ListItem with float position', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ '@type': 'ListItem', position: 1.5, name: 'Home' }],
+  };
+  const result = validateSchema(obj);
+  assert.strictEqual(result.pass, false);
+  assert.ok(result.errors.some(e => e.property.includes('position')));
+});
+
 test('validateSchema passes valid BreadcrumbList', () => {
   const result = validateSchema(VALID_BREADCRUMB);
   assert.strictEqual(result.pass, true);
