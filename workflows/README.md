@@ -56,7 +56,7 @@ CREATE INDEX idx_income_limits_lookup ON usda_income_limits(year, state, county)
 
 ### 3. Populate Income Limit Data
 
-**Data Source:** USDA Rural Development website (updated annually)  
+**Data Source:** USDA Rural Development website (updated annually)
 **URL:** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
 
 **Example Data (2026):**
@@ -82,9 +82,9 @@ INSERT INTO usda_income_limits (year, state, county, income_limit_1_4, income_li
 In n8n dashboard → Settings → Credentials:
 
 1. **Google Maps API**
-   - Type: HTTP Request Header Auth
-   - Header Name: `X-Goog-Api-Key`
-   - Header Value: `YOUR_GOOGLE_MAPS_API_KEY`
+   - Type: Query Auth
+   - Parameter Name: `key`
+   - Parameter Value: `YOUR_GOOGLE_MAPS_API_KEY`
 
 2. **PostgreSQL**
    - Host: `your-postgres-host.com`
@@ -232,7 +232,7 @@ Content-Type: application/json
 │  Webhook   │────>│ Validate     │────>│ Check USDA       │
 │  Trigger   │     │ Input        │     │ Eligibility      │
 └────────────┘     └──────────────┘     └──────────────────┘
-                                                 │
+                    (throws on error)            │
                                                  ▼
                                         ┌──────────────────┐
                                         │ Is Rural Area?   │
@@ -241,9 +241,21 @@ Content-Type: application/json
                                  YES     │              │    NO
                                          ▼              ▼
                               ┌──────────────┐   ┌──────────────┐
+                              │ Set Rural    │   │ Set Rural    │
+                              │ Eligible     │   │ Ineligible   │
+                              └──────────────┘   └──────────────┘
+                                     │                  │
+                                     ▼                  ▼
+                              ┌──────────────┐   ┌──────────────┐
                               │ Geocode      │   │ Return       │
                               │ Address      │   │ Ineligible   │
                               └──────────────┘   └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Extract      │
+                              │ State/County │
+                              └──────────────┘
                                      │
                                      ▼
                               ┌──────────────┐
@@ -263,16 +275,27 @@ Content-Type: application/json
                               │ Report       │
                               └──────────────┘
                                      │
-                        ┌────────────┴────────────┐
-                        ▼                         ▼
-                 ┌──────────────┐         ┌──────────────┐
-                 │ Save to      │         │ Email        │
-                 │ Google       │         │ Report       │
-                 │ Sheets       │         └──────────────┘
-                 └──────────────┘                │
-                        │                         │
-                        └────────────┬────────────┘
                                      ▼
+                              ┌──────────────┐
+                              │ Save to      │
+                              │ Google       │
+                              │ Sheets       │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Has Email?   │
+                              └──────────────┘
+                               │            │
+                          YES  │            │  NO
+                               ▼            │
+                        ┌──────────────┐    │
+                        │ Email        │    │
+                        │ Report       │    │
+                        └──────────────┘    │
+                               │            │
+                               └──────┬─────┘
+                                      ▼
                               ┌──────────────┐
                               │ Return       │
                               │ Success      │
@@ -323,9 +346,9 @@ VALUES (2027, 'Colorado', 'El Paso', 106500.00, 140600.00);
 
 ## License
 
-MIT License — Free to use and modify. See LICENSE file for details.
+All Rights Reserved — Audrey Evans / MIDNGHTSAPPHIRE. See repository root LICENSE for details.
 
 ---
 
-**Created:** April 30, 2026  
+**Created:** April 30, 2026
 **Maintained By:** MIDNGHTSAPPHIRE / Revvel Standards

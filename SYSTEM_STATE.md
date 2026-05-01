@@ -10,13 +10,14 @@
 
 | Component | Status | Details |
 |---|---|---|
-| Production server | ❌ | Not deployed (standards repo) |
-| Database | ❌ | Not deployed (standards repo) |
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
-| DNS | ❌ | Not deployed (standards repo) |
-| SSL | ❌ | Not deployed (standards repo) |
+| oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_API_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
+| oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** Log into Namecheap (`uprisinghope`) → oaudrey.com → Nameservers → Custom DNS → `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
+| oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same NS change as above + add CNAME in DigitalOcean Networking → Domains |
+| Database | ❌ | Not applicable (standards repo — no DB) |
+| SSL | ⏳ | Auto-provisioned by DigitalOcean Let's Encrypt once DNS resolves and app is deployed |
 
-**Status key:** ✅ Working | ⚠️ Working but with a known issue or degraded state | ❌ Not working / not deployed
+**Status key:** ✅ Working | ⚠️ Working but degraded | ❌ Not applicable / not needed | ⏳ Pending human action (infrastructure blocker — see `docs/AGENTS.md` Infrastructure Blocker Protocol)
 
 ---
 

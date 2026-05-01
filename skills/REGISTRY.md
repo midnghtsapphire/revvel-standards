@@ -26,10 +26,12 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | If the task involves... | Load this skill |
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review | [`bito-ai`](#bito-ai) |
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
 | 49Agents, agentic IDE, visual monitoring, parallel research, agent HQ, desktop agents | [`49agents`](#49agents) |
+| Agent fallback, Devin backup, Cursor, rate limits, high availability | [`agent-fallback`](#agent-fallback) |
 | Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
 | Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
 | OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight | [`openclaw-self-eval`](#openclaw-self-eval) |
@@ -49,12 +51,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
+| E-E-A-T, Google trust signals, Knowledge Panel, schema.org authority, brand identity, ORCID | [`eeat-trust-authority`](#eeat-trust-authority) |
 | Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
 | Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
 | Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
 | Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
 | PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations | [`posthog`](#posthog) |
 | Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
+| NoimosAI, autonomous marketing team, SEO, content, social media, affiliate links, email marketing, marketing automation | [`noimosai`](#noimosai) |
 | Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
 | Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
 | CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
@@ -74,6 +78,18 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ## Full Skill Catalog
 
 ### Code Quality & Autonomous Review
+
+#### bito-ai
+
+- **Path:** `skills/bito-ai/`
+- **Files:** `SKILL.md` · `bito-ai.skill.yml`
+- **Platform:** [BITO AI](https://bito.ai)
+- **Description:** Wire BITO AI into any Revvel repo for **persistent-memory** code review, agentic PR workflows, desktop API/secret procurement via the BITO CLI, and automated label updates (`bito-ai:review`, `awaiting-approval`, `bito-ai:changes-needed`, `changes-requested`) based on review outcomes. BITO indexes the entire codebase once and maintains an up-to-date knowledge base, so every PR review draws on full repo context — not just the diff. The desktop CLI (`bito review`, `bito secret get`, `bito ask`) assists developers in retrieving and wiring secrets from the local Vault client or OS keychain without manual copy-paste.
+- **Tags:** bito-ai, persistent-memory-review, agentic-code-review, desktop-api-procurement, bito-cli, bito-secret, repo-memory, pr-review, label-automation
+- **Trigger:** "bito", "bito ai", "bito review", "persistent memory review", "bito cli", "bito secret", "bito index", "agentic code review", "desktop api procurement", "code review with memory".
+- **Standard:** `standards/BITO_AI_INTEGRATION_STANDARD.md`
+- **Workflow:** `.github/workflows/bito-ai.yml`
+- **Integration doc:** `docs/BITO_AI_INTEGRATION.md`
 
 #### recurse-ml
 
@@ -104,6 +120,13 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Agent Operations
+
+#### agent-fallback
+- **Path:** `.github/workflows/agent-fallback.yml` · `docs/AGENT_FALLBACK_PROCESS.md`
+- **Description:** Automatic agent fallback system that switches between Devin AI, Cursor, and OpenRouter when rate limits are reached or agents are unavailable. Implements the fallback chain: Devin → Cursor → OpenRouter → Manual escalation. Monitors agent health, logs fallback events, and creates visibility issues for tracking. Ensures zero-downtime automation.
+- **Tags:** agent-fallback, devin, cursor, openrouter, rate-limit, backup, high-availability, automation
+- **Trigger:** Any automated task that requires AI agent execution; automatically used by workflows when Devin hits limits.
+- **Lifecycle:** System-level — always active as part of automation infrastructure.
 
 #### persona-engine
 - **Path:** `skills/persona-engine/`
@@ -305,6 +328,14 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** security, owasp, helmet, csp, rate-limiting, secrets, auth
 - **Trigger:** Any work touching authentication, API keys, user inputs, or data storage.
 
+#### grc-compliance
+- **Path:** `skills/grc-compliance/`
+- **Files:** `SKILL.md` · `grc-compliance.skill.yml`
+- **Fork:** [`midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance`](https://github.com/midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance) (upstream: `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0)
+- **Description:** Expert-level Governance, Risk, and Compliance (GRC) guidance for nine regulatory frameworks — ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered via the Claude Code plugin marketplace. Benchmarked at 94% accuracy across 18 test cases. Covers gap analyses, policy drafting, audit evidence, control mapping, risk registers, and compliance document generation for each framework.
+- **Tags:** grc, compliance, governance, risk, iso27001, soc2, fedramp, gdpr, hipaa, nist-csf, pci-dss, tsa-cybersecurity, iso42001, claude-code-plugin, audit, regulatory, security-policy, isms, ato, privacy
+- **Trigger:** `ISO 27001`, `SOC 2`, `FedRAMP`, `GDPR`, `HIPAA`, `NIST CSF`, `PCI DSS`, `TSA cybersecurity`, `ISO 42001`, `compliance framework`, `gap analysis`, `audit readiness`, `GRC`, `regulatory compliance`, `risk register`, `security policy`, `control mapping`.
+
 ---
 
 ### Accessibility & Compliance
@@ -343,6 +374,23 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
 - **Tags:** seo, metadata, open-graph, twitter-cards, json-ld, lighthouse
 - **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
+
+#### noimosai
+
+- **Path:** `skills/noimosai/`
+- **Files:** `SKILL.md`
+- **Platform:** [NoimosAI](https://noimosai.com) — Autonomous AI Marketing Team
+- **Description:** Wire NoimosAI's autonomous marketing agent fleet into any Revvel project. NoimosAI handles SEO audits, content creation, social media scheduling, affiliate link management, and email marketing automatically. Triggered by GitHub issue labels (`noimosai`, `marketing`, `seo`, `content`, `affiliate`) and a daily 08:00 UTC cron. Ships `.github/workflows/noimosai.yml`, `standards/NOIMOSAI_INTEGRATION_STANDARD.md`, and `.env.example` entries for `NOIMOSAI_API_KEY` / `NOIMOSAI_WORKSPACE_ID`.
+- **Tags:** noimosai, marketing-automation, autonomous-marketing, seo, content, social-media, affiliate, email-marketing, marketing-agent
+- **Trigger:** "noimosai", "marketing automation", "autonomous marketing", "seo agent", "content agent", "social media automation", "affiliate optimization", "email campaign", any issue labelled `marketing`, `seo`, `content`, `affiliate`, or `noimosai`.
+
+#### eeat-trust-authority
+- **Path:** `skills/eeat-trust-authority/`
+- **Files:** `SKILL.md` · `eeat-trust-authority.skill.yml`
+- **Agent Name:** TrustForge
+- **Description:** Automated Google E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) management across all MIDNGHTSAPPHIRE properties. Generates schema.org Organization and Person markup, maintains brand statement consistency, builds Google Knowledge Panel presence, manages ORCID integration, monitors trust signals, and enforces entity hierarchy from Freedom Angel Corp (founded 2010) to all child properties. Runs daily via cron with Quiet Mode control.
+- **Tags:** eeat, google, schema-org, knowledge-panel, seo, trust, authority, brand-identity, orcid, freedom-angel-corp
+- **Trigger:** Setting up a new website or app; updating brand identity or professional profiles; auditing E-E-A-T signals; implementing schema.org markup; building or updating Google Knowledge Panel presence; linking to ORCID or professional affiliations.
 
 ---
 
@@ -458,6 +506,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Lifecycle:** Long-running (cron-driven); each step session is ephemeral.
 - **Persona:** 🛠️ Forge-Pipeline
 
+#### grant-mgmt-agent
+
+- **Path:** `skills/grant-mgmt-agent/`
+- **Files:** `SKILL.md` · `grant-mgmt-agent.skill.yml`
+- **Description:** End-to-end grant management automation: discovery (Instrumentl, Grants.gov, SAM.gov), AI-powered proposal writing (OpenRouter), document automation (DocSpring/Anvil), workflow orchestration (n8n/Zapier/Make), tracking (Supabase/Airtable), and compliance reporting. Complete stack for automating the grant lifecycle from discovery through award and compliance, reducing manual work by 80%+ while maintaining high-quality applications.
+- **Tags:** grant-management, grant-automation, grants-gov, sam-gov, instrumentl, openrouter, proposal-writing, rfp-automation, n8n, zapier, make, supabase, airtable, document-automation, compliance-tracking
+- **Trigger:** "grant management", "grant automation", "grant discovery", "grant proposal", "instrumentl", "grants.gov", "sam.gov", "grant tracking", "proposal writing", "rfp automation".
+- **Persona:** 🔍 Scout
+
 ---
 
 ## Mandatory Skills for Every Session
@@ -486,4 +543,4 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai skills.*

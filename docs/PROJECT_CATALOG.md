@@ -1,7 +1,7 @@
 # Revvel Ecosystem: Project Catalog
 
-**Version:** 1.0.0
-**Date:** 2026-02-25
+**Version:** 1.1.0
+**Date:** 2026-04-30
 **Status:** Incomplete - Representative Sample
 
 > [!NOTE]
@@ -52,7 +52,26 @@ These repositories define the standards, documentation, and infrastructure for t
 | **revvel-app-template** | In Development | A working boilerplate repository for all new applications, pre-configured with the required stack and features. | [revvel-app-template](https://github.com/MIDNGHTSAPPHIRE/revvel-app-template) |
 | **rvvel** | Live | The source code for the main portfolio and hub website, `meetaudreyevans.com`, deployed via GitHub Pages. | [rvvel](https://github.com/MIDNGHTSAPPHIRE/rvvel) |
 
-## 4. Data & Research Repositories
+## 3a. AI Skills & Plugin Repositories
+
+These repositories contain agent skills, Claude Code plugins, and AI extension marketplaces.
+
+| Repository | Status | Description | Skill Entry | Link |
+| :--- | :--- | :--- | :--- | :--- |
+| **Claude-Skills-Governance-Risk-and-Compliance** | Active (Fork) | Expert-level GRC compliance guidance for ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered as a Claude Code plugin marketplace. Fork of `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0. Benchmarked at 94% accuracy across 18 test cases. | [`skills/grc-compliance/`](../skills/grc-compliance/) | [Claude-Skills-GRC](https://github.com/MIDNGHTSAPPHIRE/Claude-Skills-Governance-Risk-and-Compliance) |
+
+## 4. Research Documents
+
+These documents contain AI-powered research analysis following the [AI Research Module Standard](Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md).
+
+| Document | Date | Status | Description | Link |
+| :--- | :--- | :--- | :--- | :--- |
+| **Search Engine Alternatives** | 2026-04-30 | Complete | Comprehensive analysis of search engine options (Elasticsearch, OpenSearch, MeiliSearch, Typesense, Algolia, Solr, Vespa). Recommends MeiliSearch for product search with OpenRouter enhancement. | [SEARCH_ENGINE_ALTERNATIVES_RESEARCH.md](SEARCH_ENGINE_ALTERNATIVES_RESEARCH.md) |
+| **GitHub Enterprise** | 2026-04-14 | Complete | Analysis of GitHub Enterprise vs Personal GitHub for cross-account access and automation. | [GITHUB_ENTERPRISE_RESEARCH.md](GITHUB_ENTERPRISE_RESEARCH.md) |
+| **Test Harness** | 2026-04-19 | Complete | Evaluation of test harness options for the revvel-standards repository. | [TEST_HARNESS_RESEARCH.md](revvel-standards/TEST_HARNESS_RESEARCH.md) |
+| **Mobile Test Harness** | 2026-04-19 | Complete | Mobile testing framework research and recommendations. | [MOBILE_TEST_HARNESS_RESEARCH.md](revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md) |
+
+## 5. Data & Research Repositories
 
 These repositories contain datasets, research papers, and archives of valuable information.
 
@@ -62,4 +81,3 @@ These repositories contain datasets, research papers, and archives of valuable i
 | **SSRN_Whitepapers** | Archived | A collection of academic and technical whitepapers, primarily for submission to SSRN (Social Science Research Network). | [SSRN_Whitepapers](https://github.com/MIDNGHTSAPPHIRE/SSRN_Whitepapers) |
 | **business-ideas-vault** | Archived | A master collection of business concepts, plans, and validation research. | [business-ideas-vault](https://github.com/MIDNGHTSAPPHIRE/business-ideas-vault) |
 | **cyber-security-turn-business** | Archived | Business plans, research, and documentation related to cybersecurity ventures. | [cyber-security-turn-business](https://github.com/MIDNGHTSAPPHIRE/cyber-security-turn-business) |
-

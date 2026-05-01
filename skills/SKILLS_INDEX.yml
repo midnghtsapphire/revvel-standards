@@ -23,6 +23,32 @@ skills:
 
   # ─── Code Quality & Autonomous Review ─────────────────────────────────────
 
+  - name: bito_ai
+    title: "BITO AI — Agentic Code Review & Desktop API Assistant"
+    version: "1.0.0"
+    path: "skills/bito-ai/"
+    skill_file: "skills/bito-ai/bito-ai.skill.yml"
+    category: "Code Quality & Autonomous Review"
+    platform: "https://bito.ai"
+    standard: "standards/BITO_AI_INTEGRATION_STANDARD.md"
+    workflow: ".github/workflows/bito-ai.yml"
+    integration_doc: "docs/BITO_AI_INTEGRATION.md"
+    access: all
+    persona: reviewer
+    triggers:
+      - "bito"
+      - "bito ai"
+      - "bito review"
+      - "persistent memory review"
+      - "bito cli"
+      - "bito secret"
+      - "bito index"
+      - "agentic code review"
+      - "desktop api procurement"
+      - "bito-ai label"
+      - "code review with memory"
+      - "repo memory review"
+
   - name: recurse_ml
     title: "RecurseML — Autonomous Code Review"
     version: "1.0.0"
@@ -448,6 +474,66 @@ skills:
       - "input sanitization"
       - "secrets management"
 
+  - name: grc_compliance
+    title: "GRC Compliance — Governance, Risk & Compliance Claude Skills"
+    version: "1.0.0"
+    path: "skills/grc-compliance/"
+    skill_file: "skills/grc-compliance/grc-compliance.skill.yml"
+    category: "Security & Compliance"
+    access: all
+    lifecycle: on-demand
+    fork_of: "https://github.com/Sushegaad/Claude-Skills-Governance-Risk-and-Compliance"
+    fork_repo: "https://github.com/midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance"
+    upstream_version: "v0.3.0"
+    triggers:
+      - "iso 27001"
+      - "iso27001"
+      - "isms"
+      - "annex a"
+      - "soc 2"
+      - "soc2"
+      - "aicpa"
+      - "trust services criteria"
+      - "fedramp"
+      - "ato"
+      - "authority to operate"
+      - "poa&m"
+      - "3pao"
+      - "oscal"
+      - "gdpr"
+      - "data protection"
+      - "personal data"
+      - "dpia"
+      - "schrems ii"
+      - "hipaa"
+      - "phi"
+      - "ephi"
+      - "covered entity"
+      - "baa"
+      - "nist csf"
+      - "csf 2.0"
+      - "cybersecurity framework"
+      - "pci dss"
+      - "pci compliance"
+      - "cardholder data"
+      - "cde"
+      - "saq"
+      - "tsa cybersecurity"
+      - "pipeline cybersecurity"
+      - "iso 42001"
+      - "ai management system"
+      - "ai governance"
+      - "grc"
+      - "compliance framework"
+      - "regulatory compliance"
+      - "gap analysis"
+      - "audit readiness"
+      - "risk register"
+      - "security policy"
+      - "control mapping"
+      - "compliance audit"
+      - "certification readiness"
+
   # ─── Accessibility & Compliance ────────────────────────────────────────────
 
   - name: accessibility
@@ -546,6 +632,25 @@ skills:
       - "page title"
       - "meta description"
 
+  - name: eeat_trust_authority
+    title: "E-E-A-T Trust Authority"
+    version: "1.0.0"
+    path: "skills/eeat-trust-authority/"
+    skill_file: "skills/eeat-trust-authority/eeat-trust-authority.skill.yml"
+    category: "Content & Marketing"
+    access: all
+    triggers:
+      - "eeat"
+      - "e-e-a-t"
+      - "trust signals"
+      - "google knowledge panel"
+      - "schema.org markup"
+      - "brand authority"
+      - "seo authority"
+      - "orcid"
+      - "professional identity"
+      - "citation network"
+
   # ─── Tax & Legal ───────────────────────────────────────────────────────────
 
   - name: tax_legal_agent
@@ -568,6 +673,31 @@ skills:
       - "obbba"
       - "1040"
       - "1099"
+
+  # ─── Real Estate & Finance ───────────────────────────────────────────────
+
+  - name: usda_loan_agent
+    title: "USDA Loan & Packager Agent"
+    version: "1.0.0"
+    path: "skills/usda-loan-agent/"
+    skill_file: "skills/usda-loan-agent/usda_loan_agent.skill.yml"
+    category: "Real Estate & Finance"
+    access: all
+    triggers:
+      - "usda loan"
+      - "rural development"
+      - "section 502"
+      - "guaranteed loan"
+      - "direct loan"
+      - "loan packager"
+      - "loan packaging"
+      - "income limits"
+      - "property eligibility"
+      - "inground pool"
+      - "rural area"
+      - "usda rules"
+      - "state usda"
+      - "packager license"
 
   # ─── Skill Building & Personas ────────────────────────────────────────────
 
@@ -731,6 +861,70 @@ skills:
       - "amplitude dashboard sync"
       - "create agent using amplitude data in notion"
       - "amplitude notion agent"
+
+  # ─── Marketing Automation ─────────────────────────────────────────────────
+
+  - name: noimosai
+    title: "NoimosAI — Autonomous Marketing Team"
+    version: "1.0.0"
+    path: "skills/noimosai/"
+    skill_file: "skills/noimosai/SKILL.md"
+    category: "Marketing Automation"
+    platform: "NoimosAI"
+    platform_url: "https://noimosai.com"
+    workflow: ".github/workflows/noimosai.yml"
+    standard: "standards/NOIMOSAI_INTEGRATION_STANDARD.md"
+    access: all
+    secrets:
+      - NOIMOSAI_API_KEY
+    vars:
+      - NOIMOSAI_WORKSPACE_ID
+    triggers:
+      - "noimosai"
+      - "noimos ai"
+      - "marketing automation"
+      - "autonomous marketing"
+      - "seo agent"
+      - "seo automation"
+      - "content agent"
+      - "content automation"
+      - "social media automation"
+      - "affiliate optimization"
+      - "affiliate agent"
+      - "email campaign"
+      - "email marketing automation"
+      - "marketing"
+      - "noimosai.com"
+
+  # ─── Automation & Finance ─────────────────────────────────────────────────
+
+  - name: grant_mgmt_agent
+    title: "Grant Management Agent — Complete Automation Pipeline"
+    version: "1.0.0"
+    path: "skills/grant-mgmt-agent/"
+    skill_file: "skills/grant-mgmt-agent/grant-mgmt-agent.skill.yml"
+    category: "Automation & Finance"
+    access: all
+    lifecycle: long-running
+    persona: scout
+    triggers:
+      - "grant management"
+      - "grant automation"
+      - "grant discovery"
+      - "grant proposal"
+      - "instrumentl"
+      - "grants.gov"
+      - "sam.gov"
+      - "grant tracking"
+      - "proposal writing"
+      - "grant application"
+      - "grant pipeline"
+      - "grant workflow"
+      - "grant compliance"
+      - "grant reporting"
+      - "rfp automation"
+      - "proposal automation"
+      - "grant ai"
 
   # ─── Bot Creation ─────────────────────────────────────────────────────────
 

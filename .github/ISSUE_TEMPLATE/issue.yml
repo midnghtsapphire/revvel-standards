@@ -60,7 +60,7 @@ body:
         - Refactor / Tech debt — clean up existing code
         - Documentation — docs only
         - Other
-      default: 0
+      default: 2
     validations:
       required: true
 

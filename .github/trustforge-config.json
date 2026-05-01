@@ -1,0 +1,38 @@
+{
+  "properties": [
+    {
+      "name": "GrowlingEyes",
+      "url": "https://growlingeyes.com",
+      "type": "webapp",
+      "description": "18-domain infrastructure threat intelligence platform"
+    },
+    {
+      "name": "Neurooz",
+      "url": "https://neurooz.com",
+      "type": "webapp",
+      "description": "Wizard of Oz-themed life-work integration app for neurodivergent users"
+    },
+    {
+      "name": "Fidelity Trust Services",
+      "url": "https://fidelitytrustservices.com",
+      "type": "webapp",
+      "description": "Business consulting and CLE training for Northern Colorado legal professionals"
+    },
+    {
+      "name": "Meet Audrey Evans",
+      "url": "https://www.meetaudreyevans.com",
+      "type": "profile",
+      "description": "Professional profile and portfolio"
+    }
+  ],
+  "thresholds": {
+    "lighthouse_seo_min": 90,
+    "max_broken_links": 0,
+    "max_schema_errors": 0,
+    "max_ssl_errors": 0
+  },
+  "notifications": {
+    "on_failure": true,
+    "on_warning": true
+  }
+}

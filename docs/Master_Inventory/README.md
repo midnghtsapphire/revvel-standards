@@ -41,8 +41,10 @@
 | [`PUBLIC_IDENTITY_STANDARD.md`](PUBLIC_IDENTITY_STANDARD.md) | Public-facing GitHub trust & integrity: profile README, pinned repos, collaboration, tool integrations, numerical User ID, no-reply email |
 | [`RECURSION_STANDARD.md`](RECURSION_STANDARD.md) | Recursion patterns, depth limits, and performance guidelines |
 | [`RUNBOOK_STANDARD.md`](RUNBOOK_STANDARD.md) | Operational runbooks: incident response, deployment, rollback |
+| [`SECRET_MANAGEMENT_STANDARD.md`](SECRET_MANAGEMENT_STANDARD.md) | Infisical (primary), Vault/OpenBao, SOPS — secret lifecycle, rotation, CI/CD injection |
 | [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting, secrets management |
 | [`SEO_METADATA_STANDARD.md`](SEO_METADATA_STANDARD.md) | Mandatory Google metadata, alt text, Open Graph, JSON-LD, Lighthouse 90+ |
+| [`STRONGDM_API_CONTROL_STANDARD.md`](STRONGDM_API_CONTROL_STANDARD.md) | StrongDM evaluation (rejected) — FOSS replacement stack: Kong Gateway + Infisical for API control management |
 | [`SYNTAX_ERROR_PREVENTION_STANDARD.md`](SYNTAX_ERROR_PREVENTION_STANDARD.md) | Syntax error prevention rules, linting config, pre-commit hooks |
 | [`TESTING_STANDARD.md`](TESTING_STANDARD.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
 | [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md) | HashiCorp Vault integration for secrets management |

@@ -1,0 +1,269 @@
+name: Deployment Health Check
+
+# Checks that key deployment URLs respond with HTTP 2xx.
+# Opens a GitHub issue when a URL is down; re-uses the same issue
+# (by label search) to avoid duplicate spam. Closes the issue
+# automatically when the URL recovers.
+#
+# Add new deployment URLs to the DEPLOYMENTS variable in the
+# "Build deployment matrix" step.
+#
+# Secrets required: none (public URLs only).
+# VERCEL_TOKEN is NOT needed here — the check is a plain HTTP GET.
+#
+# Docs: docs/Soul2Bowl/VERCEL_DEPLOYMENT.md
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Optional single URL to test (leave blank to test all)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: deployment-health-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check deployment URLs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build deployment list
+        id: urls
+        run: |
+          # Full deployment registry — add new URLs here.
+          # Format: NAME|URL
+          DEPLOYMENTS=$(cat <<'EOF'
+          soul2bowl-vercel|https://soul2bowl.vercel.app
+          soul2bowl-prod|https://soul2bowl.com
+          oaudrey|https://oaudrey.com
+          revvel-standards-pages|https://midnghtsapphire.github.io/revvel-standards/
+          EOF
+          )
+
+          OVERRIDE="${{ github.event.inputs.url }}"
+          if [ -n "$OVERRIDE" ]; then
+            # Derive a label-safe name from the URL
+            NAME=$(echo "$OVERRIDE" | sed 's|https\?://||;s|[^a-zA-Z0-9_-]|-|g' | head -c 60)
+            DEPLOYMENTS="${NAME}|${OVERRIDE}"
+          fi
+
+          # Emit as JSON array for the matrix
+          JSON=$(echo "$DEPLOYMENTS" | awk 'NF{
+            split($0, a, "|")
+            name=a[1]; url=a[2]
+            # trim whitespace
+            gsub(/^[ \t]+|[ \t]+$/, "", name)
+            gsub(/^[ \t]+|[ \t]+$/, "", url)
+            if (length(name) > 0 && length(url) > 0)
+              printf "{\"name\":\"%s\",\"url\":\"%s\"},", name, url
+          }' | sed 's/,$//')
+          echo "matrix=[${JSON}]" >> "$GITHUB_OUTPUT"
+
+      - name: Ping deployments
+        id: ping
+        env:
+          MATRIX: ${{ steps.urls.outputs.matrix }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const https = require('https');
+            const http  = require('http');
+            const { URL } = require('url');
+
+            const matrix = JSON.parse(process.env.MATRIX || '[]');
+            const results = [];
+            const TIMEOUT_MS = 15000;
+
+            async function checkUrl(name, rawUrl) {
+              return new Promise((resolve) => {
+                let url;
+                try {
+                  url = new URL(rawUrl);
+                } catch (e) {
+                  resolve({ name, url: rawUrl, ok: false, status: null, error: `Invalid URL: ${e.message}` });
+                  return;
+                }
+
+                const lib = url.protocol === 'https:' ? https : http;
+                const req = lib.get(rawUrl, {
+                  timeout: TIMEOUT_MS,
+                  headers: { 'User-Agent': 'revvel-health-check/1.0' },
+                }, (res) => {
+                  // Only 2xx responses are considered healthy.
+                  // 3xx redirects may indicate misconfigured deployments.
+                  const ok = res.statusCode >= 200 && res.statusCode < 300;
+                  res.resume(); // drain response body
+                  resolve({ name, url: rawUrl, ok, status: res.statusCode, error: null });
+                });
+                req.on('timeout', () => {
+                  req.destroy();
+                  resolve({ name, url: rawUrl, ok: false, status: null, error: `Request timed out after ${TIMEOUT_MS / 1000} seconds` });
+                });
+                req.on('error', (err) => {
+                  resolve({ name, url: rawUrl, ok: false, status: null, error: err.message });
+                });
+              });
+            }
+
+            for (const entry of matrix) {
+              core.info(`Checking ${entry.name}: ${entry.url}`);
+              const result = await checkUrl(entry.name, entry.url);
+              results.push(result);
+              const icon = result.ok ? '✅' : '❌';
+              const detail = result.error || `HTTP ${result.status}`;
+              core.info(`  ${icon} ${detail}`);
+            }
+
+            // Write a run summary
+            const rows = results.map(r => [
+              r.name,
+              r.url,
+              r.ok ? '✅ UP' : '❌ DOWN',
+              String(r.error || `HTTP ${r.status}`),
+            ]);
+            await core.summary
+              .addHeading('Deployment Health Check')
+              .addTable([
+                [{data:'Name',header:true},{data:'URL',header:true},{data:'Status',header:true},{data:'Detail',header:true}],
+                ...rows,
+              ])
+              .write();
+
+            // Persist results for the next step
+            core.exportVariable('HEALTH_RESULTS', JSON.stringify(results));
+
+      - name: Create or close issues for down deployments
+        uses: actions/github-script@v8
+        env:
+          HEALTH_RESULTS: ${{ env.HEALTH_RESULTS }}
+        with:
+          script: |
+            const results = JSON.parse(process.env.HEALTH_RESULTS || '[]');
+
+            for (const r of results) {
+              const label = `deployment-down:${r.name}`;
+              const issueTitle = `🚨 Deployment DOWN — ${r.name}`;
+
+              if (!r.ok) {
+                // Check if an open issue already exists for this deployment
+                let existing = null;
+                try {
+                  const { data: issues } = await github.rest.issues.listForRepo({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: label,
+                    state: 'open',
+                    per_page: 1,
+                  });
+                  existing = issues[0] || null;
+                } catch (_) {}
+
+                if (existing) {
+                  core.info(`Issue #${existing.number} already open for ${r.name} — skipping duplicate.`);
+                  continue;
+                }
+
+                const detail = r.error || `HTTP ${r.status}`;
+                const body = [
+                  `## 🚨 Deployment Health Check Failure`,
+                  ``,
+                  `**Deployment:** \`${r.name}\``,
+                  `**URL:** ${r.url}`,
+                  `**Error:** ${detail}`,
+                  `**Detected:** ${new Date().toISOString()}`,
+                  ``,
+                  `### What to check`,
+                  ``,
+                  `1. Open ${r.url} in a browser to confirm it is down.`,
+                  `2. Check the deployment provider (Vercel / DigitalOcean) for active deployments.`,
+                  `3. Verify that all required environment variables / secrets are set in the deployment provider.`,
+                  `4. For \`soul2bowl-vercel\`: ensure \`VERCEL_TOKEN\` is set in this repo's Actions secrets`,
+                  `   and that the Vercel project is connected to \`midnghtsapphire/Soul2Bowl\`.`,
+                  `   See [\`docs/Soul2Bowl/VERCEL_DEPLOYMENT.md\`](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md)`,
+                  `   for full setup instructions.`,
+                  ``,
+                  `### Auto-close`,
+                  ``,
+                  `This issue will be closed automatically the next time the health check confirms the URL is back up.`,
+                  ``,
+                  `---`,
+                  `_Auto-created by [Deployment Health Check]` +
+                  `(https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})_`,
+                ].join('\n');
+
+                // Ensure label exists before applying it (best-effort)
+                try {
+                  await github.rest.issues.getLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                  });
+                } catch (_) {
+                  try {
+                    await github.rest.issues.createLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      name: label,
+                      color: 'd93f0b',
+                      description: `Auto-created by deployment-health-check — ${r.name} is down`,
+                    });
+                  } catch (e2) {
+                    core.warning(`Could not create label "${label}": ${e2.message}`);
+                  }
+                }
+
+                try {
+                  const { data: issue } = await github.rest.issues.create({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    title: issueTitle,
+                    body,
+                    labels: [label, 'deployment', 'bug'],
+                  });
+                  core.warning(`Created issue #${issue.number}: ${issueTitle}`);
+                } catch (e) {
+                  core.warning(`Could not create issue for ${r.name}: ${e.message}`);
+                }
+
+              } else {
+                // URL is UP — close any existing issue for this deployment
+                let existing = null;
+                try {
+                  const { data: issues } = await github.rest.issues.listForRepo({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: label,
+                    state: 'open',
+                    per_page: 1,
+                  });
+                  existing = issues[0] || null;
+                } catch (_) {}
+
+                if (existing) {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: existing.number,
+                    body: `✅ **Deployment recovered** — \`${r.name}\` is responding normally (HTTP ${r.status}) as of ${new Date().toISOString()}. Closing this issue automatically.`,
+                  });
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: existing.number,
+                    state: 'closed',
+                  });
+                  core.info(`Closed issue #${existing.number} — ${r.name} recovered.`);
+                }
+              }
+            }

@@ -33,6 +33,8 @@
 |-----|-------|--------|------|------------|
 | #251 | add pytest-mock | open | — | 2026-04-01 |
 | — | oAudrey hub deploy (DO App Platform) | in-progress | @copilot | 2026-04-26 |
+| — | oAudrey retro 2026-04-28 (sites not live) | in-progress | @copilot | 2026-04-30 |
+| — | oAudrey retro 2026-04-30 (sites not live) | in-progress | @copilot | 2026-05-01 |
 
 ### Tasks
 

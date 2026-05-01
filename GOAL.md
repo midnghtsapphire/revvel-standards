@@ -266,13 +266,16 @@ revenue/YYYY-MM-DD_HH-MM_product-name.md
 
 # REFERENCES
 
-- **GOAL** — This file
-- **NORTH STAR** — wr/NORTH_STAR.md
-- **System State** — SYSTEM_STATE.md
-- **Standards** — standards/
-- **Skills** — skills/
-- **Work Rules** — wr/ (agents, cron, memory, specs)
-- **MCP** — .mcp.json
+- **GOAL** — This file (`GOAL.md`)
+- **GOAP Hub** — [`GOAP.md`](GOAP.md) — Goap agent system index and persona definition
+- **Learnings / Self-Healing Log** — [`learnings.md`](learnings.md) — Append failures and lessons here every session
+- **Agent Prompt** — [`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md) — Canonical system prompt for AI agents
+- **NORTH STAR** — [`wr/NORTH_STAR.md`](wr/NORTH_STAR.md) — Rules above all rules
+- **System State** — [`SYSTEM_STATE.md`](SYSTEM_STATE.md)
+- **Standards** — `standards/`
+- **Skills** — `skills/`
+- **Work Rules** — `wr/` (agents, cron, memory, specs)
+- **MCP** — `.mcp.json`
 
 ---
 

@@ -1,0 +1,452 @@
+name: Agent Fallback Handler
+
+on:
+  # Automatic triggers for issues with specific labels
+  issues:
+    types: [labeled]
+
+  # Automatic triggers for PRs ready for review
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+
+  # Reusable workflow (can be called from other workflows)
+  workflow_call:
+    inputs:
+      task_description:
+        description: "Description of the task to execute"
+        required: false
+        type: string
+        default: ""
+      issue_number:
+        description: "GitHub issue number"
+        required: true
+        type: number
+      prefer_agent:
+        description: "Preferred agent (devin, cursor, openrouter, auto)"
+        required: false
+        type: string
+        default: "auto"
+    outputs:
+      agent_used:
+        description: "Which agent completed the task"
+        value: ${{ jobs.execute.outputs.agent_used }}
+      success:
+        description: "Whether the task completed successfully"
+        value: ${{ jobs.execute.outputs.success }}
+      pr_url:
+        description: "Pull request URL if created"
+        value: ${{ jobs.execute.outputs.pr_url }}
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to process"
+        required: true
+        type: number
+      prefer_agent:
+        description: "Preferred agent (devin, cursor, openrouter, auto)"
+        required: false
+        type: string
+        default: "auto"
+
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  health-check:
+    name: Check agent availability
+    runs-on: ubuntu-latest
+    # Only run if:
+    # 1. Issue labeled with wr:code, wr:auto, or agent-fallback label, OR
+    # 2. PR ready for review (opened/reopened/ready_for_review), OR
+    # 3. Manual workflow_dispatch, OR
+    # 4. Called as reusable workflow
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      inputs.issue_number ||
+      (github.event_name == 'issues' &&
+       (github.event.label.name == 'wr:code' ||
+        github.event.label.name == 'wr:auto' ||
+        github.event.label.name == 'agent-fallback')) ||
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.draft == false &&
+       (github.event.pull_request.author_association == 'MEMBER' ||
+        github.event.pull_request.author_association == 'OWNER' ||
+        github.event.pull_request.author_association == 'COLLABORATOR') &&
+       (github.event.action == 'opened' ||
+        github.event.action == 'reopened' ||
+        github.event.action == 'ready_for_review'))
+    outputs:
+      devin_available: ${{ steps.check.outputs.devin_available }}
+      cursor_available: ${{ steps.check.outputs.cursor_available }}
+      openrouter_available: ${{ steps.check.outputs.openrouter_available }}
+      recommended_agent: ${{ steps.check.outputs.recommended_agent }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check agent availability
+        id: check
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          # Check which agents are configured
+          DEVIN_AVAILABLE="false"
+          CURSOR_AVAILABLE="false"
+          OPENROUTER_AVAILABLE="false"
+
+          if [ -n "${DEVIN_API_KEY}" ]; then
+            DEVIN_AVAILABLE="true"
+            echo "✅ Devin API key configured"
+          else
+            echo "⚠️  Devin API key not configured"
+          fi
+
+          if [ -n "${CURSOR_API_KEY}" ]; then
+            CURSOR_AVAILABLE="true"
+            echo "✅ Cursor API key configured"
+          else
+            echo "⚠️  Cursor API key not configured"
+          fi
+
+          if [ -n "${OPENROUTER_API_KEY}" ]; then
+            OPENROUTER_AVAILABLE="true"
+            echo "✅ OpenRouter API key configured"
+          else
+            echo "⚠️  OpenRouter API key not configured"
+          fi
+
+          # Determine recommended agent based on availability and preference
+          RECOMMENDED="openrouter"  # Safe default
+          if [ "$DEVIN_AVAILABLE" = "true" ]; then
+            RECOMMENDED="devin"
+          elif [ "$CURSOR_AVAILABLE" = "true" ]; then
+            RECOMMENDED="cursor"
+          fi
+
+          echo "devin_available=${DEVIN_AVAILABLE}" >> $GITHUB_OUTPUT
+          echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
+          echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
+          echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "📊 Recommended agent: ${RECOMMENDED}"
+
+  execute:
+    name: Execute task with fallback
+    needs: health-check
+    runs-on: ubuntu-latest
+    outputs:
+      agent_used: ${{ steps.result.outputs.agent }}
+      success: ${{ steps.result.outputs.success }}
+      pr_url: ${{ steps.pr-url.outputs.pr_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Resolve issue context
+        id: issue
+        uses: actions/github-script@v8
+        env:
+          INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
+          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
+        with:
+          script: |
+            let issueNumber;
+            let issueTitle = '';
+            let issueBody = '';
+            const taskDescription = process.env.INPUT_TASK_DESCRIPTION || '';
+
+            // Determine issue number — explicit input takes priority
+            const raw = process.env.INPUT_ISSUE_NUMBER || '';
+            if (raw) {
+              issueNumber = Number(raw);
+            }
+
+            // Fill in title/body from event payload when available
+            if (context.eventName === 'issues') {
+              if (!issueNumber) issueNumber = context.payload.issue.number;
+              issueTitle = context.payload.issue.title || '';
+              issueBody = context.payload.issue.body || '';
+            } else if (context.eventName === 'pull_request_target') {
+              if (!issueNumber) issueNumber = context.payload.pull_request.number;
+              issueTitle = context.payload.pull_request.title || '';
+              issueBody = context.payload.pull_request.body || '';
+            }
+
+            if (issueNumber === undefined || issueNumber === null) {
+              core.setFailed('Could not determine issue/PR number');
+              return;
+            }
+
+            // Fetch full details if we don't have them yet
+            if (!issueTitle || !issueBody) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                issueTitle = issue.title || '';
+                issueBody = issue.body || '';
+              } catch (error) {
+                core.warning(`Could not fetch issue details: ${error.message}`);
+              }
+            }
+
+            // Use task_description as fallback for body
+            if (!issueBody && taskDescription) {
+              issueBody = taskDescription;
+            }
+
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('issue_title', issueTitle);
+            core.setOutput('issue_body', issueBody);
+
+      - name: Try Devin AI
+        if: >-
+          needs.health-check.outputs.devin_available == 'true' &&
+          (inputs.prefer_agent == 'auto' ||
+          inputs.prefer_agent == 'devin' ||
+          inputs.prefer_agent == '')
+        id: devin
+        continue-on-error: true
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          echo "🤖 Attempting to use Devin AI..."
+          bash scripts/call-devin-api.sh
+
+      - name: Fallback to Cursor
+        if: >-
+          (steps.devin.outcome == 'failure' ||
+          steps.devin.outcome == 'skipped') &&
+          needs.health-check.outputs.cursor_available == 'true' &&
+          (inputs.prefer_agent == 'auto' ||
+          inputs.prefer_agent == 'cursor' ||
+          inputs.prefer_agent == '')
+        id: cursor
+        continue-on-error: true
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          echo "🔧 Attempting to use Cursor..."
+          bash scripts/call-cursor-api.sh
+
+      - name: Fallback to OpenRouter
+        if: >-
+          steps.devin.outcome != 'success' &&
+          (steps.cursor.outcome == 'failure' ||
+          steps.cursor.outcome == 'skipped') &&
+          needs.health-check.outputs.openrouter_available == 'true'
+        id: openrouter
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          MODEL: anthropic/claude-sonnet-4
+        run: |
+          echo "🌐 Using OpenRouter as fallback..."
+
+          # OpenRouter is already implemented in the repository
+          # Use the existing openrouter-coder workflow logic
+
+          if [ ! -f ".github/scripts/openrouter_coder.py" ]; then
+            echo "⚠️  OpenRouter coder script not found"
+            echo "Using simple OpenRouter triage instead..."
+
+            # Fallback to basic OpenRouter call
+            if [ -f "scripts/openrouter-triage.js" ]; then
+              node scripts/openrouter-triage.js
+            else
+              echo "❌ No OpenRouter scripts available"
+              exit 1
+            fi
+          else
+            # Use the full OpenRouter coder
+            python3 -m pip install --disable-pip-version-check requests
+            python3 .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-result.json || exit 1
+
+            # Check if files were written
+            if [ -f "/tmp/openrouter-result.json" ]; then
+              echo "✅ OpenRouter completed successfully"
+            else
+              echo "❌ OpenRouter did not produce output"
+              exit 1
+            fi
+          fi
+
+      - name: Determine result
+        if: always()
+        id: result
+        run: |
+          if [ "${{ steps.devin.outcome }}" = "success" ]; then
+            echo "agent=devin" >> $GITHUB_OUTPUT
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "✅ Task completed by Devin AI"
+          elif [ "${{ steps.cursor.outcome }}" = "success" ]; then
+            echo "agent=cursor" >> $GITHUB_OUTPUT
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "✅ Task completed by Cursor"
+          elif [ "${{ steps.openrouter.outcome }}" = "success" ]; then
+            echo "agent=openrouter" >> $GITHUB_OUTPUT
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "✅ Task completed by OpenRouter"
+          else
+            echo "agent=none" >> $GITHUB_OUTPUT
+            echo "success=false" >> $GITHUB_OUTPUT
+            echo "❌ All agents failed"
+          fi
+
+      - name: Create pull request (if changes were made)
+        id: cpr
+        if: steps.result.outputs.success == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: >-
+            agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
+          base: main
+          title: >-
+            [${{ steps.result.outputs.agent }}]
+            ${{ steps.issue.outputs.issue_title }}
+          commit-message: >-
+            feat: apply ${{ steps.result.outputs.agent }}
+            changes for #${{ steps.issue.outputs.issue_number }}
+          body: |
+            Automated code changes for
+            issue #${{ steps.issue.outputs.issue_number }}.
+
+            **Agent used:** ${{ steps.result.outputs.agent }}
+            **Fallback chain:** Devin → Cursor → OpenRouter
+
+            ### Issue
+            ${{ steps.issue.outputs.issue_body }}
+
+            Closes #${{ steps.issue.outputs.issue_number }}
+
+      - name: Capture PR URL
+        id: pr-url
+        if: steps.cpr.outputs.pull-request-url != ''
+        run: |
+          echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
+
+      - name: Comment on issue with success
+        if: steps.result.outputs.success == 'true'
+        uses: actions/github-script@v8
+        env:
+          AGENT: ${{ steps.result.outputs.agent }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
+        with:
+          script: |
+            const agent = process.env.AGENT;
+            const prUrl = process.env.PR_URL || '';
+
+            let agentIcon = '🤖';
+            if (agent === 'cursor') agentIcon = '🔧';
+            if (agent === 'openrouter') agentIcon = '🌐';
+
+            const body = prUrl
+              ? `${agentIcon} **${agent}** opened PR: ${prUrl}`
+              : `${agentIcon} **${agent}** completed the task successfully.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUM),
+              body: body
+            });
+
+      - name: Create fallback event issue
+        if: steps.result.outputs.agent != 'devin' && steps.result.outputs.agent != 'none'
+        uses: actions/github-script@v8
+        env:
+          AGENT: ${{ steps.result.outputs.agent }}
+          ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
+          TASK_SUCCESS: ${{ steps.result.outputs.success }}
+        with:
+          script: |
+            const agent = process.env.AGENT;
+            const originalIssue = process.env.ORIGINAL_ISSUE;
+            const success = process.env.TASK_SUCCESS;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[AUTO-FALLBACK] Devin → ${agent.charAt(0).toUpperCase() + agent.slice(1)} (#${originalIssue})`,
+              labels: ['auto-fallback', 'agent-monitoring', 'devin-limit'],
+              body: `Devin AI was unavailable or reached rate limit. Automatically failed over to ${agent}.
+
+              **Original task:** #${originalIssue}
+              **Timestamp:** ${new Date().toISOString()}
+              **Agent used:** ${agent}
+              **Success:** ${success}
+
+              No action required — fallback is working as designed. This issue is for monitoring purposes only.`
+            });
+
+      - name: Comment on issue with failure
+        if: steps.result.outputs.success == 'false'
+        uses: actions/github-script@v8
+        env:
+          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
+          DEVIN_OUTCOME: ${{ steps.devin.outcome }}
+          CURSOR_OUTCOME: ${{ steps.cursor.outcome }}
+          OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
+        with:
+          script: |
+            const issueNum = Number(process.env.ISSUE_NUM);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              body: `❌ All agents failed to complete this task.
+
+              **Attempted:**
+              - Devin AI: ${process.env.DEVIN_OUTCOME}
+              - Cursor: ${process.env.CURSOR_OUTCOME}
+              - OpenRouter: ${process.env.OPENROUTER_OUTCOME}
+
+              **Next steps:**
+              1. Check agent status pages
+              2. Verify API keys are configured correctly
+              3. Review task complexity (may require human intervention)
+              4. See [Agent Fallback Process](docs/AGENT_FALLBACK_PROCESS.md) for troubleshooting
+
+              Adding \`needs-human\` label for manual review.`
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              labels: ['needs-human']
+            });

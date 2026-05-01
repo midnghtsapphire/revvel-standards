@@ -5,7 +5,34 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2026-04-29
+## [Unreleased] - 2026-04-30
+
+### Added
+- `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
+  the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
+  memory loop instructions, and a complete file map linking all SSOT documents 
+  (`GOAL.md`, `learnings.md`, `GOAP_AGENT_PROMPT.md`, `GOAP_AGENT_STANDARD.md`, 
+  `wr/NORTH_STAR.md`, `SYSTEM_STATE.md`, `docs/AGENTS.md`). This is the new entry point 
+  for all agents. Resolves issue: "[Deep Research] Create a goal.md and learning.md and 
+  more and all one source of truth points to these."
+
+### Changed
+- `GOAL.md` — Updated REFERENCES section to add cross-links to `learnings.md` 
+  (self-healing log), `GOAP.md` (hub), `GOAP_AGENT_PROMPT.md` (canonical system prompt), 
+  and `wr/NORTH_STAR.md` with descriptive labels.
+- `learnings.md` — Added SSOT header with links to `GOAP.md`, `GOAL.md`, and 
+  `GOAP_AGENT_PROMPT.md` so every agent reading this file knows the full context and 
+  the rule: read before every session, append after every task.
+- `docs/AGENTS.md` — Updated "Required Files" table to include `GOAP.md` (position 1), 
+  `learnings.md` (position 3), and re-numbered existing entries. Added `GOAP.md` 
+  and `learnings.md` subsections with creation instructions for missing files.
+- `GOAP_AGENT_PROMPT.md` — Updated References section to include `GOAP.md` 
+  (Goap hub), `GOAL.md` (mission), and `learnings.md` (self-healing log) 
+  as the three primary SSOT files.
+- `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Updated References section to add 
+  `GOAP.md`, `GOAL.md`, and `learnings.md` as labeled SSOT entries at the top of the list.
+
+
 
 ### Added
 - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 

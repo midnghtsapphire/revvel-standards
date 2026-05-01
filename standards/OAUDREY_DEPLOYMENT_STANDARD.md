@@ -479,6 +479,53 @@ would be `4xx`/`5xx`). Triage in this order:
 
 ---
 
+## Retro Log
+
+### 2026-04-30 — Retro Findings & Resolutions
+
+**Issue:** `oAudrey retro — 2026-04-30 — 2 item(s) need attention`
+
+| Item | Finding | Resolution | Status |
+|------|---------|------------|--------|
+| `oaudrey.com` not responding | `HTTP 000` — DNS does not resolve because Namecheap nameservers are not pointed to DigitalOcean and no DO App Platform app has been deployed yet | Improved `oaudrey-retro.yml`: added DNS pre-flight check steps (`dig +short`) so the retro issue body now distinguishes "DNS not resolving" from "server error" and includes the resolved IP when DNS is working. Also added an "Infrastructure Setup Required" section with step-by-step instructions directly in the issue body when both sites are down with no DNS. | ⚠️ Infrastructure pending |
+| `fieldwork.oaudrey.com` not responding | Same root cause — DNS not configured; app not deployed | Same infrastructure fix required. Also fixed inconsistency: the fieldwork "not responding" message now includes the HTTP status code (matching the oaudrey.com message format). | ⚠️ Infrastructure pending |
+
+**Actions taken (code):**
+- `oaudrey-retro.yml`: added `DNS check — oaudrey.com` and `DNS check — fieldwork.oaudrey.com` steps that run `dig +short` before the curl health checks, outputting resolved IPs for diagnostic use in the retro issue
+- `oaudrey-retro.yml`: updated `generate retrospective report` step to include DNS resolution result in the "Needs Work" message and emit an "Infrastructure Setup Required" section with ordered setup steps when both sites are down with no DNS
+- `oaudrey-retro.yml`: fixed inconsistency — fieldwork "not responding" message now includes HTTP status code (e.g., `HTTP 000`) to match oaudrey.com format
+
+**Remaining actions (infrastructure — requires live secrets):**
+1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets
+2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
+3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app
+4. In Namecheap: point `oaudrey.com` nameservers to `ns1-3.digitalocean.com`
+5. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
+
+---
+
+### 2026-04-28 — Retro Findings & Resolutions
+
+**Issue:** `oAudrey retro — 2026-04-28 — 2 item(s) need attention`
+
+| Item | Finding | Resolution | Status |
+|------|---------|------------|--------|
+| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via `|| echo "000"` pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses `|| true` so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycoms--fieldworkoaudreycoms) | ⚠️ Infrastructure pending |
+| `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added | ⚠️ Infrastructure pending |
+
+**Actions taken (code):**
+- `oaudrey-retro.yml` health-check steps: replaced `|| echo "000"` with `|| true` to prevent double-printing of `000` (bug produced `HTTP 000000` in retro reports)
+- `fieldwork/404.html`: added branded error page to match `error_document: 404.html` in `oaudrey/.do/app.yaml`
+
+**Remaining actions (infrastructure — requires live secrets):**
+1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets
+2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
+3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app
+4. In Namecheap: point `oaudrey.com` nameservers to `ns1-3.digitalocean.com`
+5. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
+
+---
+
 ## Related Documents
 
 - `oaudrey/README.md` — product overview and design system
