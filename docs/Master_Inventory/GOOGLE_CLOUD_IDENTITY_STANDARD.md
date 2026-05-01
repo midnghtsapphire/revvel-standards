@@ -21,7 +21,7 @@ This standard covers:
 - Authentication framework selection criteria
 - Cloud Identity configuration (3 cases)
 - Workforce Identity Federation setup
-- Attribute mapping for common IdPs (Microsoft Entra ID, Okta)
+- Attribute mapping for Microsoft Entra ID
 - SCIM provisioning
 - Prerequisites and best practices
 
@@ -50,7 +50,7 @@ Use Cloud Identity when:
 - [Cloud Identity Documentation](https://cloud.google.com/identity/docs)
 
 #### Case 2: Synced Identities with Cloud Identity Authentication
-- You sync identities from a third-party IdP (e.g., Active Directory, Okta) into Cloud Identity
+- You sync identities from a third-party IdP (e.g., Active Directory) into Cloud Identity
 - Users authenticate using Cloud Identity credentials
 - Identity sync keeps user/group data in sync
 - **Best for:** Organizations wanting Google as the authentication authority with directory sync
@@ -64,14 +64,13 @@ Use Cloud Identity when:
 ### 2.2. Workforce Identity Federation
 
 Use Workforce Identity Federation when:
-- You use an external IdP (Microsoft Entra ID, Okta, Ping, PingFederate, or any OIDC/SAML 2.0 IdP)
+- You use an external IdP (Microsoft Entra ID, Ping, PingFederate, or any OIDC/SAML 2.0 IdP)
 - You **do NOT** want to sync identities into Cloud Identity
 - You want federated authentication without directory replication
 - **Best for:** Organizations with established external IdP that don't want to maintain duplicate identity stores
 
 **Supported External IdPs:**
 - Microsoft Entra ID (formerly Azure AD)
-- Okta
 - Ping Identity
 - PingFederate
 - Any OIDC-compliant IdP
@@ -142,31 +141,7 @@ google.groups=group.externalId
 
 **Note:** When using [SCIM](https://cloud.google.com/iam/docs/workforce-identity-federation-scim) or extended attributes, the `google.groups` attribute mapping is ignored (groups are synced via SCIM instead).
 
-### 3.3. Okta Attribute Mappings
-
-#### Okta with OIDC Protocol
-
-**Setup:** [Configure OIDC provider with Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta#create-oidc-provider)
-
-**Attribute Mappings:**
-```
-google.subject=assertion.email
-google.groups=assertion.groups
-```
-
-#### Okta with SAML Protocol
-
-**Setup:** [Configure SAML provider with Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta#create-saml-provider)
-
-**Attribute Mappings:**
-```
-google.subject=assertion.subject
-google.groups=assertion.attributes['groups']
-```
-
-**Important:** If you use Okta, **do NOT** configure SCIM. Okta handles group membership differently than Entra ID.
-
-### 3.4. Other OIDC/SAML 2.0 IdPs
+### 3.3. Other OIDC/SAML 2.0 IdPs
 
 For other identity providers:
 
@@ -187,17 +162,13 @@ Ensure **one** of the following is true before proceeding:
 - [ ] You use Cloud Identity or Google Workspace as your IdP, OR
 - [ ] You use a third-party IdP and have configured SSO with Cloud Identity
 
-**Option B: Workforce Identity Federation with Non-Okta IdP**
+**Option B: Workforce Identity Federation**
 - [ ] You have set up [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation)
 - [ ] You have followed setup instructions:
   - Standard setup: [Configure with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id)
   - Large groups (>150): [Configure with large number of groups](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id-scalable-groups)
 - [ ] You have added group claim and selected "All groups" (required for NotebookLM Enterprise)
 - [ ] You have set up SCIM provisioning (see Section 5)
-
-**Option C: Workforce Identity Federation with Okta**
-- [ ] You have followed [Configure Workforce Identity Federation with Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta)
-- [ ] You have **NOT** configured SCIM (Okta incompatibility)
 
 ### 4.2. Google Cloud Project Setup
 
@@ -251,7 +222,6 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 - ✅ Microsoft Entra ID with >150 groups
 - ✅ Autocomplete of user emails and group names in NotebookLM Enterprise
 - ✅ Automatic user provisioning and deprovisioning
-- ❌ **NOT** supported with Okta (use native Okta group sync instead)
 
 ### 5.2. SCIM Setup with Microsoft Entra ID
 
@@ -328,7 +298,6 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 **Important:** You can select only **one IdP per Google Cloud project**.
 
 **Implications:**
-- Cannot mix Okta and Entra ID in same project
 - Cannot use multiple Workforce Identity Federation pools for different IdPs
 - Plan your identity architecture before deployment
 
@@ -357,7 +326,6 @@ For autocomplete of user emails and group names:
 
 **Workforce Identity Federation:**
 - ✅ Requires SCIM provisioning (Microsoft Entra ID only)
-- ❌ Not supported with Okta (Okta does not support SCIM with Workforce Identity Federation)
 
 ### 7.3. Group-Based Access Control
 
@@ -489,7 +457,6 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation)
 - [Configure Workforce Identity Federation with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id)
 - [Configure Workforce Identity Federation with Microsoft Entra ID with Large Groups](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id-scalable-groups)
-- [Configure Workforce Identity Federation with Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta)
 - [Configure SCIM in Microsoft Entra ID](https://cloud.google.com/iam/docs/configure-scim-ms-entra)
 - [Workforce Identity Federation SCIM](https://cloud.google.com/iam/docs/workforce-identity-federation-scim)
 

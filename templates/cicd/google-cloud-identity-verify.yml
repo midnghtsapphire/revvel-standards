@@ -4,8 +4,15 @@
 # Runs weekly and on-demand to ensure identity setup remains valid
 #
 # Required secrets:
-#   GCP_SERVICE_ACCOUNT_KEY - Service account with iam.workforcePools.viewer and serviceusage.services.list permissions
-#   GCP_PROJECT_ID - Google Cloud project ID
+#   GCP_WIF_SERVICE_ACCOUNT_EMAIL - Service account email for Workload Identity Federation
+#   GCP_WORKLOAD_IDENTITY_PROVIDER - Workload Identity Provider resource name
+#
+# Required variables (non-secret):
+#   GCP_PROJECT_ID - Google Cloud project ID (use vars, not secrets, so it displays in summaries)
+#
+# Service account permissions needed:
+#   - iam.workforcePools.viewer
+#   - serviceusage.services.list
 #
 # See docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md for full context
 
@@ -42,12 +49,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT_EMAIL }}
+      
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          export_default_credentials: true
+          project_id: ${{ vars.GCP_PROJECT_ID }}
       
       - name: Verify required APIs are enabled
         id: check-apis
@@ -107,14 +118,15 @@ jobs:
       - name: Verify Workforce Pool Configuration
         id: verify-pools
         if: steps.discover-pools.outputs.pool_count > 0
+        env:
+          POOLS: ${{ steps.discover-pools.outputs.pools }}
+          INPUT_POOL_ID: ${{ github.event.inputs.workforce_pool_id }}
         run: |
-          POOLS="${{ steps.discover-pools.outputs.pools }}"
-          POOL_ID="${{ github.event.inputs.workforce_pool_id }}"
+          POOL_ID="$INPUT_POOL_ID"
           
           if [ -n "$POOL_ID" ]; then
             # Verify specific pool
             echo "Verifying specified pool: $POOL_ID"
-            POOL_NAME="locations/global/workforcePools/$POOL_ID"
           else
             # Use first discovered pool
             POOL_NAME=$(echo "$POOLS" | head -n 1)
@@ -147,9 +159,9 @@ jobs:
       - name: Verify Providers Configuration
         id: verify-providers
         if: steps.verify-pools.outputs.pool_status == 'success'
+        env:
+          POOL_ID: ${{ steps.verify-pools.outputs.pool_id }}
         run: |
-          POOL_ID="${{ steps.verify-pools.outputs.pool_id }}"
-          
           echo "Discovering providers for pool: $POOL_ID"
           
           PROVIDERS=$(gcloud iam workforce-pools providers list \
@@ -221,9 +233,9 @@ jobs:
           github.event.inputs.check_scim != 'false' &&
           steps.verify-providers.outputs.providers_status == 'success'
         continue-on-error: true
+        env:
+          POOL_ID: ${{ steps.verify-pools.outputs.pool_id }}
         run: |
-          POOL_ID="${{ steps.verify-pools.outputs.pool_id }}"
-          
           PROVIDERS=$(gcloud iam workforce-pools providers list \
             --workforce-pool="$POOL_ID" \
             --location=global \
@@ -277,35 +289,35 @@ jobs:
               issue.title === title
             );
             
-            const body = `
-            ## Google Cloud Identity Configuration Verification Failed
-            
-            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            **Trigger:** ${{ github.event_name }}
-            **Date:** ${new Date().toISOString()}
-            
-            ### Failed Checks
-            
-            ${'${{ steps.check-apis.outputs.apis_status }}' === 'failed' ? '- ❌ Required APIs are not enabled' : ''}
-            ${'${{ steps.verify-pools.outputs.pool_status }}' === 'failed' ? '- ❌ Workforce pool verification failed' : ''}
-            ${'${{ steps.verify-providers.outputs.providers_status }}' === 'failed' ? '- ❌ Provider verification failed' : ''}
-            
-            ### Details
-            
-            **APIs Status:** ${{ steps.check-apis.outputs.apis_status || 'unknown' }}
-            **Pool Status:** ${{ steps.verify-pools.outputs.pool_status || 'unknown' }}
-            **Providers Status:** ${{ steps.verify-providers.outputs.providers_status || 'unknown' }}
-            
-            ### Action Required
-            
-            Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed error messages.
-            
-            Refer to the [Google Cloud Identity Standard](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md) for troubleshooting guidance.
-            
-            ---
-            
-            *This issue was created automatically by the Google Cloud Identity verification workflow.*
-            `;
+            const body = [
+              '## Google Cloud Identity Configuration Verification Failed',
+              '',
+              `**Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              `**Trigger:** ${{ github.event_name }}`,
+              `**Date:** ${new Date().toISOString()}`,
+              '',
+              '### Failed Checks',
+              '',
+              '${{ steps.check-apis.outputs.apis_status }}' === 'failed' ? '- ❌ Required APIs are not enabled' : '',
+              '${{ steps.verify-pools.outputs.pool_status }}' === 'failed' ? '- ❌ Workforce pool verification failed' : '',
+              '${{ steps.verify-providers.outputs.providers_status }}' === 'failed' ? '- ❌ Provider verification failed' : '',
+              '',
+              '### Details',
+              '',
+              '**APIs Status:** ${{ steps.check-apis.outputs.apis_status || 'unknown' }}',
+              '**Pool Status:** ${{ steps.verify-pools.outputs.pool_status || 'unknown' }}',
+              '**Providers Status:** ${{ steps.verify-providers.outputs.providers_status || 'unknown' }}',
+              '',
+              '### Action Required',
+              '',
+              'Review the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed error messages.',
+              '',
+              'Refer to the [Google Cloud Identity Standard](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md) for troubleshooting guidance.',
+              '',
+              '---',
+              '',
+              '*This issue was created automatically by the Google Cloud Identity verification workflow.*'
+            ].filter(Boolean).join('\n');
             
             if (existingIssue) {
               // Update existing issue with a new comment
@@ -333,7 +345,7 @@ jobs:
         run: |
           echo "## Google Cloud Identity Verification Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Project:** ${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Project:** ${{ vars.GCP_PROJECT_ID }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

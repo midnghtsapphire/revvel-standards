@@ -20,7 +20,7 @@ Do you use Google Workspace or Cloud Identity?
     └─ NO → Use Workforce Identity Federation
              ✓ No identity sync required
              ✓ Federated authentication
-             ✓ Supports: Entra ID, Okta, Ping, OIDC, SAML 2.0
+             ✓ Supports: Entra ID, Ping, OIDC, SAML 2.0
 ```
 
 ---
@@ -34,15 +34,6 @@ Do you use Google Workspace or Cloud Identity?
 | **OIDC** | `assertion.email` | `assertion.groups` |
 | **SAML** | `assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]` | `assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']` |
 | **Large Groups (>150)** | `user.emails[0].value.lowerAscii()` | `group.externalId` (via SCIM) |
-
-### Okta
-
-| Protocol | google.subject | google.groups |
-|---|---|---|
-| **OIDC** | `assertion.email` | `assertion.groups` |
-| **SAML** | `assertion.subject` | `assertion.attributes['groups']` |
-
-**Note:** Okta does NOT support SCIM with Workforce Identity Federation
 
 ---
 
@@ -192,7 +183,6 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 **Important:** You can only have **ONE** IdP per Google Cloud project.
 
 **Cannot mix:**
-- ❌ Okta + Entra ID in same project
 - ❌ Multiple Workforce Identity Federation pools with different IdPs
 
 **Workaround:** Create separate Google Cloud projects for each IdP.
@@ -211,7 +201,6 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 ### Autocomplete Requirements
 - **Cloud Identity:** ✅ Works automatically
 - **Workforce Identity Federation:** ✅ Requires SCIM (Entra ID only)
-- **Okta:** ❌ Autocomplete not supported (no SCIM)
 
 ---
 
@@ -223,7 +212,6 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 - **Official Docs:**
   - [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation)
   - [Configure with Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id)
-  - [Configure with Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta)
   - [Configure SCIM](https://cloud.google.com/iam/docs/configure-scim-ms-entra)
 
 ---

@@ -287,17 +287,6 @@ gcloud iam workforce-pools providers list-workforce-group-memberships PROVIDER_I
 
 ---
 
-## Okta SCIM Configuration
-
-**Important:** Okta **does NOT support** SCIM provisioning with Google Cloud Workforce Identity Federation.
-
-**Alternative:** Use Okta's native group synchronization:
-1. Configure group claims in Okta application
-2. Map `google.groups=assertion.groups` in workforce pool provider
-3. Groups will be synced via OIDC/SAML tokens (not SCIM)
-
----
-
 ## Troubleshooting SCIM
 
 ### Issue: Test connection fails in Entra ID

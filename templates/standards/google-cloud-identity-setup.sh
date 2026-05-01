@@ -10,7 +10,7 @@
 # - IdP metadata URL or configuration details
 #
 # Usage:
-#   ./google-cloud-identity-setup.sh --project PROJECT_ID --idp [entra-oidc|entra-saml|okta-oidc|okta-saml]
+#   ./google-cloud-identity-setup.sh --project PROJECT_ID --idp [entra-oidc|entra-saml]
 #
 # References:
 # - See docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md for full context
@@ -42,8 +42,6 @@ Required Arguments:
   --idp IDP_TYPE             Identity provider type:
                              - entra-oidc: Microsoft Entra ID with OIDC
                              - entra-saml: Microsoft Entra ID with SAML
-                             - okta-oidc: Okta with OIDC
-                             - okta-saml: Okta with SAML
 
 Optional Arguments:
   --pool-id POOL_ID          Workforce pool ID (default: workforce-pool-1)
@@ -54,9 +52,6 @@ Optional Arguments:
 Examples:
   # Setup Microsoft Entra ID with OIDC
   $0 --project my-project-123 --idp entra-oidc
-
-  # Setup Okta with SAML
-  $0 --project my-project-123 --idp okta-saml --pool-id okta-workforce
 
 EOF
 }
@@ -111,11 +106,11 @@ fi
 
 # Validate IDP type
 case $IDP_TYPE in
-    entra-oidc|entra-saml|okta-oidc|okta-saml)
+    entra-oidc|entra-saml)
         ;;
     *)
         echo -e "${RED}Error: Invalid IDP type '$IDP_TYPE'${NC}"
-        echo "Valid options: entra-oidc, entra-saml, okta-oidc, okta-saml"
+        echo "Valid options: entra-oidc, entra-saml"
         exit 1
         ;;
 esac
@@ -175,26 +170,6 @@ case $IDP_TYPE in
         echo -e "${YELLOW}Attribute Mapping for Microsoft Entra ID (SAML):${NC}"
         echo "  google.subject = assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]"
         echo "  google.groups = assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']"
-        echo ""
-        ;;
-    okta-oidc)
-        ATTRIBUTE_MAPPING="google.subject=assertion.email,google.groups=assertion.groups"
-        echo ""
-        echo -e "${YELLOW}Attribute Mapping for Okta (OIDC):${NC}"
-        echo "  google.subject = assertion.email"
-        echo "  google.groups = assertion.groups"
-        echo ""
-        echo -e "${YELLOW}⚠️  Important: Do NOT configure SCIM with Okta${NC}"
-        echo ""
-        ;;
-    okta-saml)
-        ATTRIBUTE_MAPPING="google.subject=assertion.subject,google.groups=assertion.attributes['groups']"
-        echo ""
-        echo -e "${YELLOW}Attribute Mapping for Okta (SAML):${NC}"
-        echo "  google.subject = assertion.subject"
-        echo "  google.groups = assertion.attributes['groups']"
-        echo ""
-        echo -e "${YELLOW}⚠️  Important: Do NOT configure SCIM with Okta${NC}"
         echo ""
         ;;
 esac
