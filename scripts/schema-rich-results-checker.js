@@ -148,7 +148,7 @@ function parseJsonLd(html) {
 
   const blocks = [];
   // Match <script type="application/ld+json">...</script> (case-insensitive, multiline)
-  const re = /<script[^>]+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  const re = /<script[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   let m;
   while ((m = re.exec(html)) !== null) {
     const raw = m[1].trim();
@@ -304,7 +304,7 @@ function _validatePropertyShapes(type, obj) {
       if (!li || li['@type'] !== 'ListItem') {
         errors.push({ property: `itemListElement[${i}]`, message: 'BreadcrumbList items must have @type "ListItem"' });
       } else {
-        if (li.position === undefined) errors.push({ property: `itemListElement[${i}].position`, message: '"position" is required on each ListItem' });
+        if (li.position === undefined || li.position === 0) errors.push({ property: `itemListElement[${i}].position`, message: '"position" is required on each ListItem (must be ≥ 1)' });
         if (!li.name && !li.item) errors.push({ property: `itemListElement[${i}].name`, message: '"name" or "item" is required on each ListItem' });
       }
     }
