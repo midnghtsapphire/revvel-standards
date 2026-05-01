@@ -55,7 +55,7 @@
         "MEILI_KEY": "${MEILI_KEY:-masterKey}"
       },
       "disabled": true,
-      "disabledReason": "Enable once MeiliSearch is installed and configured. To enable: (1) Run `docker compose up -d` in poc/meilisearch/ OR provision MeiliSearch Cloud, (2) Set MEILI_HOST and MEILI_KEY in your .env (see .env.example), (3) Install: cd mcp-servers/meilisearch-mcp && pip install -e ., (4) Remove this disabled entry."
+      "disabledReason": "Enable once MeiliSearch is installed and configured. To enable: (1) Run `docker compose up -d` in poc/meilisearch/ OR provision MeiliSearch Cloud, (2) Set MEILI_HOST and MEILI_KEY in your .env (see .env.example) — WARNING: the 'masterKey' fallback is a local-dev default ONLY; always set a strong MEILI_KEY before enabling in production, (3) Install: cd mcp-servers/meilisearch-mcp && pip install -e ., (4) Remove this disabled entry."
     },
     "github-issues-enhanced": {
       "_comment": "Enhanced GitHub Issues MCP — 6 tools for issue automation: create_issue_with_automation, bulk_label_issues, smart_issue_search, issue_timeline_summary, auto_triage_issue, issue_metrics. See mcp-servers/github-issues/README.md and docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md.",

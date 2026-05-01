@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# ruff: noqa: UP006, UP035
+from __future__ import annotations
+
 """
 MeiliSearch POC — Seed + Benchmark Script
 
@@ -164,7 +167,12 @@ def run_benchmark(client) -> list[dict]:
             latencies.append(elapsed_ms)
 
         p50 = statistics.median(latencies)
-        p95 = sorted(latencies)[int(0.95 * len(latencies)) - 1]
+        sorted_latencies = sorted(latencies)
+        p95_idx = min(int(0.95 * len(sorted_latencies)), len(sorted_latencies) - 1)
+        p95 = sorted_latencies[p95_idx]
+        # estimated_total_hits is the full match count regardless of the `limit` parameter.
+        # It may be None on older MeiliSearch versions; fall back to the returned hit count
+        # (capped at the query limit) and note the possible undercount in that case.
         hit_count = resp.estimated_total_hits if resp.estimated_total_hits is not None else len(resp.hits)
 
         result = {
