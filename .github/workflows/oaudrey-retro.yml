@@ -230,17 +230,71 @@ jobs:
 
             // Only open an issue if there are gaps or failures
             if (gaps.length > 0 || needsWork.length > 0) {
-              const { data: issue } = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
-                body,
-                labels: ['retro', 'oaudrey'],
+              // Deduplication: search for an existing open retro issue before
+              // creating a new one.  If one is already open, add a comment so
+              // the single issue becomes the running status thread instead of
+              // accumulating one clone per week.
+              const searchResult = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:retro label:oaudrey`,
               });
-              core.notice(`Retro issue created: ${issue.html_url}`);
-              core.setOutput('issue_url', issue.html_url);
+
+              if (searchResult.data.total_count > 0) {
+                const existing = searchResult.data.items[0];
+                const commentBody = [
+                  `### oAudrey Retro Update — ${date}`,
+                  '',
+                  '> Still open. Same issues detected on this run.',
+                  '',
+                  '**⚠️ Needs Work (still)**',
+                  ...needsWork.map(w => `- ${w}`),
+                  ...(gaps.length > 0 ? ['', '**🔍 Gaps (still)**', ...gaps.map(g => `- ${g}`)] : []),
+                  '',
+                  '_This is an automated status update. No new issue was opened because this one is still open._',
+                  '_Once the infrastructure actions below are completed and `oaudrey-retro.yml` is re-run successfully, this issue will close automatically._',
+                ].join('\n');
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: commentBody,
+                });
+                core.notice(`Retro: existing open issue #${existing.number} updated with new status comment.`);
+                core.setOutput('issue_url', existing.html_url);
+              } else {
+                const { data: issue } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
+                  body,
+                  labels: ['retro', 'oaudrey'],
+                });
+                core.notice(`Retro issue created: ${issue.html_url}`);
+                core.setOutput('issue_url', issue.html_url);
+              }
             } else {
-              core.notice('oAudrey retro: all checks passed — no issue opened.');
+              // All checks passed — close any open retro issue automatically
+              const searchResult = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:retro label:oaudrey`,
+              });
+              if (searchResult.data.total_count > 0) {
+                const existing = searchResult.data.items[0];
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: `### ✅ oAudrey Retro — ${date} — All checks passed\n\nAll health checks returned HTTP 200/301/302 and no gaps were found. Closing this issue.\n\n_Auto-closed by \`oaudrey-retro.yml\`._`,
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                });
+                core.notice(`Retro issue #${existing.number} auto-closed — all checks passed.`);
+              } else {
+                core.notice('oAudrey retro: all checks passed — no issue opened.');
+              }
             }
 
             // Always write to step summary

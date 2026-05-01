@@ -395,6 +395,45 @@ git log --oneline -10 && git status && git branch -a
 - **Fix what you find.** If you discover a bug while working on something else, fix it. If you see dead code, remove it. If you see missing tests, add them.
 - **Document learnings.** Every failure is a learning opportunity. Append to `learnings.md` with what failed, why, and how to prevent it next time.
 
+### Infrastructure Blocker Protocol
+
+Not all blockers are equal. Before attempting a fix, **classify the blocker type**:
+
+| Blocker Type | Examples | Agent Action |
+|---|---|---|
+| **Code / config blocker** | Wrong env var name in YAML, missing file in repo, broken workflow syntax, bad import | Fix autonomously |
+| **Infrastructure blocker** | GitHub secret not set, DNS not pointed, live app does not exist, registrar/dashboard login required | **Escalate immediately — do NOT retry in a loop** |
+
+**Infrastructure blocker = a human must act.** No code change, no workflow retry, no documentation update can substitute for a human setting a GitHub secret or clicking a DNS configuration in a registrar dashboard.
+
+#### How to Identify an Infrastructure Blocker
+
+You have an infrastructure blocker when ANY of these are true:
+- A GitHub Actions secret is not set: `gh secret list --repo <owner>/<repo>` shows it missing
+- A DNS record does not resolve: `dig +short <domain>` returns empty
+- A live cloud app/service does not exist and has never been deployed
+- The fix requires logging into a registrar, cloud dashboard, or 3rd-party UI with credentials the agent does not hold
+- The Credential Gatekeeper reports `⚠️ missing in Doppler` for a required secret
+- `curl` returns `HTTP 000` for a domain that has never been deployed
+
+#### How to Handle an Infrastructure Blocker
+
+1. **Classify it in writing.** State: "This is an infrastructure blocker. Reason: `DIGITALOCEAN_API_TOKEN` is not set."
+2. **Check SYSTEM_STATE.md.** If the component is already marked `⏳ Pending human action`, the blocker is known. Do not create a new issue — the issue already exists.
+3. **If no issue exists yet,** create ONE issue with:
+   - Title: `[INFRA PENDING] <Component> — exact human steps required`
+   - Labels: `infrastructure-pending`, `needs-human`
+   - Body: numbered list of exact human actions (specific URL, specific field, specific value)
+4. **Update SYSTEM_STATE.md** with status `⏳ Pending human action` and the exact steps.
+5. **Do NOT re-run the failing workflow** or create duplicate issues. One clear, specific issue with exact steps is worth more than ten repeat reports.
+6. **Stop.** Document in `HANDOFF.md` what you completed and what is blocked. Do not loop.
+
+#### Escalation is not failure — it is correct behavior
+
+For infrastructure blockers, immediate escalation IS the right answer. The Autonomy Mandate's "never stop at blockers" rule applies to code problems where you have the tools to fix it. It does NOT mean spending ten sessions retrying an action that requires a human to log into Namecheap.
+
+---
+
 ### Escalation Guidelines
 
 **Escalate only when:**
@@ -730,39 +769,35 @@ This creates a knowledge base of problems solved, making the system smarter over
 ## Project-Specific Context
 
 ### What This Project Is
-Sessiono — session musician subscription platform. Users browse, book, and pay session musicians. Musicians list their services, set rates, and manage bookings.
 
-### Architecture
-```
-app/                    # Expo Router file-based routing
-  (tabs)/               # Bottom tab navigation
-    index.tsx           # Home — browse featured musicians
-    search.tsx          # Search by instrument/genre
-    bookings.tsx        # My bookings list
-    profile.tsx         # User profile + subscription
-  auth/login.tsx        # Login/signup modal
-  musician/[id].tsx     # Musician detail + booking
-components/             # Reusable UI components
-lib/supabase.ts         # Supabase client with SecureStore
-constants/              # Theme, config
-```
+**revvel-standards** — the universal standards, skills, templates, and agent instructions for the MIDNGHTSAPPHIRE / Freedom Angel Corp ecosystem. This repo is a living standards document AND a deployment host for `oaudrey.com`.
 
-### Key Commands
-```bash
-npx expo start          # Dev server (scan QR with Expo Go)
-npx expo start --web    # Web dev server
-eas build --platform all  # Build for iOS + Android
-eas submit --platform ios  # Submit to App Store
+### oAudrey Hub — Infrastructure Status
+
+| Component | Status | Required Action |
+|---|---|---|
+| App Platform app | ⏳ | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml` |
+| oaudrey.com DNS | ⏳ | Namecheap (`uprisinghope`): set NS to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
+| fieldwork.oaudrey.com DNS | ⏳ | Same as above + add CNAME in DO Networking → Domains |
+
+> **If the `oaudrey-retro.yml` reports HTTP 000:** This is an **infrastructure blocker** (see Infrastructure Blocker Protocol above). The domains have never been deployed. The fix requires the human actions in the table above — NOT a code change or workflow retry.
+
+### Key Workflows
+
+```
+deploy-oaudrey.yml      # Deploys oaudrey/ and fieldwork/ to DigitalOcean App Platform
+oaudrey-retro.yml       # Weekly health-check + gap analysis (deduplicates issues)
+sync-oaudrey-dns.yml    # Syncs dns-records.yml to the active DNS registrar
+credential-gatekeeper.yml  # Provisions GitHub secrets from Doppler
 ```
 
-### Current State
-- UI scaffolding complete with dark cinematic theme
-- Demo data in place — needs Supabase integration
-- Auth screen built — needs Supabase auth wiring
-- Stripe subscription integration not started
-- Musician profile photos not implemented (use expo-image)
-- Push notifications not implemented
-- Search is static — needs Supabase full-text search
+### Key Standards
+
+```
+standards/OAUDREY_DEPLOYMENT_STANDARD.md  # Full deploy guide, DNS steps, troubleshooting
+docs/oaudrey/BOM.md                        # Complete credential bill of materials
+docs/AGENTS_RETRO_REVIEW.md               # Analysis of the HTTP 000 loop + proposed fixes
+```
 
 ---
 
