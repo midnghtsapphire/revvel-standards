@@ -160,8 +160,17 @@ doppler secrets --only-names
 The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`)
 scans issue bodies for credential requirements and generates a Bill of Materials:
 
-1. Label an issue with `ready-to-implement`
-2. The gatekeeper scans the issue text for keywords (openrouter, stripe, supabase, etc.)
-3. Posts a comment with the required secrets and Doppler provisioning commands
-4. Adds `credentials-missing` or `credentials-ready` label
-5. Implementation should not begin until `credentials-ready` is applied
+### How It Works
+
+1. Issue opened or labeled `ready-to-implement`
+2. Scans issue title + body for credential keywords (see patterns below)
+3. Checks Doppler (if `DOPPLER_TOKEN` is set) for existing credentials
+4. Posts a BOM comment listing required credentials with status table
+5. Adds `credentials-missing` or `credentials-ready` label
+6. If credentials-missing, **automatically routes to agents with desktop access**:
+   - Agent HQ desktop agent (if configured) — **automatic provisioning**
+   - Vault Agent — **posts manual provisioning instructions**
+   - After 24 hours — **escalates to needs-human**
+7. Implementation should not begin until `credentials-ready` is applied
+
+**For full details on automatic credential routing, see [`docs/CREDENTIAL_ROUTING_PROCESS.md`](./CREDENTIAL_ROUTING_PROCESS.md).**
