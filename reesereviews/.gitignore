@@ -52,3 +52,8 @@ temp/
 *_api_key*
 *_secret*
 amazon-api-application.txt
+
+# Vine Marketplace — runtime data (inventory is tracked via Actions artifacts, not git)
+vine-marketplace/data/inventory.json
+vine-marketplace/node_modules/
+vine-marketplace/.env

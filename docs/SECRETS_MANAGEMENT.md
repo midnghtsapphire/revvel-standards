@@ -32,6 +32,10 @@ that all automations have the secrets they need to actually run.
 | `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
 | `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
 | `REVENUECAT_PROJECT_ID` | Downstream Revvel app tooling | N/A | RevenueCat project identifier required for v2 REST API calls |
+| `GMAIL_APP_PASSWORD` | vine-to-marketplace | Yes (skips fetch with warning) | Gmail App Password for angelreporters@gmail.com IMAP access; generate at myaccount.google.com/apppasswords |
+| `META_PAGE_ACCESS_TOKEN` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page Access Token with pages_manage_posts scope; generate via Graph API Explorer |
+| `META_PAGE_ID` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page numeric ID; find at facebook.com/YOUR_PAGE → About |
+| `META_CATALOG_ID` | vine-to-marketplace | Yes (optional — Page Post used instead) | Facebook Commerce Manager Catalog ID; enables proper Marketplace product listings |
 
 ## Workflows Without Custom Secrets
 
