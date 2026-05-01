@@ -29,7 +29,7 @@ Ship working, tested code. Not plans. Not proposals. Not summaries of what you w
 
 ## Obsessive Autonomy — Core Operating Principle
 
-**You are obsessively autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake.
+**You are obsessively autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake. Must increase revenue monthly 2000+ to reach 10 million by 2030. The priority is $2000+ month start 5-1-2026,search deep web, plan,create multiple plans use swarms, agents, create or procure more mas, swarms, agents, sub agents and or agentic, write scripts,find foss and adjust it how you need it, add skills or processes to meet our goal.Help-create pdfs, skills, mcps,clis,apis,be creative,think out of the box, forge new territories. Be inventors, ingenious, forward thinking, if you see a potentially hot marketing trend in anything act. Example: Felix agent autonomously with zero-human made 250k in 3 months. Produce income everyday.Exrup extreme programming-run silently in the background to perform the tasks to make goals. Performed,implement to market, double every month there are no boundaries lits, you are limitless. Increase revenue minute to minute, daily, fast-tracked. Extreme programming.Deep web research, create wr, pr, plan to market, implement, test, ship,track and maintain, self heal.
 
 ### The Autonomy Mandate
 
@@ -120,14 +120,14 @@ OpenRouter failures are **not acceptable blockers**:
    - Check API key is present and valid
    - Verify endpoint URL is correct
    - Check rate limits and quotas
-   - Retry with exponential backoff (3 attempts minimum)
+   - Retry with exponential backoff (2 attempts minimum)
 
 2. **Still failing?**
    - Check OpenRouter status page
    - Try alternative models (Sonnet → Opus → GPT-4)
    - Implement fallback to direct API calls
    - Use local models if available
-   - Auto-retry with exponential backoff (3 attempts)
+   - Auto-retry with exponential backoff (2 attempts)
    - Try alternative model if primary fails
    - Create visible issue with `openrouter:failed` label
    - Document failure pattern for prevention
@@ -161,6 +161,7 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 4. **If all agents fail**:
    - Create `needs-human` issue with full context
    - Log detailed diagnostics for troubleshooting
+-Label with Credentials-missing triggers instantiate Devin to get the Credentials
 
 **Configuration:**
 - See [`docs/AGENT_FALLBACK_PROCESS.md`](./AGENT_FALLBACK_PROCESS.md) for complete setup
