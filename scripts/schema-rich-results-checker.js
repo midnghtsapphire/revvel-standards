@@ -228,7 +228,7 @@ function validateSchema(obj) {
   const primaryType = types[0];
 
   // Check required and recommended properties for the primary type
-  const rules = SCHEMA_RULES[primaryType];
+  const rules = Object.hasOwn(SCHEMA_RULES, primaryType) ? SCHEMA_RULES[primaryType] : undefined;
   if (rules) {
     for (const prop of rules.required) {
       if (obj[prop] === undefined || obj[prop] === null || obj[prop] === '') {
@@ -269,7 +269,7 @@ function _validatePropertyShapes(type, obj) {
   if (['Article', 'NewsArticle', 'BlogPosting'].includes(type) && obj.author) {
     const authors = Array.isArray(obj.author) ? obj.author : [obj.author];
     for (const a of authors) {
-      if (typeof a === 'object' && a['@type'] && !['Person', 'Organization'].includes(a['@type'])) {
+      if (a && typeof a === 'object' && a['@type'] && !['Person', 'Organization'].includes(a['@type'])) {
         warnings.push({ property: 'author', message: `author @type should be "Person" or "Organization", got "${a['@type']}"` });
       }
     }

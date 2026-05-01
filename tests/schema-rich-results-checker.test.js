@@ -190,6 +190,26 @@ test('validateSchema passes a valid Article', () => {
   assert.strictEqual(result.type, 'Article');
 });
 
+test('validateSchema handles prototype property name as @type without crashing', () => {
+  const obj = { '@context': 'https://schema.org', '@type': 'toString' };
+  const result = validateSchema(obj);
+  assert.strictEqual(result.type, 'toString');
+  assert.ok(result.warnings.some(w => w.message.includes('not in the Revvel known-types list')));
+});
+
+test('validateSchema handles null elements in author array without crashing', () => {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Test',
+    author: [null, { '@type': 'Person', name: 'A' }],
+    datePublished: '2026-01-01',
+    image: 'https://example.com/img.jpg',
+  };
+  const result = validateSchema(obj);
+  assert.strictEqual(result.pass, true);
+});
+
 test('validateSchema fails when @context is missing', () => {
   const obj = { '@type': 'Organization', name: 'X', url: 'https://x.com' };
   const result = validateSchema(obj);
