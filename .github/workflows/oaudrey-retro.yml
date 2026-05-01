@@ -43,6 +43,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: DNS check — oaudrey.com
+        id: dns-main
+        if: ${{ !inputs.skip_health_check }}
+        run: |
+          RESOLVED=$(dig +short oaudrey.com 2>/dev/null | head -1 || true)
+          echo "resolved=${RESOLVED}" >> "$GITHUB_OUTPUT"
+          if [ -n "$RESOLVED" ]; then
+            echo "::notice::oaudrey.com resolves to: $RESOLVED"
+          else
+            echo "::warning::oaudrey.com DNS does not resolve — Namecheap nameservers may not be pointed to DigitalOcean yet"
+          fi
+
+      - name: DNS check — fieldwork.oaudrey.com
+        id: dns-fieldwork
+        if: ${{ !inputs.skip_health_check }}
+        run: |
+          RESOLVED=$(dig +short fieldwork.oaudrey.com 2>/dev/null | head -1 || true)
+          echo "resolved=${RESOLVED}" >> "$GITHUB_OUTPUT"
+          if [ -n "$RESOLVED" ]; then
+            echo "::notice::fieldwork.oaudrey.com resolves to: $RESOLVED"
+          else
+            echo "::warning::fieldwork.oaudrey.com DNS does not resolve"
+          fi
+
       - name: Health check — oaudrey.com
         id: health-main
         if: ${{ !inputs.skip_health_check }}
@@ -120,6 +144,10 @@ jobs:
             const mainOk = healthOk(mainStatus);
             const fieldworkOk = healthOk(fieldworkStatus);
 
+            // DNS resolution results
+            const mainDns = '${{ steps.dns-main.outputs.resolved }}' || '';
+            const fieldworkDns = '${{ steps.dns-fieldwork.outputs.resolved }}' || '';
+
             // Gap analysis
             const has404 = '${{ steps.gap-analysis.outputs.has_404 }}' === 'true';
             const hasAppSpec = '${{ steps.gap-analysis.outputs.has_app_spec }}' === 'true';
@@ -131,10 +159,16 @@ jobs:
             const gaps = [];
 
             if (mainOk && mainStatus !== 'skipped') good.push('`oaudrey.com` is live and responding');
-            else if (mainStatus !== 'skipped') needsWork.push('`oaudrey.com` is not responding (HTTP ' + mainStatus + ')');
+            else if (mainStatus !== 'skipped') {
+              const dnsNote = mainDns ? ` — DNS resolves to \`${mainDns}\`` : ' — DNS does not resolve (check Namecheap nameservers → DigitalOcean)';
+              needsWork.push('`oaudrey.com` is not responding (HTTP ' + mainStatus + ')' + dnsNote);
+            }
 
             if (fieldworkOk && fieldworkStatus !== 'skipped') good.push('`fieldwork.oaudrey.com` is live');
-            else if (fieldworkStatus !== 'skipped') needsWork.push('`fieldwork.oaudrey.com` is not responding');
+            else if (fieldworkStatus !== 'skipped') {
+              const dnsNote = fieldworkDns ? ` — DNS resolves to \`${fieldworkDns}\`` : ' — DNS does not resolve';
+              needsWork.push('`fieldwork.oaudrey.com` is not responding (HTTP ' + fieldworkStatus + ')' + dnsNote);
+            }
 
             if (has404) good.push('`404.html` error page exists');
             else gaps.push('Missing `oaudrey/404.html` — add a branded error page');
@@ -151,6 +185,22 @@ jobs:
               !hasAppSpec && '- [ ] Commit `oaudrey/.do/app.yaml`',
               panelCount < 5 && '- [ ] Add missing product tabs to `oaudrey/index.html`',
             ].filter(Boolean);
+
+            // Emit infra-setup steps if both sites are down with no DNS
+            const bothDown = (mainStatus === '000' && !mainDns) && (fieldworkStatus === '000' && !fieldworkDns);
+            const infraSteps = bothDown ? [
+              '',
+              '### 🚀 Infrastructure Setup Required',
+              'Both sites are unreachable because the DigitalOcean App Platform has not been deployed yet. Complete these steps in order:',
+              '',
+              '1. **Set `DIGITALOCEAN_API_TOKEN`** in GitHub repo secrets (DO Dashboard → API → Personal Access Tokens)',
+              '2. **Run `deploy-oaudrey.yml`** manually via `workflow_dispatch`',
+              '3. **Add custom domains** in DO App Platform Dashboard → App → Settings → Domains: `oaudrey.com`, `fieldwork.oaudrey.com`',
+              '4. **Point Namecheap nameservers** to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`',
+              '5. **Re-run this retro** once DNS propagates — expect HTTP 200/301/302',
+              '',
+              '> See `standards/OAUDREY_DEPLOYMENT_STANDARD.md` for the full setup guide.',
+            ] : [];
 
             const body = [
               `## oAudrey Retro — ${date}`,
@@ -170,6 +220,7 @@ jobs:
               standardsGaps.length > 0
                 ? standardsGaps.join('\n')
                 : '- [x] All standards checks passed',
+              ...infraSteps,
               '',
               '---',
               '',
@@ -179,17 +230,71 @@ jobs:
 
             // Only open an issue if there are gaps or failures
             if (gaps.length > 0 || needsWork.length > 0) {
-              const { data: issue } = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
-                body,
-                labels: ['retro', 'oaudrey'],
+              // Deduplication: search for an existing open retro issue before
+              // creating a new one.  If one is already open, add a comment so
+              // the single issue becomes the running status thread instead of
+              // accumulating one clone per week.
+              const searchResult = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:retro label:oaudrey`,
               });
-              core.notice(`Retro issue created: ${issue.html_url}`);
-              core.setOutput('issue_url', issue.html_url);
+
+              if (searchResult.data.total_count > 0) {
+                const existing = searchResult.data.items[0];
+                const commentBody = [
+                  `### oAudrey Retro Update — ${date}`,
+                  '',
+                  '> Still open. Same issues detected on this run.',
+                  '',
+                  '**⚠️ Needs Work (still)**',
+                  ...needsWork.map(w => `- ${w}`),
+                  ...(gaps.length > 0 ? ['', '**🔍 Gaps (still)**', ...gaps.map(g => `- ${g}`)] : []),
+                  '',
+                  '_This is an automated status update. No new issue was opened because this one is still open._',
+                  '_Once the infrastructure actions below are completed and `oaudrey-retro.yml` is re-run successfully, this issue will close automatically._',
+                ].join('\n');
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: commentBody,
+                });
+                core.notice(`Retro: existing open issue #${existing.number} updated with new status comment.`);
+                core.setOutput('issue_url', existing.html_url);
+              } else {
+                const { data: issue } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
+                  body,
+                  labels: ['retro', 'oaudrey'],
+                });
+                core.notice(`Retro issue created: ${issue.html_url}`);
+                core.setOutput('issue_url', issue.html_url);
+              }
             } else {
-              core.notice('oAudrey retro: all checks passed — no issue opened.');
+              // All checks passed — close any open retro issue automatically
+              const searchResult = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:retro label:oaudrey`,
+              });
+              if (searchResult.data.total_count > 0) {
+                const existing = searchResult.data.items[0];
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: `### ✅ oAudrey Retro — ${date} — All checks passed\n\nAll health checks returned HTTP 200/301/302 and no gaps were found. Closing this issue.\n\n_Auto-closed by \`oaudrey-retro.yml\`._`,
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                });
+                core.notice(`Retro issue #${existing.number} auto-closed — all checks passed.`);
+              } else {
+                core.notice('oAudrey retro: all checks passed — no issue opened.');
+              }
             }
 
             // Always write to step summary

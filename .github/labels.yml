@@ -128,6 +128,15 @@ labels:
     color: "b60205"
     description: "Block auto-merge — human review required"
 
+  # ── Automation Control (Quiet Mode gate) ──────────────────────────────────────
+  - name: operations
+    color: "1d76db"
+    description: "Operational control issue (e.g. quiet-mode gate)"
+
+  - name: automation-control
+    color: "6f42c1"
+    description: "Controls scheduled automation state (exit-quiet-mode gate)"
+
   # ── Automation / Routing ──────────────────────────────────────────────────────
   - name: auto-fix
     color: "0075ca"
@@ -174,9 +183,26 @@ labels:
     color: "d93f0b"
     description: "Escalated — requires human intervention"
 
+  # ── Credential / Secret Provisioning ──────────────────────────────────────
+  - name: credentials-missing
+    color: "d93f0b"
+    description: "Issue blocked — missing API keys/secrets/credentials"
+
+  - name: credentials-ready
+    color: "0e8a16"
+    description: "All required credentials provisioned and available"
+
+  - name: desktop-access-required
+    color: "fbca04"
+    description: "Requires desktop agent with file system/keychain access"
+
   - name: vault-agent
     color: "e4e669"
     description: "Vault Agent credential provisioning required"
+
+  - name: flexina
+    color: "9b59b6"
+    description: "Route to Flexina desktop automation agent"
 
   - name: codex
     color: "5319e7"
@@ -323,3 +349,68 @@ labels:
   - name: "goap:executing"
     color: "8b5cf6"
     description: "GOAP executing planned actions"
+
+  # ── NoimosAI (Autonomous Marketing Team) ──────────────────────────────────
+  - name: noimosai
+    color: "7C5CFF"
+    description: "Route to NoimosAI autonomous marketing team"
+
+  - name: marketing
+    color: "FF6B6B"
+    description: "Marketing task — auto-routed to NoimosAI"
+
+  - name: seo
+    color: "3DDCFF"
+    description: "SEO task — handled by NoimosAI SEO agent"
+
+  - name: content
+    color: "F7C948"
+    description: "Content creation task — handled by NoimosAI content agent"
+
+  - name: affiliate
+    color: "4CAF50"
+    description: "Affiliate link / revenue task — handled by NoimosAI affiliate agent"
+
+  # ── BITO AI (Persistent-Memory Code Review & Desktop API Assistant) ────────
+  # See docs/BITO_AI_INTEGRATION.md for rationale and rollout.
+  - name: bito-ai
+    color: "0B6FFF"
+    description: "PR or issue touched by BITO AI review"
+
+  - name: "bito-ai:review"
+    color: "4D94FF"
+    description: "BITO AI review complete — see review comment"
+
+  - name: "bito-ai:changes-needed"
+    color: "D93F0B"
+    description: "BITO found blocking issues — address before merge"
+
+  # ── Auto-Error & Self-Healing ──────────────────────────────────────────────
+  - name: auto-error
+    color: "d73a4a"
+    description: "Automatically created error report from self-healing system"
+
+  - name: needs-fix
+    color: "d93f0b"
+    description: "Identified issue that needs fixing"
+
+  - name: goap-escalation
+    color: "b60205"
+    description: "Escalated to GOAP for goal-oriented action planning"
+
+  - name: urgent
+    color: "b60205"
+    description: "Urgent issue requiring immediate attention"
+
+  # ── Credentials Management ────────────────────────────────────────────────
+  - name: credentials-missing
+    color: "d93f0b"
+    description: "Required credentials not yet provisioned"
+
+  - name: credentials-ready
+    color: "0e8a16"
+    description: "All required credentials are provisioned"
+
+  - name: ready-to-implement
+    color: "0e8a16"
+    description: "Issue is ready for implementation (all blockers resolved)"

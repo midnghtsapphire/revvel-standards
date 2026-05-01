@@ -123,6 +123,35 @@ test('parseJsonLd handles @graph arrays', () => {
   const html = `<script type="application/ld+json">${JSON.stringify(graph)}</script>`;
   const result = parseJsonLd(html);
   assert.strictEqual(result.length, 2);
+  assert.strictEqual(result[0]['@context'], 'https://schema.org');
+  assert.strictEqual(result[1]['@context'], 'https://schema.org');
+});
+
+test('parseJsonLd does not overwrite existing @context on @graph children', () => {
+  const graph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@context': 'https://custom.org', '@type': 'Organization', name: 'A', url: 'https://a.com' },
+    ],
+  };
+  const html = `<script type="application/ld+json">${JSON.stringify(graph)}</script>`;
+  const result = parseJsonLd(html);
+  assert.strictEqual(result[0]['@context'], 'https://custom.org');
+});
+
+test('@graph nodes pass validation end-to-end via runChecks', () => {
+  const graph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'Organization', name: 'Acme', url: 'https://acme.com' },
+      { '@type': 'Person', name: 'Jane' },
+    ],
+  };
+  const html = `<script type="application/ld+json">${JSON.stringify(graph)}</script>`;
+  const result = runChecks(html);
+  assert.strictEqual(result.summary.total, 2);
+  assert.strictEqual(result.summary.passed, 2);
+  assert.strictEqual(result.summary.errors, 0);
 });
 
 test('parseJsonLd records _parseError for malformed JSON', () => {

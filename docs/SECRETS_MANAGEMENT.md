@@ -1,11 +1,34 @@
 # Secrets Management — Workflow ↔ Secret Matrix
 
-> **Last audited:** 2026-04-26
+> **Last audited:** 2026-05-01
 > **Source:** Gap analysis session ([link](https://app.devin.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
+> **NEW:** 🛡️ Secret Persistence Guard now active — hourly monitoring & auto-recovery
 
 This document maps every GitHub Actions workflow to the secrets it requires
 (excluding `GITHUB_TOKEN`, which is auto-provided). Use this to verify
 that all automations have the secrets they need to actually run.
+
+## 🛡️ Secret Protection & Monitoring
+
+**NEW as of 2026-05-01:** The repository now includes automated secret protection:
+
+- ✅ **Secret Persistence Guard** (`.github/workflows/secret-persistence-guard.yml`)
+  - Blocks deletion of critical secrets
+  - Monitors availability every hour
+  - Auto-recovers missing secrets from Doppler
+  - Creates P0 issues when recovery fails
+
+- ✅ **Protected Secrets** (cannot be deleted):
+  - `OPENROUTER_API_KEY`
+  - `DOPPLER_TOKEN`
+  - `ADMIN_GITHUB_TOKEN`
+  - `GITHUB_TOKEN`
+
+- ✅ **Monitored Secrets** (checked hourly):
+  - All protected secrets plus
+  - `JULES_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY`
+
+See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md) for complete details.
 
 ## Secret Inventory
 
@@ -23,6 +46,7 @@ that all automations have the secrets they need to actually run.
 | `MIRROR_GIST_ID` | durability-mirror | Yes | Gist ID for durability mirror backup |
 | `MIRROR_GIST_TOKEN` | durability-mirror | Yes | PAT with gist scope for mirror |
 | `DIGITALOCEAN_API_TOKEN` | deploy-oaudrey | Yes (skips with warning) | DO personal access token for App Platform deploys; create at DO → API → Tokens |
+| `VERCEL_TOKEN` | deployment-health-check, Soul2Bowl CI (downstream) | Yes (health check degrades gracefully) | Vercel API token for deployment triggers and project access; create at vercel.com/account/tokens. Also add `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (see `docs/Soul2Bowl/VERCEL_DEPLOYMENT.md`) |
 | `NAMECHEAP_API_KEY` | credential-gatekeeper (BOM detection only) | Yes | Namecheap API key for DNS automation; enable at Namecheap → Profile → API Access |
 | `GOOGLE_SEARCH_CONSOLE_KEY` | eeat-trust-cron | Yes (degrades gracefully) | Google Search Console API for E-E-A-T automation; create at Google Cloud Console |
 | `GOOGLE_BUSINESS_PROFILE_KEY` | eeat-trust-cron | Yes (optional) | Google Business Profile API for E-E-A-T automation; create at Google Cloud Console |
@@ -32,6 +56,10 @@ that all automations have the secrets they need to actually run.
 | `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
 | `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
 | `REVENUECAT_PROJECT_ID` | Downstream Revvel app tooling | N/A | RevenueCat project identifier required for v2 REST API calls |
+| `GMAIL_APP_PASSWORD` | vine-to-marketplace | Yes (skips fetch with warning) | Gmail App Password for angelreporters@gmail.com IMAP access; generate at myaccount.google.com/apppasswords |
+| `META_PAGE_ACCESS_TOKEN` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page Access Token with pages_manage_posts scope; generate via Graph API Explorer |
+| `META_PAGE_ID` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page numeric ID; find at facebook.com/YOUR_PAGE → About |
+| `META_CATALOG_ID` | vine-to-marketplace | Yes (optional — Page Post used instead) | Facebook Commerce Manager Catalog ID; enables proper Marketplace product listings |
 
 ## Workflows Without Custom Secrets
 
@@ -43,6 +71,7 @@ These workflows only use `GITHUB_TOKEN` (auto-provided):
 - `commit-queue-monitor.yml`
 - `compliance-watcher.yml`
 - `create-issue-branch.yml`
+- `deployment-health-check.yml`
 - `flow-chart-sync.yml`
 - `match-labels.yml`
 - `mergify-merge-queue-labels-copier.yml`
@@ -160,8 +189,17 @@ doppler secrets --only-names
 The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`)
 scans issue bodies for credential requirements and generates a Bill of Materials:
 
-1. Label an issue with `ready-to-implement`
-2. The gatekeeper scans the issue text for keywords (openrouter, stripe, supabase, etc.)
-3. Posts a comment with the required secrets and Doppler provisioning commands
-4. Adds `credentials-missing` or `credentials-ready` label
-5. Implementation should not begin until `credentials-ready` is applied
+### How It Works
+
+1. Issue opened or labeled `ready-to-implement`
+2. Scans issue title + body for credential keywords (see patterns below)
+3. Checks Doppler (if `DOPPLER_TOKEN` is set) for existing credentials
+4. Posts a BOM comment listing required credentials with status table
+5. Adds `credentials-missing` or `credentials-ready` label
+6. If credentials-missing, **automatically routes to agents with desktop access**:
+   - Agent HQ desktop agent (if configured) — **automatic provisioning**
+   - Vault Agent — **posts manual provisioning instructions**
+   - After 24 hours — **escalates to needs-human**
+7. Implementation should not begin until `credentials-ready` is applied
+
+**For full details on automatic credential routing, see [`docs/CREDENTIAL_ROUTING_PROCESS.md`](./CREDENTIAL_ROUTING_PROCESS.md).**

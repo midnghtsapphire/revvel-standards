@@ -158,7 +158,13 @@ function parseJsonLd(html) {
       if (Array.isArray(parsed)) {
         blocks.push(...parsed);
       } else if (parsed['@graph'] && Array.isArray(parsed['@graph'])) {
-        blocks.push(...parsed['@graph']);
+        const parentContext = parsed['@context'];
+        for (const node of parsed['@graph']) {
+          if (parentContext && !node['@context']) {
+            node['@context'] = parentContext;
+          }
+          blocks.push(node);
+        }
       } else {
         blocks.push(parsed);
       }
@@ -324,9 +330,10 @@ function _validatePropertyShapes(type, obj) {
 /**
  * Check whether a JSON-LD object qualifies for Google Rich Results.
  * @param {object} obj  — parsed and validated JSON-LD node
+ * @param {ReturnType<validateSchema>} [precomputedValidation] — optional pre-computed result from validateSchema
  * @returns {{ eligible: boolean, type: string, reason: string }}
  */
-function checkRichResults(obj) {
+function checkRichResults(obj, precomputedValidation) {
   if (!obj || obj._parseError) {
     return { eligible: false, type: 'unknown', reason: 'Invalid JSON-LD — cannot determine eligibility' };
   }
@@ -342,7 +349,7 @@ function checkRichResults(obj) {
   const primaryType = types[0];
 
   if (GOOGLE_RICH_RESULT_TYPES.has(primaryType)) {
-    const validation = validateSchema(obj);
+    const validation = precomputedValidation || validateSchema(obj);
     if (validation.errors.length > 0) {
       return {
         eligible: false,
@@ -387,7 +394,7 @@ function runChecks(input) {
 
   const results = nodes.map((node, i) => {
     const schemaOrg       = validateSchema(node);
-    const googleRich      = checkRichResults(node);
+    const googleRich      = checkRichResults(node, schemaOrg);
 
     if (schemaOrg.pass) {
       totalPassed++;

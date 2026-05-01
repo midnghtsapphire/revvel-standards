@@ -58,6 +58,7 @@ The revvel-standards repository has extensive automation infrastructure:
 19. ✅ `sync-labels.yml` — Sync canonical labels across repos
 20. ✅ `priority-router.yml` — Priority-based routing
 21. ✅ `triage-cron.yml` — Scheduled triage sweep
+22. ✅ `credential-label-router.yml` — **NEW** Auto-routes credentials-missing issues to desktop agents
 
 #### Branch & Issue Management
 22. ✅ `create-issue-branch.yml` — Auto-create branches from issues
@@ -70,11 +71,12 @@ The revvel-standards repository has extensive automation infrastructure:
 27. ✅ `mergify-merge-queue-labels-copier.yml` — Mergify integration
 
 #### Security & Secrets
-28. ✅ `credential-gatekeeper.yml` — Credential validation
-29. ✅ `doppler-secrets-sync.yml` — Doppler secrets sync
-30. ✅ `secret-lifecycle.yml` — Secret rotation management
-31. ✅ `secrets-health-check.yml` — Secret health monitoring
-32. ✅ `saml-sso-registration.yml` — SAML SSO automation
+28. ✅ `credential-gatekeeper.yml` — Credential detection and BOM generation
+29. ✅ `credential-label-router.yml` — **NEW** Auto-assignment to agents with desktop access
+30. ✅ `doppler-secrets-sync.yml` — Doppler secrets sync
+31. ✅ `secret-lifecycle.yml` — Secret rotation management
+32. ✅ `secrets-health-check.yml` — Secret health monitoring
+33. ✅ `saml-sso-registration.yml` — SAML SSO automation
 
 #### Monitoring & Analytics
 33. ✅ `amplitude-events.yml` — Amplitude analytics events

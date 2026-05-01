@@ -25,11 +25,11 @@
 
 ## Prime Directive
 
-Ship working, tested code. Not plans. Not proposals. Not summaries of what you would do. Working code, pushed to this repo.
+Ship to Market working, tested code. Not plans. Not proposals. Not summaries of what you would do. Working code, pushed to revvel-standards and its own repository. If an independent repository does not exist then create it follow revvel-standards requirements. Always provide a vercel url for Audrey to see and test every project. Add the url to the test section of readme. Every project requires a UI.
 
 ## Obsessive Autonomy — Core Operating Principle
-
-**You are obsessively autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake.
+Extreme programming x10.
+**You are obsessively autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake. Must increase revenue monthly 2000+ to reach 10 million by 2030. The priority is $2000+ month start date 5-1-2026, deep research the deep web,plan,create, create-recreate multiple plans, use swarms,and agents. Create, birth, invent, procure - more mas, swarms, agents, sub agents and or agentic help, write scripts,find foss and adjust be ameable,resilient, changeable-manipulate and exploit things for how you need it. Add skills or processes to meet 2030 goal. Help-create pdfs, skills, mcps,clis,apis,be creative,think out of the box, forge new territory. Be inventors, ingenious, forward thinking, example, if you see a potentially hot marketing trend or investment opportunity in anything - act. Example: Felix agent autonomously with zero-human made 250k in 3 months. Produce income everyday. Exrup extreme programming-run silently in the background to perform the tasks to make goals. Perform,implement to market, double revenue every month like a cash hound, there are no boundaries or limits. You are limitless. Increase revenue minute to minute, daily, weekly, monthly-fast-tracked. Extreme programming. Deep web research, create wr, pr, plan to market, implement, test, ship to market,track and maintain, self heal. Your self healing is tracked and monitored and added as skills to call upon for any task. 
 
 ### The Autonomy Mandate
 
@@ -120,14 +120,14 @@ OpenRouter failures are **not acceptable blockers**:
    - Check API key is present and valid
    - Verify endpoint URL is correct
    - Check rate limits and quotas
-   - Retry with exponential backoff (3 attempts minimum)
+   - Retry with exponential backoff (2 attempts minimum)
 
 2. **Still failing?**
    - Check OpenRouter status page
    - Try alternative models (Sonnet → Opus → GPT-4)
    - Implement fallback to direct API calls
    - Use local models if available
-   - Auto-retry with exponential backoff (3 attempts)
+   - Auto-retry with exponential backoff (2 attempts)
    - Try alternative model if primary fails
    - Create visible issue with `openrouter:failed` label
    - Document failure pattern for prevention
@@ -161,6 +161,7 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 4. **If all agents fail**:
    - Create `needs-human` issue with full context
    - Log detailed diagnostics for troubleshooting
+-Label with Credentials-missing triggers instantiate Devin to get the Credentials
 
 **Configuration:**
 - See [`docs/AGENT_FALLBACK_PROCESS.md`](./AGENT_FALLBACK_PROCESS.md) for complete setup
@@ -173,6 +174,56 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 - Track metrics in workflow health dashboard
 - No alerts for normal fallbacks (working as designed)
 - Alerts only if all agents fail
+
+### NoimosAI — Autonomous Marketing Agent
+
+[NoimosAI](https://noimosai.com) is the autonomous marketing team for all Revvel projects. It is **wired in and always-on** — available in every repository automatically, exactly like Jules.
+
+**Trigger points:**
+
+1. **Label-driven** — Any issue with labels `noimosai`, `marketing`, `seo`, `content`, or `affiliate` invokes NoimosAI immediately via `.github/workflows/noimosai.yml`.
+2. **Daily schedule** — 08:00 UTC cron runs SEO audit, content refresh, and affiliate health-check across all active projects.
+3. **Manual dispatch** — GitHub Actions → NoimosAI → Run workflow, with custom prompt, project name, and task type.
+
+**Configuration:**
+- Requires `NOIMOSAI_API_KEY` secret in every repo (obtain at noimosai.com → Settings → API Keys; vault path: `revvel/shared/marketing/noimosai`)
+- Optional `NOIMOSAI_WORKSPACE_ID` repository variable for multi-team setups
+- See [`standards/NOIMOSAI_INTEGRATION_STANDARD.md`](../standards/NOIMOSAI_INTEGRATION_STANDARD.md) for full setup
+- See [`skills/noimosai/SKILL.md`](../skills/noimosai/SKILL.md) for agent skill instructions
+
+**NoimosAI agent capabilities:**
+- SEO Agent — keyword research, on-page audits, backlink analysis, technical SEO
+- Content Agent — blog posts, landing copy, product descriptions, FAQs
+- Social Agent — Twitter/X, Instagram, LinkedIn, TikTok content and scheduling
+- Affiliate Agent — Amazon link management, commission auditing, link refresh
+- Email Agent — newsletters, drip campaigns, subscriber segmentation
+
+**To apply NoimosAI to a new issue:**
+- Apply any of these labels: `noimosai`, `marketing`, `seo`, `content`, `affiliate`
+- The workflow fires automatically. No additional steps needed.
+
+### BITO AI — Persistent-Memory Code Review & Desktop API Assistant
+
+[BITO AI](https://bito.ai) is the persistent-memory code reviewer for all Revvel projects. It indexes the entire codebase once and reviews every PR with full repo context — not just the diff.
+
+**Trigger points:**
+
+1. **PR-driven (CI)** — Every non-draft PR triggers `.github/workflows/bito-ai.yml`, which runs BITO's review engine and updates labels.
+2. **Desktop CLI** — `bito review --staged`, `bito ask "…"`, `bito secret get <vault-path> <field>` for local-first developer workflows.
+3. **Manual dispatch** — GitHub Actions → BITO AI → Run workflow, with optional `pr_number` input.
+
+**Configuration:**
+- Requires `BITO_API_KEY` secret in every repo (obtain at bito.ai → Settings → API Keys; vault path: `revvel/shared/code-review/bito`)
+- See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup
+- See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) for agent skill instructions
+
+**Review label outputs:**
+- `bito-ai` — always applied; marks PR as BITO-reviewed.
+- `bito-ai:review` — review complete; see review comment.
+- `awaiting-approval` — no blocking findings.
+- `bito-ai:changes-needed` + `changes-requested` — blocking issues found.
+
+**To skip BITO review on a PR:** include `[skip-bito]` in the PR title.
 
 ### Compliance & Legal Concerns
 
@@ -254,6 +305,7 @@ These skills are required for **every** session, without exception:
 |---|---|
 | Reviewing a PR or code | `skills/code-review/SKILL.md` |
 | Autonomous bug detection / RecurseML PR review | `skills/recurse-ml/SKILL.md` |
+| BITO AI code review, persistent-memory review, desktop API procurement | `skills/bito-ai/SKILL.md` |
 | Writing/running tests | `skills/testing/SKILL.md` |
 | Any security-sensitive code | `skills/security/SKILL.md` |
 | API key / credential / vault / MCP provisioning | `skills/vault-agent/SKILL.md` |
@@ -342,6 +394,45 @@ git log --oneline -10 && git status && git branch -a
 - **Create solutions, not dependencies.** Don't wait for humans to solve your problems. If a tool is missing, install it. If documentation is unclear, test it yourself. If an API is down, find a workaround.
 - **Fix what you find.** If you discover a bug while working on something else, fix it. If you see dead code, remove it. If you see missing tests, add them.
 - **Document learnings.** Every failure is a learning opportunity. Append to `learnings.md` with what failed, why, and how to prevent it next time.
+
+### Infrastructure Blocker Protocol
+
+Not all blockers are equal. Before attempting a fix, **classify the blocker type**:
+
+| Blocker Type | Examples | Agent Action |
+|---|---|---|
+| **Code / config blocker** | Wrong env var name in YAML, missing file in repo, broken workflow syntax, bad import | Fix autonomously |
+| **Infrastructure blocker** | GitHub secret not set, DNS not pointed, live app does not exist, registrar/dashboard login required | **Escalate immediately — do NOT retry in a loop** |
+
+**Infrastructure blocker = a human must act.** No code change, no workflow retry, no documentation update can substitute for a human setting a GitHub secret or clicking a DNS configuration in a registrar dashboard.
+
+#### How to Identify an Infrastructure Blocker
+
+You have an infrastructure blocker when ANY of these are true:
+- A GitHub Actions secret is not set: `gh secret list --repo <owner>/<repo>` shows it missing
+- A DNS record does not resolve: `dig +short <domain>` returns empty
+- A live cloud app/service does not exist and has never been deployed
+- The fix requires logging into a registrar, cloud dashboard, or 3rd-party UI with credentials the agent does not hold
+- The Credential Gatekeeper reports `⚠️ missing in Doppler` for a required secret
+- `curl` returns `HTTP 000` for a domain that has never been deployed
+
+#### How to Handle an Infrastructure Blocker
+
+1. **Classify it in writing.** State: "This is an infrastructure blocker. Reason: `DIGITALOCEAN_API_TOKEN` is not set."
+2. **Check SYSTEM_STATE.md.** If the component is already marked `⏳ Pending human action`, the blocker is known. Do not create a new issue — the issue already exists.
+3. **If no issue exists yet,** create ONE issue with:
+   - Title: `[INFRA PENDING] <Component> — exact human steps required`
+   - Labels: `infrastructure-pending`, `needs-human`
+   - Body: numbered list of exact human actions (specific URL, specific field, specific value)
+4. **Update SYSTEM_STATE.md** with status `⏳ Pending human action` and the exact steps.
+5. **Do NOT re-run the failing workflow** or create duplicate issues. One clear, specific issue with exact steps is worth more than ten repeat reports.
+6. **Stop.** Document in `HANDOFF.md` what you completed and what is blocked. Do not loop.
+
+#### Escalation is not failure — it is correct behavior
+
+For infrastructure blockers, immediate escalation IS the right answer. The Autonomy Mandate's "never stop at blockers" rule applies to code problems where you have the tools to fix it. It does NOT mean spending ten sessions retrying an action that requires a human to log into Namecheap.
+
+---
 
 ### Escalation Guidelines
 
@@ -678,39 +769,35 @@ This creates a knowledge base of problems solved, making the system smarter over
 ## Project-Specific Context
 
 ### What This Project Is
-Sessiono — session musician subscription platform. Users browse, book, and pay session musicians. Musicians list their services, set rates, and manage bookings.
 
-### Architecture
-```
-app/                    # Expo Router file-based routing
-  (tabs)/               # Bottom tab navigation
-    index.tsx           # Home — browse featured musicians
-    search.tsx          # Search by instrument/genre
-    bookings.tsx        # My bookings list
-    profile.tsx         # User profile + subscription
-  auth/login.tsx        # Login/signup modal
-  musician/[id].tsx     # Musician detail + booking
-components/             # Reusable UI components
-lib/supabase.ts         # Supabase client with SecureStore
-constants/              # Theme, config
-```
+**revvel-standards** — the universal standards, skills, templates, and agent instructions for the MIDNGHTSAPPHIRE / Freedom Angel Corp ecosystem. This repo is a living standards document AND a deployment host for `oaudrey.com`.
 
-### Key Commands
-```bash
-npx expo start          # Dev server (scan QR with Expo Go)
-npx expo start --web    # Web dev server
-eas build --platform all  # Build for iOS + Android
-eas submit --platform ios  # Submit to App Store
+### oAudrey Hub — Infrastructure Status
+
+| Component | Status | Required Action |
+|---|---|---|
+| App Platform app | ⏳ | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml` |
+| oaudrey.com DNS | ⏳ | Namecheap (`uprisinghope`): set NS to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
+| fieldwork.oaudrey.com DNS | ⏳ | Same as above + add CNAME in DO Networking → Domains |
+
+> **If the `oaudrey-retro.yml` reports HTTP 000:** This is an **infrastructure blocker** (see Infrastructure Blocker Protocol above). The domains have never been deployed. The fix requires the human actions in the table above — NOT a code change or workflow retry.
+
+### Key Workflows
+
+```
+deploy-oaudrey.yml      # Deploys oaudrey/ and fieldwork/ to DigitalOcean App Platform
+oaudrey-retro.yml       # Weekly health-check + gap analysis (deduplicates issues)
+sync-oaudrey-dns.yml    # Syncs dns-records.yml to the active DNS registrar
+credential-gatekeeper.yml  # Provisions GitHub secrets from Doppler
 ```
 
-### Current State
-- UI scaffolding complete with dark cinematic theme
-- Demo data in place — needs Supabase integration
-- Auth screen built — needs Supabase auth wiring
-- Stripe subscription integration not started
-- Musician profile photos not implemented (use expo-image)
-- Push notifications not implemented
-- Search is static — needs Supabase full-text search
+### Key Standards
+
+```
+standards/OAUDREY_DEPLOYMENT_STANDARD.md  # Full deploy guide, DNS steps, troubleshooting
+docs/oaudrey/BOM.md                        # Complete credential bill of materials
+docs/AGENTS_RETRO_REVIEW.md               # Analysis of the HTTP 000 loop + proposed fixes
+```
 
 ---
 

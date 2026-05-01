@@ -1,0 +1,284 @@
+# NoimosAI — Autonomous Marketing Agent
+#
+# Automatically invokes NoimosAI's autonomous marketing team when a marketing-
+# or content-related issue is opened in any Revvel project, and on a daily
+# schedule so standing campaigns stay up-to-date.
+#
+# Trigger points
+# ──────────────
+# 1. workflow_dispatch   — operator supplies an ad-hoc marketing prompt.
+# 2. issues [opened/reopened] — auto-route issues labelled `noimosai`,
+#    `marketing`, `seo`, `content`, or `affiliate` to NoimosAI immediately.
+# 3. schedule (daily 08:00 UTC) — routine refresh: SEO audit, content ideas,
+#    and affiliate-link health-check across all active projects.
+#
+# Secret required  : NOIMOSAI_API_KEY
+# Variable optional: NOIMOSAI_WORKSPACE_ID
+#
+# Standard : standards/NOIMOSAI_INTEGRATION_STANDARD.md
+# Skill    : skills/noimosai/SKILL.md
+# Env ref  : .env.example (NOIMOSAI_API_KEY, NOIMOSAI_WORKSPACE_ID)
+
+name: NoimosAI — Autonomous Marketing
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Marketing task or content brief for NoimosAI"
+        required: true
+        type: string
+      project:
+        description: "Project name / domain (e.g. reesereviews.com)"
+        required: false
+        type: string
+        default: ""
+      task_type:
+        description: "Task type"
+        required: false
+        type: choice
+        options:
+          - general
+          - seo
+          - content
+          - social
+          - affiliate
+          - email
+        default: general
+
+  issues:
+    types: [opened, reopened]
+
+  schedule:
+    # 08:00 UTC every day — routine marketing refresh
+    - cron: "0 8 * * *"
+
+concurrency:
+  group: noimosai-${{ github.event_name }}-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  # ─── Ad-hoc invocation via workflow_dispatch ────────────────────────────────
+  dispatch:
+    name: NoimosAI (dispatch)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    env:
+      NOIMOSAI_API_KEY: ${{ secrets.NOIMOSAI_API_KEY }}
+      NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
+    steps:
+      - name: Verify NOIMOSAI_API_KEY is configured
+        run: |
+          if [ -z "${NOIMOSAI_API_KEY}" ]; then
+            echo "::warning::NOIMOSAI_API_KEY is not set — skipping NoimosAI invocation."
+            echo "Configure it at: Settings → Secrets and variables → Actions → New repository secret"
+            echo "Obtain your key at: https://noimosai.com → Settings → API Keys"
+          else
+            echo "✅ NOIMOSAI_API_KEY is configured."
+          fi
+
+      - name: Invoke NoimosAI
+        if: env.NOIMOSAI_API_KEY != ''
+        env:
+          PROMPT: ${{ github.event.inputs.prompt }}
+          PROJECT: ${{ github.event.inputs.project }}
+          TASK_TYPE: ${{ github.event.inputs.task_type }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          PAYLOAD=$(node -e "
+            const payload = {
+              prompt: String(process.env.PROMPT || ''),
+              task_type: String(process.env.TASK_TYPE || 'general'),
+              project: String(process.env.PROJECT || ''),
+              source: 'github-actions',
+              repository: String(process.env.GITHUB_REPOSITORY || ''),
+            };
+            if (process.env.NOIMOSAI_WORKSPACE_ID) {
+              payload.workspace_id = String(process.env.NOIMOSAI_WORKSPACE_ID);
+            }
+            if (!payload.project) delete payload.project;
+            console.log(JSON.stringify(payload));
+          ")
+
+          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}" \
+            -X POST "https://api.noimosai.com/v1/tasks" \
+            -H "Authorization: Bearer ${NOIMOSAI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "HTTP status: $HTTP_STATUS"
+          cat /tmp/noimosai-response.json 2>/dev/null || true
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ NoimosAI task submitted successfully."
+          else
+            echo "::warning::NoimosAI returned HTTP $HTTP_STATUS. Check NOIMOSAI_API_KEY and workspace configuration."
+            cat /tmp/noimosai-response.json 2>/dev/null || true
+          fi
+
+  # ─── Auto-invoke NoimosAI on marketing/content issues ───────────────────────
+  invoke-on-issue:
+    name: NoimosAI on marketing issue
+    if: >-
+      github.event_name == 'issues' &&
+      (github.event.action == 'opened' || github.event.action == 'reopened') &&
+      (
+        contains(github.event.issue.labels.*.name, 'noimosai')    ||
+        contains(github.event.issue.labels.*.name, 'marketing')   ||
+        contains(github.event.issue.labels.*.name, 'seo')         ||
+        contains(github.event.issue.labels.*.name, 'content')     ||
+        contains(github.event.issue.labels.*.name, 'affiliate')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    env:
+      NOIMOSAI_API_KEY: ${{ secrets.NOIMOSAI_API_KEY }}
+      NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
+    steps:
+      - name: Verify NOIMOSAI_API_KEY is configured
+        run: |
+          if [ -z "${NOIMOSAI_API_KEY}" ]; then
+            echo "::warning::NOIMOSAI_API_KEY is not set — skipping NoimosAI invocation."
+          else
+            echo "✅ NOIMOSAI_API_KEY is configured."
+          fi
+
+      - name: Add noimosai label to issue
+        if: env.NOIMOSAI_API_KEY != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                labels: ['noimosai'],
+              });
+            } catch (e) {
+              core.notice(`Could not add noimosai label: ${e.message}`);
+            }
+
+      - name: Submit marketing task to NoimosAI
+        if: env.NOIMOSAI_API_KEY != ''
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          PAYLOAD=$(node -e "
+            const labelStr = String(process.env.ISSUE_LABELS || '');
+            const labels = labelStr.split(',').filter(Boolean);
+            const taskType = labels.find(function(l) {
+              return ['seo','content','affiliate','email','social'].indexOf(l) !== -1;
+            }) || 'general';
+            const promptText = String(process.env.ISSUE_TITLE || '') +
+              '\n\n' + String(process.env.ISSUE_BODY || '');
+            const payload = {
+              prompt: promptText,
+              task_type: taskType,
+              source: 'github-issues',
+              repository: String(process.env.GITHUB_REPOSITORY || ''),
+              issue_number: parseInt(process.env.ISSUE_NUMBER, 10) || 0,
+            };
+            if (process.env.NOIMOSAI_WORKSPACE_ID) {
+              payload.workspace_id = String(process.env.NOIMOSAI_WORKSPACE_ID);
+            }
+            console.log(JSON.stringify(payload));
+          ")
+
+          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}" \
+            -X POST "https://api.noimosai.com/v1/tasks" \
+            -H "Authorization: Bearer ${NOIMOSAI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "HTTP status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ NoimosAI task submitted for issue #${ISSUE_NUMBER}."
+            TASK_ID=$(cat /tmp/noimosai-response.json | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',function(){try{const r=JSON.parse(d);console.log(r.task_id||r.id||'');}catch(e){console.log('');}});")
+            echo "Task ID: ${TASK_ID:-unknown}"
+          else
+            echo "::warning::NoimosAI returned HTTP $HTTP_STATUS for issue #${ISSUE_NUMBER}."
+            cat /tmp/noimosai-response.json 2>/dev/null || true
+          fi
+
+      - name: Post NoimosAI acknowledgment comment
+        if: env.NOIMOSAI_API_KEY != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = context.payload.issue.labels.map(l => l.name);
+            const taskType = labels.find(l => ['seo','content','affiliate','email','social'].includes(l)) || 'marketing';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: [
+                '🤖 **NoimosAI** has been notified about this ' + taskType + ' task and is queuing it for the autonomous marketing team.',
+                '',
+                'NoimosAI will work on: ' + context.payload.issue.title,
+                '',
+                '> _Powered by [NoimosAI](https://noimosai.com) — Autonomous AI Marketing Team_',
+              ].join('\n'),
+            });
+
+  # ─── Daily scheduled marketing refresh ──────────────────────────────────────
+  daily-refresh:
+    name: NoimosAI daily marketing refresh
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      NOIMOSAI_API_KEY: ${{ secrets.NOIMOSAI_API_KEY }}
+      NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
+    steps:
+      - name: Verify NOIMOSAI_API_KEY is configured
+        run: |
+          if [ -z "${NOIMOSAI_API_KEY}" ]; then
+            echo "::warning::NOIMOSAI_API_KEY is not set — skipping daily NoimosAI refresh."
+          else
+            echo "✅ NOIMOSAI_API_KEY is configured. Running daily marketing refresh."
+          fi
+
+      - name: Submit daily SEO audit task
+        if: env.NOIMOSAI_API_KEY != ''
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          for TASK_TYPE in seo content affiliate; do
+            PAYLOAD=$(DAILY_TASK_TYPE="$TASK_TYPE" node -e "
+              const taskType = String(process.env.DAILY_TASK_TYPE || 'general');
+              const payload = {
+                prompt: 'Daily ' + taskType + ' refresh for all active Revvel projects. Review performance, identify opportunities, and update recommendations.',
+                task_type: taskType,
+                source: 'github-actions-schedule',
+                repository: String(process.env.GITHUB_REPOSITORY || ''),
+              };
+              if (process.env.NOIMOSAI_WORKSPACE_ID) {
+                payload.workspace_id = String(process.env.NOIMOSAI_WORKSPACE_ID);
+              }
+              console.log(JSON.stringify(payload));
+            ")
+
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST "https://api.noimosai.com/v1/tasks" \
+              -H "Authorization: Bearer ${NOIMOSAI_API_KEY}" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD")
+
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+              echo "✅ Daily $TASK_TYPE task submitted (HTTP $HTTP_STATUS)."
+            else
+              echo "::warning::NoimosAI daily $TASK_TYPE task returned HTTP $HTTP_STATUS."
+            fi
+          done

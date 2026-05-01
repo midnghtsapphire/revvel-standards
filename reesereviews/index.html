@@ -61,7 +61,7 @@
   <title>Reese Reviews - Professional Amazon Vine Product Reviews | 80K+ Views</title>
   
   <style>
-    /* Revvel Standards - Glassmorphism Dark UI */
+    /* Revvel Standards - Glassmorphism Dark UI — steel-white brand */
     :root {
       /* Warm tone color palette (resilient to blue light filters) */
       --void: #0a0a0f;
@@ -74,9 +74,17 @@
       --coral: #ff6b6b;
       --cyan: #4dd0e1;
       --gold: #ffd700;
+
+      /* Steel-white metal brand palette */
+      --steel-dark:  #2e3d49;
+      --steel-mid:   #4e6371;
+      --steel:       #607d8b;
+      --steel-shine: #90a4ae;
+      --chrome:      #b0bec5;
+      --silver:      #cfd8dc;
       
       --glass-bg: rgba(42, 42, 56, 0.7);
-      --glass-border: rgba(232, 232, 245, 0.1);
+      --glass-border: rgba(176, 190, 197, 0.15);
       --shadow: rgba(0, 0, 0, 0.5);
     }
     
@@ -137,12 +145,13 @@
     .logo-icon {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--iris) 0%, var(--cyan) 100%);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--chrome) 100%);
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
+      box-shadow: 0 2px 8px rgba(96, 125, 139, 0.4), inset 0 1px 0 rgba(207, 216, 220, 0.3);
     }
     
     nav {
@@ -161,7 +170,7 @@
     }
     
     nav a:hover {
-      color: var(--cyan);
+      color: var(--chrome);
       background: var(--glass-bg);
     }
     
@@ -270,24 +279,26 @@
     }
     
     .btn-primary {
-      background: linear-gradient(135deg, var(--iris) 0%, var(--cyan) 100%);
-      color: var(--void);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--steel-shine) 100%);
+      color: var(--ice);
+      border: 1px solid rgba(207, 216, 220, 0.3);
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(139, 125, 216, 0.4);
+      box-shadow: 0 8px 24px rgba(96, 125, 139, 0.5);
     }
     
     .btn-secondary {
       background: transparent;
-      color: var(--ice);
-      border: 2px solid var(--iris);
+      color: var(--chrome);
+      border: 2px solid var(--steel);
     }
     
     .btn-secondary:hover {
-      background: var(--iris);
-      color: var(--void);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--steel-mid) 100%);
+      color: var(--silver);
+      border-color: var(--chrome);
     }
     
     /* Reviews Grid */
@@ -343,9 +354,9 @@
     
     .filter-btn:hover,
     .filter-btn.active {
-      background: var(--iris);
-      color: var(--void);
-      border-color: var(--iris);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--steel-mid) 100%);
+      color: var(--silver);
+      border-color: var(--steel-shine);
     }
     
     .search-box {
@@ -436,12 +447,13 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: linear-gradient(135deg, rgba(77, 208, 225, 0.2) 0%, rgba(139, 125, 216, 0.2) 100%);
+      background: linear-gradient(135deg, rgba(46, 61, 73, 0.4) 0%, rgba(144, 164, 174, 0.2) 100%);
       padding: 0.4rem 0.8rem;
       border-radius: 6px;
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--cyan);
+      color: var(--chrome);
+      border: 1px solid rgba(176, 190, 197, 0.2);
     }
     
     .read-more {
@@ -483,12 +495,13 @@
       width: 80px;
       height: 80px;
       margin: 0 auto 1.5rem;
-      background: linear-gradient(135deg, var(--iris) 0%, var(--cyan) 100%);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--chrome) 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2.5rem;
+      box-shadow: 0 4px 16px rgba(96, 125, 139, 0.4), inset 0 1px 0 rgba(207, 216, 220, 0.25);
     }
     
     .feature h3 {
@@ -585,8 +598,9 @@
     }
     
     .social-link:hover {
-      background: var(--iris);
+      background: linear-gradient(135deg, var(--steel-dark) 0%, var(--steel-mid) 100%);
       transform: translateY(-2px);
+      border-color: var(--steel-shine);
     }
     
     .footer-bottom {
@@ -895,6 +909,8 @@
         <a href="#">FAQ</a>
         <a href="#">Contact</a>
         <a href="#">Press Kit</a>
+        <a href="https://noimosai.com" target="_blank" rel="noopener noreferrer"
+           style="color: var(--iris); font-weight: 600;">NoimosAI Marketing ↗</a>
       </div>
       
       <div class="footer-section">
@@ -911,6 +927,10 @@
       <p>&copy; 2026 Reese Reviews LLC. All Rights Reserved. | Part of the Revvel Ecosystem</p>
       <p style="margin-top: 0.5rem; font-size: 0.85rem;">
         Amazon Vine Reviews are independent and unbiased. Products provided by Amazon Vine program.
+      </p>
+      <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--iris);">
+        Marketing powered by <a href="https://noimosai.com" target="_blank" rel="noopener noreferrer"
+          style="color: var(--iris); text-decoration: underline;">NoimosAI</a> — Autonomous AI Marketing Team
       </p>
     </div>
   </footer>

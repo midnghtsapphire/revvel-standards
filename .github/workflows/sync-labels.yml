@@ -58,6 +58,9 @@ jobs:
               // Merge Control
               { name: 'auto-merge',        color: '0e8a16', description: 'Merge automatically once approved and CI passes' },
               { name: "won't-merge",       color: 'b60205', description: "Block auto-merge — human review required" },
+              // Automation Control (Quiet Mode gate)
+              { name: 'operations',          color: '1d76db', description: 'Operational control issue (e.g. quiet-mode gate)' },
+              { name: 'automation-control',  color: '6f42c1', description: 'Controls scheduled automation state (exit-quiet-mode gate)' },
               // Automation / Routing
               { name: 'auto-fix',          color: '0075ca', description: 'Created by auto-fix / Ralph Loop workflow' },
               { name: 'copilot',           color: '7057ff', description: 'Assigned to GitHub Copilot for fixing' },

@@ -4,6 +4,7 @@
 
 **Repository:** `midnghtsapphire/Soul2Bowl`  
 **Website:** [soul2bowl.com](https://soul2bowl.com)  
+**Staging:** [soul2bowl.vercel.app](https://soul2bowl.vercel.app) — auto-deploys from `main`  
 **Status:** Pre-Build — Documentation Complete  
 **Version:** 1.0.0  
 **Parent Organization:** Freedom Angel Corp (EIN: 86-1209156)  
@@ -156,7 +157,12 @@ npm run test:e2e
 
 ## Deployment
 
-Deployed automatically to DigitalOcean App Platform via GitHub Actions on push to `main`.
+| Environment | Platform | URL | Trigger |
+|---|---|---|---|
+| Staging | Vercel | [soul2bowl.vercel.app](https://soul2bowl.vercel.app) | Every push to `main` |
+| Production | DigitalOcean App Platform | [soul2bowl.com](https://soul2bowl.com) | Manual / tagged release |
+
+See [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) for the full Vercel setup guide (env vars, secrets, monitoring).
 
 ```bash
 # Manual deploy (emergency only)
@@ -182,6 +188,7 @@ All documentation lives in [`docs/`](./docs/) and in [revvel-standards/docs/Soul
 | [DATA_MODEL.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/DATA_MODEL.md) | Database schema (PostgreSQL + Drizzle) |
 | [API_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/API_SPEC.md) | API endpoint specification |
 | [ADMIN_PANEL_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/ADMIN_PANEL_SPEC.md) | Admin panel feature specification |
+| [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) | Vercel staging setup, env vars, monitoring |
 
 ---
 
