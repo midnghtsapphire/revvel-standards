@@ -1,4 +1,4 @@
-name: content-automation
+name: content_automation
 version: "1.0.0"
 title: "Content Automation — AI-Powered Content Creation Pipeline"
 description: "End-to-end AI-powered content creation: topic ideation, script generation, refinement, and multi-format publishing using OpenRouter"

@@ -44,12 +44,19 @@ jobs:
   trigger-content-automation:
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'issues' && (
+      (github.event_name == 'issues' && github.event.action == 'opened' && (
         contains(github.event.issue.labels.*.name, 'content-automation') ||
         contains(github.event.issue.labels.*.name, 'content') ||
         contains(github.event.issue.labels.*.name, 'writing') ||
         contains(github.event.issue.labels.*.name, 'blog') ||
         contains(github.event.issue.labels.*.name, 'seo-content')
+      )) ||
+      (github.event_name == 'issues' && github.event.action == 'labeled' && (
+        github.event.label.name == 'content-automation' ||
+        github.event.label.name == 'content' ||
+        github.event.label.name == 'writing' ||
+        github.event.label.name == 'blog' ||
+        github.event.label.name == 'seo-content'
       )) ||
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch'
@@ -111,20 +118,20 @@ jobs:
               urgency = context.payload.inputs.urgency;
               audience = context.payload.inputs.target_audience;
             } else if (context.eventName === 'issues') {
-              // Sanitize issue title to prevent injection
+              // Sanitize issue title to prevent injection and XSS
               const rawTitle = context.payload.issue.title;
               topic = rawTitle
-                .replace(/[\r\n]/g, ' ')  // Remove newlines
-                .replace(/[`$]/g, '')      // Remove potential injection chars
-                .substring(0, 200);        // Limit length
+                .replace(/[\r\n]/g, ' ')      // Remove newlines
+                .replace(/[`$<>"']/g, '')     // Remove injection and XSS chars
+                .substring(0, 200);            // Limit length
               format = 'blog';
               urgency = 'draft';
               audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
               issueNumber = context.payload.issue.number;
             } else {
-              // Scheduled run
+              // Scheduled run - use existing format instead of 'calendar'
               topic = 'Weekly Content Calendar';
-              format = 'calendar';
+              format = 'blog';
               urgency = 'draft';
               audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
             }
@@ -156,25 +163,35 @@ jobs:
         run: |
           node scripts/content-automation.js
           
-          # Capture output path
-          if [ -f content-automation-output/latest-output-path.txt ]; then
-            OUTPUT_PATH=$(cat content-automation-output/latest-output-path.txt)
-            echo "output_path=${OUTPUT_PATH}" >> $GITHUB_OUTPUT
+          # Capture output path from script stdout or check directory
+          if [ -d content-automation-output ]; then
+            # Find most recent directory
+            OUTPUT_PATH=$(ls -td content-automation-output/*/ 2>/dev/null | head -1 | sed 's:/$::')
+            if [ -n "$OUTPUT_PATH" ]; then
+              echo "output_path=${OUTPUT_PATH}" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Commit generated content
         if: steps.generate.outputs.output_path != ''
+        env:
+          TOPIC: ${{ steps.params.outputs.topic }}
+          FORMAT: ${{ steps.params.outputs.format }}
+          URGENCY: ${{ steps.params.outputs.urgency }}
+          AUDIENCE: ${{ steps.params.outputs.audience }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
           git add content-automation-output/
-          git commit -m "🤖 Auto-generate content: ${{ steps.params.outputs.topic }}
+          
+          # Use env vars to avoid injection in commit message
+          git commit -m "🤖 Auto-generate content: ${TOPIC}
 
           Generated via content-automation skill
-          Format: ${{ steps.params.outputs.format }}
-          Urgency: ${{ steps.params.outputs.urgency }}
-          Audience: ${{ steps.params.outputs.audience }}" || echo "No changes to commit"
+          Format: ${FORMAT}
+          Urgency: ${URGENCY}
+          Audience: ${AUDIENCE}" || echo "No changes to commit"
 
       - name: Push changes
         if: steps.generate.outputs.output_path != ''
@@ -203,8 +220,6 @@ jobs:
             - **Title:** ${metadata.title || '${{ steps.params.outputs.topic }}'}
             - **Format:** ${{ steps.params.outputs.format }}
             - **Word Count:** ${metadata.word_count || 'N/A'}
-            - **SEO Score:** ${metadata.seo_score || 'N/A'}/100
-            - **Readability:** ${metadata.readability_score || 'N/A'}/100
             
             **Output Location:** \`${outputPath}\`
             
@@ -241,50 +256,55 @@ jobs:
             });
 
       - name: Handle errors
-        if: failure()
+        if: failure() && github.event_name == 'issues'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            if ('${{ github.event_name }}' === 'issues') {
-              const comment = `❌ **Content Generation Failed**
-              
-              The content automation pipeline encountered an error. Please check the workflow logs for details.
-              
-              **Common issues:**
-              - Missing or invalid OPENROUTER_API_KEY
-              - Topic is too vague or unclear
-              - API rate limits exceeded
-              - Network connectivity issues
-              
-              **Next Steps:**
-              1. Check workflow logs: ${context.payload.repository.html_url}/actions/runs/${context.runId}
-              2. Verify API keys are configured correctly
-              3. Try again with a more specific topic
-              4. Contact support if the issue persists
-              
-              *Error occurred in: content-automation workflow*`;
-              
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: ${{ steps.params.outputs.issue_number || github.event.issue.number }},
-                body: comment
-              });
+            const issueNumber = context.payload.issue?.number;
+            if (!issueNumber) {
+              console.log('No issue number available, skipping error comment');
+              return;
             }
+            
+            const comment = `❌ **Content Generation Failed**
+            
+            The content automation pipeline encountered an error. Please check the workflow logs for details.
+            
+            **Common issues:**
+            - Missing or invalid OPENROUTER_API_KEY
+            - Topic is too vague or unclear
+            - API rate limits exceeded
+            - Network connectivity issues
+            
+            **Next Steps:**
+            1. Check workflow logs: ${context.payload.repository.html_url}/actions/runs/${context.runId}
+            2. Verify API keys are configured correctly
+            3. Try again with a more specific topic
+            4. Contact support if the issue persists
+            
+            *Error occurred in: content-automation workflow*`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: comment
+            });
 
   self-heal:
     runs-on: ubuntu-latest
     needs: trigger-content-automation
-    if: failure()
+    if: always() && needs.trigger-content-automation.result == 'failure'
     steps:
       - name: Retry with fallback model
         run: |
           echo "Primary generation failed, attempting fallback..."
           # Future: Implement fallback logic with alternative models
+          exit 1  # Ensure this fails to trigger issue creation
           
       - name: Create auto-error issue
-        if: failure()
+        if: always()
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -300,5 +320,5 @@ jobs:
               **Trigger:** ${{ github.event_name }}
               
               Please investigate and fix the underlying issue.`,
-              labels: ['auto-error', 'content-automation', 'needs-fix']
+              labels: ['auto-error', 'content-automation']
             });

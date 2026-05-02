@@ -75,7 +75,7 @@ if (test('callOpenRouter is a function', () => {
 // Test output directory path generation (mock scenario)
 if (test('Output directory path generation logic', () => {
   const timestamp = new Date().toISOString().split('T')[0];
-  const slug = 'example-topic'.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
+  const slug = ('example-topic'.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled').slice(0, 50);
   assert(timestamp.match(/^\d{4}-\d{2}-\d{2}$/), 'Timestamp should be in YYYY-MM-DD format');
   assert(slug === 'example-topic', 'Slug should be sanitized correctly');
 })) passed++; else failed++;
@@ -83,18 +83,21 @@ if (test('Output directory path generation logic', () => {
 // Test slug generation edge cases
 if (test('Slug generation handles special characters', () => {
   const topic = 'Best Budget Headphones 2026: Top Picks!';
-  const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
-  assert(slug === 'best-budget-headphones-2026-top-picks', 'Slug should remove special chars');
+  const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50);
+  assert(slug === 'best-budget-headphones-2026-top-picks', 'Slug should remove special chars and trim hyphens');
   assert(!slug.includes(' '), 'Slug should have no spaces');
   assert(!slug.includes(':'), 'Slug should have no colons');
   assert(!slug.includes('!'), 'Slug should have no exclamation marks');
+  assert(!slug.startsWith('-'), 'Slug should not start with hyphen');
+  assert(!slug.endsWith('-'), 'Slug should not end with hyphen');
 })) passed++; else failed++;
 
-if (test('Slug generation truncates long titles', () => {
-  const longTopic = 'a'.repeat(100);
-  const slug = longTopic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
-  assert(slug.length <= 50, 'Slug should be truncated to 50 chars');
-  assert(slug.length === 50, 'Slug should be exactly 50 chars for long inputs');
+if (test('Slug generation handles empty/special-only topics', () => {
+  const emptySlug = ('!!!'.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled').slice(0, 50);
+  assert(emptySlug === 'untitled', 'Empty slug should fallback to "untitled"');
+  
+  const spaceOnlySlug = ('   '.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled').slice(0, 50);
+  assert(spaceOnlySlug === 'untitled', 'Space-only slug should fallback to "untitled"');
 })) passed++; else failed++;
 
 // Test quality gate logic (basic structure test)

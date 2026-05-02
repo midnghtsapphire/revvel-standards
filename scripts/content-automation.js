@@ -43,7 +43,7 @@ const MODELS = {
 // Output directory
 const OUTPUT_DIR = path.join(process.cwd(), 'content-automation-output');
 const timestamp = new Date().toISOString().split('T')[0];
-const slug = CONFIG.topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
+const slug = (CONFIG.topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled').slice(0, 50);
 const contentDir = path.join(OUTPUT_DIR, `${timestamp}-${slug}`);
 const formatsDir = path.join(contentDir, 'formats');
 const assetsDir = path.join(contentDir, 'assets');
@@ -68,6 +68,8 @@ async function callOpenRouter(model, messages, maxTokens = 4000) {
         'Authorization': `Bearer ${CONFIG.openrouterKey}`,
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload),
+        'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
+        'X-Title': 'Revvel Standards Content Automation',
       },
     };
 
@@ -341,15 +343,15 @@ function runQualityGates(finalContent) {
 
   const headings = (finalContent.match(/^## /gm) || []).length;
   if (headings < 3) {
-    results.readability.passed = false;
-    results.readability.details.push(`Only ${headings} H2 headings (min: 3)`);
+    results.structure.passed = false;
+    results.structure.details.push(`Only ${headings} H2 headings (min: 3)`);
   }
 
   // Word count
   const wordCount = finalContent.split(/\s+/).length;
   if (CONFIG.format === 'blog' && (wordCount < 800 || wordCount > 3000)) {
     results.structure.passed = false;
-    results.structure.details.push(`Word count ${wordCount} (target: 1200-1500)`);
+    results.structure.details.push(`Word count ${wordCount} (range: 800-3000, target: 1200-1500)`);
   }
 
   console.log('  SEO:', results.seo.passed ? '✅' : '⚠️');
@@ -417,12 +419,8 @@ async function main() {
       'utf8'
     );
 
-    // Save output path for workflow
-    fs.writeFileSync(
-      path.join(OUTPUT_DIR, 'latest-output-path.txt'),
-      contentDir,
-      'utf8'
-    );
+    // Output path to stdout for workflow (don't commit pointer file)
+    console.log(`::set-output name=content_path::${contentDir}`);
 
     console.log('');
     console.log('✅ Content Generation Complete!');
