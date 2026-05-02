@@ -1,0 +1,172 @@
+name: PR Review Request Handler
+
+# Automated response to "changes requested" reviews via OpenRouter
+#
+# What this workflow does:
+#   1. Triggers when a PR receives "changes-requested" label (applied by pr-review-status.yml)
+#   2. Fetches all review feedback and PR diff
+#   3. Calls OpenRouter to analyze feedback and generate fix recommendations
+#   4. Posts detailed analysis with implementation plan
+#   5. Updates PR labels to track fix progress
+#
+# Automation Routing Policy: Uses OpenRouter via OPENROUTER_API_KEY (not GitHub Copilot)
+#
+# Related workflows:
+#   • pr-review-status.yml — Applies review status labels
+#   • openrouter-triage.yml — General issue/PR triage
+#   • ralph-loop.yml — CI failure auto-fix
+#
+# Documentation: docs/PR_REVIEW_REQUEST_AUTOMATION.md
+
+on:
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  handle-review-request:
+    name: Handle Changes Requested
+    runs-on: ubuntu-latest
+    # Only run when:
+    # 1. A review with state CHANGES_REQUESTED is submitted, OR
+    # 2. The changes-requested label is manually added
+    if: |
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'CHANGES_REQUESTED') ||
+      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'changes-requested')
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify OPENROUTER_API_KEY
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::error::OPENROUTER_API_KEY is not set. Cannot proceed with automated review handling."
+            exit 1
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: Check for no-triage label
+        id: check-skip
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+            const hasNoTriage = labels.some(l => l.name === 'no-triage');
+            if (hasNoTriage) {
+              core.notice('Skipping review request handling due to no-triage label');
+              core.setOutput('skip', 'true');
+            } else {
+              core.setOutput('skip', 'false');
+            }
+
+      - name: Run OpenRouter review request handler
+        if: steps.check-skip.outputs.skip != 'true'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MODEL: anthropic/claude-sonnet-4
+        run: node scripts/pr-review-request-handler.js
+
+  # Badge update job - updates PR status comment with new badge when review-fix labels change
+  update-status-badge:
+    name: Update Review Fix Status Badge
+    runs-on: ubuntu-latest
+    needs: handle-review-request
+    if: always() && needs.handle-review-request.result != 'skipped'
+
+    steps:
+      - name: Update PR comment with status badge
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            // Fetch current labels to determine status
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const labelNames = labels.map(l => l.name);
+
+            let statusBadge, statusText;
+            if (labelNames.includes('review-fix:complete')) {
+              statusBadge = '![Review Fix Status](https://img.shields.io/badge/review_fix-complete-green?style=for-the-badge)';
+              statusText = '✅ **Review feedback has been analyzed.** Check the analysis comment above for recommendations.';
+            } else if (labelNames.includes('review-fix:failed')) {
+              statusBadge = '![Review Fix Status](https://img.shields.io/badge/review_fix-failed-red?style=for-the-badge)';
+              statusText = '❌ **Automated analysis failed.** Manual review and fixes required.';
+            } else if (labelNames.includes('review-fix:in-progress')) {
+              statusBadge = '![Review Fix Status](https://img.shields.io/badge/review_fix-in_progress-yellow?style=for-the-badge)';
+              statusText = '⏳ **Analyzing review feedback...** OpenRouter is processing reviewer comments.';
+            } else {
+              // No review-fix label, skip update
+              core.info('No review-fix status label found, skipping badge update');
+              return;
+            }
+
+            const marker = '<!-- pr-review-fix-status -->';
+
+            // Check if status comment exists
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const existingComment = comments.find(c => c.body && c.body.includes(marker));
+
+            const body = [
+              marker,
+              '## 🔧 Review Fix Status',
+              '',
+              statusBadge,
+              '',
+              statusText,
+              '',
+              '---',
+              '_Status updated automatically by PR Review Request Handler workflow._',
+            ].join('\n');
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body,
+              });
+              core.info('Updated existing review fix status comment');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+              core.info('Created new review fix status comment');
+            }
