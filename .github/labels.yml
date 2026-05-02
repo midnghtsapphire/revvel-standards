@@ -425,3 +425,7 @@ labels:
   - name: goap-escalation
     color: "b60205"
     description: "GOAP escalation — requires human intervention after auto-retry failure"
+
+  - name: auto-error
+    color: "d73a4a"
+    description: "Auto-created error issue from workflow failure"

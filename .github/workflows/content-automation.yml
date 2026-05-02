@@ -196,7 +196,7 @@ jobs:
       - name: Push changes
         if: steps.generate.outputs.output_path != ''
         run: |
-          git push origin ${{ github.ref_name }} || echo "Nothing to push"
+          git push origin "${GITHUB_REF_NAME}" || echo "Nothing to push"
 
       - name: Post results to issue
         if: github.event_name == 'issues' && steps.generate.outputs.output_path != ''
@@ -309,16 +309,37 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '[AUTO-ERROR] Content Automation workflow failed',
-              body: `The content-automation workflow failed multiple times.
-              
-              **Run:** ${context.payload.repository.html_url}/actions/runs/${context.runId}
-              **Event:** ${context.eventName}
-              **Trigger:** ${{ github.event_name }}
-              
-              Please investigate and fix the underlying issue.`,
-              labels: ['auto-error']
+            const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const title = '[AUTO-ERROR] Content Automation workflow failed';
+            const body = `The content-automation workflow failed.
+
+            **Run:** ${runUrl}
+            **Event:** ${context.eventName}
+
+            Please investigate and fix the underlying issue.`;
+
+            // Deduplication: if an open auto-error issue with the same title
+            // already exists, add a comment with the latest run instead of
+            // opening another duplicate issue.
+            const searchResult = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:auto-error in:title "${title}"`,
             });
+
+            if (searchResult.data.total_count > 0) {
+              const existing = searchResult.data.items[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Another content-automation run failed.\n\n**Run:** ${runUrl}\n**Event:** ${context.eventName}`,
+              });
+              core.notice(`Existing auto-error issue #${existing.number} updated with new failure.`);
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['auto-error'],
+              });
+            }

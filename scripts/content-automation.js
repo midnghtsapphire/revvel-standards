@@ -81,6 +81,8 @@ async function callOpenRouter(model, messages, maxTokens = 4000) {
           const result = JSON.parse(data);
           if (result.error) {
             reject(new Error(result.error.message || JSON.stringify(result.error)));
+          } else if (!result.choices || !result.choices.length || !result.choices[0].message) {
+            reject(new Error(`Unexpected API response: no choices returned. Response: ${JSON.stringify(result).substring(0, 200)}`));
           } else {
             resolve(result.choices[0].message.content);
           }
