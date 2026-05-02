@@ -464,7 +464,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 |------|-----|---------|-----------|
 | **Telegago** | https://cse.google.com/cse | Custom Google search engine for finding public and private Telegram channels | Excellent for initial discovery, but cannot penetrate restricted groups |
 | **TGStat** | https://tgstat.com | Catalogs channels, subscriber counts, and audience overlap | Highly valuable for tracking influence networks, propaganda flow, and the "business side" of channels |
-| **Telemetr.io** | https://telemetr.io | Channel analytics and audience overlap | Highly valuable for tracking influence networks and propaganda flow |
+| **Telemetr.io** | https://telemetr.io | Alternative channel analytics platform with different data visualization and export formats | Highly valuable as a cross-validation source for TGStat data |
 | **Telepathy** | https://telepathydb.com | Open-source toolkit for archiving chats, scraping member lists, and mapping message interactions | Very powerful for deep analysis but requires technical knowledge and is subject to strict Telegram API rate limits |
 | **UserSearch** | https://usersearch.com | Structured platform for searching billions of messages, enumerating members, and retrieving historic profile pictures | Yes, it abstracts the complexity of API limits and burner accounts, making it vastly superior to manual scraping for professional investigations |
 | **Leak Bots** | @TrueCalleRobot, @LeakOsintf311a_bot, @probiv43bot | Telegram bots that provide phone-to-name resolution or search multi-gigabyte breach databases | They return fast results, but they operate in legal gray areas, frequently get banned, and require strict OPSEC (like burner accounts) to use safely |
@@ -564,7 +564,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 | **PimEyes** | https://pimeyes.com | An advanced public facial recognition engine capable of matching faces even in low-resolution images | Yes, very powerful but raises privacy concerns |
 | **Lenso.ai** | https://lenso.ai | AI-powered facial recognition that handles altered, edited, or angled photos | Yes, complements PimEyes |
 | **GeoSpy** | https://geospy.ai | AI-powered image geolocation that uncovers where photos were taken without relying on EXIF data | Yes, revolutionary for geolocation work |
-| **GeoSpyer** | Alternative service | AI-powered image geolocation | Yes, provides alternative to GeoSpy |
+| **GeoSpyer** | URL unavailable | AI-powered image geolocation service (URL not publicly documented) | Yes, provides alternative to GeoSpy when available |
 
 ---
 
@@ -599,7 +599,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 ## 9. OSINT Platform Integrations (FOSS)
 
-**Note:** Many tools from the field-specific catalog above (Section 8) are also included in integration workflows. The platforms below provide centralized management and orchestration.
+**Note:** Many tools from the field-specific catalog above (Section 8) are also included in integration workflows. The platforms below provide centralized management and orchestration. For example, SpiderFoot and Maltego from Section 8 appear here because they serve dual roles as both standalone OSINT tools and integration platforms. OpenCTI and MISP provide frameworks for correlating data from tools like Shodan, theHarvester, and threat feeds mentioned in earlier sections.
 
 | Platform | Role | URL |
 |----------|------|-----|
