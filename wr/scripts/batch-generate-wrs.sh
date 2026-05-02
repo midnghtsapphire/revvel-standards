@@ -73,8 +73,9 @@ case "$MODE" in
         echo ""
         
         for repo in "${P0_REPOS[@]}"; do
-            generate_wr_for_repo "$repo"
+            generate_wr_for_repo "$repo" || true
         done
+
         ;;
         
     "p1")
