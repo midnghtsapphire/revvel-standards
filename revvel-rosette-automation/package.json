@@ -22,10 +22,6 @@
   "devDependencies": {
     "yaml": "^2.8.3"
   },
-  "dependencies": {
-    "axios": "^1.6.0",
-    "dotenv": "^16.4.0"
-  },
   "engines": {
     "node": ">=18.0.0"
   }
