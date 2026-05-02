@@ -429,16 +429,16 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 
 | Project | Docs Directory | BOM | Brand |
 |---|---|---|---|
-| GrowlingEyes | [`docs/growlingeyes/`](docs/growlingeyes/) | [BOM.md](docs/growlingeyes/BOM.md) | [BRAND.md](docs/growlingeyes/BRAND.md) |
-| Neurooz | [`docs/neurooz/`](docs/neurooz/) | [BOM.md](docs/neurooz/BOM.md) | — |
-| Revvel Music Studio | [`docs/revvel-music-studio/`](docs/revvel-music-studio/) | [BOM.md](docs/revvel-music-studio/BOM.md) | — |
-| Universal SAR App | [`docs/universal-sar-app/`](docs/universal-sar-app/) | [BOM.md](docs/universal-sar-app/BOM.md) | — |
-| Premolt | [`docs/premolt/`](docs/premolt/) | [BOM.md](docs/premolt/BOM.md) · [PLAN.md](docs/premolt/PLAN.md) | — |
-| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](penny-sovereign-yield-scout/) | [CHANGELOG.md](penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](penny-sovereign-yield-scout/branding/) |
+| GrowlingEyes | [`docs/growlingeyes/`](../docs/growlingeyes/) | [BOM.md](../docs/growlingeyes/BOM.md) | [BRAND.md](../docs/growlingeyes/BRAND.md) |
+| Neurooz | [`docs/neurooz/`](../docs/neurooz/) | [BOM.md](../docs/neurooz/BOM.md) | — |
+| Revvel Music Studio | [`docs/revvel-music-studio/`](../docs/revvel-music-studio/) | [BOM.md](../docs/revvel-music-studio/BOM.md) | — |
+| Universal SAR App | [`docs/universal-sar-app/`](../docs/universal-sar-app/) | [BOM.md](../docs/universal-sar-app/BOM.md) | — |
+| Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
+| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
 
-**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
+**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md)
 
-**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](docs/_MASTER_INVENTORY.md)
+**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md)
 
 Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
@@ -448,10 +448,10 @@ Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
-- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](templates/brand/REVVEL_EMBLEM_STANDARD.md)
-- **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](templates/brand/BRAND_IDENTITY_TEMPLATE.md)
-- **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](templates/brand/ICON_SIZE_SPEC.md)
-- **How to use brand templates:** [`templates/brand/README.md`](templates/brand/README.md)
+- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](../templates/brand/REVVEL_EMBLEM_STANDARD.md)
+- **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](../templates/brand/BRAND_IDENTITY_TEMPLATE.md)
+- **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](../templates/brand/ICON_SIZE_SPEC.md)
+- **How to use brand templates:** [`templates/brand/README.md`](../templates/brand/README.md)
 
 ---
 
@@ -472,9 +472,9 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 
 **DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
-**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](docs/WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
+**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](../docs/WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
 
-Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
+Full README: [`templates/cicd/README.md`](../templates/cicd/README.md)
 
 ---
 
@@ -488,7 +488,7 @@ Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every p
 | `ui-db-map.test.ts` | Vitest integration | Validates API response shapes match DB |
 | `panel-data-void.spec.ts` | Playwright E2E | Validates pages load with real data |
 
-Instructions: [`templates/testing/README.md`](templates/testing/README.md)
+Instructions: [`templates/testing/README.md`](../templates/testing/README.md)
 
 ---
 

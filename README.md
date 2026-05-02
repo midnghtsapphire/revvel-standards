@@ -612,11 +612,18 @@ All Revvel projects enforce strict documentation standards:
 
 ---
 
-## 8. Corporate Identity & Entity Hierarchy
+## 8–10 + Templates → Moved to `docs/PORTFOLIO.md`
 
-Moved to `docs/PORTFOLIO.md` to keep `README.md` smaller.
+To keep this README lean, the following sections have moved to [`docs/PORTFOLIO.md`](docs/PORTFOLIO.md):
 
-See: `docs/PORTFOLIO.md`.
+- **8. Corporate Identity & Entity Hierarchy** — parent-entity structure, Schema.org JSON-LD requirements.
+- **9. Learning Resources & Documentation** — curated platforms, references, and community links.
+- **10. Cutting-Edge Technology Discovery & Evaluation** — tech radar, newsletters, and adoption strategy.
+- **Project Tracking — BOM & Per-Project Docs** — per-project doc directories, master BOM/inventory.
+- **Brand & Design — Revvel Emblem Standard** — emblem standard, brand identity templates.
+- **CI/CD Templates** — workflow catalog (`templates/cicd/`), DeployBot/Waydev integration notes.
+- **Testing Templates** — Vitest/Playwright templates from `templates/testing/`.
+- **Bootstrap a New Project** — one-command scaffold from `scripts/bootstrap-new-project.sh`.
 
 ## GitHub Projects Setup
 
