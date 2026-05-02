@@ -24,6 +24,7 @@ const path = require('path');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const ORG = process.env.GITHUB_REPOSITORY_OWNER || 'midnghtsapphire';
 const REPO = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'revvel-standards';
+const DATE_OVERRIDE = process.env.DATE_OVERRIDE; // Support date override from workflow
 
 if (!GITHUB_TOKEN) {
   console.error('❌ GITHUB_TOKEN is required');
@@ -38,23 +39,29 @@ const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 /**
  * Get today's date in YYYY-MM-DD format
+ * Supports DATE_OVERRIDE environment variable for testing
  */
 function getToday() {
+  if (DATE_OVERRIDE) {
+    return DATE_OVERRIDE;
+  }
   const date = new Date();
   return date.toISOString().split('T')[0];
 }
 
 /**
  * Get yesterday's date in YYYY-MM-DD format
+ * Returns the date before getToday()
  */
 function getYesterday() {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
+  const today = getToday();
+  const date = new Date(today + 'T00:00:00Z');
+  date.setUTCDate(date.getUTCDate() - 1);
   return date.toISOString().split('T')[0];
 }
 
 /**
- * Format ISO timestamp to readable format
+ * Format ISO timestamp to readable format in UTC
  */
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -64,8 +71,9 @@ function formatDate(isoString) {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true
-  });
+    hour12: true,
+    timeZone: 'UTC'
+  }) + ' UTC';
 }
 
 /**
@@ -103,22 +111,23 @@ function extractRepoReferences(text) {
 // ────────────────────────────────────────────────────────────────────────────
 
 /**
- * Fetch issues created since a given date
+ * Fetch issues created since a given date using Search API for accurate created_at filtering
  */
 async function fetchIssuesSince(since) {
   try {
-    const { data } = await octokit.rest.issues.listForRepo({
-      owner: ORG,
-      repo: REPO,
-      state: 'all',
-      since: `${since}T00:00:00Z`,
-      per_page: 100,
+    // Use Search API to filter by created date accurately
+    const query = `repo:${ORG}/${REPO} is:issue created:>=${since}`;
+    
+    // Use paginate to get all results
+    const issues = await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {
+      q: query,
       sort: 'created',
-      direction: 'desc'
+      order: 'desc',
+      per_page: 100
     });
     
-    // Filter out pull requests (GitHub API includes PRs in issues endpoint)
-    return data.filter(issue => !issue.pull_request);
+    // Filter out pull requests (search API can return both)
+    return issues.filter(issue => !issue.pull_request);
   } catch (error) {
     console.error('❌ Error fetching issues:', error.message);
     return [];
@@ -126,11 +135,12 @@ async function fetchIssuesSince(since) {
 }
 
 /**
- * Fetch pull requests created since a given date
+ * Fetch pull requests created since a given date with pagination
  */
 async function fetchPRsSince(since) {
   try {
-    const { data } = await octokit.rest.pulls.list({
+    // Use paginate to get all PRs
+    const allPRs = await octokit.paginate(octokit.rest.pulls.list, {
       owner: ORG,
       repo: REPO,
       state: 'all',
@@ -140,9 +150,9 @@ async function fetchPRsSince(since) {
     });
     
     // Filter PRs created since the given date
-    return data.filter(pr => {
+    const sinceDate = new Date(`${since}T00:00:00Z`);
+    return allPRs.filter(pr => {
       const createdAt = new Date(pr.created_at);
-      const sinceDate = new Date(`${since}T00:00:00Z`);
       return createdAt >= sinceDate;
     });
   } catch (error) {
@@ -227,13 +237,30 @@ async function generateMarkdownReport(date, issues, prs) {
   const allVercelUrls = new Set();
   const allRepos = new Set();
   
+  // Extract from PR bodies first
   for (const pr of prs) {
-    // Extract from PR body
     extractVercelUrls(pr.body).forEach(url => allVercelUrls.add(url));
     extractRepoReferences(pr.body).forEach(repo => allRepos.add(repo));
-    
-    // Extract from PR comments
-    const comments = await fetchPRComments(pr.number);
+  }
+  
+  // Fetch comments for all PRs concurrently with a concurrency limit
+  const CONCURRENCY_LIMIT = 5;
+  const prComments = new Map();
+  
+  for (let i = 0; i < prs.length; i += CONCURRENCY_LIMIT) {
+    const batch = prs.slice(i, i + CONCURRENCY_LIMIT);
+    const commentPromises = batch.map(pr => 
+      fetchPRComments(pr.number).then(comments => [pr.number, comments])
+    );
+    const results = await Promise.all(commentPromises);
+    results.forEach(([prNumber, comments]) => {
+      prComments.set(prNumber, comments);
+    });
+  }
+  
+  // Extract URLs and repos from comments
+  for (const pr of prs) {
+    const comments = prComments.get(pr.number) || [];
     for (const comment of comments) {
       extractVercelUrls(comment.body).forEach(url => allVercelUrls.add(url));
       extractRepoReferences(comment.body).forEach(repo => allRepos.add(repo));
@@ -441,93 +468,127 @@ function escapeHtml(text) {
 }
 
 /**
- * Convert markdown to HTML (basic conversion)
+ * Convert markdown to HTML with proper escaping
+ * Strategy: Escape all user content first, then apply HTML formatting to safe patterns
  */
 function convertMarkdownToHTML(markdown) {
-  let html = markdown;
-  
-  // Headers (do these first)
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  
-  // Tables (convert markdown tables to HTML early, before other replacements)
-  html = html.replace(/\|(.*)?\|\n\|[-:| ]+\|\n((?:\|.*?\|\n?)+)/g, (match, header, rows) => {
-    const headerCells = header.split('|').filter(Boolean).map(cell => 
-      `<th>${escapeHtml(cell.trim())}</th>`
-    ).join('');
-    
-    const bodyRows = rows.trim().split('\n').map(row => {
-      const cells = row.split('|').filter(Boolean).map(cell => 
-        `<td>${escapeHtml(cell.trim())}</td>`
-      ).join('');
-      return `<tr>${cells}</tr>`;
-    }).join('\n');
-    
-    return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
-  });
-  
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-  
-  // Links (escape both text and URL to prevent XSS, add security attributes)
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
-    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
-  });
-  
-  // Code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // Lists - group consecutive list items into single <ul>
-  const listItems = [];
-  const lines = html.split('\n');
+  const lines = markdown.split('\n');
+  const processedLines = [];
+  let inTable = false;
   let inList = false;
-  const processed = [];
+  const listItems = [];
   
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Headers
+    if (line.match(/^# (.+)$/)) {
+      const text = line.match(/^# (.+)$/)[1];
+      processedLines.push(`<h1>${escapeHtml(text)}</h1>`);
+      continue;
+    }
+    if (line.match(/^## (.+)$/)) {
+      const text = line.match(/^## (.+)$/)[1];
+      processedLines.push(`<h2>${escapeHtml(text)}</h2>`);
+      continue;
+    }
+    if (line.match(/^### (.+)$/)) {
+      const text = line.match(/^### (.+)$/)[1];
+      processedLines.push(`<h3>${escapeHtml(text)}</h3>`);
+      continue;
+    }
+    
+    // Horizontal rules
+    if (line === '---') {
+      processedLines.push('<hr>');
+      continue;
+    }
+    
+    // Tables
+    if (line.match(/^\|.*\|$/)) {
+      if (!inTable && i + 1 < lines.length && lines[i + 1].match(/^\|[-:| ]+\|$/)) {
+        // Table header
+        inTable = true;
+        const cells = line.split('|').filter(Boolean);
+        const headerCells = cells.map(cell => `<th>${escapeHtml(cell.trim())}</th>`).join('');
+        processedLines.push(`<table><thead><tr>${headerCells}</tr></thead><tbody>`);
+        i++; // Skip separator line
+        continue;
+      } else if (inTable) {
+        // Table row
+        const cells = line.split('|').filter(Boolean);
+        const rowCells = cells.map(cell => {
+          // Process inline markdown in cells (bold, italic, links, code)
+          let cellContent = escapeHtml(cell.trim());
+          cellContent = cellContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          cellContent = cellContent.replace(/_(.+?)_/g, '<em>$1</em>');
+          cellContent = cellContent.replace(/`([^`]+)`/g, '<code>$1</code>');
+          return `<td>${cellContent}</td>`;
+        }).join('');
+        processedLines.push(`<tr>${rowCells}</tr>`);
+        continue;
+      }
+    } else if (inTable) {
+      // End of table
+      processedLines.push('</tbody></table>');
+      inTable = false;
+    }
+    
+    // Lists
     if (line.match(/^- (.+)$/)) {
       if (!inList) {
         inList = true;
       }
-      listItems.push(line.replace(/^- (.+)$/, '<li>$1</li>'));
-    } else {
-      if (inList && listItems.length > 0) {
-        processed.push('<ul>' + listItems.join('') + '</ul>');
-        listItems.length = 0;
-        inList = false;
+      const text = line.match(/^- (.+)$/)[1];
+      // Process inline markdown in list items
+      let listContent = escapeHtml(text);
+      listContent = listContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      listContent = listContent.replace(/_(.+?)_/g, '<em>$1</em>');
+      listContent = listContent.replace(/`([^`]+)`/g, '<code>$1</code>');
+      listItems.push(`<li>${listContent}</li>`);
+      continue;
+    } else if (inList) {
+      // End of list
+      processedLines.push('<ul>' + listItems.join('') + '</ul>');
+      listItems.length = 0;
+      inList = false;
+    }
+    
+    // Links (full line or inline)
+    let processedLine = line;
+    processedLine = processedLine.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+    });
+    
+    // If line wasn't processed and contains content, escape and wrap in paragraph
+    if (processedLine === line && line.trim() !== '' && !line.match(/^<[^>]+>/)) {
+      let content = escapeHtml(line);
+      // Apply inline formatting
+      content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      content = content.replace(/_(.+?)_/g, '<em>$1</em>');
+      content = content.replace(/`([^`]+)`/g, '<code>$1</code>');
+      processedLines.push(`<p>${content}</p>`);
+    } else if (processedLine !== line) {
+      // Links were processed, wrap if needed
+      if (!processedLine.match(/^<[^>]+>/)) {
+        processedLines.push(`<p>${processedLine}</p>`);
+      } else {
+        processedLines.push(processedLine);
       }
-      processed.push(line);
+    } else if (line.trim() === '') {
+      processedLines.push('');
     }
   }
   
-  // Flush any remaining list items
-  if (listItems.length > 0) {
-    processed.push('<ul>' + listItems.join('') + '</ul>');
+  // Close any open lists or tables
+  if (inList && listItems.length > 0) {
+    processedLines.push('<ul>' + listItems.join('') + '</ul>');
+  }
+  if (inTable) {
+    processedLines.push('</tbody></table>');
   }
   
-  html = processed.join('\n');
-  
-  // Horizontal rules
-  html = html.replace(/^---$/gm, '<hr>');
-  
-  // Paragraphs (do this last, and skip already converted elements)
-  // Note: At this point, plain text lines haven't been escaped yet, only converted HTML has
-  html = html.replace(/^([^<\n].+)$/gm, (match) => {
-    // Don't wrap if line is already HTML or empty
-    if (match.trim() === '' || match.match(/^<[^>]+>/)) {
-      return match;
-    }
-    // Only escape plain text that hasn't been converted to HTML yet
-    return `<p>${match}</p>`;
-  });
-  
-  // Clean up multiple consecutive <p> tags
-  html = html.replace(/<\/p>\n<p>/g, '</p><p>');
-  
-  return html;
+  return processedLines.join('\n');
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -538,18 +599,17 @@ async function main() {
   console.log('📊 Generating daily WR & PR summary...\n');
   
   const today = getToday();
-  const yesterday = getYesterday();
   
   console.log(`📅 Date: ${today}`);
-  console.log(`🔍 Looking for activity since: ${yesterday}\n`);
+  console.log(`🔍 Looking for activity since midnight today (${today} 00:00 UTC)\n`);
   
-  // Fetch data
+  // Fetch data - use today as cutoff for true 24-hour window
   console.log('📥 Fetching issues...');
-  const issues = await fetchIssuesSince(yesterday);
+  const issues = await fetchIssuesSince(today);
   console.log(`   Found ${issues.length} issue(s)\n`);
   
   console.log('📥 Fetching pull requests...');
-  const prs = await fetchPRsSince(yesterday);
+  const prs = await fetchPRsSince(today);
   console.log(`   Found ${prs.length} PR(s)\n`);
   
   // Generate reports

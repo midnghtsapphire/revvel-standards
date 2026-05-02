@@ -213,7 +213,7 @@ Vercel URLs are extracted via pattern matching. If URLs are not detected:
 For issues or questions about the daily summary system:
 1. Check this documentation
 2. Check `wr/summaries/README.md`
-3. Open an issue with label `wr-summary`
+3. Open an issue with label `weekly-research`
 
 ## License
 

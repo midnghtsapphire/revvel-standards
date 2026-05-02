@@ -17,6 +17,7 @@
   - Automatically commits to repository
   - Creates index page with reverse chronological listing
   - Zero human intervention required
+  - Captures today's activity (midnight to workflow run time)
 
 ### 2. Summary Generator Script
 - **Script:** `scripts/generate-daily-summary.js`
@@ -223,8 +224,8 @@ Key differences:
 
 ### Schedule
 - Runs at 23:00 UTC daily
-- Captures activity from yesterday 00:00 UTC to workflow runtime
-- Approximately 47 hours of coverage
+- Captures activity from today 00:00 UTC to workflow runtime
+- True 24-hour daily window with no overlap between days
 
 ### Permissions Required
 - `contents: write` — To commit generated reports

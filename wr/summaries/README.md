@@ -92,8 +92,8 @@ List of all repository references found in PR descriptions and comments.
 
 ## Notes
 
-- The script runs at 23:00 UTC and looks for activity created since yesterday at 00:00 UTC
-- This captures approximately 47 hours of activity (yesterday 00:00 to today 23:00)
+- The script runs daily and captures activity from midnight to midnight UTC (true 24-hour window)
+- When run at 23:00 UTC, it captures from today 00:00 UTC to today 23:00 UTC (current day's activity)
 - Vercel URLs are extracted using pattern matching from PR bodies and comments
 - Repository references are extracted using pattern matching (owner/repo format)
 - HTML reports use inline CSS for standalone viewing without external dependencies
@@ -101,4 +101,4 @@ List of all repository references found in PR descriptions and comments.
 
 ## Support
 
-For issues or questions about the daily summary system, please open an issue in this repository with the label `wr-summary`.
+For issues or questions about the daily summary system, please open an issue in this repository with the label `weekly-research`.
