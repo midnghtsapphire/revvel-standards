@@ -12,15 +12,16 @@ This report analyzes all midnghtsapphire repositories for opportunities, errors,
 
 ### Tier 1: Active Projects (Recently Updated)
 
-| Repository | Status | Last Updated | Key Issues | Vercel URL |
-|---|---|---|---|---|
-| revvel-standards | ✅ Fixed | 2026-05-02 | YAML errors fixed | N/A (standards) |
-| Soup2Bowl | ⚠️ No deploy | 2026-05-02 | Needs URL in README | TBD |
-| neurooz | ✅ Built | 2026-04-30 | No production URL, uses Lovable | TBD |
-| thealttext-frontend | ✅ Fixed | 2026-05-02 | TypeScript error fixed | TBD |
-| thealttext-backend | TBD | 2026-04-25 | Needs inspection | TBD |
-| reese-reviews | TBD | 2026-04-30 | Needs inspection | TBD |
-| mindmappr | TBD | 2026-04-26 | Needs inspection | TBD |
+| Repository | Status | Tests | Build | Key Issues | Vercel URL |
+|---|---|---|---|---|---|
+| revvel-standards | ✅ Fixed | 334 | ✅ | YAML errors fixed | N/A |
+| Soup2Bowl | ⚠️ Ready | N/A | ✅ | Static - needs deploy | TBD |
+| neurooz | ⚠️ Ready | 27 ✅ | ✅ | No production URL | TBD |
+| **thealttext-frontend** | ✅ **Fixed** | N/A | ✅ | TypeScript fix pushed | TBD |
+| **thealttext-backend** | ⚠️ Blocked | N/A | N/A | Needs PostgreSQL | TBD |
+| reese-reviews | ✅ **Excellent** | **245 ✅** | ✅ | Ready to deploy | TBD |
+| mindmappr | ✅ Ready | 3 ✅ | N/A | Needs node install | TBD |
+| revvel-music-studio | ✅ Ready | N/A | ✅ | Python/FFmpeg needed | TBD |
 
 ---
 
