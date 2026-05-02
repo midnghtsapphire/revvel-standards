@@ -506,7 +506,7 @@ bash ../revvel-standards/scripts/bootstrap-new-project.sh neurooz 164.90.148.7 n
 
 This creates:
 - `SYSTEM_STATE.md` + `CONTEXT_PRIMER.md` (session state standards)
-- `.github/workflows/` (all 6 CI/CD workflows)
+- `.github/workflows/` (all 7 CI/CD workflows)
 - `scripts/pwa-audit.sh` (PWA readiness checker)
 - `docs/MOBILE_DEPLOYMENT.md` (store deployment guide)
 - `fastlane/` scaffold (inactive until accounts ready)
