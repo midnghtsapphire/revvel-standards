@@ -9,7 +9,7 @@
 #
 # Options:
 #   --days N              Duration in days (default: 30)
-#   --shape SHAPE         Product shape (pdf|app|cli|mcp|api)
+#   --shape SHAPE         Product shape (pdf|app|cli|mcp|api|skill|extension|booklet|full-app|excel|token)
 #   --auto-research       Run automated research phase
 #   --payment PLATFORM    Payment platform (lemonsqueezy|gumroad|stripe)
 #   --launch-date DATE    Target launch date (YYYY-MM-DD)
@@ -56,7 +56,7 @@ error() {
 }
 
 check_dependencies() {
-  local deps=(git jq python3 curl)
+  local deps=(git python3 curl)
   for dep in "${deps[@]}"; do
     if ! command -v "$dep" &> /dev/null; then
       error "Required dependency '$dep' not found. Please install it first."
@@ -64,8 +64,27 @@ check_dependencies() {
   done
 }
 
+# Convert input to lowercase kebab-case slug accepted by init-product.sh.
+# Strips leading/trailing dashes and collapses runs of dashes so inputs like
+# " My Product! " don't produce slugs like '-my-product-' that init-product.sh
+# rejects.
 slugify() {
-  echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-'
+  echo "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | tr ' ' '-' \
+    | tr -cd '[:alnum:]-' \
+    | sed -E 's/-+/-/g; s/^-+//; s/-+$//'
+}
+
+# Require a value for an option flag. Errors out with a clear message when
+# the user passes a value-taking flag without a value (e.g. `--days` with no
+# argument). Without this guard, `shift 2` would silently abort under set -e.
+require_value() {
+  local flag="$1"
+  local remaining="$2"
+  if [ "$remaining" -lt 2 ]; then
+    error "$flag requires a value"
+  fi
 }
 
 # ============================================================================
@@ -78,11 +97,13 @@ while [ $# -gt 0 ]; do
       usage 0
       ;;
     --days)
-      DAYS="${2:-}"
+      require_value "--days" "$#"
+      DAYS="$2"
       shift 2
       ;;
     --shape)
-      SHAPE="${2:-}"
+      require_value "--shape" "$#"
+      SHAPE="$2"
       shift 2
       ;;
     --auto-research)
@@ -90,11 +111,13 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     --payment)
-      PAYMENT_PLATFORM="${2:-}"
+      require_value "--payment" "$#"
+      PAYMENT_PLATFORM="$2"
       shift 2
       ;;
     --launch-date)
-      LAUNCH_DATE="${2:-}"
+      require_value "--launch-date" "$#"
+      LAUNCH_DATE="$2"
       shift 2
       ;;
     --dry-run)
@@ -127,10 +150,11 @@ if ! [[ "$DAYS" =~ ^[0-9]+$ ]] || [ "$DAYS" -lt 7 ] || [ "$DAYS" -gt 90 ]; then
   error "Days must be between 7 and 90"
 fi
 
+# Shape list must stay in sync with scripts/init-product.sh:64.
 case "$SHAPE" in
-  pdf|app|cli|mcp|api|skill|extension|booklet|excel|token) ;;
+  pdf|app|cli|mcp|api|skill|extension|booklet|full-app|excel|token) ;;
   *)
-    error "Invalid shape '$SHAPE' (expected: pdf, app, cli, mcp, api, skill, extension, booklet, excel, token)"
+    error "Invalid shape '$SHAPE' (expected: pdf, app, cli, mcp, api, skill, extension, booklet, full-app, excel, token)"
     ;;
 esac
 
@@ -141,13 +165,35 @@ case "$PAYMENT_PLATFORM" in
     ;;
 esac
 
+# Pre-flight check now that arguments have validated. Doing this after
+# validation gives a clearer error for typos (e.g. `--shape ap`) before
+# complaining about missing tools.
+check_dependencies
+
 # ============================================================================
 # Setup
 # ============================================================================
 
 PRODUCT_SLUG=$(slugify "$PRODUCT_NAME")
+if [ -z "$PRODUCT_SLUG" ]; then
+  error "Product name '$PRODUCT_NAME' produced an empty slug after sanitization"
+fi
 PROJECT_DIR="$REPO_ROOT/projects/agent-generated/$PRODUCT_SLUG"
 NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+# Compute proportional week boundaries so generated plans match --days.
+# For DAYS=30 this reproduces the canonical 1-7 / 8-14 / 15-21 / 22-30 split.
+WEEK1_END=$(( DAYS / 4 ))
+if [ "$WEEK1_END" -lt 1 ]; then WEEK1_END=1; fi
+WEEK2_END=$(( DAYS / 2 ))
+if [ "$WEEK2_END" -le "$WEEK1_END" ]; then WEEK2_END=$(( WEEK1_END + 1 )); fi
+WEEK3_END=$(( DAYS * 3 / 4 ))
+if [ "$WEEK3_END" -le "$WEEK2_END" ]; then WEEK3_END=$(( WEEK2_END + 1 )); fi
+if [ "$WEEK3_END" -ge "$DAYS" ]; then WEEK3_END=$(( DAYS - 1 )); fi
+WEEK1_START=1
+WEEK2_START=$(( WEEK1_END + 1 ))
+WEEK3_START=$(( WEEK2_END + 1 ))
+WEEK4_START=$(( WEEK3_END + 1 ))
 
 if [ -z "$LAUNCH_DATE" ]; then
   # Portable date calculation (works on GNU and BSD/macOS)
@@ -186,7 +232,11 @@ fi
 log "Phase 1: Initializing project structure..."
 
 if [ -d "$PROJECT_DIR" ]; then
-  error "Project directory already exists: $PROJECT_DIR"
+  if [ "$DRY_RUN" = true ]; then
+    log "[DRY RUN] Project directory already exists: $PROJECT_DIR (would refuse in real run)"
+  else
+    error "Project directory already exists: $PROJECT_DIR"
+  fi
 fi
 
 if [ "$DRY_RUN" = false ]; then
@@ -224,25 +274,25 @@ if [ "$DRY_RUN" = false ]; then
 
 ## Timeline
 
-### Week 1: Foundation & Validation (Days 1-7)
-- [ ] Day 1-2: Problem discovery & validation
-- [ ] Day 3-4: MVP specification
-- [ ] Day 5-7: Landing page & waitlist setup
+### Week 1: Foundation & Validation (Days $WEEK1_START-$WEEK1_END)
+- [ ] Problem discovery & validation
+- [ ] MVP specification
+- [ ] Landing page & waitlist setup
 
-### Week 2: Build & Automate (Days 8-14)
-- [ ] Day 8-10: MVP development
-- [ ] Day 11-12: Payment integration ($PAYMENT_PLATFORM)
-- [ ] Day 13-14: Analytics & monitoring
+### Week 2: Build & Automate (Days $WEEK2_START-$WEEK2_END)
+- [ ] MVP development
+- [ ] Payment integration ($PAYMENT_PLATFORM)
+- [ ] Analytics & monitoring
 
-### Week 3: Test & Iterate (Days 15-21)
-- [ ] Day 15-17: Closed beta launch
-- [ ] Day 18-19: Iterate based on data
-- [ ] Day 20-21: Final polish
+### Week 3: Test & Iterate (Days $WEEK3_START-$WEEK3_END)
+- [ ] Closed beta launch
+- [ ] Iterate based on data
+- [ ] Final polish
 
-### Week 4: Launch & Scale (Days 22-30)
-- [ ] Day 22-24: Soft launch
-- [ ] Day 25-27: Full launch (Product Hunt)
-- [ ] Day 28-30: Measure & plan next iteration
+### Week 4: Launch & Scale (Days $WEEK4_START-$DAYS)
+- [ ] Soft launch
+- [ ] Full launch (Product Hunt)
+- [ ] Measure & plan next iteration
 
 ---
 
@@ -625,7 +675,7 @@ cd projects/agent-generated/$PRODUCT_SLUG/build
 # Check launch status
 cat ../launch/30-day-plan.md
 
-# View metrics targets
+# View metrics targets (config only — collection is documented in automation/README.md)
 cat ../metrics/config.json
 \`\`\`
 
