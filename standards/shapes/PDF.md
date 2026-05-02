@@ -166,11 +166,13 @@ This combination requires no backend infrastructure and scales infinitely with z
 
 ```bash
 # Gumroad (via API)
+# Use -F for every field — file uploads require multipart/form-data,
+# and curl's -d (urlencoded) and -F (multipart) flags are mutually exclusive.
 curl -X POST https://api.gumroad.com/v2/products \
-  -d "access_token=$GUMROAD_ACCESS_TOKEN" \
-  -d "name=<Product Name>" \
-  -d "price=<price_in_cents>" \
-  -d "description=<description>" \
+  -F "access_token=$GUMROAD_ACCESS_TOKEN" \
+  -F "name=<Product Name>" \
+  -F "price=<price_in_cents>" \
+  -F "description=<description>" \
   -F "preview=@build/pdf/assets/cover.png" \
   -F "file=@build/pdf/output/<product-slug>.pdf"
 
