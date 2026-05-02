@@ -36,7 +36,7 @@
 3. **Analysis**: AI correlation, pattern detection, ATT&CK mapping
 4. **Action**: Alerts, tickets, reports, feed enrichment
 
-**End-to-end latency**: Raw data → Actionable alert in &lt; 60 seconds
+**End-to-end latency**: Raw data → Actionable alert in < 60 seconds
 
 ## 🚀 30-Day Product Blueprint
 
