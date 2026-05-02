@@ -239,6 +239,15 @@ BITO_API_KEY=$(vault kv get -field=api_key revvel/shared/code-review/bito)
 - [ ] Run `bito auth login` to authorize desktop access.
 - [ ] Open a test PR and verify BITO posts a review comment and applies the `bito-ai:review` label.
 
+### Helper Scripts
+
+For automated setup and testing:
+
+- **Interactive setup:** `./scripts/bito-api-helper.sh setup`
+- **Test integration:** `./scripts/test-bito-api.sh`
+- **Check status:** `./scripts/bito-api-helper.sh status`
+- **Full documentation:** [`scripts/BITO_README.md`](../scripts/BITO_README.md)
+
 ---
 
 *Part of the Revvel Standards tooling layer. See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) and [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for agent-ready instructions.*

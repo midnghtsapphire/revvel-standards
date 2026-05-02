@@ -220,6 +220,9 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 
 **Configuration:**
 - Requires `BITO_API_KEY` secret in every repo (obtain at bito.ai → Settings → API Keys; vault path: `revvel/shared/code-review/bito`)
+- **Quick setup:** Run `./scripts/bito-api-helper.sh setup` for interactive configuration
+- **Test integration:** Run `./scripts/test-bito-api.sh` to validate setup
+- See [`scripts/BITO_README.md`](../scripts/BITO_README.md) for helper script documentation
 - See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup
 - See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) for agent skill instructions
 
