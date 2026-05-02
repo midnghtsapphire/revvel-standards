@@ -32,7 +32,11 @@ class TaskScheduler:
         """Load scheduler configuration"""
         try:
             with open(self.config_path) as f:
-                config = yaml.safe_load(f)
+                # ``yaml.safe_load`` returns ``None`` for empty files / files
+                # containing only ``---``; coerce to ``{}`` so the subsequent
+                # ``.get("scheduler", {})`` doesn't raise ``AttributeError`` and
+                # crash ``TaskScheduler.__init__``.
+                config = yaml.safe_load(f) or {}
                 return config.get("scheduler", {})
         except FileNotFoundError:
             logger.error(f"Config file not found: {self.config_path}")

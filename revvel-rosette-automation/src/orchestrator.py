@@ -37,8 +37,19 @@ class Orchestrator:
         self.projects = []
 
     def _load_config(self) -> Dict[str, Any]:
-        """Load main configuration and merge supporting services config"""
+        """Load main configuration and merge supporting services config.
+
+        Only merges the supporting (services) config when the primary config
+        actually loaded — otherwise ``status_report().config_loaded`` would
+        report ``True`` purely on the back of the supporting file, hiding a
+        missing primary config from monitoring.
+        """
+        if not self.config_path.is_file():
+            logger.error(f"Config file not found: {self.config_path}")
+            return {}
         config = self._load_yaml(self.config_path)
+        if not config:
+            return config
         supporting = self._load_yaml(
             self.config_path.parent / "20-supportingconfig.yaml"
         )
@@ -58,7 +69,10 @@ class Orchestrator:
         """Load project registry"""
         try:
             with open(projects_file) as f:
-                data = yaml.safe_load(f)
+                # ``yaml.safe_load`` returns ``None`` for empty files / files
+                # containing only ``---``; coerce to ``{}`` so the subsequent
+                # ``.get("projects", [])`` doesn't raise ``AttributeError``.
+                data = yaml.safe_load(f) or {}
                 self.projects = data.get("projects", [])
                 logger.info(f"Loaded {len(self.projects)} projects")
         except FileNotFoundError:

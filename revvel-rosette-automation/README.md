@@ -58,14 +58,13 @@ revvel-rosette-automation/
 │   # Planned: security-credentials.sh, export-keys.sh,
 │   #          install-requirements.sh, local-launch-test.sh
 ├── docs/                 # Documentation
-│   ├── queue-format.txt       # Queue file format
+│   ├── authorization.txt       # Auth documentation
+│   ├── daily-routine.txt       # Daily automation
 │   ├── directory-structure.txt # Structure documentation
-│   ├── gatekeeper-system.txt  # Gatekeeper overview
-│   ├── trello-integration.txt # Trello usage
-│   ├── authorization.txt      # Auth documentation
-│   ├── project-labels.txt     # Label taxonomy
-│   ├── daily-routine.txt      # Daily automation
-│   └── five-step-trello.txt   # Trello workflow
+│   ├── five-step-trello.txt    # Trello workflow
+│   ├── gatekeeper-system.txt   # Gatekeeper overview
+│   └── queue-format.txt        # Queue file format
+│   # Planned: trello-integration.txt, project-labels.txt
 ├── tests/                # Test suite
 │   └── harness.test.js        # Main test harness
 ├── package.json          # Node.js dependencies
