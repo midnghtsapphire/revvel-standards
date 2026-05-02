@@ -116,11 +116,11 @@ A complete, production-ready automation system for creating and selling PDF prod
 ### Key Features
 
 - **Error Handling**: Retry logic, validation, fallbacks
-- **JSON Validation**: Clean Claude responses
+- **JSON Validation**: Clean Claude responses, handle markdown code blocks
 - **Idempotency**: Safe to re-run workflows
 - **Logging**: Complete audit trail
 - **Security**: Environment variable credentials
-- **Testing**: Comprehensive test suite
+- **Testing**: Manual validation scripts and sample payloads
 
 ---
 

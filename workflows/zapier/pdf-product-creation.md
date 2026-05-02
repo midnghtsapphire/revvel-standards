@@ -39,6 +39,8 @@ This Zap automates the 6-step process for creating and marketing PDF products:
 - **Action**: Run Python
 - **Code**:
   ```python
+  from datetime import datetime
+  
   # Prepare research data
   niche = input_data.get('niche', 'parenting')
   keywords = input_data.get('keywords', [])
@@ -80,13 +82,24 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   import json
   
   response = input_data.get('response', '{}')
-  parsed = json.loads(response)
   
-  output = {
-      'title': parsed.get('title'),
-      'subtitle': parsed.get('subtitle'),
-      'target_audience': parsed.get('target_audience')
-  }
+  # Clean up potential markdown code fences from Claude
+  response = response.replace('```json', '').replace('```', '').strip()
+  
+  try:
+      parsed = json.loads(response)
+      output = {
+          'title': parsed.get('title'),
+          'subtitle': parsed.get('subtitle'),
+          'target_audience': parsed.get('target_audience')
+      }
+  except json.JSONDecodeError as e:
+      # Provide clear error with context
+      output = {
+          'error': f'JSON parse error: {str(e)}',
+          'raw_response': response[:200]  # First 200 chars for debugging
+      }
+      raise Exception(f'Failed to parse Claude response as JSON. Error: {str(e)}. Response preview: {response[:200]}')
   ```
 
 #### Step 4: OpenAI / Claude - Generate PDF Content

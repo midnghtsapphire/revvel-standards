@@ -221,65 +221,17 @@ echo "- Product Pipeline: $REPO_ROOT/standards/AUTOMATED_PRODUCT_PIPELINE.md"
 echo "- PDF Shape Standard: $REPO_ROOT/standards/shapes/PDF.md"
 echo ""
 
-# Create test payload file
-TEST_FILE="$WORKFLOWS_DIR/test-payload.json"
-cat > "$TEST_FILE" << 'EOF'
-{
-  "niche": "parenting",
-  "keywords": [
-    "sleep training",
-    "toddler tantrums",
-    "picky eating",
-    "potty training",
-    "bedtime routine"
-  ]
-}
-EOF
-
-print_success "Created test payload: $TEST_FILE"
-
-# Create curl test script
-CURL_SCRIPT="$WORKFLOWS_DIR/test-workflow.sh"
-cat > "$CURL_SCRIPT" << 'EOF'
-#!/bin/bash
-# Test the PDF Product Automation workflow
-# Usage: ./test-workflow.sh <webhook-url>
-
-WEBHOOK_URL="${1}"
-
-if [ -z "$WEBHOOK_URL" ]; then
-    echo "Error: Please provide webhook URL"
-    echo "Usage: ./test-workflow.sh <webhook-url>"
-    exit 1
+# Note: test-payload.json and test-workflow.sh are already tracked in the repo
+# Don't overwrite them - just reference the existing files
+if [ ! -f "$WORKFLOWS_DIR/test-payload.json" ]; then
+    print_warning "test-payload.json not found (should be tracked in repo)"
 fi
 
-echo "🧪 Testing PDF Product Automation workflow..."
-echo "Webhook URL: $WEBHOOK_URL"
-echo ""
-
-RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$WEBHOOK_URL" \
-  -H "Content-Type: application/json" \
-  -d @test-payload.json)
-
-HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
-BODY=$(echo "$RESPONSE" | head -n -1)
-
-if [ "$HTTP_CODE" -eq 200 ]; then
-    echo "✅ Success! HTTP $HTTP_CODE"
-    echo ""
-    echo "Response:"
-    echo "$BODY" | jq '.' 2>/dev/null || echo "$BODY"
-else
-    echo "❌ Failed! HTTP $HTTP_CODE"
-    echo ""
-    echo "Response:"
-    echo "$BODY"
-    exit 1
+if [ ! -f "$WORKFLOWS_DIR/test-workflow.sh" ]; then
+    print_warning "test-workflow.sh not found (should be tracked in repo)"
 fi
-EOF
 
-chmod +x "$CURL_SCRIPT"
-print_success "Created test script: $CURL_SCRIPT"
+print_success "Setup script complete - using tracked test files from repo"
 
 echo ""
 echo "🎯 Next Steps:"

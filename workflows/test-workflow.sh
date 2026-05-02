@@ -22,7 +22,8 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$WEBHOOK_URL" \
 HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
 BODY=$(echo "$RESPONSE" | head -n -1)
 
-if [ "$HTTP_CODE" -eq 200 ]; then
+# Accept any 2xx status code as success
+if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
     echo "✅ Success! HTTP $HTTP_CODE"
     echo ""
     echo "Response:"
