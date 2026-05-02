@@ -100,27 +100,45 @@ jobs:
 
       - name: Extract content parameters
         id: params
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "topic=${{ github.event.inputs.topic }}" >> $GITHUB_OUTPUT
-            echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
-            echo "urgency=${{ github.event.inputs.urgency }}" >> $GITHUB_OUTPUT
-            echo "audience=${{ github.event.inputs.target_audience }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" = "issues" ]; then
-            # Sanitize issue title to prevent injection
-            TOPIC=$(echo '${{ github.event.issue.title }}' | tr -d '\n\r' | head -c 200)
-            echo "topic=${TOPIC}" >> $GITHUB_OUTPUT
-            echo "format=blog" >> $GITHUB_OUTPUT
-            echo "urgency=draft" >> $GITHUB_OUTPUT
-            echo "audience=${{ vars.CONTENT_TARGET_AUDIENCE || 'general audience' }}" >> $GITHUB_OUTPUT
-            echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
-          else
-            # Scheduled run - generate content calendar
-            echo "topic=Weekly Content Calendar" >> $GITHUB_OUTPUT
-            echo "format=calendar" >> $GITHUB_OUTPUT
-            echo "urgency=draft" >> $GITHUB_OUTPUT
-            echo "audience=${{ vars.CONTENT_TARGET_AUDIENCE || 'general audience' }}" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let topic, format, urgency, audience, issueNumber;
+            
+            if (context.eventName === 'workflow_dispatch') {
+              topic = context.payload.inputs.topic;
+              format = context.payload.inputs.format;
+              urgency = context.payload.inputs.urgency;
+              audience = context.payload.inputs.target_audience;
+            } else if (context.eventName === 'issues') {
+              // Sanitize issue title to prevent injection
+              const rawTitle = context.payload.issue.title;
+              topic = rawTitle
+                .replace(/[\r\n]/g, ' ')  // Remove newlines
+                .replace(/[`$]/g, '')      // Remove potential injection chars
+                .substring(0, 200);        // Limit length
+              format = 'blog';
+              urgency = 'draft';
+              audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
+              issueNumber = context.payload.issue.number;
+            } else {
+              // Scheduled run
+              topic = 'Weekly Content Calendar';
+              format = 'calendar';
+              urgency = 'draft';
+              audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
+            }
+            
+            // Set outputs
+            core.setOutput('topic', topic);
+            core.setOutput('format', format);
+            core.setOutput('urgency', urgency);
+            core.setOutput('audience', audience);
+            if (issueNumber) {
+              core.setOutput('issue_number', issueNumber.toString());
+            }
+        env:
+          CONTENT_TARGET_AUDIENCE: ${{ vars.CONTENT_TARGET_AUDIENCE }}
 
       - name: Run content automation script
         id: generate
