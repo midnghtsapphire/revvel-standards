@@ -60,7 +60,7 @@ build/pdf/
 | Tool | Purpose | Install |
 |------|---------|---------|
 | **ChatGPT / Claude / Jasper** | AI writing assistants to brainstorm, outline, and generate PDF content | Web-based (chatgpt.com, claude.ai, jasper.ai) |
-| **Canva / Canva AI** | Format AI-generated text into polished PDFs; create covers and promotional assets | Web-based (canva.com) or `npm install canva-api` |
+| **Canva / Canva AI** | Format AI-generated text into polished PDFs; create covers and promotional assets | Web-based (canva.com) or [Canva Connect APIs](https://www.canva.dev/docs/connect/) |
 | **Pandoc** | Markdown → PDF compilation | `apt install pandoc texlive-xetex` |
 | **WeasyPrint** (alternative) | HTML/CSS → PDF with better styling | `pip install weasyprint` |
 | **Puppeteer/Playwright** (alternative) | HTML → PDF via headless Chrome | `npm install puppeteer` |
