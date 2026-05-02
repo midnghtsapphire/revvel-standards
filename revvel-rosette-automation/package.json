@@ -22,7 +22,7 @@
   "author": "Audrey Evans (MIDNGHTSAPPHIRE)",
   "license": "MIT",
   "devDependencies": {
-    "yaml": "^2.7.0"
+    "yaml": "^2.8.3"
   },
   "dependencies": {
     "axios": "^1.6.0",
