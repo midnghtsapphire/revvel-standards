@@ -462,7 +462,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 | Tool | URL | Purpose | Worth It? |
 |------|-----|---------|-----------|
-| **Telegago** | https://cse.google.com/cse | Custom Google search engine for finding public and private Telegram channels | Excellent for initial discovery, but cannot penetrate restricted groups |
+| **Telegago** | https://cse.google.com/cse (search for "Telegago") | Custom Google search engine for finding public and private Telegram channels | Excellent for initial discovery, but cannot penetrate restricted groups |
 | **TGStat** | https://tgstat.com | Catalogs channels, subscriber counts, and audience overlap | Highly valuable for tracking influence networks, propaganda flow, and the "business side" of channels |
 | **Telemetr.io** | https://telemetr.io | Alternative channel analytics platform with different data visualization and export formats | Highly valuable as a cross-validation source for TGStat data |
 | **Telepathy** | https://telepathydb.com | Open-source toolkit for archiving chats, scraping member lists, and mapping message interactions | Very powerful for deep analysis but requires technical knowledge and is subject to strict Telegram API rate limits |
@@ -564,7 +564,6 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 | **PimEyes** | https://pimeyes.com | An advanced public facial recognition engine capable of matching faces even in low-resolution images | Yes, very powerful but raises privacy concerns |
 | **Lenso.ai** | https://lenso.ai | AI-powered facial recognition that handles altered, edited, or angled photos | Yes, complements PimEyes |
 | **GeoSpy** | https://geospy.ai | AI-powered image geolocation that uncovers where photos were taken without relying on EXIF data | Yes, revolutionary for geolocation work |
-| **GeoSpyer** | URL unavailable | AI-powered image geolocation service (URL not publicly documented) | Yes, provides alternative to GeoSpy when available |
 
 ---
 
