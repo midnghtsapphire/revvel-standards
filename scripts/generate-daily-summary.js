@@ -473,9 +473,9 @@ function convertMarkdownToHTML(markdown) {
   // Italic
   html = html.replace(/_(.+?)_/g, '<em>$1</em>');
   
-  // Links (escape both text and URL to prevent XSS)
+  // Links (escape both text and URL to prevent XSS, add security attributes)
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
-    return `<a href="${escapeHtml(url)}" target="_blank">${escapeHtml(text)}</a>`;
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
   });
   
   // Code
@@ -514,12 +514,14 @@ function convertMarkdownToHTML(markdown) {
   html = html.replace(/^---$/gm, '<hr>');
   
   // Paragraphs (do this last, and skip already converted elements)
+  // Note: At this point, plain text lines haven't been escaped yet, only converted HTML has
   html = html.replace(/^([^<\n].+)$/gm, (match) => {
     // Don't wrap if line is already HTML or empty
     if (match.trim() === '' || match.match(/^<[^>]+>/)) {
       return match;
     }
-    return `<p>${escapeHtml(match)}</p>`;
+    // Only escape plain text that hasn't been converted to HTML yet
+    return `<p>${match}</p>`;
   });
   
   // Clean up multiple consecutive <p> tags
