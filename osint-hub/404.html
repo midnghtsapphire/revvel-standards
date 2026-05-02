@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 — OSINT Hub</title>
+  <meta name="description" content="Page not found" />
+  <meta name="robots" content="noindex" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: {
+              pink: '#ff006e',
+              purple: '#8338ec',
+              blue: '#3a86ff',
+              green: '#06ffa5',
+            },
+          },
+          fontFamily: {
+            sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  
+  <style>
+    body { 
+      font-family: 'Space Grotesk', system-ui, sans-serif; 
+      background: #0a0a0f;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #3a86ff 0%, #8338ec 50%, #ff006e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .grid-bg {
+      background-image: 
+        linear-gradient(rgba(58, 134, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(58, 134, 255, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      25% { transform: translate(-2px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-2px, -2px); }
+    }
+    
+    .glitch {
+      animation: glitch 0.3s infinite;
+    }
+  </style>
+</head>
+
+<body class="text-white">
+  <div class="absolute inset-0 grid-bg opacity-20"></div>
+  
+  <div class="relative z-10 text-center px-4">
+    <div class="mb-8">
+      <h1 class="text-9xl font-bold mb-4">
+        <span class="gradient-text glitch">404</span>
+      </h1>
+      <h2 class="text-3xl font-bold mb-4">Intelligence Not Found</h2>
+      <p class="text-xl text-gray-400 mb-8">
+        The page you're looking for doesn't exist in our OSINT database.
+      </p>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="/revvel-standards/osint-hub/" 
+         class="px-8 py-4 bg-gradient-to-r from-neon-blue to-neon-purple rounded-lg font-bold text-lg hover:scale-105 transition-transform">
+        Return to OSINT Hub
+      </a>
+      <a href="https://github.com/midnghtsapphire/revvel-standards" 
+         class="px-8 py-4 bg-white/5 backdrop-blur-lg rounded-lg border border-white/10 font-bold text-lg hover:bg-white/10 transition-all">
+        View on GitHub
+      </a>
+    </div>
+    
+    <div class="mt-12 text-sm text-gray-500 font-mono">
+      ERROR_CODE: OSINT_404 | STATUS: NOT_FOUND | TIMESTAMP: <span id="timestamp"></span>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('timestamp').textContent = new Date().toISOString();
+  </script>
+</body>
+</html>
