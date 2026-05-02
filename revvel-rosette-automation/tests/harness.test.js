@@ -69,7 +69,7 @@ function pythonModuleAvailable(moduleName) {
 function requirePythonModules(modules) {
   const missing = modules.filter((m) => !pythonModuleAvailable(m));
   if (missing.length > 0) {
-    skip(
+    throw new Error(
       `missing Python module(s): ${missing.join(', ')} ` +
       `(install with \`pip install -r requirements.txt\` or \`./scripts/bootstrap.sh\`)`
     );
