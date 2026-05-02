@@ -4,7 +4,7 @@
 **Created:** {CREATED_DATE}  
 **Last Updated:** {UPDATED_DATE}  
 **Language:** {PRIMARY_LANGUAGE}  
-**Research Date:** {RESEARCH_DATE}  
+**Research Date:** {RESEARCH_DATE} <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
 **WR Status:** 🟡 In Progress
 
@@ -573,5 +573,5 @@
 
 ---
 
-**Last Updated:** {RESEARCH_DATE} <!-- Format: YYYY-MM-DD -->  
+**Last Updated:** {RESEARCH_DATE}  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]

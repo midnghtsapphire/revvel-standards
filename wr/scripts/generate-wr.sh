@@ -25,6 +25,21 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+# Check if gh CLI is available
+if ! command -v gh &> /dev/null; then
+    echo -e "${RED}Error: gh CLI not found${NC}"
+    echo "Please install GitHub CLI: https://cli.github.com/"
+    echo "Or authenticate: gh auth login"
+    exit 1
+fi
+
+# Check if gh CLI is authenticated
+if ! gh auth status &> /dev/null; then
+    echo -e "${RED}Error: gh CLI not authenticated${NC}"
+    echo "Please run: gh auth login"
+    exit 1
+fi
+
 REPO_NAME="$1"
 OUTPUT_FILE="$REPOS_DIR/${REPO_NAME}.md"
 
