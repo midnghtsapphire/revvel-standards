@@ -176,11 +176,15 @@ jobs:
           INDEXEOF
           
           # List all HTML summaries in reverse chronological order
-          for file in $(ls -r wr/summaries/*.html 2>/dev/null | grep -v index.html || true); do
+          for file in wr/summaries/*.html; do
+            # Skip if no files found or if it's the index itself
+            [[ "$file" == "wr/summaries/*.html" ]] && continue
+            [[ "$file" == "wr/summaries/index.html" ]] && continue
+            
             basename=$(basename "$file")
             date="${basename%.html}"
             echo "      <li class=\"summary-item\"><a href=\"${basename}\">Summary for ${date}</a></li>" >> wr/summaries/index.html
-          done
+          done | sort -r
           
           cat >> wr/summaries/index.html << 'INDEXEOF'
               </ul>

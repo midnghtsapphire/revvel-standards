@@ -1,5 +1,33 @@
 node_modules/
+.gitbutler/*
+!.gitbutler/config.json
+
+# Logs
+logs/
+*.log
+
+# Python artifacts (applies repo-wide; sub-projects have their own ignores too)
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / env
 .env
 .env.local
-*.log
-.DS_Store
+
+# Scratch files occasionally committed by automation (Jules, Copilot, etc.)
+pr-body.md
+.jules/
+*.egg-info/

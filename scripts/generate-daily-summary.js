@@ -79,14 +79,21 @@ function extractVercelUrls(text) {
 
 /**
  * Extract repository references from text
+ * Only matches when preceded by whitespace or repo: to avoid false matches
  */
 function extractRepoReferences(text) {
   if (!text) return [];
-  const repoPattern = /(?:^|\s)([a-zA-Z0-9-]+)\/([a-zA-Z0-9._-]+)(?:\s|$|[,.])/g;
+  // Match owner/repo but only when preceded by whitespace, 'repo:', '@', or start of string
+  // This avoids matching URLs like example.com/path
+  const repoPattern = /(?:^|[\s@]|repo:)([a-zA-Z0-9-]+\/[a-zA-Z0-9._-]+)(?=[\s,.\)]|$)/g;
   const matches = [];
   let match;
   while ((match = repoPattern.exec(text)) !== null) {
-    matches.push(`${match[1]}/${match[2]}`);
+    const repo = match[1];
+    // Exclude if it looks like a URL (contains a dot in the owner part)
+    if (!repo.split('/')[0].includes('.')) {
+      matches.push(repo);
+    }
   }
   return [...new Set(matches)];
 }
@@ -424,29 +431,13 @@ ${convertMarkdownToHTML(markdown)}
 function convertMarkdownToHTML(markdown) {
   let html = markdown;
   
-  // Headers
+  // Headers (do these first)
   html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-  
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-  
-  // Code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // Lists
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>\n)+/g, '<ul>$&</ul>');
-  
-  // Tables (convert markdown tables to HTML)
-  html = html.replace(/\|(.+)\|\n\|[-:| ]+\|\n((?:\|.+\|\n?)+)/g, (match, header, rows) => {
+  // Tables (convert markdown tables to HTML early, before other replacements)
+  html = html.replace(/\|(.*)?\|\n\|[-:| ]+\|\n((?:\|.*?\|\n?)+)/g, (match, header, rows) => {
     const headerCells = header.split('|').filter(Boolean).map(cell => 
       `<th>${cell.trim()}</th>`
     ).join('');
@@ -461,11 +452,58 @@ function convertMarkdownToHTML(markdown) {
     return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
   });
   
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  
+  // Italic
+  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+  
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  // Code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Lists - group consecutive list items into single <ul>
+  const listItems = [];
+  const lines = html.split('\n');
+  let inList = false;
+  const processed = [];
+  
+  for (const line of lines) {
+    if (line.match(/^- (.+)$/)) {
+      if (!inList) {
+        inList = true;
+      }
+      listItems.push(line.replace(/^- (.+)$/, '<li>$1</li>'));
+    } else {
+      if (inList && listItems.length > 0) {
+        processed.push('<ul>' + listItems.join('') + '</ul>');
+        listItems.length = 0;
+        inList = false;
+      }
+      processed.push(line);
+    }
+  }
+  
+  // Flush any remaining list items
+  if (listItems.length > 0) {
+    processed.push('<ul>' + listItems.join('') + '</ul>');
+  }
+  
+  html = processed.join('\n');
+  
   // Horizontal rules
   html = html.replace(/^---$/gm, '<hr>');
   
-  // Paragraphs
-  html = html.replace(/^([^<\n].+)$/gm, '<p>$1</p>');
+  // Paragraphs (do this last, and skip already converted elements)
+  html = html.replace(/^([^<\n].+)$/gm, (match) => {
+    // Don't wrap if line is already HTML or empty
+    if (match.trim() === '' || match.match(/^<[^>]+>/)) {
+      return match;
+    }
+    return `<p>${match}</p>`;
+  });
   
   // Clean up multiple consecutive <p> tags
   html = html.replace(/<\/p>\n<p>/g, '</p><p>');
