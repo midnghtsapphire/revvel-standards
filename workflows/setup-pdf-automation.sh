@@ -5,8 +5,9 @@
 set -e
 
 PLATFORM="${1:-n8n}"
-REPO_ROOT="/home/runner/work/revvel-standards/revvel-standards"
-WORKFLOWS_DIR="$REPO_ROOT/workflows"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+WORKFLOWS_DIR="$SCRIPT_DIR"
 
 echo "🚀 PDF Product Automation Setup"
 echo "================================"
