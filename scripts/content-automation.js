@@ -317,6 +317,45 @@ Format each tweet with a number (1/, 2/, etc.).`;
     console.log('  ✓ Social thread exported');
   }
 
+  // Email Newsletter HTML
+  if (CONFIG.format === 'email' || CONFIG.format === 'all') {
+    const emailHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${CONFIG.topic}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 24px; }
+    h1 { color: #1a1a1a; font-size: 24px; margin-top: 0; }
+    h2 { color: #2a2a2a; font-size: 18px; margin-top: 24px; }
+    h3 { color: #3a3a3a; font-size: 16px; }
+    p { margin: 12px 0; }
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #888; text-align: center; }
+    a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <article>
+${finalContent.replace(/^# (.+)$/gm, '<h1>$1</h1>')
+           .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+           .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+           .split('\n\n').map(p => p.trim() && !p.startsWith('<h') ? `      <p>${p}</p>` : `      ${p}`).join('\n')}
+    </article>
+    <div class="footer">
+      <p>You're receiving this because you subscribed to updates from ${CONFIG.brandVoice} content.</p>
+      <p><a href="{{unsubscribe_url}}">Unsubscribe</a> · <a href="{{preferences_url}}">Manage preferences</a></p>
+    </div>
+  </div>
+</body>
+</html>`;
+    fs.writeFileSync(path.join(formatsDir, 'email.html'), emailHtml, 'utf8');
+    formats.push('email.html');
+    console.log('  ✓ Email newsletter exported');
+  }
+
   return formats;
 }
 

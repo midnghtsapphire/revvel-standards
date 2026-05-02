@@ -320,5 +320,5 @@ jobs:
               **Trigger:** ${{ github.event_name }}
               
               Please investigate and fix the underlying issue.`,
-              labels: ['auto-error', 'content-automation']
+              labels: ['auto-error']
             });
