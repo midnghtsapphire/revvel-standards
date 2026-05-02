@@ -113,3 +113,15 @@ Issues and questions: [revvel-standards/issues](https://github.com/midnghtsapphi
 **Ship Date:** May 2, 2026  
 **Author:** Audrey Evans (@midnghtsapphire)  
 **Status:** 🟢 All Products Live
+
+## 🔒 Security
+
+**Last Security Audit:** May 2, 2026
+
+All products have been updated to patch critical Next.js vulnerabilities:
+- ✅ DoS vulnerabilities patched (Next.js 15.5.15)
+- ✅ Authorization bypass fixed
+- ✅ Cache poisoning resolved
+- ✅ All dependencies updated
+
+See [SECURITY_UPDATE.md](SECURITY_UPDATE.md) for details.
