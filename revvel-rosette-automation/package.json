@@ -2,10 +2,8 @@
   "name": "revvel-rosette-automation",
   "version": "1.0.0",
   "description": "Comprehensive test harness and automation framework for revvel-standards",
-  "main": "src/index.js",
   "scripts": {
     "test": "node tests/harness.test.js",
-    "start": "node src/index.js",
     "bootstrap": "./scripts/bootstrap.sh",
     "gatekeeper": "./scripts/gatekeeper.sh",
     "monitor": "./scripts/monitoring.sh"

@@ -10,6 +10,7 @@ import argparse
 import json
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -126,7 +127,7 @@ class Orchestrator:
             "projects_loaded": len(self.projects),
             "active_projects": len([p for p in self.projects if p.get("status") == "active"]),
             "config_loaded": bool(self.config),
-            "timestamp": "2026-05-02T02:30:00Z",
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
 
 

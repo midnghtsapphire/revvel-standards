@@ -11,7 +11,7 @@
 
 Successfully created **revvel-rosette-automation**, a comprehensive test harness and automation framework for the revvel-standards repository. The system provides end-to-end automation for project orchestration, security management, scheduling, and self-healing capabilities.
 
-**Key Achievement:** 15/15 tests passing, all validation checks passed, zero security issues detected.
+**Key Achievement:** 15/15 tests passing after `npm install` + `pip install -r requirements.txt`. On a fresh clone with only `npm install` (no Python deps yet), 12 tests pass and the 3 Python-integration tests skip with a clear install hint — `npm test` exits cleanly either way. All validation checks pass; zero security issues detected.
 
 ---
 
@@ -36,7 +36,7 @@ revvel-rosette-automation/
 ├── src/         # 4 Python modules (orchestrator, scheduler, gatekeeper, selfheal)
 ├── scripts/     # 5 shell scripts (bootstrap, monitoring, cronjob, manual-test, gatekeeper)
 ├── docs/        # 7 documentation files
-├── tests/       # Test harness with 15 tests
+├── tests/       # Test harness with 15 tests (skip-aware for missing Python deps)
 └── README.md    # Comprehensive documentation (9.5KB)
 ```
 
@@ -200,7 +200,7 @@ revvel-rosette-automation/
 
 **Test Harness:** `tests/harness.test.js`
 
-**15 Tests (All Passing ✅):**
+**15 Tests (all pass after `npm install` + `pip install -r requirements.txt`; the 3 Python-integration tests skip cleanly if Python deps are missing):**
 1. Directory structure exists
 2. Configuration files exist
 3. Python source files exist
@@ -223,7 +223,9 @@ $ npm test
 > revvel-rosette-automation@1.0.0 test
 > node tests/harness.test.js
 
-15 passed, 0 failed
+15 passed, 0 failed (15 total)
+# Without Python deps installed:
+# 12 passed, 0 failed, 3 skipped (15 total)
 ```
 
 ### 7. Validation (✅ Complete)
@@ -269,7 +271,8 @@ cd revvel-rosette-automation
 ### Run Tests
 ```bash
 npm test
-# 15 passed, 0 failed
+# After full install: 15 passed, 0 failed (15 total)
+# Fresh clone (npm install only): 12 passed, 0 failed, 3 skipped (15 total)
 ```
 
 ### Daily Automation
@@ -398,7 +401,7 @@ python3 src/selfheal.py --check    # One-time check
 
 ### Test Suite
 - **Execution time:** <1 second
-- **Tests:** 15 (all passing)
+- **Tests:** 15 (all passing with deps installed; skip-aware otherwise)
 - **Coverage:** Core functionality
 
 ### Daily Automation
@@ -472,7 +475,7 @@ The system is production-ready with:
 - 4 automation modules
 - 5 shell scripts
 - 7 documentation files
-- 15 tests (all passing)
+- 15 tests (all passing when Python deps installed; skip-aware otherwise)
 - Zero security issues
 - Full integration with parent repository
 
@@ -487,7 +490,7 @@ The system is production-ready with:
 ```bash
 cd revvel-rosette-automation
 ./scripts/bootstrap.sh
-npm test  # Verify: 15 passed, 0 failed
+npm test  # Verify: 15 passed, 0 failed (or 12 passed + 3 skipped before bootstrap)
 crontab -e  # Add: 0 3 * * * /path/to/scripts/cronjob.sh
 ```
 

@@ -7,9 +7,10 @@ Integrates with ../gatekeeper-cli and provides high-level automation.
 
 import argparse
 import logging
+import os
 import subprocess
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from rich.console import Console
 
@@ -19,24 +20,34 @@ console = Console()
 
 class Gatekeeper:
     """Gatekeeper automation system"""
-    
+
     def __init__(self):
-        self.gatekeeper_script = self._find_gatekeeper_script()
-        
-    def _find_gatekeeper_script(self) -> Path:
-        """Locate the gatekeeper-sync.sh script"""
+        self.gatekeeper_script: Optional[Path] = self._find_gatekeeper_script()
+
+    def _find_gatekeeper_script(self) -> Optional[Path]:
+        """Locate the gatekeeper-sync.sh script in the parent revvel-standards repo.
+
+        Returns the resolved path if found, otherwise None. Callers should check
+        for None and surface a clear error rather than attempting to invoke a
+        non-existent script.
+        """
+        # Anchor relative paths to this file so behavior doesn't depend on cwd.
+        here = Path(__file__).resolve().parent
         possible_paths = [
-            Path("../scripts/gatekeeper-sync.sh"),
-            Path("../../scripts/gatekeeper-sync.sh"),
+            here.parent.parent / "scripts" / "gatekeeper-sync.sh",
+            here.parent / "scripts" / "gatekeeper-sync.sh",
             Path("/home/runner/work/revvel-standards/revvel-standards/scripts/gatekeeper-sync.sh"),
         ]
-        
+
         for path in possible_paths:
             if path.exists():
                 return path.resolve()
-        
-        logger.warning("gatekeeper-sync.sh not found in expected locations")
-        return Path("scripts/gatekeeper-sync.sh")
+
+        logger.warning(
+            "gatekeeper-sync.sh not found in expected locations: %s",
+            [str(p) for p in possible_paths],
+        )
+        return None
     
     def provision_secrets(
         self,
@@ -61,6 +72,14 @@ class Gatekeeper:
         """
         console.print(f"\n[cyan]Provisioning secrets for {repo}[/cyan]")
         
+        if self.gatekeeper_script is None:
+            msg = (
+                "gatekeeper-sync.sh not found; cannot provision secrets. "
+                "Ensure this package is run from within the revvel-standards repo."
+            )
+            console.print(f"[red]Error:[/red] {msg}")
+            return {"error": msg}
+
         cmd = [
             str(self.gatekeeper_script),
             "--repo", repo,
@@ -69,15 +88,15 @@ class Gatekeeper:
             "--config", config,
             "--json",
         ]
-        
+
         env = {"DRY_RUN": "1"} if dry_run else {}
-        
+
         try:
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-                env={**subprocess.os.environ, **env},
+                env={**os.environ, **env},
                 check=True,
             )
             
@@ -105,9 +124,11 @@ class Gatekeeper:
         console.print("\n[cyan]Gatekeeper Health Check[/cyan]")
         
         checks = {
-            "gatekeeper_script_exists": self.gatekeeper_script.exists(),
-            "doppler_token_set": bool(subprocess.os.environ.get("DOPPLER_TOKEN")),
-            "github_token_set": bool(subprocess.os.environ.get("GITHUB_TOKEN")),
+            "gatekeeper_script_exists": (
+                self.gatekeeper_script is not None and self.gatekeeper_script.exists()
+            ),
+            "doppler_token_set": bool(os.environ.get("DOPPLER_TOKEN")),
+            "github_token_set": bool(os.environ.get("GITHUB_TOKEN")),
         }
         
         for check, result in checks.items():

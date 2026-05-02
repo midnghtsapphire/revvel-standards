@@ -40,29 +40,23 @@ revvel-rosette-automation/
 │   ├── 9-Nostradamus.json     # Prediction/forecasting config
 │   └── 7-body.json            # Request body templates
 ├── src/                  # Python automation modules
+│   # Implemented:
 │   ├── orchestrator.py        # Main orchestrator (CEO agent)
 │   ├── scheduler.py           # Job scheduling
-│   ├── security.py            # Security controls
-│   ├── vault.py               # Vault integration
-│   ├── metrics.py             # Metrics collection
-│   ├── selfheal.py            # Self-healing logic
-│   ├── marketing.py           # Marketing automation
-│   ├── usernames.py           # Username management
-│   ├── research.py            # Research automation
-│   ├── blueprint.py           # Blueprint generation
-│   ├── trello.py              # Trello integration
 │   ├── gatekeeper.py          # Gatekeeper automation
-│   └── queue_manager.py       # Queue management
+│   └── selfheal.py            # Self-healing logic
+│   # Planned (not yet implemented — see Section 6 for roadmap):
+│   #   security.py, vault.py, metrics.py, marketing.py,
+│   #   usernames.py, research.py, blueprint.py, trello.py,
+│   #   queue_manager.py
 ├── scripts/              # Shell scripts
 │   ├── bootstrap.sh           # Initial setup
 │   ├── monitoring.sh          # System monitoring
-│   ├── gatekeeper.sh          # Gatekeeper runner
+│   ├── gatekeeper.sh          # Gatekeeper runner (delegates to ../scripts/gatekeeper-sync.sh)
 │   ├── cronjob.sh             # Cron job setup
-│   ├── manual-test.sh         # Manual testing
-│   ├── security-credentials.sh # Credential management
-│   ├── export-keys.sh         # Key export
-│   ├── install-requirements.sh # Dependency install
-│   └── local-launch-test.sh   # Local testing
+│   └── manual-test.sh         # Manual testing
+│   # Planned: security-credentials.sh, export-keys.sh,
+│   #          install-requirements.sh, local-launch-test.sh
 ├── docs/                 # Documentation
 │   ├── queue-format.txt       # Queue file format
 │   ├── directory-structure.txt # Structure documentation
@@ -120,8 +114,8 @@ uv pip install -e .
 # Run bootstrap script
 ./scripts/bootstrap.sh
 
-# Export required credentials
-./scripts/export-keys.sh
+# Export required credentials (set the variables in your shell or .env;
+# scripts/export-keys.sh is planned but not yet implemented)
 
 # Verify installation
 ./scripts/manual-test.sh
@@ -142,9 +136,9 @@ uv pip install -e .
    export OPENROUTER_API_KEY="your-openrouter-key"
    ```
 
-3. Initialize the vault:
+3. Initialize the vault *(planned — `src/vault.py` not yet implemented)*:
    ```bash
-   python src/vault.py --init
+   # python src/vault.py --init
    ```
 
 4. Load project registry:
@@ -181,34 +175,29 @@ Automatically provision secrets when PRs/issues are created:
 ./scripts/monitoring.sh
 ```
 
-### 4.3. Trello Integration
+### 4.3. Trello Integration *(planned — module not yet implemented)*
 
-Five-step Trello workflow automation:
+Five-step Trello workflow automation. The commands below describe the intended
+interface for `src/trello.py`; they are not runnable yet.
 
 ```bash
-# Update Trello cards based on GitHub activity
-python src/trello.py --sync
-
-# Create cards for new issues
-python src/trello.py --create-from-issues
-
-# Five-step workflow: TODO → In Progress → Review → Testing → Done
-python src/trello.py --workflow
+# Planned commands (src/trello.py is not yet implemented):
+#   python src/trello.py --sync                    # Sync GitHub activity
+#   python src/trello.py --create-from-issues      # Create cards for new issues
+#   python src/trello.py --workflow                # Five-step workflow
 ```
 
-### 4.4. Security & Vault
+### 4.4. Security & Vault *(planned — modules not yet implemented)*
 
-Automated credential rotation and vault management:
+Automated credential rotation and vault management. The commands below
+describe the intended interface; they are not runnable yet.
 
 ```bash
-# Rotate credentials
-python src/security.py --rotate-all
-
-# Fetch secrets from Gatekeeper
+# Planned commands (src/security.py is not yet implemented):
+#   python src/security.py --rotate-all
+#   python src/security.py --policy-update
+# Available today:
 ./scripts/security-credentials.sh --fetch
-
-# Modify security policies
-python src/security.py --policy-update
 ```
 
 ### 4.5. Self-Healing
@@ -216,11 +205,11 @@ python src/security.py --policy-update
 Automatic error detection and remediation:
 
 ```bash
-# Monitor and self-heal
+# Monitor and self-heal (implemented)
 python src/selfheal.py --watch
 
-# View self-healing metrics
-python src/metrics.py --dashboard selfheal
+# Planned: src/metrics.py is not yet implemented
+#   python src/metrics.py --dashboard selfheal
 ```
 
 ---
@@ -236,14 +225,15 @@ npm test
 ### 5.2. Manual Testing
 
 ```bash
-# Local launch test
-./scripts/local-launch-test.sh
-
-# Test specific module
-python -m pytest tests/test_orchestrator.py
+# Quick smoke test of the harness
+./scripts/manual-test.sh
 
 # Dry run (no external API calls)
 DRY_RUN=1 python src/orchestrator.py --run-all
+
+# Planned (not yet implemented):
+#   ./scripts/local-launch-test.sh
+#   python -m pytest tests/test_orchestrator.py
 ```
 
 ### 5.3. CI/CD Integration
@@ -316,12 +306,13 @@ Task queue for asynchronous operations:
 
 ---
 
-## 8. Monitoring & Metrics
+## 8. Monitoring & Metrics *(planned — `src/metrics.py` not yet implemented)*
 
 ### 8.1. Dashboard
 
 ```bash
-python src/metrics.py --dashboard all
+# Planned (src/metrics.py is not yet implemented):
+#   python src/metrics.py --dashboard all
 ```
 
 Metrics tracked:

@@ -29,15 +29,14 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-
-[project.dependencies]
-requests = ">=2.31.0"
+dependencies = [
+    "requests>=2.31.0",
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
-    "hvac>=2.1.0",  # HashiCorp Vault client
-    "schedule>=1.2.0",  # Job scheduling
-    "click>=8.1.0",  # CLI framework
-    "rich>=13.7.0",  # Terminal formatting
+    "hvac>=2.1.0",
+    "schedule>=1.2.0",
+    "click>=8.1.0",
+    "rich>=13.7.0",
 ]
 
 [project.optional-dependencies]
