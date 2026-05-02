@@ -23,7 +23,7 @@ This document contains the corporate identity, entity hierarchy, product portfol
 
 ---
 
-## 8. Corporate Identity & Entity Hierarchy
+## 1. Corporate Identity & Entity Hierarchy
 
 All Revvel applications inherit their corporate identity and SEO authority from the parent entity structure. This section documents the full corporate tree, the reasoning behind it, and how it must be implemented in every app.
 
@@ -154,7 +154,7 @@ Each individual app adds its own `Product` or `WebApplication` schema that refer
 
 ---
 
-## 9. Learning Resources & Documentation
+## 2. Learning Resources & Documentation
 
 Continuous learning is essential for maintaining cutting-edge expertise. These resources provide comprehensive training across all technology domains.
 
@@ -240,7 +240,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 
 ---
 
-## 10. Cutting-Edge Technology Discovery & Evaluation
+## 3. Cutting-Edge Technology Discovery & Evaluation
 
 Staying ahead requires systematic discovery and evaluation of emerging technologies. This section provides direct resources and methodologies for identifying and adopting cutting-edge tools.
 
@@ -444,7 +444,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 
 ---
 
-## Project Tracking — BOM & Per-Project Docs
+## 4. Project Tracking — BOM & Per-Project Docs
 
 Every active Revvel project has a dedicated docs directory with a Bill of Materials (BOM), brand identity document, and sprint log.
 
@@ -465,7 +465,7 @@ Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 ---
 
-## Brand & Design — Revvel Emblem Standard
+## 5. Brand & Design — Revvel Emblem Standard
 
 Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
@@ -476,7 +476,7 @@ Every Revvel project derives its visual identity from the **Revvel Emblem Standa
 
 ---
 
-## CI/CD Templates
+## 6. CI/CD Templates
 
 All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.github/workflows/` of every app repo.
 
@@ -499,7 +499,7 @@ Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
 
 ---
 
-## Testing Templates
+## 7. Testing Templates
 
 Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every project.
 
@@ -513,7 +513,7 @@ Instructions: [`templates/testing/README.md`](templates/testing/README.md)
 
 ---
 
-## Bootstrap a New Project
+## 8. Bootstrap a New Project
 
 One command to scaffold a complete new Revvel app from all standard templates:
 
@@ -535,7 +535,7 @@ This creates:
 
 ---
 
-## GitHub Projects Setup
+## 9. GitHub Projects Setup
 
 Labels, milestones, and project board setup for every new Revvel repository.
 
@@ -550,7 +550,7 @@ Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 
 
 ---
 
-## [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
+## 10. [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
 
 **New UI:** [`ui/freedom-angel-repo-manager/`](ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](docs/Master_Inventory/ACCESSIBILITY_STANDARD.md).
 
