@@ -131,7 +131,7 @@ echo -e "${GREEN}Generating WR from template...${NC}"
 # Helper function to escape sed replacement strings
 escape_sed() {
     # Escape backslashes, ampersands, newlines, and forward slashes
-    echo "$1" | sed 's/[&/\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g'
+    printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g' -e ':a;N;$!ba;s/\n/\\n/g'
 }
 
 # Escape all values for safe sed substitution
