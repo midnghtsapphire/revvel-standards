@@ -462,7 +462,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 | Tool | URL | Purpose | Worth It? |
 |------|-----|---------|-----------|
-| **Telegago** | Community CSE (no direct URL) | Custom Google search engine for finding public and private Telegram channels. Access by searching for "Telegago CSE" or create your own using Google CSE with Telegram-specific site filters (e.g., site:t.me). No single canonical URL exists. | Excellent for initial discovery, but cannot penetrate restricted groups |
+| **Telegago** | Community CSE (no direct URL) | Custom Google search engine for finding public and private Telegram channels. Created using Google CSE with Telegram-specific site filters (e.g., site:t.me). | Excellent for initial discovery, but cannot penetrate restricted groups. Access: Search for "Telegago CSE" or create your own at https://cse.google.com/cse |
 | **TGStat** | https://tgstat.com | Catalogs channels, subscriber counts, and audience overlap | Highly valuable for tracking influence networks, propaganda flow, and the "business side" of channels |
 | **Telemetr.io** | https://telemetr.io | Alternative channel analytics platform with different data visualization and export formats | Highly valuable as a cross-validation source for TGStat data |
 | **Telepathy** | https://telepathydb.com | Open-source toolkit for archiving chats, scraping member lists, and mapping message interactions | Very powerful for deep analysis but requires technical knowledge and is subject to strict Telegram API rate limits |
@@ -575,7 +575,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 |------|-----|---------|-----------|
 | **Google Dorking** | Native Google search | Using advanced operators (site:, filetype:, intext:) to find exposed documents, passwords, or vulnerable web panels | Yes, fundamental OSINT skill |
 | **LLM-Dorking** | AI technique (no specific tool) | General technique using AI models (ChatGPT, Claude, etc.) to automatically craft complex search queries based on plain-English requests | Yes, accelerates dork creation |
-| **DorkGenius** | Various AI implementations | Category of AI-powered tools that generate Google/Bing dorks. Search for "AI dork generator" or use ChatGPT with prompts like "Generate Google dorks for [topic]" | Yes, useful for automated query crafting |
+| **AI Dork Generation (category)** | See description | Category of AI-powered tools that generate Google/Bing dorks. Implementations: use ChatGPT/Claude with prompts like "Generate Google dorks for [topic]" or search GitHub for "AI dork generator" | Yes, useful for automated query crafting |
 | **Wayback Machine** | https://archive.org | The primary tool for exploring the history of websites and retrieving deleted posts | Yes, essential for historical research |
 | **SearXNG** | https://searxng.org | Privacy-respecting meta-search engine that prevents tracking and personalization bias during investigations | Yes, for privacy-conscious searching |
 | **DuckDuckGo** | https://duckduckgo.com | Privacy-focused search engine | Yes, no tracking or personalization |
@@ -590,7 +590,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 | Tool | URL | Purpose | Worth It? |
 |------|-----|---------|-----------|
 | **Anthropic Cybersecurity Skills** | Via Claude API | Agentic AI setups using Anthropic's Claude models that can be directed to autonomously query APIs, scrape data, and write intelligence reports | Yes, enables automated intelligence synthesis |
-| **OSINT Agent Frameworks** | Category (LangChain, AutoGPT, etc.) | General category of frameworks for building autonomous OSINT agents. Examples: LangChain (https://langchain.com), AutoGPT, AgentGPT. Search for "OSINT agent framework" on GitHub for implementations. | Yes, for advanced automation |
+| **OSINT Agent Frameworks (category)** | https://langchain.com, https://github.com/Significant-Gravitas/AutoGPT | Category of frameworks for building autonomous OSINT agents. Examples: LangChain, AutoGPT, AgentGPT. Search GitHub for "OSINT agent framework" for additional implementations. | Yes, for advanced automation |
 | **OSINT Skill v3.0** | Proprietary/research project | An orchestrated toolkit for AI agents that integrates 55+ Apify scrapers, Jina AI, and Perplexity to generate psychoprofiles, map careers, and assign confidence scores. Mentioned in research literature; not publicly available as packaged tool. | Yes (if accessible), shifts burden of data normalization to AI, though human orchestration necessary to prevent hallucinations |
 | **NAIJA OSINT INTEL** | Search GitHub for "NAIJA OSINT" | A localized Python suite specifically designed for Nigerian cyber threat intelligence, featuring tools for 419 scam detection, legal evidence packaging, and IP tracking via Grabify. Implementation details vary. | Yes, specialized for Nigerian threat landscape |
 
@@ -598,7 +598,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 ## 9. OSINT Platform Integrations (FOSS)
 
-**Note:** Many tools from the field-specific catalog above (Section 8) are also included in integration workflows. The platforms below provide centralized management and orchestration. For example, SpiderFoot and Maltego from Section 8 appear here because they serve dual roles as both standalone OSINT tools and integration platforms. OpenCTI and MISP provide frameworks for correlating data from tools like Shodan, theHarvester, and threat feeds mentioned in earlier sections.
+**Note:** Many tools from the field-specific catalog above (Section 8) are also included in integration workflows. The platforms below provide centralized management and orchestration. For example, SpiderFoot and Maltego from Section 8 appear here because they serve dual roles as both standalone OSINT tools and integration platforms. OpenCTI and MISP provide frameworks for correlating data from tools like Shodan and threat feeds mentioned in earlier sections. Additional tools like theHarvester (below) complement the Section 8 catalog.
 
 | Platform | Role | URL |
 |----------|------|-----|
