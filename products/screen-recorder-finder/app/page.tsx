@@ -136,7 +136,7 @@ const recorders: ScreenRecorder[] = [
   {
     name: 'Camtasia',
     pricing: '~$40-$600/yr',
-    pricePerMonth: 320,
+    pricePerMonth: 50,
     category: 'Professional',
     bestFor: ['E-learning', 'Training videos', 'Interactive content'],
     pros: [
