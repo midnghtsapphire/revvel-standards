@@ -172,7 +172,9 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 - **Body**:
   ```json
   {
-    "design_type": "presentation",
+    "design_type": {
+      "type": "presentation"
+    },
     "title": "{{title}}",
     "width": 2100,
     "height": 2970
