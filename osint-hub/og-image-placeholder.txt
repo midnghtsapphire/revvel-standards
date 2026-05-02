@@ -1,0 +1,14 @@
+# OG Image Placeholder
+
+This file serves as a placeholder reference for the Open Graph image.
+
+To add an actual OG image:
+1. Create a 1200x630px image showcasing the OSINT Hub
+2. Save it as `og-image.png` in the `/osint-hub/` directory
+3. The image should include:
+   - OSINT Hub branding
+   - Key messaging (50+ tools, AI-powered, etc.)
+   - Neon gradient colors matching the site theme
+
+Until a proper image is created, the meta tags reference `og-image.png`.
+If this file doesn't exist, social media platforms will fall back to other methods.

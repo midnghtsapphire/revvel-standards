@@ -73,6 +73,8 @@
 
 Visit the live site: [https://midnghtsapphire.github.io/revvel-standards/osint-hub/](https://midnghtsapphire.github.io/revvel-standards/osint-hub/)
 
+**Note**: The GitHub Pages path includes `/revvel-standards/` because this is part of the `revvel-standards` repository.
+
 ## 📦 Deployment
 
 The OSINT Hub is designed to be deployed as a static site. To deploy:
@@ -91,7 +93,7 @@ The OSINT Hub is designed to be deployed as a static site. To deploy:
 
 2. **GitHub Pages**:
    - Already configured in `revvel-standards` repository
-   - Accessible at `/osint-hub/` path
+   - Accessible at `/revvel-standards/osint-hub/` path (full path including repository name)
    - Automatic deployment on push to `main`
 
 3. **Vercel/Netlify**:

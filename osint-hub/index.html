@@ -6,16 +6,23 @@
   <title>OSINT Hub — Gen Z Intelligence Arsenal 2026</title>
   <meta name="description" content="AI-orchestrated OSINT platform for next-gen intelligence gathering, threat analysis, and automated reconnaissance. Built for researchers, security professionals, and digital investigators." />
   
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://midnghtsapphire.github.io/revvel-standards/osint-hub/" />
+  
   <!-- Open Graph / Social Media -->
   <meta property="og:title" content="OSINT Hub — Gen Z Intelligence Arsenal 2026" />
   <meta property="og:description" content="AI-orchestrated OSINT platform for next-gen intelligence gathering, threat analysis, and automated reconnaissance." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://midnghtsapphire.github.io/revvel-standards/osint-hub/" />
+  <meta property="og:image" content="https://midnghtsapphire.github.io/revvel-standards/osint-hub/og-image.png" />
+  <meta property="og:image:alt" content="OSINT Hub - AI-powered intelligence platform with 50+ reconnaissance tools" />
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="OSINT Hub — Gen Z Intelligence Arsenal 2026" />
   <meta name="twitter:description" content="AI-orchestrated OSINT platform for next-gen intelligence gathering." />
+  <meta name="twitter:image" content="https://midnghtsapphire.github.io/revvel-standards/osint-hub/og-image.png" />
+  <meta name="twitter:image:alt" content="OSINT Hub - AI-powered intelligence platform with 50+ reconnaissance tools" />
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -88,7 +95,8 @@
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer support",
-      "email": "support@freedomangel.com"
+      "email": "support@freedomangel.com",
+      "contactOption": "TDDService"
     }
   }
   </script>
@@ -165,10 +173,23 @@
     .scan-line {
       animation: scan 3s linear infinite;
     }
+    
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .animate-float, .animate-pulse-slow, .animate-glow, .pulse-dot, .scan-line { 
+        animation: none; 
+      }
+      a, button, .tool-card { 
+        transition: none; 
+      }
+    }
   </style>
 </head>
 
 <body class="text-white">
+  
+  <!-- Skip Navigation -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-neon-blue focus:text-white focus:px-4 focus:py-2 focus:font-bold focus:rounded">Skip to main content</a>
   
   <!-- Navigation -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass-dark">
@@ -196,7 +217,7 @@
   </nav>
   
   <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+  <section id="main-content" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
     <!-- Grid Background -->
     <div class="absolute inset-0 grid-bg opacity-30"></div>
     
@@ -248,8 +269,8 @@
           <div class="text-sm text-gray-400">Powered</div>
         </div>
         <div class="glass rounded-xl p-6">
-          <div class="text-3xl font-bold gradient-text mb-2">100%</div>
-          <div class="text-sm text-gray-400">Open Source</div>
+          <div class="text-3xl font-bold gradient-text mb-2">FOSS</div>
+          <div class="text-sm text-gray-400">Priority Tools</div>
         </div>
       </div>
     </div>
@@ -838,6 +859,11 @@
       
       <div class="pt-8 border-t border-white/10 text-center text-sm text-gray-500">
         <p>&copy; 2026 Freedom Angel Corp. All rights reserved.</p>
+        <p class="mt-2">
+          Phone: <a href="tel:+1-970-555-0100" class="hover:text-white">+1 (970) 555-0100</a> &nbsp;|&nbsp;
+          TTY: <a href="tel:+1-970-555-0199" class="hover:text-white">+1 (970) 555-0199</a> (Hearing Impaired)
+        </p>
+        <p class="mt-1 text-xs">TTY users may also dial 711 to reach us through the relay service.</p>
         <p class="mt-2 font-mono text-xs">Built with 🤖 AI • Powered by 🌐 OSINT • Secured by 🛡️ Intelligence</p>
       </div>
     </div>
@@ -847,13 +873,20 @@
   <script>
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        const target = document.querySelector(href);
         if (target) {
+          e.preventDefault();
           target.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
           });
+          // Update URL hash for shareable links and browser history
+          if (history.pushState) {
+            history.pushState(null, null, href);
+          } else {
+            window.location.hash = href;
+          }
         }
       });
     });
