@@ -151,7 +151,7 @@ Config file: `.mcp.json` in each project root. Setup: `scripts/setup-mcp.sh`.
 | # | Service | Category | What It Does | Flow Phase | Cost |
 |---|---|---|---|---|---|
 | 72 | **Gumroad** | Digital Sales | Upload and sell digital products (PDFs, eBooks, guides). Automated checkout and delivery. Payment processing with zero upfront cost. | Phase 10 (Deploy) | Free to start; 10% commission per sale |
-| **Carrd** | Website Builder | Create simple landing pages and online storefronts for digital products. Easy embedding of payment links. | Phase 10 (Deploy) | Free (up to 3 sites) / $19/year Pro |
+| 73 | **Carrd** | Website Builder | Create simple landing pages and online storefronts for digital products. Easy embedding of payment links. | Phase 10 (Deploy) | Free (up to 3 sites) / $19/year Pro |
 | 74 | **ChatGPT** | AI Writing | Brainstorm, outline, and generate written content for PDF guides, eBooks, and templates. | Phase 2 (Create) | Free tier / $20/month Plus |
 | 75 | **Claude** | AI Writing | Generate and refine written content, structure documents, create technical content for PDFs. | Phase 2 (Create) | Free tier / $20/month Pro |
 | 76 | **Jasper** | AI Writing | Alternative AI writing assistant for marketing copy, product descriptions, and content generation. | Phase 2 (Create) | Starts at $49/month |
