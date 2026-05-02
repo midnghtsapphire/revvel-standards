@@ -178,7 +178,7 @@ jobs:
           
           # List all HTML summaries in reverse chronological order
           # Use find with proper filtering and validation
-          find wr/summaries -name "*.html" -type f ! -name "index.html" | while IFS= read -r file; do
+          find wr/summaries -name "*.html" -type f ! -name "index.html" | sort -r | while IFS= read -r file; do
             basename=$(basename "$file")
             # Validate filename matches YYYY-MM-DD.html pattern
             if [[ "$basename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\.html$ ]]; then
