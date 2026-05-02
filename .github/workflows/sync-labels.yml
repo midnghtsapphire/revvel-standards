@@ -72,6 +72,15 @@ jobs:
               { name: 'proof-of-life',     color: '2ea44f', description: 'Proof-of-life run — app-review revvel-standards-run' },
               { name: 'role:orchestrator', color: '6f42c1', description: 'OpenRouter agent is acting as orchestrator on this item' },
               { name: 'role:fixer',        color: 'ff6b35', description: 'OpenRouter agent is acting as fixer on this item' },
+              // oAudrey Hub
+              { name: 'oaudrey',             color: '7C5CFF', description: 'oAudrey hub landing page or subdomain work' },
+              { name: 'deploy-failure',      color: 'd73a4a', description: 'Production deployment failure — needs immediate attention' },
+              { name: 'retro',               color: '0075ca', description: 'Post-deploy retrospective or gap analysis finding' },
+              // Secrets / Credentials
+              { name: 'secrets-missing',         color: 'b60205', description: 'One or more required secrets are absent — auto-heal pending' },
+              { name: 'credentials-ready',       color: '0e8a16', description: 'All required credentials are provisioned' },
+              { name: 'credentials-missing',     color: 'd93f0b', description: 'One or more required credentials are missing' },
+              { name: 'goap-escalation',         color: 'b60205', description: 'GOAP escalation — requires human intervention after auto-retry failure' },
             ];
 
             // Fetch existing labels (paginated — repos can have 100+)
