@@ -30,19 +30,28 @@ console = Console()
 
 class Orchestrator:
     """Main orchestrator agent that coordinates all automation tasks"""
-    
+
     def __init__(self, config_path: str = "config/59-config.yaml"):
         self.config_path = Path(config_path)
         self.config = self._load_config()
         self.projects = []
-        
+
     def _load_config(self) -> Dict[str, Any]:
-        """Load main configuration file"""
+        """Load main configuration and merge supporting services config"""
+        config = self._load_yaml(self.config_path)
+        supporting = self._load_yaml(
+            self.config_path.parent / "20-supportingconfig.yaml"
+        )
+        if supporting:
+            config["services"] = supporting
+        return config
+
+    def _load_yaml(self, filepath: Path) -> Dict[str, Any]:
         try:
-            with open(self.config_path) as f:
-                return yaml.safe_load(f)
+            with open(filepath) as f:
+                return yaml.safe_load(f) or {}
         except FileNotFoundError:
-            logger.error(f"Config file not found: {self.config_path}")
+            logger.error(f"Config file not found: {filepath}")
             return {}
     
     def load_projects(self, projects_file: str = "config/300Projects.yaml") -> None:
