@@ -175,6 +175,29 @@
     .log-err { color: var(--danger); }
     .log-info { color: var(--accent-light); }
 
+    /* RFY status badges */
+    .badge-watching { background: rgba(124,106,247,.15); color: var(--accent-light); border: 1px solid rgba(124,106,247,.3); }
+    .badge-ordered  { background: rgba(34,197,94,.15);  color: var(--success);      border: 1px solid rgba(34,197,94,.25); }
+    .badge-missed   { background: rgba(239,68,68,.15);  color: var(--danger);       border: 1px solid rgba(239,68,68,.25); }
+    .badge-passed   { background: rgba(255,255,255,.07); color: var(--mist);        border: 1px solid var(--border); }
+
+    /* RFY add-form */
+    .rfy-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+    .rfy-form input[type="text"], .rfy-form input[type="number"] {
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--white);
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .rfy-form input:focus { border-color: var(--accent); }
+    .rfy-form input[type="text"].wide { min-width: 220px; flex: 1; }
+    .rfy-form input[type="text"].sm   { width: 110px; }
+    .rfy-form input[type="number"]    { width: 90px; }
+
     /* Empty state */
     .empty { text-align: center; padding: 48px 20px; color: var(--mist); }
     .empty-icon { font-size: 40px; margin-bottom: 12px; }
@@ -201,6 +224,10 @@
     <div class="stat-card"><div class="stat-label">Stale (Repost)</div><div class="stat-value amber" id="s-stale">—</div></div>
     <div class="stat-card"><div class="stat-label">Vine Items</div><div class="stat-value purple" id="s-vine">—</div></div>
     <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value green" id="s-revenue">—</div></div>
+    <div class="stat-card"><div class="stat-label">RFY Watched</div><div class="stat-value purple" id="s-rfy-total">—</div></div>
+    <div class="stat-card"><div class="stat-label">RFY Ordered</div><div class="stat-value green" id="s-rfy-ordered">—</div></div>
+    <div class="stat-card"><div class="stat-label">RFY Missed</div><div class="stat-value amber" id="s-rfy-missed">—</div></div>
+    <div class="stat-card"><div class="stat-label">RFY Conversion</div><div class="stat-value" id="s-rfy-rate">—</div></div>
   </div>
 
   <!-- Toolbar -->
@@ -261,6 +288,52 @@
         </thead>
         <tbody id="products-body">
           <tr><td colspan="9"><div class="empty"><div class="empty-icon">⏳</div>Loading products…</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RFY Watchlist -->
+  <div class="card" id="rfy-section">
+    <div class="card-header">
+      <div class="card-title">🔎 RFY Watchlist <small style="font-weight:400;color:var(--mist);font-size:12px;">(Recommended For You — track items you spotted)</small></div>
+      <div style="display:flex;gap:8px;">
+        <select id="rfy-filter-status" onchange="loadRfy()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 10px;font-size:12px;outline:none;">
+          <option value="">All</option>
+          <option value="watching">Watching</option>
+          <option value="ordered">Ordered</option>
+          <option value="missed">Missed</option>
+          <option value="passed">Passed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Add RFY entry form -->
+    <div class="rfy-form">
+      <input type="text"   class="wide" id="rfy-title"    placeholder="Product title *" required>
+      <input type="text"   class="sm"   id="rfy-asin"     placeholder="ASIN (opt.)">
+      <input type="number" id="rfy-price"    placeholder="Est. $" step="0.01" min="0">
+      <input type="text"   class="sm"   id="rfy-category" placeholder="Category">
+      <input type="text"   class="wide" id="rfy-notes"    placeholder="Notes">
+      <button class="btn btn-primary btn-sm" onclick="addRfyEntry()">+ Track Item</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="rfy-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>ASIN</th>
+            <th>Est. Price</th>
+            <th>Category</th>
+            <th>Spotted</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rfy-body">
+          <tr><td colspan="8"><div class="empty"><div class="empty-icon">📋</div>No RFY items tracked yet</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -588,6 +661,156 @@ function updateSelectedCount() {
   el.textContent = selectedOrders.size > 0 ? `${selectedOrders.size} selected` : '';
 }
 
+// ── RFY: load summary into stat cards ────────────────────────────────────
+
+async function loadRfySummary() {
+  try {
+    const r = await fetch(`${API}/rfy/summary`);
+    const s = await r.json();
+    document.getElementById('s-rfy-total').textContent   = s.totalRFY   ?? '—';
+    document.getElementById('s-rfy-ordered').textContent = s.rfyOrdered ?? '—';
+    document.getElementById('s-rfy-missed').textContent  = s.rfyMissed  ?? '—';
+    const rate = s.rfyConversionRate != null
+      ? Math.round(s.rfyConversionRate * 100) + '%'
+      : '—';
+    document.getElementById('s-rfy-rate').textContent = rate;
+  } catch { /* non-critical — server may not have rfy routes yet */ }
+}
+
+// ── RFY: load + render watchlist table ───────────────────────────────────
+
+async function loadRfy() {
+  const status = document.getElementById('rfy-filter-status').value;
+  let url = `${API}/rfy`;
+  if (status) url += `?status=${encodeURIComponent(status)}`;
+  try {
+    const r = await fetch(url);
+    const data = await r.json();
+    renderRfyTable(data.entries || []);
+  } catch (e) {
+    toast('Failed to load RFY list: ' + e.message);
+  }
+}
+
+function rfyStatusBadge(status) {
+  const map = {
+    watching: '<span class="badge badge-watching">Watching</span>',
+    ordered:  '<span class="badge badge-ordered">Ordered</span>',
+    missed:   '<span class="badge badge-missed">Missed</span>',
+    passed:   '<span class="badge badge-passed">Passed</span>',
+  };
+  return map[status] || `<span class="badge">${escHtml(status)}</span>`;
+}
+
+function renderRfyTable(entries) {
+  const tbody = document.getElementById('rfy-body');
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📋</div>No RFY items match this filter</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = entries.map((e) => `<tr data-rfy-id="${escHtml(e.rfyId)}">
+    <td style="max-width:240px;word-break:break-word;">${escHtml(e.productTitle)}</td>
+    <td><small style="color:var(--mist)">${escHtml(e.asin || '—')}</small></td>
+    <td>${e.estPrice != null ? fmtUSD(e.estPrice) : '—'}</td>
+    <td>${escHtml(e.category || '—')}</td>
+    <td>${fmtDate(e.seenAt)}</td>
+    <td>${rfyStatusBadge(e.status)}</td>
+    <td style="max-width:180px;word-break:break-word;color:var(--mist);font-size:12px;">${escHtml(e.notes || '')}</td>
+    <td>
+      <div class="row-actions" style="gap:4px;flex-wrap:wrap;">
+        ${e.status !== 'ordered' ? `<button class="btn btn-success btn-sm" data-rfy-action="ordered">✓ Got it</button>` : ''}
+        ${e.status !== 'missed'  ? `<button class="btn btn-ghost btn-sm"   data-rfy-action="missed">Missed</button>` : ''}
+        ${e.status !== 'passed'  ? `<button class="btn btn-ghost btn-sm"   data-rfy-action="passed">Pass</button>` : ''}
+        <button class="btn btn-ghost btn-sm" style="color:var(--danger)" data-rfy-action="delete">✕</button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+// ── RFY: add entry ────────────────────────────────────────────────────────
+
+async function addRfyEntry() {
+  const title = document.getElementById('rfy-title').value.trim();
+  if (!title) { toast('Product title is required'); return; }
+  const body = {
+    productTitle: title,
+    asin:     document.getElementById('rfy-asin').value.trim()     || null,
+    estPrice: parseFloat(document.getElementById('rfy-price').value) || null,
+    category: document.getElementById('rfy-category').value.trim() || null,
+    notes:    document.getElementById('rfy-notes').value.trim()    || null,
+  };
+  try {
+    const r = await fetch(`${API}/rfy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    // Clear form
+    ['rfy-title','rfy-asin','rfy-price','rfy-category','rfy-notes'].forEach((id) => {
+      document.getElementById(id).value = '';
+    });
+    toast('Added to RFY watchlist');
+    await loadRfy();
+    await loadRfySummary();
+  } catch (e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+// ── RFY: update status ────────────────────────────────────────────────────
+
+async function setRfyStatus(rfyId, status) {
+  try {
+    const r = await fetch(`${API}/rfy/${encodeURIComponent(rfyId)}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    toast(`Marked as ${status}`);
+    await loadRfy();
+    await loadRfySummary();
+  } catch (e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+// ── RFY: delete entry ─────────────────────────────────────────────────────
+
+async function deleteRfyEntry(rfyId) {
+  if (!confirm('Remove this item from the RFY watchlist?')) return;
+  try {
+    const r = await fetch(`${API}/rfy/${encodeURIComponent(rfyId)}`, { method: 'DELETE' });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    toast('Removed from watchlist');
+    await loadRfy();
+    await loadRfySummary();
+  } catch (e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+// ── RFY: event delegation for table buttons ───────────────────────────────
+
+document.addEventListener('click', async (evt) => {
+  const btn = evt.target.closest('[data-rfy-action]');
+  if (!btn) return;
+  const action = btn.dataset.rfyAction;
+  const row = btn.closest('tr[data-rfy-id]');
+  if (!row) return;
+  const rfyId = row.dataset.rfyId;
+
+  if (action === 'delete') {
+    await deleteRfyEntry(rfyId);
+  } else if (['ordered', 'missed', 'passed'].includes(action)) {
+    await setRfyStatus(rfyId, action);
+  }
+});
+
 // ── Init ──────────────────────────────────────────────────────────────────
 
 (async function init() {
@@ -600,9 +823,11 @@ function updateSelectedCount() {
 
   await loadSummary();
   await loadProducts();
+  await loadRfy();
+  await loadRfySummary();
 
   // Auto-refresh summary every 60s
-  setInterval(loadSummary, 60000);
+  setInterval(async () => { await loadSummary(); await loadRfySummary(); }, 60000);
 })();
 </script>
 </body>

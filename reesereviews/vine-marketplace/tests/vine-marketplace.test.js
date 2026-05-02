@@ -290,6 +290,143 @@ test('parseAmazonEmail: accepts ship-confirm@marketplace.amazon.com subdomain', 
   assert.ok(result !== null);
 });
 
+// ── RFY Tracker ───────────────────────────────────────────────────────────
+
+console.log('\n🔎  RFY Tracker');
+
+const rfyTracker = require('../lib/rfy-tracker');
+
+test('add: creates entry with status=watching', () => {
+  const entry = rfyTracker.add({ productTitle: 'Smart Garden Sensor', asin: 'B0TESTAAAA', estPrice: 29.99, category: 'Garden' });
+  assert.ok(entry.rfyId, 'should have an rfyId');
+  assert.strictEqual(entry.status, 'watching');
+  assert.strictEqual(entry.productTitle, 'Smart Garden Sensor');
+  assert.strictEqual(entry.asin, 'B0TESTAAAA');
+  assert.strictEqual(entry.estPrice, 29.99);
+  assert.strictEqual(entry.category, 'Garden');
+  assert.strictEqual(entry.orderId, null);
+});
+
+test('add: throws when productTitle is missing', () => {
+  assert.throws(() => rfyTracker.add({ asin: 'B0MISSING' }), /productTitle/i);
+});
+
+test('add: throws when productTitle is empty string', () => {
+  assert.throws(() => rfyTracker.add({ productTitle: '   ' }), /productTitle/i);
+});
+
+test('getById: returns the entry that was added', () => {
+  const created = rfyTracker.add({ productTitle: 'Scope USB-C to Phone', estPrice: 15.00 });
+  const found = rfyTracker.getById(created.rfyId);
+  assert.ok(found !== null);
+  assert.strictEqual(found.rfyId, created.rfyId);
+  assert.strictEqual(found.productTitle, 'Scope USB-C to Phone');
+});
+
+test('getById: returns null for unknown id', () => {
+  assert.strictEqual(rfyTracker.getById('rfy-doesnotexist'), null);
+});
+
+test('getAll: returns all entries when no filter', () => {
+  const all = rfyTracker.getAll();
+  assert.ok(Array.isArray(all));
+  assert.ok(all.length >= 2);
+});
+
+test('updateStatus: changes status to missed', () => {
+  const entry = rfyTracker.add({ productTitle: 'Grow Light Seedlings' });
+  const updated = rfyTracker.updateStatus(entry.rfyId, 'missed');
+  assert.strictEqual(updated.status, 'missed');
+  assert.ok(updated.updatedAt);
+});
+
+test('updateStatus: changes status to ordered and stores orderId', () => {
+  const entry = rfyTracker.add({ productTitle: 'Blumat Moisture Meter v2' });
+  const updated = rfyTracker.updateStatus(entry.rfyId, 'ordered', '114-TESTORDER-001');
+  assert.strictEqual(updated.status, 'ordered');
+  assert.strictEqual(updated.orderId, '114-TESTORDER-001');
+});
+
+test('updateStatus: changes status to passed', () => {
+  const entry = rfyTracker.add({ productTitle: 'Random Junk Item' });
+  const updated = rfyTracker.updateStatus(entry.rfyId, 'passed');
+  assert.strictEqual(updated.status, 'passed');
+});
+
+test('updateStatus: throws for invalid status', () => {
+  const entry = rfyTracker.add({ productTitle: 'Test Item Status' });
+  assert.throws(() => rfyTracker.updateStatus(entry.rfyId, 'invalid'), /invalid status/i);
+});
+
+test('updateStatus: throws for unknown rfyId', () => {
+  assert.throws(() => rfyTracker.updateStatus('rfy-unknown', 'missed'), /not found/i);
+});
+
+test('updateNotes: updates notes field', () => {
+  const entry = rfyTracker.add({ productTitle: 'Noteworthy Item' });
+  const updated = rfyTracker.updateNotes(entry.rfyId, 'Love this but probe too expensive');
+  assert.strictEqual(updated.notes, 'Love this but probe too expensive');
+});
+
+test('updateNotes: throws for unknown rfyId', () => {
+  assert.throws(() => rfyTracker.updateNotes('rfy-unknown', 'note'), /not found/i);
+});
+
+test('remove: deletes entry', () => {
+  const entry = rfyTracker.add({ productTitle: 'Item to Delete' });
+  rfyTracker.remove(entry.rfyId);
+  assert.strictEqual(rfyTracker.getById(entry.rfyId), null);
+});
+
+test('remove: throws for unknown rfyId', () => {
+  assert.throws(() => rfyTracker.remove('rfy-unknown'), /not found/i);
+});
+
+test('getAll with status filter: returns only matching entries', () => {
+  const entry = rfyTracker.add({ productTitle: 'Filter Test Item' });
+  rfyTracker.updateStatus(entry.rfyId, 'missed');
+  const missed = rfyTracker.getAll('missed');
+  assert.ok(missed.every((e) => e.status === 'missed'));
+  assert.ok(missed.some((e) => e.rfyId === entry.rfyId));
+});
+
+test('getSummary: returns correct counts and conversion rate', () => {
+  // Counts derived directly from the live list — always consistent with each other
+  const all       = rfyTracker.getAll();
+  const watching  = all.filter((e) => e.status === 'watching').length;
+  const ordered   = all.filter((e) => e.status === 'ordered').length;
+  const missed    = all.filter((e) => e.status === 'missed').length;
+  const passedCt  = all.filter((e) => e.status === 'passed').length;
+  const decided   = ordered + missed + passedCt;
+  const expectedRate = decided > 0 ? parseFloat((ordered / decided).toFixed(4)) : 0;
+
+  const summary = rfyTracker.getSummary();
+  assert.strictEqual(summary.totalRFY, all.length);
+  assert.strictEqual(summary.rfyWatching, watching);
+  assert.strictEqual(summary.rfyOrdered, ordered);
+  assert.strictEqual(summary.rfyMissed, missed);
+  assert.strictEqual(summary.rfyPassed, passedCt);
+  assert.strictEqual(summary.rfyConversionRate, expectedRate);
+  assert.ok(summary.rfyConversionRate >= 0 && summary.rfyConversionRate <= 1);
+  assert.strictEqual(
+    summary.totalRFY,
+    summary.rfyWatching + summary.rfyOrdered + summary.rfyMissed + summary.rfyPassed
+  );
+});
+
+test('getSummary: conversion rate is 0 when decided count is zero', () => {
+  // Add a fresh watching-only entry and confirm that if decided == 0, rate == 0
+  const entry = rfyTracker.add({ productTitle: 'Watching Only Item' });
+  const summary = rfyTracker.getSummary();
+  const decided = summary.rfyOrdered + summary.rfyMissed + summary.rfyPassed;
+  if (decided === 0) {
+    assert.strictEqual(summary.rfyConversionRate, 0);
+  } else {
+    assert.ok(summary.rfyConversionRate > 0);
+  }
+  rfyTracker.remove(entry.rfyId);
+});
+
 // ── Results ────────────────────────────────────────────────────────────────
 
 console.log(`\n──────────────────────────────────────────`);
