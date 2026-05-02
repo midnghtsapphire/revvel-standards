@@ -520,8 +520,12 @@ function convertMarkdownToHTML(markdown) {
         const rowCells = cells.map(cell => {
           // Process inline markdown in cells (bold, italic, links, code)
           let cellContent = escapeHtml(cell.trim());
+          // Convert markdown links: [text](url) → <a> tags
+          cellContent = cellContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+          });
           cellContent = cellContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-          cellContent = cellContent.replace(/(^|\s)_([^_]+)_(?=\s|$|[.,;:!?)])/g, '$1<em>$2</em>');
+          cellContent = cellContent.replace(/_(.+?)_/g, '<em>$1</em>');
           cellContent = cellContent.replace(/`([^`]+)`/g, '<code>$1</code>');
           return `<td>${cellContent}</td>`;
         }).join('');
