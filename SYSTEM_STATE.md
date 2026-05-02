@@ -34,6 +34,7 @@
 | ID | Description | Severity | Status | Reported |
 |---|---|---|---|---|
 | BUG-001 | `npm test` fails if dependencies are not installed (`npm ci` required) | low | resolved | 2026-04-29 |
+| BUG-002 | YAML parsing errors in credential-label-router.yml and weekly-research.yml causing workflow validation failures | medium | resolved | 2026-05-02 |
 
 ---
 
@@ -64,7 +65,7 @@
 ## Last Updated
 
 ```
-Last updated: 2026-04-29 01:28 UTC
-Updated by: codex[agent]
-Session summary: Added SYSTEM_STATE.md and verified npm test passes after npm ci.
+Last updated: 2026-05-02 01:00 UTC
+Updated by: openhands[agent]
+Session summary: Fixed YAML parsing errors in credential-label-router.yml and weekly-research.yml. All 334 tests now passing.
 ```
