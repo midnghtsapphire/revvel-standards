@@ -43,26 +43,26 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 
 | # | Repository | Created | Last Updated | Status | Priority | Revenue Potential | WR Link | Notes |
 |---|------------|---------|--------------|--------|----------|-------------------|---------|-------|
-| 1 | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY) | 2021-10-22 | 2026-04-28 | ⭕ | P2 | TBD | [WR](repos/XHUMANITY.md) | XPRIZE project |
-| 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-04-28 | ⭕ | P3 | TBD | [WR](repos/k9-community-site.md) | Community site |
-| 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | [WR](repos/certifixes.md) | 1 star |
-| 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | [WR](repos/leaf2tree.md) | - |
-| 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | [WR](repos/tikiwash-autofill-frontend-kit.md) | TypeScript |
-| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | ⭕ | P0 | High | [WR](repos/neurooz.md) | AI-ADHD productivity |
-| 7 | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans) | 2026-01-23 | 2026-05-02 | ⭕ | P1 | Medium | [WR](repos/Meetaudreyevans.md) | Life Hub |
-| 8 | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis) | 2026-01-27 | 2026-05-02 | ⭕ | P2 | TBD | [WR](repos/Mechatronopolis.md) | Mechatronics career |
-| 9 | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server) | 2026-01-28 | 2026-03-05 | ⭕ | P1 | Medium | [WR](repos/code-review-mcp-server.md) | MCP server |
-| 10 | [the-alt-text](https://github.com/midnghtsapphire/the-alt-text) | 2026-01-29 | 2026-03-05 | ⭕ | P2 | TBD | [WR](repos/the-alt-text.md) | TypeScript |
-| 11 | [oz-prompt-library](https://github.com/midnghtsapphire/oz-prompt-library) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | [WR](repos/oz-prompt-library.md) | Prompt library |
-| 12 | [rags](https://github.com/midnghtsapphire/rags) | 2026-01-30 | 2026-03-05 | ⭕ | P3 | TBD | [WR](repos/rags.md) | - |
-| 13 | [universal_oz](https://github.com/midnghtsapphire/universal_oz) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | [WR](repos/universal_oz.md) | Python |
-| 14 | [WEBSITE-FACTORY-API](https://github.com/midnghtsapphire/WEBSITE-FACTORY-API) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | [WR](repos/WEBSITE-FACTORY-API.md) | OpenRouter 5 models |
-| 15 | [WEBSITE-FACTORY-GENERATOR](https://github.com/midnghtsapphire/WEBSITE-FACTORY-GENERATOR) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | [WR](repos/WEBSITE-FACTORY-GENERATOR.md) | OpenRouter generator |
-| 16 | [premolt](https://github.com/midnghtsapphire/premolt) | 2026-02-03 | 2026-04-06 | ⭕ | P1 | High | [WR](repos/premolt.md) | Security sandbox |
-| 17 | [Lifehub](https://github.com/midnghtsapphire/Lifehub) | 2026-02-06 | 2026-05-02 | ⭕ | P1 | Medium | [WR](repos/Lifehub.md) | - |
-| 18 | [Epstein](https://github.com/midnghtsapphire/Epstein) | 2026-02-06 | 2026-03-05 | ⭕ | P3 | TBD | [WR](repos/Epstein.md) | - |
-| 19 | [affiliate-marketing-system](https://github.com/midnghtsapphire/affiliate-marketing-system) | 2026-02-07 | 2026-05-02 | ⭕ | P0 | Very High | [WR](repos/affiliate-marketing-system.md) | Direct revenue |
-| 20 | [MCP-AUTH](https://github.com/midnghtsapphire/MCP-AUTH) | 2026-02-07 | 2026-05-02 | ⭕ | P1 | Medium | [WR](repos/MCP-AUTH.md) | InTheWild platform |
+| 1 | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY) | 2021-10-22 | 2026-04-28 | ⭕ | P2 | TBD | - | XPRIZE project |
+| 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-04-28 | ⭕ | P3 | TBD | - | Community site |
+| 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
+| 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
+| 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | - | TypeScript |
+| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | 🟡 | P0 | High | [WR](repos/neurooz.md) | AI-ADHD productivity |
+| 7 | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans) | 2026-01-23 | 2026-05-02 | ⭕ | P1 | Medium | - | Life Hub |
+| 8 | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis) | 2026-01-27 | 2026-05-02 | ⭕ | P2 | TBD | - | Mechatronics career |
+| 9 | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server) | 2026-01-28 | 2026-03-05 | ⭕ | P1 | Medium | - | MCP server |
+| 10 | [the-alt-text](https://github.com/midnghtsapphire/the-alt-text) | 2026-01-29 | 2026-03-05 | ⭕ | P2 | TBD | - | TypeScript |
+| 11 | [oz-prompt-library](https://github.com/midnghtsapphire/oz-prompt-library) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | - | Prompt library |
+| 12 | [rags](https://github.com/midnghtsapphire/rags) | 2026-01-30 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
+| 13 | [universal_oz](https://github.com/midnghtsapphire/universal_oz) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | - | Python |
+| 14 | [WEBSITE-FACTORY-API](https://github.com/midnghtsapphire/WEBSITE-FACTORY-API) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | - | OpenRouter 5 models |
+| 15 | [WEBSITE-FACTORY-GENERATOR](https://github.com/midnghtsapphire/WEBSITE-FACTORY-GENERATOR) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | - | OpenRouter generator |
+| 16 | [premolt](https://github.com/midnghtsapphire/premolt) | 2026-02-03 | 2026-04-06 | ⭕ | P1 | High | - | Security sandbox |
+| 17 | [Lifehub](https://github.com/midnghtsapphire/Lifehub) | 2026-02-06 | 2026-05-02 | ⭕ | P1 | Medium | - | - |
+| 18 | [Epstein](https://github.com/midnghtsapphire/Epstein) | 2026-02-06 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
+| 19 | [affiliate-marketing-system](https://github.com/midnghtsapphire/affiliate-marketing-system) | 2026-02-07 | 2026-05-02 | ⭕ | P0 | Very High | - | Direct revenue |
+| 20 | [MCP-AUTH](https://github.com/midnghtsapphire/MCP-AUTH) | 2026-02-07 | 2026-05-02 | ⭕ | P1 | Medium | - | InTheWild platform |
 
 _Table continues with remaining 80 repositories..._
 
@@ -82,16 +82,17 @@ cd /home/runner/work/revvel-standards/revvel-standards/wr
 ### Batch Generate WRs
 
 ```bash
-# Generate WRs for all repos (runs in background)
-cd /home/runner/work/revvel-standards/revvel-standards/wr
+# Generate WRs for P0 repos (default)
+cd wr
 ./scripts/batch-generate-wrs.sh
+# or explicitly: ./scripts/batch-generate-wrs.sh p0
 ```
 
 ### Update Tracker
 
 ```bash
 # Update this tracker with latest status
-cd /home/runner/work/revvel-standards/revvel-standards/wr
+cd wr
 ./scripts/update-tracker.sh
 ```
 
@@ -104,7 +105,7 @@ cd /home/runner/work/revvel-standards/revvel-standards/wr
 | Category | Count | Est. Monthly Revenue | Notes |
 |----------|-------|---------------------|-------|
 | Ship-Ready | 0 | $0 | Target: 5 repos by end of May |
-| In Progress | 0 | $0 (potential) | - |
+| In Progress | 1 | $0 (potential) | neurooz WR being completed |
 | Identified P0 | ~10 | $5000+ (potential) | High-value opportunities |
 | Total Repositories | 140 | TBD | Full audit needed |
 
@@ -154,23 +155,23 @@ These repositories have immediate revenue potential and should be addressed firs
 ### Weekly Research Workflow
 
 **Workflow:** `.github/workflows/weekly-research.yml`  
-**Status:** [To be implemented]
+**Status:** ✅ Active
 
 **Triggers:**
-- [ ] Issue with `[WR]` prefix
-- [ ] Manual trigger with issue number
-- [ ] Scheduled weekly scan for stale repos
+- ✅ Issue with `[WR]` prefix - automatically detected
+- ✅ Manual trigger with issue number via workflow_dispatch
+- ⏳ Scheduled weekly scan (can be configured)
 
 ### WR Generation Scripts
 
 **Location:** `/wr/scripts/`
 
-- [ ] `generate-wr.sh` - Generate single WR from template
-- [ ] `batch-generate-wrs.sh` - Generate WRs for all repos
-- [ ] `update-tracker.sh` - Update this tracker
-- [ ] `check-deployment.sh` - Verify Vercel deployments
-- [ ] `audit-security.sh` - Check security vulnerabilities
-- [ ] `estimate-revenue.sh` - Calculate revenue potential
+- ✅ `generate-wr.sh` - Generate single WR from template
+- ✅ `batch-generate-wrs.sh` - Generate WRs for P0/P1/custom repos
+- ✅ `update-tracker.sh` - Update this tracker
+- ⏳ `check-deployment.sh` - Verify Vercel deployments (future)
+- ⏳ `audit-security.sh` - Check security vulnerabilities (future)
+- ⏳ `estimate-revenue.sh` - Calculate revenue potential (future)
 
 ---
 

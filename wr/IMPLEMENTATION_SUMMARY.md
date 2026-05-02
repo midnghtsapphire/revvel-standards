@@ -236,7 +236,7 @@ cd wr/scripts
 ### Example 1: Generate WR for Single Repository
 
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./generate-wr.sh affiliate-marketing-system
 ```
 
@@ -248,7 +248,7 @@ cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
 ### Example 2: Batch Generate P0 Repositories
 
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./batch-generate-wrs.sh p0
 ```
 

@@ -272,7 +272,7 @@ cd wr/scripts
 
 **Generate WR for single repository:**
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./generate-wr.sh <repo-name>
 ```
 

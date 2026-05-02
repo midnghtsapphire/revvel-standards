@@ -36,7 +36,7 @@ wr/
 
 ```bash
 # Generate WR for a single repository
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./generate-wr.sh neurooz
 
 # Generate WRs for P0 (highest priority) repositories
@@ -92,7 +92,7 @@ All WRs must align with the Prime Directive from `docs/AGENTS.md`:
 - **Total Repositories:** 140
 - **WRs Created:** 1
 - **WRs In Progress:** 1
-- **WRs Completed:** 1
+- **WRs Completed:** 0
 - **Ship-to-Market Ready:** 0
 
 **Priority Distribution:**

@@ -25,11 +25,24 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+REPO_NAME="$1"
+
+# Validate repo name to prevent path traversal
+if [[ ! "$REPO_NAME" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+    echo -e "${RED}Error: Invalid repository name${NC}"
+    echo "Repository name must contain only letters, numbers, underscores, hyphens, and dots"
+    echo "Got: $REPO_NAME"
+    exit 1
+fi
+
+# Normalize with basename to be extra safe
+REPO_NAME=$(basename "$REPO_NAME")
+OUTPUT_FILE="$REPOS_DIR/${REPO_NAME}.md"
+
 # Check if gh CLI is available
 if ! command -v gh &> /dev/null; then
     echo -e "${RED}Error: gh CLI not found${NC}"
     echo "Please install GitHub CLI: https://cli.github.com/"
-    echo "Or authenticate: gh auth login"
     exit 1
 fi
 
@@ -40,8 +53,12 @@ if ! gh auth status &> /dev/null; then
     exit 1
 fi
 
-REPO_NAME="$1"
-OUTPUT_FILE="$REPOS_DIR/${REPO_NAME}.md"
+# Check if jq is available
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}Error: jq not found${NC}"
+    echo "Please install jq: https://stedolan.github.io/jq/"
+    exit 1
+fi
 
 # Check if template exists
 if [ ! -f "$TEMPLATE_FILE" ]; then
@@ -111,18 +128,37 @@ RESEARCH_DATE=$(date +%Y-%m-%d)
 
 echo -e "${GREEN}Generating WR from template...${NC}"
 
+# Helper function to escape sed replacement strings
+escape_sed() {
+    # Escape backslashes, ampersands, newlines, and forward slashes
+    echo "$1" | sed 's/[&/\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g'
+}
+
+# Escape all values for safe sed substitution
+REPO_NAME_ESC=$(escape_sed "$REPO_NAME")
+REPO_URL_ESC=$(escape_sed "$REPO_URL")
+CREATED_DATE_ESC=$(escape_sed "$CREATED_DATE")
+UPDATED_DATE_ESC=$(escape_sed "$UPDATED_DATE")
+PRIMARY_LANGUAGE_ESC=$(escape_sed "$PRIMARY_LANGUAGE")
+RESEARCH_DATE_ESC=$(escape_sed "$RESEARCH_DATE")
+DESCRIPTION_ESC=$(escape_sed "$DESCRIPTION")
+STARS_ESC=$(escape_sed "$STARS")
+OPEN_ISSUES_ESC=$(escape_sed "$OPEN_ISSUES")
+IS_PRIVATE_ESC=$(escape_sed "$IS_PRIVATE")
+IS_ARCHIVED_ESC=$(escape_sed "$IS_ARCHIVED")
+
 # Create WR from template with substitutions
-sed -e "s|{REPO_NAME}|$REPO_NAME|g" \
-    -e "s|{REPO_URL}|$REPO_URL|g" \
-    -e "s|{CREATED_DATE}|$CREATED_DATE|g" \
-    -e "s|{UPDATED_DATE}|$UPDATED_DATE|g" \
-    -e "s|{PRIMARY_LANGUAGE}|$PRIMARY_LANGUAGE|g" \
-    -e "s|{RESEARCH_DATE}|$RESEARCH_DATE|g" \
-    -e "s|{DESCRIPTION}|$DESCRIPTION|g" \
-    -e "s|{STARS}|$STARS|g" \
-    -e "s|{OPEN_ISSUES}|$OPEN_ISSUES|g" \
-    -e "s|{IS_PRIVATE}|$IS_PRIVATE|g" \
-    -e "s|{IS_ARCHIVED}|$IS_ARCHIVED|g" \
+sed -e "s|{REPO_NAME}|$REPO_NAME_ESC|g" \
+    -e "s|{REPO_URL}|$REPO_URL_ESC|g" \
+    -e "s|{CREATED_DATE}|$CREATED_DATE_ESC|g" \
+    -e "s|{UPDATED_DATE}|$UPDATED_DATE_ESC|g" \
+    -e "s|{PRIMARY_LANGUAGE}|$PRIMARY_LANGUAGE_ESC|g" \
+    -e "s|{RESEARCH_DATE}|$RESEARCH_DATE_ESC|g" \
+    -e "s|{DESCRIPTION}|$DESCRIPTION_ESC|g" \
+    -e "s|{STARS}|$STARS_ESC|g" \
+    -e "s|{OPEN_ISSUES}|$OPEN_ISSUES_ESC|g" \
+    -e "s|{IS_PRIVATE}|$IS_PRIVATE_ESC|g" \
+    -e "s|{IS_ARCHIVED}|$IS_ARCHIVED_ESC|g" \
     "$TEMPLATE_FILE" > "$OUTPUT_FILE"
 
 echo -e "${GREEN}✓ WR created successfully!${NC}"

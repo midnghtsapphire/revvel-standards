@@ -26,9 +26,24 @@ echo ""
 # Count WRs
 echo "Scanning WR directory..."
 TOTAL_WRS=$(find "$REPOS_DIR" -name "*.md" -type f 2>/dev/null | wc -l)
-IN_PROGRESS=$(grep -l "🟡 In Progress" "$REPOS_DIR"/*.md 2>/dev/null | wc -l)
-COMPLETED=$(grep -l "✅ Complete" "$REPOS_DIR"/*.md 2>/dev/null | wc -l)
-SHIP_READY=$(grep -l "🚀" "$REPOS_DIR"/*.md 2>/dev/null | wc -l)
+
+# Count based on canonical WR Status field (not mentions anywhere in file)
+IN_PROGRESS=0
+COMPLETED=0
+SHIP_READY=0
+
+for wr_file in "$REPOS_DIR"/*.md 2>/dev/null; do
+    [ -f "$wr_file" ] || continue
+    
+    # Extract the WR Status line and check its value
+    if grep -q "^\*\*WR Status:\*\* 🟡 In Progress" "$wr_file"; then
+        ((IN_PROGRESS++))
+    elif grep -q "^\*\*WR Status:\*\* ✅ Complete" "$wr_file"; then
+        ((COMPLETED++))
+    elif grep -q "^\*\*WR Status:\*\* 🚀" "$wr_file"; then
+        ((SHIP_READY++))
+    fi
+done
 
 echo ""
 echo -e "${GREEN}WR Statistics:${NC}"
@@ -45,13 +60,16 @@ if [ -f "$TRACKER_FILE" ]; then
     # Update statistics in the tracker
     CURRENT_DATE=$(date +%Y-%m-%d)
     
-    # Create temp file with updated stats
-    sed -i "s/\*\*Total Repositories:\*\* .*/\*\*Total Repositories:\*\* 140/" "$TRACKER_FILE"
-    sed -i "s/\*\*WRs Created:\*\* .*/\*\*WRs Created:\*\* $TOTAL_WRS/" "$TRACKER_FILE"
-    sed -i "s/\*\*WRs In Progress:\*\* .*/\*\*WRs In Progress:\*\* $IN_PROGRESS/" "$TRACKER_FILE"
-    sed -i "s/\*\*WRs Completed:\*\* .*/\*\*WRs Completed:\*\* $COMPLETED/" "$TRACKER_FILE"
-    sed -i "s/\*\*Ship-to-Market Ready:\*\* .*/\*\*Ship-to-Market Ready:\*\* $SHIP_READY/" "$TRACKER_FILE"
-    sed -i "s/\*\*Last Updated:\*\* .*/\*\*Last Updated:\*\* $CURRENT_DATE/" "$TRACKER_FILE"
+    # Use portable sed (create backup, then rename)
+    # This works on both GNU and BSD sed
+    cp "$TRACKER_FILE" "${TRACKER_FILE}.bak"
+    sed "s/\*\*Total Repositories:\*\* .*/\*\*Total Repositories:\*\* 140/" "${TRACKER_FILE}.bak" > "${TRACKER_FILE}.tmp1"
+    sed "s/\*\*WRs Created:\*\* .*/\*\*WRs Created:\*\* $TOTAL_WRS/" "${TRACKER_FILE}.tmp1" > "${TRACKER_FILE}.tmp2"
+    sed "s/\*\*WRs In Progress:\*\* .*/\*\*WRs In Progress:\*\* $IN_PROGRESS/" "${TRACKER_FILE}.tmp2" > "${TRACKER_FILE}.tmp3"
+    sed "s/\*\*WRs Completed:\*\* .*/\*\*WRs Completed:\*\* $COMPLETED/" "${TRACKER_FILE}.tmp3" > "${TRACKER_FILE}.tmp4"
+    sed "s/\*\*Ship-to-Market Ready:\*\* .*/\*\*Ship-to-Market Ready:\*\* $SHIP_READY/" "${TRACKER_FILE}.tmp4" > "${TRACKER_FILE}.tmp5"
+    sed "s/\*\*Last Updated:\*\* .*/\*\*Last Updated:\*\* $CURRENT_DATE/" "${TRACKER_FILE}.tmp5" > "$TRACKER_FILE"
+    rm -f "${TRACKER_FILE}.bak" "${TRACKER_FILE}.tmp"*
     
     echo -e "${GREEN}✓ Tracker file updated${NC}"
 else

@@ -8,21 +8,27 @@ This guide explains how to use the Weekly Research (WR) system for reviewing all
 
 **Via Script:**
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./generate-wr.sh neurooz
 ```
 
-**Via GitHub Workflow:**
-```bash
-gh workflow run wr-repository-review.yml -f repository=neurooz -f mode=single
-```
+**Via GitHub Issue:**
+Create an issue with title: `[WR] Repository Review - [neurooz]`  
+The `weekly-research.yml` workflow will automatically detect and process it.
 
 ### 2. Generate WRs for Priority Repositories
 
 **P0 (Highest Priority):**
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+cd wr/scripts
 ./batch-generate-wrs.sh p0
+```
+
+**P1 (High Priority):**
+```bash
+cd wr/scripts
+./batch-generate-wrs.sh p1
+```
 ```
 
 **P1 (High Priority):**
@@ -307,7 +313,7 @@ Every WR should include:
 **Solution:**
 ```bash
 # Make scripts executable
-chmod +x /home/runner/work/revvel-standards/revvel-standards/wr/scripts/*.sh
+chmod +x wr/scripts/*.sh
 
 # Try again
 cd wr/scripts
@@ -323,7 +329,7 @@ cd wr/scripts
 **Solution:**
 If placeholders remain, manually edit the WR file:
 ```bash
-vim /home/runner/work/revvel-standards/revvel-standards/wr/repos/<repo-name>.md
+vim wr/repos/<repo-name>.md
 ```
 
 Replace `{REPO_NAME}`, `{REPO_URL}`, etc. with actual values.

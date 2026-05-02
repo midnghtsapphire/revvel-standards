@@ -20,7 +20,7 @@ GENERATE_SCRIPT="$SCRIPT_DIR/generate-wr.sh"
 # Make generate script executable
 chmod +x "$GENERATE_SCRIPT"
 
-MODE="${1:-all}"
+MODE="${1:-p0}"
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║   Batch WR Generation                  ║${NC}"
@@ -55,15 +55,16 @@ generate_wr_for_repo() {
     local repo_name="$1"
     echo -e "${GREEN}Generating WR for: $repo_name${NC}"
     
-    # Run generation script (non-interactive mode)
-    echo "y" | "$GENERATE_SCRIPT" "$repo_name" 2>/dev/null || {
+    # Run generation script - preserve stderr for error messages
+    if echo "y" | "$GENERATE_SCRIPT" "$repo_name"; then
+        echo -e "${GREEN}✓ WR generated for $repo_name${NC}"
+        echo ""
+        return 0
+    else
         echo -e "${RED}✗ Failed to generate WR for $repo_name${NC}"
+        echo ""
         return 1
-    }
-    
-    echo -e "${GREEN}✓ WR generated for $repo_name${NC}"
-    echo ""
-    sleep 1  # Rate limiting
+    fi
 }
 
 case "$MODE" in
@@ -72,10 +73,15 @@ case "$MODE" in
         echo "Repositories: ${#P0_REPOS[@]}"
         echo ""
         
+        FAILED_COUNT=0
         for repo in "${P0_REPOS[@]}"; do
-            generate_wr_for_repo "$repo" || true
+            generate_wr_for_repo "$repo" || ((FAILED_COUNT++))
         done
-
+        
+        if [ $FAILED_COUNT -gt 0 ]; then
+            echo -e "${RED}Failed to generate $FAILED_COUNT WR(s)${NC}"
+            exit 1
+        fi
         ;;
         
     "p1")
@@ -83,9 +89,15 @@ case "$MODE" in
         echo "Repositories: ${#P1_REPOS[@]}"
         echo ""
         
+        FAILED_COUNT=0
         for repo in "${P1_REPOS[@]}"; do
-            generate_wr_for_repo "$repo"
+            generate_wr_for_repo "$repo" || ((FAILED_COUNT++))
         done
+        
+        if [ $FAILED_COUNT -gt 0 ]; then
+            echo -e "${RED}Failed to generate $FAILED_COUNT WR(s)${NC}"
+            exit 1
+        fi
         ;;
         
     "all")
