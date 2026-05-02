@@ -249,7 +249,7 @@ jobs:
       - name: API connectivity test (if key available)
         # Only run if BITO_API_KEY secret is configured
         # Note: This step will be skipped in most cases as the secret is not required for basic tests
-        if: secrets.BITO_API_KEY != ''
+        if: ${{ secrets.BITO_API_KEY != '' }}
         env:
           BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
         run: |
