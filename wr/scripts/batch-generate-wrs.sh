@@ -75,7 +75,7 @@ case "$MODE" in
         
         FAILED_COUNT=0
         for repo in "${P0_REPOS[@]}"; do
-            generate_wr_for_repo "$repo" || ((FAILED_COUNT++))
+            generate_wr_for_repo "$repo" || ((++FAILED_COUNT))
         done
         
         if [ $FAILED_COUNT -gt 0 ]; then
