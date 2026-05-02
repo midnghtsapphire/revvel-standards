@@ -148,6 +148,19 @@ Config file: `.mcp.json` in each project root. Setup: `scripts/setup-mcp.sh`.
 
 ---
 
+## 8. Digital Product Creation & Sales Tools
+
+| # | Service | Category | What It Does | Flow Phase | Cost |
+|---|---|---|---|---|---|
+| 73 | **Gumroad** | Digital Sales | Upload and sell digital products (PDFs, eBooks, guides). Automated checkout and delivery. Payment processing with zero upfront cost. | Phase 7 (Deploy) | Free to start; 10% commission per sale |
+| 74 | **Carrd** | Website Builder | Create simple landing pages and online storefronts for digital products. Easy embedding of payment links. | Phase 7 (Deploy) | Free (up to 3 sites) / $19/year Pro |
+| 75 | **ChatGPT** | AI Writing | Brainstorm, outline, and generate written content for PDF guides, eBooks, and templates. | Phase 2 (Create) | Free tier / $20/month Plus |
+| 76 | **Claude** | AI Writing | Generate and refine written content, structure documents, create technical content for PDFs. | Phase 2 (Create) | Free tier / $20/month Pro |
+| 77 | **Canva / Canva AI** | Design & PDF Creation | Format AI-generated text into polished PDFs. Create covers, promotional graphics, social media assets. | Phase 2–3 (Create/Design) | Free tier / $15/month Pro |
+| 78 | **YouTube** | Marketing & Traffic | Create content channels (faceless or traditional) to drive traffic to digital product landing pages. Video descriptions and pinned comments link to storefront. | Phase 8 (Market) | Free (platform monetization available at 1K+ subs) |
+
+---
+
 ## Required Secrets Reference
 
 All secrets must be stored in **GitHub Secrets** (Settings → Secrets and variables → Actions).
@@ -166,6 +179,8 @@ They are **never** committed to code.
 | `EXA_API_KEY` | exa-mcp | Exa search API key |
 | `SLACK_BOT_TOKEN` | slack-mcp | Slack bot OAuth token |
 | `MEM0_API_KEY` | mem0-mcp | Mem0 memory API key |
+| `GUMROAD_ACCESS_TOKEN` | Gumroad API | Gumroad API access token for automated product uploads |
+| `CANVA_API_KEY` | Canva API (if using automation) | Canva API key for programmatic design generation |
 
 ---
 
