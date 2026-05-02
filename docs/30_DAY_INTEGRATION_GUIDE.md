@@ -105,10 +105,10 @@ projects/agent-generated/<product-slug>/
   ├── BOM.md                    # ✅ Same in both
   ├── state.json                # ✅ Same in both
   ├── research/                 # ✅ Same in both
-  │   └── brief.md
+  │   └── brief.md              # Generated with research template
   ├── build/                    # ✅ Same in both
-  │   ├── src/
-  │   └── tests/
+  │   ├── <shape>/              # Per-shape build folders
+  │   └── .gitkeep files
   ├── certify/                  # ✅ Same in both
   ├── deploy/                   # ✅ Same in both
   ├── monetize/                 # ✅ Same in both
@@ -121,7 +121,6 @@ projects/agent-generated/<product-slug>/
   ├── automation/               # ⭐ 30-day specific
   │   └── README.md
   ├── learnings/                # ⭐ 30-day specific
-  │   └── 30day-cycle-1.md
   └── NEXT_STEPS.md             # ⭐ 30-day specific
 ```
 
@@ -129,9 +128,9 @@ projects/agent-generated/<product-slug>/
 
 ## Skill Integration
 
-### New Skill: `product-launch-30day`
+### Planned Skill: `product-launch-30day`
 
-**Path:** `skills/product-launch-30day/`
+**Path:** `skills/product-launch-30day/` (planned for future release)
 
 **Trigger keywords:**
 - "30 day launch"
@@ -140,31 +139,35 @@ projects/agent-generated/<product-slug>/
 - "validate product idea"
 - "rapid product ship"
 
-**What it provides:**
+**What it will provide:**
 - 30-day timeline execution
 - MVP validation checklist
 - Simplified metrics tracking
 - Community launch playbook
 
-**Register in:** `skills/REGISTRY.md`
+**Status:** Not yet implemented. For now, use the script directly: `./scripts/autonomous-product-launcher.sh`
 
 ## Workflow Integration
 
 ### Existing Workflows (Used)
 - `.github/workflows/credential-gatekeeper.yml` — BOM validation
-- `.github/workflows/deploy-*.yml` — Deployment per shape
-- `.github/workflows/tests.yml` — CI/CD testing
+- `.github/workflows/deploy-*.yml` — Deployment per shape (if available)
+- CI/CD testing — Use existing test workflows in the repository
 
-### New Workflows (30-Day Specific)
-- `.github/workflows/30day-metrics.yml` — Daily metrics collection
-- `.github/workflows/30day-reminder.yml` — Timeline milestone alerts
+### Planned Workflows (30-Day Specific)
+The following workflows are planned for future releases:
+- `30day-metrics.yml` — Daily metrics collection (planned)
+- `30day-reminder.yml` — Timeline milestone alerts (planned)
+
+For now, metrics tracking and reminders are manual processes.
 
 ## Script Integration
 
 ### New Scripts
 - `scripts/autonomous-product-launcher.sh` — Main launcher
-- `scripts/research-automation.sh` — TODO: Automated research
-- `scripts/metrics-dashboard.sh` — TODO: Generate metrics dashboard
+- Future planned:
+  - `research-automation.sh` — Automated research (planned)
+  - `metrics-dashboard.sh` — Generate metrics dashboard (planned)
 
 ### Existing Scripts (Used)
 - `scripts/init-product.sh` — Product scaffolding (called by launcher)
@@ -337,7 +340,7 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 - **Full Pipeline:** `standards/AUTOMATED_PRODUCT_PIPELINE.md`
 - **Launcher Script:** `scripts/autonomous-product-launcher.sh`
 - **Examples:** `projects/agent-generated/_examples/`
-- **Skills:** `skills/product-launch-30day/` (TODO)
+- **Skills:** `skills/product-launch-30day/` (planned for future release)
 
 ---
 

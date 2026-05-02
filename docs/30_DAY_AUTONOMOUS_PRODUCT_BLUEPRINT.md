@@ -25,11 +25,8 @@ This is a **simplified, autonomous, resilient, and changeable** framework for sh
 ## Quick Start
 
 ```bash
-# Create a new autonomous product project
+# Create a new autonomous product
 ./scripts/autonomous-product-launcher.sh "product-name" --days 30
-
-# Or use the existing init script with auto-launch
-./scripts/init-product.sh "product-name" --shape app --auto-launch
 ```
 
 ---

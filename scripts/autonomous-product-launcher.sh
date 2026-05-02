@@ -150,7 +150,14 @@ PROJECT_DIR="$REPO_ROOT/projects/agent-generated/$PRODUCT_SLUG"
 NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 if [ -z "$LAUNCH_DATE" ]; then
-  LAUNCH_DATE=$(date -u -d "+${DAYS} days" +%Y-%m-%d)
+  # Portable date calculation (works on GNU and BSD/macOS)
+  if date -v+1d > /dev/null 2>&1; then
+    # BSD/macOS date
+    LAUNCH_DATE=$(date -u -v+${DAYS}d +%Y-%m-%d)
+  else
+    # GNU date
+    LAUNCH_DATE=$(date -u -d "+${DAYS} days" +%Y-%m-%d)
+  fi
 fi
 
 log "==================================================================="
@@ -276,7 +283,7 @@ if [ "$DRY_RUN" = false ]; then
 
 ## Resources
 
-- Blueprint: [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- Blueprint: [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - Project folder: \`projects/agent-generated/$PRODUCT_SLUG/\`
 - Research: \`research/\`
 - Build: \`build/\`
@@ -300,14 +307,17 @@ log "Phase 3: Setting up metrics tracking..."
 METRICS_CONFIG="$PROJECT_DIR/metrics/config.json"
 
 if [ "$DRY_RUN" = false ]; then
-  cat > "$METRICS_CONFIG" <<EOF
-{
-  "product_slug": "$PRODUCT_SLUG",
-  "product_name": "$PRODUCT_NAME",
-  "shape": "$SHAPE",
-  "payment_platform": "$PAYMENT_PLATFORM",
-  "launch_date": "$LAUNCH_DATE",
-  "created_at": "$NOW",
+  # Use Python to generate JSON safely (avoids injection issues)
+  python3 - "$METRICS_CONFIG" "$PRODUCT_SLUG" "$PRODUCT_NAME" "$SHAPE" "$PAYMENT_PLATFORM" "$LAUNCH_DATE" "$NOW" <<'PY'
+import json, sys
+path, slug, name, shape, payment, launch, created = sys.argv[1:8]
+config = {
+  "product_slug": slug,
+  "product_name": name,
+  "shape": shape,
+  "payment_platform": payment,
+  "launch_date": launch,
+  "created_at": created,
   "metrics": {
     "primary": [
       "signups",
@@ -337,8 +347,8 @@ if [ "$DRY_RUN" = false ]; then
       "waitlist_signups": 30
     },
     "week2": {
-      "prototype_ready": true,
-      "payment_tested": true
+      "prototype_ready": True,
+      "payment_tested": True
     },
     "week3": {
       "beta_users": 10,
@@ -355,7 +365,10 @@ if [ "$DRY_RUN" = false ]; then
     }
   }
 }
-EOF
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(config, f, indent=2)
+    f.write("\n")
+PY
   log "Created: $METRICS_CONFIG"
 else
   log "[DRY RUN] Would create: $METRICS_CONFIG"
@@ -480,9 +493,73 @@ TODO: Estimate addressable market:
 
 ---
 
-*Run: \`./scripts/research-automation.sh $PRODUCT_SLUG\` to populate this automatically*
+*Note: Automated research tools are in development. For now, manually research the above.*
 EOF
-    log "Created: $RESEARCH_BRIEF (requires manual research or automation)"
+    log "Created: $RESEARCH_BRIEF (requires manual research)"
+  else
+    log "[DRY RUN] Would create: $RESEARCH_BRIEF"
+  fi
+else
+  # Create research directory with brief template even without --auto-research
+  RESEARCH_DIR="$PROJECT_DIR/research"
+  RESEARCH_BRIEF="$RESEARCH_DIR/brief.md"
+  
+  if [ "$DRY_RUN" = false ]; then
+    cat > "$RESEARCH_BRIEF" <<EOF
+# Research Brief: $PRODUCT_NAME
+
+**Status:** TODO - Complete research
+**Created:** $NOW
+
+## Pain Points
+
+Identify pain points by:
+- Searching Reddit, Twitter/X, forums for complaints
+- Analyzing competitor reviews
+- Interviewing potential users
+- Monitoring social media conversations
+
+Target: 50+ mentions of the problem in the last 30 days
+
+## Competitor Analysis
+
+Research top 10 competitors:
+- Pricing and business models
+- Feature comparison
+- Customer reviews (what they love/hate)
+- SEO keywords they rank for
+- Market gaps and opportunities
+
+## Target Audience
+
+Define your primary audience:
+- Demographics (age, location, profession)
+- Use cases and pain points
+- Current solutions they use
+- Willingness to pay
+- Where they hang out online
+
+## MVP Definition
+
+Based on research, define:
+- **Core problem:** One sentence description
+- **Solution:** How your product solves it
+- **Minimum feature set:** The absolute minimum to provide value
+- **Differentiation:** Why you vs. competitors
+
+## Market Size
+
+Estimate the addressable market:
+- Total potential users/customers
+- Realistic market capture rate (be conservative)
+- Revenue potential at different price points
+- Growth trajectory
+
+---
+
+*Fill this out before proceeding to Week 2 of your launch plan*
+EOF
+    log "Created: $RESEARCH_BRIEF"
   else
     log "[DRY RUN] Would create: $RESEARCH_BRIEF"
   fi
@@ -532,9 +609,9 @@ Your autonomous 30-day product launch has been initialized! 🚀
 
 ## Key Resources
 
-- **Blueprint:** [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
-- **Pipeline:** [\`standards/AUTOMATED_PRODUCT_PIPELINE.md\`](../../standards/AUTOMATED_PRODUCT_PIPELINE.md)
-- **Pricing:** [\`standards/PRICING.md\`](../../standards/PRICING.md)
+- **Blueprint:** [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- **Pipeline:** [\`standards/AUTOMATED_PRODUCT_PIPELINE.md\`](../../../standards/AUTOMATED_PRODUCT_PIPELINE.md)
+- **Pricing:** [\`standards/PRICING.md\`](../../../standards/PRICING.md)
 
 ## Quick Commands
 
@@ -545,11 +622,11 @@ tree projects/agent-generated/$PRODUCT_SLUG
 # Start development
 cd projects/agent-generated/$PRODUCT_SLUG/build
 
-# Run metrics collection
-./metrics/collect.sh
-
 # Check launch status
-cat launch/30-day-plan.md
+cat ../launch/30-day-plan.md
+
+# View metrics targets
+cat ../metrics/config.json
 \`\`\`
 
 ## Support

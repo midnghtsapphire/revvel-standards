@@ -37,7 +37,8 @@ cat NEXT_STEPS.md
 cat launch/30-day-plan.md
 
 # Start with research
-vim research/brief.md
+cat research/brief.md
+# Fill out the research brief with your findings
 ```
 
 ### 4. Track Your Progress
