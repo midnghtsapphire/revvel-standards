@@ -6,6 +6,29 @@
 
 ---
 
+## 🎯 Revvel Rosette Automation (NEW!)
+
+**Comprehensive test harness and automation framework** for the revvel-standards repository.
+
+### What It Does
+- **Project orchestration** — Multi-agent coordination across 300+ projects
+- **Security & vault management** — Automated credential rotation
+- **Gatekeeper system** — Automated secret provisioning
+- **Trello integration** — Project management automation
+- **Self-healing** — Autonomous error detection and remediation
+- **Scheduled automation** — Daily routines and cron jobs
+
+### Quick Start
+```bash
+cd revvel-rosette-automation
+./scripts/bootstrap.sh
+npm test  # 15 tests, all passing
+```
+
+📖 **Documentation:** [`revvel-rosette-automation/README.md`](revvel-rosette-automation/README.md)
+
+---
+
 ## 🚀 Agent Fallback System (NEW!)
 
 **Automatic Devin → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
