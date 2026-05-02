@@ -521,7 +521,7 @@ function convertMarkdownToHTML(markdown) {
           // Process inline markdown in cells (bold, italic, links, code)
           let cellContent = escapeHtml(cell.trim());
           cellContent = cellContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-          cellContent = cellContent.replace(/_(.+?)_/g, '<em>$1</em>');
+          cellContent = cellContent.replace(/(^|\s)_([^_]+)_(?=\s|$|[.,;:!?)])/g, '$1<em>$2</em>');
           cellContent = cellContent.replace(/`([^`]+)`/g, '<code>$1</code>');
           return `<td>${cellContent}</td>`;
         }).join('');
@@ -543,7 +543,7 @@ function convertMarkdownToHTML(markdown) {
       // Process inline markdown in list items
       let listContent = escapeHtml(text);
       listContent = listContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      listContent = listContent.replace(/_(.+?)_/g, '<em>$1</em>');
+      listContent = listContent.replace(/(^|\s)_([^_]+)_(?=\s|$|[.,;:!?)])/g, '$1<em>$2</em>');
       listContent = listContent.replace(/`([^`]+)`/g, '<code>$1</code>');
       listItems.push(`<li>${listContent}</li>`);
       continue;
@@ -565,7 +565,7 @@ function convertMarkdownToHTML(markdown) {
       let content = escapeHtml(line);
       // Apply inline formatting
       content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      content = content.replace(/_(.+?)_/g, '<em>$1</em>');
+      content = content.replace(/(^|\s)_([^_]+)_(?=\s|$|[.,;:!?)])/g, '$1<em>$2</em>');
       content = content.replace(/`([^`]+)`/g, '<code>$1</code>');
       processedLines.push(`<p>${content}</p>`);
     } else if (processedLine !== line) {
