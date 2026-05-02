@@ -32,23 +32,32 @@ wr/
 
 ## Usage
 
-### Generate WR for a Repository
+### Quick Start
 
 ```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr
-./scripts/generate-wr.sh <repo-name>
+# Generate WR for a single repository
+cd /home/runner/work/revvel-standards/revvel-standards/wr/scripts
+./generate-wr.sh neurooz
+
+# Generate WRs for P0 (highest priority) repositories
+./batch-generate-wrs.sh p0
+
+# Update tracker with current statistics
+./update-tracker.sh
 ```
 
-### Update WR Tracker
+### Via GitHub Actions
 
-```bash
-cd /home/runner/work/revvel-standards/revvel-standards/wr
-./scripts/update-tracker.sh
+Create an issue with title:
+```
+[WR] Repository Review - [repository-name]
 ```
 
-### View All WRs
+The automation will generate the WR and create a PR with findings.
 
-See `WR_TRACKER.md` for a complete list of all repositories and their WR status.
+### Detailed Documentation
+
+See [USAGE.md](USAGE.md) for complete usage guide, examples, and troubleshooting.
 
 ## WR Process
 
@@ -81,8 +90,18 @@ All WRs must align with the Prime Directive from `docs/AGENTS.md`:
 ## Statistics
 
 - **Total Repositories:** 140
-- **WRs Created:** 0 (in progress)
-- **WRs Completed:** 0
+- **WRs Created:** 1
+- **WRs In Progress:** 1
+- **WRs Completed:** 1
 - **Ship-to-Market Ready:** 0
+
+**Priority Distribution:**
+- P0 (Critical): ~10 repositories
+- P1 (High): ~20 repositories
+- P2 (Medium): ~40 repositories
+- P3 (Low): ~50 repositories
+- P4 (Maintenance): ~20 repositories
+
+**Target Revenue:** $2000+/month (Start: May 1, 2026) - **URGENT**
 
 Last updated: 2026-05-02
