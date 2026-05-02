@@ -484,9 +484,14 @@ export default function Home() {
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     {tool.pricing}
                   </span>
-                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-md transition-colors">
+                  <a
+                    href={tool.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-md transition-colors"
+                  >
                     Learn More
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}

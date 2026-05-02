@@ -6,6 +6,7 @@ export interface AffiliateProgram {
   name: string;
   commission: string;
   ltv: string;
+  ltvValue: number;
   cookieWindow: string;
   audience: string[];
   type: 'recurring' | 'one-time' | 'hybrid';
@@ -20,6 +21,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Scale Rankings',
     commission: '40% first order + 10% recurring',
     ltv: 'Highest',
+    ltvValue: 60000,
     cookieWindow: '30 days',
     audience: ['SEO bloggers', 'Marketing consultants'],
     type: 'hybrid',
@@ -36,6 +38,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'HubSpot',
     commission: '30% recurring for 12 months',
     ltv: '$1,800 - $5,400',
+    ltvValue: 5400,
     cookieWindow: '90 days',
     audience: ['B2B marketers', 'Sales professionals'],
     type: 'recurring',
@@ -52,6 +55,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Kajabi Partner Program',
     commission: '30% recurring lifetime',
     ltv: 'Very High',
+    ltvValue: 10000,
     cookieWindow: '60 days',
     audience: ['Course creators', 'Educators', 'Coaches'],
     type: 'recurring',
@@ -68,6 +72,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'ClickFunnels',
     commission: '30-40% recurring',
     ltv: 'High',
+    ltvValue: 3000,
     cookieWindow: '45 days',
     audience: ['Marketers', 'Entrepreneurs', 'Agency owners'],
     type: 'recurring',
@@ -84,6 +89,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Shopify Plus',
     commission: '$2,000 per enterprise referral',
     ltv: '$2,000',
+    ltvValue: 2000,
     cookieWindow: '30 days',
     audience: ['E-commerce consultants', 'Agency owners'],
     type: 'one-time',
@@ -100,6 +106,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Liquid Web',
     commission: '150% of first month',
     ltv: '$150 - $7,000+',
+    ltvValue: 7000,
     cookieWindow: '90 days',
     audience: ['Tech professionals', 'Developers', 'IT consultants'],
     type: 'one-time',
@@ -116,6 +123,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Semrush',
     commission: '$200 + recurring',
     ltv: '$200+',
+    ltvValue: 1000,
     cookieWindow: '120 days',
     audience: ['SEO professionals', 'Digital marketers'],
     type: 'hybrid',
@@ -132,6 +140,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Salesforce AppExchange',
     commission: '25-50% of revenue',
     ltv: '$5,000 - $50,000+',
+    ltvValue: 50000,
     cookieWindow: 'Custom',
     audience: ['Consultants', 'Enterprise partners'],
     type: 'recurring',
@@ -148,6 +157,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Authority Hacker',
     commission: '60%',
     ltv: '$600 - $1,200',
+    ltvValue: 1200,
     cookieWindow: '45 days',
     audience: ['Marketing educators', 'Bloggers'],
     type: 'one-time',
@@ -164,6 +174,7 @@ const affiliatePrograms: AffiliateProgram[] = [
     name: 'Coursera for Business',
     commission: 'Up to $200 per referral',
     ltv: '$200',
+    ltvValue: 200,
     cookieWindow: '30 days',
     audience: ['HR professionals', 'Corporate trainers'],
     type: 'one-time',
@@ -194,13 +205,7 @@ export default function Home() {
     if (sortBy === 'name') {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      const ltvOrder = ['Highest', 'Very High', 'High'];
-      filtered.sort((a, b) => {
-        if (ltvOrder.includes(a.ltv) && ltvOrder.includes(b.ltv)) {
-          return ltvOrder.indexOf(a.ltv) - ltvOrder.indexOf(b.ltv);
-        }
-        return 0;
-      });
+      filtered.sort((a, b) => b.ltvValue - a.ltvValue);
     }
 
     return filtered;
@@ -241,7 +246,7 @@ export default function Home() {
               </label>
               <select
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value as any)}
+                onChange={(e) => setFilterType(e.target.value as 'all' | 'recurring' | 'one-time' | 'hybrid')}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="all">All Types</option>

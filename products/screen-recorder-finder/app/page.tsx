@@ -398,7 +398,7 @@ export default function Home() {
               </label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'price' | 'name')}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="price">Price (Low to High)</option>
@@ -551,9 +551,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
+              <a
+                href={recorder.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+              >
                 Learn More
-              </button>
+              </a>
             </div>
           ))}
         </div>
