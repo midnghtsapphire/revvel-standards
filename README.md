@@ -44,6 +44,39 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 
 ---
 
+## 🎯 30-Day Autonomous Product Launch (NEW!)
+
+**Ship products to market in 30 days** — simplified, autonomous, metrics-driven, no Shopify required.
+
+### Quick Start
+```bash
+./scripts/autonomous-product-launcher.sh "your-product-name" \
+  --shape app \
+  --days 30 \
+  --payment lemonsqueezy
+```
+
+**Features:**
+- ✅ **Simplified MVP approach** — Focus on one core feature
+- ✅ **Metrics-driven** — Track what matters from day 1
+- ✅ **Resilient & changeable** — Self-healing, quick pivots
+- ✅ **No complex platforms** — LemonSqueezy/Gumroad/Stripe instead of Shopify
+- ✅ **Autonomous execution** — Minimal human intervention
+
+📖 **Documentation:**
+- [`docs/QUICKSTART_30DAY_LAUNCH.md`](docs/QUICKSTART_30DAY_LAUNCH.md) — Quick start guide
+- [`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md) — Complete 30-day framework
+- [`docs/30_DAY_INTEGRATION_GUIDE.md`](docs/30_DAY_INTEGRATION_GUIDE.md) — Integration with existing pipeline
+- [`projects/agent-generated/_examples/`](projects/agent-generated/_examples/) — Example projects
+
+**Timeline:**
+- **Week 1:** Research, validate, build waitlist (30-50 signups)
+- **Week 2:** Build MVP, integrate payment, setup analytics
+- **Week 3:** Beta launch, iterate, polish (10+ beta users)
+- **Week 4:** Launch, scale, measure (25+ customers, $500+ revenue)
+
+---
+
 **Key Standards** — All standards live in [`docs/Master_Inventory/`](docs/Master_Inventory/)
 - [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
 - [`OSINT_STANDARD.md`](docs/Master_Inventory/OSINT_STANDARD.md) — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
