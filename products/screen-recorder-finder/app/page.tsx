@@ -280,7 +280,7 @@ const recorders: ScreenRecorder[] = [
   {
     name: 'Movavi',
     pricing: '~$30/mo or ~$230/yr',
-    pricePerMonth: 130,
+    pricePerMonth: 30,
     category: 'Beginner Friendly',
     bestFor: ['Beginners', 'Scheduled recordings', 'Simple editing'],
     pros: [
