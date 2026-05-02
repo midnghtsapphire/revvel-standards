@@ -35,6 +35,7 @@
 |---|---|---|---|---|
 | BUG-001 | `npm test` fails if dependencies are not installed (`npm ci` required) | low | resolved | 2026-04-29 |
 | BUG-002 | YAML parsing errors in credential-label-router.yml and weekly-research.yml causing workflow validation failures | medium | resolved | 2026-05-02 |
+| BUG-003 | Duplicate keys in secrets-health-check.yml causing YAML validation failure | low | resolved | 2026-05-02 |
 
 ---
 
@@ -58,14 +59,14 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-04-29 | ✅ passing | — |
+| `npm test` | 2026-05-02 | ✅ passing (214 tests) | — |
 
 ---
 
 ## Last Updated
 
 ```
-Last updated: 2026-05-02 01:00 UTC
-Updated by: openhands[agent]
-Session summary: Fixed YAML parsing errors in credential-label-router.yml and weekly-research.yml. All 334 tests now passing.
+Last updated: 2026-05-02 03:50 UTC
+Updated by: copilot
+Session summary: Implemented daily WR & PR summary system with automated HTML/markdown reports. Fixed secrets-health-check.yml duplicate keys. All 214 tests passing.
 ```
