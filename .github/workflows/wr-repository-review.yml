@@ -35,8 +35,10 @@ jobs:
     steps:
       - name: Check if WR issue
         id: check
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          if [[ "${{ github.event.issue.title }}" =~ ^\[WR\] ]]; then
+          if [[ "$ISSUE_TITLE" =~ ^\[WR\] ]]; then
             echo "should_process=true" >> $GITHUB_OUTPUT
           else
             echo "should_process=false" >> $GITHUB_OUTPUT
@@ -114,10 +116,15 @@ jobs:
 
       - name: Determine repositories to process
         id: repos
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_MODE: ${{ inputs.mode }}
+          WORKFLOW_REPO: ${{ inputs.repository }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            MODE="${{ inputs.mode }}"
-            REPO="${{ inputs.repository }}"
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            MODE="$WORKFLOW_MODE"
+            REPO="$WORKFLOW_REPO"
             
             case "$MODE" in
               "single")
@@ -135,8 +142,8 @@ jobs:
                 ;;
             esac
           else
-            # Extract repo name from issue title
-            REPO=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*\[WR\].*\[\([^]]*\)\].*/\1/p' | tr -d ' ')
+            # Extract repo name from issue title - using environment variable to prevent code injection
+            REPO=$(echo "$ISSUE_TITLE" | sed -n 's/.*\[WR\].*\[\([^]]*\)\].*/\1/p' | tr -d ' ')
             if [[ -z "$REPO" ]]; then
               echo "Could not extract repository name from issue title"
               echo "repos=" >> $GITHUB_OUTPUT

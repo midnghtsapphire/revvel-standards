@@ -573,5 +573,5 @@
 
 ---
 
-**Last Updated:** {RESEARCH_DATE}  
-**Next Review:** [Date or "After implementation"]
+**Last Updated:** {RESEARCH_DATE} <!-- Format: YYYY-MM-DD -->  
+**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
