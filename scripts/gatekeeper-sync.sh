@@ -75,11 +75,11 @@ done
 DRY_RUN="${DRY_RUN:-0}"
 case "$DRY_RUN" in 1|true|TRUE|yes|YES) DRY_RUN=1 ;; *) DRY_RUN=0 ;; esac
 
-# Accept DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, or DOPPLER_AGENT_ODIC as
-# fallbacks when DOPPLER_TOKEN is not set.  Workflows may store the Doppler
-# CLI token under any of these names; normalise to DOPPLER_TOKEN here so the
-# rest of the script only needs to check one variable.
-DOPPLER_TOKEN="${DOPPLER_TOKEN:-${DOPPLER_LOCAL_TOKEN:-${DOPPLER_API_KEY:-${DOPPLER_AGENT_ODIC:-}}}}"
+# Accept DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, DOPPLER_AGENT_ODIC, or
+# DOPPLER_CIRCLECI_OIDC as fallbacks when DOPPLER_TOKEN is not set.  Workflows
+# may store the Doppler CLI token under any of these names; normalise to
+# DOPPLER_TOKEN here so the rest of the script only needs to check one variable.
+DOPPLER_TOKEN="${DOPPLER_TOKEN:-${DOPPLER_LOCAL_TOKEN:-${DOPPLER_API_KEY:-${DOPPLER_AGENT_ODIC:-${DOPPLER_CIRCLECI_OIDC:-}}}}}"
 
 if [[ "$JSON_OUT" -eq 1 || "$DRY_RUN" -ne 1 ]]; then
   command -v jq >/dev/null || { echo "error: jq not found" >&2; exit 3; }
