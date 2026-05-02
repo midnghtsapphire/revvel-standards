@@ -141,7 +141,8 @@ cmd_retrieve() {
     echo -e "${YELLOW}  export BITO_API_KEY='${API_KEY}'${NC}"
     echo ""
     echo "Or add to your shell profile:"
-    echo "  echo \"export BITO_API_KEY=\$(vault kv get -field=${VAULT_FIELD} ${VAULT_PATH})\" >> ~/.bashrc"
+    echo "  # Add this line to your ~/.bashrc or ~/.zshrc:"
+    echo "  export BITO_API_KEY=\$(vault kv get -field=${VAULT_FIELD} ${VAULT_PATH})"
     echo ""
   else
     echo -e "${RED}❌ Failed to retrieve BITO_API_KEY from Vault${NC}"
@@ -211,10 +212,14 @@ cmd_wire() {
   
   # Determine target repository
   if [ -z "${GITHUB_REPOSITORY}" ]; then
-    # Try to detect from git remote
-    if git remote get-url origin &> /dev/null; then
+    # Try to detect from git remote using gh CLI if available
+    if command -v gh &> /dev/null && gh repo view --json nameWithOwner -q .nameWithOwner &> /dev/null; then
+      GITHUB_REPOSITORY=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+      echo "Detected repository: ${GITHUB_REPOSITORY}"
+    elif git remote get-url origin &> /dev/null; then
+      # Fallback to parsing git remote URL
       REMOTE_URL=$(git remote get-url origin)
-      # Extract owner/repo from URL
+      # Extract owner/repo from URL (handles https and ssh formats)
       GITHUB_REPOSITORY=$(echo "${REMOTE_URL}" | sed -E 's/.*[:/]([^/]+\/[^/]+)(\.git)?$/\1/')
       echo "Detected repository: ${GITHUB_REPOSITORY}"
     else

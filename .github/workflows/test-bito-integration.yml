@@ -247,7 +247,7 @@ jobs:
           echo ""
 
       - name: API connectivity test (if key available)
-        if: env.BITO_API_KEY != ''
+        if: secrets.BITO_API_KEY != ''
         env:
           BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
         run: |
