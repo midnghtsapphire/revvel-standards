@@ -361,9 +361,14 @@ export default function Home() {
                 </ul>
               </div>
 
-              <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
+              <a
+                href={program.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+              >
                 Learn More
-              </button>
+              </a>
             </div>
           ))}
         </div>
