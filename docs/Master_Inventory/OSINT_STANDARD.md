@@ -462,12 +462,12 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 | Tool | URL | Purpose | Worth It? |
 |------|-----|---------|-----------|
-| **Telegago** | https://cse.google.com/cse | Custom Google search engine for finding public and private Telegram channels. Access via Google CSE by searching for "Telegago" or by creating a custom CSE with Telegram-specific parameters. | Excellent for initial discovery, but cannot penetrate restricted groups |
+| **Telegago** | Search "Telegago" at https://cse.google.com/cse | Custom Google search engine for finding public and private Telegram channels. Access by searching for "Telegago" within Google CSE or create a custom CSE with Telegram-specific parameters. | Excellent for initial discovery, but cannot penetrate restricted groups |
 | **TGStat** | https://tgstat.com | Catalogs channels, subscriber counts, and audience overlap | Highly valuable for tracking influence networks, propaganda flow, and the "business side" of channels |
 | **Telemetr.io** | https://telemetr.io | Alternative channel analytics platform with different data visualization and export formats | Highly valuable as a cross-validation source for TGStat data |
 | **Telepathy** | https://telepathydb.com | Open-source toolkit for archiving chats, scraping member lists, and mapping message interactions | Very powerful for deep analysis but requires technical knowledge and is subject to strict Telegram API rate limits |
 | **UserSearch** | https://usersearch.com | Structured platform for searching billions of messages, enumerating members, and retrieving historic profile pictures | Yes, it abstracts the complexity of API limits and burner accounts, making it vastly superior to manual scraping for professional investigations |
-| **Leak Bots** | @TrueCalleRobot, @LeakOsintf311a_bot, @probiv43bot | Telegram bots that provide phone-to-name resolution or search multi-gigabyte breach databases | ⚠️ **LEGAL WARNING**: These tools operate in legal gray areas, frequently get banned, and require strict OPSEC (burner accounts). Using them may violate data protection laws (GDPR, CCPA), breach investigation ethics, or organizational policies. Consult legal counsel before use. They return fast results but carry significant legal and operational risks. |
+| **Leak Bots** | @TrueCalleRobot, @LeakOsintf311a_bot, @probiv43bot | ⚠️ **LEGAL WARNING**: Telegram bots that provide phone-to-name resolution or search multi-gigabyte breach databases. These tools operate in legal gray areas, frequently get banned, and require strict OPSEC (burner accounts). Using them may violate data protection laws (GDPR, CCPA), breach investigation ethics, or organizational policies. Consult legal counsel before use. | Fast results but carry significant legal and operational risks |
 
 #### Mainstream Social Media (X/Twitter, Facebook, LinkedIn, Reddit)
 
@@ -544,7 +544,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 | Tool | URL | Purpose | Worth It? |
 |------|-----|---------|-----------|
-| **WhatsMyName** | https://whatsmyname.app | Checks if a specific username exists across hundreds or thousands of different websites | Very useful for cross-platform identity resolution. Note: Common usernames may generate high false-positive rates due to name collisions across platforms. Most effective with unique usernames. |
+| **WhatsMyName** | https://whatsmyname.app | Checks if a specific username exists across hundreds or thousands of different websites. Most effective with unique usernames; common usernames may generate high false-positive rates due to name collisions across platforms. | Very useful for cross-platform identity resolution |
 | **Sherlock** | https://github.com/sherlock-project/sherlock | Username enumeration tool across social networks | Yes, widely used and actively maintained |
 | **Maigret** | https://github.com/soxoj/maigret | Advanced username search across thousands of sites with reporting features | Yes, more advanced than Sherlock |
 | **Blackbird** | https://github.com/p1ngul1n0/blackbird | Fast username search across multiple platforms | Yes, good for quick checks |
