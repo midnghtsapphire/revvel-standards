@@ -193,11 +193,10 @@ Automated credential rotation and vault management. The commands below
 describe the intended interface; they are not runnable yet.
 
 ```bash
-# Planned commands (src/security.py is not yet implemented):
+# Planned commands (none of these are runnable yet):
 #   python src/security.py --rotate-all
 #   python src/security.py --policy-update
-# Available today:
-./scripts/security-credentials.sh --fetch
+#   ./scripts/security-credentials.sh --fetch
 ```
 
 ### 4.5. Self-Healing

@@ -55,10 +55,15 @@ class Orchestrator:
         except FileNotFoundError:
             logger.error(f"Projects file not found: {projects_file}")
             
-    def run_daily_automation(self) -> None:
-        """Execute daily automation tasks"""
+    def run_daily_automation(self) -> List[str]:
+        """Execute daily automation tasks.
+
+        Returns the list of task names that failed. Continues past individual
+        failures (fault tolerance) but reports them so the caller can decide
+        whether to treat the overall run as a success or partial failure.
+        """
         console.print("\n[bold cyan]Running Daily Automation[/bold cyan]")
-        
+
         tasks = [
             ("Sync GitHub Issues → Trello", self._sync_github_trello),
             ("Run Gatekeeper Health Check", self._gatekeeper_health_check),
@@ -66,7 +71,8 @@ class Orchestrator:
             ("Generate Metrics Report", self._generate_metrics),
             ("Self-Healing Scan", self._self_healing_scan),
         ]
-        
+
+        failures: List[str] = []
         for task_name, task_func in tasks:
             try:
                 console.print(f"\n[yellow]→[/yellow] {task_name}...")
@@ -75,6 +81,16 @@ class Orchestrator:
             except Exception as e:
                 console.print(f"[red]✗[/red] {task_name} failed: {e}")
                 logger.exception(f"Error in {task_name}")
+                failures.append(task_name)
+
+        if failures:
+            console.print(
+                f"\n[red]Daily automation finished with {len(failures)} failure(s):"
+                f"[/red] {', '.join(failures)}"
+            )
+        else:
+            console.print("\n[green]Daily automation finished: all tasks succeeded[/green]")
+        return failures
     
     def _sync_github_trello(self) -> None:
         """Sync GitHub issues to Trello"""
@@ -157,19 +173,24 @@ def main():
     )
     
     args = parser.parse_args()
-    
+
     orchestrator = Orchestrator()
-    
+    exit_code = 0
+
     if args.load_projects:
         orchestrator.load_projects(args.load_projects)
-    
+
     if args.run_all:
-        orchestrator.run_daily_automation()
-    
+        failures = orchestrator.run_daily_automation()
+        if failures:
+            # Surface partial failures so cron/monitoring can react instead of
+            # always recording the run as successful.
+            exit_code = 1
+
     if args.status:
         status = orchestrator.status_report()
         console.print_json(data=status)
-    
+
     if args.dispatch:
         try:
             task_type, task_json = args.dispatch.split(":", 1)
@@ -178,9 +199,11 @@ def main():
         except (ValueError, json.JSONDecodeError) as e:
             console.print(f"[red]Error:[/red] Invalid dispatch format: {e}")
             sys.exit(1)
-    
+
     if not any([args.load_projects, args.run_all, args.status, args.dispatch]):
         parser.print_help()
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
