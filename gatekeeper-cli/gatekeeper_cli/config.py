@@ -33,7 +33,7 @@ class Config:
 
         return {
             "doppler": {
-                "token": os.getenv("DOPPLER_TOKEN") or os.getenv("DOPPLER_LOCAL_TOKEN") or doppler_config.get("token"),
+                "token": os.getenv("DOPPLER_TOKEN") or os.getenv("DOPPLER_LOCAL_TOKEN") or os.getenv("DOPPLER_API_KEY") or os.getenv("DOPPLER_AGENT_ODIC") or doppler_config.get("token"),
                 "project": os.getenv("DOPPLER_PROJECT")
                 or doppler_config.get("project", "revvel-standards"),
                 "config": os.getenv("DOPPLER_CONFIG") or doppler_config.get("config", "prd"),

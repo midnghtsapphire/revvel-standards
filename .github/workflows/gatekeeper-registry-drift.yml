@@ -32,12 +32,12 @@ jobs:
 
       - name: Compare registry to Doppler
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY || secrets.DOPPLER_AGENT_ODIC }}
           DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT || 'revvel-standards' }}
           DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG || 'prd' }}
         run: |
           if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
-            echo "::error::Neither DOPPLER_TOKEN nor DOPPLER_LOCAL_TOKEN is set — cannot check Doppler for drift"
+            echo "::error::None of DOPPLER_TOKEN, DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, or DOPPLER_AGENT_ODIC is set — cannot check Doppler for drift"
             exit 1
           fi
 

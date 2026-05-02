@@ -75,10 +75,11 @@ done
 DRY_RUN="${DRY_RUN:-0}"
 case "$DRY_RUN" in 1|true|TRUE|yes|YES) DRY_RUN=1 ;; *) DRY_RUN=0 ;; esac
 
-# Accept DOPPLER_LOCAL_TOKEN as a fallback when DOPPLER_TOKEN is not set.
-# This allows the new Doppler CLI token format to work alongside the legacy
-# service token variable name used throughout the codebase.
-DOPPLER_TOKEN="${DOPPLER_TOKEN:-${DOPPLER_LOCAL_TOKEN:-}}"
+# Accept DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, or DOPPLER_AGENT_ODIC as
+# fallbacks when DOPPLER_TOKEN is not set.  Workflows may store the Doppler
+# CLI token under any of these names; normalise to DOPPLER_TOKEN here so the
+# rest of the script only needs to check one variable.
+DOPPLER_TOKEN="${DOPPLER_TOKEN:-${DOPPLER_LOCAL_TOKEN:-${DOPPLER_API_KEY:-${DOPPLER_AGENT_ODIC:-}}}}"
 
 if [[ "$JSON_OUT" -eq 1 || "$DRY_RUN" -ne 1 ]]; then
   command -v jq >/dev/null || { echo "error: jq not found" >&2; exit 3; }
