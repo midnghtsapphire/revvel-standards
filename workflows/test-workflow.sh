@@ -20,7 +20,9 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$WEBHOOK_URL" \
   -d @"$SCRIPT_DIR/test-payload.json")
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
-BODY=$(echo "$RESPONSE" | head -n -1)
+# Use sed to drop the last line (HTTP code) so this works on both GNU and BSD
+# (macOS) — `head -n -1` is GNU-specific.
+BODY=$(echo "$RESPONSE" | sed '$d')
 
 # Accept any 2xx status code as success
 if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then

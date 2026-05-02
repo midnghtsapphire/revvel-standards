@@ -101,10 +101,18 @@ if [ ${#MISSING_KEYS[@]} -gt 0 ]; then
     echo "Please set these environment variables before running the workflow."
     echo "You can continue setup, but the workflow won't work without them."
     echo ""
-    read -p "Continue anyway? (y/n) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
+    # In non-interactive contexts (CI, piped input) `read` would either hang or
+    # return empty, exiting the script. Auto-continue when no TTY is attached
+    # or when AUTO_YES=1 is set, and only prompt for human confirmation when
+    # we have an interactive terminal.
+    if [ "${AUTO_YES:-0}" = "1" ] || [ ! -t 0 ]; then
+        print_warning "Non-interactive run detected — continuing without prompt."
+    else
+        read -p "Continue anyway? (y/n) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
     fi
 else
     print_success "All required API keys found"
