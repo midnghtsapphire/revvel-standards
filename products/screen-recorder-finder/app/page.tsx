@@ -165,7 +165,7 @@ const recorders: ScreenRecorder[] = [
   {
     name: 'ScreenFlow',
     pricing: '$169-$259',
-    pricePerMonth: 214,
+    pricePerMonth: 22,
     category: 'Professional',
     bestFor: ['Long recordings', 'Professional editing', 'Podcasters'],
     pros: [
