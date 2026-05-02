@@ -16,7 +16,6 @@
  */
 
 const https = require("https");
-const fs = require("fs");
 
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
@@ -30,6 +29,41 @@ const OPENROUTER_PATH = "/api/v1/chat/completions";
 
 // Error handling constants
 const ERROR_BODY_LIMIT = 600;
+
+// GitHub REST API pagination — use the maximum page size to minimize requests
+const GITHUB_PAGE_SIZE = 100;
+
+function splitRepository() {
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo) {
+    throw new Error(`Invalid GITHUB_REPOSITORY format: ${GITHUB_REPOSITORY}`);
+  }
+  return { owner, repo };
+}
+
+async function fetchAllPages(buildPath) {
+  const results = [];
+  let page = 1;
+  // Loop until a page returns fewer than the requested page size, indicating the last page
+  while (true) {
+    const data = await requestJson({
+      hostname: "api.github.com",
+      pathName: buildPath(page, GITHUB_PAGE_SIZE),
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        "User-Agent": "revvel-pr-review-request-handler",
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    if (!Array.isArray(data) || data.length === 0) break;
+    results.push(...data);
+    if (data.length < GITHUB_PAGE_SIZE) break;
+    page += 1;
+  }
+  return results;
+}
 
 function truncateForComment(text, limit = ERROR_BODY_LIMIT) {
   if (!text) return "";
@@ -89,7 +123,7 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
  * Fetches PR details from GitHub API
  */
 async function getPRDetails() {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  const { owner, repo } = splitRepository();
   return await requestJson({
     hostname: "api.github.com",
     pathName: `/repos/${owner}/${repo}/pulls/${PR_NUMBER}`,
@@ -104,46 +138,32 @@ async function getPRDetails() {
 }
 
 /**
- * Fetches all reviews for the PR
+ * Fetches all reviews for the PR (paginated)
  */
 async function getPRReviews() {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
-  return await requestJson({
-    hostname: "api.github.com",
-    pathName: `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/reviews`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      "User-Agent": "revvel-pr-review-request-handler",
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
+  const { owner, repo } = splitRepository();
+  return await fetchAllPages(
+    (page, perPage) =>
+      `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/reviews?per_page=${perPage}&page=${page}`,
+  );
 }
 
 /**
- * Fetches review comments (line-level comments)
+ * Fetches review comments (line-level comments) for the PR (paginated)
  */
 async function getPRReviewComments() {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
-  return await requestJson({
-    hostname: "api.github.com",
-    pathName: `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/comments`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      "User-Agent": "revvel-pr-review-request-handler",
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
+  const { owner, repo } = splitRepository();
+  return await fetchAllPages(
+    (page, perPage) =>
+      `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/comments?per_page=${perPage}&page=${page}`,
+  );
 }
 
 /**
  * Fetches the PR diff
  */
 async function getPRDiff() {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  const { owner, repo } = splitRepository();
   return new Promise((resolve, reject) => {
     const req = https.request(
       {
@@ -208,7 +228,7 @@ async function callOpenRouter(systemPrompt, userPrompt) {
  * Posts a comment on the PR
  */
 async function postPRComment(commentBody) {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  const { owner, repo } = splitRepository();
   await requestJson({
     hostname: "api.github.com",
     pathName: `/repos/${owner}/${repo}/issues/${PR_NUMBER}/comments`,
@@ -227,7 +247,7 @@ async function postPRComment(commentBody) {
  * Adds labels to the PR
  */
 async function addPRLabels(labels) {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  const { owner, repo } = splitRepository();
   for (const label of labels) {
     try {
       await requestJson({
@@ -252,7 +272,7 @@ async function addPRLabels(labels) {
  * Removes labels from the PR
  */
 async function removePRLabels(labels) {
-  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  const { owner, repo } = splitRepository();
   for (const label of labels) {
     try {
       await requestJson({

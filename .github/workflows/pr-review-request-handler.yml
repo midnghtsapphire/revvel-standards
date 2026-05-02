@@ -29,6 +29,13 @@ permissions:
   pull-requests: write
   issues: write
 
+# Serialize runs per PR so rapid-fire CHANGES_REQUESTED reviews don't post
+# duplicate analyses or race on label updates. cancel-in-progress=true means a
+# newer review supersedes any analysis still running for the same PR.
+concurrency:
+  group: pr-review-request-handler-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   handle-review-request:
     name: Handle Changes Requested
