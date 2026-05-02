@@ -27,7 +27,7 @@ if [ -z "${BITO_API_KEY}" ]; then
   echo "  export BITO_API_KEY=your-key-here"
   echo ""
   echo "Or retrieve it from Vault:"
-  echo "  export BITO_API_KEY=\$(vault kv get -field=${VAULT_FIELD} ${VAULT_PATH})"
+  echo '  export BITO_API_KEY=$(vault kv get -field='"${VAULT_FIELD}"' '"${VAULT_PATH}"')'
   echo ""
   exit 1
 else
