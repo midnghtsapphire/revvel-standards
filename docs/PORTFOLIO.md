@@ -457,7 +457,7 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 | Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
 | penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
 
-**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](../_MASTER_BOM.md)
+**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](_MASTER_BOM.md)
 
 **Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md)
 
