@@ -367,6 +367,30 @@ labels:
     color: "F7C948"
     description: "Content creation task — handled by NoimosAI content agent"
 
+  - name: content-automation
+    color: "00D4AA"
+    description: "Trigger content automation pipeline"
+
+  - name: writing
+    color: "FF69B4"
+    description: "Writing/copywriting task"
+
+  - name: blog
+    color: "7B68EE"
+    description: "Blog post creation"
+
+  - name: seo-content
+    color: "3DDCFF"
+    description: "SEO-focused content"
+
+  - name: "content:draft"
+    color: "FFA500"
+    description: "Content draft stage, needs review"
+
+  - name: "content:final"
+    color: "00FF00"
+    description: "Content final, ready to publish"
+
   - name: affiliate
     color: "4CAF50"
     description: "Affiliate link / revenue task — handled by NoimosAI affiliate agent"
