@@ -22,6 +22,7 @@ const { parseAmazonEmail } = require('./lib/amazon-parser');
 const { calculateListingPrice, formatUSD } = require('./lib/price-calculator');
 const { postProduct, repostProduct } = require('./lib/facebook-poster');
 const inventory = require('./lib/inventory');
+const rfy = require('./lib/rfy-tracker');
 
 const PORT = parseInt(process.env.PORT || '3030', 10);
 const AUTO_POST = process.env.ENABLE_AUTO_POSTING === 'true';
@@ -263,6 +264,73 @@ app.post('/api/repost', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  RFY Watchlist API
+// ─────────────────────────────────────────────
+
+// RFY summary stats
+app.get('/api/rfy/summary', (_req, res) => {
+  res.json(rfy.getSummary());
+});
+
+// List RFY entries (optionally filter by status)
+app.get('/api/rfy', (req, res) => {
+  const { status } = req.query;
+  const entries = rfy.getAll(status || null);
+  res.json({ entries, count: entries.length });
+});
+
+// Get a single RFY entry
+app.get('/api/rfy/:rfyId', (req, res) => {
+  const entry = rfy.getById(req.params.rfyId);
+  if (!entry) return res.status(404).json({ error: 'Not found' });
+  res.json(entry);
+});
+
+// Add a new RFY entry
+app.post('/api/rfy', (req, res) => {
+  const { productTitle, asin, estPrice, category, notes } = req.body;
+  try {
+    const entry = rfy.add({ productTitle, asin, estPrice, category, notes });
+    res.status(201).json(entry);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Update status of an RFY entry
+app.patch('/api/rfy/:rfyId/status', (req, res) => {
+  const { status, orderId } = req.body;
+  try {
+    const entry = rfy.updateStatus(req.params.rfyId, status, orderId || null);
+    res.json(entry);
+  } catch (err) {
+    const code = err.message.includes('not found') ? 404 : 400;
+    res.status(code).json({ error: err.message });
+  }
+});
+
+// Update notes on an RFY entry
+app.patch('/api/rfy/:rfyId/notes', (req, res) => {
+  const { notes } = req.body;
+  try {
+    const entry = rfy.updateNotes(req.params.rfyId, notes || '');
+    res.json(entry);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// Delete an RFY entry
+app.delete('/api/rfy/:rfyId', (req, res) => {
+  try {
+    rfy.remove(req.params.rfyId);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────
 //  Scheduled jobs
 // ─────────────────────────────────────────────
 
@@ -313,6 +381,9 @@ if (CLI_COMMAND === 'fetch') {
     .catch((err) => { console.error(err.message); process.exit(1); });
 } else if (CLI_COMMAND === 'summary') {
   console.log(JSON.stringify(inventory.getSummary(), null, 2));
+  process.exit(0);
+} else if (CLI_COMMAND === 'rfy') {
+  console.log(JSON.stringify(rfy.getSummary(), null, 2));
   process.exit(0);
 } else {
   // Server mode

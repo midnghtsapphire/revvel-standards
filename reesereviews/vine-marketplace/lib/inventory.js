@@ -32,6 +32,15 @@
 const fs = require('fs');
 const path = require('path');
 
+// rfy-tracker is in the same lib directory; loaded lazily-safe at module level.
+// We guard against circular-require or missing module scenarios.
+let rfyTracker = null;
+try {
+  rfyTracker = require('./rfy-tracker');
+} catch {
+  // rfy-tracker unavailable — RFY stats will be omitted from summary
+}
+
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const INVENTORY_FILE = path.join(DATA_DIR, 'inventory.json');
 
@@ -167,7 +176,7 @@ function getByDateRange(since = null, before = null) {
   });
 }
 
-/** Summary stats for the dashboard. */
+/** Summary stats for the dashboard. Optionally merged with RFY stats. */
 function getSummary() {
   const all = load();
   const totalProducts = all.length;
@@ -178,6 +187,14 @@ function getSummary() {
   const pendingListing = all.filter((p) => !p.listed && !p.sold).length;
   const staleListings = getStaleListings().length;
 
+  // Merge RFY stats if tracker loaded successfully at module init
+  let rfyStats = {};
+  try {
+    if (rfyTracker) rfyStats = rfyTracker.getSummary();
+  } catch {
+    // non-critical — omit gracefully
+  }
+
   return {
     totalProducts,
     totalListed,
@@ -186,6 +203,7 @@ function getSummary() {
     staleListings,
     totalVine,
     totalRevenue: parseFloat(totalRevenue.toFixed(2)),
+    ...rfyStats,
   };
 }
 
