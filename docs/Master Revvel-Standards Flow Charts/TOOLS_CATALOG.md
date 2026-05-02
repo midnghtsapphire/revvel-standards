@@ -114,6 +114,8 @@ Config file: `.mcp.json` in each project root. Setup: `scripts/setup-mcp.sh`.
 | 48 | `ready-for-review.yml` | Labels PRs as "ready for review" and assigns reviewers | `pull_request` |
 | 49 | `create-issue-branch.yml` | Creates a branch automatically when a new issue is opened | `issues` opened |
 | 50 | `panda-ops.yml` | CHANGELOG.md auto-update on every push to main | `push` to main |
+| 50a | `pr-review-status.yml` | Auto-applies review status labels (`awaiting-approval`, `changes-requested`, etc.) and posts status badges on PRs | `pull_request`, `pull_request_review` |
+| 50b | `pr-review-request-handler.yml` | **NEW:** When reviewer requests changes, analyzes all feedback via OpenRouter and generates prioritized fix recommendations | `pull_request_review` (changes requested), label `changes-requested` |
 | 51 | `recurse-ml.yml` | ML/recursion automation workflow | Scheduled / manual |
 | 52 | `run-human-testing-api.yml` | Human testing API runner | Manual |
 | 53 | `flow-chart-sync.yml` | **THIS FOLDER'S MAINTAINER.** Auto-syncs flow charts on every push | `push` to main |
