@@ -37,11 +37,11 @@ for wr_file in "$REPOS_DIR"/*.md 2>/dev/null; do
     
     # Extract the WR Status line and check its value
     if grep -q "^\*\*WR Status:\*\* 🟡 In Progress" "$wr_file"; then
-        ((IN_PROGRESS++))
+        ((IN_PROGRESS++)) || true
     elif grep -q "^\*\*WR Status:\*\* ✅ Complete" "$wr_file"; then
-        ((COMPLETED++))
+        ((COMPLETED++)) || true
     elif grep -q "^\*\*WR Status:\*\* 🚀" "$wr_file"; then
-        ((SHIP_READY++))
+        ((SHIP_READY++)) || true
     fi
 done
 
