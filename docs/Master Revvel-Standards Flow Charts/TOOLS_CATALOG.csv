@@ -49,6 +49,8 @@ ID,Tool,Category,What_It_Does,Flow_Phase,Cost,Required_Secret,Link
 48,ready-for-review.yml,GitHub Actions Workflow,Labels PRs as ready for review and assigns reviewers,pull_request,Free,.github/workflows/ready-for-review.yml,
 49,create-issue-branch.yml,GitHub Actions Workflow,Creates a branch automatically when a new issue is opened,issues opened,Free,.github/workflows/create-issue-branch.yml,
 50,panda-ops.yml,GitHub Actions Workflow,CHANGELOG.md auto-update on every push to main,push to main,Free,.github/workflows/panda-ops.yml,
+50a,pr-review-status.yml,GitHub Actions Workflow,Auto-applies review status labels (awaiting-approval / changes-requested / approved) and posts status badges on PRs,pull_request / pull_request_review,Free,.github/workflows/pr-review-status.yml,
+50b,pr-review-request-handler.yml,GitHub Actions Workflow,When reviewer requests changes - analyzes all feedback via OpenRouter and generates prioritized fix recommendations,pull_request_review (changes requested),Free,OPENROUTER_API_KEY,.github/workflows/pr-review-request-handler.yml
 51,recurse-ml.yml,GitHub Actions Workflow,ML/recursion automation workflow,Scheduled / manual,Free,.github/workflows/recurse-ml.yml,
 52,run-human-testing-api.yml,GitHub Actions Workflow,Human testing API runner,Manual,Free,.github/workflows/run-human-testing-api.yml,
 53,flow-chart-sync.yml,GitHub Actions Workflow,Auto-syncs flow charts on every push to main,push to main,Free,.github/workflows/flow-chart-sync.yml,
