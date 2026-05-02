@@ -92,7 +92,7 @@ List of all repository references found in PR descriptions and comments.
 
 ## Notes
 
-- The script looks for activity from the previous 24 hours (yesterday 00:00 UTC to today 23:59 UTC)
+- The script looks for activity created since yesterday at 00:00 UTC (last 24-hour period)
 - Vercel URLs are extracted using pattern matching from PR bodies and comments
 - Repository references are extracted using pattern matching (owner/repo format)
 - HTML reports use inline CSS for standalone viewing without external dependencies

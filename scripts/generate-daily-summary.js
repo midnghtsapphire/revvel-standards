@@ -426,6 +426,21 @@ ${convertMarkdownToHTML(markdown)}
 }
 
 /**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(text) {
+  if (!text) return '';
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  return text.toString().replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
  * Convert markdown to HTML (basic conversion)
  */
 function convertMarkdownToHTML(markdown) {
@@ -439,12 +454,12 @@ function convertMarkdownToHTML(markdown) {
   // Tables (convert markdown tables to HTML early, before other replacements)
   html = html.replace(/\|(.*)?\|\n\|[-:| ]+\|\n((?:\|.*?\|\n?)+)/g, (match, header, rows) => {
     const headerCells = header.split('|').filter(Boolean).map(cell => 
-      `<th>${cell.trim()}</th>`
+      `<th>${escapeHtml(cell.trim())}</th>`
     ).join('');
     
     const bodyRows = rows.trim().split('\n').map(row => {
       const cells = row.split('|').filter(Boolean).map(cell => 
-        `<td>${cell.trim()}</td>`
+        `<td>${escapeHtml(cell.trim())}</td>`
       ).join('');
       return `<tr>${cells}</tr>`;
     }).join('\n');
@@ -458,8 +473,10 @@ function convertMarkdownToHTML(markdown) {
   // Italic
   html = html.replace(/_(.+?)_/g, '<em>$1</em>');
   
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  // Links (escape both text and URL to prevent XSS)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+    return `<a href="${escapeHtml(url)}" target="_blank">${escapeHtml(text)}</a>`;
+  });
   
   // Code
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -502,7 +519,7 @@ function convertMarkdownToHTML(markdown) {
     if (match.trim() === '' || match.match(/^<[^>]+>/)) {
       return match;
     }
-    return `<p>${match}</p>`;
+    return `<p>${escapeHtml(match)}</p>`;
   });
   
   // Clean up multiple consecutive <p> tags
