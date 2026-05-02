@@ -51,3 +51,26 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Next Action:** Human (Audrey) must set `DIGITALOCEAN_API_TOKEN` secret and update Namecheap DNS. See `docs/AGENTS_RETRO_REVIEW.md` for full analysis and `standards/OAUDREY_DEPLOYMENT_STANDARD.md` for step-by-step instructions.
 
 ---
+
+---
+
+**Date/Time:** 2026-05-02T01:00Z
+
+**Task Attempted:** Fix YAML parsing errors in GitHub Actions workflow files revvel-standards
+
+**Outcome:** Success - All 334 tests now passing
+
+**Root Cause of Failure (If any):** 
+- `credential-label-router.yml` and `weekly-research.yml` had YAML parsing errors due to multiline JavaScript template literal strings
+- Lines in template literal strings starting with text (like "This issue has been routed..." or "**What happens next:**") without proper indentation were being interpreted as new YAML keys
+- Lines containing only "---" were being interpreted as YAML document separators
+- The YAML parser requires ALL text within script blocks to have consistent indentation (12 spaces)
+
+**Self-Healing Fix / Learned Lesson:**
+1. **Identify all script blocks with backtick template literals** - Find lines with "= \`" that start script blocks in YAML
+2. **Fix ALL lines within the block, not just some** - The opening line has indentation, but subsequent lines need it too
+3. **Remove standalone "---" lines** - These are YAML document separators and break flow scalar parsing
+4. **Include the closing line in fixes** - Even the line ending with `_`; needs proper indentation
+
+**Next Action:** None - Work complete
+
