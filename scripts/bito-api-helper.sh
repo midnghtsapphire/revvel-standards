@@ -138,11 +138,13 @@ cmd_retrieve() {
     echo -e "${GREEN}✅ Successfully retrieved BITO_API_KEY from Vault${NC}"
     echo ""
     echo "To use it in your current shell:"
-    echo -e "${YELLOW}  export BITO_API_KEY='${API_KEY}'${NC}"
+    echo -e "${YELLOW}  export BITO_API_KEY='<your-key-from-vault>'${NC}"
+    echo ""
+    echo "The actual key value is available in the variable and has not been displayed for security."
     echo ""
     echo "Or add to your shell profile:"
     echo '  # Add this line to your ~/.bashrc or ~/.zshrc:'
-    echo '  export BITO_API_KEY=$(vault kv get -field=api_key revvel/shared/code-review/bito)'
+    echo "  export BITO_API_KEY=\$(vault kv get -field=${VAULT_FIELD} ${VAULT_PATH})"
     echo ""
   else
     echo -e "${RED}❌ Failed to retrieve BITO_API_KEY from Vault${NC}"

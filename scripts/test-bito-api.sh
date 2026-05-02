@@ -5,6 +5,10 @@
 
 set -e
 
+# Configuration - shared with bito-api-helper.sh
+VAULT_PATH="${VAULT_PATH:-revvel/shared/code-review/bito}"
+VAULT_FIELD="${VAULT_FIELD:-api_key}"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,7 +27,7 @@ if [ -z "${BITO_API_KEY}" ]; then
   echo "  export BITO_API_KEY=your-key-here"
   echo ""
   echo "Or retrieve it from Vault:"
-  echo "  export BITO_API_KEY=\$(vault kv get -field=api_key revvel/shared/code-review/bito)"
+  echo "  export BITO_API_KEY=\$(vault kv get -field=${VAULT_FIELD} ${VAULT_PATH})"
   echo ""
   exit 1
 else
