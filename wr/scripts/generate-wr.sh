@@ -36,7 +36,7 @@ if [[ ! "$REPO_NAME" =~ ^[A-Za-z0-9_.-]+$ ]]; then
 fi
 
 # Normalize with basename to be extra safe
-REPO_NAME=$(basename "$REPO_NAME")
+REPO_NAME=$(basename -- "$REPO_NAME")
 OUTPUT_FILE="$REPOS_DIR/${REPO_NAME}.md"
 
 # Check if gh CLI is available
