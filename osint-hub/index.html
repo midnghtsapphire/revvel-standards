@@ -114,7 +114,7 @@
   </script>
   
   <style>
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
     body { 
       font-family: 'Space Grotesk', system-ui, sans-serif; 
       -webkit-font-smoothing: antialiased;
@@ -217,7 +217,7 @@
   </nav>
   
   <!-- Hero Section -->
-  <section id="main-content" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+  <section id="main-content" tabindex="-1" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 focus:outline-none">
     <!-- Grid Background -->
     <div class="absolute inset-0 grid-bg opacity-30"></div>
     
@@ -860,37 +860,13 @@
       <div class="pt-8 border-t border-white/10 text-center text-sm text-gray-500">
         <p>&copy; 2026 Freedom Angel Corp. All rights reserved.</p>
         <p class="mt-2">
-          Phone: <a href="tel:+1-970-555-0100" class="hover:text-white">+1 (970) 555-0100</a> &nbsp;|&nbsp;
-          TTY: <a href="tel:+1-970-555-0199" class="hover:text-white">+1 (970) 555-0199</a> (Hearing Impaired)
+          Contact: <a href="mailto:support@freedomangel.com" class="hover:text-white">support@freedomangel.com</a>
         </p>
-        <p class="mt-1 text-xs">TTY users may also dial 711 to reach us through the relay service.</p>
+        <p class="mt-1 text-xs">Email-based support — accessible to all users including those who use assistive technologies.</p>
         <p class="mt-2 font-mono text-xs">Built with 🤖 AI • Powered by 🌐 OSINT • Secured by 🛡️ Intelligence</p>
       </div>
     </div>
   </footer>
-  
-  <!-- Smooth Scroll Script -->
-  <script>
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-          // Update URL hash for shareable links and browser history
-          if (history.pushState) {
-            history.pushState(null, null, href);
-          } else {
-            window.location.hash = href;
-          }
-        }
-      });
-    });
-  </script>
   
 </body>
 </html>
