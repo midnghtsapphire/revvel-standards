@@ -107,8 +107,8 @@ jobs:
             echo "urgency=${{ github.event.inputs.urgency }}" >> $GITHUB_OUTPUT
             echo "audience=${{ github.event.inputs.target_audience }}" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" = "issues" ]; then
-            # Extract from issue title and body
-            TOPIC="${{ github.event.issue.title }}"
+            # Sanitize issue title to prevent injection
+            TOPIC=$(echo '${{ github.event.issue.title }}' | tr -d '\n\r' | head -c 200)
             echo "topic=${TOPIC}" >> $GITHUB_OUTPUT
             echo "format=blog" >> $GITHUB_OUTPUT
             echo "urgency=draft" >> $GITHUB_OUTPUT

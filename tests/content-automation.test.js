@@ -170,9 +170,10 @@ if (test('OpenRouter API key structure validation', () => {
   if (CONFIG.openrouterKey) {
     assert(typeof CONFIG.openrouterKey === 'string', 'API key should be string if provided');
     assert(CONFIG.openrouterKey.length > 0, 'API key should not be empty if provided');
+  } else {
+    // If no key is provided, it should be undefined or empty
+    assert(CONFIG.openrouterKey === undefined || CONFIG.openrouterKey === '', 'API key should be undefined or empty when not set');
   }
-  // If no key is provided, it should be undefined or empty
-  assert(CONFIG.openrouterKey === undefined || CONFIG.openrouterKey === '', 'API key should be undefined or empty when not set');
 })) passed++; else failed++;
 
 // Summary
