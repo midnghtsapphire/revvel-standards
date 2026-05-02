@@ -92,12 +92,7 @@ If GitHub Pages is enabled:
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/YYYY-MM-DD.html
 ```
 
-### Option 3: Raw GitHub Content
-```
-https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/wr/summaries/YYYY-MM-DD.html
-```
-
-### Option 4: Index Page
+### Option 3: Index Page
 View all summaries via the index:
 ```
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/index.html
@@ -205,7 +200,7 @@ Vercel URLs are extracted via pattern matching. If URLs are not detected:
 
 ### HTML Not Rendering Properly
 - Ensure the file is opened directly (not via GitHub's preview)
-- Try viewing via GitHub Pages or raw.githubusercontent.com
+- Try viewing via GitHub Pages or open the file locally in your browser
 - Check browser console for errors
 
 ## Support
