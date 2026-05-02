@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Daily cron job - Main automation routine
 
-# Note: we deliberately do NOT use `pipefail` here so that we can capture the
-# orchestrator's exit code via PIPESTATUS[0] (the `tee` after it would otherwise
-# mask it).
+# We use `set -eu` (no `pipefail`) at the top level. The `tee` pipeline below
+# is wrapped in `set +e` / `set -e` so the orchestrator's non-zero exit doesn't
+# abort this script before we can record the failure to last-run.txt. The
+# orchestrator's exit code is read out of `PIPESTATUS[0]` afterwards (this works
+# whether `pipefail` is set or not — `PIPESTATUS` is a separate mechanism).
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,9 +20,10 @@ LOG_FILE="$LOG_DIR/cronjob-$(date +%Y%m%d).log"
 
 echo "Starting daily automation at $(date)" | tee -a "$LOG_FILE"
 
-# Run the orchestrator with all daily tasks. Capture its exit code so we can
-# distinguish "all tasks succeeded" from "one or more tasks failed but the
-# orchestrator continued past them" (orchestrator exits 1 on any task failure).
+# Run the orchestrator with all daily tasks. We temporarily disable `errexit`
+# so a non-zero orchestrator exit (one or more daily tasks failed) doesn't
+# abort the script before we record the result; we'll re-raise that exit code
+# at the end. The orchestrator exits 1 when at least one task fails.
 set +e
 python3 src/orchestrator.py --run-all 2>&1 | tee -a "$LOG_FILE"
 ORCHESTRATOR_EXIT=${PIPESTATUS[0]}
