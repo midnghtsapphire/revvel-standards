@@ -149,7 +149,7 @@ This combination requires no backend infrastructure and scales infinitely with z
 | Store | How to upload | Pricing | Commission |
 |-------|--------------|---------|------------|
 | **Gumroad** | API (`POST /products`) or dashboard | Any price, $0 minimum | 10% flat |
-| **Carrd** | Web builder (carrd.co) — embed Gumroad link or Stripe Payment Link | N/A (landing page only) | Free (up to 3 sites) / $19/year Pro |
+| **Carrd** | Web builder (carrd.co) — embed Gumroad link or Stripe Payment Link | Free (up to 3 sites) / $19/year Pro | N/A (landing page only — no per-sale fee) |
 | **Etsy (digital)** | Etsy API or dashboard → digital download listing | $0.99+ | 6.5% transaction + $0.20 listing |
 | **Own site (Stripe)** | Stripe Payment Link → deliver via email/download page | Any price | 2.9% + $0.30 |
 

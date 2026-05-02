@@ -146,16 +146,31 @@ const META_START = "<!-- SYNC-META-START -->";
 const META_END = "<!-- SYNC-META-END -->";
 
 /**
+ * Count the number of data rows (tools) in TOOLS_CATALOG.csv.
+ * Excludes the header row and any blank trailing lines.
+ * @returns {number} tool count, or 0 if the CSV is missing/unreadable
+ */
+function countTools() {
+  const csvPath = path.join(FLOW_CHARTS_DIR, "TOOLS_CATALOG.csv");
+  if (!fs.existsSync(csvPath)) return 0;
+  const content = readFile(csvPath);
+  const lines = content.split(/\r?\n/).filter((line) => line.trim().length > 0);
+  // Subtract 1 for the header row
+  return Math.max(0, lines.length - 1);
+}
+
+/**
  * Build the new metadata block content.
  * @param {number} docCount
+ * @param {number} toolCount
  * @returns {string}
  */
-function buildMetaBlock(docCount) {
+function buildMetaBlock(docCount, toolCount) {
   return (
     `${META_START}\n` +
     `- **Last sync:** ${TODAY}\n` +
     `- **Total docs in repo:** ${docCount}\n` +
-    `- **Total tools catalogued:** 71\n` +
+    `- **Total tools catalogued:** ${toolCount}\n` +
     `- **Workflow:** \`.github/workflows/flow-chart-sync.yml\`\n` +
     `- **Script:** \`scripts/sync-flow-charts.js\`\n` +
     `${META_END}`
@@ -166,16 +181,17 @@ function buildMetaBlock(docCount) {
  * Update the metadata block inside a file if it exists.
  * @param {string} filePath
  * @param {number} docCount
+ * @param {number} toolCount
  * @returns {boolean} true if the file was changed
  */
-function updateMetaBlock(filePath, docCount) {
+function updateMetaBlock(filePath, docCount, toolCount) {
   if (!fs.existsSync(filePath)) return false;
   const original = readFile(filePath);
   const startIdx = original.indexOf(META_START);
   const endIdx = original.indexOf(META_END);
   if (startIdx === -1 || endIdx === -1) return false;
 
-  const newBlock = buildMetaBlock(docCount);
+  const newBlock = buildMetaBlock(docCount, toolCount);
   const updated = original.slice(0, startIdx) + newBlock + original.slice(endIdx + META_END.length);
 
   if (updated === original) return false;
@@ -321,13 +337,15 @@ async function main() {
   // Step 1: Scan docs
   const allDocPaths = await scanDocs();
   const docCount = allDocPaths.length;
+  const toolCount = countTools();
+  console.log(`🛠️  Tools catalogued in TOOLS_CATALOG.csv: ${toolCount}`);
 
   // Step 2: Update metadata blocks + footers
   console.log("\n✏️  Updating metadata blocks...");
   let metaChanges = 0;
   for (const filename of FLOW_CHART_FILES) {
     const filePath = path.join(FLOW_CHARTS_DIR, filename);
-    const metaChanged = updateMetaBlock(filePath, docCount);
+    const metaChanged = updateMetaBlock(filePath, docCount, toolCount);
     const footerChanged = updateSyncFooter(filePath);
     if (metaChanged || footerChanged) {
       console.log(`  ✅ Updated: ${filename}`);
