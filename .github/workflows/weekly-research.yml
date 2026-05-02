@@ -108,31 +108,30 @@ jobs:
 
             const welcomeComment = `👋 **Weekly Research (WR) task detected**
 
-This issue has been identified as a Weekly Research task and will receive enhanced deep-research treatment.
+            This issue has been identified as a Weekly Research task and will receive enhanced deep-research treatment.
 
-**Automation applied:**
-- ✅ Labeled as \`weekly-research\` + \`deep-research\`
-- ✅ Routed to OpenRouter orchestrator
-- ✅ Progress tracking enabled (\`wr:in-progress\` → \`wr:complete\`)
+            **Automation applied:**
+            - ✅ Labeled as \`weekly-research\` + \`deep-research\`
+            - ✅ Routed to OpenRouter orchestrator
+            - ✅ Progress tracking enabled (\`wr:in-progress\` → \`wr:complete\`)
 
-**What happens next:**
-1. OpenRouter triage will analyze the research scope
-2. Research agents will be assigned based on the task requirements
-3. Findings will be documented in this issue
-4. When complete, the \`wr:complete\` label will be applied
+            **What happens next:**
+            1. OpenRouter triage will analyze the research scope
+            2. Research agents will be assigned based on the task requirements
+            3. Findings will be documented in this issue
+            4. When complete, the \`wr:complete\` label will be applied
 
-**Research checklist** (from issue description):
-- [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/)
-- [x] Cross-reference other repos in the **midnghtsapphire** org for consistency
-- [x] Check the **skills vault** (\`skills/REGISTRY.md\`) for relevant skills
-- [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules
-- [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
-- [x] Consider non-US sources for cross-validation
-- [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
+            **Research checklist** (from issue description):
+            - [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/)
+            - [x] Cross-reference other repos in the **midnghtsapphire** org for consistency
+            - [x] Check the **skills vault** (\`skills/REGISTRY.md\`) for relevant skills
+            - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules
+            - [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
+            - [x] Consider non-US sources for cross-validation
+            - [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
 
----
 
-_Automated by \`.github/workflows/weekly-research.yml\`_`;
+            _Automated by \`.github/workflows/weekly-research.yml\`_`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -217,36 +216,34 @@ _Automated by \`.github/workflows/weekly-research.yml\`_`;
             
             const trackerComment = `📊 **Research Progress Tracker**
 
-This comment will be updated as research progresses.
+            This comment will be updated as research progresses.
 
-**Current Status:** 🟡 In Progress
+            **Current Status:** 🟡 In Progress
 
-**Research Phases:**
-- [ ] Initial triage and scope definition
-- [ ] Repository review (AGENTS.md, skills/, standards/)
-- [ ] Cross-repository consistency check
-- [ ] Skills vault review
-- [ ] External tools/extensions research
-- [ ] Non-US sources review (if applicable)
-- [ ] Prime Directive compliance check
-- [ ] Findings documentation
-- [ ] Implementation recommendations
+            **Research Phases:**
+            - [ ] Initial triage and scope definition
+            - [ ] Repository review (AGENTS.md, skills/, standards/)
+            - [ ] Cross-repository consistency check
+            - [ ] Skills vault review
+            - [ ] External tools/extensions research
+            - [ ] Non-US sources review (if applicable)
+            - [ ] Prime Directive compliance check
+            - [ ] Findings documentation
+            - [ ] Implementation recommendations
 
-**Agents Assigned:**
-- OpenRouter orchestrator: 🟢 Active
-- Research agents: ⏳ Pending assignment
+            **Agents Assigned:**
+            - OpenRouter orchestrator: 🟢 Active
+            - Research agents: ⏳ Pending assignment
 
----
 
-**When research is complete:**
-1. A summary comment will be posted
-2. The \`wr:complete\` label will be applied
-3. The \`wr:in-progress\` label will be removed
+            **When research is complete:**
+            1. A summary comment will be posted
+            2. The \`wr:complete\` label will be applied
+            3. The \`wr:in-progress\` label will be removed
 
----
 
-_Last updated: ${new Date().toISOString()}_  
-_Automated by \`.github/workflows/weekly-research.yml\`_`;
+            _Last updated: ${new Date().toISOString()}_  
+            _Automated by \`.github/workflows/weekly-research.yml\`_`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,

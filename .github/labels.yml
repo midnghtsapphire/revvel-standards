@@ -183,9 +183,26 @@ labels:
     color: "d93f0b"
     description: "Escalated — requires human intervention"
 
+  # ── Credential / Secret Provisioning ──────────────────────────────────────
+  - name: credentials-missing
+    color: "d93f0b"
+    description: "Issue blocked — missing API keys/secrets/credentials"
+
+  - name: credentials-ready
+    color: "0e8a16"
+    description: "All required credentials provisioned and available"
+
+  - name: desktop-access-required
+    color: "fbca04"
+    description: "Requires desktop agent with file system/keychain access"
+
   - name: vault-agent
     color: "e4e669"
     description: "Vault Agent credential provisioning required"
+
+  - name: flexina
+    color: "9b59b6"
+    description: "Route to Flexina desktop automation agent"
 
   - name: codex
     color: "5319e7"

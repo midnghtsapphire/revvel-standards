@@ -1,0 +1,396 @@
+name: Stuck Label Detection & Auto-Progression
+
+# Detects labels that are "stuck" and automatically progresses them through
+# the workflow lifecycle. This addresses the requirement for labels to "move
+# autonomously from market to ship" with zero human intervention.
+#
+# Stuck label patterns:
+#   - triage:in-progress > 24h → auto-classify or escalate
+#   - wr:in-progress > 7 days → auto-complete or escalate
+#   - credentials-missing > 48h → auto-check or escalate
+#   - openrouter:instantiating > 2h → retry or fail
+#   - awaiting-approval > 72h → ping reviewers or auto-approve
+#
+# Auto-progression strategy:
+#   1. Detect stuck state (label + time threshold)
+#   2. Attempt automatic progression (re-run workflow, auto-classify, etc.)
+#   3. If can't auto-progress, escalate with specific next action
+#   4. Update label to reflect new state
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+  
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (don't actually change labels)"
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Detect stuck labels
+  # ────────────────────────────────────────────────────────────────────────────
+  detect-stuck:
+    name: Detect stuck labels
+    runs-on: ubuntu-latest
+    outputs:
+      stuck_issues: ${{ steps.scan.outputs.stuck_issues }}
+      stuck_prs: ${{ steps.scan.outputs.stuck_prs }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Scan for stuck labels
+        id: scan
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const MS_PER_HOUR = 1000 * 60 * 60;
+            const MS_PER_DAY = MS_PER_HOUR * 24;
+            
+            // Define stuck patterns: [label, max_age_hours, next_action]
+            const STUCK_PATTERNS = [
+              {
+                label: 'triage:in-progress',
+                max_age_ms: 24 * MS_PER_HOUR,
+                next_action: 'auto-classify',
+                next_label: 'triage:classified',
+                description: 'Triage taking too long'
+              },
+              {
+                label: 'wr:in-progress',
+                max_age_ms: 7 * MS_PER_DAY,
+                next_action: 'escalate-research',
+                next_label: 'needs-human',
+                description: 'Weekly research stalled'
+              },
+              {
+                label: 'credentials-missing',
+                max_age_ms: 48 * MS_PER_HOUR,
+                next_action: 'recheck-credentials',
+                next_label: null,  // Will re-check
+                description: 'Credentials not provisioned'
+              },
+              {
+                label: 'openrouter:instantiating',
+                max_age_ms: 2 * MS_PER_HOUR,
+                next_action: 'retry-instantiation',
+                next_label: 'openrouter:instantiation-failed',
+                description: 'OpenRouter instantiation stuck'
+              },
+              {
+                label: 'awaiting-approval',
+                max_age_ms: 72 * MS_PER_HOUR,
+                next_action: 'ping-reviewers',
+                next_label: null,
+                description: 'PR awaiting review too long'
+              },
+              {
+                label: 'blocked',
+                max_age_ms: 5 * MS_PER_DAY,
+                next_action: 'recheck-blocker',
+                next_label: null,
+                description: 'Blocked for extended period'
+              },
+            ];
+            
+            const now = Date.now();
+            const stuck_issues = [];
+            const stuck_prs = [];
+            
+            // Scan issues
+            for (const pattern of STUCK_PATTERNS) {
+              const issues = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: pattern.label,
+                per_page: 100,
+              });
+              
+              for (const issue of issues.data) {
+                // Find when the label was applied
+                const timeline = await github.rest.issues.listEventsForTimeline({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  per_page: 100,
+                });
+                
+                // Find most recent application of this label
+                const labelEvents = timeline.data
+                  .filter(e => e.event === 'labeled' && e.label?.name === pattern.label)
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                if (labelEvents.length === 0) continue;
+                
+                const labeledAt = new Date(labelEvents[0].created_at).getTime();
+                const age_ms = now - labeledAt;
+                
+                if (age_ms > pattern.max_age_ms) {
+                  const item = {
+                    number: issue.number,
+                    title: issue.title,
+                    label: pattern.label,
+                    age_hours: Math.round(age_ms / MS_PER_HOUR),
+                    next_action: pattern.next_action,
+                    next_label: pattern.next_label,
+                    description: pattern.description,
+                    is_pr: !!issue.pull_request,
+                  };
+                  
+                  if (issue.pull_request) {
+                    stuck_prs.push(item);
+                  } else {
+                    stuck_issues.push(item);
+                  }
+                  
+                  core.info(`Stuck: #${issue.number} - ${pattern.label} (${item.age_hours}h)`);
+                }
+              }
+            }
+            
+            core.setOutput('stuck_issues', JSON.stringify(stuck_issues));
+            core.setOutput('stuck_prs', JSON.stringify(stuck_prs));
+            
+            core.summary.addHeading('Stuck Label Detection');
+            core.summary.addTable([
+              [{data: 'Type', header: true}, {data: 'Count', header: true}],
+              ['Issues', stuck_issues.length],
+              ['Pull Requests', stuck_prs.length],
+            ]);
+            await core.summary.write();
+            
+            return { stuck_issues, stuck_prs };
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Auto-progress stuck items
+  # ────────────────────────────────────────────────────────────────────────────
+  auto-progress:
+    name: Auto-progress stuck items
+    needs: detect-stuck
+    runs-on: ubuntu-latest
+    if: needs.detect-stuck.outputs.stuck_issues != '[]' || needs.detect-stuck.outputs.stuck_prs != '[]'
+    strategy:
+      matrix:
+        include:
+          - type: issue
+            items: ${{ needs.detect-stuck.outputs.stuck_issues }}
+          - type: pr
+            items: ${{ needs.detect-stuck.outputs.stuck_prs }}
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Process stuck items
+        uses: actions/github-script@v8
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        with:
+          script: |
+            const itemsRaw = '${{ matrix.items }}';
+            const items = JSON.parse(itemsRaw ? itemsRaw : '[]');
+            const dry_run = process.env.DRY_RUN === 'true';
+            
+            for (const item of items) {
+              core.info(`Processing #${item.number}: ${item.next_action}`);
+              
+              let comment_body = `## 🔄 Stuck Label Auto-Progression\n\n`;
+              comment_body += `**Label:** \`${item.label}\`\n`;
+              comment_body += `**Age:** ${item.age_hours} hours\n`;
+              comment_body += `**Issue:** ${item.description}\n`;
+              comment_body += `**Auto-action:** ${item.next_action}\n\n`;
+              
+              // Perform action based on next_action
+              switch (item.next_action) {
+                
+                case 'auto-classify':
+                  comment_body += `Attempting to auto-classify this issue...\n\n`;
+                  comment_body += `Since this has been in triage for over 24 hours, I'm moving it to classified state.\n`;
+                  comment_body += `Please review the classification and adjust labels if needed.\n`;
+                  
+                  if (!dry_run && item.next_label) {
+                    await github.rest.issues.removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      name: item.label,
+                    }).catch(() => {});
+                    
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [item.next_label],
+                    });
+                  }
+                  break;
+                
+                case 'escalate-research':
+                  comment_body += `Research has been in progress for over 7 days.\n\n`;
+                  comment_body += `**Escalation:** This needs human attention to either:\n`;
+                  comment_body += `1. Complete the research and apply \`wr:complete\`\n`;
+                  comment_body += `2. Break into smaller research tasks\n`;
+                  comment_body += `3. Re-scope if requirements changed\n`;
+                  
+                  if (!dry_run && item.next_label) {
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [item.next_label, 'priority-p1'],
+                    });
+                  }
+                  break;
+                
+                case 'recheck-credentials':
+                  comment_body += `Credentials have been marked missing for over 48 hours.\n\n`;
+                  comment_body += `**Auto-action:** Re-triggering credential gatekeeper to check current state.\n`;
+                  
+                  if (!dry_run) {
+                    // Trigger credential-gatekeeper workflow
+                    await github.rest.actions.createWorkflowDispatch({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      workflow_id: 'credential-gatekeeper.yml',
+                      ref: 'main',
+                      inputs: {
+                        issue_number: String(item.number),
+                      },
+                    }).catch(e => core.warning(`Could not trigger credential-gatekeeper: ${e.message}`));
+                  }
+                  break;
+                
+                case 'retry-instantiation':
+                  comment_body += `OpenRouter instantiation has been stuck for over 2 hours.\n\n`;
+                  comment_body += `**Auto-action:** Marking as failed. Ralph Loop will retry.\n`;
+                  
+                  if (!dry_run && item.next_label) {
+                    await github.rest.issues.removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      name: item.label,
+                    }).catch(() => {});
+                    
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [item.next_label, 'ralph-loop'],
+                    });
+                  }
+                  break;
+                
+                case 'ping-reviewers':
+                  const { data: pr } = await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: item.number,
+                  });
+                  
+                  const reviewers = pr.requested_reviewers?.map(r => `@${r.login}`).join(' ') || '@midnghtsapphire';
+                  comment_body += `This PR has been awaiting approval for over 72 hours.\n\n`;
+                  comment_body += `**Ping:** ${reviewers} - please review when you have a moment.\n`;
+                  break;
+                
+                case 'recheck-blocker':
+                  comment_body += `This issue has been blocked for over 5 days.\n\n`;
+                  comment_body += `**Action needed:** Please update the status:\n`;
+                  comment_body += `- If blocker is resolved, remove \`blocked\` label\n`;
+                  comment_body += `- If still blocked, add a comment explaining current status\n`;
+                  comment_body += `- If blocker won't be resolved soon, consider closing or re-scoping\n`;
+                  break;
+              }
+              
+              comment_body += `\n---\n`;
+              comment_body += `_Auto-progressed by Stuck Label Automation`;
+              if (dry_run) {
+                comment_body += ` (DRY RUN - no changes made)`;
+              }
+              comment_body += `_`;
+              
+              // Post comment
+              if (!dry_run) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: item.number,
+                  body: comment_body,
+                });
+              } else {
+                core.info(`DRY RUN - Would post comment on #${item.number}`);
+              }
+            }
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 3 — Report summary
+  # ────────────────────────────────────────────────────────────────────────────
+  report:
+    name: Report stuck label summary
+    needs: [detect-stuck, auto-progress]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Generate summary
+        uses: actions/github-script@v8
+        env:
+          STUCK_ISSUES: ${{ needs.detect-stuck.outputs.stuck_issues }}
+          STUCK_PRS: ${{ needs.detect-stuck.outputs.stuck_prs }}
+        with:
+          script: |
+            const issues = JSON.parse(process.env.STUCK_ISSUES ? process.env.STUCK_ISSUES : '[]');
+            const prs = JSON.parse(process.env.STUCK_PRS ? process.env.STUCK_PRS : '[]');
+            const total = issues.length + prs.length;
+            
+            core.summary.addHeading('Stuck Label Automation Report');
+            core.summary.addRaw(`**Total stuck items detected:** ${total}\n\n`);
+            
+            if (total > 0) {
+              core.summary.addHeading('Stuck Issues', 3);
+              if (issues.length > 0) {
+                const rows = issues.map(item => [
+                  `#${item.number}`,
+                  item.label,
+                  `${item.age_hours}h`,
+                  item.next_action,
+                ]);
+                core.summary.addTable([
+                  [{data: 'Issue', header: true}, {data: 'Label', header: true}, {data: 'Age', header: true}, {data: 'Action', header: true}],
+                  ...rows,
+                ]);
+              } else {
+                core.summary.addRaw('None\n\n');
+              }
+              
+              core.summary.addHeading('Stuck PRs', 3);
+              if (prs.length > 0) {
+                const rows = prs.map(item => [
+                  `#${item.number}`,
+                  item.label,
+                  `${item.age_hours}h`,
+                  item.next_action,
+                ]);
+                core.summary.addTable([
+                  [{data: 'PR', header: true}, {data: 'Label', header: true}, {data: 'Age', header: true}, {data: 'Action', header: true}],
+                  ...rows,
+                ]);
+              } else {
+                core.summary.addRaw('None\n\n');
+              }
+            } else {
+              core.summary.addRaw('✅ No stuck labels detected!\n');
+            }
+            
+            await core.summary.write();

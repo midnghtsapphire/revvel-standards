@@ -632,6 +632,32 @@ skills:
       - "page title"
       - "meta description"
 
+  - name: schema_rich_results
+    title: "Schema Rich Results Checker"
+    version: "1.0.0"
+    path: "skills/schema-rich-results/"
+    skill_file: "skills/schema-rich-results/schema-rich-results.skill.yml"
+    script: "scripts/schema-rich-results-checker.js"
+    tests: "tests/schema-rich-results-checker.test.js"
+    category: "Content & Marketing"
+    access: all
+    dependencies:
+      - seo_metadata
+    triggers:
+      - "schema validation"
+      - "json-ld"
+      - "structured data"
+      - "rich results"
+      - "rich snippets"
+      - "schema.org"
+      - "google structured data"
+      - "schema markup"
+      - "faqpage schema"
+      - "product schema"
+      - "article schema"
+      - "breadcrumb schema"
+      - "organization schema"
+
   - name: eeat_trust_authority
     title: "E-E-A-T Trust Authority"
     version: "1.0.0"
