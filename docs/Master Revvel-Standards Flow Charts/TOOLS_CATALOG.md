@@ -151,12 +151,12 @@ Config file: `.mcp.json` in each project root. Setup: `scripts/setup-mcp.sh`.
 | # | Service | Category | What It Does | Flow Phase | Cost |
 |---|---|---|---|---|---|
 | 72 | **Gumroad** | Digital Sales | Upload and sell digital products (PDFs, eBooks, guides). Automated checkout and delivery. Payment processing with zero upfront cost. | Phase 10 (Deploy) | Free to start; 10% commission per sale |
-| 73 | **Carrd** | Website Builder | Create simple landing pages and online storefronts for digital products. Easy embedding of payment links. | Phase 10 (Deploy) | Free (up to 3 sites) / $19/year Pro |
+| **Carrd** | Website Builder | Create simple landing pages and online storefronts for digital products. Easy embedding of payment links. | Phase 10 (Deploy) | Free (up to 3 sites) / $19/year Pro |
 | 74 | **ChatGPT** | AI Writing | Brainstorm, outline, and generate written content for PDF guides, eBooks, and templates. | Phase 2 (Create) | Free tier / $20/month Plus |
 | 75 | **Claude** | AI Writing | Generate and refine written content, structure documents, create technical content for PDFs. | Phase 2 (Create) | Free tier / $20/month Pro |
 | 76 | **Jasper** | AI Writing | Alternative AI writing assistant for marketing copy, product descriptions, and content generation. | Phase 2 (Create) | Starts at $49/month |
 | 77 | **Canva / Canva AI** | Design & PDF Creation | Format AI-generated text into polished PDFs. Create covers, promotional graphics, social media assets. | Phase 2–3 (Create/Design) | Free tier / $15/month Pro |
-| 78 | **YouTube** | Marketing & Traffic | Create content channels (faceless or traditional) to drive traffic to digital product landing pages. Video descriptions and pinned comments link to storefront. | Phase 11 (Market) | Free (monetization after 1K subs) |
+| 78 | **YouTube** | Marketing & Traffic | Create content channels (faceless or traditional) to drive traffic to digital product landing pages. Video descriptions and pinned comments link to storefront. | Phase 11 (Market) | Free (platform monetization available at 1K+ subs) |
 
 ---
 
