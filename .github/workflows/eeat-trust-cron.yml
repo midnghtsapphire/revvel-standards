@@ -75,7 +75,7 @@ jobs:
         if: steps.quiet.outputs.active == 'true'
         uses: dopplerhq/secrets-fetch-action@v2
         with:
-          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+          doppler-token: ${{ secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN }}
 
       - name: Install dependencies
         if: steps.quiet.outputs.active == 'true'

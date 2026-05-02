@@ -124,6 +124,7 @@ sign up at doppler.com and create your own account.
 3. **Add your secrets** in the Doppler dashboard for the `github` environment
 4. **Generate a service token**: Project Settings → Service Tokens → Generate → scope to `github` config
 5. **Add the service token to GitHub**: Repo Settings → Secrets and variables → Actions → `DOPPLER_TOKEN`
+   - Alternatively, you may use `DOPPLER_LOCAL_TOKEN` — all workflows accept either name automatically
 
 ### Installed GitHub Actions (from Doppler Marketplace)
 
