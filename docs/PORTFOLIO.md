@@ -10,16 +10,16 @@ This document contains the corporate identity, entity hierarchy, product portfol
 
 ## Table of Contents
 
-1. [Corporate Identity & Entity Hierarchy](#corporate-identity--entity-hierarchy)
-2. [Learning Resources & Documentation](#learning-resources--documentation)
-3. [Cutting-Edge Technology Discovery & Evaluation](#cutting-edge-technology-discovery--evaluation)
-4. [Project Tracking — BOM & Per-Project Docs](#project-tracking--bom--per-project-docs)
-5. [Brand & Design — Revvel Emblem Standard](#brand--design--revvel-emblem-standard)
-6. [CI/CD Templates](#cicd-templates)
-7. [Testing Templates](#testing-templates)
-8. [Bootstrap a New Project](#bootstrap-a-new-project)
-9. [GitHub Projects Setup](#github-projects-setup)
-10. [Freedom Angel Corps Repo Manager UI](#freedom-angel-corps-repo-manager-ui--reusable-master-prompt)
+1. [Corporate Identity & Entity Hierarchy](#1-corporate-identity--entity-hierarchy)
+2. [Learning Resources & Documentation](#2-learning-resources--documentation)
+3. [Cutting-Edge Technology Discovery & Evaluation](#3-cutting-edge-technology-discovery--evaluation)
+4. [Project Tracking — BOM & Per-Project Docs](#4-project-tracking--bom--per-project-docs)
+5. [Brand & Design — Revvel Emblem Standard](#5-brand--design--revvel-emblem-standard)
+6. [CI/CD Templates](#6-cicd-templates)
+7. [Testing Templates](#7-testing-templates)
+8. [Bootstrap a New Project](#8-bootstrap-a-new-project)
+9. [GitHub Projects Setup](#9-github-projects-setup)
+10. [Freedom Angel Corps Repo Manager UI](#10-2026-04-15-freedom-angel-corps-repo-manager-ui--reusable-master-prompt)
 
 ---
 
@@ -450,16 +450,16 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 
 | Project | Docs Directory | BOM | Brand |
 |---|---|---|---|
-| GrowlingEyes | [`docs/growlingeyes/`](docs/growlingeyes/) | [BOM.md](docs/growlingeyes/BOM.md) | [BRAND.md](docs/growlingeyes/BRAND.md) |
-| Neurooz | [`docs/neurooz/`](docs/neurooz/) | [BOM.md](docs/neurooz/BOM.md) | — |
-| Revvel Music Studio | [`docs/revvel-music-studio/`](docs/revvel-music-studio/) | [BOM.md](docs/revvel-music-studio/BOM.md) | — |
-| Universal SAR App | [`docs/universal-sar-app/`](docs/universal-sar-app/) | [BOM.md](docs/universal-sar-app/BOM.md) | — |
-| Premolt | [`docs/premolt/`](docs/premolt/) | [BOM.md](docs/premolt/BOM.md) · [PLAN.md](docs/premolt/PLAN.md) | — |
-| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](penny-sovereign-yield-scout/) | [CHANGELOG.md](penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](penny-sovereign-yield-scout/branding/) |
+| GrowlingEyes | [`docs/growlingeyes/`](../docs/growlingeyes/) | [BOM.md](../docs/growlingeyes/BOM.md) | [BRAND.md](../docs/growlingeyes/BRAND.md) |
+| Neurooz | [`docs/neurooz/`](../docs/neurooz/) | [BOM.md](../docs/neurooz/BOM.md) | — |
+| Revvel Music Studio | [`docs/revvel-music-studio/`](../docs/revvel-music-studio/) | [BOM.md](../docs/revvel-music-studio/BOM.md) | — |
+| Universal SAR App | [`docs/universal-sar-app/`](../docs/universal-sar-app/) | [BOM.md](../docs/universal-sar-app/BOM.md) | — |
+| Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
+| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
 
-**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](docs/_MASTER_BOM.md)
+**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](../_MASTER_BOM.md)
 
-**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](docs/_MASTER_INVENTORY.md)
+**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md)
 
 Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
@@ -469,10 +469,10 @@ Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
-- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](templates/brand/REVVEL_EMBLEM_STANDARD.md)
-- **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](templates/brand/BRAND_IDENTITY_TEMPLATE.md)
-- **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](templates/brand/ICON_SIZE_SPEC.md)
-- **How to use brand templates:** [`templates/brand/README.md`](templates/brand/README.md)
+- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](../templates/brand/REVVEL_EMBLEM_STANDARD.md)
+- **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](../templates/brand/BRAND_IDENTITY_TEMPLATE.md)
+- **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](../templates/brand/ICON_SIZE_SPEC.md)
+- **How to use brand templates:** [`templates/brand/README.md`](../templates/brand/README.md)
 
 ---
 
@@ -493,9 +493,9 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 
 **DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
-**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](docs/WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
+**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
 
-Full README: [`templates/cicd/README.md`](templates/cicd/README.md)
+Full README: [`templates/cicd/README.md`](../templates/cicd/README.md)
 
 ---
 
@@ -509,7 +509,7 @@ Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every p
 | `ui-db-map.test.ts` | Vitest integration | Validates API response shapes match DB |
 | `panel-data-void.spec.ts` | Playwright E2E | Validates pages load with real data |
 
-Instructions: [`templates/testing/README.md`](templates/testing/README.md)
+Instructions: [`templates/testing/README.md`](../templates/testing/README.md)
 
 ---
 
@@ -527,7 +527,7 @@ bash ../revvel-standards/scripts/bootstrap-new-project.sh neurooz 164.90.148.7 n
 
 This creates:
 - `SYSTEM_STATE.md` + `CONTEXT_PRIMER.md` (session state standards)
-- `.github/workflows/` (all 6 CI/CD workflows)
+- `.github/workflows/` (7 CI/CD workflows: ci, auto-fix, security, deploy, syntax-check, deploy-android, deploy-ios)
 - `scripts/pwa-audit.sh` (PWA readiness checker)
 - `docs/MOBILE_DEPLOYMENT.md` (store deployment guide)
 - `fastlane/` scaffold (inactive until accounts ready)
@@ -539,10 +539,10 @@ This creates:
 
 Labels, milestones, and project board setup for every new Revvel repository.
 
-- **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](docs/GITHUB_PROJECTS_SETUP.md)
-- **PR Review Automation:** [`docs/PR_REVIEW_STATUS_AUTOMATION.md`](docs/PR_REVIEW_STATUS_AUTOMATION.md) — Automated PR review status labels and badges
-- **Quick Setup:** [`docs/GITHUB_AUTOMATION_QUICKSTART.md`](docs/GITHUB_AUTOMATION_QUICKSTART.md) — 5-minute automation setup script
-- **Badge Guide:** [`docs/PR_STATUS_BADGES_GUIDE.md`](docs/PR_STATUS_BADGES_GUIDE.md) — Add dynamic status badges to your README
+- **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](GITHUB_PROJECTS_SETUP.md)
+- **PR Review Automation:** [`docs/PR_REVIEW_STATUS_AUTOMATION.md`](PR_REVIEW_STATUS_AUTOMATION.md) — Automated PR review status labels and badges
+- **Quick Setup:** [`docs/GITHUB_AUTOMATION_QUICKSTART.md`](GITHUB_AUTOMATION_QUICKSTART.md) — 5-minute automation setup script
+- **Badge Guide:** [`docs/PR_STATUS_BADGES_GUIDE.md`](PR_STATUS_BADGES_GUIDE.md) — Add dynamic status badges to your README
 
 Standard labels include: `bug`, `enhancement`, `security`, `bom-purchase`, `design`, `blocked`, `auto-fix`, `copilot`, `documentation`
 
@@ -552,10 +552,10 @@ Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 
 
 ## 10. [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
 
-**New UI:** [`ui/freedom-angel-repo-manager/`](ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](docs/Master_Inventory/ACCESSIBILITY_STANDARD.md).
+**New UI:** [`ui/freedom-angel-repo-manager/`](../ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](Master_Inventory/ACCESSIBILITY_STANDARD.md).
 
-**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) and [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md).
+**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`AGENT_FACTORY_STANDARD.md`](Master_Inventory/AGENT_FACTORY_STANDARD.md) and [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md).
 
-**Bootstrap verification:** open `ui/freedom-angel-repo-manager/index.html` locally, load repositories for `midnghtsapphire`, run **Audit all repositories**, and export the JSON report. Full 10-step verification checklist is in the UI's [`README.md`](ui/freedom-angel-repo-manager/README.md#4-bootstrap-verification-steps).
+**Bootstrap verification:** open `ui/freedom-angel-repo-manager/index.html` locally, load repositories for `midnghtsapphire`, run **Audit all repositories**, and export the JSON report. Full 10-step verification checklist is in the UI's [`README.md`](../ui/freedom-angel-repo-manager/README.md#4-bootstrap-verification-steps).
 
 ---
