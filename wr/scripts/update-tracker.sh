@@ -32,7 +32,7 @@ IN_PROGRESS=0
 COMPLETED=0
 SHIP_READY=0
 
-for wr_file in "$REPOS_DIR"/*.md 2>/dev/null; do
+for wr_file in "$REPOS_DIR"/*.md; do
     [ -f "$wr_file" ] || continue
     
     # Extract the WR Status line and check its value
