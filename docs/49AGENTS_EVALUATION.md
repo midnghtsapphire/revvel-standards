@@ -158,6 +158,8 @@
 
 ## Recommended Implementation Strategy
 
+> **📝 NOTE:** This section describes a multi-phase *adoption roadmap* for future work across separate PRs/issues. This is **planning documentation**, not a proposal to implement code incrementally within a single task. Per AGENTS.md, agents must deliver complete solutions within their assigned scope—this roadmap defines what those separate scopes should be.
+
 ### Phase 1: Evaluation & Proof-of-Concept (Weeks 1-2)
 
 - [ ] Set up local 49Agents instance

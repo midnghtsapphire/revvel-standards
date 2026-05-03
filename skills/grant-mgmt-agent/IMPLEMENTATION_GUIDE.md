@@ -499,6 +499,8 @@ curl -X POST $N8N_WEBHOOK_URL -d '{"test": true}'
 
 ## ✅ Implementation Checklist
 
+> **📝 NOTE:** This checklist describes *separate implementation phases* for future work. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
+
 Use this checklist to track your implementation progress:
 
 ### Phase 1: Foundation (Week 1-2)

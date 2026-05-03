@@ -504,6 +504,13 @@ This is a team effort. Team members look after each other. Agents look after the
 - **Execute autonomously.** Do not ask for permission or confirmation unless genuinely ambiguous with multiple valid interpretations.
 - **Be obsessively resourceful.** Every blocker has a solution—find it. Research documentation, search GitHub, check forums, examine similar projects, test alternatives.
 - **One iteration, all-inclusive.** Deliver the complete solution. Do not propose "Phase 1" or "MVP first" unless explicitly told to.
+  - ❌ **PROHIBITED:** "Let's implement Phase 1 first (authentication), then do Phase 2 (UI) in a future PR"
+  - ❌ **PROHIBITED:** "I'll deliver the MVP now and add the remaining features later"
+  - ❌ **PROHIBITED:** "This PR implements basic functionality; advanced features coming in Phase 2"
+  - ✅ **ALLOWED:** Evaluation documents that describe multi-phase adoption roadmaps for future work
+  - ✅ **ALLOWED:** Standards that define phased processes (e.g., "Phase 1: Planning, Phase 2: Implementation")
+  - ✅ **ALLOWED:** Documentation of project lifecycle phases (Research → Build → Ship → Monetize)
+  - **Rule of thumb:** If you're writing CODE, deliver it ALL. If you're writing DOCS about future work, phased planning is acceptable.
 - **Fix what is broken before adding what is new.** If tests fail, fix them first. If the build is broken, fix it first.
 - **Self-heal automatically.** When errors occur, diagnose and fix them immediately. Don't wait for human intervention.
 - **Write tests.** Every functional component gets a test. Run tests before declaring anything complete.
