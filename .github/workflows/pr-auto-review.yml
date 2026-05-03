@@ -78,7 +78,7 @@ jobs:
             const pr = context.payload.pull_request;
             
             // Security: Validate PR is from same repository (not fork)
-            if (pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.name) {
+            if (pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.repo) {
               core.notice('Skipping auto-review - PR is from untrusted fork');
               core.setOutput('needs_review', 'false');
               return;
