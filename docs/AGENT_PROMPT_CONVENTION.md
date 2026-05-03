@@ -1,14 +1,30 @@
 # Agent Prompt Convention
 
 **Version:** 1.0.0  
-**Status:** Active  
+**Status:** Planned (Documentation Complete, Workflows Pending)  
 **Repository:** midnghtsapphire/revvel-standards
+
+---
+
+## ⚠️ Implementation Status
+
+**Current State:** This convention is **documented but not yet automated**. The tag system and routing logic are defined, but the automatic detection workflow (Phase 2) has not been implemented yet.
+
+**What Works Today:**
+- Manual agent invocation via GitHub labels
+- Existing workflows (`openrouter-triage.yml`, `bito-ai.yml`, `jules-invoke.yml`)
+- Tag syntax can be used in code comments for future automation
+
+**What's Planned:**
+- Phase 2: Automatic prompt detection workflow
+- Phase 3: GOAP agent deployment
+- Phase 4: Full tag-based routing
 
 ---
 
 ## Purpose
 
-This document defines the standard convention for leaving prompts/instructions for AI agents in code, issues, PRs, and documentation. When you tag a comment with a specific agent, automated workflows will detect and route the prompt to the appropriate agent for execution.
+This document defines the standard convention for leaving prompts/instructions for AI agents in code, issues, PRs, and documentation. When the automation workflows are implemented (Phase 2), tagged comments will be automatically detected and routed to the appropriate agent for execution.
 
 ---
 
@@ -26,13 +42,13 @@ This document defines the standard convention for leaving prompts/instructions f
 
 | Tag | Agent | Purpose | Auto-Executes |
 |-----|-------|---------|---------------|
-| `@agent` | OpenRouter (auto-routed) | General AI task — system decides best agent | ✅ Yes (CI/CD) |
-| `@bito` | Bito AI | Code review, security scan, tech debt analysis | ✅ Yes (CI/CD) |
-| `@goap` | GOAP | Revenue, business, monetization tasks | ✅ Yes (CI/CD) |
-| `@jules` | Jules (Google Gemini) | Research, documentation, complex analysis | ✅ Yes (CI/CD) |
-| `@copilot` | GitHub Copilot Coding Agent | Complex coding tasks, PR fixes | ⚠️ Manual (assign in GitHub) |
+| `@agent` | OpenRouter (auto-routed) | General AI task — system decides best agent | 🔜 Planned (Phase 2) |
+| `@bito` | Bito AI | Code review, security scan, tech debt analysis | 🔜 Planned (Phase 2) |
+| `@goap` | GOAP | Revenue, business, monetization tasks | 🔜 Planned (Phase 3) |
+| `@jules` | Jules (Google Gemini) | Research, documentation, complex analysis | ⚠️ Manual (workflow_dispatch) |
+| `@copilot` | GitHub Copilot Coding Agent | Complex coding tasks, PR fixes | ⚠️ Manual (human assigns) |
 | `@roo` | Roo-Cline | Local refactoring, autonomous coding | ⚠️ Manual (VS Code) |
-| `@openrouter` | OpenRouter direct | Explicitly use OpenRouter | ✅ Yes (CI/CD) |
+| `@openrouter` | OpenRouter direct | Explicitly use OpenRouter | 🔜 Planned (Phase 2) |
 
 ---
 
@@ -74,6 +90,16 @@ TODO @jules: Research best practices for implementing OAuth2 PKCE flow
 TODO @jules: Compare performance of 5 popular React state management libraries
 NOTE @jules: Need comprehensive documentation for this API module
 ```
+
+**Special: WR (Weekly Research) Enhancement**
+
+For WR (Weekly Research) issues, Jules can be configured to:
+1. Receive the WR request from the issue
+2. Research and rewrite/refine the request for clarity
+3. Update both the original issue and create/update the PR
+4. Route to OpenRouter for code generation or orchestration
+
+*Note: This WR workflow enhancement is planned for Phase 2 implementation.*
 
 ---
 
@@ -297,13 +323,13 @@ When an agent completes a prompt:
 
 ### Compatibility with Current Labels
 
-| Agent Tag | GitHub Label | Workflow |
-|-----------|--------------|----------|
-| `@agent` | `openrouter` | `openrouter-triage.yml` |
-| `@bito` | `bito-ai` | `bito-ai.yml` |
-| `@goap` | `goap` (new) | `goap-executor.yml` (new) |
-| `@jules` | `jules` | `jules-invoke.yml` |
-| `@copilot` | `copilot` | `ai-ci-failure-helper.yml` |
+| Agent Tag | GitHub Label | Workflow | Trigger |
+|-----------|--------------|----------|---------|
+| `@agent` | `openrouter` | `openrouter-triage.yml` | issues/PR opened, reopened (not labeled) |
+| `@bito` | `bito-ai` | `bito-ai.yml` | Label application |
+| `@goap` | `goap` (new) | `goap-executor.yml` (planned) | TBD |
+| `@jules` | `jules` | `jules-invoke.yml` | workflow_dispatch only |
+| `@copilot` | `copilot` | N/A | Manual tracking only (no automation) |
 
 ### Backward Compatibility
 

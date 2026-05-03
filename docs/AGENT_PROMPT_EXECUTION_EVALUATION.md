@@ -3,7 +3,7 @@
 **Evaluation Date:** May 3, 2026  
 **Evaluator:** GitHub Copilot Coding Agent  
 **Repository:** midnghtsapphire/revvel-standards  
-**Issue:** [WR] ASSIGNT AGENT TO PERFROM DEVINS COMMENT PROMPT LEFT FOR AGENTS CAN CIRCLECI? BITO? ROO? GOAP?
+**Issue:** [WR] Assign agent to perform Devin's comment prompt - Can CircleCI, Bito, Roo, or GOAP handle this?
 
 ---
 

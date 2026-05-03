@@ -47,7 +47,7 @@ Uses OpenRouter triage to classify prompts:
 - **Code quality** → Route to Bito AI
 - **Revenue/business** → Route to GOAP
 - **Research** → Route to Jules
-- **General coding** → Route to OpenRouter or GitHub Copilot
+- **General coding** → Route to OpenRouter
 - **Local development** → Document for Roo-Cline (manual)
 
 ### 4. Execution Orchestration
@@ -55,9 +55,9 @@ Uses OpenRouter triage to classify prompts:
 Triggers appropriate workflow:
 - **Bito AI** → `.github/workflows/bito-ai.yml`
 - **GOAP** → `.github/workflows/goap-executor.yml` (to be created)
-- **Jules** → `.github/workflows/jules-invoke.yml`
+- **Jules** → `.github/workflows/jules-invoke.yml` (workflow_dispatch)
 - **OpenRouter** → `.github/workflows/openrouter-coder.yml`
-- **GitHub Copilot** → Manual assignment via label
+- **GitHub Copilot** → Manual only (not automated, human assigns via GitHub UI)
 
 ### 5. Completion Tracking
 

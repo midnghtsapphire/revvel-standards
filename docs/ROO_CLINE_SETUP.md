@@ -257,11 +257,11 @@ Reference: docs/AGENTS.md in this repo
 Roo-Cline can use skills from `skills/`:
 
 ```
-Before implementing OAuth:
-1. Read skills/oauth2-pkce/SKILL.md
-2. Follow the skill guidelines
-3. Use provided code examples
-4. Implement with skill patterns
+Before implementing a feature:
+1. Check if a relevant skill exists in skills/
+2. Read the skill's SKILL.md
+3. Follow skill guidelines and patterns
+4. Example: skills/testing/SKILL.md for test requirements
 ```
 
 ### Handoff to CI/CD Agents
