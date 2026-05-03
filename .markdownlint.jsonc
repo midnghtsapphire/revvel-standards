@@ -1,0 +1,32 @@
+{
+  // Revvel Standards Markdown Linter Configuration
+  // See https://github.com/DavidAnson/markdownlint for rule details
+  
+  "default": true,
+  
+  // MD013: Line length - disabled for docs with long URLs and tables
+  "MD013": false,
+  
+  // MD033: Inline HTML - allowed for badges, custom formatting
+  "MD033": false,
+  
+  // MD041: First line in file should be a top level heading - disabled
+  // because some files have front matter or comments first
+  "MD041": false,
+  
+  // MD024: Multiple headings with the same content - disabled
+  // because we have multiple "Usage" or "Example" sections in some docs
+  "MD024": {
+    "allow_different_nesting": true
+  },
+  
+  // MD026: Trailing punctuation in heading - allow for questions
+  "MD026": {
+    "punctuation": ".,;:"
+  },
+  
+  // MD046: Code block style - consistent fenced style
+  "MD046": {
+    "style": "fenced"
+  }
+}

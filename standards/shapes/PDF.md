@@ -59,10 +59,28 @@ build/pdf/
 
 | Tool | Purpose | Install |
 |------|---------|---------|
+| **ChatGPT / Claude** | AI writing assistants to brainstorm, outline, and generate PDF content | Web-based (chatgpt.com, claude.ai) |
+| **Canva / Canva AI** | Format AI-generated text into polished PDFs; create covers and promotional assets | Web-based (canva.com) or [Canva Connect APIs](https://www.canva.dev/docs/connect/) |
 | **Pandoc** | Markdown → PDF compilation | `apt install pandoc texlive-xetex` |
 | **WeasyPrint** (alternative) | HTML/CSS → PDF with better styling | `pip install weasyprint` |
 | **Puppeteer/Playwright** (alternative) | HTML → PDF via headless Chrome | `npm install puppeteer` |
 | **Figma** (via MCP or API) | Cover design, diagrams, infographics | Figma MCP server |
+
+### Content Creation Workflow (AI-Assisted)
+
+1. **Brainstorm & Outline** — Use ChatGPT or Claude to:
+   - Generate table of contents based on problem statement
+   - Create section outlines with key points
+   - Draft content for each section in markdown format
+   
+2. **Refine & Format** — Import AI-generated content into:
+   - Canva for visual layout and PDF export
+   - Or keep in markdown and use Pandoc/WeasyPrint for compilation
+
+3. **Design Assets** — Use Canva or Figma to create:
+   - Professional cover page
+   - Infographics and diagrams
+   - Social media preview images
 
 ### Build Commands
 
@@ -117,11 +135,21 @@ Every PDF product needs these design assets:
 
 ## 4. Publish Phase — Where to Sell
 
+### Primary Automated Stack (Recommended)
+
+**Gumroad + Carrd** provides the fastest, zero-maintenance storefront:
+
+1. **Gumroad** — Upload your PDF and get an instant payment link. Handles checkout, delivery, and receipts automatically.
+2. **Carrd** — Build a simple landing page (free up to 3 sites) with product info and embedded Gumroad button.
+
+This combination requires no backend infrastructure and scales infinitely with zero operational burden.
+
 ### Primary Stores
 
 | Store | How to upload | Pricing | Commission |
 |-------|--------------|---------|------------|
 | **Gumroad** | API (`POST /products`) or dashboard | Any price, $0 minimum | 10% flat |
+| **Carrd** | Web builder (carrd.co) — embed Gumroad link or Stripe Payment Link | Free (up to 3 sites) / $19/year Pro | N/A (landing page only — no per-sale fee) |
 | **Etsy (digital)** | Etsy API or dashboard → digital download listing | $0.99+ | 6.5% transaction + $0.20 listing |
 | **Own site (Stripe)** | Stripe Payment Link → deliver via email/download page | Any price | 2.9% + $0.30 |
 
@@ -138,11 +166,13 @@ Every PDF product needs these design assets:
 
 ```bash
 # Gumroad (via API)
+# Use -F for every field — file uploads require multipart/form-data,
+# and curl's -d (urlencoded) and -F (multipart) flags are mutually exclusive.
 curl -X POST https://api.gumroad.com/v2/products \
-  -d "access_token=$GUMROAD_ACCESS_TOKEN" \
-  -d "name=<Product Name>" \
-  -d "price=<price_in_cents>" \
-  -d "description=<description>" \
+  -F "access_token=$GUMROAD_ACCESS_TOKEN" \
+  -F "name=<Product Name>" \
+  -F "price=<price_in_cents>" \
+  -F "description=<description>" \
   -F "preview=@build/pdf/assets/cover.png" \
   -F "file=@build/pdf/output/<product-slug>.pdf"
 
@@ -181,6 +211,181 @@ These must be provisioned (via BOM gatekeeper) before the build starts:
 | **Figma access token** | Design generation | Doppler `revvel-standards/prd/FIGMA_ACCESS_TOKEN` |
 | **Google Search Console** | SEO submission | OAuth via Doppler |
 | **Etsy API key** | Etsy listings (optional) | Doppler `revvel-standards/prd/ETSY_API_KEY` |
+
+---
+
+## 6. Complete Ship-to-Market Workflow
+
+This section describes the recommended end-to-end workflow for creating and selling PDF products, from initial research to scaled marketing.
+
+### Step 1: Identify a High-Demand Niche and Problem
+
+Before creating anything, identify a specific problem your audience is actively trying to solve. Digital products work best when they provide a direct solution.
+
+**Examples of high-demand niches:**
+- "12-week back pain rehab program"
+- "Hypertrophy training guide"
+- "Productivity workflow template"
+- Technical skill guides (programming, design, marketing)
+- Industry-specific checklists and templates
+
+**Research activities:**
+- Use social listening (Step 1 of AUTOMATED_PRODUCT_PIPELINE) to find high-volume complaints
+- Validate demand through Reddit, Twitter/X, YouTube comments, forums
+- Analyze competitor PDFs on Gumroad, Etsy, Amazon KDP
+- Identify gaps in existing solutions
+
+**Gate:** Must have ≥50 mentions of the problem in the past 30 days before proceeding. Use social listening tools from Step 1 of AUTOMATED_PRODUCT_PIPELINE.md (Reddit search, Twitter/X search, YouTube comment analysis, forum monitoring).
+
+---
+
+### Step 2: Automate Content Creation
+
+Use AI tools to rapidly generate high-quality content:
+
+1. **Brainstorm with AI**
+   - Use ChatGPT or Claude to generate outlines, section ideas, and key talking points
+   - Example prompt: "Create a detailed outline for a PDF guide that solves [problem] for [audience]"
+
+2. **Generate Content**
+   - Have AI write each section based on your outline
+   - Iterate and refine: ask for rewrites, expansions, or alternative approaches
+   - Maintain consistent voice and formatting throughout
+
+3. **Design in Canva**
+   - Import AI-generated text into Canva
+   - Use Canva templates for professional layouts
+   - Add graphics, infographics, and visual elements
+   - Create a compelling cover design
+   - Export as high-quality PDF
+
+**Output:** Polished, professional PDF ready for sale.
+
+---
+
+### Step 3: Set Up Your Automated Storefront
+
+Create a frictionless sales pipeline with no manual fulfillment:
+
+1. **Upload to Gumroad**
+   - Go to gumroad.com and create a free account
+   - Click "New Product" → "Digital Product"
+   - Upload your PDF file
+   - Set your price (recommended: $7–$27 for guides, $17–$47 for comprehensive courses)
+   - Add product description, cover image, and preview
+   - Publish to get your Gumroad payment link
+
+2. **Build Landing Page on Carrd**
+   - Go to carrd.co and sign up (free for up to 3 sites)
+   - Choose a simple landing page template
+   - Add sections:
+     - Hero with product title and mockup
+     - Problem statement (pain points your PDF solves)
+     - Solution overview (what's inside)
+     - Table of contents preview
+     - Testimonials (if available)
+     - Call-to-action button
+   - Embed your Gumroad link as the CTA button
+   - Publish your Carrd site
+
+**Result:** Fully automated sales flow. When someone clicks your CTA, Gumroad handles payment and delivers the PDF instantly via email.
+
+---
+
+### Step 4: Generate Traffic Using YouTube
+
+Create a content channel that drives qualified traffic to your PDF:
+
+1. **Channel Strategy**
+   - Create a YouTube channel related to your PDF's topic
+   - Faceless channels work well: screen recordings, slideshows, stock footage with voiceover
+   - Example: If selling a financial guide, make tutorials about personal finance
+
+2. **Content Creation**
+   - Make 2–3 videos per week addressing related problems
+   - Each video should provide value while hinting at the deeper solution in your PDF
+   - Keep videos 8–15 minutes for optimal engagement
+
+3. **Link Placement**
+   - Add your Carrd or Gumroad link in video description (first line)
+   - Pin a comment with the link
+   - Mention the PDF naturally in your videos (not aggressively)
+
+4. **SEO Optimization**
+   - Use keywords from your PDF research in titles and descriptions
+   - Create thumbnails that stand out
+   - Add timestamps and chapters
+
+**Why YouTube:**
+- Long-tail traffic (videos continue generating views for years)
+- High buyer intent (people actively searching for solutions)
+- Free organic reach (no paid ads required initially)
+- Builds authority and trust over time
+
+---
+
+### Step 5: Time Your Launch for Maximum Conversions
+
+**DO NOT** push your PDF aggressively from day one. Follow this timeline:
+
+**Phase 1: Value Building (Weeks 1–8)**
+- Focus purely on providing valuable free content
+- Build subscriber base and engagement
+- Establish authority in your niche
+- Do not mention your PDF yet
+
+**Phase 2: Soft Introduction (Weeks 9–12)**
+- Casually mention your PDF exists
+- Position it as "extra resources for those who want to go deeper"
+- Keep links in description, don't be pushy
+
+**Phase 3: Active Promotion (5,000–20,000 subscribers)**
+- Once you have consistent engagement and trust, promote more actively
+- Create dedicated videos about your PDF (e.g., "How I created this guide")
+- Offer limited-time discounts
+- Share testimonials and results
+
+**Why this timing works:**
+- Viewers already trust your authority
+- PDF feels like a helpful extension, not an advertisement
+- Near 100% profit margins mean every sale counts
+- No inventory or shipping costs, so late promotion doesn't hurt
+
+**Scaling:**
+- As your channel grows, your PDF sales scale automatically
+- Create additional PDFs to serve the same audience
+- Bundle products for higher-value offerings
+- Eventually, consider Patreon or membership for recurring revenue
+
+---
+
+## 7. Marketing & Growth Strategy
+
+### YouTube Channel Growth Milestones
+
+| Milestone | Timeline | Focus | Expected PDF Sales |
+|-----------|----------|-------|-------------------|
+| 0–1K subs | Months 1–3 | Content quality, SEO optimization | 0–10/month |
+| 1K–5K subs | Months 4–6 | Consistency, soft PDF mentions | 10–50/month |
+| 5K–20K subs | Months 7–12 | Active promotion, product expansion | 50–200/month |
+| 20K–100K subs | Year 2+ | Multiple products, affiliate deals, sponsorships | 200–1000+/month |
+
+### Additional Marketing Channels (Post-Launch)
+
+Once YouTube is established, expand to:
+- **Twitter/X** — Share tips and link to videos
+- **Reddit** — Participate in relevant communities, offer value before promoting
+- **Email list** — Capture emails via Gumroad, send updates about new PDFs
+- **Pinterest** — Create pins for infographics from your PDFs
+- **TikTok/Shorts** — Repurpose YouTube content into short-form clips
+
+### Paid Advertising (Optional, After Validation)
+
+Only invest in paid ads once you've validated organic demand:
+- **YouTube Ads** — Promote your best-performing videos
+- **Google Ads** — Target high-intent keywords
+- **Facebook/Instagram Ads** — Target lookalike audiences
+- **Budget rule:** Start with $5–10/day, scale if monthly ROI (revenue / ad spend) > 3:1
 
 ---
 

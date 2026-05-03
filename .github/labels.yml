@@ -119,6 +119,19 @@ labels:
     color: "0075ca"
     description: "PR review has been initiated"
 
+  # ── PR Review Request Handling ────────────────────────────────────────────────
+  - name: "review-fix:in-progress"
+    color: "fbca04"
+    description: "OpenRouter is analyzing and fixing review feedback"
+
+  - name: "review-fix:complete"
+    color: "0e8a16"
+    description: "OpenRouter has addressed all review feedback"
+
+  - name: "review-fix:failed"
+    color: "d93f0b"
+    description: "OpenRouter could not automatically fix review issues"
+
   # ── Merge Control ─────────────────────────────────────────────────────────────
   - name: auto-merge
     color: "0e8a16"
