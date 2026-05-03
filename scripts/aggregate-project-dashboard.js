@@ -399,6 +399,16 @@ function deduplicateProjects(projects) {
   return Array.from(seen.values());
 }
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Helper function to get badge class for status
  */
@@ -586,9 +596,9 @@ function generateDashboard(data) {
           <tbody>
             ${data.domains.slice(0, 10).map(d => `
               <tr>
-                <td>${d.name}</td>
-                <td><span class="badge ${getBadgeClass(d.status)}">${d.status}</span></td>
-                <td>${d.purpose}</td>
+                <td>${escapeHtml(d.name)}</td>
+                <td><span class="badge ${getBadgeClass(d.status)}">${escapeHtml(d.status)}</span></td>
+                <td>${escapeHtml(d.purpose)}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -612,11 +622,11 @@ function generateDashboard(data) {
         <tbody>
           ${data.projects.map(p => `
             <tr>
-              <td><strong>${p.name}</strong></td>
-              <td><span class="badge ${getBadgeClass(p.status)}">${p.status}</span></td>
-              <td>${p.description || p.notes || p.revenue || ''}</td>
-              <td>${p.source || 'N/A'}</td>
-              <td>${p.link ? `<a href="${p.link}" target="_blank">View</a>` : 'N/A'}</td>
+              <td><strong>${escapeHtml(p.name)}</strong></td>
+              <td><span class="badge ${getBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+              <td>${escapeHtml(p.description || p.notes || p.revenue || '')}</td>
+              <td>${escapeHtml(p.source || 'N/A')}</td>
+              <td>${p.link ? `<a href="${escapeHtml(p.link)}" target="_blank">View</a>` : 'N/A'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -638,10 +648,10 @@ function generateDashboard(data) {
         <tbody>
           ${data.urls.map(u => `
             <tr>
-              <td><a href="${u.url}" target="_blank">${u.url}</a></td>
-              <td>${u.project}</td>
-              <td><span class="badge badge-${u.type}">${u.type}</span></td>
-              <td>${u.source}</td>
+              <td><a href="${escapeHtml(u.url)}" target="_blank">${escapeHtml(u.url)}</a></td>
+              <td>${escapeHtml(u.project)}</td>
+              <td><span class="badge badge-${escapeHtml(u.type)}">${escapeHtml(u.type)}</span></td>
+              <td>${escapeHtml(u.source)}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -663,10 +673,10 @@ function generateDashboard(data) {
         <tbody>
           ${(data.inventory.masterInventory?.services || []).slice(0, 20).map(s => `
             <tr>
-              <td><strong>${s.name}</strong></td>
-              <td>${s.description.substring(0, 100)}...</td>
-              <td>${s.status}</td>
-              <td>${s.usedBy}</td>
+              <td><strong>${escapeHtml(s.name)}</strong></td>
+              <td>${escapeHtml(s.description.substring(0, 100))}...</td>
+              <td>${escapeHtml(s.status)}</td>
+              <td>${escapeHtml(s.usedBy)}</td>
             </tr>
           `).join('')}
         </tbody>
