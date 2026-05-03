@@ -15,7 +15,7 @@ cd oaudrey
 python3 -m http.server 8080
 ```
 
-Then open http://localhost:8080 in your browser.
+Then open <http://localhost:8080> in your browser.
 
 ### Option 2: Node.js http-server
 
@@ -26,7 +26,7 @@ cd oaudrey
 npx http-server -p 8080
 ```
 
-Then open http://localhost:8080 in your browser.
+Then open <http://localhost:8080> in your browser.
 
 ### Option 3: PHP (if available)
 
@@ -37,13 +37,13 @@ cd oaudrey
 php -S localhost:8080
 ```
 
-Then open http://localhost:8080 in your browser.
+Then open <http://localhost:8080> in your browser.
 
 ## GitHub Pages Deployment
 
 The repository is also configured to deploy to GitHub Pages automatically on every push to `main`. Once enabled in your repository settings, the site will be available at:
 
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/oaudrey/
 ```
 
@@ -56,6 +56,7 @@ https://midnghtsapphire.github.io/revvel-standards/oaudrey/
 4. The `static.yml` workflow will automatically deploy on the next push to `main`
 
 The GitHub Pages deployment is useful for:
+
 - Quick previews without DigitalOcean setup
 - Testing before deploying to production
 - Sharing work-in-progress with stakeholders
@@ -81,6 +82,7 @@ The oAudrey hub consists of:
 The oAudrey hub links to several product tabs. To run them locally:
 
 ### FieldWork
+
 ```bash
 cd fieldwork
 python3 -m http.server 8081
@@ -88,12 +90,14 @@ python3 -m http.server 8081
 ```
 
 ### ColdTrace
+
 ```bash
 cd coldtrace
 # See coldtrace/README.md for setup instructions (requires backend)
 ```
 
 ### Penny Sovereign Yield Scout
+
 ```bash
 cd penny-sovereign-yield-scout
 python3 -m http.server 8082
@@ -110,6 +114,7 @@ To test the oAudrey hub with all product tabs working:
 4. Update the links in `index.html` temporarily to point to localhost URLs
 
 Example temporary changes for local testing:
+
 ```html
 <!-- Change from -->
 <a href="https://fieldwork.oaudrey.com">FieldWork</a>
@@ -125,8 +130,10 @@ Example temporary changes for local testing:
 ### Port Already in Use
 
 If you get "Address already in use" error, either:
+
 - Stop the process using that port, or
 - Use a different port number:
+
   ```bash
   python3 -m http.server 8081  # Use port 8081 instead
   ```
@@ -134,6 +141,7 @@ If you get "Address already in use" error, either:
 ### Browser Shows Plain HTML Without Styling
 
 This means Tailwind CSS isn't loading from the CDN. Check:
+
 1. You have an active internet connection (Tailwind loads from `cdn.tailwindcss.com`)
 2. Your browser isn't blocking the CDN
 3. Try a different browser or clear your cache
@@ -145,5 +153,6 @@ The oAudrey hub links to external product subdomains (`fieldwork.oaudrey.com`, e
 ## Production Deployment
 
 For deploying to production (DigitalOcean or other hosting):
+
 - See [`README.md`](./README.md) for DigitalOcean App Platform instructions
 - See [`../standards/OAUDREY_DEPLOYMENT_STANDARD.md`](../standards/OAUDREY_DEPLOYMENT_STANDARD.md) for complete deployment guide
