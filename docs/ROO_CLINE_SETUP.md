@@ -489,7 +489,7 @@ Step 3: Update login endpoint
    ONLY modify src/auth/*.ts files.
    Do NOT touch any other files.
    ```
-2. Use `.roo-cline-ignore` file (create in repo root):
+2. Use `.rooignore` file (create in repo root):
    ```
    node_modules/
    dist/
