@@ -353,30 +353,15 @@ jobs:
                   comment_body += `**Auto-action:** Triggering triage workflow.\n`;
                   
                   if (!dry_run) {
-                    // Trigger openrouter-triage workflow
+                    // Trigger openrouter-triage workflow. Do not advance this item's
+                    // label here because workflow_dispatch has no per-item context and
+                    // only runs the backlog sweep.
                     await github.rest.actions.createWorkflowDispatch({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       workflow_id: 'openrouter-triage.yml',
                       ref: 'main',
                     }).catch(e => core.warning(`Could not trigger openrouter-triage: ${e.message}`));
-                    
-                    // Update label to show triage is in progress
-                    if (item.next_label) {
-                      await github.rest.issues.removeLabel({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        issue_number: item.number,
-                        name: item.label,
-                      }).catch(() => {});
-                      
-                      await github.rest.issues.addLabels({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        issue_number: item.number,
-                        labels: [item.next_label],
-                      });
-                    }
                   }
                   break;
               }
