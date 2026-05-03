@@ -164,6 +164,7 @@ python3 -m http.server 8080
 ```
 
 **📖 For complete local setup instructions**, including:
+
 - Multiple server options (Python, Node.js, PHP)
 - GitHub Pages deployment
 - Testing with product tabs
