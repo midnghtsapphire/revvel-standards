@@ -391,7 +391,7 @@ function runQualityGates(finalContent) {
 
 
   const headings = (finalContent.match(/^## /gm) || []).length;
-  if (headings < 3) {
+  if (CONFIG.format === 'blog' && headings < 3) {
     results.structure.passed = false;
     results.structure.details.push(`Only ${headings} H2 headings (min: 3)`);
   }
