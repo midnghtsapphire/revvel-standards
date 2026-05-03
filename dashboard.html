@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIDNGHTSAPPHIRE Project Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+    }
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat:last-child {
+      border-bottom: none;
+    }
+    .stat-label {
+      font-weight: 600;
+    }
+    .stat-value {
+      font-weight: 300;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    th {
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+    a:hover {
+      color: #ffd700;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-active { background: #10b981; }
+    .badge-dev { background: #3b82f6; }
+    .badge-research { background: #f59e0b; }
+    .badge-unknown { background: #6b7280; }
+    .last-updated {
+      text-align: center;
+      margin-top: 30px;
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+    .search-box {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+    }
+    .search-box::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 MIDNGHTSAPPHIRE Project Dashboard</h1>
+      <p class="subtitle">Centralized visibility into all projects, BOM, inventory, and status</p>
+    </header>
+
+    <input type="text" class="search-box" id="searchBox" placeholder="Search projects, domains, URLs..." onkeyup="filterAll()">
+
+    <div class="grid">
+      <!-- Summary Card -->
+      <div class="card">
+        <h2>📊 Summary</h2>
+        <div class="stat">
+          <span class="stat-label">Total Projects:</span>
+          <span class="stat-value">33</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Active Services:</span>
+          <span class="stat-value">10</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Test URLs:</span>
+          <span class="stat-value">28</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Tracked Domains:</span>
+          <span class="stat-value">12</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Last Updated:</span>
+          <span class="stat-value">5/3/2026, 3:42:10 AM</span>
+        </div>
+      </div>
+
+      <!-- Key Domains Card -->
+      <div class="card">
+        <h2>🌐 Key Domains</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Status</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>oaudrey.com</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>Freedom Angel Hub</td>
+              </tr>
+            
+              <tr>
+                <td>freedomangel.org</td>
+                <td><span class="badge badge-research">Research</span></td>
+                <td>Nonprofit</td>
+              </tr>
+            
+              <tr>
+                <td>revvel.co</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>Portfolio</td>
+              </tr>
+            
+              <tr>
+                <td>soup2bowl.com</td>
+                <td><span class="badge badge-dev">In Development</span></td>
+                <td>Catering</td>
+              </tr>
+            
+              <tr>
+                <td>sam.gov</td>
+                <td><span class="badge badge-unknown">External</span></td>
+                <td>Gov Registration</td>
+              </tr>
+            
+              <tr>
+                <td>grants.gov</td>
+                <td><span class="badge badge-unknown">External</span></td>
+                <td>Grant Search</td>
+              </tr>
+            
+              <tr>
+                <td>fieldwork.oaudrey.com</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>oAudrey Subdomain</td>
+              </tr>
+            
+              <tr>
+                <td>growlingeyes.oaudrey.com</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>oAudrey Subdomain</td>
+              </tr>
+            
+              <tr>
+                <td>penny.oaudrey.com</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>oAudrey Subdomain</td>
+              </tr>
+            
+              <tr>
+                <td>agents.oaudrey.com</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td>oAudrey Subdomain</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Projects Table -->
+    <div class="card">
+      <h2>📦 All Projects</h2>
+      <table id="projectsTable">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Source</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>Vine review optimization</strong></td>
+              <td><span class="badge badge-unknown">Existing</span></td>
+              <td>Expand</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Product rental</strong></td>
+              <td><span class="badge badge-unknown">New</span></td>
+              <td>Launch</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Overflow sales</strong></td>
+              <td><span class="badge badge-unknown">Existing</span></td>
+              <td>Scale</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Consulting</strong></td>
+              <td><span class="badge badge-unknown">New</span></td>
+              <td>Offer</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Expense tracker</strong></td>
+              <td><span class="badge badge-unknown">Google Sheets</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Invoice automation</strong></td>
+              <td><span class="badge badge-unknown">CLI/API</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Compliance automations</strong></td>
+              <td><span class="badge badge-unknown">GitHub Actions</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Tax Navigator Agent</strong></td>
+              <td><span class="badge badge-unknown">MCP/Tool</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Compliance tracker</strong></td>
+              <td><span class="badge badge-unknown">App</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Business dashboard</strong></td>
+              <td><span class="badge badge-unknown">API</span></td>
+              <td>Build</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Freedom Angel Corp</strong></td>
+              <td><span class="badge badge-unknown">Non-profit</span></td>
+              <td>Legal structure</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Anti-trafficking API</strong></td>
+              <td><span class="badge badge-unknown">MCP/Tool</span></td>
+              <td>Research</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Resource database</strong></td>
+              <td><span class="badge badge-unknown">App</span></td>
+              <td>Research</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Reese Reviews</strong></td>
+              <td><span class="badge badge-unknown">$K/mo</span></td>
+              <td>Expand</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Rental Co</strong></td>
+              <td><span class="badge badge-unknown">Setup</span></td>
+              <td>Q2 launch</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Overflow LLC</strong></td>
+              <td><span class="badge badge-unknown">Setup</span></td>
+              <td>Q2 launch</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Tax Navigator</strong></td>
+              <td><span class="badge badge-unknown">Planning</span></td>
+              <td>Q3</td>
+              <td>PROJECTS_TO_SHIP.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>:---</strong></td>
+              <td><span class="badge badge-unknown">:---</span></td>
+              <td>:---</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td>N/A</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Soul2Bowl</strong></td>
+              <td><span class="badge badge-dev">In Development</span></td>
+              <td>Premium online ordering and catering platform for St. Louis fusion cuisine — BBQ, Asian-Hawaiian, Southern soul food. Features glassmorphic design, animated UI, booking calendar, Stripe payments (one-time + subscriptions), Clerk auth (Google/Apple/Email), admin CMS panel, and eco-friendly LIFEMADE compostable bowl showcase.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>Pawsitting</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>Pet sitting management app with a purple glassmorphism UI, 10-table database, Stripe billing, and AI chat features.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/Pawsitting" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>the-alt-text</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>AI-powered SaaS for generating SEO-optimized alt text for images. Includes a 3-tier Stripe subscription model and a REST API.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/the-alt-text" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>steel-white</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>(Reese Reviews) An application for Amazon Vine reviewers to track products, ETV (Estimated Tax Value), and inventory. Includes an affiliate engine.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/steel-white" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>revvel-forensic-studio</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>An AI-powered image analysis and enhancement tool with a &quot;Glass Observatory&quot; theme, 12 distinct workspaces, and a FastAPI backend.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/revvel-forensic-studio" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>mindmappr</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>The backend service for the MindMappr AI agent, which is integrated with Telegram and Slack.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/mindmappr" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>meetaudreyevans-dashboard</strong></td>
+              <td><span class="badge badge-active">Deployed</span></td>
+              <td>The full React-based dashboard for the `meetaudreyevans.com` hub, running in a Docker container.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/meetaudreyevans-dashboard" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>revvel-standards</strong></td>
+              <td><span class="badge badge-active">Live</span></td>
+              <td>The single source of truth for all documentation, including templates, deployment guides, and infrastructure maps.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/revvel-standards" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>revvel-app-template</strong></td>
+              <td><span class="badge badge-dev">In Development</span></td>
+              <td>A working boilerplate repository for all new applications, pre-configured with the required stack and features.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/revvel-app-template" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>rvvel</strong></td>
+              <td><span class="badge badge-active">Live</span></td>
+              <td>The source code for the main portfolio and hub website, `meetaudreyevans.com`, deployed via GitHub Pages.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/rvvel" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>Claude-Skills-Governance-Risk-and-Compliance</strong></td>
+              <td><span class="badge badge-active">Active (Fork)</span></td>
+              <td>Expert-level GRC compliance guidance for ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered as a Claude Code plugin marketplace. Fork of `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0. Benchmarked at 94% accuracy across 18 test cases.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="../skills/grc-compliance/" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>ai-conversation-extractions</strong></td>
+              <td><span class="badge badge-unknown">Archived</span></td>
+              <td>A massive archive of over 1,000 AI conversation logs from ChatGPT and Grok, containing prompts, code snippets, and project ideas.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/ai-conversation-extractions" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>SSRN_Whitepapers</strong></td>
+              <td><span class="badge badge-unknown">Archived</span></td>
+              <td>A collection of academic and technical whitepapers, primarily for submission to SSRN (Social Science Research Network).</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/SSRN_Whitepapers" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>business-ideas-vault</strong></td>
+              <td><span class="badge badge-unknown">Archived</span></td>
+              <td>A master collection of business concepts, plans, and validation research.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/business-ideas-vault" target="_blank">View</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>cyber-security-turn-business</strong></td>
+              <td><span class="badge badge-unknown">Archived</span></td>
+              <td>Business plans, research, and documentation related to cybersecurity ventures.</td>
+              <td>PROJECT_CATALOG.md</td>
+              <td><a href="https://github.com/MIDNGHTSAPPHIRE/cyber-security-turn-business" target="_blank">View</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Test URLs Table -->
+    <div class="card">
+      <h2>🔗 Test URLs</h2>
+      <table id="urlsTable">
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Project</th>
+            <th>Type</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><a href="https://vitest.dev" target="_blank">https://vitest.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://jestjs.io" target="_blank">https://jestjs.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://mochajs.org" target="_blank">https://mochajs.org</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://chaijs.com" target="_blank">https://chaijs.com</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://avajs.dev" target="_blank">https://avajs.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://playwright.dev" target="_blank">https://playwright.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://cypress.io" target="_blank">https://cypress.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://pptr.dev" target="_blank">https://pptr.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://webdriver.io" target="_blank">https://webdriver.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://testcafe.io" target="_blank">https://testcafe.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://postman.com" target="_blank">https://postman.com</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://insomnia.rest" target="_blank">https://insomnia.rest</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://httpie.io" target="_blank">https://httpie.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://hoppscotch.io" target="_blank">https://hoppscotch.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://zaproxy.org" target="_blank">https://zaproxy.org</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://snyk.io" target="_blank">https://snyk.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://semgrep.dev" target="_blank">https://semgrep.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://trivy.dev" target="_blank">https://trivy.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://sonarqube.org" target="_blank">https://sonarqube.org</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://webpagetest.org" target="_blank">https://webpagetest.org</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://k6.io" target="_blank">https://k6.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://artillery.io" target="_blank">https://artillery.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://locust.io" target="_blank">https://locust.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://eslint.org" target="_blank">https://eslint.org</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://biomejs.dev" target="_blank">https://biomejs.dev</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://prettier.io" target="_blank">https://prettier.io</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://codeclimate.com" target="_blank">https://codeclimate.com</a></td>
+              <td>workspace</td>
+              <td><span class="badge badge-test">test</span></td>
+              <td>/README.md</td>
+            </tr>
+          
+            <tr>
+              <td><a href="https://soul2bowl.vercel.app" target="_blank">https://soul2bowl.vercel.app</a></td>
+              <td>Soul2Bowl</td>
+              <td><span class="badge badge-vercel">vercel</span></td>
+              <td>/docs/Soul2Bowl/README.md</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Active Services -->
+    <div class="card">
+      <h2>⚙️ Active Services (Inventory)</h2>
+      <table id="servicesTable">
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Used By</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>Anthropic Claude API</strong></td>
+              <td>Primary reasoning LLM for all autonomous agents; handles coding, planning, research tasks...</td>
+              <td>❌ Expired / Lapsed</td>
+              <td>Audrey Agent, Goap Agent, Agent Factory, all agents</td>
+            </tr>
+          
+            <tr>
+              <td><strong>OpenAI API</strong></td>
+              <td>AI and LLM features for Neurooz; GPT-4o for reasoning, GPT-4o mini for cost-efficient tasks...</td>
+              <td>❌ Expired / Lapsed</td>
+              <td>Neurooz</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Google Gemini API</strong></td>
+              <td>Multi-modal reasoning; free tier covers high-volume lower-priority tasks...</td>
+              <td>🟡 Research Topic</td>
+              <td>Agent Factory (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Groq API</strong></td>
+              <td>Ultra-fast LLM inference (Llama, Mixtral); low-latency tasks...</td>
+              <td>🟡 Research Topic</td>
+              <td>Neurooz real-time features (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>OpenRouter</strong></td>
+              <td>Routes requests to cheapest available LLM per task; manages fallbacks...</td>
+              <td>🔵 Configured</td>
+              <td>All AI projects</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Venice.ai</strong></td>
+              <td>Privacy-focused LLM; uncensored model access...</td>
+              <td>🟡 Research Topic</td>
+              <td>Research / evaluation</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Brave Search API</strong></td>
+              <td>Web search for research agents; privacy-respecting...</td>
+              <td>🟡 Research Topic</td>
+              <td>Research agents (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Serper API</strong></td>
+              <td>Returns Google search results via API for AI agent research tasks...</td>
+              <td>🟡 Research Topic</td>
+              <td>Research agents (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Tavily API</strong></td>
+              <td>Search purpose-built for AI agents; returns AI-optimized result format...</td>
+              <td>🟡 Research Topic</td>
+              <td>Research agents, LangChain (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Perplexity API</strong></td>
+              <td>LLM with real-time web search built in; research agent use...</td>
+              <td>🟡 Research Topic</td>
+              <td>Research agents (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Google Maps Platform</strong></td>
+              <td>GPS, mapping, routing for SAR app; $200/mo free credit...</td>
+              <td>❌ Expired / Lapsed</td>
+              <td>Universal SAR App</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Mapbox</strong></td>
+              <td>Custom map styles; alternative to Google Maps...</td>
+              <td>🟡 Research Topic</td>
+              <td>Universal SAR App (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>OpenStreetMap / Nominatim</strong></td>
+              <td>Free and open-source geocoding; no API key required...</td>
+              <td>🔵 Configured</td>
+              <td>Universal SAR App</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Stripe</strong></td>
+              <td>Processes payments, subscriptions, and invoices; handles card transactions...</td>
+              <td>❌ Expired / Lapsed</td>
+              <td>Premolt, Revvel Music Studio</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Paddle</strong></td>
+              <td>Merchant-of-record; handles international VAT and taxes automatically...</td>
+              <td>🟡 Research Topic</td>
+              <td>International SaaS (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>LemonSqueezy</strong></td>
+              <td>Simple digital product sales and subscriptions...</td>
+              <td>🟡 Research Topic</td>
+              <td>Evaluate for low-volume products</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Resend</strong></td>
+              <td>Transactional email delivery (account confirmations, alerts, receipts)...</td>
+              <td>✅ Active</td>
+              <td>All projects</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Loops</strong></td>
+              <td>Email marketing and drip campaigns for SaaS products...</td>
+              <td>🟡 Research Topic</td>
+              <td>The Alt Text, Neurooz (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Buttondown</strong></td>
+              <td>Newsletter platform for content distribution...</td>
+              <td>🟡 Research Topic</td>
+              <td>Any newsletter project (evaluate)</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Firebase Cloud Messaging (FCM)</strong></td>
+              <td>Push notifications for mobile apps...</td>
+              <td>❌ Expired / Lapsed</td>
+              <td>Universal SAR App, GrowlingEyes</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <div class="last-updated">
+      Dashboard generated at 5/3/2026, 3:42:10 AM
+      <br>
+      <small>Auto-updates every 4 hours via GitHub Actions cron job</small>
+    </div>
+  </div>
+
+  <script>
+    function filterAll() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      
+      // Filter projects
+      const projectRows = document.querySelectorAll('#projectsTable tbody tr');
+      projectRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+      
+      // Filter URLs
+      const urlRows = document.querySelectorAll('#urlsTable tbody tr');
+      urlRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+      
+      // Filter services
+      const serviceRows = document.querySelectorAll('#servicesTable tbody tr');
+      serviceRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
