@@ -281,10 +281,8 @@ Content generation fails (API error, rate limit, etc.)
    - Error details
    - Common causes
    - Next steps
-3. Self-heal job attempts retry with fallback model
-4. If all retries fail:
-   - Auto-creates issue with `auto-error` label
-   - Includes full logs and context
+3. Self-heal job currently logs a fallback placeholder (retry logic is not implemented yet)
+4. If generation fails, review the workflow run logs and re-run after fixing the root cause
 
 ### Recovery Steps
 1. Check workflow logs for specific error
