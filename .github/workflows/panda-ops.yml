@@ -11,6 +11,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# P1 - Important workflow: can cancel old runs for newer commits
+concurrency:
+  group: panda-ops-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   review:
     name: PandaOps AI PR Review
