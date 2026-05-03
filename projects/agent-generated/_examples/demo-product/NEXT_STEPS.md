@@ -46,7 +46,7 @@ tree projects/agent-generated/demo-product
 cd projects/agent-generated/demo-product/build
 
 # View metrics targets (config only — collection is documented in automation/README.md)
-cat metrics/config.json
+cat ../metrics/config.json
 
 # Check launch status
 cat launch/30-day-plan.md
