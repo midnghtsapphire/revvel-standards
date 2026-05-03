@@ -143,8 +143,13 @@ async function getPRFiles() {
     if (!files || files.length === 0) {
       hasMore = false;
     } else {
-      allFiles.push(...files);
-      if (files.length < GITHUB_PAGE_SIZE) {
+      // Only add files up to the limit
+      const remainingSlots = MAX_FILES_TO_FETCH - allFiles.length;
+      const filesToAdd = files.slice(0, remainingSlots);
+      allFiles.push(...filesToAdd);
+      
+      // Stop if we've reached the limit or received fewer files than requested
+      if (allFiles.length >= MAX_FILES_TO_FETCH || files.length < GITHUB_PAGE_SIZE) {
         hasMore = false;
       } else {
         page++;

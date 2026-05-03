@@ -374,7 +374,7 @@ The script sends a structured prompt and expects JSON response:
 
 ## Limitations
 
-1. **PR Size Limits** 
+1. **PR Size Limits** (see Configuration section for adjusting these)
    - Maximum 5,000 lines changed (configurable)
    - Maximum 100 files changed (configurable)
    - PRs exceeding limits are skipped with notification
