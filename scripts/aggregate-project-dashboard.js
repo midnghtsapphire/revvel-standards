@@ -374,6 +374,12 @@ function extractProjectStatus() {
 
 /**
  * Deduplicate projects by name
+ * 
+ * Strategy: First-wins approach
+ * - Projects are matched case-insensitively by name
+ * - If a project appears in multiple sources, the first occurrence is kept
+ * - Missing fields (link, description) are merged from later occurrences
+ * - Priority order: PROJECTS_TO_SHIP.md > PROJECT_CATALOG.md
  */
 function deduplicateProjects(projects) {
   const seen = new Map();
@@ -670,7 +676,7 @@ function generateDashboard(data) {
     <div class="last-updated">
       Dashboard generated at ${new Date(data.lastUpdated).toLocaleString()}
       <br>
-      <small>Auto-updates hourly via GitHub Actions cron job</small>
+      <small>Auto-updates every 4 hours via GitHub Actions cron job</small>
     </div>
   </div>
 

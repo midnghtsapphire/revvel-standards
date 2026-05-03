@@ -25,6 +25,21 @@ const colors = {
   magenta: '\x1b[35m',
 };
 
+/**
+ * Get color for status badge
+ */
+function getStatusColor(status) {
+  if (!status) return colors.reset;
+  const s = status.toLowerCase();
+  if (s.includes('active') || s.includes('✅') || s.includes('live') || s.includes('deployed')) {
+    return colors.green;
+  }
+  if (s.includes('dev') || s.includes('progress') || s.includes('🔵')) {
+    return colors.yellow;
+  }
+  return colors.reset;
+}
+
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
     console.log(`${colors.yellow}⚠️  Dashboard data not found. Generating...${colors.reset}`);
@@ -41,11 +56,7 @@ function printHeader(text) {
 }
 
 function printProject(project, index) {
-  const statusColor = project.status?.includes('Active') || project.status?.includes('✅') 
-    ? colors.green 
-    : project.status?.includes('Dev') 
-    ? colors.yellow 
-    : colors.reset;
+  const statusColor = getStatusColor(project.status);
   
   console.log(`${colors.bright}${index + 1}. ${project.name}${colors.reset}`);
   console.log(`   Status: ${statusColor}${project.status || 'Unknown'}${colors.reset}`);
@@ -64,7 +75,7 @@ function printURL(url, index) {
 }
 
 function printDomain(domain, index) {
-  const statusColor = domain.status === 'Active' ? colors.green : colors.yellow;
+  const statusColor = getStatusColor(domain.status);
   console.log(`${colors.bright}${index + 1}. ${domain.name}${colors.reset}`);
   console.log(`   Status: ${statusColor}${domain.status}${colors.reset}`);
   console.log(`   Purpose: ${domain.purpose}`);

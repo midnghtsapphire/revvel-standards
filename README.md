@@ -51,7 +51,7 @@ npm run dashboard open
 **Features:**
 - 🔍 Live search across all data
 - 📱 Beautiful glassmorphism UI
-- ⏱️ Auto-updates hourly via GitHub Actions
+- ⏱️ **Auto-updates** every 4 hours via GitHub Actions
 - 💻 CLI tool for terminal access
 - 🌐 GitHub Pages deployment
 

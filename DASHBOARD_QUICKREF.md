@@ -12,7 +12,7 @@
 **After:** Centralized dashboard with all project data
 - Single HTML page with everything
 - CLI tool for terminal access
-- Auto-updates hourly
+- Auto-updates every 4 hours
 - Live search across all data
 - Beautiful UI
 

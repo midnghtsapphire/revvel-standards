@@ -242,11 +242,11 @@ Generates dashboard and opens in browser.
 
 ### Hourly Updates (Cron)
 
-The dashboard auto-updates every hour via GitHub Actions:
+The dashboard auto-updates every 4 hours via GitHub Actions:
 
 ```yaml
 schedule:
-  - cron: '0 * * * *'  # Every hour
+  - cron: '0 */4 * * *'  # Every 4 hours
 ```
 
 **What it does:**

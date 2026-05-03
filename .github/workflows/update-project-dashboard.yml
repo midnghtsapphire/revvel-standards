@@ -2,8 +2,8 @@ name: Update Project Dashboard
 
 on:
   schedule:
-    # Run hourly to keep dashboard up-to-date
-    - cron: '0 * * * *'
+    # Run every 4 hours to keep dashboard up-to-date
+    - cron: '0 */4 * * *'
   workflow_dispatch:
     # Allow manual trigger
   push:
