@@ -109,7 +109,7 @@ python3 -m http.server 8082
 To test the oAudrey hub with all product tabs working:
 
 1. Run oAudrey hub on port 8080
-2. Run FieldWork on port 8081  
+2. Run FieldWork on port 8081
 3. Run other products on different ports
 4. Update the links in `index.html` temporarily to point to localhost URLs
 

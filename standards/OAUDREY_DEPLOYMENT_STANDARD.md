@@ -193,7 +193,6 @@ https://midnghtsapphire.github.io/revvel-standards/oaudrey/
 Subdomains (like `fieldwork.oaudrey.com`) become sub-paths:
 
 ```text
-https://midnghtsapphire.github.io/revvel-standards/oaudrey/
 https://midnghtsapphire.github.io/revvel-standards/fieldwork/
 ```
 
