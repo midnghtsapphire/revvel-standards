@@ -254,14 +254,14 @@ Reference: docs/AGENTS.md in this repo
 
 ### Skills Integration
 
-Roo-Cline can use skills from `skills/`:
+Roo-Cline can use skills from the repository's [`skills/`](../skills/) directory:
 
 ```
 Before implementing a feature:
 1. Check if a relevant skill exists in skills/
 2. Read the skill's SKILL.md
 3. Follow skill guidelines and patterns
-4. Example: skills/testing/SKILL.md for test requirements
+4. Example: See skills/testing/SKILL.md for test coverage requirements
 ```
 
 ### Handoff to CI/CD Agents
