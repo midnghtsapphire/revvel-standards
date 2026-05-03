@@ -152,17 +152,24 @@ Full guide: `standards/OAUDREY_DEPLOYMENT_STANDARD.md`
 
 ---
 
-## Running the Landing Page Locally
+## 🚀 Running Locally
 
-No build step. Just serve the directory:
+Want to see the oAudrey hub on your local machine instead of DigitalOcean? It's easy!
 
+**Quick Start:**
 ```bash
 cd oaudrey
 python3 -m http.server 8080
 # → open http://localhost:8080
 ```
 
-Or open `index.html` directly in a browser.
+**📖 For complete local setup instructions**, including:
+- Multiple server options (Python, Node.js, PHP)
+- GitHub Pages deployment
+- Testing with product tabs
+- Troubleshooting
+
+**See [`LOCAL_SETUP.md`](./LOCAL_SETUP.md)** — your complete guide to running oAudrey locally.
 
 ---
 

@@ -162,6 +162,70 @@ DigitalOcean App Platform offers **3 free static sites** per account. oAudrey qu
 
 ---
 
+## Alternative Deployment: GitHub Pages
+
+GitHub Pages offers a **free, zero-config alternative** to DigitalOcean for hosting the oAudrey static site. This is useful for:
+- **Testing/preview** before deploying to production
+- **Development** when you want to see the site without DigitalOcean access
+- **Backup/mirror** deployment
+- **Cost savings** (100% free, no limits for public repos)
+
+### Automated GitHub Pages Deployment
+
+The repository includes a GitHub Actions workflow (`.github/workflows/static.yml`) that automatically deploys the entire repository to GitHub Pages on every push to `main`.
+
+**Setup (one-time):**
+
+1. Go to your repository on GitHub
+2. Click **Settings** → **Pages** (left sidebar)
+3. Under **Build and deployment**:
+   - Source: **GitHub Actions** (not "Deploy from a branch")
+4. Save
+
+Once enabled, the site will be available at:
+```
+https://midnghtsapphire.github.io/revvel-standards/oaudrey/
+```
+
+Subdomains (like `fieldwork.oaudrey.com`) become sub-paths:
+```
+https://midnghtsapphire.github.io/revvel-standards/oaudrey/
+https://midnghtsapphire.github.io/revvel-standards/fieldwork/
+```
+
+### GitHub Pages vs DigitalOcean App Platform
+
+| Feature | GitHub Pages | DigitalOcean App Platform |
+|---------|--------------|---------------------------|
+| **Cost** | Free | Free tier (3 sites), then $3/mo per site |
+| **Custom domain** | Supported (`oaudrey.com` via CNAME) | Supported |
+| **HTTPS** | Automatic (Let's Encrypt) | Automatic |
+| **Deployment** | Auto (on push to `main`) | Auto (on push to `main`) |
+| **Subdomains** | Only via custom DNS | Native support (`*.oaudrey.com`) |
+| **Build time** | ~30 seconds | ~2-3 minutes |
+| **Bandwidth** | 100 GB/month soft limit | Unmetered |
+| **Best for** | Testing, mirrors, development | Production with subdomains |
+
+### Running Locally (No Deployment)
+
+For **immediate local preview** without any deployment:
+
+```bash
+cd oaudrey
+python3 -m http.server 8080
+# Open http://localhost:8080
+```
+
+**Complete local setup guide:** [`oaudrey/LOCAL_SETUP.md`](../oaudrey/LOCAL_SETUP.md)
+
+### When to Use Each Option
+
+- **DigitalOcean (primary)** — Use for `oaudrey.com` production with full subdomain support (`fieldwork.oaudrey.com`, `penny.oaudrey.com`, etc.)
+- **GitHub Pages (secondary)** — Use for testing, previews, and as a backup. Can serve the site on a custom domain if needed.
+- **Local server (development)** — Use when developing/testing changes before committing.
+
+---
+
 ## DNS Configuration (Namecheap → DigitalOcean)
 
 ### Step 1: Point Namecheap to DigitalOcean nameservers
