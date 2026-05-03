@@ -385,6 +385,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** schema-org, json-ld, rich-results, structured-data, seo, google-rich-results, schema-validation, faqpage, product-schema, article-schema, breadcrumb
 - **Trigger:** "schema validation", "json-ld", "structured data", "rich results", "rich snippets", "schema.org", "google structured data", "schema markup", "faqpage schema", "product schema", "article schema", "breadcrumb schema", "organization schema".
 
+#### content-automation
+
+- **Path:** `skills/content-automation/`
+- **Files:** `SKILL.md` · `content-automation.skill.yml`
+- **Script:** `scripts/content-automation.js`
+- **Description:** End-to-end AI-powered content creation pipeline: topic ideation, script generation, refinement, and multi-format publishing using OpenRouter. Automates the complete content workflow from research through publication in 10-15 minutes. Supports blog posts, video scripts, social media threads, and email newsletters. Implements quality gates for SEO, readability, and technical standards.
+- **Tags:** content-automation, ai-content, content-generation, blog-automation, script-writing, seo-content, openrouter, topic-ideation, content-pipeline, multi-format
+- **Trigger:** "content automation", "content creation", "content generation", "blog automation", "script writing", "topic ideation", "ai content", "write blog post", "generate content", "video script", and labels: `content-automation`, `content`, `writing`, `blog`, `seo-content`.
+- **Standard:** `standards/CONTENT_AUTOMATION_STANDARD.md`
+- **Workflow:** `.github/workflows/content-automation.yml`
+
 #### noimosai
 
 - **Path:** `skills/noimosai/`

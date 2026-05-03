@@ -6,6 +6,61 @@
 
 ---
 
+## Quick Links
+
+📊 **[Project Dashboard](./dashboard.html)** — **NEW!** Centralized visibility into all projects, BOM, inventory, test URLs, and status ([docs](docs/PROJECT_DASHBOARD.md))  
+📋 **[PORTFOLIO.md](docs/PORTFOLIO.md)** — Corporate identity, entity hierarchy, product brands, project tracking, and comprehensive tool/resource catalogs  
+📚 **[Master Inventory](docs/Master_Inventory/)** — All detailed standards and specifications  
+🛠️ **[Scripts](scripts/)** — Automation scripts for bootstrapping, compliance checking, and repo management
+
+---
+
+## 📊 Project Dashboard System (NEW!)
+
+**Centralized visibility into all MIDNGHTSAPPHIRE projects without "looking in folders"!**
+
+### Quick Start
+
+```bash
+# View dashboard summary
+npm run dashboard
+
+# List all projects
+npm run dashboard projects
+
+# Find all test URLs  
+npm run dashboard urls
+
+# Search everything
+npm run dashboard search oaudrey
+
+# Open HTML dashboard in browser
+npm run dashboard open
+```
+
+**Full Documentation:** [docs/PROJECT_DASHBOARD.md](./docs/PROJECT_DASHBOARD.md)
+
+**What It Tracks:**
+- ✅ **33 Projects** from PROJECTS_TO_SHIP and PROJECT_CATALOG
+- ✅ **124 Active Services** from Master Inventory  
+- ✅ **29 Test URLs** extracted from README files
+- ✅ **12 Domains** including oaudrey.com, soup2bowl.com, revvel.co
+- ✅ **BOM & Inventory** from all sources
+- ✅ **Project Status** and handoff documentation
+
+**Features:**
+- 🔍 Live search across all data
+- 📱 Beautiful glassmorphism UI
+- ⏱️ **Auto-updates** every 4 hours via GitHub Actions
+- 💻 CLI tool for terminal access
+- 🌐 GitHub Pages deployment
+
+---
+
+## 🎯 Revvel Rosette Automation (NEW!)
+
+---
+
 ## 🚀 Agent Fallback System (NEW!)
 
 **Automatic Devin → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
@@ -41,6 +96,39 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
     task_description: ${{ github.event.issue.body }}
     issue_number: ${{ github.event.issue.number }}
 ```
+
+---
+
+## 🎯 30-Day Autonomous Product Launch (NEW!)
+
+**Ship products to market in 30 days** — simplified, autonomous, metrics-driven, no Shopify required.
+
+### Quick Start
+```bash
+./scripts/autonomous-product-launcher.sh "your-product-name" \
+  --shape app \
+  --days 30 \
+  --payment lemonsqueezy
+```
+
+**Features:**
+- ✅ **Simplified MVP approach** — Focus on one core feature
+- ✅ **Metrics-driven** — Track what matters from day 1
+- ✅ **Resilient & changeable** — Self-healing, quick pivots
+- ✅ **No complex platforms** — LemonSqueezy/Gumroad/Stripe instead of Shopify
+- ✅ **Autonomous execution** — Minimal human intervention
+
+📖 **Documentation:**
+- [`docs/QUICKSTART_30DAY_LAUNCH.md`](docs/QUICKSTART_30DAY_LAUNCH.md) — Quick start guide
+- [`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md) — Complete 30-day framework
+- [`docs/30_DAY_INTEGRATION_GUIDE.md`](docs/30_DAY_INTEGRATION_GUIDE.md) — Integration with existing pipeline
+- [`projects/agent-generated/_examples/`](projects/agent-generated/_examples/) — Example projects
+
+**Timeline:**
+- **Week 1:** Research, validate, build waitlist (30-50 signups)
+- **Week 2:** Build MVP, integrate payment, setup analytics
+- **Week 3:** Beta launch, iterate, polish (10+ beta users)
+- **Week 4:** Launch, scale, measure (25+ customers, $500+ revenue)
 
 ---
 
@@ -181,6 +269,11 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 | **5** | Deployment | Production Launch | App Store/Web Deployment |
 | **6** | Compliance | Legal & Ethics | Privacy Policy, SOC2/HIPAA |
 | **7** | Maintenance | Continuous Improvement | Monitoring, Patches, Updates |
+
+---
+
+
+**For comprehensive lists of AI tools, development frameworks, testing tools, databases, and learning resources, see [PORTFOLIO.md](docs/PORTFOLIO.md).**
 
 ---
 
@@ -612,43 +705,26 @@ All Revvel projects enforce strict documentation standards:
 
 ---
 
-## 8–10 + Templates → Moved to `docs/PORTFOLIO.md`
-
-To keep this README lean, the following sections have moved to [`docs/PORTFOLIO.md`](docs/PORTFOLIO.md):
-
-- **8. Corporate Identity & Entity Hierarchy** — parent-entity structure, Schema.org JSON-LD requirements.
-- **9. Learning Resources & Documentation** — curated platforms, references, and community links.
-- **10. Cutting-Edge Technology Discovery & Evaluation** — tech radar, newsletters, and adoption strategy.
-- **Project Tracking — BOM & Per-Project Docs** — per-project doc directories, master BOM/inventory.
-- **Brand & Design — Revvel Emblem Standard** — emblem standard, brand identity templates.
-- **CI/CD Templates** — workflow catalog (`templates/cicd/`), DeployBot/Waydev integration notes.
-- **Testing Templates** — Vitest/Playwright templates from `templates/testing/`.
-- **Bootstrap a New Project** — one-command scaffold from `scripts/bootstrap-new-project.sh`.
-
-## GitHub Projects Setup
-
-Labels, milestones, and project board setup for every new Revvel repository.
-
-- **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](docs/GITHUB_PROJECTS_SETUP.md)
-- **PR Review Automation:** [`docs/PR_REVIEW_STATUS_AUTOMATION.md`](docs/PR_REVIEW_STATUS_AUTOMATION.md) — Automated PR review status labels and badges
-- **Quick Setup:** [`docs/GITHUB_AUTOMATION_QUICKSTART.md`](docs/GITHUB_AUTOMATION_QUICKSTART.md) — 5-minute automation setup script
-- **Badge Guide:** [`docs/PR_STATUS_BADGES_GUIDE.md`](docs/PR_STATUS_BADGES_GUIDE.md) — Add dynamic status badges to your README
-
-Standard labels include: `bug`, `enhancement`, `security`, `bom-purchase`, `design`, `blocked`, `auto-fix`, `copilot`, `documentation`
-
-Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 7: Maintenance).
 
 ---
 
-## [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
+## Corporate Identity & Portfolio
 
-**New UI:** [`ui/freedom-angel-repo-manager/`](ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](docs/Master_Inventory/ACCESSIBILITY_STANDARD.md).
+For complete information about:
+- **Corporate Identity & Entity Hierarchy** (Freedom Angel Corp, divisions, sub-brands, Schema.org implementation)
+- **Learning Resources & Documentation** (online learning platforms, tutorials, books)
+- **Cutting-Edge Technology Discovery** (technology radars, newsletters, evaluation frameworks)
+- **Project Tracking Systems** (BOM, per-project docs)
+- **Brand & Design Standards** (Revvel emblem)
+- **CI/CD & Testing Templates**
+- **Bootstrap & Setup Scripts**
+- **GitHub Projects Setup**
+- **Freedom Angel Corps Repo Manager UI**
 
-**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) and [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md).
-
-**Bootstrap verification:** open `ui/freedom-angel-repo-manager/index.html` locally, load repositories for `midnghtsapphire`, run **Audit all repositories**, and export the JSON report. Full 10-step verification checklist is in the UI's [`README.md`](ui/freedom-angel-repo-manager/README.md#4-bootstrap-verification-steps).
+**See: [PORTFOLIO.md](docs/PORTFOLIO.md)**
 
 ---
+
 **END OF DOCUMENT**
 
 ---

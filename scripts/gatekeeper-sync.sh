@@ -75,6 +75,15 @@ done
 DRY_RUN="${DRY_RUN:-0}"
 case "$DRY_RUN" in 1|true|TRUE|yes|YES) DRY_RUN=1 ;; *) DRY_RUN=0 ;; esac
 
+DOPPLER_TOKEN_CANDIDATES=()
+for _candidate_var in DOPPLER_AGENT_TOKEN DOPPLER_TOKEN DOPPLER_LOCAL_TOKEN \
+                      DOPPLER_API_KEY DOPPLER_AGENT_ODIC DOPPLER_CIRCLECI_OIDC; do
+  [[ -n "${!_candidate_var:-}" ]] && DOPPLER_TOKEN_CANDIDATES+=("${!_candidate_var}")
+done
+unset _candidate_var
+
+DOPPLER_TOKEN="${DOPPLER_TOKEN_CANDIDATES[0]:-}"
+
 if [[ "$JSON_OUT" -eq 1 || "$DRY_RUN" -ne 1 ]]; then
   command -v jq >/dev/null || { echo "error: jq not found" >&2; exit 3; }
 fi
@@ -83,7 +92,7 @@ if [[ "$DRY_RUN" -ne 1 ]]; then
   command -v jq   >/dev/null || { echo "error: jq not found" >&2; exit 3; }
   command -v gh   >/dev/null || { echo "error: gh CLI not found" >&2; exit 3; }
   command -v curl >/dev/null || { echo "error: curl not found" >&2; exit 3; }
-  [[ -n "${DOPPLER_TOKEN:-}" ]] || { echo "error: DOPPLER_TOKEN not set" >&2; exit 4; }
+  [[ ${#DOPPLER_TOKEN_CANDIDATES[@]} -gt 0 ]] || { echo "error: no Doppler token set (tried DOPPLER_AGENT_TOKEN, DOPPLER_TOKEN, DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, DOPPLER_AGENT_ODIC, DOPPLER_CIRCLECI_OIDC)" >&2; exit 4; }
 fi
 
 # Normalize the comma-separated list, deduplicate, drop empties.
@@ -106,25 +115,39 @@ synced=()
 missing_in_doppler=()
 failed=()
 
+# Exit codes: 0 = success (value on stdout), 1 = not found/other error, 2 = unauthorized
 fetch_doppler_value() {
-  # POST/GET to Doppler — returns the secret's raw value on stdout, or
-  # empty string if not found / not readable. Never echoes the value to
-  # the workflow log; the caller pipes it straight into `gh secret set`.
-  local name="$1"
+  local name="$1" token="$2"
   local resp http_code body
   resp="$(curl -sS -w '\n%{http_code}' \
     --get "$DOPPLER_API" \
     --data-urlencode "project=$PROJECT" \
     --data-urlencode "config=$CONFIG" \
     --data-urlencode "name=$name" \
-    -H "Authorization: Bearer $DOPPLER_TOKEN" \
+    -H "Authorization: Bearer $token" \
     -H "Accept: application/json" || true)"
   http_code="${resp##*$'\n'}"
   body="${resp%$'\n'*}"
+  if [[ "$http_code" == "401" || "$http_code" == "403" ]]; then
+    return 2
+  fi
   if [[ "$http_code" != "200" ]]; then
     return 1
   fi
   jq -r '.value.raw // empty' <<<"$body"
+}
+
+fetch_with_fallback() {
+  local name="$1"
+  local rc
+  for token in "${DOPPLER_TOKEN_CANDIDATES[@]}"; do
+    rc=0
+    fetch_doppler_value "$name" "$token" && return 0 || rc=$?
+    if [[ $rc -ne 2 ]]; then
+      return $rc
+    fi
+  done
+  return 2
 }
 
 for name in "${SECRETS[@]}"; do
@@ -134,7 +157,7 @@ for name in "${SECRETS[@]}"; do
     continue
   fi
 
-  value="$(fetch_doppler_value "$name" || true)"
+  value="$(fetch_with_fallback "$name" || true)"
   if [[ -z "$value" ]]; then
     echo "  ⚠️  $name — not present in Doppler $PROJECT/$CONFIG" >&2
     missing_in_doppler+=("$name")

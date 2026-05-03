@@ -1,8 +1,29 @@
-# Portfolio
+# REVVEL Portfolio & Corporate Identity
 
-This content was split out of the root README to keep it lean.
+**Part of:** [REVVEL MASTER STANDARDS](../README.md)  
+**Version:** 2.0.0  
+**Last Updated:** 2026-05-02
 
-## 8. Corporate Identity & Entity Hierarchy
+This document contains the corporate identity, entity hierarchy, product portfolio, project tracking systems, and comprehensive tool/resource catalogs for the REVVEL ecosystem.
+
+---
+
+## Table of Contents
+
+1. [Corporate Identity & Entity Hierarchy](#1-corporate-identity--entity-hierarchy)
+2. [Learning Resources & Documentation](#2-learning-resources--documentation)
+3. [Cutting-Edge Technology Discovery & Evaluation](#3-cutting-edge-technology-discovery--evaluation)
+4. [Project Tracking — BOM & Per-Project Docs](#4-project-tracking--bom--per-project-docs)
+5. [Brand & Design — Revvel Emblem Standard](#5-brand--design--revvel-emblem-standard)
+6. [CI/CD Templates](#6-cicd-templates)
+7. [Testing Templates](#7-testing-templates)
+8. [Bootstrap a New Project](#8-bootstrap-a-new-project)
+9. [GitHub Projects Setup](#9-github-projects-setup)
+10. [Freedom Angel Corps Repo Manager UI](#10-2026-04-15-freedom-angel-corps-repo-manager-ui--reusable-master-prompt)
+
+---
+
+## 1. Corporate Identity & Entity Hierarchy
 
 All Revvel applications inherit their corporate identity and SEO authority from the parent entity structure. This section documents the full corporate tree, the reasoning behind it, and how it must be implemented in every app.
 
@@ -133,7 +154,7 @@ Each individual app adds its own `Product` or `WebApplication` schema that refer
 
 ---
 
-## 9. Learning Resources & Documentation
+## 2. Learning Resources & Documentation
 
 Continuous learning is essential for maintaining cutting-edge expertise. These resources provide comprehensive training across all technology domains.
 
@@ -219,7 +240,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 
 ---
 
-## 10. Cutting-Edge Technology Discovery & Evaluation
+## 3. Cutting-Edge Technology Discovery & Evaluation
 
 Staying ahead requires systematic discovery and evaluation of emerging technologies. This section provides direct resources and methodologies for identifying and adopting cutting-edge tools.
 
@@ -423,7 +444,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 
 ---
 
-## Project Tracking — BOM & Per-Project Docs
+## 4. Project Tracking — BOM & Per-Project Docs
 
 Every active Revvel project has a dedicated docs directory with a Bill of Materials (BOM), brand identity document, and sprint log.
 
@@ -436,15 +457,15 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 | Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
 | penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
 
-**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md)
+**Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](_MASTER_BOM.md)
 
-**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md)
+**Master inventory (all services, APIs, subscriptions, and physical products):** [`docs/_MASTER_INVENTORY.md`](_MASTER_INVENTORY.md)
 
 Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 ---
 
-## Brand & Design — Revvel Emblem Standard
+## 5. Brand & Design — Revvel Emblem Standard
 
 Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
@@ -455,7 +476,7 @@ Every Revvel project derives its visual identity from the **Revvel Emblem Standa
 
 ---
 
-## CI/CD Templates
+## 6. CI/CD Templates
 
 All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.github/workflows/` of every app repo.
 
@@ -472,13 +493,13 @@ All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.
 
 **DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
-**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](../docs/WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
+**Waydev** ([github.com/marketplace/waydev](https://github.com/marketplace/waydev)) is the developer productivity analytics GitHub App for the `midnghtsapphire` organisation. It is installed once at the organisation level and passively tracks PR cycle time, commit frequency, code churn, and deployment frequency across all repos — no workflow changes required. See [`docs/WAYDEV_SETUP.md`](WAYDEV_SETUP.md) for full setup, pricing, and evaluation instructions.
 
 Full README: [`templates/cicd/README.md`](../templates/cicd/README.md)
 
 ---
 
-## Testing Templates
+## 7. Testing Templates
 
 Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every project.
 
@@ -492,7 +513,7 @@ Instructions: [`templates/testing/README.md`](../templates/testing/README.md)
 
 ---
 
-## Bootstrap a New Project
+## 8. Bootstrap a New Project
 
 One command to scaffold a complete new Revvel app from all standard templates:
 
@@ -506,10 +527,35 @@ bash ../revvel-standards/scripts/bootstrap-new-project.sh neurooz 164.90.148.7 n
 
 This creates:
 - `SYSTEM_STATE.md` + `CONTEXT_PRIMER.md` (session state standards)
-- `.github/workflows/` (all 7 CI/CD workflows)
+- `.github/workflows/` (7 CI/CD workflows: ci, auto-fix, security, deploy, syntax-check, deploy-android, deploy-ios)
 - `scripts/pwa-audit.sh` (PWA readiness checker)
 - `docs/MOBILE_DEPLOYMENT.md` (store deployment guide)
 - `fastlane/` scaffold (inactive until accounts ready)
 - `tests/` structure with all three test templates
+
+---
+
+## 9. GitHub Projects Setup
+
+Labels, milestones, and project board setup for every new Revvel repository.
+
+- **Full guide:** [`docs/GITHUB_PROJECTS_SETUP.md`](GITHUB_PROJECTS_SETUP.md)
+- **PR Review Automation:** [`docs/PR_REVIEW_STATUS_AUTOMATION.md`](PR_REVIEW_STATUS_AUTOMATION.md) — Automated PR review status labels and badges
+- **Quick Setup:** [`docs/GITHUB_AUTOMATION_QUICKSTART.md`](GITHUB_AUTOMATION_QUICKSTART.md) — 5-minute automation setup script
+- **Badge Guide:** [`docs/PR_STATUS_BADGES_GUIDE.md`](PR_STATUS_BADGES_GUIDE.md) — Add dynamic status badges to your README
+
+Standard labels include: `bug`, `enhancement`, `security`, `bom-purchase`, `design`, `blocked`, `auto-fix`, `copilot`, `documentation`
+
+Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 7: Maintenance).
+
+---
+
+## 10. [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
+
+**New UI:** [`ui/freedom-angel-repo-manager/`](../ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](Master_Inventory/ACCESSIBILITY_STANDARD.md).
+
+**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`AGENT_FACTORY_STANDARD.md`](Master_Inventory/AGENT_FACTORY_STANDARD.md) and [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md).
+
+**Bootstrap verification:** open `ui/freedom-angel-repo-manager/index.html` locally, load repositories for `midnghtsapphire`, run **Audit all repositories**, and export the JSON report. Full 10-step verification checklist is in the UI's [`README.md`](../ui/freedom-angel-repo-manager/README.md#4-bootstrap-verification-steps).
 
 ---

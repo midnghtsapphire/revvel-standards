@@ -1,4 +1,34 @@
-# n8n Workflow: USDA Loan Eligibility Checker
+# Automation Workflows
+
+This directory contains automation workflows for various Revvel products and processes.
+
+## 📁 Available Workflows
+
+### 1. 🎨 PDF Product Creation Pipeline ⭐ NEW
+
+**Platforms**: n8n, Make.com, Zapier, Gumloop
+
+**Purpose**: Automate the complete 6-step process for creating and marketing PDF products
+
+**Features**:
+- AI-powered title generation (Claude)
+- 15-20 page content creation
+- Canva design integration
+- Shopify product listing
+- YouTube influencer campaign prep
+
+**Quick Start**:
+```bash
+./setup-pdf-automation.sh [n8n|make|zapier|gumloop]
+```
+
+**Documentation**: [PDF_AUTOMATION_GUIDE.md](./PDF_AUTOMATION_GUIDE.md)
+
+---
+
+### 2. 🏡 USDA Loan Eligibility Checker
+
+**Platform**: n8n
 
 This n8n workflow automates the USDA loan eligibility checking process. It validates user input, checks rural area eligibility, compares income to state/county limits, and generates a comprehensive eligibility report.
 

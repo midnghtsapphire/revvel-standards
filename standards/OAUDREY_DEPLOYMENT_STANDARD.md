@@ -124,6 +124,7 @@ DRY_RUN=1 scripts/gatekeeper-sync.sh \
 ### 1. First Deploy (automated)
 
 The `deploy-oaudrey.yml` workflow handles the first deploy automatically when you push to `main`. It:
+
 1. Installs `doctl` and authenticates with `DIGITALOCEAN_API_TOKEN`
 2. Validates `oaudrey/.do/app.yaml`
 3. Creates a new App Platform app (first time) or updates it (subsequent pushes)
@@ -162,6 +163,72 @@ DigitalOcean App Platform offers **3 free static sites** per account. oAudrey qu
 
 ---
 
+## Alternative Deployment: GitHub Pages
+
+GitHub Pages offers a **free, zero-config alternative** to DigitalOcean for hosting the oAudrey static site. This is useful for:
+
+- **Testing/preview** before deploying to production
+- **Development** when you want to see the site without DigitalOcean access
+- **Backup/mirror** deployment
+- **Cost savings** (free for public repos within GitHub Pages usage limits)
+
+### Automated GitHub Pages Deployment
+
+The repository includes a GitHub Actions workflow (`.github/workflows/static.yml`) that automatically deploys the entire repository to GitHub Pages on every push to `main`.
+
+**Setup (one-time):**
+
+1. Go to your repository on GitHub
+2. Click **Settings** → **Pages** (left sidebar)
+3. Under **Build and deployment**:
+   - Source: **GitHub Actions** (not "Deploy from a branch")
+4. Save
+
+Once enabled, the site will be available at:
+
+```text
+https://midnghtsapphire.github.io/revvel-standards/oaudrey/
+```
+
+Subdomains (like `fieldwork.oaudrey.com`) become sub-paths:
+
+```text
+https://midnghtsapphire.github.io/revvel-standards/fieldwork/
+```
+
+### GitHub Pages vs DigitalOcean App Platform
+
+| Feature           | GitHub Pages                         | DigitalOcean App Platform                 |
+| ----------------- | ------------------------------------ | ----------------------------------------- |
+| **Cost**          | Free                                 | Free tier (3 sites), then $3/mo per site |
+| **Custom domain** | Supported (`oaudrey.com` via A/ALIAS/ANAME; subdomains via CNAME) | Supported                                 |
+| **HTTPS**         | Automatic (Let's Encrypt)            | Automatic                                 |
+| **Deployment**    | Auto (on push to `main`)             | Auto (on push to `main`)                  |
+| **Subdomains**    | Only via custom DNS                  | Native support (`*.oaudrey.com`)          |
+| **Build time**    | ~30 seconds                          | ~2-3 minutes                              |
+| **Bandwidth**     | 100 GB/month soft limit              | Unmetered                                 |
+| **Best for**      | Testing, mirrors, development        | Production with subdomains                |
+
+### Running Locally (No Deployment)
+
+For **immediate local preview** without any deployment:
+
+```bash
+cd oaudrey
+python3 -m http.server 8080
+# Open http://localhost:8080
+```
+
+**Complete local setup guide:** [`oaudrey/LOCAL_SETUP.md`](../oaudrey/LOCAL_SETUP.md)
+
+### When to Use Each Option
+
+- **DigitalOcean (primary)** — Use for `oaudrey.com` production with full subdomain support (`fieldwork.oaudrey.com`, `penny.oaudrey.com`, etc.)
+- **GitHub Pages (secondary)** — Use for testing, previews, and as a backup. Can serve the site on a custom domain if needed.
+- **Local server (development)** — Use when developing/testing changes before committing.
+
+---
+
 ## DNS Configuration (Namecheap → DigitalOcean)
 
 ### Step 1: Point Namecheap to DigitalOcean nameservers
@@ -170,11 +237,13 @@ DigitalOcean App Platform offers **3 free static sites** per account. oAudrey qu
 2. Go to **Domain List** → click **Manage** next to `oaudrey.com`
 3. Under **Nameservers**, select **Custom DNS**
 4. Enter DigitalOcean nameservers:
+
    ```
    ns1.digitalocean.com
    ns2.digitalocean.com
    ns3.digitalocean.com
    ```
+
 5. Save. DNS propagation takes 0–48 hours.
 
 ### Step 2: Add domain in DigitalOcean
@@ -183,6 +252,7 @@ DigitalOcean App Platform offers **3 free static sites** per account. oAudrey qu
 2. Go to **Networking → Domains**
 3. Add `oaudrey.com` → point to your App Platform app
 4. Add subdomains:
+
    ```
    oaudrey.com         → ALIAS to your App Platform URL
    www.oaudrey.com     → CNAME to oaudrey.com
@@ -250,11 +320,13 @@ DNS_PROVIDER=godaddy ... node scripts/sync-dns-records.js
 ```
 
 Triggers:
+
 - After every successful `deploy-oaudrey.yml` run (via `workflow_run`)
 - Manual via `workflow_dispatch` (with optional `provider` and `dry_run`)
 - Weekly Mondays 06:30 UTC as a drift-correction sweep
 
 > **FOSS tools for DNS automation:**
+>
 > - [octodns](https://github.com/octodns/octodns) — declarative DNS management (YAML config → push to any provider)
 > - [external-dns](https://github.com/kubernetes-sigs/external-dns) — Kubernetes-native DNS sync
 > - [lexicon](https://github.com/AnalogJ/lexicon) — CLI tool for DNS manipulation across providers
@@ -322,6 +394,7 @@ To add a new product (e.g., `neurooz.oaudrey.com`):
 ### 1. Add the tab button in `oaudrey/index.html`
 
 Find the `role="tablist"` section and add:
+
 ```html
 <button role="tab" id="tab-neurooz" aria-controls="panel-neurooz" aria-selected="false"
         class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice">
@@ -332,6 +405,7 @@ Find the `role="tablist"` section and add:
 ### 2. Add the panel in `oaudrey/index.html`
 
 After the last panel, add:
+
 ```html
 <div role="tabpanel" id="panel-neurooz" aria-labelledby="tab-neurooz" hidden
      class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -399,9 +473,11 @@ Add the new product to the subdomain table in `oaudrey/README.md`.
 ### Deploy fails: "App not found"
 
 The `doctl apps list` grep may fail to match the app name. Check:
+
 ```bash
 doctl apps list --format ID,Spec.Name --no-header
 ```
+
 Ensure the app name in `oaudrey/.do/app.yaml` matches exactly `oaudrey-hub`.
 
 ### DNS not propagating
@@ -455,33 +531,40 @@ timed out. It does **not** mean the site is returning an error page (that
 would be `4xx`/`5xx`). Triage in this order:
 
 1. **DNS resolution** — from any shell:
+
    ```bash
    dig +short oaudrey.com
    dig +short fieldwork.oaudrey.com
    ```
+
    Empty output → DNS not provisioned. Confirm Namecheap nameservers point
    to DigitalOcean (`ns1.digitalocean.com`, `ns2.digitalocean.com`, and
    `ns3.digitalocean.com`) and that the records exist in DO → Networking →
    Domains. See [DNS Configuration](#dns-configuration-namecheap--digitalocean).
 
 2. **App Platform deploy state** — confirm the app exists and is healthy:
+
    ```bash
    doctl apps list --format ID,Spec.Name,DefaultIngress,ActiveDeployment.Phase
    ```
+
    If `ActiveDeployment.Phase` is not `ACTIVE`, re-run `deploy-oaudrey.yml`
    and inspect its logs.
 
 3. **Required secrets** — if no deploy has ever succeeded, the apex won't
    resolve. Verify `DIGITALOCEAN_API_TOKEN` is set:
+
    ```bash
    gh secret list --repo midnghtsapphire/revvel-standards | grep DIGITALOCEAN_API_TOKEN
    ```
 
 4. **Re-run the retro after fixing** — once DNS resolves and the deploy is
    `ACTIVE`, manually trigger the retro to confirm:
+
    ```bash
    gh workflow run oaudrey-retro.yml --repo midnghtsapphire/revvel-standards
    ```
+
    A successful retro will close the loop with `200`/`301`/`302` and no
    `⚠️ Needs Work` items.
 
@@ -523,6 +606,7 @@ GitHub fine-grained personal access tokens (PATs) expire. The default expiry is 
 Additionally, Doppler service tokens are non-expiring by default, but if `DOPPLER_TOKEN` itself was provisioned with a short-lived token type, it too expires — breaking the entire self-healing chain.
 
 **Actions taken (code — this PR):**
+
 - `.github/workflows/secrets-sentinel.yml` — **new** daily sentinel (05:00 UTC, one hour before retro). Audits `DIGITALOCEAN_API_TOKEN`, `DOPPLER_TOKEN`, `ADMIN_GITHUB_TOKEN`, `NAMECHEAP_API_KEY`, and `OPENROUTER_API_KEY`. If any are missing and `DOPPLER_TOKEN` is available, invokes `scripts/gatekeeper-sync.sh` to restore them from Doppler automatically. Opens or updates a `secrets-missing` tracking issue when auto-heal is not possible.
 - `.github/workflows/secrets-health-check.yml` — added `DIGITALOCEAN_API_TOKEN` and `DOPPLER_TOKEN` to the weekly audit (both were absent from the checked set).
 
@@ -538,6 +622,7 @@ Only two secrets need to be set manually; everything else can auto-heal from the
 Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.yml`) will auto-restore any other missing secret by pulling it from Doppler.
 
 **Remaining actions (infrastructure — requires live secrets):**
+
 1. Set `DOPPLER_TOKEN` (service token, non-expiring) and `ADMIN_GITHUB_TOKEN` (`secrets:write`) manually
 2. Trigger `secrets-sentinel.yml` manually to restore `DIGITALOCEAN_API_TOKEN` and other missing secrets
 3. Run `deploy-oaudrey.yml` via `workflow_dispatch` to deploy to DigitalOcean App Platform
@@ -557,10 +642,12 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 | `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added | ⚠️ Infrastructure pending |
 
 **Actions taken (code):**
+
 - `oaudrey-retro.yml` health-check steps: replaced `|| echo "000"` with `|| true` to prevent double-printing of `000` (bug produced `HTTP 000000` in retro reports)
 - `fieldwork/404.html`: added branded error page to match `error_document: 404.html` in `oaudrey/.do/app.yaml`
 
 **Remaining actions (infrastructure — requires live secrets):**
+
 1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets
 2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
 3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app

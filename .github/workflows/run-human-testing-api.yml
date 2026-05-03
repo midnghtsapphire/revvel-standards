@@ -5,11 +5,14 @@
 # The report is committed to the repository and optionally surfaced as a
 # GitHub Issue for team review.
 #
-# SETUP:
-#   1. Add GitHub Secret: OPENROUTER_API_KEY
-#      (Settings → Secrets and variables → Actions → New repository secret)
-#   2. Optionally add GitHub App secrets for cross-repo push access:
-#      APP_ID, APP_PRIVATE_KEY (see GITHUB_APP_INTEGRATION_STANDARD.md)
+# REQUIRED SECRETS:
+#   - OPENROUTER_API_KEY: OpenRouter API key for AI model calls (required)
+#
+# OPTIONAL SECRETS:
+#   - APP_ID, APP_PRIVATE_KEY: GitHub App credentials for enhanced permissions
+#
+# The workflow will fail immediately if OPENROUTER_API_KEY is not configured.
+# Add it via Settings → Secrets and variables → Actions → New repository secret
 #
 # See: TESTING_STANDARD.md §11
 
@@ -77,6 +80,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Verify OPENROUTER_API_KEY
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::error::OPENROUTER_API_KEY is not set. Cannot proceed with human testing API."
+            exit 1
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
 
       - name: Run Human Testing API
         env:

@@ -19,8 +19,8 @@ name: Stuck Label Detection & Auto-Progression
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: "0 */6 * * *"
+    # Run every 2 hours instead of 6 to catch stuck items faster
+    - cron: "0 */2 * * *"
   
   workflow_dispatch:
     inputs:
@@ -58,48 +58,63 @@ jobs:
             const MS_PER_DAY = MS_PER_HOUR * 24;
             
             // Define stuck patterns: [label, max_age_hours, next_action]
+            // REDUCED TIMEOUTS - See docs/WORKFLOW_STATE_MACHINE.md for rationale
             const STUCK_PATTERNS = [
               {
                 label: 'triage:in-progress',
-                max_age_ms: 24 * MS_PER_HOUR,
+                max_age_ms: 4 * MS_PER_HOUR,
                 next_action: 'auto-classify',
                 next_label: 'triage:classified',
                 description: 'Triage taking too long'
               },
               {
                 label: 'wr:in-progress',
-                max_age_ms: 7 * MS_PER_DAY,
+                max_age_ms: 3 * MS_PER_DAY,
                 next_action: 'escalate-research',
                 next_label: 'needs-human',
                 description: 'Weekly research stalled'
               },
               {
                 label: 'credentials-missing',
-                max_age_ms: 48 * MS_PER_HOUR,
+                max_age_ms: 12 * MS_PER_HOUR,
                 next_action: 'recheck-credentials',
                 next_label: null,  // Will re-check
                 description: 'Credentials not provisioned'
               },
               {
                 label: 'openrouter:instantiating',
-                max_age_ms: 2 * MS_PER_HOUR,
+                max_age_ms: 1 * MS_PER_HOUR,
                 next_action: 'retry-instantiation',
                 next_label: 'openrouter:instantiation-failed',
                 description: 'OpenRouter instantiation stuck'
               },
               {
                 label: 'awaiting-approval',
-                max_age_ms: 72 * MS_PER_HOUR,
+                max_age_ms: 24 * MS_PER_HOUR,
                 next_action: 'ping-reviewers',
                 next_label: null,
                 description: 'PR awaiting review too long'
               },
               {
                 label: 'blocked',
-                max_age_ms: 5 * MS_PER_DAY,
+                max_age_ms: 1 * MS_PER_DAY,
                 next_action: 'recheck-blocker',
                 next_label: null,
                 description: 'Blocked for extended period'
+              },
+              {
+                label: 'review-fix:in-progress',
+                max_age_ms: 6 * MS_PER_HOUR,
+                next_action: 'retry-review-fix',
+                next_label: 'review-fix:failed',
+                description: 'Review fix automation stuck'
+              },
+              {
+                label: 'triage:new',
+                max_age_ms: 2 * MS_PER_HOUR,
+                next_action: 'trigger-triage',
+                next_label: 'triage:in-progress',
+                description: 'New item not triaged'
               },
             ];
             
@@ -305,11 +320,50 @@ jobs:
                   break;
                 
                 case 'recheck-blocker':
-                  comment_body += `This issue has been blocked for over 5 days.\n\n`;
+                  comment_body += `This issue has been blocked for over 1 day.\n\n`;
                   comment_body += `**Action needed:** Please update the status:\n`;
                   comment_body += `- If blocker is resolved, remove \`blocked\` label\n`;
                   comment_body += `- If still blocked, add a comment explaining current status\n`;
                   comment_body += `- If blocker won't be resolved soon, consider closing or re-scoping\n`;
+                  break;
+                
+                case 'retry-review-fix':
+                  comment_body += `Review fix automation has been running for over 6 hours.\n\n`;
+                  comment_body += `**Auto-action:** Marking as failed. Please review manually.\n`;
+                  
+                  if (!dry_run && item.next_label) {
+                    await github.rest.issues.removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      name: item.label,
+                    }).catch(() => {});
+                    
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [item.next_label, 'needs-human'],
+                    });
+                  }
+                  break;
+                
+                case 'trigger-triage':
+                  comment_body += `This item has been in \`triage:new\` for over 2 hours without progression.\n\n`;
+                  comment_body += `**Auto-action:** Triggering triage workflow sweep.\n`;
+                  comment_body += `Note: The item will remain in \`triage:new\` until the sweep processes it.\n`;
+                  
+                  if (!dry_run) {
+                    // Trigger openrouter-triage workflow sweep (workflow_dispatch has no
+                    // per-item context). The item stays in triage:new and will be picked
+                    // up by the sweep job's backlog discovery.
+                    await github.rest.actions.createWorkflowDispatch({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      workflow_id: 'openrouter-triage.yml',
+                      ref: 'main',
+                    }).catch(e => core.warning(`Could not trigger openrouter-triage: ${e.message}`));
+                  }
                   break;
               }
               
