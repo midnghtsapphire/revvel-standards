@@ -937,6 +937,8 @@ Value = (3 × $75 × 52) × 0.1 = $1,170/year → Price at $49–$99
 
 ## 12. Implementation Checklist
 
+> **📝 NOTE:** This checklist describes *separate implementation phases* for adopting this methodology. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
+
 When implementing this methodology for a new project:
 
 ### Phase 1: Foundation (Day 1)

@@ -22,10 +22,10 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (devin, cursor, openrouter, auto)"
+        description: "Preferred agent (openrouter, cursor, devin, auto)"
         required: false
         type: string
-        default: "auto"
+        default: "openrouter"
     outputs:
       agent_used:
         description: "Which agent completed the task"
@@ -45,10 +45,10 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (devin, cursor, openrouter, auto)"
+        description: "Preferred agent (openrouter, cursor, devin, auto)"
         required: false
         type: string
-        default: "auto"
+        default: "openrouter"
 
 concurrency:
   # yamllint disable-line rule:line-length
@@ -127,11 +127,16 @@ jobs:
           fi
 
           # Determine recommended agent based on availability and preference
-          RECOMMENDED="openrouter"  # Safe default
-          if [ "$DEVIN_AVAILABLE" = "true" ]; then
-            RECOMMENDED="devin"
+          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents (Devin)
+          # Devin is opt-in only via explicit prefer_agent parameter
+          RECOMMENDED="openrouter"  # Default to free/affordable option
+          if [ "$OPENROUTER_AVAILABLE" = "true" ]; then
+            RECOMMENDED="openrouter"
           elif [ "$CURSOR_AVAILABLE" = "true" ]; then
             RECOMMENDED="cursor"
+          elif [ "$DEVIN_AVAILABLE" = "true" ]; then
+            # Devin is last resort due to cost
+            RECOMMENDED="devin"
           fi
 
           echo "devin_available=${DEVIN_AVAILABLE}" >> $GITHUB_OUTPUT
@@ -220,48 +225,12 @@ jobs:
             core.setOutput('issue_title', issueTitle);
             core.setOutput('issue_body', issueBody);
 
-      - name: Try Devin AI
+      - name: Try OpenRouter (Primary)
         if: >-
-          needs.health-check.outputs.devin_available == 'true' &&
+          needs.health-check.outputs.openrouter_available == 'true' &&
           (inputs.prefer_agent == 'auto' ||
-          inputs.prefer_agent == 'devin' ||
+          inputs.prefer_agent == 'openrouter' ||
           inputs.prefer_agent == '')
-        id: devin
-        continue-on-error: true
-        env:
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-        run: |
-          echo "🤖 Attempting to use Devin AI..."
-          bash scripts/call-devin-api.sh
-
-      - name: Fallback to Cursor
-        if: >-
-          (steps.devin.outcome == 'failure' ||
-          steps.devin.outcome == 'skipped') &&
-          needs.health-check.outputs.cursor_available == 'true' &&
-          (inputs.prefer_agent == 'auto' ||
-          inputs.prefer_agent == 'cursor' ||
-          inputs.prefer_agent == '')
-        id: cursor
-        continue-on-error: true
-        env:
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-        run: |
-          echo "🔧 Attempting to use Cursor..."
-          bash scripts/call-cursor-api.sh
-
-      - name: Fallback to OpenRouter
-        if: >-
-          steps.devin.outcome != 'success' &&
-          (steps.cursor.outcome == 'failure' ||
-          steps.cursor.outcome == 'skipped') &&
-          needs.health-check.outputs.openrouter_available == 'true'
         id: openrouter
         continue-on-error: true
         env:
@@ -273,7 +242,7 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
           MODEL: anthropic/claude-sonnet-4
         run: |
-          echo "🌐 Using OpenRouter as fallback..."
+          echo "🌐 Attempting to use OpenRouter (preferred free/affordable agent)..."
 
           # OpenRouter is already implemented in the repository
           # Use the existing openrouter-coder workflow logic
@@ -303,22 +272,59 @@ jobs:
             fi
           fi
 
+      - name: Fallback to Cursor
+        if: >-
+          (steps.openrouter.outcome == 'failure' ||
+          steps.openrouter.outcome == 'skipped') &&
+          needs.health-check.outputs.cursor_available == 'true' &&
+          (inputs.prefer_agent == 'auto' ||
+          inputs.prefer_agent == 'cursor' ||
+          inputs.prefer_agent == '')
+        id: cursor
+        continue-on-error: true
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          echo "🔧 Attempting to use Cursor..."
+          bash scripts/call-cursor-api.sh
+
+      - name: Try Devin AI (Opt-in Only - Paid Service)
+        if: >-
+          steps.openrouter.outcome != 'success' &&
+          (steps.cursor.outcome == 'failure' ||
+          steps.cursor.outcome == 'skipped') &&
+          needs.health-check.outputs.devin_available == 'true' &&
+          inputs.prefer_agent == 'devin'
+        id: devin
+        continue-on-error: true
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          echo "🤖 Using Devin AI (paid service - opt-in only)..."
+          bash scripts/call-devin-api.sh
+
       - name: Determine result
         if: always()
         id: result
         run: |
-          if [ "${{ steps.devin.outcome }}" = "success" ]; then
-            echo "agent=devin" >> $GITHUB_OUTPUT
+          if [ "${{ steps.openrouter.outcome }}" = "success" ]; then
+            echo "agent=openrouter" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by Devin AI"
+            echo "✅ Task completed by OpenRouter"
           elif [ "${{ steps.cursor.outcome }}" = "success" ]; then
             echo "agent=cursor" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
             echo "✅ Task completed by Cursor"
-          elif [ "${{ steps.openrouter.outcome }}" = "success" ]; then
-            echo "agent=openrouter" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.devin.outcome }}" = "success" ]; then
+            echo "agent=devin" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by OpenRouter"
+            echo "✅ Task completed by Devin AI (paid service)"
           else
             echo "agent=none" >> $GITHUB_OUTPUT
             echo "success=false" >> $GITHUB_OUTPUT
@@ -345,7 +351,7 @@ jobs:
             issue #${{ steps.issue.outputs.issue_number }}.
 
             **Agent used:** ${{ steps.result.outputs.agent }}
-            **Fallback chain:** Devin → Cursor → OpenRouter
+            **Fallback chain:** OpenRouter → Cursor → Devin (opt-in)
 
             ### Issue
             ${{ steps.issue.outputs.issue_body }}
@@ -386,7 +392,7 @@ jobs:
             });
 
       - name: Create fallback event issue
-        if: steps.result.outputs.agent != 'devin' && steps.result.outputs.agent != 'none'
+        if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
         uses: actions/github-script@v8
         env:
           AGENT: ${{ steps.result.outputs.agent }}
@@ -401,9 +407,9 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `[AUTO-FALLBACK] Devin → ${agent.charAt(0).toUpperCase() + agent.slice(1)} (#${originalIssue})`,
-              labels: ['auto-fallback', 'agent-monitoring', 'devin-limit'],
-              body: `Devin AI was unavailable or reached rate limit. Automatically failed over to ${agent}.
+              title: `[AUTO-FALLBACK] OpenRouter → ${agent.charAt(0).toUpperCase() + agent.slice(1)} (#${originalIssue})`,
+              labels: ['auto-fallback', 'agent-monitoring', 'openrouter-fallback'],
+              body: `OpenRouter was unavailable or failed. Automatically failed over to ${agent}.
 
               **Original task:** #${originalIssue}
               **Timestamp:** ${new Date().toISOString()}

@@ -798,6 +798,8 @@ Track these KPIs in your analytics dashboard:
 
 ## Implementation Roadmap
 
+> **📝 NOTE:** This roadmap describes multiple *future implementation phases* that would be executed as separate tasks/PRs. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when an agent is assigned one of these phases as a task, it must deliver that phase completely—not propose sub-phases within it.
+
 ### Phase 1: Foundation (Week 1-2)
 - [ ] Set up database (Supabase or Airtable)
 - [ ] Configure OpenRouter API access
