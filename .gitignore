@@ -2,8 +2,10 @@ node_modules/
 .gitbutler/*
 !.gitbutler/config.json
 
-# Logs
-logs/
+# Logs (but keep audit logs)
+logs/*
+!logs/agent-audit/
+logs/agent-audit/*.log
 *.log
 
 # Python artifacts (applies repo-wide; sub-projects have their own ignores too)
