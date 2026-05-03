@@ -73,6 +73,7 @@ jobs:
               { name: 'ralph-loop',        color: 'ff6b35', description: 'Managed by the Ralph Loop self-healing workflow' },
               { name: 'openrouter',        color: '6f42c1', description: 'Routed to the OpenRouter orchestrator (first line of sight)' },
               { name: 'needs-human',       color: 'd93f0b', description: 'Escalated — requires human intervention' },
+              { name: 'needs-action',      color: 'fbca04', description: 'Requires immediate action — auto-route to OpenRouter' },
               { name: 'vault-agent',       color: 'e4e669', description: 'Vault Agent credential provisioning required' },
               { name: 'codex',             color: '5319e7', description: 'Routed to Codex (via OpenRouter) for code execution' },
               { name: 'proof-of-life',     color: '2ea44f', description: 'Proof-of-life run — app-review revvel-standards-run' },
