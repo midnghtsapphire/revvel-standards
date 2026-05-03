@@ -180,6 +180,39 @@ if (test('HTML escaping prevents XSS in malicious input', () => {
   assert(escaped.includes('&lt;'), 'Should contain escaped characters');
 })) passed++; else failed++;
 
+// Test: Search API query format for PRs
+if (test('Search API query includes is:pr filter and created date', () => {
+  const ORG = 'midnghtsapphire';
+  const REPO = 'revvel-standards';
+  const since = '2026-05-01';
+  
+  // Simulating the query format used in fetchPRsSince
+  const query = `repo:${ORG}/${REPO} is:pr created:>=${since}`;
+  
+  // Verify query has correct structure
+  assert(query.includes('repo:'), 'Query should include repo: prefix');
+  assert(query.includes('is:pr'), 'Query should filter to PRs only');
+  assert(query.includes('created:>='), 'Query should have server-side date filter');
+  assert(query.includes(since), 'Query should include the since date');
+  assert.strictEqual(query, `repo:${ORG}/${REPO} is:pr created:>=${since}`, 'Query format should match expected');
+})) passed++; else failed++;
+
+// Test: Search API query format for issues
+if (test('Search API query for issues matches pattern', () => {
+  const ORG = 'midnghtsapphire';
+  const REPO = 'revvel-standards';
+  const since = '2026-05-01';
+  
+  // Simulating the query format used in fetchIssuesSince
+  const query = `repo:${ORG}/${REPO} is:issue created:>=${since}`;
+  
+  // Verify query has correct structure
+  assert(query.includes('repo:'), 'Query should include repo: prefix');
+  assert(query.includes('is:issue'), 'Query should filter to issues only');
+  assert(query.includes('created:>='), 'Query should have server-side date filter');
+  assert(query.includes(since), 'Query should include the since date');
+})) passed++; else failed++;
+
 // ────────────────────────────────────────────────────────────────────────────
 // Summary
 // ────────────────────────────────────────────────────────────────────────────

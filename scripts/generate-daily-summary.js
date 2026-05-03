@@ -135,26 +135,23 @@ async function fetchIssuesSince(since) {
 }
 
 /**
- * Fetch pull requests created since a given date with pagination
+ * Fetch pull requests created since a given date using Search API for accurate created_at filtering
  */
 async function fetchPRsSince(since) {
   try {
-    // Use paginate to get all PRs
-    const allPRs = await octokit.paginate(octokit.rest.pulls.list, {
-      owner: ORG,
-      repo: REPO,
-      state: 'all',
+    // Use Search API to filter by created date accurately
+    const query = `repo:${ORG}/${REPO} is:pr created:>=${since}`;
+    
+    // Use paginate to get all results
+    const results = await octokit.paginate(octokit.rest.search.issuesAndPullRequests, {
+      q: query,
       sort: 'created',
-      direction: 'desc',
+      order: 'desc',
       per_page: 100
     });
     
-    // Filter PRs created since the given date
-    const sinceDate = new Date(`${since}T00:00:00Z`);
-    return allPRs.filter(pr => {
-      const createdAt = new Date(pr.created_at);
-      return createdAt >= sinceDate;
-    });
+    // Search API returns both issues and PRs, filter to only PRs
+    return results.filter(item => item.pull_request);
   } catch (error) {
     console.error('❌ Error fetching PRs:', error.message);
     return [];
