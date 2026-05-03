@@ -381,10 +381,11 @@ function runQualityGates(finalContent) {
   // SEO checks
   const titleMatch = finalContent.match(/^# (.+)$/m);
   const title = titleMatch ? titleMatch[1] : '';
-  if (title.length < 50 || title.length > 60) {
+  if (CONFIG.format === 'blog' && (title.length < 50 || title.length > 60)) {
     results.seo.passed = false;
     results.seo.details.push(`Title length ${title.length} (target: 50-60)`);
   }
+
 
   const headings = (finalContent.match(/^## /gm) || []).length;
   if (headings < 3) {
