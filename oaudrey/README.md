@@ -157,6 +157,7 @@ Full guide: `standards/OAUDREY_DEPLOYMENT_STANDARD.md`
 Want to see the oAudrey hub on your local machine instead of DigitalOcean? It's easy!
 
 **Quick Start:**
+
 ```bash
 cd oaudrey
 python3 -m http.server 8080
