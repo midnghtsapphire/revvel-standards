@@ -81,12 +81,37 @@
       }
     },
     {
+      "id": 10,
+      "module": "util:SetVariable",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "name": "claude_clean_json",
+        "value": "{{trim(replace(replace(3.content.0.text; \"```json\"; \"\"); \"```\"; \"\"))}}",
+        "scope": "roundtrip"
+      },
+      "metadata": {
+        "designer": {
+          "x": 750,
+          "y": 0,
+          "name": "Step 2b: Strip Markdown Fences"
+        },
+        "restore": {
+          "expect": {
+            "scope": {
+              "label": "One cycle"
+            }
+          }
+        }
+      }
+    },
+    {
       "id": 4,
       "module": "json:ParseJSON",
       "version": 1,
       "parameters": {},
       "mapper": {
-        "json": "{{3.content.0.text}}"
+        "json": "{{10.value}}"
       },
       "metadata": {
         "designer": {
@@ -143,7 +168,7 @@
         "qs": [],
         "bodyType": "raw",
         "rawType": "json",
-        "body": "{\n  \"design_type\": \"presentation\",\n  \"title\": \"{{4.title}}\"\n}"
+        "body": "{\n  \"design_type\": {\n    \"type\": \"preset\",\n    \"name\": \"presentation\"\n  },\n  \"title\": \"{{4.title}}\"\n}"
       },
       "metadata": {
         "designer": {
@@ -162,7 +187,7 @@
       },
       "mapper": {
         "title": "{{4.title}}",
-        "body_html": "<p>{{4.subtitle}}</p><div>{{5.content.0.text}}</div>",
+        "body_html": "<p>{{4.subtitle}}</p>",
         "vendor": "Freedom Angel Corp",
         "product_type": "Digital Download",
         "tags": "pdf,guide,{{1.niche}}",

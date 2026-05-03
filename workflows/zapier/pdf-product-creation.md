@@ -94,11 +94,9 @@ This Zap automates the 6-step process for creating and marketing PDF products:
           'target_audience': parsed.get('target_audience')
       }
   except json.JSONDecodeError as e:
-      # Provide clear error with context
-      output = {
-          'error': f'JSON parse error: {str(e)}',
-          'raw_response': response[:200]  # First 200 chars for debugging
-      }
+      # Raise so Zapier marks the step as failed with a clear, actionable error.
+      # We do not assign `output` here because Zapier ignores it once an
+      # exception is raised — failed steps return only the exception message.
       raise Exception(f'Failed to parse Claude response as JSON. Error: {str(e)}. Response preview: {response[:200]}')
   ```
 
@@ -145,7 +143,10 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   - **Body**:
     ```json
     {
-      "design_type": "presentation",
+      "design_type": {
+        "type": "preset",
+        "name": "presentation"
+      },
       "title": "{{Step 3: title}}"
     }
     ```

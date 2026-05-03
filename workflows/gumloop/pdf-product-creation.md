@@ -173,13 +173,17 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
   ```json
   {
     "design_type": {
-      "type": "presentation"
+      "type": "preset",
+      "name": "presentation"
     },
-    "title": "{{title}}",
-    "width": 2100,
-    "height": 2970
+    "title": "{{title}}"
   }
   ```
+
+  > **Note:** Canva accepts either `{"type": "preset", "name": "<preset>"}`
+  > (e.g., `presentation`, `doc`, `instagram-post`) **or**
+  > `{"type": "custom", "width": <px>, "height": <px>}`. Mixing a preset
+  > with root-level `width`/`height` violates the schema and returns 400.
 - **Success Condition**: Status code 200-299
 - **Output Variable**: `canva_design`
 
