@@ -175,6 +175,24 @@ Available models on OpenRouter:
 - `openai/gpt-4-turbo` — Alternative high-quality option
 - `openai/gpt-3.5-turbo` — Faster, less detailed
 
+#### Adjust PR Size Limits
+
+Edit `.github/workflows/pr-auto-review.yml` to change the size limits in the "Check if PR needs review" step:
+
+```yaml
+# Modify these constants:
+const MAX_CHANGES = 5000;  # Lines changed limit (default: 5000)
+const MAX_FILES = 100;     # Files changed limit (default: 100)
+```
+
+Or set environment variables in the "Run OpenRouter auto-review" step:
+
+```yaml
+env:
+  MAX_DIFF_SIZE: 50000      # Diff truncation size (default: 30000)
+  MAX_FILES_TO_FETCH: 200   # Max files to fetch (default: 100)
+```
+
 #### Adjust Review Criteria
 
 Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function to customize what the reviewer looks for.
@@ -234,15 +252,29 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 3. Provide more context in PR descriptions
 4. Break large PRs into smaller, focused changes
 5. Add code comments to explain complex logic
+6. Check if PR exceeded size limits (see workflow logs)
 
-### Too Many Reviews
+### Too Many Reviews or Rate Limits
 
-**Issue:** Bot reviews every small change
+**Issue:** Bot reviews every small change or hits rate limits
 
 **Solutions:**
 1. Add `no-triage` label to skip automation on specific PRs
 2. Adjust trigger conditions in workflow file
 3. Use draft PRs for work-in-progress (bot only reviews ready PRs)
+4. Increase `OPENROUTER_RATE_LIMIT_DELAY` in script (default: 2000ms)
+5. Check OpenRouter account credits and limits
+6. Consider reducing frequency with additional workflow conditions
+
+### PR Size Limit Exceeded
+
+**Issue:** PR is skipped because it's too large
+
+**Solutions:**
+1. Split the PR into smaller, focused changes
+2. Increase size limits in workflow configuration (see "Adjust Size Limits" above)
+3. Use `no-triage` label and request manual human review
+4. Check if changes are mostly generated code or dependencies
 
 ---
 
@@ -342,12 +374,18 @@ The script sends a structured prompt and expects JSON response:
 
 ## Limitations
 
-1. **Diff size** — Diffs larger than 15KB are truncated
-2. **Comment count** — Limited to 10 inline comments max to avoid spam
-3. **File count** — GitHub API paginates at 100 files per page (only fetches first page)
-4. **No iterative review** — Only reviews once per commit; doesn't re-review after changes
-5. **Context window** — Limited by OpenRouter model's context size (~200K tokens for Claude Sonnet)
-6. **No code execution** — Bot cannot run tests or execute code to verify changes
+1. **PR Size Limits** 
+   - Maximum 5,000 lines changed (configurable)
+   - Maximum 100 files changed (configurable)
+   - PRs exceeding limits are skipped with notification
+2. **Diff size** — Diffs larger than 30KB are truncated (increased from 15KB)
+3. **Comment count** — Limited to 10 inline comments max to avoid spam
+4. **File pagination** — Fetches all files up to limit; warns if limit reached
+5. **No iterative review** — Only reviews once per commit; doesn't re-review after changes
+6. **Context window** — Limited by OpenRouter model's context size (~200K tokens for Claude Sonnet)
+7. **No code execution** — Bot cannot run tests or execute code to verify changes
+8. **Fork PRs** — Does not review PRs from forks for security reasons
+9. **Rate limiting** — Basic 2-second delay; may still hit limits with many concurrent PRs
 
 ---
 
@@ -367,11 +405,19 @@ Potential improvements (not yet implemented):
 
 ## Security Considerations
 
-1. **Secret handling** — OPENROUTER_API_KEY is only used server-side, never exposed in PR
-2. **PR validation** — Only reviews PRs from same repo (not from forks)
-3. **Token permissions** — Requires `pull-requests: write` to submit reviews
-4. **Rate limiting** — Concurrency group prevents multiple simultaneous reviews per PR
-5. **Truncation** — Diffs are truncated to prevent sending excessive data to OpenRouter
+1. **Fork Protection** — Only reviews PRs from the same repository, not from untrusted forks
+2. **PR Size Limits** — Enforces limits to control API costs:
+   - Maximum 5,000 lines changed
+   - Maximum 100 files changed
+   - PRs exceeding limits receive a notification comment
+3. **Secret handling** — OPENROUTER_API_KEY is only used server-side, never exposed in PR
+4. **Token permissions** — Requires `pull-requests: write` to submit reviews
+5. **Rate limiting** — 2-second delay before each OpenRouter API call to prevent abuse
+6. **Timeout protection** — Workflow has 5-minute timeout to prevent resource exhaustion
+7. **Concurrency control** — Serialized per PR to prevent duplicate reviews and race conditions
+8. **Diff size limits** — Diffs truncated at 30KB to prevent excessive API usage
+9. **Field validation** — Validates all inline comment fields before submission to prevent API errors
+10. **Error isolation** — Failures don't break other workflows; rate limit errors trigger graceful retry
 
 ---
 
