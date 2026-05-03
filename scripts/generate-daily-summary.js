@@ -150,7 +150,7 @@ async function fetchPRsSince(since) {
       per_page: 100
     });
     
-    // Search API returns both issues and PRs, filter to only PRs
+    // Defensive filter: ensure only PRs are returned (items with pull_request property)
     return results.filter(item => item.pull_request);
   } catch (error) {
     console.error('❌ Error fetching PRs:', error.message);
