@@ -13,6 +13,7 @@
  */
 
 const assert = require('assert');
+const Module = require('module');
 
 // Mock dependencies for testing
 const mockModule = {
@@ -180,13 +181,121 @@ if (test('HTML escaping prevents XSS in malicious input', () => {
   assert(escaped.includes('&lt;'), 'Should contain escaped characters');
 })) passed++; else failed++;
 
+async function testAsync(name, fn) {
+  try {
+    await fn();
+    console.log(`✅ PASS: ${name}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ FAIL: ${name}`);
+    console.error(`   ${error.message}`);
+    return false;
+  }
+}
+
+function requireProductionWithMock(mockPaginate) {
+  const originalRequire = Module.prototype.require;
+  const originalEnv = { ...process.env };
+
+  process.env.GITHUB_TOKEN = 'test-token';
+  process.env.GITHUB_REPOSITORY_OWNER = 'test-org';
+  process.env.GITHUB_REPOSITORY = 'test-org/test-repo';
+
+  Module.prototype.require = function(id) {
+    if (id === '@octokit/rest') {
+      return { Octokit: function() {
+        this.paginate = mockPaginate;
+        this.rest = { search: { issuesAndPullRequests: 'search.issuesAndPullRequests' } };
+      }};
+    }
+    return originalRequire.apply(this, arguments);
+  };
+
+  try {
+    const modulePath = require.resolve('../scripts/generate-daily-summary.js');
+    delete require.cache[modulePath];
+    return require(modulePath);
+  } finally {
+    Module.prototype.require = originalRequire;
+    Object.keys(process.env).forEach(k => {
+      if (!(k in originalEnv)) delete process.env[k];
+    });
+    Object.assign(process.env, originalEnv);
+  }
+}
+
+async function runProductionQueryTests() {
+  let asyncPassed = 0;
+  let asyncFailed = 0;
+
+  const capturedCalls = [];
+  const capturingPaginate = async (method, params) => {
+    capturedCalls.push({ method, params });
+    return [];
+  };
+
+  const productionModule = requireProductionWithMock(capturingPaginate);
+
+  if (await testAsync('fetchPRsSince constructs correct search query with repo, type, and date filter', async () => {
+    capturedCalls.length = 0;
+    await productionModule.fetchPRsSince('2026-05-01');
+    assert.strictEqual(capturedCalls.length, 1);
+    const call = capturedCalls[0];
+    assert.strictEqual(call.params.q, 'repo:test-org/test-repo is:pr created:>=2026-05-01');
+    assert.strictEqual(call.params.sort, 'created');
+    assert.strictEqual(call.params.order, 'desc');
+    assert.strictEqual(call.params.per_page, 100);
+  })) asyncPassed++; else asyncFailed++;
+
+  if (await testAsync('fetchIssuesSince constructs correct search query with repo, type, and date filter', async () => {
+    capturedCalls.length = 0;
+    await productionModule.fetchIssuesSince('2026-03-15');
+    assert.strictEqual(capturedCalls.length, 1);
+    const call = capturedCalls[0];
+    assert.strictEqual(call.params.q, 'repo:test-org/test-repo is:issue created:>=2026-03-15');
+    assert.strictEqual(call.params.sort, 'created');
+    assert.strictEqual(call.params.order, 'desc');
+    assert.strictEqual(call.params.per_page, 100);
+  })) asyncPassed++; else asyncFailed++;
+
+  if (await testAsync('fetchPRsSince filters results to only items with pull_request property', async () => {
+    const mod = requireProductionWithMock(async () => [
+      { number: 1, pull_request: { url: 'http://...' } },
+      { number: 2 },
+      { number: 3, pull_request: { url: 'http://...' } }
+    ]);
+    const results = await mod.fetchPRsSince('2026-01-01');
+    assert.strictEqual(results.length, 2);
+    assert(results.every(r => r.pull_request));
+  })) asyncPassed++; else asyncFailed++;
+
+  if (await testAsync('fetchIssuesSince filters out items with pull_request property', async () => {
+    const mod = requireProductionWithMock(async () => [
+      { number: 1, pull_request: { url: 'http://...' } },
+      { number: 2 },
+      { number: 3 }
+    ]);
+    const results = await mod.fetchIssuesSince('2026-01-01');
+    assert.strictEqual(results.length, 2);
+    assert(results.every(r => !r.pull_request));
+  })) asyncPassed++; else asyncFailed++;
+
+  return { passed: asyncPassed, failed: asyncFailed };
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // Summary
 // ────────────────────────────────────────────────────────────────────────────
 
-console.log('');
-console.log(`Test Summary: ${passed} passed, ${failed} failed`);
-
-if (failed > 0) {
+runProductionQueryTests().then(asyncResults => {
+  const totalPassed = passed + asyncResults.passed;
+  const totalFailed = failed + asyncResults.failed;
+  console.log('');
+  console.log(`Test Summary: ${totalPassed} passed, ${totalFailed} failed`);
+  if (totalFailed > 0) {
+    process.exit(1);
+  }
+}).catch(err => {
+  console.error('❌ Unexpected error in async tests:', err);
   process.exit(1);
-}
+});
