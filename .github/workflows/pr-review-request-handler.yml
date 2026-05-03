@@ -9,9 +9,14 @@ name: PR Review Request Handler
 #   4. Posts detailed analysis with implementation plan
 #   5. Updates PR labels to track fix progress
 #
+# NOTE: This workflow handles "changes requested" scenarios. For initial automated
+#       code review submission, see pr-auto-review.yml which submits reviews when
+#       PRs have the "awaiting-approval" label.
+#
 # Automation Routing Policy: Uses OpenRouter via OPENROUTER_API_KEY (not GitHub Copilot)
 #
 # Related workflows:
+#   • pr-auto-review.yml — Submits initial automated reviews
 #   • pr-review-status.yml — Applies review status labels
 #   • openrouter-triage.yml — General issue/PR triage
 #   • ralph-loop.yml — CI failure auto-fix

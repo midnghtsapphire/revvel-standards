@@ -299,6 +299,11 @@ gh pr edit <PR_NUMBER> --add-label "no-triage"
 
 ## Integration with Other Workflows
 
+### pr-auto-review.yml
+
+- **Purpose:** Automatically submits initial code reviews on PRs that need review
+- **Relationship:** Complementary; pr-auto-review submits initial reviews, this workflow handles change requests
+
 ### pr-review-status.yml
 
 - **Purpose:** Manages review status labels (`awaiting-approval`, `changes-requested`, etc.)

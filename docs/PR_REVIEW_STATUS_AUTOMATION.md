@@ -358,7 +358,19 @@ A: The workflow relies on GitHub's native review system. External tools that cre
 - [`arsc-labels.yml`](arsc-labels.yml) — General label management (add/remove/set/clear)
 - [`pr-labels.yml`](templates/cicd/pr-labels.yml) — Label-driven CI automation
 - [`auto-merge.yml`](auto-merge.yml) — Automatic merging when criteria are met
-- [`pr-review-request-handler.yml`](../.github/workflows/pr-review-request-handler.yml) — **NEW:** Automated review feedback analysis via OpenRouter
+- [`pr-auto-review.yml`](../.github/workflows/pr-auto-review.yml) — **NEW:** Automated review submission via OpenRouter
+- [`pr-review-request-handler.yml`](../.github/workflows/pr-review-request-handler.yml) — Automated review feedback analysis via OpenRouter
+
+### PR Auto Review Integration
+
+When a PR needs review (has `awaiting-approval` label), the `pr-auto-review.yml` workflow automatically:
+1. Analyzes PR diff and files changed
+2. Uses OpenRouter AI to perform code review
+3. Submits a formal GitHub review with inline comments
+4. Provides APPROVE, REQUEST_CHANGES, or COMMENT assessment
+5. Helps get PRs reviewed faster with automated initial feedback
+
+See [PR_AUTO_REVIEW_AUTOMATION.md](PR_AUTO_REVIEW_AUTOMATION.md) for complete documentation.
 
 ### PR Review Request Handler Integration
 
