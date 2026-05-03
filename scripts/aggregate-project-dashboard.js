@@ -112,12 +112,12 @@ function parseInventory(content) {
     // Parse table row
     if (inTable && line.startsWith('|')) {
       const cells = line.split('|').map(c => c.trim()).filter(c => c);
-      if (cells.length >= 3) {
+      if (cells.length >= 8) {  // Need all 8 columns
         services.push({
           name: cells[0],
           description: cells[1],
-          status: cells[6] || 'Unknown',
-          usedBy: cells[7] || 'Unknown',
+          status: cells[6] || 'Unknown',  // Column 6 is Status (0-indexed)
+          usedBy: cells[7] || 'Unknown',  // Column 7 is Used By (0-indexed)
         });
       }
     }
