@@ -310,11 +310,12 @@ jobs:
         uses: actions/github-script@v8
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
+          TO_ROUTE_JSON: ${{ steps.discover.outputs.to_route }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
-            const toRoute = JSON.parse('${{ steps.discover.outputs.to_route }}');
+            const toRoute = JSON.parse(process.env.TO_ROUTE_JSON || '[]');
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey 
               ? '🟢 Configured' 
