@@ -890,6 +890,44 @@ skills:
 
   # ─── Marketing Automation ─────────────────────────────────────────────────
 
+  - name: content_automation
+    title: "Content Automation — AI-Powered Content Creation Pipeline"
+    version: "1.0.0"
+    path: "skills/content-automation/"
+    skill_file: "skills/content-automation/content-automation.skill.yml"
+    category: "Content & Marketing"
+    standard: "standards/CONTENT_AUTOMATION_STANDARD.md"
+    workflow: ".github/workflows/content-automation.yml"
+    script: "scripts/content-automation.js"
+    access: all
+    secrets:
+      - OPENROUTER_API_KEY
+    optional_secrets:
+      - TUBEBUDDY_API_KEY
+      - VIDIQ_API_KEY
+    vars:
+      - CONTENT_TARGET_AUDIENCE
+      - CONTENT_BRAND_VOICE
+      - CONTENT_PRIMARY_KEYWORDS
+      - CONTENT_AUTO_PUBLISH
+    triggers:
+      - "content automation"
+      - "content creation"
+      - "content generation"
+      - "blog automation"
+      - "script writing"
+      - "topic ideation"
+      - "ai content"
+      - "write blog post"
+      - "generate content"
+      - "video script"
+      - "social media content"
+      - "content-automation label"
+      - "content label"
+      - "writing label"
+      - "blog label"
+      - "seo-content label"
+
   - name: noimosai
     title: "NoimosAI — Autonomous Marketing Team"
     version: "1.0.0"

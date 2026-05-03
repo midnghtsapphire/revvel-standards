@@ -1,0 +1,349 @@
+name: Content Automation
+
+on:
+  issues:
+    types: [opened, labeled]
+  schedule:
+    - cron: '0 9 * * 0'  # Weekly Sunday 09:00 UTC
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Content topic or title'
+        required: true
+      format:
+        description: 'Output format'
+        required: true
+        default: 'blog'
+        type: choice
+        options:
+          - blog
+          - video
+          - social
+          - email
+          - all
+      urgency:
+        description: 'Content urgency'
+        required: true
+        default: 'draft'
+        type: choice
+        options:
+          - draft
+          - final
+          - publish
+      target_audience:
+        description: 'Target audience'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  trigger-content-automation:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && github.event.action == 'opened' && (
+        contains(github.event.issue.labels.*.name, 'content-automation') ||
+        contains(github.event.issue.labels.*.name, 'content') ||
+        contains(github.event.issue.labels.*.name, 'writing') ||
+        contains(github.event.issue.labels.*.name, 'blog') ||
+        contains(github.event.issue.labels.*.name, 'seo-content')
+      )) ||
+      (github.event_name == 'issues' && github.event.action == 'labeled' && (
+        github.event.label.name == 'content-automation' ||
+        github.event.label.name == 'content' ||
+        github.event.label.name == 'writing' ||
+        github.event.label.name == 'blog' ||
+        github.event.label.name == 'seo-content'
+      )) ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+          fi
+
+      - name: Acknowledge issue trigger
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = context.issue.number;
+            const comment = `🤖 **Content Automation Pipeline Activated**
+            
+            The content automation system is now processing your request. This will take approximately 10-15 minutes.
+            
+            **Pipeline Stages:**
+            - [ ] Research & Topic Ideation (2-3 min)
+            - [ ] Outline Generation (1 min)
+            - [ ] Draft Generation (3-4 min)
+            - [ ] Content Refinement (2-3 min)
+            - [ ] Multi-Format Export (1 min)
+            
+            Results will be posted here when complete.
+            
+            *Powered by OpenRouter AI · Skill: content-automation*`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: comment
+            });
+
+      - name: Extract content parameters
+        id: params
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let topic, format, urgency, audience, issueNumber;
+            
+            if (context.eventName === 'workflow_dispatch') {
+              const rawTopic = context.payload.inputs.topic;
+              topic = rawTopic
+                .replace(/[\r\n]/g, ' ')
+                .replace(/[`$<>"']/g, '')
+                .substring(0, 200);
+              format = context.payload.inputs.format;
+              urgency = context.payload.inputs.urgency;
+              audience = context.payload.inputs.target_audience;
+            } else if (context.eventName === 'issues') {
+              // Sanitize issue title to prevent injection and XSS
+              const rawTitle = context.payload.issue.title;
+              topic = rawTitle
+                .replace(/[\r\n]/g, ' ')      // Remove newlines
+                .replace(/[`$<>"']/g, '')     // Remove injection and XSS chars
+                .substring(0, 200);            // Limit length
+              format = 'blog';
+              urgency = 'draft';
+              audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
+              issueNumber = context.payload.issue.number;
+            } else {
+              // Scheduled run - use existing format instead of 'calendar'
+              topic = 'Weekly Content Calendar';
+              format = 'blog';
+              urgency = 'draft';
+              audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
+            }
+            
+            // Set outputs
+            core.setOutput('topic', topic);
+            core.setOutput('format', format);
+            core.setOutput('urgency', urgency);
+            core.setOutput('audience', audience);
+            if (issueNumber) {
+              core.setOutput('issue_number', issueNumber.toString());
+            }
+        env:
+          CONTENT_TARGET_AUDIENCE: ${{ vars.CONTENT_TARGET_AUDIENCE }}
+
+      - name: Run content automation script
+        id: generate
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TUBEBUDDY_API_KEY: ${{ secrets.TUBEBUDDY_API_KEY }}
+          VIDIQ_API_KEY: ${{ secrets.VIDIQ_API_KEY }}
+          CONTENT_TOPIC: ${{ steps.params.outputs.topic }}
+          CONTENT_FORMAT: ${{ steps.params.outputs.format }}
+          CONTENT_URGENCY: ${{ steps.params.outputs.urgency }}
+          CONTENT_AUDIENCE: ${{ steps.params.outputs.audience }}
+          CONTENT_BRAND_VOICE: ${{ vars.CONTENT_BRAND_VOICE || 'professional yet approachable' }}
+          CONTENT_PRIMARY_KEYWORDS: ${{ vars.CONTENT_PRIMARY_KEYWORDS || '' }}
+          CONTENT_AUTO_PUBLISH: ${{ vars.CONTENT_AUTO_PUBLISH || 'false' }}
+        run: |
+          node scripts/content-automation.js
+          
+          # Capture output path from script stdout or check directory
+          if [ -d content-automation-output ]; then
+            # Find most recent directory
+            OUTPUT_PATH=$(ls -td content-automation-output/*/ 2>/dev/null | head -1 | sed 's:/$::')
+            if [ -n "$OUTPUT_PATH" ]; then
+              echo "output_path=${OUTPUT_PATH}" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Commit generated content
+        if: steps.generate.outputs.output_path != ''
+        env:
+          TOPIC: ${{ steps.params.outputs.topic }}
+          FORMAT: ${{ steps.params.outputs.format }}
+          URGENCY: ${{ steps.params.outputs.urgency }}
+          AUDIENCE: ${{ steps.params.outputs.audience }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add content-automation-output/
+          
+          # Use env vars to avoid injection in commit message
+          git commit -m "🤖 Auto-generate content: ${TOPIC}
+
+          Generated via content-automation skill
+          Format: ${FORMAT}
+          Urgency: ${URGENCY}
+          Audience: ${AUDIENCE}" || echo "No changes to commit"
+
+      - name: Push changes
+        if: steps.generate.outputs.output_path != ''
+        run: |
+          git push origin "${GITHUB_REF_NAME}" || echo "Nothing to push"
+
+      - name: Post results to issue
+        if: github.event_name == 'issues' && steps.generate.outputs.output_path != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const outputPath = '${{ steps.generate.outputs.output_path }}';
+            const metadataPath = path.join(outputPath, 'metadata.json');
+            
+            let metadata = {};
+            if (fs.existsSync(metadataPath)) {
+              metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+            }
+            
+            const comment = `✅ **Content Generation Complete!**
+            
+            **Generated Content:**
+            - **Title:** ${metadata.title || '${{ steps.params.outputs.topic }}'}
+            - **Format:** ${{ steps.params.outputs.format }}
+            - **Word Count:** ${metadata.word_count || 'N/A'}
+            
+            **Output Location:** \`${outputPath}\`
+            
+            **Available Formats:**
+            ${metadata.formats ? metadata.formats.map(f => `- ${f}`).join('\n') : '- See output directory'}
+            
+            **Next Steps:**
+            1. Review the generated content in the output directory
+            2. Make any necessary edits for brand voice and accuracy
+            3. Add visuals and format for final publication
+            4. Close this issue when content is published
+            
+            **Quality Gates:**
+            - SEO: ${metadata.quality_gates?.seo?.passed ? '✅' : '⚠️'}
+            - Readability: ${metadata.quality_gates?.readability?.passed ? '✅' : '⚠️'}
+            - Structure: ${metadata.quality_gates?.structure?.passed ? '✅' : '⚠️'}
+            - Technical: ${metadata.quality_gates?.technical?.passed ? '✅' : '⚠️'}
+            
+            *Generated in ~${metadata.generation_time_seconds || 'N/A'}s using ${metadata.models_used?.join(', ') || 'OpenRouter AI'}*`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.params.outputs.issue_number }},
+              body: comment
+            });
+            
+            const autoPublish = '${{ vars.CONTENT_AUTO_PUBLISH }}' === 'true';
+            const label = autoPublish ? 'content:final' : 'content:draft';
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.params.outputs.issue_number }},
+              labels: [label]
+            });
+
+      - name: Handle errors
+        if: failure() && github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue?.number;
+            if (!issueNumber) {
+              console.log('No issue number available, skipping error comment');
+              return;
+            }
+            
+            const comment = `❌ **Content Generation Failed**
+            
+            The content automation pipeline encountered an error. Please check the workflow logs for details.
+            
+            **Common issues:**
+            - Missing or invalid OPENROUTER_API_KEY
+            - Topic is too vague or unclear
+            - API rate limits exceeded
+            - Network connectivity issues
+            
+            **Next Steps:**
+            1. Check workflow logs: ${context.payload.repository.html_url}/actions/runs/${context.runId}
+            2. Verify API keys are configured correctly
+            3. Try again with a more specific topic
+            4. Contact support if the issue persists
+            
+            *Error occurred in: content-automation workflow*`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: comment
+            });
+
+  self-heal:
+    runs-on: ubuntu-latest
+    needs: trigger-content-automation
+    if: always() && needs.trigger-content-automation.result == 'failure'
+    steps:
+      - name: Retry with fallback model
+        run: |
+          echo "Primary generation failed, attempting fallback..."
+          # Future: Implement fallback logic with alternative models
+          exit 1  # Ensure this fails to trigger issue creation
+          
+      - name: Create auto-error issue
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const title = '[AUTO-ERROR] Content Automation workflow failed';
+            const body = `The content-automation workflow failed.
+
+            **Run:** ${runUrl}
+            **Event:** ${context.eventName}
+
+            Please investigate and fix the underlying issue.`;
+
+            // Deduplication: if an open auto-error issue with the same title
+            // already exists, add a comment with the latest run instead of
+            // opening another duplicate issue.
+            const searchResult = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:auto-error in:title "${title}"`,
+            });
+
+            if (searchResult.data.total_count > 0) {
+              const existing = searchResult.data.items[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Another content-automation run failed.\n\n**Run:** ${runUrl}\n**Event:** ${context.eventName}`,
+              });
+              core.notice(`Existing auto-error issue #${existing.number} updated with new failure.`);
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['auto-error'],
+              });
+            }
