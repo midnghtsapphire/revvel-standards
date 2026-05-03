@@ -50,6 +50,8 @@ Use when the workflow **can still provide value** without the API key (e.g., mar
 
 ```yaml
       - name: Verify OPENROUTER_API_KEY is configured
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set — skipping [feature name]."
