@@ -84,6 +84,20 @@ jobs:
               { name: 'credentials-ready',       color: '0e8a16', description: 'All required credentials are provisioned' },
               { name: 'credentials-missing',     color: 'd93f0b', description: 'One or more required credentials are missing' },
               { name: 'goap-escalation',         color: 'b60205', description: 'GOAP escalation — requires human intervention after auto-retry failure' },
+              // Content & Marketing
+              { name: 'content',                 color: 'F7C948', description: 'Content creation task — handled by NoimosAI content agent' },
+              { name: 'content-automation',      color: '00D4AA', description: 'Trigger content automation pipeline' },
+              { name: 'writing',                 color: 'FF69B4', description: 'Writing/copywriting task' },
+              { name: 'blog',                    color: '7B68EE', description: 'Blog post creation' },
+              { name: 'seo-content',             color: '3DDCFF', description: 'SEO-focused content' },
+              { name: 'content:draft',           color: 'FFA500', description: 'Content draft stage, needs review' },
+              { name: 'content:final',           color: '00FF00', description: 'Content final, ready to publish' },
+              { name: 'auto-error',              color: 'd73a4a', description: 'Auto-created error issue from workflow failure' },
+              // Marketing / NoimosAI
+              { name: 'noimosai',            color: '7C5CFF', description: 'Route to NoimosAI autonomous marketing team' },
+              { name: 'marketing',           color: 'FF6B6B', description: 'Marketing task — auto-routed to NoimosAI' },
+              { name: 'seo',                 color: '3DDCFF', description: 'SEO task — handled by NoimosAI SEO agent' },
+              { name: 'affiliate',           color: '4CAF50', description: 'Affiliate link / revenue task — handled by NoimosAI affiliate agent' },
             ];
 
             // Fetch existing labels (paginated — repos can have 100+)
