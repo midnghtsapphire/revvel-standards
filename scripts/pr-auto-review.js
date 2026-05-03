@@ -24,6 +24,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const PR_NUMBER = process.env.PR_NUMBER || "";
+const PR_HEAD_REPO = process.env.PR_HEAD_REPO || "";
 const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 
 const OPENROUTER_HOST = "openrouter.ai";
@@ -32,7 +33,10 @@ const OPENROUTER_PATH = "/api/v1/chat/completions";
 // Constants
 const ERROR_BODY_LIMIT = 600;
 const GITHUB_PAGE_SIZE = 100;
-const MAX_DIFF_SIZE = 15000; // Truncate diffs larger than this
+const MAX_DIFF_SIZE = parseInt(process.env.MAX_DIFF_SIZE || "30000", 10); // Increased from 15KB to 30KB
+const MAX_FILES_TO_FETCH = parseInt(process.env.MAX_FILES_TO_FETCH || "100", 10);
+const MAX_INLINE_COMMENTS = 10; // GitHub API limit
+const OPENROUTER_RATE_LIMIT_DELAY = 2000; // 2 second delay before API call for basic rate limiting
 
 function splitRepository() {
   const [owner, repo] = GITHUB_REPOSITORY.split("/");
@@ -115,21 +119,40 @@ async function getPRDetails() {
 }
 
 /**
- * Fetches files changed in the PR
+ * Fetches files changed in the PR with pagination support
  */
 async function getPRFiles() {
   const { owner, repo } = splitRepository();
-  return await requestJson({
-    hostname: "api.github.com",
-    pathName: `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/files?per_page=${GITHUB_PAGE_SIZE}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      "User-Agent": "revvel-pr-auto-review",
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
+  const allFiles = [];
+  let page = 1;
+  let hasMore = true;
+  
+  while (hasMore && allFiles.length < MAX_FILES_TO_FETCH) {
+    const files = await requestJson({
+      hostname: "api.github.com",
+      pathName: `/repos/${owner}/${repo}/pulls/${PR_NUMBER}/files?per_page=${GITHUB_PAGE_SIZE}&page=${page}`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        "User-Agent": "revvel-pr-auto-review",
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    
+    if (!files || files.length === 0) {
+      hasMore = false;
+    } else {
+      allFiles.push(...files);
+      if (files.length < GITHUB_PAGE_SIZE) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
+  }
+  
+  return allFiles;
 }
 
 /**
@@ -170,9 +193,12 @@ async function getPRDiff() {
 }
 
 /**
- * Calls OpenRouter API to perform code review
+ * Calls OpenRouter API to perform code review with rate limiting
  */
 async function callOpenRouter(systemPrompt, userPrompt) {
+  // Basic rate limiting: wait before making API call
+  await new Promise(resolve => setTimeout(resolve, OPENROUTER_RATE_LIMIT_DELAY));
+  
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
   const response = await requestJson({
     hostname: OPENROUTER_HOST,
@@ -338,7 +364,7 @@ function buildUserPrompt(prDetails, files, diff) {
 }
 
 /**
- * Parse OpenRouter response and extract review data
+ * Parse OpenRouter response and extract review data with validation
  */
 function parseReviewResponse(response) {
   try {
@@ -355,22 +381,46 @@ function parseReviewResponse(response) {
 
     const parsed = JSON.parse(jsonText);
     
+    // Validate required fields
+    if (!parsed.overall_assessment || !['APPROVE', 'REQUEST_CHANGES', 'COMMENT'].includes(parsed.overall_assessment)) {
+      console.warn(`Invalid overall_assessment: ${parsed.overall_assessment}. Defaulting to COMMENT.`);
+      parsed.overall_assessment = 'COMMENT';
+    }
+    
+    // Validate inline comments have required fields
+    const validInlineComments = (parsed.inline_comments || [])
+      .filter(c => {
+        if (!c.file || !c.line || !c.comment) {
+          console.warn(`Skipping invalid inline comment - missing required fields:`, c);
+          return false;
+        }
+        if (typeof c.line !== 'number' || c.line <= 0) {
+          console.warn(`Skipping invalid inline comment - invalid line number:`, c);
+          return false;
+        }
+        return true;
+      })
+      .slice(0, MAX_INLINE_COMMENTS); // Limit to avoid API errors
+    
     return {
-      event: parsed.overall_assessment || "COMMENT",
+      event: parsed.overall_assessment,
       summary: parsed.summary || "Automated code review completed.",
-      inlineComments: parsed.inline_comments || [],
+      inlineComments: validInlineComments,
       generalFeedback: parsed.general_feedback || [],
     };
   } catch (error) {
     console.warn(`Failed to parse review response as JSON: ${error.message}`);
-    console.warn("Response was:", response);
+    console.warn("Response was:", response.substring(0, 500));
     
-    // Fallback: treat entire response as general feedback
+    // Improved fallback: extract useful information from unparseable response
+    const fallbackSummary = "Automated code review completed, but response format was unexpected. Review the full feedback below.";
+    const feedbackLines = response.split('\n').filter(line => line.trim());
+    
     return {
       event: "COMMENT",
-      summary: "Automated code review completed (parsing error).",
+      summary: fallbackSummary,
       inlineComments: [],
-      generalFeedback: [response],
+      generalFeedback: feedbackLines.length > 0 ? feedbackLines : [response.substring(0, 1000)],
     };
   }
 }
@@ -393,8 +443,15 @@ async function main() {
     console.log("::error::PR_NUMBER is not set. Cannot proceed.");
     process.exit(1);
   }
+  
+  // Security check: Validate PR is from same repository
+  if (PR_HEAD_REPO && PR_HEAD_REPO !== GITHUB_REPOSITORY) {
+    console.log(`::warning::PR is from fork (${PR_HEAD_REPO}). Skipping automated review for security.`);
+    process.exit(0);
+  }
 
   console.log(`Performing automated review for PR #${PR_NUMBER}...`);
+  console.log(`Configuration: MAX_DIFF_SIZE=${MAX_DIFF_SIZE}, MAX_FILES=${MAX_FILES_TO_FETCH}`);
 
   try {
     // Post initial comment
@@ -411,9 +468,15 @@ async function main() {
 
     console.log("Fetching PR files...");
     const files = await getPRFiles();
+    console.log(`Fetched ${files.length} files`);
+    
+    if (files.length >= MAX_FILES_TO_FETCH) {
+      console.warn(`Warning: PR has at least ${MAX_FILES_TO_FETCH} files. Review may be incomplete.`);
+    }
 
     console.log("Fetching PR diff...");
     const diff = await getPRDiff();
+    console.log(`Diff size: ${diff.length} characters`);
 
     // Build prompts
     const systemPrompt = buildSystemPrompt();
@@ -444,6 +507,11 @@ async function main() {
         reviewBodyParts.push(`- ${feedback}`);
       });
     }
+    
+    if (files.length >= MAX_FILES_TO_FETCH) {
+      reviewBodyParts.push("");
+      reviewBodyParts.push(`⚠️ **Note**: This PR changes ${files.length}+ files. Review may not cover all files.`);
+    }
 
     reviewBodyParts.push("");
     reviewBodyParts.push("---");
@@ -451,7 +519,7 @@ async function main() {
 
     const reviewBody = reviewBodyParts.join("\n");
 
-    // Prepare inline comments (map to GitHub format)
+    // Prepare inline comments (map to GitHub format with validation)
     const githubComments = review.inlineComments
       .filter(c => c.file && c.line && c.comment)
       .map(c => ({
@@ -459,7 +527,10 @@ async function main() {
         line: parseInt(c.line, 10),
         body: c.comment,
       }))
-      .filter(c => !isNaN(c.line) && c.line > 0);
+      .filter(c => !isNaN(c.line) && c.line > 0)
+      .slice(0, MAX_INLINE_COMMENTS);
+
+    console.log(`Submitting ${githubComments.length} inline comments`);
 
     // Submit the review
     console.log("Submitting review to GitHub...");
@@ -472,22 +543,30 @@ async function main() {
     console.log("::notice::Automated code review submitted successfully!");
   } catch (error) {
     console.error(`::error::Failed to perform automated review: ${error.message}`);
+    
+    // Check for rate limiting errors
+    const isRateLimit = error.message.includes('429') || error.message.toLowerCase().includes('rate limit');
+    const errorType = isRateLimit ? 'Rate Limit' : 'Error';
 
     // Post error comment
     try {
-      await postPRComment(
-        "❌ **Automated Code Review — Error**\n\n" +
+      const errorComment = isRateLimit 
+        ? "⚠️ **Automated Code Review — Rate Limit**\n\n" +
+          "OpenRouter API rate limit exceeded. The review will be retried automatically.\n\n" +
+          "If this persists, please request manual review."
+        : "❌ **Automated Code Review — Error**\n\n" +
           "Failed to complete automated code review.\n\n" +
           "**Error:**\n```\n" +
           truncateForComment(error.message) +
           "\n```\n\n" +
-          "_Manual review required._",
-      );
+          "_Manual review required._";
+      
+      await postPRComment(errorComment);
     } catch (commentError) {
       console.error(`::error::Could not post error comment: ${commentError.message}`);
     }
 
-    process.exit(1);
+    process.exit(isRateLimit ? 0 : 1); // Exit 0 for rate limits (workflow will retry)
   }
 }
 

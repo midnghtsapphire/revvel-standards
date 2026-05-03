@@ -41,9 +41,13 @@ jobs:
     # Only run when:
     # 1. PR has "awaiting-approval" label, OR
     # 2. PR is opened/ready for review and doesn't have any review labels yet
+    # 3. PR is from same repository (not from untrusted fork)
     if: |
-      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'awaiting-approval') ||
-      (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || github.event.action == 'synchronize'))
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'awaiting-approval') ||
+        (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || github.event.action == 'synchronize'))
+      )
 
     steps:
       - name: Check out repository
@@ -71,6 +75,54 @@ jobs:
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
+            const pr = context.payload.pull_request;
+            
+            // Security: Validate PR is from same repository (not fork)
+            if (pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.name) {
+              core.notice('Skipping auto-review - PR is from untrusted fork');
+              core.setOutput('needs_review', 'false');
+              return;
+            }
+            
+            // Cost management: Check PR size before proceeding
+            const { data: prDetails } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+            
+            const additions = prDetails.additions || 0;
+            const deletions = prDetails.deletions || 0;
+            const totalChanges = additions + deletions;
+            const changedFiles = prDetails.changed_files || 0;
+            
+            // Skip extremely large PRs to prevent excessive API costs
+            const MAX_CHANGES = 5000;
+            const MAX_FILES = 100;
+            
+            if (totalChanges > MAX_CHANGES) {
+              core.warning(`PR has ${totalChanges} changes (>${MAX_CHANGES}). Skipping auto-review to control costs.`);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `⚠️ **Automated Review Skipped**\n\nThis PR has ${totalChanges} lines changed, which exceeds the ${MAX_CHANGES} line limit for automated reviews. Please request human review or split into smaller PRs.`
+              });
+              core.setOutput('needs_review', 'false');
+              return;
+            }
+            
+            if (changedFiles > MAX_FILES) {
+              core.warning(`PR has ${changedFiles} files (>${MAX_FILES}). Skipping auto-review to control costs.`);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `⚠️ **Automated Review Skipped**\n\nThis PR changes ${changedFiles} files, which exceeds the ${MAX_FILES} file limit for automated reviews. Please request human review or split into smaller PRs.`
+              });
+              core.setOutput('needs_review', 'false');
+              return;
+            }
             
             // Check if PR has awaiting-approval label or no review labels
             const { data: labels } = await github.rest.issues.listLabelsOnIssue({
@@ -111,7 +163,7 @@ jobs:
             }
 
             // Check if bot has already submitted a review for this commit
-            const currentSha = context.payload.pull_request.head.sha;
+            const currentSha = pr.head.sha;
             const hasBotReview = reviews.some(r => 
               r.user.login === 'github-actions[bot]' &&
               r.commit_id === currentSha
@@ -133,10 +185,14 @@ jobs:
 
       - name: Run OpenRouter auto-review
         if: steps.check-needs-review.outputs.needs_review == 'true'
+        timeout-minutes: 5
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           MODEL: anthropic/claude-sonnet-4
+          MAX_DIFF_SIZE: 30000
+          MAX_FILES_TO_FETCH: 100
         run: node scripts/pr-auto-review.js
