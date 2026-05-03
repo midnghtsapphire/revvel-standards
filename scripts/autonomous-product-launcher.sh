@@ -333,7 +333,7 @@ if [ "$DRY_RUN" = false ]; then
 
 ## Resources
 
-- Blueprint: [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- Blueprint: [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - Project folder: \`projects/agent-generated/$PRODUCT_SLUG/\`
 - Research: \`research/\`
 - Build: \`build/\`
