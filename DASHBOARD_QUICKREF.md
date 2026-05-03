@@ -109,7 +109,7 @@ Found 15 URLs
 ## Auto-Updates
 
 Dashboard updates automatically:
-- **Every hour** via GitHub Actions cron
+- **Every 4 hours** via GitHub Actions cron
 - **On file changes** to inventory, BOM, README files
 - **Manual:** `npm run dashboard:generate`
 
