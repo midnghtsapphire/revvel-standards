@@ -435,8 +435,20 @@ async function main() {
     const outline = await phaseOutline(brief);
     const draft = await phaseDraft(brief, outline);
     const finalContent = await phaseRefinement(draft);
-    const formats = await phaseExport(finalContent);
+
     const qualityGates = runQualityGates(finalContent);
+    const allGatesPassed = Object.values(qualityGates).every(gate => gate.passed);
+
+    if (!allGatesPassed) {
+      const failures = Object.entries(qualityGates)
+        .filter(([, gate]) => !gate.passed)
+        .map(([name, gate]) => `${name}: ${gate.details.join('; ')}`)
+        .join('\n   ');
+      console.error(`\n❌ Quality gates failed — export skipped:\n   ${failures}`);
+      process.exit(1);
+    }
+
+    const formats = await phaseExport(finalContent);
 
     // Calculate metrics
     const endTime = Date.now();
@@ -487,4 +499,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { callOpenRouter, CONFIG };
+module.exports = { callOpenRouter, CONFIG, runQualityGates };

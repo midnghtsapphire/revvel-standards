@@ -7,7 +7,7 @@
  * Tests the core content automation pipeline functions.
  */
 
-const { CONFIG, callOpenRouter } = require('../scripts/content-automation.js');
+const { CONFIG, callOpenRouter, runQualityGates } = require('../scripts/content-automation.js');
 
 function test(name, fn) {
   try {
@@ -177,6 +177,37 @@ if (test('OpenRouter API key structure validation', () => {
     // If no key is provided, it should be undefined or empty
     assert(CONFIG.openrouterKey === undefined || CONFIG.openrouterKey === '', 'API key should be undefined or empty when not set');
   }
+})) passed++; else failed++;
+
+// Test runQualityGates enforces failures
+if (test('runQualityGates returns failure for content with too few headings', () => {
+  const weakContent = `# Short\n\nOnly one section with very few words.`;
+  const results = runQualityGates(weakContent);
+  assert(results.structure.passed === false, 'Structure gate should fail with < 3 H2 headings');
+})) passed++; else failed++;
+
+if (test('runQualityGates returns all-passed for well-structured content', () => {
+  const goodContent = `# A Well Structured Title That Is Exactly Fifty Chars!
+
+## Introduction
+This is the introduction section with plenty of words to ensure the content meets the minimum word count requirement for blog posts.
+
+## Main Content
+${'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore. '.repeat(80)}
+
+## Deep Dive
+${'Exploring further details about the topic at hand with additional context and analysis. '.repeat(20)}
+
+## Conclusion
+Wrapping up the content with a strong call to action and final thoughts about the material covered.`;
+
+  const results = runQualityGates(goodContent);
+  const allPassed = Object.values(results).every(gate => gate.passed);
+  assert(allPassed, `Expected all gates to pass but got failures: ${JSON.stringify(results)}`);
+})) passed++; else failed++;
+
+if (test('runQualityGates is exported as a function', () => {
+  assert(typeof runQualityGates === 'function', 'runQualityGates should be exported');
 })) passed++; else failed++;
 
 // Summary
