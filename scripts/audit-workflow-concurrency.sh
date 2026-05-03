@@ -12,10 +12,10 @@ echo "🔍 Auditing workflow concurrency controls..."
 echo ""
 
 # Create report header
-cat > "$OUTPUT_FILE" << 'EOF'
+cat > "$OUTPUT_FILE" << EOF
 # Workflow Concurrency Audit
 
-**Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")  
+**Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 **Purpose:** Identify workflows missing concurrency controls to prevent workflow stampedes
 
 ---

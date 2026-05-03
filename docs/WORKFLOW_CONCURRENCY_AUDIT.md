@@ -1,6 +1,6 @@
 # Workflow Concurrency Audit
 
-**Generated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")  
+**Generated:** 2026-05-03  
 **Purpose:** Identify workflows missing concurrency controls to prevent workflow stampedes
 
 ---

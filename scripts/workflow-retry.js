@@ -62,43 +62,29 @@ async function isTransientFailure(runId) {
     // Check each job for transient error patterns
     for (const job of jobs.jobs) {
       if (job.conclusion === 'failure') {
-        // Get job logs
-        try {
-          const { data: logs } = await octokit.rest.actions.downloadJobLogsForWorkflowRun({
-            owner,
-            repo,
-            job_id: job.id,
-          });
-          
-          const logsText = logs.toString();
-          
-          // Transient error patterns
-          const transientPatterns = [
-            /rate limit/i,
-            /timeout/i,
-            /503 Service Unavailable/i,
-            /502 Bad Gateway/i,
-            /504 Gateway Timeout/i,
-            /ECONNRESET/,
-            /ETIMEDOUT/,
-            /ENOTFOUND/,
-            /Connection reset/i,
-            /Socket timeout/i,
-            /Network error/i,
-            /Temporary failure/i,
-            /Unable to connect/i,
-            /429 Too Many Requests/i,
-            /403 Forbidden.*rate limit/i,
-          ];
-          
-          for (const pattern of transientPatterns) {
-            if (pattern.test(logsText)) {
-              console.log(`  ⚠️ Transient failure detected: ${pattern}`);
-              return true;
-            }
+        // Get job logs (note: logs are returned as redirect URL, not content)
+        // We'll check job step conclusions and names instead
+        const jobName = job.name.toLowerCase();
+        const stepNames = job.steps?.map(s => s.name?.toLowerCase() || '').join(' ') || '';
+        
+        // Transient error patterns in job/step names
+        const transientPatterns = [
+          /rate limit/i,
+          /timeout/i,
+          /503/i,
+          /502/i,
+          /504/i,
+          /connection/i,
+          /network/i,
+          /temporary/i,
+          /throttle/i,
+        ];
+        
+        for (const pattern of transientPatterns) {
+          if (pattern.test(jobName) || pattern.test(stepNames)) {
+            console.log(`  ⚠️ Transient failure detected in job: ${job.name}`);
+            return true;
           }
-        } catch (err) {
-          console.warn(`  ⚠️ Could not download logs for job ${job.id}: ${err.message}`);
         }
       }
     }
