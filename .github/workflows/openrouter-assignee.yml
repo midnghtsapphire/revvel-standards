@@ -52,6 +52,7 @@ jobs:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.pull_request?.number;
             const itemKind = context.payload.issue ? 'issue' : 'pull_request';
+            const displayKind = context.payload.issue ? 'issue' : 'pull request';
             
             if (!issueNumber) {
               core.notice('No issue/PR number found; skipping.');
@@ -61,9 +62,10 @@ jobs:
             
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('item_kind', itemKind);
+            core.setOutput('display_kind', displayKind);
             core.setOutput('skip', 'false');
             
-            core.info(`Routing ${itemKind} #${issueNumber} to OpenRouter`);
+            core.info(`Routing ${displayKind} #${issueNumber} to OpenRouter`);
 
       - name: Check if already assigned or routed
         id: check
@@ -159,34 +161,36 @@ jobs:
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey 
               ? '🟢 Configured' 
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
             
-            const comment = `🤖 **OpenRouter First Line of Sight**
-            
-            This ${itemKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.
-            
-            **Routing applied:**
-            - ✅ Assignee: \`@Copilot\` (GitHub-visible orchestrator)
-            - ✅ Labels: \`openrouter\`, \`auto-fix\`, \`copilot\`, \`role:orchestrator\`
-            
-            **OpenRouter API:** ${apiKeyStatus}
-            
-            **What happens next:**
-            1. OpenRouter triage will analyze this ${itemKind}
-            2. Appropriate labels and priority will be assigned
-            3. The orchestrator will coordinate work or route to specialized agents
-            4. If the orchestrator cannot complete the task, it will apply \`needs-human\` label
-            
-            **For reviewers/auditors:**
-            - Process documentation: [docs/OPENROUTER_ASSIGNEE_PROCESS.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/docs/OPENROUTER_ASSIGNEE_PROCESS.md)
-            - OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)
-            - Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)
-            
-            _Automated by \`.github/workflows/openrouter-assignee.yml\` — runs 24/7 on event triggers + hourly cron sweep_`;
+            const comment = [
+              '🤖 **OpenRouter First Line of Sight**',
+              '',
+              `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`,
+              '',
+              '**Routing applied:**',
+              '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)',
+              '- ✅ Labels: `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`',
+              '',
+              `**OpenRouter API:** ${apiKeyStatus}`,
+              '',
+              '**What happens next:**',
+              `1. OpenRouter triage will analyze this ${displayKind}`,
+              '2. Appropriate labels and priority will be assigned',
+              '3. The orchestrator will coordinate work or route to specialized agents',
+              '4. If the orchestrator cannot complete the task, it will apply `needs-human` label',
+              '',
+              '**For reviewers/auditors:**',
+              `- Process documentation: [docs/OPENROUTER_ASSIGNEE_PROCESS.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/docs/OPENROUTER_ASSIGNEE_PROCESS.md)`,
+              `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
+              `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
+              '',
+              '_Automated by `.github/workflows/openrouter-assignee.yml` — runs 24/7 on event triggers + hourly cron sweep_'
+            ].join('\n');
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -360,28 +364,31 @@ jobs:
                 core.info(`  ✅ Applied routing labels`);
                 
                 // Post comment
-                const comment = `🤖 **OpenRouter First Line of Sight** (cron sweep)
-            
-            This ${item.kind.toLowerCase()} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.
-            
-            **Routing applied:**
-            - ✅ Assignee: \`@Copilot\` (GitHub-visible orchestrator)
-            - ✅ Labels: \`openrouter\`, \`auto-fix\`, \`copilot\`, \`role:orchestrator\`
-            
-            **OpenRouter API:** ${apiKeyStatus}
-            
-            **What happens next:**
-            1. OpenRouter triage will analyze this ${item.kind.toLowerCase()}
-            2. Appropriate labels and priority will be assigned
-            3. The orchestrator will coordinate work or route to specialized agents
-            4. If the orchestrator cannot complete the task, it will apply \`needs-human\` label
-            
-            **For reviewers/auditors:**
-            - Process documentation: [docs/OPENROUTER_ASSIGNEE_PROCESS.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/docs/OPENROUTER_ASSIGNEE_PROCESS.md)
-            - OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)
-            - Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)
-            
-            _Automated by \`.github/workflows/openrouter-assignee.yml\` — 24/7 cron sweep (picked up by hourly run)_`;
+                const displayKind = item.kind === 'PR' ? 'pull request' : 'issue';
+                const comment = [
+                  '🤖 **OpenRouter First Line of Sight** (cron sweep)',
+                  '',
+                  `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`,
+                  '',
+                  '**Routing applied:**',
+                  '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)',
+                  '- ✅ Labels: `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`',
+                  '',
+                  `**OpenRouter API:** ${apiKeyStatus}`,
+                  '',
+                  '**What happens next:**',
+                  `1. OpenRouter triage will analyze this ${displayKind}`,
+                  '2. Appropriate labels and priority will be assigned',
+                  '3. The orchestrator will coordinate work or route to specialized agents',
+                  '4. If the orchestrator cannot complete the task, it will apply `needs-human` label',
+                  '',
+                  '**For reviewers/auditors:**',
+                  `- Process documentation: [docs/OPENROUTER_ASSIGNEE_PROCESS.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/docs/OPENROUTER_ASSIGNEE_PROCESS.md)`,
+                  `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
+                  `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
+                  '',
+                  '_Automated by `.github/workflows/openrouter-assignee.yml` — 24/7 cron sweep (picked up by hourly run)_'
+                ].join('\n');
                 
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
