@@ -116,7 +116,6 @@ jobs:
       - name: Assign to Copilot orchestrator
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
-        continue-on-error: true
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
