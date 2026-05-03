@@ -284,6 +284,55 @@ jobs:
                 `${context.repo.owner}/${context.repo.repo}`;
 
             if (isForkPr) {
+              // Add visible feedback for fork PRs that are being skipped
+              const prNumber = context.payload.pull_request.number;
+              const forkRepo = context.payload.pull_request.head.repo.full_name;
+              
+              core.info(`Detected fork PR #${prNumber} from ${forkRepo}. Adding third-party label and comment.`);
+              
+              // Add third-party label for visibility
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: ['third-party', 'external-contributor'],
+                });
+              } catch (error) {
+                core.warning(`Could not add third-party labels: ${error.message}`);
+              }
+              
+              // Post informative comment
+              const comment = `👋 **Third-Party Pull Request Detected**
+
+This PR originates from a forked repository (\`${forkRepo}\`), not the main \`${context.repo.owner}/${context.repo.repo}\` repository.
+
+**What this means:**
+- ✅ Your PR is welcome! We appreciate external contributions.
+- ⚠️ Automated priority routing is skipped for security (fork PRs can't access secrets)
+- 👁️ A maintainer will manually review and assign priority labels
+- 🔐 Security workflows run in a restricted mode
+
+**Next steps:**
+1. A maintainer will review your PR within 24-48 hours
+2. They will manually apply appropriate priority and routing labels
+3. Standard review process will proceed once labels are applied
+
+Thank you for contributing to ${context.repo.repo}! 🎉
+
+_This is an automated message from \`.github/workflows/priority-router.yml\`_`;
+              
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: comment,
+                });
+              } catch (error) {
+                core.warning(`Could not post fork PR comment: ${error.message}`);
+              }
+              
               core.info('Skipping forked pull request event.');
               return;
             }

@@ -97,6 +97,15 @@ labels:
   - name: blocked
     color: "e4e669"
     description: "Blocked by external dependency"
+  
+  # ── Third-Party / External Contributions ──────────────────────────────────────
+  - name: third-party
+    color: "bfdadc"
+    description: "PR from forked repository - external contributor"
+  
+  - name: external-contributor
+    color: "7057ff"
+    description: "Contribution from outside the organization"
 
   - name: wontfix
     color: "ffffff"
