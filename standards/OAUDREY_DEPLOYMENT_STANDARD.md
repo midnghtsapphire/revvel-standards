@@ -170,7 +170,7 @@ GitHub Pages offers a **free, zero-config alternative** to DigitalOcean for host
 - **Testing/preview** before deploying to production
 - **Development** when you want to see the site without DigitalOcean access
 - **Backup/mirror** deployment
-- **Cost savings** (100% free, no limits for public repos)
+- **Cost savings** (free for public repos within GitHub Pages usage limits)
 
 ### Automated GitHub Pages Deployment
 
