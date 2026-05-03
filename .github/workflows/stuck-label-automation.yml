@@ -58,60 +58,60 @@ jobs:
             const MS_PER_DAY = MS_PER_HOUR * 24;
             
             // Define stuck patterns: [label, max_age_hours, next_action]
-            // REDUCED TIMEOUTS - Previously items were stuck too long
+            // REDUCED TIMEOUTS - See docs/WORKFLOW_STATE_MACHINE.md for rationale
             const STUCK_PATTERNS = [
               {
                 label: 'triage:in-progress',
-                max_age_ms: 4 * MS_PER_HOUR,  // Reduced from 24h to 4h
+                max_age_ms: 4 * MS_PER_HOUR,
                 next_action: 'auto-classify',
                 next_label: 'triage:classified',
                 description: 'Triage taking too long'
               },
               {
                 label: 'wr:in-progress',
-                max_age_ms: 3 * MS_PER_DAY,  // Reduced from 7 days to 3 days
+                max_age_ms: 3 * MS_PER_DAY,
                 next_action: 'escalate-research',
                 next_label: 'needs-human',
                 description: 'Weekly research stalled'
               },
               {
                 label: 'credentials-missing',
-                max_age_ms: 12 * MS_PER_HOUR,  // Reduced from 48h to 12h
+                max_age_ms: 12 * MS_PER_HOUR,
                 next_action: 'recheck-credentials',
                 next_label: null,  // Will re-check
                 description: 'Credentials not provisioned'
               },
               {
                 label: 'openrouter:instantiating',
-                max_age_ms: 1 * MS_PER_HOUR,  // Reduced from 2h to 1h
+                max_age_ms: 1 * MS_PER_HOUR,
                 next_action: 'retry-instantiation',
                 next_label: 'openrouter:instantiation-failed',
                 description: 'OpenRouter instantiation stuck'
               },
               {
                 label: 'awaiting-approval',
-                max_age_ms: 24 * MS_PER_HOUR,  // Reduced from 72h to 24h
+                max_age_ms: 24 * MS_PER_HOUR,
                 next_action: 'ping-reviewers',
                 next_label: null,
                 description: 'PR awaiting review too long'
               },
               {
                 label: 'blocked',
-                max_age_ms: 1 * MS_PER_DAY,  // Reduced from 5 days to 1 day
+                max_age_ms: 1 * MS_PER_DAY,
                 next_action: 'recheck-blocker',
                 next_label: null,
                 description: 'Blocked for extended period'
               },
               {
                 label: 'review-fix:in-progress',
-                max_age_ms: 6 * MS_PER_HOUR,  // New pattern
+                max_age_ms: 6 * MS_PER_HOUR,
                 next_action: 'retry-review-fix',
                 next_label: 'review-fix:failed',
                 description: 'Review fix automation stuck'
               },
               {
                 label: 'triage:new',
-                max_age_ms: 2 * MS_PER_HOUR,  // New pattern - should move quickly
+                max_age_ms: 2 * MS_PER_HOUR,
                 next_action: 'trigger-triage',
                 next_label: 'triage:in-progress',
                 description: 'New item not triaged'
