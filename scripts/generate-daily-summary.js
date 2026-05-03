@@ -151,7 +151,7 @@ async function fetchPRsSince(since) {
     });
     
     // Defensive filter: ensure only PRs are returned (items with pull_request property)
-    return results.filter(item => item.pull_request);
+    return results.filter(item => item.pull_request).map(pr => ({ ...pr, merged_at: pr.pull_request.merged_at }));
   } catch (error) {
     console.error('❌ Error fetching PRs:', error.message);
     return [];
