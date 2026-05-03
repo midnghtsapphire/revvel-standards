@@ -14,6 +14,10 @@
 
 ---
 
+## 🎯 Revvel Rosette Automation (NEW!)
+
+---
+
 ## 🚀 Agent Fallback System (NEW!)
 
 **Automatic Devin → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
