@@ -114,7 +114,7 @@ jobs:
             core.setOutput('skip', 'false');
 
       - name: Assign to Copilot orchestrator
-        if: steps.check.outputs.skip != 'true'
+        if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
         continue-on-error: true
         with:
