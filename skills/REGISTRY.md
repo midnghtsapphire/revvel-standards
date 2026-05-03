@@ -73,6 +73,8 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | USDA loans, rural development, loan packagers, property eligibility, income limits | [`usda-loan-agent`](#usda-loan-agent) |
 | Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
 | Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
+| Agent prompt detection, TODO @agent routing, @bito @goap @roo tags, HANDOFF.md execution | [`prompt-routing`](#prompt-routing) |
+| Roo-Cline, local development, VS Code agent, multi-file refactoring, @roo tag | [`roo-cline`](#roo-cline) |
 
 ---
 
@@ -552,4 +554,29 @@ At the end of every session:
 
 ---
 
-*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: April 30, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai skills.*
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: May 3, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai, prompt-routing, roo-cline skills.*
+
+---
+
+### Agent Orchestration & Prompts (New Section)
+
+#### prompt-routing
+
+- **Path:** `skills/prompt-routing/`
+- **Files:** `SKILL.md`
+- **Description:** Automatically detect agent prompts in code comments (`TODO @agent:`), issues, PRs, and `HANDOFF.md` files. Extract context, classify prompt type, route to appropriate specialist agent (Bito, GOAP, Jules, Roo-Cline, OpenRouter), and track completion. Enables tag-based agent assignment: `@agent` (auto-routed), `@bito` (code quality), `@goap` (revenue), `@jules` (research), `@roo` (local development), `@copilot` (manual).
+- **Tags:** prompt-detection, agent-routing, todo-@agent, handoff-execution, multi-agent-orchestration, @bito, @goap, @roo, @jules, @copilot
+- **Trigger:** "agent prompt", "TODO @agent", "@bito tag", "@goap tag", "@roo tag", "HANDOFF.md", "agent routing", "prompt detection", "multi-agent orchestration"
+- **Documentation:** `docs/AGENT_PROMPT_CONVENTION.md` · `docs/AGENT_PROMPT_EXECUTION_EVALUATION.md`
+- **Status:** Planned (documentation complete, workflow pending)
+
+#### roo-cline
+
+- **Path:** `skills/roo-cline/`
+- **Files:** `SKILL.md`
+- **Platform:** [Roo-Cline](https://github.com/marco-altran/Roo-Cline) (VS Code extension)
+- **Description:** Use Roo-Cline autonomous coding agent for local development tasks requiring multi-file refactoring, complex feature implementation, or terminal command execution with human oversight. Roo-Cline operates in VS Code with multiple modes (Code, Architect, Ask, Debug), supports all major LLM providers (OpenAI, Claude, Gemini, Ollama), and provides human-in-the-loop approval for each action. Ideal for local development work tagged with `@roo`.
+- **Tags:** roo-cline, vs-code-agent, local-development, autonomous-coding, multi-file-refactoring, @roo-tag, IDE-agent, human-in-loop
+- **Trigger:** "@roo", "roo-cline", "local refactoring", "VS Code agent", "autonomous coding", "Cline", "IDE agent"
+- **Documentation:** `docs/ROO_CLINE_SETUP.md` · `docs/AGENT_PROMPT_CONVENTION.md`
+- **Status:** Active (manual invocation, desktop tool)
