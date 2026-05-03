@@ -100,21 +100,21 @@ Every Sunday at 09:00 UTC, the system automatically generates content ideas
 
 ### How It Works
 - Triggered by schedule: `cron: '0 9 * * 0'`
-- Analyzes trends and topics
-- Generates 2-4 new blog post ideas
-- Creates content calendar for the week
+- Runs the standard blog pipeline with topic "Weekly Content Calendar"
+- Generates a content calendar post through the 5-phase pipeline (research, outline, draft, refinement, export)
 - Commits to repository
 
 ### Output
+The scheduled run uses the standard blog pipeline with topic "Weekly Content Calendar":
 ```
 content-automation-output/2026-05-02-weekly-content-calendar/
 ├── metadata.json
-├── content-calendar.md  # Week's content plan
-└── ideas/
-    ├── idea-1.md
-    ├── idea-2.md
-    ├── idea-3.md
-    └── idea-4.md
+├── brief.md
+├── outline.md
+├── draft_v1.md
+├── draft_final.md
+└── formats/
+    └── blog.html
 ```
 
 ---
