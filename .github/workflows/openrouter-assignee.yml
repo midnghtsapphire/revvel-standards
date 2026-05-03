@@ -34,7 +34,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'cron-sweep' }}
   cancel-in-progress: false
 
 jobs:
@@ -130,7 +130,8 @@ jobs:
               core.info(`✅ Assigned @Copilot to #${issueNumber}`);
             } catch (error) {
               // Retry with GITHUB_TOKEN if ADMIN_GITHUB_TOKEN failed
-              if ('${{ secrets.ADMIN_GITHUB_TOKEN }}' && error.status === 403) {
+              const hasAdminToken = '${{ secrets.ADMIN_GITHUB_TOKEN }}' !== '';
+              if (hasAdminToken && error.status === 403) {
                 core.warning(`ADMIN_GITHUB_TOKEN failed (${error.message}), retrying with GITHUB_TOKEN`);
                 const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
                 await octokit.rest.issues.addAssignees({
@@ -231,6 +232,7 @@ jobs:
         with:
           script: |
             const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
+            const hasApiKey = '${{ secrets.OPENROUTER_API_KEY }}' !== '';
             
             // Fetch all open issues (includes PRs)
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -309,7 +311,7 @@ jobs:
                 ['Has assignee', String(hasAssignee.length)],
                 ['No-triage label', String(noTriageLabel.length)],
                 ['Dry run?', isDryRun ? 'Yes' : 'No'],
-                ['OPENROUTER_API_KEY', '${{ secrets.OPENROUTER_API_KEY }}' ? 'Configured' : 'Not configured'],
+                ['OPENROUTER_API_KEY', hasApiKey ? 'Configured' : 'Not configured'],
               ])
               .write();
 
@@ -350,7 +352,8 @@ jobs:
                   core.info(`  ✅ Assigned @Copilot`);
                 } catch (error) {
                   // Retry with GITHUB_TOKEN if ADMIN_GITHUB_TOKEN failed
-                  if ('${{ secrets.ADMIN_GITHUB_TOKEN }}' && error.status === 403) {
+                  const hasAdminToken = '${{ secrets.ADMIN_GITHUB_TOKEN }}' !== '';
+                  if (hasAdminToken && error.status === 403) {
                     core.warning(`  ADMIN_GITHUB_TOKEN failed, retrying with GITHUB_TOKEN`);
                     const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
                     await octokit.rest.issues.addAssignees({
