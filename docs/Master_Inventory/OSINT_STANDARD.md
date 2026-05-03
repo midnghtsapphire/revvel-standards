@@ -446,7 +446,159 @@ if __name__ == "__main__":
 
 ---
 
-## 8. OSINT Platform Integrations (FOSS)
+## 8. Field-Specific OSINT Tool Catalog
+
+The open-source intelligence (OSINT) landscape contains hundreds of tools that range from simple search operators to advanced AI-driven frameworks. Because manual data gathering is often fragile, rate-limited, and difficult to scale, utilizing structured OSINT tools is highly "worth it" for security teams, journalists, and researchers looking to cut through noise and avoid double-counting evidence.
+
+Below is a comprehensive mapping of OSINT data streams to their respective operational fields, detailing what the tools do, their links, and an assessment of their value.
+
+---
+
+### 8.1. Field 1: Social Media & Messaging Intelligence (SOCMINT)
+
+**Stream:** Tracking threat actors, scam rings, disinformation, and digital footprints across platforms.
+
+#### Telegram Ecosystem
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **Telegago** | Community CSE (no direct URL) | Custom Google search engine for finding publicly accessible and indexed Telegram channels. Created using Google CSE with Telegram-specific site filters (e.g., site:t.me). | Excellent for initial discovery of public channels, but cannot penetrate restricted or truly private groups. Access: Search for "Telegago CSE" or create your own at https://cse.google.com/cse |
+| **TGStat** | https://tgstat.com | Catalogs channels, subscriber counts, and audience overlap | Highly valuable for tracking influence networks, propaganda flow, and the "business side" of channels |
+| **Telemetr.io** | https://telemetr.io | Alternative channel analytics platform with different data visualization and export formats | Highly valuable as a cross-validation source for TGStat data |
+| **Telepathy** | https://telepathydb.com | Open-source toolkit for archiving chats, scraping member lists, and mapping message interactions | Very powerful for deep analysis but requires technical knowledge and is subject to strict Telegram API rate limits |
+| **UserSearch** | https://usersearch.com | Structured platform for searching billions of messages, enumerating members, and retrieving historic profile pictures | Yes, it abstracts the complexity of API limits and burner accounts, making it vastly superior to manual scraping for professional investigations |
+| **Telegram Breach Search Bots (category)** | Various implementations (not listed) | ⚠️ **LEGAL WARNING**: Category of Telegram bots that claim to provide phone-to-name resolution or search breach databases. These tools operate in legal gray areas, frequently get banned, and may violate data protection laws (GDPR, CCPA), breach investigation ethics, and organizational policies. **Use only with explicit legal authorization and within lawful investigative frameworks.** Not recommended for general use. | Significant legal and operational risks; consult legal counsel before considering |
+
+#### Mainstream Social Media (X/Twitter, Facebook, LinkedIn, Reddit)
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **ExportData.io** | https://exportdata.io | Analyzes X/Twitter followers, historical tweets, and engagement trends | Yes, valuable for social network analysis |
+| **Foller.me** | https://foller.me | X/Twitter account analysis and engagement metrics | Yes, useful for follower analysis |
+| **DumpItBlue+** | Chrome extension | Dumps Facebook friends, group members, and messenger contacts into text files | Yes, for Facebook OSINT workflows |
+| **Instaloader** | https://github.com/instaloader/instaloader | Downloads Instagram pictures, metadata, and maps relationships | Yes, for Instagram investigations |
+| **Osintgram** | https://github.com/Datalux/Osintgram | Instagram OSINT tool for gathering information | Yes, complements Instaloader |
+| **CrossLinked** | https://github.com/m8sec/CrossLinked | LinkedIn enumeration tool that uses search engine scraping to collect valid employee names without alerting the target | Yes, essential for corporate OSINT |
+| **Pullpush** | https://pullpush.io | Service for indexing and retrieving Reddit content, including deleted posts | Yes, for Reddit investigation and deleted content recovery |
+| **F5BOT** | https://f5bot.com | Keyword notifications for Reddit, Hacker News, and Lobsters | Yes, for real-time monitoring |
+
+---
+
+### 8.2. Field 2: Geolocation, Maritime, and Aviation Intelligence
+
+**Stream:** Monitoring military movements, global conflict, supply chains, and environmental data.
+
+#### Flight & Aviation Tracking
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **ADS-B Exchange** | https://globe.adsbexchange.com | The world's largest source of unfiltered flight data | Essential. Unlike commercial trackers, it does not filter out military or blocked aircraft, making it critical for tracking tankers, AWACS, and troop movements |
+| **FlightRadar24** | https://flightradar24.com | Popular commercial flight tracker | Yes, but has filtering limitations |
+| **RadarBox** | https://radarbox.com | Commercial flight tracker with air traffic control audio | Yes, audio recordings add intelligence value |
+
+#### Maritime Tracking
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **MarineTraffic** | https://marinetraffic.com | Tracks ships globally via AIS data | Yes, but with the caveat that military and illicit vessels often "go dark" by disabling AIS or spoofing their locations |
+| **VesselFinder** | https://vesselfinder.com | Alternative global ship tracking via AIS | Yes, provides cross-validation with MarineTraffic |
+
+#### Satellite & Environmental Observation
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **Sentinel Hub EO Browser** | https://apps.sentinel-hub.com/eo-browser | Free multispectral satellite monitoring | Highly recommended for detecting burn scars, thermal anomalies, and baseline conflict monitoring |
+| **NASA FIRMS** | https://firms.modaps.eosdis.nasa.gov | Near real-time fire and thermal anomaly detection | Yes, essential for environmental and conflict monitoring |
+| **SunCalc** | https://suncalc.org | Shadow analysis tool used to verify the exact time and date a photo or video was taken (chronolocation) | Yes, critical for verification work |
+
+#### Conflict Aggregators
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **World Monitor** | https://worldmonitor.app | Aggregates military bases, live aircraft, dark ships, and news onto a 3D globe | Yes, excellent for integrated situational awareness |
+| **LiveUAMap** | https://liveuamap.com | Interactive conflict map plotting real-time events geographically | Yes, essential for conflict tracking |
+
+---
+
+### 8.3. Field 3: Network, Infrastructure, and Cybersecurity Reconnaissance
+
+**Stream:** Identifying digital vulnerabilities, exposed servers, and malicious infrastructure.
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **Shodan** | https://shodan.io | Search engine for the Internet of Things (IoT) that discovers devices, open ports, webcams, and unpatched software | Absolutely critical for defenders to find exposed internal assets before attackers do |
+| **Censys** | https://censys.io | IoT search engine for devices, certificates, and services | Yes, complements Shodan with different indexing |
+| **SpiderFoot** | https://github.com/smicallef/spiderfoot | An automated OSINT platform with 200+ modules for threat intelligence and asset discovery | Highly valuable for correlating disparate data like IP addresses, subdomains, and Bitcoin wallets |
+| **Maltego** | https://maltego.com | A graph-based link analysis platform (part of Kali Linux) with dozens of data transforms | Excellent for visualizing relationships, though analysts must be careful of confirmation bias leading to false connections |
+| **Intelligence X** | https://intelx.io | An archival search engine that accesses the dark web, public data leaks, and historical web pages removed for legal/censorship reasons | Yes, for deep web and dark web investigations |
+| **ThreatFox** | https://threatfox.abuse.ch | Free, live feed for Indicators of Compromise (IoCs) | Yes, essential for threat intelligence |
+| **URLhaus** | https://urlhaus.abuse.ch | Free, live feed for malicious URLs | Yes, essential for URL threat intelligence |
+
+---
+
+### 8.4. Field 4: People, Identity, and Credential Investigations
+
+**Stream:** Lawful identity attribution, background verification, and credential investigations. **Note:** All tools in this field must be used only with proper legal authorization, legitimate investigative purposes, and in compliance with applicable privacy laws and regulations.
+
+#### Username Enumeration
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **WhatsMyName** | https://whatsmyname.app | Checks if a specific username exists across hundreds or thousands of different websites. Most effective with unique usernames; common usernames may generate high false-positive rates due to name collisions across platforms. | Very useful for cross-platform identity resolution |
+| **Sherlock** | https://github.com/sherlock-project/sherlock | Username enumeration tool across social networks | Yes, widely used and actively maintained |
+| **Maigret** | https://github.com/soxoj/maigret | Advanced username search across thousands of sites with reporting features | Yes, more advanced than Sherlock |
+| **Blackbird** | https://github.com/p1ngul1n0/blackbird | Fast username search across multiple platforms | Yes, good for quick checks |
+
+#### Data Breaches & Emails
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **HaveIBeenPwned** | https://haveibeenpwned.com | Checks if an email was exposed in known data breaches | Yes, essential for breach verification |
+| **DeHashed** | https://dehashed.com | A deep breach search engine matching employee/consumer logins against aggregated leaks | Yes, comprehensive breach database |
+| **Epieos** | https://epieos.com | Reverse email and phone lookup tool to find connected social accounts | Yes, powerful for email investigations |
+
+#### Facial Recognition & Image Analysis
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **PimEyes** | https://pimeyes.com | An advanced public facial recognition engine capable of matching faces even in low-resolution images | Yes, very powerful but raises privacy concerns |
+| **Lenso.ai** | https://lenso.ai | AI-powered facial recognition that handles altered, edited, or angled photos | Yes, complements PimEyes |
+| **GeoSpy** | https://geospy.ai | AI-powered image geolocation that uncovers where photos were taken without relying on EXIF data | Yes, revolutionary for geolocation work |
+
+---
+
+### 8.5. Field 5: Search Engines, Web Archiving & "Dorking"
+
+**Stream:** Bypassing standard search limits to find hidden files and deleted history.
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **Google Dorking** | Native Google search | Using advanced operators (site:, filetype:, intext:) to find exposed documents, passwords, or vulnerable web panels | Yes, fundamental OSINT skill |
+| **LLM-Dorking** | AI technique (no specific tool) | General technique using AI models (ChatGPT, Claude, etc.) to automatically craft complex search queries based on plain-English requests | Yes, accelerates dork creation |
+| **AI Dork Generation (category)** | See description | Category of AI-powered tools that generate Google/Bing dorks. Implementations: use ChatGPT/Claude with prompts like "Generate Google dorks for [topic]" or search GitHub for "AI dork generator" | Yes, useful for automated query crafting |
+| **Wayback Machine** | https://archive.org | The primary tool for exploring the history of websites and retrieving deleted posts | Yes, essential for historical research |
+| **SearXNG** | https://searxng.org | Privacy-respecting meta-search engine that prevents tracking and personalization bias during investigations | Yes, for privacy-conscious searching |
+| **DuckDuckGo** | https://duckduckgo.com | Privacy-focused search engine | Yes, no tracking or personalization |
+| **Mojeek** | https://mojeek.com | Independent search engine with no tracking | Yes, alternative perspective |
+
+---
+
+### 8.6. Field 6: AI-Augmented OSINT Frameworks
+
+**Stream:** Using Large Language Models (LLMs) and autonomous agents to synthesize raw intelligence.
+
+| Tool | URL | Purpose | Worth It? |
+|------|-----|---------|-----------|
+| **Anthropic Cybersecurity Skills** | Via Claude API | Agentic AI setups using Anthropic's Claude models that can be directed to autonomously query APIs, scrape data, and write intelligence reports | Yes, enables automated intelligence synthesis |
+| **OSINT Agent Frameworks (category)** | https://langchain.com, https://github.com/Significant-Gravitas/AutoGPT | Category of frameworks for building autonomous OSINT agents. Examples: LangChain, AutoGPT, AgentGPT. Search GitHub for "OSINT agent framework" for additional implementations. | Yes, for advanced automation |
+| **OSINT Skill v3.0** | Proprietary/research project | An orchestrated toolkit for AI agents that integrates 55+ Apify scrapers, Jina AI, and Perplexity to generate psychoprofiles, map careers, and assign confidence scores. Mentioned in research literature; not publicly available as packaged tool. | Yes (if accessible), shifts burden of data normalization to AI, though human orchestration necessary to prevent hallucinations |
+| **NAIJA OSINT INTEL** | Search GitHub for "NAIJA OSINT" | A localized Python suite specifically designed for Nigerian cyber threat intelligence, featuring tools for 419 scam detection and legal evidence packaging. Implementation details vary. | Yes, specialized for Nigerian threat landscape |
+
+---
+
+## 9. OSINT Platform Integrations (FOSS)
+
+**Note:** Many tools from the field-specific catalog above (Section 8) are also included in integration workflows. The platforms below provide centralized management and orchestration. For example, Spiderfoot and Maltego from Section 8 appear here because they serve dual roles as both standalone OSINT tools and integration platforms. OpenCTI and MISP provide frameworks for correlating data from tools like Shodan and threat feeds mentioned in earlier sections. Additional tools like theHarvester (below) complement the Section 8 catalog.
 
 | Platform | Role | URL |
 |----------|------|-----|
@@ -463,7 +615,7 @@ if __name__ == "__main__":
 
 ---
 
-## 9. OSINT Directory Structure
+## 10. OSINT Directory Structure
 
 ```
 osint/
@@ -490,7 +642,7 @@ osint/
 
 ---
 
-## 10. Required GitHub Secrets
+## 11. Required GitHub Secrets
 
 | Secret Name | Purpose |
 |-------------|---------|
@@ -504,7 +656,7 @@ Store all secrets in GitHub Secrets and in HashiCorp Vault under `revvel/apps/YO
 
 ---
 
-## 11. References
+## 12. References
 
 - `SECURITY_STANDARD.md` — base security requirements
 - `AUTOMATED_AUDIT_AGENT_STANDARD.md` — continuous auditing that consumes OSINT output
