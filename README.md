@@ -8,9 +8,52 @@
 
 ## Quick Links
 
+📊 **[Project Dashboard](./dashboard.html)** — **NEW!** Centralized visibility into all projects, BOM, inventory, test URLs, and status ([docs](docs/PROJECT_DASHBOARD.md))  
 📋 **[PORTFOLIO.md](docs/PORTFOLIO.md)** — Corporate identity, entity hierarchy, product brands, project tracking, and comprehensive tool/resource catalogs  
 📚 **[Master Inventory](docs/Master_Inventory/)** — All detailed standards and specifications  
 🛠️ **[Scripts](scripts/)** — Automation scripts for bootstrapping, compliance checking, and repo management
+
+---
+
+## 📊 Project Dashboard System (NEW!)
+
+**Centralized visibility into all MIDNGHTSAPPHIRE projects without "looking in folders"!**
+
+### Quick Start
+
+```bash
+# View dashboard summary
+npm run dashboard
+
+# List all projects
+npm run dashboard projects
+
+# Find all test URLs  
+npm run dashboard urls
+
+# Search everything
+npm run dashboard search oaudrey
+
+# Open HTML dashboard in browser
+npm run dashboard open
+```
+
+**Full Documentation:** [docs/PROJECT_DASHBOARD.md](./docs/PROJECT_DASHBOARD.md)
+
+**What It Tracks:**
+- ✅ **33 Projects** from PROJECTS_TO_SHIP and PROJECT_CATALOG
+- ✅ **124 Active Services** from Master Inventory  
+- ✅ **29 Test URLs** extracted from README files
+- ✅ **12 Domains** including oaudrey.com, soup2bowl.com, revvel.co
+- ✅ **BOM & Inventory** from all sources
+- ✅ **Project Status** and handoff documentation
+
+**Features:**
+- 🔍 Live search across all data
+- 📱 Beautiful glassmorphism UI
+- ⏱️ Auto-updates hourly via GitHub Actions
+- 💻 CLI tool for terminal access
+- 🌐 GitHub Pages deployment
 
 ---
 

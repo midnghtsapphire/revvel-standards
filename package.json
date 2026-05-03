@@ -6,7 +6,12 @@
   "scripts": {
     "test": "node tests/openrouter-triage.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/gatekeeper-sync.test.js && node tests/sync-dns-records.test.js && node tests/schema-rich-results-checker.test.js && node tests/revvel-rosette-automation-harness.test.js && node tests/generate-daily-summary.test.js && node tests/scripts/check-compliance.test.js && node tests/scripts/sync-flow-charts.test.js",
     "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\"",
-    "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\""
+    "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
+    "dashboard": "node scripts/dashboard-cli.js",
+    "dashboard:generate": "node scripts/aggregate-project-dashboard.js"
+  },
+  "bin": {
+    "dashboard": "./scripts/dashboard-cli.js"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.22.1",
