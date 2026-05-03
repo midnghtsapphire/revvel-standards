@@ -269,7 +269,10 @@ async function phaseExport(finalContent) {
 </head>
 <body>
   <article>
-${finalContent.replace(/^# (.+)$/gm, '<h1>$1</h1>')
+${finalContent.replace(/&/g, '&amp;')
+           .replace(/</g, '&lt;')
+           .replace(/>/g, '&gt;')
+           .replace(/^# (.+)$/gm, '<h1>$1</h1>')
            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
            .split('\n\n').map(p => p.trim() && !p.startsWith('<h') ? `    <p>${p}</p>` : `    ${p}`).join('\n')}
