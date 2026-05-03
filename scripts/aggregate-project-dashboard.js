@@ -230,9 +230,9 @@ function parseProjectCatalog(content) {
       if (cells.length >= 3) {
         // Extract link from markdown [text](url)
         let link = '';
-        const linkMatch = cells[3] ? cells[3].match(/\[.*?\]\((.*?)\)/) : null;
+        const lastCell = cells[cells.length - 1];
+        const linkMatch = lastCell ? lastCell.match(/\[.*?\]\((.*?)\)/) : null;
         if (linkMatch) {
-          link = linkMatch[1];
         }
         
         projects.push({
