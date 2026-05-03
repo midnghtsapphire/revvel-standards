@@ -112,7 +112,11 @@ jobs:
             let topic, format, urgency, audience, issueNumber;
             
             if (context.eventName === 'workflow_dispatch') {
-              topic = context.payload.inputs.topic;
+              const rawTopic = context.payload.inputs.topic;
+              topic = rawTopic
+                .replace(/[\r\n]/g, ' ')
+                .replace(/[`$<>"']/g, '')
+                .substring(0, 200);
               format = context.payload.inputs.format;
               urgency = context.payload.inputs.urgency;
               audience = context.payload.inputs.target_audience;
