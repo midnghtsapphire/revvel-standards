@@ -84,7 +84,7 @@ Smart model routing based on task requirements:
 ### Security & Compliance
 - Input sanitization (prevents code injection)
 - API keys in GitHub Secrets
-- No PII sent to AI models
+- Avoid sending PII in topics/prompts (PII filtering is not automatically enforced)
 - Human review by default
 - GDPR/CCPA compliant
 
