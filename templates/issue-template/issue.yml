@@ -176,4 +176,10 @@ body:
         4. **Wait for Audrey's 👍** before implementing, unless the change is
            clearly trivial (typo, dead-link, comment-only).
 
+        **For [WR] issues:** After posting your research findings:
+        - A PR will be automatically created with a WR document
+        - You'll be assigned to refine and rewrite the WR in that PR
+        - Follow the WR template structure in `wr/WR_TEMPLATE.md`
+        - Mark the WR as ✅ Complete when refinement is done
+
         Follow `docs/AGENTS.md` and any skills triggered by this request.

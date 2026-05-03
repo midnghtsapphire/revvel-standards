@@ -1,0 +1,420 @@
+name: WR PR Creation
+
+# After Jules completes deep research on a WR issue, this workflow:
+#   1. Detects when Jules has completed research (via comment or label)
+#   2. Creates a new branch for the WR
+#   3. Generates a WR document from template with Jules' findings
+#   4. Opens a PR with the refined WR content
+#   5. Assigns Jules to rewrite/refine the PR
+#
+# Docs: docs/WEEKLY_RESEARCH_PROCESS.md
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to create WR PR for"
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: wr-pr-${{ github.event.issue.number || github.event.inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  detect-completion:
+    name: Detect Jules research completion
+    runs-on: ubuntu-latest
+    outputs:
+      should_create_pr: ${{ steps.check.outputs.should_create_pr }}
+      issue_number: ${{ steps.check.outputs.issue_number }}
+      issue_title: ${{ steps.check.outputs.issue_title }}
+      issue_body: ${{ steps.check.outputs.issue_body }}
+    steps:
+      - name: Check if PR should be created
+        id: check
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            if (!issueNumber) {
+              core.notice('No issue number found');
+              core.setOutput('should_create_pr', 'false');
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            const title = issue.title || '';
+            const body = issue.body || '';
+            const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            
+            // Check if this is a WR issue
+            const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
+            if (!isWR) {
+              core.info(`Issue #${issueNumber} is not a WR issue`);
+              core.setOutput('should_create_pr', 'false');
+              return;
+            }
+
+            // Check if PR already exists for this issue
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100,
+            });
+
+            const existingPR = prs.find(pr => 
+              pr.body && pr.body.includes(`Closes #${issueNumber}`) ||
+              pr.title.includes(title.replace(/^\[WR\]\s*/i, ''))
+            );
+
+            if (existingPR) {
+              core.info(`PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
+              core.setOutput('should_create_pr', 'false');
+              return;
+            }
+
+            // Check if wr:complete label is present or if this is manual dispatch
+            const isComplete = labels.includes('wr:complete') || context.eventName === 'workflow_dispatch';
+            
+            // Or check if Jules has posted research findings (comment contains "Research Findings:")
+            let julesCompleted = false;
+            if (context.eventName === 'issue_comment') {
+              const comment = context.payload.comment;
+              if (comment && comment.body && comment.body.includes('Research Findings:')) {
+                julesCompleted = true;
+              }
+            }
+
+            const shouldCreate = isComplete || julesCompleted;
+            
+            core.info(`Issue #${issueNumber}: "${title}"`);
+            core.info(`Is WR: ${isWR}`);
+            core.info(`Is Complete: ${isComplete}`);
+            core.info(`Jules Completed: ${julesCompleted}`);
+            core.info(`Should Create PR: ${shouldCreate}`);
+            core.info(`Current labels: ${labels.join(', ')}`);
+            
+            core.setOutput('should_create_pr', shouldCreate ? 'true' : 'false');
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('issue_title', title);
+            core.setOutput('issue_body', body);
+
+  create-wr-pr:
+    name: Create WR PR
+    needs: detect-completion
+    if: needs.detect-completion.outputs.should_create_pr == 'true'
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_NUMBER: ${{ needs.detect-completion.outputs.issue_number }}
+      ISSUE_TITLE: ${{ needs.detect-completion.outputs.issue_title }}
+      JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get issue comments for research findings
+        id: get_findings
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            // Find Jules' research findings comment
+            const findingsComment = comments.find(c => 
+              c.body && (
+                c.body.includes('Research Findings:') ||
+                c.body.includes('## Research Findings') ||
+                c.body.includes('Executive Summary')
+              )
+            );
+
+            const findings = findingsComment ? findingsComment.body : '';
+            core.info(`Found research findings: ${findings.length} characters`);
+            
+            // Save to file for next step
+            const fs = require('fs');
+            fs.writeFileSync('research-findings.md', findings, 'utf8');
+            
+            return findings.substring(0, 1000); // Return preview
+
+      - name: Create WR branch
+        id: create_branch
+        run: |
+          # Clean title for branch name
+          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
+          BRANCH_NAME="wr/issue-${{ env.ISSUE_NUMBER }}-${CLEAN_TITLE:0:50}"
+          
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git checkout -b "${BRANCH_NAME}"
+          echo "Created branch: ${BRANCH_NAME}"
+
+      - name: Generate WR document
+        run: |
+          # Create WR directory if it doesn't exist
+          mkdir -p wr/issues
+          
+          # Generate WR filename
+          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
+          WR_FILE="wr/issues/issue-${{ env.ISSUE_NUMBER }}-${CLEAN_TITLE:0:50}.md"
+          
+          echo "WR_FILE=${WR_FILE}" >> $GITHUB_ENV
+          
+          # Copy template
+          cp wr/WR_TEMPLATE.md "${WR_FILE}"
+          
+          # Replace placeholders with actual values
+          sed -i "s#{REPO_NAME}#midnghtsapphire/revvel-standards#g" "${WR_FILE}"
+          sed -i "s#{REPO_URL}#https://github.com/midnghtsapphire/revvel-standards#g" "${WR_FILE}"
+          sed -i "s#{CREATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
+          sed -i "s#{UPDATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
+          sed -i "s#{RESEARCH_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
+          sed -i "s#{PRIMARY_LANGUAGE}#JavaScript#g" "${WR_FILE}"
+          
+          # Insert issue information at the top
+          cat > temp_header.md <<EOF
+          # WR: ${{ env.ISSUE_TITLE }}
+
+          **Issue:** #${{ env.ISSUE_NUMBER }}  
+          **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+          **Research Date:** $(date -u +%Y-%m-%d)  
+          **Researcher:** Jules (Google) + OpenRouter  
+          **WR Status:** 🟡 In Progress
+
+          ---
+
+          EOF
+          
+          # Append research findings if they exist
+          if [ -f research-findings.md ] && [ -s research-findings.md ]; then
+            echo "" >> temp_header.md
+            cat research-findings.md >> temp_header.md
+            echo "" >> temp_header.md
+            echo "---" >> temp_header.md
+            echo "" >> temp_header.md
+          fi
+          
+          # Append the rest of the template (skip first few lines to avoid duplication)
+          tail -n +10 "${WR_FILE}" >> temp_header.md
+          
+          mv temp_header.md "${WR_FILE}"
+          
+          echo "Generated WR document: ${WR_FILE}"
+
+      - name: Commit WR document
+        run: |
+          git add "${WR_FILE}"
+          git add wr/issues/ || true
+          
+          git commit -m "docs(wr): create WR for issue #${{ env.ISSUE_NUMBER }}
+
+          - Initial WR document created from template
+          - Includes Jules research findings
+          - Ready for refinement and implementation
+          
+          Issue: #${{ env.ISSUE_NUMBER }}"
+
+      - name: Push branch
+        id: push
+        run: |
+          git push -u origin "${{ steps.create_branch.outputs.BRANCH_NAME }}"
+          echo "Pushed branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}"
+
+      - name: Create Pull Request
+        id: create_pr
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const branchName = '${{ steps.create_branch.outputs.BRANCH_NAME }}';
+            const issueTitle = `${{ env.ISSUE_TITLE }}`.replace(/^\[WR\]\s*/i, '');
+            
+            const prTitle = `[WR] ${issueTitle}`;
+            
+            const prBody = `## Weekly Research (WR) - Ready for Jules Rewrite
+
+            This PR contains the initial WR (Weekly Research) document for issue #${issueNumber}.
+
+            ### 📋 Research Summary
+
+            The deep research phase has been completed by Jules and documented in this PR. The WR document includes:
+
+            - ✅ Repository review (AGENTS.md, skills/, standards/, templates/, .github/)
+            - ✅ Cross-repository consistency check
+            - ✅ Skills vault review
+            - ✅ External tools/extensions research
+            - ✅ Compliance with Prime Directive
+
+            ### 🎯 Next Steps
+
+            **Jules:** Please review and rewrite this WR document to:
+            1. Refine the research findings for clarity and actionability
+            2. Ensure all recommendations are specific and implementable
+            3. Add any missing context or considerations
+            4. Structure the content for maximum impact
+
+            ### 📁 Files Changed
+
+            - \`${process.env.WR_FILE}\` - Initial WR document with research findings
+
+            ### 🔗 Related
+
+            Closes #${issueNumber}
+
+            ---
+
+            **Workflow:** \`.github/workflows/wr-pr-creation.yml\`
+            **Jules Rewrite:** Requested via \`jules\` label
+            **Status:** 🟡 Awaiting Jules refinement`;
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: prTitle,
+              body: prBody,
+              head: branchName,
+              base: 'main',
+            });
+
+            core.info(`Created PR #${pr.number}: ${pr.html_url}`);
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('pr_url', pr.html_url);
+            
+            return { number: pr.number, url: pr.html_url };
+
+      - name: Apply labels to PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const prNumber = ${{ steps.create_pr.outputs.result }}.number;
+            
+            const labels = [
+              'weekly-research',
+              'jules',
+              'documentation',
+              'wr:in-progress'
+            ];
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: [label],
+                });
+                core.info(`Added label: ${label}`);
+              } catch (error) {
+                core.notice(`Could not add label "${label}": ${error.message}`);
+              }
+            }
+
+      - name: Request Jules review
+        if: env.JULES_API_KEY != ''
+        uses: BeksOmega/jules-action@v1
+        with:
+          prompt: |
+            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.result }}.number.
+            
+            Your task:
+            1. Review the research findings already documented
+            2. Refine and restructure the content for clarity
+            3. Ensure all recommendations are actionable and specific
+            4. Add implementation steps where appropriate
+            5. Verify compliance with revvel-standards requirements
+            6. Update the WR status to "✅ Complete" when done
+            
+            Follow the WR template structure and ensure the final document is ship-to-market ready.
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
+
+      - name: Comment on issue
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const prResult = ${{ steps.create_pr.outputs.result }};
+            
+            const comment = `🎉 **WR PR Created!**
+
+            I've created a pull request with the initial WR document based on the research findings.
+
+            **PR:** #${prResult.number}  
+            **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
+            **Status:** 🟡 Awaiting Jules refinement
+
+            ### What's next?
+
+            1. **Jules will review and rewrite** the WR document to refine the research findings
+            2. **You can review** the PR and provide feedback
+            3. **Once approved**, the WR will be merged and marked as complete
+
+            [View the PR →](${prResult.url})
+
+            ---
+
+            _Automated by \`.github/workflows/wr-pr-creation.yml\`_`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: comment,
+            });
+
+      - name: Update issue labels
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            
+            // Add in-review label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['in-review'],
+            });
+            
+            // Remove wr:complete if present (since we're now in refinement phase)
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: 'wr:complete',
+              });
+            } catch (error) {
+              // Label might not exist, ignore
+            }

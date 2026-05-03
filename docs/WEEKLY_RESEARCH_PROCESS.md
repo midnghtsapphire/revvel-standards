@@ -58,19 +58,43 @@ gh workflow run weekly-research.yml -f issue_number=123
    - `deep-research`
    - `openrouter`
    - `role:orchestrator`
+   - `jules` (triggers Jules deep research)
 3. Post welcome comment with research checklist
 
-### Step 2: Triage & Routing
+### Step 2: Deep Research by Jules
+
+**Workflow:** `jules-invoke.yml` (automatically triggered by `jules` label)
+
+**Actions:**
+1. Jules analyzes issue scope and requirements
+2. Performs comprehensive research across:
+   - Repository documentation (AGENTS.md, skills/, standards/)
+   - Cross-repository patterns
+   - External sources (docs, tools, recent releases)
+   - Security and compliance requirements
+3. Posts research findings as issue comment
+4. Includes structured recommendations and next steps
+
+### Step 3: Triage & Additional Routing
 
 **Workflow:** `openrouter-triage.yml` (automatically triggered)
 
 **Actions:**
 1. OpenRouter analyzes issue scope
-2. Suggests additional labels (e.g., `jules`, `codex`, `49agents`)
+2. Suggests additional labels (e.g., `codex`, `49agents`)
 3. Recommends research approach
 4. Posts triage comment with classification
 
-### Step 3: Research Execution
+### Step 4: Progress Tracking
+
+**Automated progress tracker comment includes:**
+
+- Research phases checklist
+- Agent assignment status
+- Findings summary (updated in real-time)
+- Completion estimate
+
+### Step 5: Parallel Research (Optional)
 
 **Multiple paths depending on configuration:**
 
@@ -88,25 +112,31 @@ gh workflow run weekly-research.yml -f issue_number=123
 - Findings consolidated by dedicated agent
 - **Duration:** 30-60 minutes
 
-### Step 4: Progress Tracking
-
-**Automated progress tracker comment includes:**
-
-- Research phases checklist
-- Agent assignment status
-- Findings summary (updated in real-time)
-- Completion estimate
-
-### Step 5: Completion
+### Step 5: Completion & PR Creation
 
 **When research is complete:**
 
 1. Final findings posted to issue
 2. Label changes:
-   - Remove `wr:in-progress`
    - Add `wr:complete`
-3. Implementation recommendations provided
-4. Next steps documented
+3. **Automatic PR creation triggered** (`.github/workflows/wr-pr-creation.yml`):
+   - Creates a new branch `wr/issue-{number}-{title}`
+   - Generates WR document from template with research findings
+   - Opens PR with refined content
+   - Applies `jules`, `weekly-research`, `documentation` labels
+4. **Jules rewrite phase**:
+   - Jules is automatically invoked to review and rewrite the WR
+   - Refines research findings for clarity and actionability
+   - Ensures recommendations are specific and implementable
+   - Updates status to ✅ Complete when done
+5. Label changes after PR creation:
+   - Add `in-review` to issue
+   - Keep `wr:in-progress` on PR until Jules completes refinement
+6. **Final merge**:
+   - Once Jules completes rewrite and PR is approved
+   - PR is merged to main
+   - Issue is automatically closed
+   - `wr:complete` label applied to both issue and PR
 
 ---
 

@@ -239,7 +239,9 @@ jobs:
             **When research is complete:**
             1. A summary comment will be posted
             2. The \`wr:complete\` label will be applied
-            3. The \`wr:in-progress\` label will be removed
+            3. A PR will be automatically created with the WR document
+            4. Jules will refine and rewrite the WR in the PR
+            5. The \`wr:in-progress\` label will be removed
 
 
             _Last updated: ${new Date().toISOString()}_  
