@@ -636,7 +636,7 @@ function generateDashboard(data) {
               <td><span class="badge ${getBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
               <td>${escapeHtml(p.description || p.notes || p.revenue || '')}</td>
               <td>${escapeHtml(p.source || 'N/A')}</td>
-              <td>${p.link ? `<a href="${escapeHtml(p.link)}" target="_blank">View</a>` : 'N/A'}</td>
+              <td>${p.link && /^https?:\/\//i.test(p.link) ? `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">View</a>` : 'N/A'}</td>
             </tr>
           `).join('')}
         </tbody>
