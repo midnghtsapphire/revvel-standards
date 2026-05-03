@@ -80,7 +80,7 @@ function extractProjectData() {
     projects: deduplicateProjects(projects),
     inventory,
     bom,
-    urls,
+    urls: deduplicateURLs(urls),
     domains,
     projectStatus,
     lastUpdated: new Date().toISOString(),
@@ -397,6 +397,16 @@ function deduplicateProjects(projects) {
   }
   
   return Array.from(seen.values());
+}
+
+function deduplicateURLs(urls) {
+  const seen = new Set();
+  return urls.filter(entry => {
+    const key = `${entry.url}|${entry.project}|${entry.type}|${entry.source}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function escapeHtml(str) {
@@ -772,5 +782,6 @@ module.exports = {
   extractTestURLs,
   extractDomainInfo,
   extractProjectStatus,
+  deduplicateURLs,
   generateDashboard,
 };

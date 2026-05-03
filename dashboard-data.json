@@ -1352,12 +1352,6 @@
       "project": "Soul2Bowl",
       "type": "vercel",
       "source": "/docs/Soul2Bowl/README.md"
-    },
-    {
-      "url": "https://soul2bowl.vercel.app",
-      "project": "Soul2Bowl",
-      "type": "vercel",
-      "source": "/docs/Soul2Bowl/README.md"
     }
   ],
   "domains": [
@@ -1441,5 +1435,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-03T03:36:07.756Z"
+  "lastUpdated": "2026-05-03T03:42:10.481Z"
 }
