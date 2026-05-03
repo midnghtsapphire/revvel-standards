@@ -1,7 +1,9 @@
 name: OpenRouter Assignee — First Line of Sight
 
-# Automatically assigns all new issues and PRs to @Copilot (the GitHub-visible
-# orchestrator backed by OpenRouter) as the first line of sight. Runs on:
+# Automatically assigns all new issues and PRs to @Copilot (a GitHub user account
+# representing the OpenRouter orchestrator, NOT the paid GitHub Copilot service)
+# as the first line of sight. This follows the Automation Routing Policy: all
+# automation routes through OpenRouter via OPENROUTER_API_KEY. Runs on:
 #   1. Every new issue/PR opened or reopened
 #   2. Hourly cron sweep to catch anything that was missed
 #   3. Manual workflow_dispatch for testing/dry-run
@@ -196,6 +198,9 @@ jobs:
             
             core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
 
+  # Hourly cron sweep job
+  # Named 'ralph-cron-sweep' following the Ralph self-healing pattern (see skills/ralph-loop/SKILL.md)
+  # for consistency with other continuous monitoring jobs in the repo.
   ralph-cron-sweep:
     name: Hourly cron sweep — catch missed items
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
