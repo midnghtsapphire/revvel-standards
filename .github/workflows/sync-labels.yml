@@ -53,6 +53,10 @@ jobs:
               // Third-Party / External Contributions
               { name: 'third-party',       color: 'bfdadc', description: 'PR from forked repository - external contributor' },
               { name: 'external-contributor', color: '7057ff', description: 'Contribution from outside the organization' },
+              // Agent Quality & Monitoring
+              { name: 'scaffolding-detected', color: 'd93f0b', description: 'PR contains scaffolding language - requires completion' },
+              { name: 'needs-completion', color: 'fbca04', description: 'Work is incomplete - finish implementation' },
+              { name: 'agent-health-alert', color: 'd73a4a', description: 'Agent health check detected issues' },
               // PR Review Status
               { name: 'awaiting-approval', color: 'fbca04', description: 'PR is awaiting review and approval' },
               { name: 'changes-requested', color: 'd93f0b', description: 'PR has changes requested by reviewers' },
