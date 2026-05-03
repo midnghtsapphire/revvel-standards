@@ -108,6 +108,7 @@
 | GitHub Actions | CI/CD pipelines: automated testing, builds, and deployments | GitHub | 2,000 min/mo (free public repos = unlimited) | $0 | Exceeds 2,000 minutes/month on private repos | ✅ Active | All projects |
 | Vercel | Frontend deployment (alternative to DigitalOcean for Next.js) | Vercel | 100 GB bandwidth/mo | $0 free / $20+/mo | Exceeds 100 GB bandwidth/month | 🟡 Research Topic | Next.js projects (evaluate) |
 | Railway | One-click app deployment with managed databases | Railway | $5 free credit/mo | $5–20+/mo | Free credit exhausted | 🟡 Research Topic | Rapid prototypes (evaluate) |
+| InfinityFree | Free web hosting with PHP and MySQL support for testing dynamic sites ([dash.infinityfree.com](https://dash.infinityfree.com)); unlimited bandwidth/storage with fair use policy; includes SSL, custom domains, and auto-installer for WordPress/Joomla | InfinityFree | Unlimited (free with fair use) | $0 | Fair use policy violated (excessive CPU/resource usage) or need email hosting | 🟡 Research Topic | Dynamic site testing, PHP/MySQL prototypes (evaluate) |
 
 ### 1.9 Monitoring & Observability
 
