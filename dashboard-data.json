@@ -428,6 +428,12 @@
           "usedBy": "Rapid prototypes (evaluate)"
         },
         {
+          "name": "InfinityFree",
+          "description": "Free web hosting with PHP and MySQL support for testing dynamic sites ([dash.infinityfree.com](https://dash.infinityfree.com)); unlimited bandwidth/storage with fair use policy; includes SSL, custom domains, and auto-installer for WordPress/Joomla",
+          "status": "🟡 Research Topic",
+          "usedBy": "Dynamic site testing, PHP/MySQL prototypes (evaluate)"
+        },
+        {
           "name": "GlitchTip",
           "description": "Self-hosted error tracking; captures application exceptions",
           "status": "🟡 Research Topic",
@@ -1483,5 +1489,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-03T02:17:02.608Z"
+  "lastUpdated": "2026-05-03T02:34:12.187Z"
 }
