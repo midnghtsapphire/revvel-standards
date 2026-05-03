@@ -350,12 +350,13 @@ jobs:
                 
                 case 'trigger-triage':
                   comment_body += `This item has been in \`triage:new\` for over 2 hours without progression.\n\n`;
-                  comment_body += `**Auto-action:** Triggering triage workflow.\n`;
+                  comment_body += `**Auto-action:** Triggering triage workflow sweep.\n`;
+                  comment_body += `Note: The item will remain in \`triage:new\` until the sweep processes it.\n`;
                   
                   if (!dry_run) {
-                    // Trigger openrouter-triage workflow. Do not advance this item's
-                    // label here because workflow_dispatch has no per-item context and
-                    // only runs the backlog sweep.
+                    // Trigger openrouter-triage workflow sweep (workflow_dispatch has no
+                    // per-item context). The item stays in triage:new and will be picked
+                    // up by the sweep job's backlog discovery.
                     await github.rest.actions.createWorkflowDispatch({
                       owner: context.repo.owner,
                       repo: context.repo.repo,

@@ -290,6 +290,23 @@ jobs:
               
               core.info(`Detected fork PR #${prNumber} from ${forkRepo}. Adding third-party label and comment.`);
               
+              // Check if we've already commented on this PR
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+              });
+              
+              const botCommentExists = comments.data.some(comment => 
+                comment.user.type === 'Bot' && 
+                comment.body.includes('Third-Party Pull Request Detected')
+              );
+              
+              if (botCommentExists) {
+                core.info(`Fork PR comment already exists for #${prNumber}. Skipping duplicate.`);
+                return;
+              }
+              
               // Add third-party label for visibility
               try {
                 await github.rest.issues.addLabels({
