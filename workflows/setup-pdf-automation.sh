@@ -105,7 +105,9 @@ if [ ${#MISSING_KEYS[@]} -gt 0 ]; then
     # return empty, exiting the script. Auto-continue when no TTY is attached
     # or when AUTO_YES=1 is set, and only prompt for human confirmation when
     # we have an interactive terminal.
-    if [ "${AUTO_YES:-0}" = "1" ] || [ ! -t 0 ]; then
+    if [ "${AUTO_YES:-0}" = "1" ]; then
+        print_warning "AUTO_YES=1 detected — continuing without prompt."
+    elif [ ! -t 0 ]; then
         print_warning "Non-interactive run detected — continuing without prompt."
     else
         read -p "Continue anyway? (y/n) " -n 1 -r
