@@ -28,6 +28,11 @@ on:
     types: [opened, reopened, ready_for_review]
   pull_request_review:
     types: [submitted, edited, dismissed]
+
+# P0 - Critical workflow: must complete before PR merge
+concurrency:
+  group: pr-review-status-${{ github.event.pull_request.number || github.event.review.pull_request_number }}
+  cancel-in-progress: false  # Let runs complete (critical status updates)
   pull_request_review_comment:
     types: [created]
 

@@ -37,6 +37,11 @@ on:
       - '.github/labels.yml'
   workflow_dispatch:
 
+# P1 - Important workflow: test configuration changes
+concurrency:
+  group: test-bito-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

@@ -442,3 +442,28 @@ labels:
   - name: auto-error
     color: "d73a4a"
     description: "Auto-created error issue from workflow failure"
+
+  # ── Workflow Priority & Health ────────────────────────────────────────────────
+  - name: "workflow-priority:p0"
+    color: "d93f0b"
+    description: "Critical workflow — must complete before PR merge"
+
+  - name: "workflow-priority:p1"
+    color: "fbca04"
+    description: "Important workflow — should complete but not blocking"
+
+  - name: "workflow-priority:p2"
+    color: "0e8a16"
+    description: "Optional workflow — runs async, doesn't block merge"
+
+  - name: workflow-stuck
+    color: "d73a4a"
+    description: "Workflow running too long or hung — auto-fix in progress"
+
+  - name: workflow-failure
+    color: "b60205"
+    description: "Workflow failed — requires investigation"
+
+  - name: resolved
+    color: "0e8a16"
+    description: "Issue resolved — workflow recovered or fixed"
