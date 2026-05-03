@@ -25,12 +25,34 @@ cp /path/to/revvel-standards/.github/workflows/sync-labels.yml .github/workflows
 cp /path/to/revvel-standards/.github/workflows/pr-labels.yml .github/workflows/
 cp /path/to/revvel-standards/.github/workflows/ready-for-review.yml .github/workflows/
 cp /path/to/revvel-standards/.github/workflows/pr-review-status.yml .github/workflows/
+cp /path/to/revvel-standards/.github/workflows/pr-auto-review.yml .github/workflows/
+cp /path/to/revvel-standards/.github/workflows/pr-review-request-handler.yml .github/workflows/
+
+# Copy review automation scripts
+mkdir -p scripts
+cp /path/to/revvel-standards/scripts/pr-auto-review.js scripts/
+cp /path/to/revvel-standards/scripts/pr-review-request-handler.js scripts/
 
 # Copy labels configuration
 cp /path/to/revvel-standards/.github/labels.yml .github/
 ```
 
-## 2. Configure Repository Settings (1 minute)
+## 2. Configure OpenRouter API Key (1 minute)
+
+The automated review workflows require OpenRouter API access:
+
+```bash
+# Get your API key from https://openrouter.ai/keys
+# Then set it as a repository secret
+gh secret set OPENROUTER_API_KEY --repo OWNER/REPO
+
+# Verify it was set
+gh secret list --repo OWNER/REPO | grep OPENROUTER
+```
+
+> **Note:** The `pr-auto-review.yml` and `pr-review-request-handler.yml` workflows will skip gracefully if `OPENROUTER_API_KEY` is not set, so other automation will continue to work.
+
+## 3. Configure Repository Settings (1 minute)
 
 ```bash
 # Enable GitHub Actions with write permissions
@@ -48,7 +70,7 @@ gh api repos/OWNER/REPO/actions/permissions/workflow \
 
 Replace `OWNER/REPO` with your repository path (e.g., `midnghtsapphire/my-app`).
 
-## 3. Create Review Status Labels (1 minute)
+## 4. Create Review Status Labels (1 minute)
 
 Run this script to create all review status labels:
 
@@ -103,7 +125,7 @@ git push
 gh workflow run sync-labels.yml
 ```
 
-## 4. Set Up Branch Protection (2 minutes)
+## 5. Set Up Branch Protection (2 minutes)
 
 ```bash
 # Enable branch protection with required reviews
@@ -126,7 +148,7 @@ gh api repos/OWNER/REPO/branches/main/protection \
 EOF
 ```
 
-## 5. Test the Automation (3 minutes)
+## 6. Test the Automation (3 minutes)
 
 Create a test PR to verify everything works:
 
@@ -159,7 +181,7 @@ gh pr review $PR_NUM --approve
 gh pr close $PR_NUM --delete-branch
 ```
 
-## 6. Add Status Badges to README (Optional)
+## 7. Add Status Badges to README (Optional)
 
 Add these badges to your `README.md`:
 
@@ -204,9 +226,22 @@ cp "$REVVEL_STANDARDS_PATH/.github/workflows/sync-labels.yml" .github/workflows/
 cp "$REVVEL_STANDARDS_PATH/.github/workflows/pr-labels.yml" .github/workflows/
 cp "$REVVEL_STANDARDS_PATH/.github/workflows/ready-for-review.yml" .github/workflows/
 cp "$REVVEL_STANDARDS_PATH/.github/workflows/pr-review-status.yml" .github/workflows/
+cp "$REVVEL_STANDARDS_PATH/.github/workflows/pr-auto-review.yml" .github/workflows/
+cp "$REVVEL_STANDARDS_PATH/.github/workflows/pr-review-request-handler.yml" .github/workflows/
 cp "$REVVEL_STANDARDS_PATH/.github/labels.yml" .github/
 
-# Step 2: Enable Actions
+# Copy review automation scripts
+mkdir -p scripts
+cp "$REVVEL_STANDARDS_PATH/scripts/pr-auto-review.js" scripts/
+cp "$REVVEL_STANDARDS_PATH/scripts/pr-review-request-handler.js" scripts/
+
+# Step 2: Configure OpenRouter API key (optional but recommended)
+echo "🔑 Configuring secrets..."
+echo "⚠️  Please set OPENROUTER_API_KEY manually:"
+echo "    gh secret set OPENROUTER_API_KEY --repo $REPO"
+echo ""
+
+# Step 3: Enable Actions
 echo "⚙️  Configuring repository settings..."
 gh api "repos/$REPO/actions/permissions" \
   --method PUT \
@@ -218,7 +253,7 @@ gh api "repos/$REPO/actions/permissions/workflow" \
   -f default_workflow_permissions=write \
   -f can_approve_pull_request_reviews=false
 
-# Step 3: Create labels
+# Step 4: Create labels
 echo "🏷️  Creating labels..."
 gh label create "awaiting-approval" --repo "$REPO" --color "fbca04" --description "PR is awaiting review and approval" || true
 gh label create "changes-requested" --repo "$REPO" --color "d93f0b" --description "PR has changes requested by reviewers" || true
@@ -227,12 +262,14 @@ gh label create "review-started" --repo "$REPO" --color "0075ca" --description "
 gh label create "in-review" --repo "$REPO" --color "fbca04" --description "Linked PR is open and ready for review" || true
 gh label create "draft" --repo "$REPO" --color "cccccc" --description "Pull request is still a draft" || true
 
-# Step 4: Commit and push
+# Step 5: Commit and push
 echo "💾 Committing changes..."
 git add .github/
 git commit -m "feat: add GitHub PR review automation
 
 - Add PR review status automation with badges
+- Add automated code review submission via OpenRouter (pr-auto-review.yml)
+- Add automated review feedback analysis (pr-review-request-handler.yml)
 - Add ARSC labels workflow for label management
 - Add PR labels workflow for label-driven CI
 - Add ready-for-review workflow for auto-promotion
@@ -252,6 +289,8 @@ echo "3. Add status badges to README.md (optional)"
 echo ""
 echo "Documentation:"
 echo "- PR Review Status: $REVVEL_STANDARDS_PATH/docs/PR_REVIEW_STATUS_AUTOMATION.md"
+echo "- PR Auto Review: $REVVEL_STANDARDS_PATH/docs/PR_AUTO_REVIEW_AUTOMATION.md"
+echo "- PR Review Request Handler: $REVVEL_STANDARDS_PATH/docs/PR_REVIEW_REQUEST_AUTOMATION.md"
 echo "- Badge Guide: $REVVEL_STANDARDS_PATH/docs/PR_STATUS_BADGES_GUIDE.md"
 echo "- Full Setup: $REVVEL_STANDARDS_PATH/docs/GITHUB_PROJECTS_SETUP.md"
 ```
