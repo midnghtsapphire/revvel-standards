@@ -264,7 +264,7 @@ gh label create "draft" --repo "$REPO" --color "cccccc" --description "Pull requ
 
 # Step 5: Commit and push
 echo "💾 Committing changes..."
-git add .github/
+git add .github/ scripts/
 git commit -m "feat: add GitHub PR review automation
 
 - Add PR review status automation with badges
