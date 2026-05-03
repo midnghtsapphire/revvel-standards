@@ -201,7 +201,7 @@ https://midnghtsapphire.github.io/revvel-standards/fieldwork/
 | Feature           | GitHub Pages                         | DigitalOcean App Platform                 |
 | ----------------- | ------------------------------------ | ----------------------------------------- |
 | **Cost**          | Free                                 | Free tier (3 sites), then $3/mo per site |
-| **Custom domain** | Supported (`oaudrey.com` via CNAME)  | Supported                                 |
+| **Custom domain** | Supported (`oaudrey.com` via A/ALIAS/ANAME; subdomains via CNAME) | Supported                                 |
 | **HTTPS**         | Automatic (Let's Encrypt)            | Automatic                                 |
 | **Deployment**    | Auto (on push to `main`)             | Auto (on push to `main`)                  |
 | **Subdomains**    | Only via custom DNS                  | Native support (`*.oaudrey.com`)          |
