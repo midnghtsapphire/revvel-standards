@@ -246,12 +246,13 @@ jobs:
               body: comment
             });
             
-            // Add completion label
+            const autoPublish = '${{ vars.CONTENT_AUTO_PUBLISH }}' === 'true';
+            const label = autoPublish ? 'content:final' : 'content:draft';
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ steps.params.outputs.issue_number }},
-              labels: ['content:draft']
+              labels: [label]
             });
 
       - name: Handle errors
