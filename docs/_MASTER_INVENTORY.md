@@ -382,6 +382,7 @@
 
 | App | What It Does | Cost | ⚡ UPGRADE TRIGGER | Status | Install Link |
 |---|---|---|---|---|---|
+| **Bito AI** | Persistent-memory code review with agentic workflows; enforces repo conventions automatically | Free (limited) / $20+/mo | Exceeds free tier limits | ✅ Active | Installation ID: [128849516](https://github.com/settings/installations/128849516) |
 | **RecurseML** | Autonomous code review on every PR; enforces Revvel standards | $250/yr | Trial ends April 28, 2026 | 🧪 Trial Active | Already installed |
 | **Dependabot** | Automated dependency update PRs for security vulnerabilities | Free | N/A (always free) | ✅ Active | Built into GitHub |
 | **GitGuardian** | Scans every push for accidentally committed secrets | Free (individual) | Needs team plan for multiple contributors | 🟡 Research Topic | [marketplace.github.com](https://github.com/marketplace/gitguardian) |
