@@ -3,10 +3,14 @@
 # Triggers on manual dispatch. Runs 5 specialized sub-agents via OpenRouter
 # and synthesizes results into a research document committed to the repo.
 #
-# SETUP:
-#   1. Register a GitHub App (see GITHUB_APP_INTEGRATION_STANDARD.md)
-#   2. Add GitHub Secrets: APP_ID, APP_PRIVATE_KEY, OPENROUTER_API_KEY
-#      (Settings → Secrets and variables → Actions → New repository secret)
+# REQUIRED SECRETS:
+#   - OPENROUTER_API_KEY: OpenRouter API key for AI model calls (required)
+#
+# OPTIONAL SECRETS:
+#   - APP_ID, APP_PRIVATE_KEY: GitHub App credentials for enhanced permissions
+#
+# The workflow will fail immediately if OPENROUTER_API_KEY is not configured.
+# Add it via Settings → Secrets and variables → Actions → New repository secret
 #
 # See: AI_RESEARCH_MODULE_STANDARD.md
 
@@ -65,6 +69,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Verify OPENROUTER_API_KEY
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::error::OPENROUTER_API_KEY is not set. Cannot proceed with AI research."
+            exit 1
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
 
       - name: Run Research Module
         env:
