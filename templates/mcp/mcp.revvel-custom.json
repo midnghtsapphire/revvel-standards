@@ -190,6 +190,28 @@
       "_comment": "Software and tool discovery. MCP status: ❓ Not audited. Add when project needs software cataloguing. npm name TBD.",
       "command": "node",
       "args": ["${MCT_DISCOVERY_PATH}/dist/index.js"]
+    },
+
+    "wr-pr-control-plane": {
+      "_comment": "WR / PR Control Plane MCP — GitHub-native intake packet, credential readiness, and 2026 blueprint orchestration contract for Composio + Firecrawl + Obot + FastMCP. Source: revvel-standards mcp-servers/wr-control-plane/. Install: cd mcp-servers/wr-control-plane && uv pip install -e .",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "./mcp-servers/wr-control-plane/wr_control_plane/server.py"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "JULES_API_KEY": "${JULES_API_KEY}",
+        "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+        "OBOT_BASE_URL": "${OBOT_BASE_URL}",
+        "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
+        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev}",
+        "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
+      }
     }
 
   }

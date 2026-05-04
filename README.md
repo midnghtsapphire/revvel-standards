@@ -761,6 +761,24 @@ All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
 
 Label any issue `wr:code` and OpenRouter writes the code. See [`docs/OPENROUTER_AGENT.md`](docs/OPENROUTER_AGENT.md).
 
+### WR / PR Control Plane (Composio + Firecrawl + Obot + FastMCP)
+
+The 2026 WR-PR Automation Blueprint is wired into this repo as the in-tree
+[`wr-pr-control-plane`](mcp-servers/wr-control-plane/) MCP server. It exposes
+four tools that downstream agents can call to inspect WR issues, detect
+required Composio / Firecrawl / Obot credentials, and emit ready-to-paste MCP
+config for any consuming repo.
+
+- Server: [`mcp-servers/wr-control-plane/`](mcp-servers/wr-control-plane/)
+- Catalog entry: [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md)
+- MVI contract: [`docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md`](docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md)
+- Disabled-by-default `.mcp.json` entry until Composio / Firecrawl / Obot
+  credentials are provisioned. Enable by removing the `disabled` flag.
+
+This is a complement to — not a replacement for — Jules research and
+OpenRouter orchestration. It is the home for the blueprint stack inside
+`revvel-standards` so every downstream repo gets the same path.
+
 ---
 
 ## GOALS — GOAP Agent Master Prompt (One Source of Truth)

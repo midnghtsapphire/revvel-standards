@@ -13,7 +13,7 @@ This catalog documents every custom MCP repository in the MIDNGHTSAPPHIRE GitHub
 
 | Group | Count | Description |
 |---|---|---|
-| **[Group A] True MCP Servers** | 2 | Production-ready MCP servers exposing tools via the Model Context Protocol stdio transport |
+| **[Group A] True MCP Servers** | 3 | Production-ready MCP servers exposing tools via the Model Context Protocol stdio transport |
 | **[Group B] MCT Microservice Modules** | 20 | Express REST API microservices for the InTheWild platform with partial `@modelcontextprotocol/sdk` integration |
 
 All repos in Group B follow the naming convention `MCP-<DOMAIN>` (uppercase), use TypeScript/Node.js, and are containerized via Docker. Each has a `src/mct/` layer that either fully implements MCP SDK tooling or has a placeholder awaiting completion.
@@ -105,6 +105,63 @@ Automated code quality, accessibility, security, and deployment readiness scanni
 Where `CODE_REVIEW_MCP_PATH` = absolute path to a local clone of `code-review-mcp-server`.
 
 **When to use:** Include in every Revvel project. Run `validate_deployment_readiness` before every push to `main`. Wire `generate_quality_report` into the CI pipeline via `send_slack_report`.
+
+---
+
+### 3. `wr-pr-control-plane` (in-tree)
+
+| Field | Value |
+|---|---|
+| **Repo** | In-tree: `mcp-servers/wr-control-plane/` (revvel-standards) |
+| **Language** | Python (FastMCP) |
+| **Transport** | stdio |
+| **Database** | None (reads GitHub API + repo state) |
+| **Run** | `uv run python ./mcp-servers/wr-control-plane/wr_control_plane/server.py` |
+| **MCP Status** | ✅ Production-ready (disabled by default until credentials provisioned) |
+
+**What it does:**
+GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[WR]` issues, detects URLs / PDFs / requested integrations, reports credential readiness for Composio + Firecrawl + Obot, and emits ready-to-paste `.mcp.json` entries. This is the integration point that lets Composio (tool router), Firecrawl (research), Obot (governance), and FastMCP (custom tools) be adopted incrementally without rewriting the existing `wr-pr-creation` / `jules-invoke` / `openrouter-coder` workflows.
+
+**Tools (4):**
+
+| Tool | Description |
+|---|---|
+| `control_plane_status` | Return server-level credential and governance readiness |
+| `build_wr_issue_packet(issue_number, repo?)` | Fetch a WR issue + comments and produce a structured research/orchestration packet |
+| `detect_wr_credential_requirements(issue_number, repo?)` | Identify required and missing credentials for a specific WR |
+| `render_control_plane_mcp_entry(profile)` | Generate a ready-to-paste MCP config snippet for `repo` or downstream `template` profile |
+
+**Resources (2):**
+
+| Resource | Description |
+|---|---|
+| `data://wr-control-plane/env-schema` | Required and optional environment variables |
+| `data://wr-control-plane/architecture` | Canonical Revvel interpretation of the 2026 blueprint (current Jules + next Firecrawl, OpenRouter + Composio, Obot governance) |
+
+**`.mcp.json` entry:**
+```json
+"wr-pr-control-plane": {
+  "command": "uv",
+  "args": [
+    "run", "python",
+    "./mcp-servers/wr-control-plane/wr_control_plane/server.py"
+  ],
+  "env": {
+    "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+    "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+    "JULES_API_KEY": "${JULES_API_KEY}",
+    "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
+    "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+    "OBOT_BASE_URL": "${OBOT_BASE_URL}",
+    "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
+    "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS}",
+    "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO}"
+  }
+}
+```
+
+**When to use:** Enable in any repository that follows the revvel-standards WR pipeline. The server lets the agent answer "what credentials does this WR need?" and "what is the canonical orchestration plan for this WR?" without spinning up Composio / Firecrawl / Obot first. Wire it into the WR pipeline as soon as `GITHUB_TOKEN`, `OPENROUTER_API_KEY`, and `JULES_API_KEY` are available; add Composio / Firecrawl / Obot keys later as the blueprint adoption progresses.
 
 ---
 
