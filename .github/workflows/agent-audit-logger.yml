@@ -2,6 +2,17 @@ name: Agent Audit Logger
 
 # This workflow logs all agent actions to provide visibility and accountability
 # Addresses: "I NEED A LOG OF WHO IS DOING WHAT"
+#
+# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
+# The `workflow_run: workflows: ["*"]` trigger and the unguarded `issues:opened`
+# trigger together caused a feedback loop: every workflow ran the audit logger,
+# every audit-logger failure produced a `[FAILURE] ...` issue (via Workflow
+# Monitor), and every new issue re-triggered every agent workflow. To break
+# the loop:
+#   - workflow_run trigger is fully disabled (commented out).
+#   - issue/PR triggers are guarded so the logger does NOT fire on bot-created
+#     `[FAILURE] ...` or `[ALERT] ...` issues from github-actions[bot].
+#   - cron health-check stays so we don't lose periodic visibility.
 
 on:
   issues:
@@ -12,9 +23,9 @@ on:
     types: [submitted, edited, dismissed]
   issue_comment:
     types: [created, edited, deleted]
-  workflow_run:
-    workflows: ["*"]
-    types: [completed, requested]
+  # workflow_run:
+  #   workflows: ["*"]   -- DISABLED, feedback loop with workflow-monitor & ralph-loop
+  #   types: [completed, requested]
   schedule:
     # Run health check every hour
     - cron: "0 * * * *"
@@ -35,10 +46,29 @@ permissions:
   pull-requests: write
   actions: read
 
+# Serialize audit log appends so two runs don't race on `git push` to main.
+# DEVIN-RESTRUCTURE 2026-05-04.
+concurrency:
+  group: agent-audit-logger
+  cancel-in-progress: false
+
 jobs:
   log-agent-action:
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' && github.event_name != 'schedule'
+    # Skip on schedule/dispatch (those run health-check below).
+    # Skip on bot-created `[FAILURE] ...` / `[ALERT] ...` spam issues so we
+    # don't re-trigger the logger on its own failure-issues.
+    if: >-
+      github.event_name != 'workflow_dispatch' &&
+      github.event_name != 'schedule' &&
+      !(github.event_name == 'issues' &&
+        github.event.issue.user.login == 'github-actions[bot]' &&
+        (startsWith(github.event.issue.title, '[FAILURE]') ||
+         startsWith(github.event.issue.title, '[ALERT]'))) &&
+      !(github.event_name == 'issue_comment' &&
+        github.event.issue.user.login == 'github-actions[bot]' &&
+        (startsWith(github.event.issue.title, '[FAILURE]') ||
+         startsWith(github.event.issue.title, '[ALERT]')))
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

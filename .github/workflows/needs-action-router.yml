@@ -15,10 +15,15 @@ name: Needs Action Router — Auto-Assign to OpenRouter
 # Reference: docs/OPENROUTER_ASSIGNEE_PROCESS.md
 
 on:
-  issues:
-    types: [labeled]
-  pull_request_target:
-    types: [labeled]
+  # DEVIN-RESTRUCTURE 2026-05-04: Issue/PR triggers disabled — they raced with
+  # openrouter-coder, jules-invoke, and wr-pr-creation on every newly-labeled
+  # issue. The new pipeline routes through openrouter-coder. Re-enable only if
+  # you want this workflow to act on a SEPARATE label that no other orchestrator
+  # listens to.
+  # issues:
+  #   types: [labeled]
+  # pull_request_target:
+  #   types: [labeled]
   workflow_dispatch:
     inputs:
       issue_number:

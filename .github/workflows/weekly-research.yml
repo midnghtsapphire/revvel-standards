@@ -36,6 +36,14 @@ jobs:
   detect-wr:
     name: Detect and label WR issue
     runs-on: ubuntu-latest
+    # DEVIN-RESTRUCTURE 2026-05-04: skip bot-spam issues so the WR label-applier
+    # doesn't fire on the [FAILURE]/[ALERT] issues the workflow-monitor used
+    # to create. (workflow-monitor's auto-issue trigger is now disabled too.)
+    if: >-
+      !(github.event_name == 'issues' &&
+        github.event.issue.user.login == 'github-actions[bot]' &&
+        (startsWith(github.event.issue.title, '[FAILURE]') ||
+         startsWith(github.event.issue.title, '[ALERT]')))
     outputs:
       is_wr: ${{ steps.check.outputs.is_wr }}
       issue_number: ${{ steps.check.outputs.issue_number }}

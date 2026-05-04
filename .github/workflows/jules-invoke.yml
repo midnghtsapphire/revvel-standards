@@ -134,19 +134,28 @@ jobs:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
 
   # ─── Auto-assign Jules to every new WR (opened / reopened) ─────────────────
-  # Audrey's rule: every new work request is routed through the Deep-Research
-  # issue template, which applies `deep-research` (and may also apply `jules`).
-  # When either label is present on an opened/reopened issue we invoke Jules
-  # automatically so she can deep-research and refine the request before any
+  # Audrey's rule: every new work request gets a deep-research pass before any
   # code is written.
+  #
+  # DEVIN-RESTRUCTURE 2026-05-04: Originally this required a `jules` or
+  # `deep-research` label, but those labels are stripped when issues are opened
+  # via API / Copilot UI (the [WR] issue template's `labels:` defaults only fire
+  # on the GitHub form). We now ALSO fire on title prefix `[WR]` so Jules runs
+  # on every WR regardless of label. Bot-created `[FAILURE]/[ALERT]` issues are
+  # explicitly excluded.
   invoke-on-opened:
     name: Invoke Jules on new WR
     if: >-
       github.event_name == 'issues' &&
       (github.event.action == 'opened' || github.event.action == 'reopened') &&
+      github.event.issue.user.login != 'github-actions[bot]' &&
+      !startsWith(github.event.issue.title, '[FAILURE]') &&
+      !startsWith(github.event.issue.title, '[ALERT]') &&
       (
+        startsWith(github.event.issue.title, '[WR]') ||
         contains(github.event.issue.labels.*.name, 'deep-research') ||
-        contains(github.event.issue.labels.*.name, 'jules')
+        contains(github.event.issue.labels.*.name, 'jules') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research')
       )
     runs-on: ubuntu-latest
     permissions:
