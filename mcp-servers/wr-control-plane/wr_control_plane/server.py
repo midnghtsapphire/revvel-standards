@@ -18,9 +18,9 @@ from __future__ import annotations
 import json
 import os
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Callable
-from urllib import error, parse, request
+from urllib import error, request
 
 try:
     from fastmcp import FastMCP
