@@ -10,13 +10,20 @@ name: Ralph Loop — Self-Healing CI
 # After 5 failed attempts: escalates to human reviewer.
 #
 # Reference: skills/ralph-loop/SKILL.md
+#
+# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
+# The `workflow_run: workflows: ["*"]` trigger combined with workflow-monitor
+# and agent-audit-logger created a 3-way feedback loop: any workflow failing
+# triggered Ralph, Ralph itself ran as a workflow → re-triggered Ralph, etc.
+# `check_suite` already gives the actual signal we want (CI pass/fail on a
+# PR head SHA), so the redundant workflow_run trigger is disabled.
 
 on:
   check_suite:
     types: [completed]
-  workflow_run:
-    workflows: ["*"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["*"]   -- DISABLED, feedback loop. check_suite is enough.
+  #   types: [completed]
 
 permissions:
   pull-requests: write
@@ -28,9 +35,8 @@ jobs:
   ralph-trigger:
     name: "Ralph Loop — Trigger Fix"
     runs-on: ubuntu-latest
-    if: |
-      github.event.check_suite.conclusion == 'failure' ||
-      github.event.workflow_run.conclusion == 'failure'
+    # workflow_run path disabled (see header). check_suite is the only signal.
+    if: github.event.check_suite.conclusion == 'failure'
 
     steps:
       - name: Find matching open PR

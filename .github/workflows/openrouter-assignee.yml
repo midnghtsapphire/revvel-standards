@@ -16,8 +16,13 @@ name: OpenRouter Assignee — First Line of Sight
 # Reference: docs/OPENROUTER_ASSIGNEE_PROCESS.md
 
 on:
-  issues:
-    types: [opened, reopened]
+  # DEVIN-RESTRUCTURE 2026-05-04: `issues` live trigger disabled — was racing
+  # with openrouter-coder, jules-invoke, openrouter-triage, priority-router
+  # on every new issue (5+ workflows fighting for first comment). The hourly
+  # cron sweep still picks up anything missed and assigns @Copilot, so
+  # orchestrator first-line-of-sight remains intact.
+  # issues:
+  #   types: [opened, reopened]
   pull_request_target:
     types: [opened, reopened, ready_for_review]
   schedule:

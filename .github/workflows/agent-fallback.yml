@@ -1,9 +1,16 @@
 name: Agent Fallback Handler
 
+# DEVIN-RESTRUCTURE 2026-05-04: Issue trigger disabled. Was racing with
+# openrouter-coder + needs-action-router on `wr:code` / `wr:auto` /
+# `agent-fallback` labels. Now the issue side of the fallback chain lives in
+# openrouter-coder.yml. This workflow remains available for PR review handling
+# and as a reusable workflow_call target if a future flow wants the
+# Devin → Cursor → OpenRouter chain explicitly.
+
 on:
-  # Automatic triggers for issues with specific labels
-  issues:
-    types: [labeled]
+  # # Automatic triggers for issues with specific labels  -- DISABLED, racing
+  # issues:
+  #   types: [labeled]
 
   # Automatic triggers for PRs ready for review
   pull_request_target:
@@ -65,17 +72,13 @@ jobs:
     name: Check agent availability
     runs-on: ubuntu-latest
     # Only run if:
-    # 1. Issue labeled with wr:code, wr:auto, or agent-fallback label, OR
-    # 2. PR ready for review (opened/reopened/ready_for_review), OR
-    # 3. Manual workflow_dispatch, OR
-    # 4. Called as reusable workflow
+    # 1. PR ready for review (opened/reopened/ready_for_review), OR
+    # 2. Manual workflow_dispatch, OR
+    # 3. Called as reusable workflow
+    # (DEVIN-RESTRUCTURE: issues path removed — see workflow header.)
     if: |
       github.event_name == 'workflow_dispatch' ||
       inputs.issue_number ||
-      (github.event_name == 'issues' &&
-       (github.event.label.name == 'wr:code' ||
-        github.event.label.name == 'wr:auto' ||
-        github.event.label.name == 'agent-fallback')) ||
       (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
        (github.event.pull_request.author_association == 'MEMBER' ||

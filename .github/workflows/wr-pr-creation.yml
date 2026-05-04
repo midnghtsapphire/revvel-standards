@@ -1,11 +1,19 @@
 name: WR PR Creation
 
-# After Jules completes deep research on a WR issue, this workflow:
-#   1. Detects when Jules has completed research (via comment or label)
-#   2. Creates a new branch for the WR
-#   3. Generates a WR document from template with Jules' findings
-#   4. Opens a PR with the refined WR content
-#   5. Assigns Jules to rewrite/refine the PR
+# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure",
+# issue #9417 "WR AND PR CREATED AT THE SAME TIME THEN DEEP SEARCH CAN MODIFY"):
+# Previously this workflow only fired AFTER Jules finished deep-research (gated
+# on `wr:complete` label or a 'Research Findings:' comment). Audrey's stated
+# intent is the opposite: Issue + WR doc + PR get created at the same time, and
+# Jules then modifies them. So we now fire on `issues:opened/reopened` for any
+# `[WR]`-prefixed issue and immediately create the skeleton WR doc and PR.
+# Jules deep-research updates the same branch via wr-pr-creation:research-found
+# path below (still triggered by the 'Research Findings:' comment).
+#
+# Steps:
+#   1. On a [WR] issue opened/reopened: create branch + WR skeleton + PR.
+#   2. On 'Research Findings:' comment from Jules: append findings to WR doc
+#      and push to the same PR branch.
 #
 # Docs: docs/WEEKLY_RESEARCH_PROCESS.md
 
@@ -13,7 +21,7 @@ on:
   issue_comment:
     types: [created]
   issues:
-    types: [labeled]
+    types: [opened, reopened, labeled]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -32,8 +40,14 @@ concurrency:
 
 jobs:
   detect-completion:
-    name: Detect Jules research completion
+    name: Detect WR issue / Jules research completion
     runs-on: ubuntu-latest
+    # Skip on bot-spam `[FAILURE] ...` / `[ALERT] ...` issues (DEVIN-RESTRUCTURE).
+    if: >-
+      !(github.event_name == 'issues' &&
+        github.event.issue.user.login == 'github-actions[bot]' &&
+        (startsWith(github.event.issue.title, '[FAILURE]') ||
+         startsWith(github.event.issue.title, '[ALERT]')))
     outputs:
       should_create_pr: ${{ steps.check.outputs.should_create_pr }}
       issue_number: ${{ steps.check.outputs.issue_number }}
@@ -61,11 +75,23 @@ jobs:
             const title = issue.title || '';
             const body = issue.body || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
-            
-            // Check if this is a WR issue
+
+            // Check if this is a WR issue (title prefix [WR] or label `weekly-research`).
+            // DEVIN-RESTRUCTURE 2026-05-04: also accept the title prefix on its own,
+            // because the [WR] issue template's `labels:` array is dropped when issues
+            // are opened via the API/Copilot UI rather than the GitHub form. The
+            // title prefix is the most reliable signal.
             const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
             if (!isWR) {
               core.info(`Issue #${issueNumber} is not a WR issue`);
+              core.setOutput('should_create_pr', 'false');
+              return;
+            }
+
+            // Skip bot-created issues (defensive — bot-spam should be filtered
+            // by the job-level `if:` already).
+            if (issue.user && issue.user.login === 'github-actions[bot]') {
+              core.info(`Issue #${issueNumber} is bot-created; skipping.`);
               core.setOutput('should_create_pr', 'false');
               return;
             }
@@ -78,8 +104,8 @@ jobs:
               per_page: 100,
             });
 
-            const existingPR = prs.find(pr => 
-              pr.body && pr.body.includes(`Closes #${issueNumber}`) ||
+            const existingPR = prs.find(pr =>
+              (pr.body && pr.body.includes(`Closes #${issueNumber}`)) ||
               pr.title.includes(title.replace(/^\[WR\]\s*/i, ''))
             );
 
@@ -89,10 +115,14 @@ jobs:
               return;
             }
 
-            // Check if wr:complete label is present or if this is manual dispatch
+            // DEVIN-RESTRUCTURE 2026-05-04: WR PR is now created on issue OPEN
+            // (or reopen / `wr:complete` / manual dispatch / Jules findings comment),
+            // not gated on Jules being done.
+            const isOpenEvent = context.eventName === 'issues' &&
+              (context.payload.action === 'opened' || context.payload.action === 'reopened');
             const isComplete = labels.includes('wr:complete') || context.eventName === 'workflow_dispatch';
-            
-            // Or check if Jules has posted research findings (comment contains "Research Findings:")
+
+            // Check if Jules has posted research findings (comment contains "Research Findings:")
             let julesCompleted = false;
             if (context.eventName === 'issue_comment') {
               const comment = context.payload.comment;
@@ -101,15 +131,16 @@ jobs:
               }
             }
 
-            const shouldCreate = isComplete || julesCompleted;
-            
+            const shouldCreate = isOpenEvent || isComplete || julesCompleted;
+
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
+            core.info(`Is Open Event: ${isOpenEvent}`);
             core.info(`Is Complete: ${isComplete}`);
             core.info(`Jules Completed: ${julesCompleted}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Current labels: ${labels.join(', ')}`);
-            
+
             core.setOutput('should_create_pr', shouldCreate ? 'true' : 'false');
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', title);

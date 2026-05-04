@@ -11,6 +11,11 @@ permissions:
 jobs:
   triage:
     runs-on: ubuntu-latest
+    # DEVIN-RESTRUCTURE 2026-05-04: skip bot-spam [FAILURE]/[ALERT] issues.
+    if: >-
+      !(github.event.issue.user.login == 'github-actions[bot]' &&
+        (startsWith(github.event.issue.title, '[FAILURE]') ||
+         startsWith(github.event.issue.title, '[ALERT]')))
     steps:
       - name: Auto-label based on title and body
         uses: actions/github-script@v7

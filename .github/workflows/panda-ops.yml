@@ -7,19 +7,26 @@
 
 name: PandaOps AI PR Review
 
+# DEVIN-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
+# PandaOps disabled to stop reviewer noise. Re-enable the `pull_request`
+# trigger only if BITO AI is unavailable for an extended period.
+
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  # # DISABLED — see header
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 # P1 - Important workflow: can cancel old runs for newer commits
 concurrency:
-  group: panda-ops-${{ github.event.pull_request.number }}
+  group: panda-ops-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   review:
     name: PandaOps AI PR Review
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
 
     permissions:
       contents: read

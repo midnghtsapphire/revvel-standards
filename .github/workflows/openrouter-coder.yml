@@ -1,8 +1,22 @@
 name: OpenRouter Coder
 
+# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "OpenRouter acts as orchestrator for
+# code changes"): This is now the SOLE orchestrator that turns a researched WR
+# issue into code changes on a PR. Triggered by:
+#   - `wr:code` label (manual: research is done, push code now)
+#   - `wr:research-complete` label (auto, set after Jules posts findings)
+#   - `issue_comment` containing "Research Findings:" (Jules signal)
+#   - workflow_dispatch (manual)
+#
+# Other orchestrators (needs-action-router, agent-fallback issue-path,
+# priority-router issue-path, content-automation issue-path) have had their
+# issue triggers commented out so they don't race on the same issue.
+
 on:
   issues:
     types: [labeled]
+  issue_comment:
+    types: [created]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -15,9 +29,27 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: openrouter-coder-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   openrouter-coder:
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'wr:code'
+    # Skip bot-spam issues. Trigger on wr:code or wr:research-complete labels,
+    # on Jules' "Research Findings:" comment, or on manual workflow_dispatch.
+    if: >-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' &&
+       github.event.issue.user.login != 'github-actions[bot]' &&
+       !startsWith(github.event.issue.title, '[FAILURE]') &&
+       !startsWith(github.event.issue.title, '[ALERT]') &&
+       (github.event.label.name == 'wr:code' ||
+        github.event.label.name == 'wr:research-complete')) ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.user.login != 'github-actions[bot]' &&
+       !startsWith(github.event.issue.title, '[FAILURE]') &&
+       !startsWith(github.event.issue.title, '[ALERT]') &&
+       contains(github.event.comment.body, 'Research Findings:'))
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
