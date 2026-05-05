@@ -203,6 +203,31 @@ that originated inside this repo were fixed in this PR; the third is external.
 | `log-agent-action` (Agent Audit Logger) | **fixed** | The `pull_request` trigger was removed from `.github/workflows/agent-audit-logger.yml`. The job tried to push the audit log to `main` from a PR-branch checkout, which the `Protect main` ruleset blocks → 100% failure rate. Issue/comment/review/cron triggers stay because they CAN push. |
 | `ci/circleci: pr-review` | **fixed** | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by Devin Review + Jules + BITO AI on every PR. |
 | `recurseml/analysis` | **external** | Posted by the RecurseML GitHub App, not by a workflow in this repo. The in-repo workflow `.github/workflows/recurse-ml.yml` already disables its `pull_request` trigger. To make this status check stop appearing on PRs, uninstall the RecurseML app at https://github.com/settings/installations or set its `RECURSE_ML_API_KEY` so it succeeds. Branch protection on `main` does not require this check, so it's visual noise rather than a merge blocker. |
+| `Analyze (ruby)` (CodeQL Advanced) | **fixed** | Replaced CodeQL with [Semgrep](https://semgrep.dev/) + [Trivy](https://trivy.dev/) in a follow-up PR after #13338. CodeQL's per-language matrix included Ruby (auto-detected by GitHub) but the repo has zero `.rb` files, so the analyzer exited 32 (`CodeQL could not process any code written in Ruby`) on every PR. `.github/workflows/codeql.yml` was deleted; replacements are at `.github/workflows/semgrep.yml` and `.github/workflows/trivy.yml`. |
+
+## Security scanning stack
+
+The PR-time security scanning has been consolidated to four tools that are
+fast, multi-language by default, and don't fail on missing source files:
+
+| Tool | Layer | Trigger | Why |
+| ---- | ----- | ------- | --- |
+| [Semgrep](https://semgrep.dev/) | SAST (code patterns) | every PR + weekly | Replaces CodeQL. ~30s, OSS rules cover OWASP Top 10, CWE Top 25, GitHub Actions hardening, secrets, Dockerfiles. No per-language matrix (auto-detect). |
+| [Trivy](https://trivy.dev/) | SCA + IaC + secrets | every PR + weekly | Single-tool dependency vulnerabilities + Infrastructure-as-Code misconfigs + supplementary secret scanning. Auto-detects everything in the filesystem. |
+| [GitGuardian](https://www.gitguardian.com/) | git-leak / runtime secrets | every PR | Already configured at the org level. Catches committed secrets in any file. |
+| [Mabl](https://www.mabl.com/) | behavioral E2E tests | every PR | Already configured. Tests deployed Vercel preview, complements static scanners. |
+
+CodeQL was removed because:
+
+1. Its per-language matrix included `ruby` even though the repo has no Ruby
+   code, causing a configuration-error failure on every PR.
+2. Even working, it's the slowest option (5+ min vs ~30s for Semgrep).
+3. Coverage overlap: Semgrep + Trivy cover everything CodeQL would have
+   caught for the languages this repo actually uses (JS/TS, Python, GitHub
+   Actions, YAML, Dockerfiles).
+
+Findings from Semgrep and Trivy are uploaded as SARIF and surface under
+**Security → Code scanning** alongside any other tools.
 
 ## Notes
 
