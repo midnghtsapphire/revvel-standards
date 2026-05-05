@@ -25,8 +25,9 @@ When you're about to start something new, grep this file with the verb of your a
 **Workflows that fire automatically once configured:**
 
 - `.github/workflows/set-default-project-v2-fields.yml` — runs when `vars.PROJECTS_APP_ID` is set (GitHub App auth)
-- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth)
-- Both skip silently when their credentials are absent. Configure exactly one. The currently active one for `revvel-standards` is the PAT variant.
+- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth). Sets the **floor**: `Status=Inbox`, `Priority=medium`, `Research Mode=standard` on every new issue.
+- `.github/workflows/wr-auto-classify.yml` — runs alongside the PAT workflow on `issues.opened` with the `work-request` label. **Extends** the floor by reading the issue body and asking OpenRouter to classify the routing dropdowns the user left on `auto-classify`. Respects explicit picks; falls back to opinionated defaults if OpenRouter is unavailable; tags `auto:default-fallback` when any fallback was used so a human can spot-check ambiguous cases.
+- All three skip silently when their credentials are absent. The currently active auth path for `revvel-standards` is PAT + OpenRouter; both `PROJECTS_PAT` and `OPENROUTER_API_KEY` are configured.
 
 ---
 
@@ -52,7 +53,7 @@ When you're about to start something new, grep this file with the verb of your a
 
 **The form to use:**
 
-- [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](./.github/ISSUE_TEMPLATE/devin-work-request.yml) — open via `New issue` → `Devin Work Request`
+- [`.github/ISSUE_TEMPLATE/00-devin-work-request.yml`](./.github/ISSUE_TEMPLATE/00-devin-work-request.yml) — open via `New issue` → `Devin Work Request`. The `00-` prefix forces this template to sort first in the chooser; it is the only template in `.github/ISSUE_TEMPLATE/` other than `config.yml`. Older templates are archived under `templates/issue-template-archive/`. Routing dropdowns default to `auto-classify`; leave them alone unless you want to override what the LLM picks.
 
 **Hard rules to remember:**
 
