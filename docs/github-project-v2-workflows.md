@@ -4,7 +4,7 @@ This bundle contains GitHub Actions workflows for automatically setting default 
 
 ## Files included
 
-- `default-project-v2-fields.yml`: Main workflow using a GitHub App token.
+- `set-default-project-v2-fields.yml`: Main workflow using a GitHub App token.
 - `default-project-v2-fields-pat.yml`: Main workflow using a classic personal access token.
 - `print-project-v2-ids.yml`: Helper workflow using a GitHub App token to print Project v2 field and option IDs.
 - `print-project-v2-ids-pat.yml`: Helper workflow using a classic personal access token to print Project v2 field and option IDs.
@@ -17,7 +17,7 @@ This bundle contains GitHub Actions workflows for automatically setting default 
 2. Run the helper workflow manually from the GitHub Actions tab.
 3. Copy the printed Project, field, and option IDs into repository or organization variables.
 4. Copy one main workflow into `.github/workflows/`.
-   - Use `default-project-v2-fields.yml` for GitHub App authentication.
+   - Use `set-default-project-v2-fields.yml` for GitHub App authentication.
    - Use `default-project-v2-fields-pat.yml` for classic PAT authentication.
 5. Open a test issue and confirm the Project v2 fields are set automatically.
 
@@ -57,7 +57,7 @@ Use these workflows:
 
 ```text
 print-project-v2-ids.yml
-default-project-v2-fields.yml
+set-default-project-v2-fields.yml
 ```
 
 ## Classic PAT authentication
