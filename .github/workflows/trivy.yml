@@ -1,0 +1,56 @@
+name: Trivy
+
+# Multi-purpose security scanner: dependencies (SCA), Infrastructure-as-Code,
+# and supplementary secret scanning. Complements Semgrep (SAST) and
+# GitGuardian (runtime / git-leak secret scanning).
+#
+# Why Trivy:
+#   - Single tool covers SCA + IaC + secrets + Dockerfiles + Kubernetes manifests
+#   - No per-language matrix (auto-detects)
+#   - Fast (~30 sec for this repo)
+#   - OSS, no license / billing
+#   - https://trivy.dev/
+#
+# Output uploaded as SARIF to GitHub Code Scanning so findings appear in
+# Security → Code scanning alongside Semgrep.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '45 4 * * 1'  # Weekly Monday 04:45 UTC (15 min after Semgrep)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  trivy-fs:
+    name: trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,misconfig,secret
+          format: sarif
+          output: trivy.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: true
+          exit-code: '0'  # don't fail the job; surface findings via SARIF
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+          category: trivy

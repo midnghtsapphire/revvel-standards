@@ -1,0 +1,73 @@
+name: Semgrep SAST
+
+# Static application security testing using Semgrep's OSS rule packs.
+#
+# Replaces the previous CodeQL Advanced workflow (deleted 2026-05-05) which
+# was failing every PR with `CodeQL could not process any code written in
+# Ruby` because there is zero Ruby code in this repo.
+#
+# Semgrep is the replacement because:
+#   - Native multi-language support (30+ languages) without per-language matrix
+#   - No "configuration error" failures when a language has no source files
+#   - ~30 second runtime vs 5+ minute CodeQL
+#   - OSS rule packs are free; no license / billing
+#   - https://semgrep.dev/explore for rule library
+#
+# The job runs on every PR and on a weekly schedule. Findings are uploaded as
+# SARIF to GitHub Code Scanning so they appear under Security → Code scanning
+# alongside any remaining tools (GitGuardian, Trivy).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '15 4 * * 1'  # Weekly Monday 04:15 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  semgrep:
+    name: semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep:latest
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep (OSS rule packs)
+        # p/security-audit  : core security audit rules
+        # p/secrets         : secret detection (complements GitGuardian)
+        # p/owasp-top-ten   : OWASP Top 10 patterns
+        # p/cwe-top-25      : CWE Top 25 patterns
+        # p/github-actions  : GitHub Actions hardening rules
+        # p/dockerfile      : Dockerfile best practices
+        # p/yaml            : generic YAML hygiene
+        run: |
+          semgrep ci \
+            --config=p/security-audit \
+            --config=p/secrets \
+            --config=p/owasp-top-ten \
+            --config=p/cwe-top-25 \
+            --config=p/github-actions \
+            --config=p/dockerfile \
+            --config=p/yaml \
+            --sarif --sarif-output=semgrep.sarif \
+            --error \
+            --no-suppress-errors \
+            --metrics=off \
+            || true  # don't fail the job; we surface findings via SARIF and PR comments
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
