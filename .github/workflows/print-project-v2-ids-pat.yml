@@ -1,0 +1,208 @@
+name: Print Project v2 field and option IDs using PAT
+
+on:
+  workflow_dispatch:
+    inputs:
+      owner_type:
+        description: "Project owner type"
+        required: true
+        default: "organization"
+        type: choice
+        options:
+          - organization
+          - user
+      owner:
+        description: "GitHub organization or username that owns the project"
+        required: true
+        type: string
+      project_number:
+        description: "Project number from the Project URL, e.g. /projects/5"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  print-project-ids:
+    name: Print Project v2 IDs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Classic PAT setup:
+      # 1. Create a classic personal access token.
+      # 2. For private repos, grant: repo
+      # 3. For public repos only, public_repo may be enough.
+      # 4. Grant: project
+      # 5. Save it as a repository or organization secret named PROJECTS_PAT.
+      #
+      # Note: GITHUB_TOKEN usually cannot access GitHub Projects v2 outside
+      # the repository permissions boundary, so use PROJECTS_PAT here.
+      - name: Query Project v2 data
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+          OWNER_TYPE: ${{ inputs.owner_type }}
+          OWNER: ${{ inputs.owner }}
+          PROJECT_NUMBER: ${{ inputs.project_number }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "Missing secret PROJECTS_PAT."
+            exit 1
+          fi
+
+          if [ "${OWNER_TYPE}" = "organization" ]; then
+            gh api graphql \
+              -f owner="${OWNER}" \
+              -F number="${PROJECT_NUMBER}" \
+              -f query='
+                query($owner: String!, $number: Int!) {
+                  organization(login: $owner) {
+                    projectV2(number: $number) {
+                      id
+                      title
+                      fields(first: 100) {
+                        nodes {
+                          ... on ProjectV2Field {
+                            id
+                            name
+                            dataType
+                          }
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            dataType
+                            options {
+                              id
+                              name
+                            }
+                          }
+                          ... on ProjectV2IterationField {
+                            id
+                            name
+                            dataType
+                            configuration {
+                              iterations {
+                                id
+                                title
+                                startDate
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ' > project_data.json
+          elif [ "${OWNER_TYPE}" = "user" ]; then
+            gh api graphql \
+              -f owner="${OWNER}" \
+              -F number="${PROJECT_NUMBER}" \
+              -f query='
+                query($owner: String!, $number: Int!) {
+                  user(login: $owner) {
+                    projectV2(number: $number) {
+                      id
+                      title
+                      fields(first: 100) {
+                        nodes {
+                          ... on ProjectV2Field {
+                            id
+                            name
+                            dataType
+                          }
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            dataType
+                            options {
+                              id
+                              name
+                            }
+                          }
+                          ... on ProjectV2IterationField {
+                            id
+                            name
+                            dataType
+                            configuration {
+                              iterations {
+                                id
+                                title
+                                startDate
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ' > project_data.json
+          else
+            echo "owner_type must be either organization or user."
+            exit 1
+          fi
+
+      - name: Print copy/paste variables
+        env:
+          OWNER_TYPE: ${{ inputs.owner_type }}
+        run: |
+          set -euo pipefail
+
+          if [ "${OWNER_TYPE}" = "organization" ]; then
+            PROJECT_PATH='.data.organization.projectV2'
+          else
+            PROJECT_PATH='.data.user.projectV2'
+          fi
+
+          PROJECT_ID="$(jq -r "${PROJECT_PATH}.id" project_data.json)"
+          PROJECT_TITLE="$(jq -r "${PROJECT_PATH}.title" project_data.json)"
+
+          if [ -z "${PROJECT_ID}" ] || [ "${PROJECT_ID}" = "null" ]; then
+            echo "Could not find Project v2. Check owner, owner_type, project_number, and PROJECTS_PAT permissions."
+            cat project_data.json
+            exit 1
+          fi
+
+          {
+            echo "## Project"
+            echo
+            echo "PROJECT_ID=${PROJECT_ID}"
+            echo "PROJECT_TITLE=${PROJECT_TITLE}"
+            echo
+            echo "## Fields"
+            echo
+            jq -r "${PROJECT_PATH}.fields.nodes[] |
+              select(.id != null) |
+              \"FIELD name=\\\"\\(.name)\\\" type=\\\"\\(.dataType // \"unknown\")\\\" id=\\\"\\(.id)\\\"\"" project_data.json
+            echo
+            echo "## Single-select options"
+            echo
+            jq -r "${PROJECT_PATH}.fields.nodes[] |
+              select(.options != null) |
+              . as \$field |
+              \$field.options[] |
+              \"OPTION field=\\\"\\(\$field.name)\\\" option=\\\"\\(.name)\\\" id=\\\"\\(.id)\\\"\"" project_data.json
+            echo
+            echo "## Iterations"
+            echo
+            jq -r "${PROJECT_PATH}.fields.nodes[] |
+              select(.configuration.iterations != null) |
+              . as \$field |
+              \$field.configuration.iterations[] |
+              \"ITERATION field=\\\"\\(\$field.name)\\\" title=\\\"\\(.title)\\\" start=\\\"\\(.startDate)\\\" id=\\\"\\(.id)\\\"\"" project_data.json
+          } | tee project-v2-ids.txt
+
+          echo
+          echo "Saved readable output to project-v2-ids.txt"
+
+      - name: Upload Project v2 ID report
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-v2-ids-pat
+          path: |
+            project-v2-ids.txt
+            project_data.json

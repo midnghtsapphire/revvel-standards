@@ -90,13 +90,56 @@
 
 ---
 
+## Operating Model
+
+| Component | Status | Details |
+|---|---|---|
+| Intake form | ✅ live | [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](.github/ISSUE_TEMPLATE/devin-work-request.yml) |
+| Viability gate template | ✅ live | [`templates/viability-gate-template.md`](templates/viability-gate-template.md) |
+| Invention flow template | ✅ live | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) |
+| Legacy refresh checklist | ✅ live | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) |
+| GitHub Project schema | ✅ documented | [`docs/github-project-schema.md`](docs/github-project-schema.md) — provisioned per-org |
+| Notion knowledge layer | ✅ documented | [`docs/notion-structure.md`](docs/notion-structure.md) — provisioned per-org |
+| Step 0 router | ✅ live | [`promptforproject.md`](promptforproject.md) |
+| Operating model doc | ✅ live | [`docs/operating-model.md`](docs/operating-model.md) |
+| Project v2 default-field automation | ✅ live | [`.github/workflows/set-default-project-v2-fields.yml`](.github/workflows/set-default-project-v2-fields.yml) (+ PAT variant `default-project-v2-fields-pat.yml`) |
+| Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
+| Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
+
+`Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
+
+### Project v2 automation requirements
+
+Before the default-field workflows will run end-to-end, provision either path:
+
+**GitHub App path** (recommended for org-owned boards) — `set-default-project-v2-fields.yml` + `print-project-v2-ids.yml`. Needs:
+
+- Variable `PROJECTS_APP_ID` and secret `PROJECTS_APP_PRIVATE_KEY` for a GitHub App with org Projects = Read & write and repo Issues = Read.
+
+**Classic PAT path** — `default-project-v2-fields-pat.yml` + `print-project-v2-ids-pat.yml`. Needs:
+
+- Secret `PROJECTS_PAT` for a classic personal access token with `project` + `repo` scopes (or `public_repo` for public-only).
+
+Both paths additionally need these repository or organization variables, populated from the helper workflow's output:
+
+- `PROJECT_ID`
+- `PRIORITY_FIELD_ID`, `EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`
+- `PRIORITY_HIGH_OPTION_ID`, `EFFORT_MEDIUM_OPTION_ID`, `CUSTOM_DEFAULT_OPTION_ID`
+
+Until populated, the workflows fail loudly on every new issue (intentional — silent failure would let the project board drift). See [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) for the full setup walkthrough.
+
+---
+
 ## Last Updated
 
 ```
+Last updated: 2026-05-05 14:55 UTC
+Updated by: devin
+Session summary: Added the Revvel operating model layer — Devin Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
+
 Last updated: 2026-05-04 (post PR #10191 merge)
 Updated by: devin
 Session summary: (1) Promoted Tavily to a first-class research provider in the wr-pr-control-plane MCP server (alongside Firecrawl). New TAVILY_API_KEY env var, new credential-matrix row, new research_mode branches (tavily-search, jules-plus-firecrawl-and-tavily). (2) Documented every deliberate v0.1.0 trade-off in the server module docstring, mcp-servers/wr-control-plane/README.md, docs/MCP_REVVEL_CATALOG.md, and a machine-readable v0_1_0_trade_offs field on data://wr-control-plane/architecture. (3) Added Composio Firebase toolkit to the architecture summary so per-app Firestore / Functions / Auth wiring has a documented home. (4) Clarified that the MCP Servers Status column tracks repo-level availability while .mcp.json `disabled` tracks per-clone runtime state.
-
 Last updated: 2026-05-04 18:56 UTC
 Updated by: devin
 Session summary: (1) Merged PR #9577 to fix WR/PR automation by killing workflow_run loops, restoring [WR] intake, OpenRouter as sole orchestrator, BITO as sole reviewer, and bot-spam guards. (2) Closed ~999 bot-spam [FAILURE]/[ALERT] issues. (3) Added in-tree wr-pr-control-plane MCP server at mcp-servers/wr-control-plane/ implementing the 2026 WR-PR Automation Blueprint integration contract for Composio + Firecrawl + Obot + FastMCP. Server is disabled by default in .mcp.json until credentials are provisioned.

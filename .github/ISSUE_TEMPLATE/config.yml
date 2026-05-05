@@ -1,40 +1,5 @@
-# Issue template picker configuration for midnghtsapphire/revvel-standards.
-#
-# Audrey's standing rule (issue: "ONE TEMPLATE ALL DEEP RESEARCH"):
-#   There is exactly ONE user-facing intake template — `issue.yml` — and
-#   every issue filed through it gets a deep-research pass before any code
-#   is written. Bugs, features, questions, refactors — all routed the same
-#   way via the `jules` label and `jules-invoke.yml`. The previous split
-#   between `bug-report.yml` and `deep-research.yml` has been retired.
-#
-# The other files in this directory (`daily-decision.md`, `exit-quiet-mode.md`,
-# `urgent-compliance.md`) are **operational** templates consumed by the
-# triage-cron / migration-cron / compliance-watcher workflows — they are not
-# intended as day-to-day user entry points.
-#
-# `blank_issues_enabled` stays `true` so existing automation that opens
-# blank issues via the API/UI keeps working. Automation should still apply
-# the `jules` label so those issues are picked up by `jules-invoke.yml` and
-# get the same deep-research pass as issues filed through `issue.yml`.
-
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: 📚 Universal Agent Instructions (AGENTS.md)
-    url: https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/AGENTS.md
-    about: Read the repo-wide rules that every agent (including Jules) follows before filing structured work.
-  
-  - name: 📊 Issues Dashboard (Enhanced UI)
-    url: https://midnghtsapphire.github.io/revvel-standards/ui/issues-board/
-    about: Interactive issues management dashboard with filters, metrics, and quick actions
-  
-  - name: 🤖 AI-Powered Triage
-    url: https://github.com/midnghtsapphire/revvel-standards/actions/workflows/issue-auto-triage.yml
-    about: Let AI automatically analyze and label your issue
-  
-  - name: 🔍 Search Similar Issues
-    url: https://github.com/midnghtsapphire/revvel-standards/issues?q=is%3Aissue
-    about: Check if your issue already exists
-  
-  - name: 🎯 GitHub CLI Quick Actions
-    url: https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md#4-github-cli-workflows
-    about: Use GitHub CLI for faster issue management
+  - name: Revvel operating notes
+    url: https://github.com/midnghtsapphire/revvel-standards
+    about: Review the operating system, routing logic, and standards before opening a work request.

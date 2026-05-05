@@ -1,24 +1,5 @@
-# Issue template picker configuration for midnghtsapphire/revvel-standards.
-#
-# Audrey's standing rule (issue: "ONE TEMPLATE ALL DEEP RESEARCH"):
-#   There is exactly ONE user-facing intake template — `issue.yml` — and
-#   every issue filed through it gets a deep-research pass before any code
-#   is written. Bugs, features, questions, refactors — all routed the same
-#   way via the `jules` label and `jules-invoke.yml`. The previous split
-#   between `bug-report.yml` and `deep-research.yml` has been retired.
-#
-# The other files in this directory (`daily-decision.md`, `exit-quiet-mode.md`,
-# `urgent-compliance.md`) are **operational** templates consumed by the
-# triage-cron / migration-cron / compliance-watcher workflows — they are not
-# intended as day-to-day user entry points.
-#
-# `blank_issues_enabled` stays `true` so existing automation that opens
-# blank issues via the API/UI keeps working. Automation should still apply
-# the `jules` label so those issues are picked up by `jules-invoke.yml` and
-# get the same deep-research pass as issues filed through `issue.yml`.
-
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: 📚 Universal Agent Instructions (AGENTS.md)
-    url: https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/AGENTS.md
-    about: Read the repo-wide rules that every agent (including Jules) follows before filing structured work.
+  - name: Revvel operating notes
+    url: https://github.com/midnghtsapphire/revvel-standards
+    about: Review the operating system, routing logic, and standards before opening a work request.

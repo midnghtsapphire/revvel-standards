@@ -1,0 +1,227 @@
+name: Set default Project v2 fields for new issues using PAT
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Optional issue number to backfill or re-run defaults for"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  set-project-defaults:
+    name: Add issue to Project v2 and set default fields
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      # Required classic PAT.
+      # Create a repository or organization secret named PROJECTS_PAT.
+      # Recommended classic PAT scopes:
+      # - project
+      # - repo for private repositories, or public_repo for public repositories only
+      GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+
+      # Required Project v2 node ID. Example format: PVT_kwHOA...
+      # Store this as a repository/org/environment variable named PROJECT_ID.
+      PROJECT_ID: ${{ vars.PROJECT_ID }}
+
+      # Required Project v2 field node IDs. Example format: PVTSSF_lAHO...
+      PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
+      EFFORT_FIELD_ID: ${{ vars.EFFORT_FIELD_ID }}
+      CUSTOM_SELECT_FIELD_ID: ${{ vars.CUSTOM_SELECT_FIELD_ID }}
+
+      # Required single-select option IDs. Example format: 47fc9ee4.
+      PRIORITY_HIGH_OPTION_ID: ${{ vars.PRIORITY_HIGH_OPTION_ID }}
+      EFFORT_MEDIUM_OPTION_ID: ${{ vars.EFFORT_MEDIUM_OPTION_ID }}
+      CUSTOM_DEFAULT_OPTION_ID: ${{ vars.CUSTOM_DEFAULT_OPTION_ID }}
+
+    steps:
+      - name: Validate configuration
+        run: |
+          set -euo pipefail
+
+          missing=0
+
+          for var_name in \
+            GH_TOKEN \
+            PROJECT_ID \
+            PRIORITY_FIELD_ID \
+            EFFORT_FIELD_ID \
+            CUSTOM_SELECT_FIELD_ID \
+            PRIORITY_HIGH_OPTION_ID \
+            EFFORT_MEDIUM_OPTION_ID \
+            CUSTOM_DEFAULT_OPTION_ID
+          do
+            if [ -z "${!var_name}" ]; then
+              echo "Missing required secret or variable: ${var_name}"
+              missing=1
+            fi
+          done
+
+          if [ "${missing}" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Resolve issue node ID
+        id: issue
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${ISSUE_NUMBER}" ]; then
+            echo "ISSUE_NUMBER is required for workflow_dispatch runs."
+            exit 1
+          fi
+
+          ISSUE_ID="$(
+            gh api graphql \
+              -f owner="${REPO%/*}" \
+              -f name="${REPO#*/}" \
+              -F number="${ISSUE_NUMBER}" \
+              -f query='
+                query($owner: String!, $name: String!, $number: Int!) {
+                  repository(owner: $owner, name: $name) {
+                    issue(number: $number) {
+                      id
+                      title
+                    }
+                  }
+                }
+              ' \
+              --jq '.data.repository.issue.id'
+          )"
+
+          if [ -z "${ISSUE_ID}" ] || [ "${ISSUE_ID}" = "null" ]; then
+            echo "Could not resolve issue node ID for issue #${ISSUE_NUMBER}."
+            exit 1
+          fi
+
+          echo "issue_id=${ISSUE_ID}" >> "${GITHUB_OUTPUT}"
+
+      - name: Add issue to project or get existing project item
+        id: project-item
+        env:
+          ISSUE_ID: ${{ steps.issue.outputs.issue_id }}
+        run: |
+          set -euo pipefail
+
+          RESPONSE="$(
+            gh api graphql \
+              -f project="${PROJECT_ID}" \
+              -f content="${ISSUE_ID}" \
+              -f query='
+                mutation($project: ID!, $content: ID!) {
+                  addProjectV2ItemById(input: {
+                    projectId: $project
+                    contentId: $content
+                  }) {
+                    item {
+                      id
+                    }
+                  }
+                }
+              ' 2>&1
+          )" || true
+
+          ITEM_ID="$(printf '%s' "${RESPONSE}" | jq -r '.data.addProjectV2ItemById.item.id // empty' 2>/dev/null || true)"
+
+          if [ -z "${ITEM_ID}" ]; then
+            echo "addProjectV2ItemById did not return an item. The issue may already be in the project."
+            echo "${RESPONSE}"
+            echo "Looking up the existing item by issue content ID..."
+
+            ITEM_ID="$(
+              gh api graphql \
+                -f issue="${ISSUE_ID}" \
+                -f query='
+                  query($issue: ID!) {
+                    node(id: $issue) {
+                      ... on Issue {
+                        projectItems(first: 50) {
+                          nodes {
+                            id
+                            project {
+                              id
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ' \
+                --jq ".data.node.projectItems.nodes[] | select(.project.id == \"${PROJECT_ID}\") | .id" \
+              | head -n 1
+            )"
+          fi
+
+          if [ -z "${ITEM_ID}" ] || [ "${ITEM_ID}" = "null" ]; then
+            echo "Could not add or find the Project v2 item for this issue."
+            exit 1
+          fi
+
+          echo "item_id=${ITEM_ID}" >> "${GITHUB_OUTPUT}"
+
+      - name: Set default Project v2 fields
+        env:
+          ITEM_ID: ${{ steps.project-item.outputs.item_id }}
+        run: |
+          set -euo pipefail
+
+          gh api graphql \
+            -f project="${PROJECT_ID}" \
+            -f item="${ITEM_ID}" \
+            -f priority_field="${PRIORITY_FIELD_ID}" \
+            -f priority_value="${PRIORITY_HIGH_OPTION_ID}" \
+            -f effort_field="${EFFORT_FIELD_ID}" \
+            -f effort_value="${EFFORT_MEDIUM_OPTION_ID}" \
+            -f custom_field="${CUSTOM_SELECT_FIELD_ID}" \
+            -f custom_value="${CUSTOM_DEFAULT_OPTION_ID}" \
+            -f query='
+              mutation(
+                $project: ID!
+                $item: ID!
+                $priority_field: ID!
+                $priority_value: String!
+                $effort_field: ID!
+                $effort_value: String!
+                $custom_field: ID!
+                $custom_value: String!
+              ) {
+                set_priority: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $priority_field
+                  value: { singleSelectOptionId: $priority_value }
+                }) {
+                  projectV2Item { id }
+                }
+
+                set_effort: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $effort_field
+                  value: { singleSelectOptionId: $effort_value }
+                }) {
+                  projectV2Item { id }
+                }
+
+                set_custom_default: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $custom_field
+                  value: { singleSelectOptionId: $custom_value }
+                }) {
+                  projectV2Item { id }
+                }
+              }
+            ' \
+            --silent
