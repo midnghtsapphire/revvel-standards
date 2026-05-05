@@ -8,6 +8,35 @@ Execute the following workflow for each repository in the midnghtsapphire organi
 
 ---
 
+## Step 0: Route the request before doing any work
+
+Read these required fields from the work request:
+- OUTPUT_TYPE
+- RESEARCH_MODE
+- DELIVERY_MODE
+- ITERATION_MODE
+- LIFECYCLE_MODE
+- COMMERCIAL_MODE
+- DEPLOYMENT_TARGET
+
+Rules:
+- RESEARCH_MODE controls research depth only. It does not change the deliverable.
+- OUTPUT_TYPE is the hard constraint on the deliverable.
+- Every request must pass viability scoring before implementation.
+- If score is 24–30, Decision=BUILD.
+- If score is 16–23, Decision=HOLD unless explicitly overridden.
+- If score is below 16, Decision=ARCHIVE unless explicitly overridden.
+- If DELIVERY_MODE=proposal-first, stop after proposal.
+- If DELIVERY_MODE=build-with-brief-options, provide 1–2 concise options, then implement.
+- If DELIVERY_MODE=build-direct, implement immediately after viability passes.
+- If ITERATION_MODE=single-pass, do not expand into multi-phase app roadmaps unless blocked.
+- If LIFECYCLE_MODE=refresh-existing, audit the current repo/assets first before proposing rebuilds.
+- If OUTPUT_TYPE=cli-product, do not default to a web app.
+- If OUTPUT_TYPE=mcp-product, optimize for tool definitions, schema quality, packaging, docs, and selective tool exposure.
+- If OUTPUT_TYPE=api-product, optimize for endpoint design, auth, schema, docs, pricing model, and hosting readiness.
+- If OUTPUT_TYPE=sellable-pdf, optimize for document quality and monetizable packaging; do not create an app unless explicitly requested.
+- If OUTPUT_TYPE=invention-flow, follow invention evaluation before any build recommendation.
+
 ## Step 1: Repository Discovery
 
 ```bash
