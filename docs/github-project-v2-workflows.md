@@ -138,6 +138,72 @@ Both main workflows support manual runs with `workflow_dispatch`.
 
 Enter an `issue_number` to add or update defaults for an existing issue.
 
+## Auto-classifier — extending the floor with LLM-picked routing fields
+
+The default-field workflows above set a 3-field **floor** on every new issue
+(`Status=Inbox`, `Priority=medium`, `Research Mode=standard`). They run
+unconditionally and are the safety net.
+
+`.github/workflows/wr-auto-classify.yml` extends this floor by classifying the
+**other** routing dropdowns from the issue body using OpenRouter
+(`anthropic/claude-sonnet-4`):
+
+- `Output Type`, `Delivery Mode`, `Iteration Mode`, `Lifecycle Mode`,
+  `Commercial Mode`, `Deployment Target`, `Priority` (overrides the floor's
+  `medium` if the body suggests otherwise), `Research Mode` (overrides
+  `standard` if the body says `deepresearch`).
+
+Behavior:
+
+1. **Respects explicit picks.** If the WR form has an explicit non-`auto-classify`
+   value for a field, that value wins; the classifier leaves it alone.
+2. **Calls OpenRouter for blanks/`auto-classify`.** Fills only the fields the
+   user left as `auto-classify` or empty.
+3. **Falls back to opinionated defaults** if OpenRouter is unavailable or
+   replies with malformed output: `internal-script-automation` / `standard`
+   / `build-direct` / `single-pass` / `new-build` / `internal-only` /
+   `none` / `medium`. When any fallback is used the issue is labeled
+   `auto:default-fallback` so a human can spot-check.
+4. **Posts a comment** on the issue summarizing each field's value AND its
+   source (`explicit` / `classifier` / `fallback`).
+
+Required credentials (both already configured for `revvel-standards`):
+
+- `secrets.PROJECTS_PAT` (classic PAT, `project` + `repo` scopes) — write to Project v2.
+- `secrets.OPENROUTER_API_KEY` — call the LLM. Optional; classifier degrades to
+  fallback defaults if missing.
+
+Both are checked by a preflight job (same pattern as #13333). If either is
+missing the main classify job is `skipped`, not failed.
+
+## Issue template structure
+
+The `New Issue` chooser is intentionally minimal:
+
+- `.github/ISSUE_TEMPLATE/00-devin-work-request.yml` — the single intake form.
+  Numeric `00-` prefix forces it to sort first among `.yml` forms (which sort
+  before `.md`) per [GitHub's documented ordering rules][gh-template-order].
+- `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false` plus a
+  single `contact_link` to the operating docs.
+
+Older templates (`daily-decision.md`, `exit-quiet-mode.md`, `issue.yml`,
+`urgent-compliance.md`, `work-request.yml`) live in
+`templates/issue-template-archive/` for reference but are NOT in the chooser.
+See `templates/issue-template-archive/README.md` for why each was retired.
+
+[gh-template-order]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
+## Chronic CI failures fixed alongside this work
+
+Three CI checks were red on every recent PR (#13329 through #13336). The two
+that originated inside this repo were fixed in this PR; the third is external.
+
+| Check | Status | Resolution |
+| ----- | ------ | ---------- |
+| `log-agent-action` (Agent Audit Logger) | **fixed** | The `pull_request` trigger was removed from `.github/workflows/agent-audit-logger.yml`. The job tried to push the audit log to `main` from a PR-branch checkout, which the `Protect main` ruleset blocks → 100% failure rate. Issue/comment/review/cron triggers stay because they CAN push. |
+| `ci/circleci: pr-review` | **fixed** | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by Devin Review + Jules + BITO AI on every PR. |
+| `recurseml/analysis` | **external** | Posted by the RecurseML GitHub App, not by a workflow in this repo. The in-repo workflow `.github/workflows/recurse-ml.yml` already disables its `pull_request` trigger. To make this status check stop appearing on PRs, uninstall the RecurseML app at https://github.com/settings/installations or set its `RECURSE_ML_API_KEY` so it succeeds. Branch protection on `main` does not require this check, so it's visual noise rather than a merge blocker. |
+
 ## Notes
 
 - The main workflow triggers on `issues.opened`.

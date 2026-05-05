@@ -1,22 +1,28 @@
 name: Template Sync Check
 
 # Ensures `.github/ISSUE_TEMPLATE/` (active) and `templates/issue-template/`
-# (portable) stay identical. Triggered on any push that touches either location.
+# (portable) stay identical for the canonical WR template. Triggered on any
+# push that touches either location.
+#
+# DEVIN-RESTRUCTURE 2026-05-05 (PR #13338): the canonical filename moved from
+# `issue.yml` to `00-devin-work-request.yml` so the WR form sorts first in the
+# New Issue chooser. The legacy `issue.yml` mirror was deleted at the same
+# time.
 
 on:
   pull_request:
     paths:
-      - '.github/ISSUE_TEMPLATE/issue.yml'
+      - '.github/ISSUE_TEMPLATE/00-devin-work-request.yml'
       - '.github/ISSUE_TEMPLATE/config.yml'
-      - 'templates/issue-template/issue.yml'
+      - 'templates/issue-template/00-devin-work-request.yml'
       - 'templates/issue-template/config.yml'
   push:
     branches:
       - main
     paths:
-      - '.github/ISSUE_TEMPLATE/issue.yml'
+      - '.github/ISSUE_TEMPLATE/00-devin-work-request.yml'
       - '.github/ISSUE_TEMPLATE/config.yml'
-      - 'templates/issue-template/issue.yml'
+      - 'templates/issue-template/00-devin-work-request.yml'
       - 'templates/issue-template/config.yml'
 
 permissions:
@@ -30,19 +36,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Compare issue.yml files
+      - name: Compare 00-devin-work-request.yml files
         run: |
-          echo "Comparing .github/ISSUE_TEMPLATE/issue.yml with templates/issue-template/issue.yml..."
-          if ! diff -u .github/ISSUE_TEMPLATE/issue.yml templates/issue-template/issue.yml; then
-            echo "❌ ERROR: issue.yml files are out of sync!"
+          echo "Comparing .github/ISSUE_TEMPLATE/00-devin-work-request.yml with templates/issue-template/00-devin-work-request.yml..."
+          if ! diff -u .github/ISSUE_TEMPLATE/00-devin-work-request.yml templates/issue-template/00-devin-work-request.yml; then
+            echo "❌ ERROR: 00-devin-work-request.yml files are out of sync!"
             echo ""
-            echo "The active template (.github/ISSUE_TEMPLATE/issue.yml) and the portable"
-            echo "copy (templates/issue-template/issue.yml) must be identical."
+            echo "The active template (.github/ISSUE_TEMPLATE/00-devin-work-request.yml) and the portable"
+            echo "copy (templates/issue-template/00-devin-work-request.yml) must be identical."
             echo ""
             echo "To fix: Copy the desired version to both locations and commit both files."
             exit 1
           else
-            echo "✅ issue.yml files are in sync"
+            echo "✅ 00-devin-work-request.yml files are in sync"
           fi
 
       - name: Compare config.yml files
@@ -65,9 +71,9 @@ jobs:
           echo "✅ All template files are in sync!"
           echo ""
           echo "Active templates:"
-          echo "  - .github/ISSUE_TEMPLATE/issue.yml"
+          echo "  - .github/ISSUE_TEMPLATE/00-devin-work-request.yml"
           echo "  - .github/ISSUE_TEMPLATE/config.yml"
           echo ""
           echo "Portable copies (for installing in other repos):"
-          echo "  - templates/issue-template/issue.yml"
+          echo "  - templates/issue-template/00-devin-work-request.yml"
           echo "  - templates/issue-template/config.yml"
