@@ -97,3 +97,15 @@ Rollback steps:
 Database migrations in this MVI: no
 Rollback risk: low
 ```
+
+---
+
+## Section 8: Follow-up MVIs
+
+- `docs/MVI_CONTRACT_2026-05-04_TAVILY_AND_TRADEOFFS.md` — adds Tavily as a
+  first-class research provider alongside Firecrawl and documents every
+  deliberate v0.1.0 trade-off in code, server README, MCP catalog, and a
+  machine-readable `v0_1_0_trade_offs` field on
+  `data://wr-control-plane/architecture`. Acts as the canonical follow-up to
+  this MVI.
+

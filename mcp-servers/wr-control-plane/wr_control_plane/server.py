@@ -3,14 +3,34 @@
 
 This server provides a concrete home for the blueprint architecture inside the
 existing revvel-standards conventions:
+
 - GitHub issue intake remains the trigger surface.
 - Jules / OpenRouter remain current workflow actors.
-- Composio / Firecrawl / Obot are modeled as the next control-plane layer.
+- Composio / Firecrawl / Tavily / Obot are modeled as the next control-plane layer.
 - FastMCP is the server framework when installed.
 
 The module includes a tiny compatibility shim so the file can still be imported
 in lightweight environments that have not installed FastMCP yet. When FastMCP
 is present, `mcp.run()` exposes the tools over stdio like any other MCP server.
+
+Known v0.1.0 trade-offs (deliberate, tracked for v0.2.0):
+
+- Integration detection uses a permissive substring match against
+  ``PROVIDER_TOOLKITS`` (e.g. the literal string ``"github"`` will match in
+  almost any WR body since GitHub URLs are common). The match is intentionally
+  lossy on the side of false positives because ``requested_integrations`` is an
+  informational signal only -- it does not flip ``required`` flags in the
+  credential matrix. A stop-word / URL-host-aware tokenizer is a v0.2.0 task.
+- ``_github_get`` issues unpaginated requests against the GitHub REST API. The
+  default page size is 30 comments. ``[WR]`` issues with more than 30 comments
+  will only have their first page inspected by the signal collector. This is
+  acceptable for triage/intake but will be replaced with Composio's GitHub
+  toolkit (which handles pagination + per-user OAuth) when that wires in.
+- ``ControlPlaneConfig.from_env`` is intentionally not memoised: tools are
+  individually importable for the regression test suite, and per-call env
+  reads keep the surface trivially auditable. Process-wide caching will land
+  when Composio is wired in, so we share one code path between env reads and
+  OAuth refresh.
 """
 
 from __future__ import annotations
@@ -72,10 +92,12 @@ PROVIDER_TOOLKITS: dict[str, tuple[str, ...]] = {
     "linear": ("COMPOSIO_API_KEY",),
     "stripe": ("COMPOSIO_API_KEY",),
     "supabase": ("COMPOSIO_API_KEY",),
+    "firebase": ("COMPOSIO_API_KEY",),
 }
 
 DEFAULT_ALLOWED_HOSTS = (
-    "api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev"
+    "api.github.com,github.com,openrouter.ai,api.anthropic.com,"
+    "api.firecrawl.dev,api.tavily.com"
 )
 
 URL_RE = re.compile(r"https?://[^\s)\]>\"']+")
@@ -91,6 +113,7 @@ class ControlPlaneConfig:
     jules_api_key: str
     composio_api_key: str
     firecrawl_api_key: str
+    tavily_api_key: str
     obot_base_url: str
     obot_idp_config: str
     obot_allowed_hosts: str
@@ -105,6 +128,7 @@ class ControlPlaneConfig:
             jules_api_key=os.getenv("JULES_API_KEY", "").strip(),
             composio_api_key=os.getenv("COMPOSIO_API_KEY", "").strip(),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY", "").strip(),
+            tavily_api_key=os.getenv("TAVILY_API_KEY", "").strip(),
             obot_base_url=os.getenv("OBOT_BASE_URL", "").strip(),
             obot_idp_config=os.getenv("OBOT_IDP_CONFIG", "").strip(),
             obot_allowed_hosts=os.getenv("OBOT_ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).strip(),
@@ -227,6 +251,15 @@ def _credential_matrix(signals: IssueSignalSet) -> list[dict[str, object]]:
             "reason": "Recommended when WRs contain docs, APIs, PDFs, or external URLs to research.",
         },
         {
+            "secret": "TAVILY_API_KEY",
+            "required": bool(signals.urls),
+            "configured": bool(cfg.tavily_api_key),
+            "reason": (
+                "LLM-optimized live web search; pairs with Firecrawl for fast topical "
+                "retrieval whenever a WR carries URLs or external research signals."
+            ),
+        },
+        {
             "secret": "ANTHROPIC_API_KEY",
             "required": True,
             "configured": bool(cfg.anthropic_api_key),
@@ -254,9 +287,18 @@ def _control_plane_readiness(signals: IssueSignalSet) -> dict[str, object]:
     required_missing = [
         item["secret"] for item in credential_matrix if item["required"] and not item["configured"]
     ]
-    research_mode = "firecrawl-agent" if signals.urls else "jules-only"
-    if signals.pdf_urls:
+    has_firecrawl = bool(cfg.firecrawl_api_key)
+    has_tavily = bool(cfg.tavily_api_key)
+    if signals.pdf_urls and has_firecrawl:
         research_mode = "jules-plus-firecrawl-pdf"
+    elif signals.urls and has_firecrawl and has_tavily:
+        research_mode = "jules-plus-firecrawl-and-tavily"
+    elif signals.urls and has_firecrawl:
+        research_mode = "firecrawl-agent"
+    elif signals.urls and has_tavily:
+        research_mode = "tavily-search"
+    else:
+        research_mode = "jules-only"
     governance_mode = "obot-enforced" if cfg.obot_base_url and cfg.obot_idp_config else "repo-native"
     return {
         "default_repo": cfg.default_repo,
@@ -267,7 +309,8 @@ def _control_plane_readiness(signals: IssueSignalSet) -> dict[str, object]:
         "recommended_next_steps": [
             "Provision missing required credentials in Vault / Doppler.",
             "Route GitHub/OAuth actions through Composio once COMPOSIO_API_KEY is available.",
-            "Use Firecrawl for WRs that include docs, PDFs, API references, or external links.",
+            "Use Firecrawl for deterministic crawl/scrape/PDF extraction on WR-referenced URLs.",
+            "Use Tavily for fast LLM-tuned topical search alongside Firecrawl.",
             "Place Obot in front of MCP traffic before enabling fully autonomous destructive actions.",
         ],
     }
@@ -277,7 +320,7 @@ def _issue_packet(issue: dict, comments: list[dict], repo: str) -> dict[str, obj
     signals = _collect_issue_signals(issue, comments)
     comments_excerpt = [
         {
-            "author": comment.get("user", {}).get("login"),
+            "author": (comment.get("user") or {}).get("login"),
             "body": str(comment.get("body") or "")[:500],
             "created_at": comment.get("created_at"),
         }
@@ -290,7 +333,7 @@ def _issue_packet(issue: dict, comments: list[dict], repo: str) -> dict[str, obj
         "body": str(issue.get("body") or ""),
         "state": issue.get("state"),
         "labels": [label.get("name") for label in issue.get("labels", [])],
-        "author": issue.get("user", {}).get("login"),
+        "author": (issue.get("user") or {}).get("login"),
         "urls": signals.urls,
         "pdf_urls": signals.pdf_urls,
         "requested_integrations": signals.requested_integrations,
@@ -317,6 +360,7 @@ def control_plane_status() -> dict[str, object]:
             "jules": bool(cfg.jules_api_key),
             "composio": bool(cfg.composio_api_key),
             "firecrawl": bool(cfg.firecrawl_api_key),
+            "tavily": bool(cfg.tavily_api_key),
             "obot": bool(cfg.obot_base_url),
         },
         "readiness": _control_plane_readiness(empty_signals),
@@ -371,6 +415,7 @@ def render_control_plane_mcp_entry(profile: str = "repo") -> dict[str, object]:
                 "JULES_API_KEY": "${JULES_API_KEY}",
                 "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
                 "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+                "TAVILY_API_KEY": "${TAVILY_API_KEY}",
                 "OBOT_BASE_URL": "${OBOT_BASE_URL}",
                 "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
                 "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS}",
@@ -412,6 +457,7 @@ def env_schema() -> dict[str, object]:
         ],
         "optional": [
             "FIRECRAWL_API_KEY",
+            "TAVILY_API_KEY",
             "OBOT_ALLOWED_HOSTS",
             "WR_DEFAULT_REPO",
         ],
@@ -429,11 +475,25 @@ def architecture_summary() -> dict[str, object]:
     return {
         "trigger": "GitHub Work Request issue ([WR] title prefix)",
         "current_research_layer": ["Jules"],
-        "next_research_layer": ["Firecrawl /agent", "Firecrawl /parse"],
+        "next_research_layer": [
+            "Firecrawl /agent",
+            "Firecrawl /parse",
+            "Tavily /search (LLM-optimized live snippets)",
+            "Tavily /extract (clean readable content)",
+        ],
         "current_execution_layer": ["OpenRouter Coder workflow"],
-        "next_execution_layer": ["Composio GitHub toolkit", "FastMCP server tools"],
+        "next_execution_layer": [
+            "Composio GitHub toolkit",
+            "Composio Firebase toolkit (per-app: Firestore / Functions / Auth)",
+            "FastMCP server tools",
+        ],
         "governance_layer": ["Obot gateway", "per-user OAuth passthrough", "DLP / allowed-host policy"],
         "review_layer": ["BITO AI"],
+        "v0_1_0_trade_offs": [
+            "Integration detection is permissive substring match (informational only).",
+            "GitHub API responses are unpaginated (~30 comments per WR).",
+            "Per-tool env reads are not memoised across invocations.",
+        ],
     }
 
 

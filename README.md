@@ -761,23 +761,44 @@ All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
 
 Label any issue `wr:code` and OpenRouter writes the code. See [`docs/OPENROUTER_AGENT.md`](docs/OPENROUTER_AGENT.md).
 
-### WR / PR Control Plane (Composio + Firecrawl + Obot + FastMCP)
+### WR / PR Control Plane (Composio + Firecrawl + Tavily + Obot + FastMCP)
 
 The 2026 WR-PR Automation Blueprint is wired into this repo as the in-tree
 [`wr-pr-control-plane`](mcp-servers/wr-control-plane/) MCP server. It exposes
 four tools that downstream agents can call to inspect WR issues, detect
-required Composio / Firecrawl / Obot credentials, and emit ready-to-paste MCP
-config for any consuming repo.
+required Composio / Firecrawl / Tavily / Obot credentials, and emit
+ready-to-paste MCP config for any consuming repo.
 
 - Server: [`mcp-servers/wr-control-plane/`](mcp-servers/wr-control-plane/)
 - Catalog entry: [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md)
-- MVI contract: [`docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md`](docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md)
-- Disabled-by-default `.mcp.json` entry until Composio / Firecrawl / Obot
-  credentials are provisioned. Enable by removing the `disabled` flag.
+- MVI contracts:
+  [`docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md`](docs/MVI_CONTRACT_2026-05-04_MCP_CONTROL_PLANE.md)
+  (v0.1.0 slice) and
+  [`docs/MVI_CONTRACT_2026-05-04_TAVILY_AND_TRADEOFFS.md`](docs/MVI_CONTRACT_2026-05-04_TAVILY_AND_TRADEOFFS.md)
+  (Tavily research path + v0.1.0 trade-off documentation)
+- Disabled-by-default `.mcp.json` entry until Composio / Firecrawl / Tavily /
+  Obot credentials are provisioned. Enable by removing the `disabled` flag.
 
-This is a complement to — not a replacement for — Jules research and
-OpenRouter orchestration. It is the home for the blueprint stack inside
+Research providers wired into the control plane:
+
+- **Jules** — current GitHub-native deep-research pass (always on)
+- **Firecrawl** — deterministic crawl / scrape / PDF / structured extraction
+- **Tavily** — LLM-optimized live web search and clean content extraction
+  (pairs with Firecrawl: Tavily for fast topical retrieval, Firecrawl for PDFs
+  and deterministic extraction)
+
+The control plane reports a `research_mode` for every WR (`jules-only`,
+`tavily-search`, `firecrawl-agent`, `jules-plus-firecrawl-and-tavily`, or
+`jules-plus-firecrawl-pdf`) so downstream agents always know which research
+path to take. Tavily and Firecrawl are complements to — not replacements for —
+Jules. The control plane is the home for the blueprint stack inside
 `revvel-standards` so every downstream repo gets the same path.
+
+Known v0.1.0 trade-offs (substring integration matching, unpaginated GitHub
+calls, per-call env reads) are documented inline in the server source, in the
+[server README](mcp-servers/wr-control-plane/README.md#known-v010-trade-offs),
+in the [MCP catalog entry](docs/MCP_REVVEL_CATALOG.md), and as a machine-readable
+`v0_1_0_trade_offs` field on `data://wr-control-plane/architecture`.
 
 ---
 
