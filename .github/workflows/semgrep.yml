@@ -42,7 +42,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Semgrep (OSS rule packs)
+      - name: Mark workspace safe (avoid 'dubious ownership' from container UID mismatch)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Run Semgrep scan (OSS rule packs)
         # p/security-audit  : core security audit rules
         # p/secrets         : secret detection (complements GitGuardian)
         # p/owasp-top-ten   : OWASP Top 10 patterns
@@ -51,7 +54,7 @@ jobs:
         # p/dockerfile      : Dockerfile best practices
         # p/yaml            : generic YAML hygiene
         run: |
-          semgrep ci \
+          semgrep scan \
             --config=p/security-audit \
             --config=p/secrets \
             --config=p/owasp-top-ten \
@@ -60,13 +63,12 @@ jobs:
             --config=p/dockerfile \
             --config=p/yaml \
             --sarif --sarif-output=semgrep.sarif \
-            --error \
-            --no-suppress-errors \
             --metrics=off \
-            || true  # don't fail the job; we surface findings via SARIF and PR comments
+            --no-error \
+            || true  # don't fail the job; we surface findings via SARIF
 
       - name: Upload SARIF to GitHub Code Scanning
-        if: always()
+        if: hashFiles('semgrep.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
