@@ -20,7 +20,7 @@ This bundle contains GitHub Actions workflows for automatically setting default 
 | `EFFORT_FIELD_ID` *(legacy name)* | `Status` | `Inbox` |
 | `CUSTOM_SELECT_FIELD_ID` *(legacy name)* | `Research Mode` | `standard` |
 
-The legacy variable names (`EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`) are retained from the original workflow template to keep the existing workflow YAML untouched. They point at fields whose actual names are `Status` and `Research Mode`. The variable name is opaque to the workflow — only the value (the field/option node ID) matters at runtime.
+The legacy variable names (`EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`, `PRIORITY_HIGH_OPTION_ID`, `EFFORT_MEDIUM_OPTION_ID`) are retained from the original workflow template to keep the existing workflow YAML untouched. The field-ID variables point at fields whose actual names are `Status` and `Research Mode`. `PRIORITY_HIGH_OPTION_ID` stores the option ID for `Priority: medium` (`be3c0726`) and `EFFORT_MEDIUM_OPTION_ID` stores the option ID for `Status: Inbox` (`0aff196f`) — the variable names are misleading but the values are correct per the default-fields mapping table above. The variable name is opaque to the workflow — only the value (the field/option node ID) matters at runtime.
 
 ### Live values
 
@@ -83,7 +83,7 @@ EFFORT_MEDIUM_OPTION_ID
 CUSTOM_DEFAULT_OPTION_ID
 ```
 
-The values come from the helper workflow output. For the live values currently set on this repo, see the [Live deployment](#live-deployment-for-revvel-standards-v01) section above.
+The values come from the helper workflow output. For the live values currently set on this repo, see the [Live deployment](#live-deployment-for-revvel-standards) section above.
 
 ## GitHub App authentication
 
