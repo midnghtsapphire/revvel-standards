@@ -17,10 +17,17 @@ Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
 
 ## Files
 
-| File         | Where it goes in your app repo                |
-|--------------|-----------------------------------------------|
-| `issue.yml`  | `.github/ISSUE_TEMPLATE/issue.yml`            |
-| `config.yml` | `.github/ISSUE_TEMPLATE/config.yml`           |
+| File                          | Where it goes in your app repo                          |
+|-------------------------------|---------------------------------------------------------|
+| `00-devin-work-request.yml`   | `.github/ISSUE_TEMPLATE/00-devin-work-request.yml`      |
+| `config.yml`                  | `.github/ISSUE_TEMPLATE/config.yml`                     |
+
+The `00-` prefix forces this template to sort first in GitHub's New Issue
+chooser ([per the docs][gh-template-order] — `.yml` before `.md`, alpha within
+each group). Without a numeric prefix, alphabetical ordering can push the WR
+form behind unrelated `.yml` forms in the chooser.
+
+[gh-template-order]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
 
 ---
 
@@ -29,8 +36,8 @@ Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
 ```bash
 # from the root of the target repo
 mkdir -p .github/ISSUE_TEMPLATE
-cp ../revvel-standards/templates/issue-template/issue.yml   .github/ISSUE_TEMPLATE/issue.yml
-cp ../revvel-standards/templates/issue-template/config.yml  .github/ISSUE_TEMPLATE/config.yml
+cp ../revvel-standards/templates/issue-template/00-devin-work-request.yml .github/ISSUE_TEMPLATE/00-devin-work-request.yml
+cp ../revvel-standards/templates/issue-template/config.yml                .github/ISSUE_TEMPLATE/config.yml
 git add .github/ISSUE_TEMPLATE
 git commit -m "chore(issues): adopt the One Template (deep-research by default)"
 ```
@@ -88,16 +95,16 @@ template.
 
 ## Keeping the two copies in sync
 
-`templates/issue-template/issue.yml` and
-`.github/ISSUE_TEMPLATE/issue.yml` in `revvel-standards` must stay
-identical. Same for the two `config.yml` copies. If you change one,
-change the other in the same PR.
+`templates/issue-template/00-devin-work-request.yml` and
+`.github/ISSUE_TEMPLATE/00-devin-work-request.yml` in `revvel-standards`
+must stay identical. Same for the two `config.yml` copies. If you change
+one, change the other in the same PR.
 
-Until a CI drift check exists, verify manually before committing:
+Verify manually before committing:
 
 ```bash
-diff .github/ISSUE_TEMPLATE/issue.yml  templates/issue-template/issue.yml
-diff .github/ISSUE_TEMPLATE/config.yml templates/issue-template/config.yml
+diff .github/ISSUE_TEMPLATE/00-devin-work-request.yml templates/issue-template/00-devin-work-request.yml
+diff .github/ISSUE_TEMPLATE/config.yml                templates/issue-template/config.yml
 ```
 
 Both `diff` calls must produce no output.
