@@ -35,35 +35,54 @@ The system does **not** auto-build every idea. It researches first, scores it, a
 
 ## 1. Intake
 
-Work requests for the operating model are filed through the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) issue form. The legacy [`Issue (Jules / triage)`](../.github/ISSUE_TEMPLATE/issue.yml) form is retained for the existing Jules deep-research path; both share the `[WR]` title prefix so downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`) handles either source.
+Work requests for the operating model are filed through the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/00-devin-work-request.yml) issue form. The legacy `Issue (Jules / triage)` form has been archived to `templates/issue-template-archive/` so the New Issue chooser shows exactly one card; downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`) keys off the `[WR]` title prefix so any historical issues continue to route correctly.
 
 Required fields (intake will reject the form if any are blank):
 
-- OUTPUT_TYPE
-- RESEARCH_MODE
-- DELIVERY_MODE
-- ITERATION_MODE
-- LIFECYCLE_MODE
-- COMMERCIAL_MODE
-- DEPLOYMENT_TARGET
+- **Output Type** — the hard constraint on the deliverable (production-app, cli-product, api-product, sellable-pdf, etc.)
+- **High-Level Goal** — prose description of what you're trying to achieve
+
+Optional fields (auto-classifier fills any left on `auto-classify`):
+
+- Research Mode
+- Delivery Mode
+- Iteration Mode
+- Lifecycle Mode
+- Commercial Mode
+- Deployment Target
 - Launch Priority
-- High-level goal
-- Problem to solve
-- Success definition
-
-Optional fields:
-
+- Problem to Solve
+- Success Definition
 - Constraints and must-haves
 - Existing assets / repos / links
 - Cutting-edge notes
 
+### Picking the right mode
+
+Revvel uses **one universal Work Request form**. The **Output Type** dropdown
+at the top is the only routing decision you need to make:
+
+- `production-app` / `desktop-tool` — build an app or tool
+- `cli-product` / `mcp-product` / `api-product` — code-facing product
+- `sellable-pdf` / `technical-documentation` — documents, briefs, and PDFs
+- `project-management-doc` — process and planning
+- `client-code-task` — small client-scoped work
+- `internal-script-automation` — internal tooling, no external surface
+- `invention-flow` — invention evaluation, not a build
+
+Everything else (research depth, lifecycle, commercial mode, deployment
+target, priority) is derived from your prose by the auto-classifier workflow
+at [`.github/workflows/wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml). You can
+still override any individual dropdown by selecting an explicit value — the
+classifier respects user choices and only fills fields left on `auto-classify`.
+
 Field semantics:
 
-- **RESEARCH_MODE** controls research depth only. It does not change the deliverable.
-- **OUTPUT_TYPE** is the hard constraint on the final deliverable.
-- **DELIVERY_MODE** controls whether Devin proposes first or builds immediately.
-- **ITERATION_MODE = single-pass** means do not expand into multi-stage roadmaps unless blocked.
-- **LIFECYCLE_MODE = refresh-existing** means audit first before proposing rebuilds.
+- **Research Mode** controls research depth only. It does not change the deliverable.
+- **Output Type** is the hard constraint on the final deliverable.
+- **Delivery Mode** controls whether Devin proposes first or builds immediately.
+- **Iteration Mode = single-pass** means do not expand into multi-stage roadmaps unless blocked.
+- **Lifecycle Mode = refresh-existing** means audit first before proposing rebuilds.
 
 ---
 
@@ -123,7 +142,7 @@ Inbox → Researching → Scored → { Hold | Archived | Approved → In Build �
 
 The expected end-to-end flow once the operating model is wired:
 
-1. **File a WR.** Open a new issue using the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) form. Required dropdowns (`Output Type`, `Research Mode`, `Delivery Mode`, `Iteration Mode`, `Lifecycle Mode`, `Commercial Mode`, `Deployment Target`, `Launch Priority`) capture the routing constraints. The form auto-applies labels `work-request` and `devin`.
+1. **File a WR.** Open a new issue using the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/00-devin-work-request.yml) form. Pick an **Output Type** (the only required routing dropdown) and write your description in `High-Level Goal`. Every other routing dropdown defaults to `auto-classify` and is filled in automatically by [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml). The form auto-applies labels `work-request` and `devin`.
 2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
 3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
 4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).

@@ -17,13 +17,25 @@ body:
         - Every request should be researched and scored before implementation.
         - Weak ideas should be held or archived instead of built.
 
+  - type: markdown
+    attributes:
+      value: |
+        ### 1. Choose the mode
+
+        This single Work Request template handles everything.
+        **Output Type** below is the only routing decision you need to make —
+        it tells the system whether you're asking for an app, CLI, API, PDF,
+        docs, or invention work. Every other routing dropdown is optional and
+        will be filled in automatically from your description.
+
   - type: dropdown
     id: output_type
     attributes:
-      label: Output Type
-      description: What is the primary deliverable? Leave on 'auto-classify' to let the agent decide from your description.
+      label: Output Type (required)
+      description: >
+        What are you asking Devin to create? This is the only required routing
+        choice; it controls the entire flow.
       options:
-        - auto-classify
         - production-app
         - desktop-tool
         - sellable-pdf
@@ -36,7 +48,7 @@ body:
         - api-product
         - invention-flow
     validations:
-      required: false
+      required: true
 
   - type: dropdown
     id: research_mode
