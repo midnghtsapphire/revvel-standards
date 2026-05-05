@@ -11,7 +11,27 @@
 📊 **[Project Dashboard](./dashboard.html)** — **NEW!** Centralized visibility into all projects, BOM, inventory, test URLs, and status ([docs](docs/PROJECT_DASHBOARD.md))  
 📋 **[PORTFOLIO.md](docs/PORTFOLIO.md)** — Corporate identity, entity hierarchy, product brands, project tracking, and comprehensive tool/resource catalogs  
 📚 **[Master Inventory](docs/Master_Inventory/)** — All detailed standards and specifications  
-🛠️ **[Scripts](scripts/)** — Automation scripts for bootstrapping, compliance checking, and repo management
+🛠️ **[Scripts](scripts/)** — Automation scripts for bootstrapping, compliance checking, and repo management  
+📖 **[REMINDERS.md](./REMINDERS.md)** — One-stop "if you're about to do X, read Y first" index for setup tasks
+
+---
+
+## 📚 Reference Materials
+
+Curated reading list — sorted by *when you'll need it*, not by topic. Open the linked doc before you start the corresponding activity so you don't rediscover the same constraints the hard way.
+
+| Read this when… | Document | Format / length |
+|---|---|---|
+| Provisioning a new GitHub Project v2 board (fields, options, automation) | [`docs/reference/github-projects-automation-guide.pdf`](docs/reference/github-projects-automation-guide.pdf) | PDF, 8 pages, ~15 min |
+| Wiring the Project v2 default-field-setter workflows | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) | Markdown walkthrough |
+| Defining Project v2 schema (fields, options, status lifecycle) | [`docs/github-project-schema.md`](docs/github-project-schema.md) | Spec |
+| Filing a new Work Request (intake → score → route) | [`docs/operating-model.md`](docs/operating-model.md) + [`templates/viability-gate-template.md`](templates/viability-gate-template.md) | Spec + rubric |
+| Evaluating an invention idea before committing to a build | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) | Template |
+| Refreshing or rebuilding an existing legacy project | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) | Checklist |
+| Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
+| Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
+
+When you add a new reference doc, add a row to this table. The table is the index — keep it short, keep it sorted by *trigger*, and link directly to the source. See [`REMINDERS.md`](./REMINDERS.md) for the matching activity-based reminders index.
 
 ---
 

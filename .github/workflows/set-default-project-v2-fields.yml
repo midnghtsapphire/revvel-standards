@@ -17,6 +17,12 @@ permissions:
 jobs:
   set-project-defaults:
     name: Add issue to Project v2 and set default fields
+    # Skip silently when the GitHub App credentials are not configured. This
+    # lets the App and PAT default-setter workflows coexist in the same repo
+    # without one always failing on every issue when only one auth path is
+    # provisioned. Manual workflow_dispatch always runs so operators can see
+    # the actual configuration error if they invoke it intentionally.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.PROJECTS_APP_ID != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
