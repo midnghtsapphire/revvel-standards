@@ -93,8 +93,31 @@
 | Notion knowledge layer | ✅ documented | [`docs/notion-structure.md`](docs/notion-structure.md) — provisioned per-org |
 | Step 0 router | ✅ live | [`promptforproject.md`](promptforproject.md) |
 | Operating model doc | ✅ live | [`docs/operating-model.md`](docs/operating-model.md) |
+| Project v2 default-field automation | ✅ live | [`.github/workflows/set-default-project-v2-fields.yml`](.github/workflows/set-default-project-v2-fields.yml) (+ PAT variant `default-project-v2-fields-pat.yml`) |
+| Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
+| Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
+
+### Project v2 automation requirements
+
+Before the default-field workflows will run end-to-end, provision either path:
+
+**GitHub App path** (recommended for org-owned boards) — `set-default-project-v2-fields.yml` + `print-project-v2-ids.yml`. Needs:
+
+- Variable `PROJECTS_APP_ID` and secret `PROJECTS_APP_PRIVATE_KEY` for a GitHub App with org Projects = Read & write and repo Issues = Read.
+
+**Classic PAT path** — `default-project-v2-fields-pat.yml` + `print-project-v2-ids-pat.yml`. Needs:
+
+- Secret `PROJECTS_PAT` for a classic personal access token with `project` + `repo` scopes (or `public_repo` for public-only).
+
+Both paths additionally need these repository or organization variables, populated from the helper workflow's output:
+
+- `PROJECT_ID`
+- `PRIORITY_FIELD_ID`, `EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`
+- `PRIORITY_HIGH_OPTION_ID`, `EFFORT_MEDIUM_OPTION_ID`, `CUSTOM_DEFAULT_OPTION_ID`
+
+Until populated, the workflows fail loudly on every new issue (intentional — silent failure would let the project board drift). See [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) for the full setup walkthrough.
 
 ---
 

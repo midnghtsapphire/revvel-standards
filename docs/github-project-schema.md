@@ -41,7 +41,7 @@ Inbox → Researching → Scored
 
 Rules:
 
-- New issues created from `devin-work-request.yml` enter `Inbox`.
+- New issues opened in this repo enter `Inbox` automatically. The default-field workflow does not filter by template, so issues from `devin-work-request.yml`, the legacy `issue.yml`, and bot-created issues all land on the board. To restrict the board to operating-model work requests only, add a job-level `if: contains(github.event.issue.labels.*.name, 'work-request')` guard to `.github/workflows/set-default-project-v2-fields.yml` (or its PAT variant).
 - After deep research is performed, the item moves to `Researching`.
 - After the viability rubric is filled in, the item moves to `Scored`.
 - The `Decision` field is the gate between `Scored` and the build / hold / archive lanes.

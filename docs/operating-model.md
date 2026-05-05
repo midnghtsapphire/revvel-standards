@@ -35,9 +35,9 @@ The system does **not** auto-build every idea. It researches first, scores it, a
 
 ## 1. Intake
 
-All work requests are filed through the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) issue form.
+Work requests for the operating model are filed through the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) issue form. The legacy [`Issue (Jules / triage)`](../.github/ISSUE_TEMPLATE/issue.yml) form is retained for the existing Jules deep-research path; both share the `[WR]` title prefix so downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`) handles either source.
 
-Required fields:
+Required fields (intake will reject the form if any are blank):
 
 - OUTPUT_TYPE
 - RESEARCH_MODE
@@ -50,9 +50,12 @@ Required fields:
 - High-level goal
 - Problem to solve
 - Success definition
+
+Optional fields:
+
 - Constraints and must-haves
 - Existing assets / repos / links
-- Optional cutting-edge notes
+- Cutting-edge notes
 
 Field semantics:
 
