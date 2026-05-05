@@ -193,7 +193,7 @@
     },
 
     "wr-pr-control-plane": {
-      "_comment": "WR / PR Control Plane MCP — GitHub-native intake packet, credential readiness, and 2026 blueprint orchestration contract for Composio + Firecrawl + Obot + FastMCP. Source: revvel-standards mcp-servers/wr-control-plane/. Install: cd mcp-servers/wr-control-plane && uv pip install -e .",
+      "_comment": "WR / PR Control Plane MCP — GitHub-native intake packet, credential readiness, and 2026 blueprint orchestration contract for Composio + Firecrawl + Tavily + Obot + FastMCP. Source: revvel-standards mcp-servers/wr-control-plane/. Install: cd mcp-servers/wr-control-plane && uv pip install -e .",
       "command": "uv",
       "args": [
         "run",
@@ -207,9 +207,10 @@
         "JULES_API_KEY": "${JULES_API_KEY}",
         "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
         "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
         "OBOT_BASE_URL": "${OBOT_BASE_URL}",
         "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
-        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev}",
+        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev,api.tavily.com}",
         "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
       }
     }

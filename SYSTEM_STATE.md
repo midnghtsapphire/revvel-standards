@@ -43,11 +43,19 @@
 
 ## MCP Servers
 
+> **Status column meaning:** tracks repo-level *availability* of each server
+> (whether the source / npm package is published and consumable). The
+> `disabled` flag in each `.mcp.json` entry is a separate, per-clone
+> *runtime* signal indicating whether a particular workspace has the
+> credentials and dependencies installed to run the server. A server can be
+> `✅ live` here while still being `"disabled": true` in a fresh clone of
+> `revvel-standards` until that clone provisions its own secrets.
+
 | Server | Status | Notes |
 |---|---|---|
 | `rvvel-affiliate-links` | ✅ live | Production, npm: `rvvel-affiliate-links-mcp` |
 | `code-review` | ✅ live | Production, mandatory in every project |
-| `wr-pr-control-plane` | ⏳ disabled | In-tree at `mcp-servers/wr-control-plane/`. Implements 2026 WR-PR Automation Blueprint contract for Composio + Firecrawl + Obot + FastMCP. Enable by removing `disabled: true` in `.mcp.json` and provisioning the credentials listed in `.env.example`. |
+| `wr-pr-control-plane` | ✅ live | In-tree at `mcp-servers/wr-control-plane/`. Implements the 2026 WR-PR Automation Blueprint contract for Composio + Firecrawl + Tavily + Obot + FastMCP. Ships `"disabled": true` in `.mcp.json` so downstream clones opt in after installing the local Python deps (`uv pip install -e .`) and provisioning the credentials listed in `.env.example`. |
 
 ---
 
@@ -66,7 +74,8 @@
 | `OPENROUTER_API_KEY` | ❌ not set | ❌ not set | Used by OpenRouter-routed workflows |
 | `JULES_API_KEY` | ❌ not set | ❌ not set | Used by `.github/workflows/jules-invoke.yml` |
 | `COMPOSIO_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — tool router |
-| `FIRECRAWL_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — research engine (optional) |
+| `FIRECRAWL_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — deterministic crawl/scrape/PDF research (optional) |
+| `TAVILY_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — LLM-optimized live web search (optional, pairs with Firecrawl) |
 | `OBOT_BASE_URL` | ❌ not set | ❌ not set | WR/PR control-plane — governance gateway |
 | `OBOT_IDP_CONFIG` | ❌ not set | ❌ not set | WR/PR control-plane — IdP for per-user OAuth |
 | `WR_DEFAULT_REPO` | `midnghtsapphire/revvel-standards` | `midnghtsapphire/revvel-standards` | Default repo target for WR/PR control-plane |
@@ -124,10 +133,13 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
-Last updated: 2026-05-04 19:05 UTC
+Last updated: 2026-05-05 14:55 UTC
 Updated by: devin
-Session summary: Added the Revvel operating model layer — Devin Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, and the operating-model.md master document. Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
+Session summary: Added the Revvel operating model layer — Devin Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
 
+Last updated: 2026-05-04 (post PR #10191 merge)
+Updated by: devin
+Session summary: (1) Promoted Tavily to a first-class research provider in the wr-pr-control-plane MCP server (alongside Firecrawl). New TAVILY_API_KEY env var, new credential-matrix row, new research_mode branches (tavily-search, jules-plus-firecrawl-and-tavily). (2) Documented every deliberate v0.1.0 trade-off in the server module docstring, mcp-servers/wr-control-plane/README.md, docs/MCP_REVVEL_CATALOG.md, and a machine-readable v0_1_0_trade_offs field on data://wr-control-plane/architecture. (3) Added Composio Firebase toolkit to the architecture summary so per-app Firestore / Functions / Auth wiring has a documented home. (4) Clarified that the MCP Servers Status column tracks repo-level availability while .mcp.json `disabled` tracks per-clone runtime state.
 Last updated: 2026-05-04 18:56 UTC
 Updated by: devin
 Session summary: (1) Merged PR #9577 to fix WR/PR automation by killing workflow_run loops, restoring [WR] intake, OpenRouter as sole orchestrator, BITO as sole reviewer, and bot-spam guards. (2) Closed ~999 bot-spam [FAILURE]/[ALERT] issues. (3) Added in-tree wr-pr-control-plane MCP server at mcp-servers/wr-control-plane/ implementing the 2026 WR-PR Automation Blueprint integration contract for Composio + Firecrawl + Obot + FastMCP. Server is disabled by default in .mcp.json until credentials are provisioned.
