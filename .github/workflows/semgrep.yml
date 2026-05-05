@@ -68,7 +68,11 @@ jobs:
             || true  # don't fail the job; we surface findings via SARIF
 
       - name: Upload SARIF to GitHub Code Scanning
+        # continue-on-error so a transient GitHub installation rate-limit
+        # during SARIF upload doesn't fail the whole job. Findings will land
+        # in Code Scanning on the next run when the rate limit resets.
         if: hashFiles('semgrep.sarif') != ''
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif

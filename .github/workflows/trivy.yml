@@ -49,7 +49,11 @@ jobs:
           exit-code: '0'  # don't fail the job; surface findings via SARIF
 
       - name: Upload SARIF to GitHub Code Scanning
-        if: always()
+        # continue-on-error so a transient GitHub installation rate-limit
+        # during SARIF upload doesn't fail the whole job. Findings will land
+        # in Code Scanning on the next run when the rate limit resets.
+        if: hashFiles('trivy.sarif') != ''
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy.sarif
