@@ -120,7 +120,7 @@ Where `CODE_REVIEW_MCP_PATH` = absolute path to a local clone of `code-review-mc
 | **MCP Status** | ✅ Production-ready (disabled by default until credentials provisioned) |
 
 **What it does:**
-GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[WR]` issues, detects URLs / PDFs / requested integrations, reports credential readiness for Composio + Firecrawl + Obot, and emits ready-to-paste `.mcp.json` entries. This is the integration point that lets Composio (tool router), Firecrawl (research), Obot (governance), and FastMCP (custom tools) be adopted incrementally without rewriting the existing `wr-pr-creation` / `jules-invoke` / `openrouter-coder` workflows.
+GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[WR]` issues, detects URLs / PDFs / requested integrations, reports credential readiness for Composio + Firecrawl + Tavily + Obot, and emits ready-to-paste `.mcp.json` entries. This is the integration point that lets Composio (tool router incl. Firebase / Slack / Notion / 100+), Firecrawl (deterministic research), Tavily (LLM-tuned live search), Obot (governance), and FastMCP (custom tools) be adopted incrementally without rewriting the existing `wr-pr-creation` / `jules-invoke` / `openrouter-coder` workflows.
 
 **Tools (4):**
 
@@ -136,7 +136,7 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
 | Resource | Description |
 |---|---|
 | `data://wr-control-plane/env-schema` | Required and optional environment variables |
-| `data://wr-control-plane/architecture` | Canonical Revvel interpretation of the 2026 blueprint (current Jules + next Firecrawl, OpenRouter + Composio, Obot governance) |
+| `data://wr-control-plane/architecture` | Canonical Revvel interpretation of the 2026 blueprint (current Jules + next Firecrawl & Tavily, OpenRouter + Composio incl. Firebase toolkit, Obot governance, plus a `v0_1_0_trade_offs` field) |
 
 **`.mcp.json` entry:**
 ```json
@@ -153,6 +153,7 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
     "JULES_API_KEY": "${JULES_API_KEY}",
     "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
     "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+    "TAVILY_API_KEY": "${TAVILY_API_KEY}",
     "OBOT_BASE_URL": "${OBOT_BASE_URL}",
     "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
     "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS}",
@@ -161,7 +162,26 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
 }
 ```
 
-**When to use:** Enable in any repository that follows the revvel-standards WR pipeline. The server lets the agent answer "what credentials does this WR need?" and "what is the canonical orchestration plan for this WR?" without spinning up Composio / Firecrawl / Obot first. Wire it into the WR pipeline as soon as `GITHUB_TOKEN`, `OPENROUTER_API_KEY`, and `JULES_API_KEY` are available; add Composio / Firecrawl / Obot keys later as the blueprint adoption progresses.
+**When to use:** Enable in any repository that follows the revvel-standards WR pipeline. The server lets the agent answer "what credentials does this WR need?" and "what is the canonical orchestration plan for this WR?" without spinning up Composio / Firecrawl / Tavily / Obot first. Wire it into the WR pipeline as soon as `GITHUB_TOKEN`, `OPENROUTER_API_KEY`, and `JULES_API_KEY` are available; add Composio / Firecrawl / Tavily / Obot keys later as the blueprint adoption progresses.
+
+**Research mode selection** (returned by `_control_plane_readiness.research_mode`):
+
+| Mode | Trigger |
+|---|---|
+| `jules-only` | No URLs detected, or no research credentials beyond Jules |
+| `firecrawl-agent` | URLs detected and `FIRECRAWL_API_KEY` configured |
+| `tavily-search` | URLs detected and `TAVILY_API_KEY` configured (no Firecrawl) |
+| `jules-plus-firecrawl-and-tavily` | URLs detected with both Firecrawl and Tavily configured |
+| `jules-plus-firecrawl-pdf` | PDF URLs detected with Firecrawl configured (Firecrawl wins on PDFs) |
+
+**Known v0.1.0 trade-offs** (also exposed at `data://wr-control-plane/architecture` under `v0_1_0_trade_offs`):
+
+| Trade-off | Why intentional | Replaced by |
+|---|---|---|
+| Substring match for `requested_integrations` (false positives are common, e.g. `github` matches every issue) | Informational signal only; does not flip required-credential flags | Stop-word / URL-host-aware tokenizer in v0.2.0 |
+| Unpaginated GitHub REST calls (~30 comments per WR) | Acceptable at intake stage; pagination is best owned by Composio's GitHub toolkit alongside per-user OAuth | Composio GitHub toolkit pagination |
+| Per-call `ControlPlaneConfig.from_env` reads | Keeps tools individually importable for tests and trivially auditable under Obot DLP | Process-wide cache shared with the Composio OAuth refresh path |
+| `disabled: true` in `.mcp.json` by default | Downstream clones must opt in after installing local Python deps and provisioning credentials | `setup-mcp.sh` flips the flag once the credential check passes |
 
 ---
 

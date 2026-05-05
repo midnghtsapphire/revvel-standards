@@ -71,6 +71,7 @@ function runPython(snippet) {
     JULES_API_KEY: '',
     COMPOSIO_API_KEY: '',
     FIRECRAWL_API_KEY: '',
+    TAVILY_API_KEY: '',
     OBOT_BASE_URL: '',
     OBOT_IDP_CONFIG: '',
     OBOT_ALLOWED_HOSTS: '',
@@ -225,6 +226,127 @@ test('FIRECRAWL_API_KEY becomes required when WR signals contain URLs', () => {
   assertEq(data, { required: true, configured: false }, 'firecrawl required');
 });
 
+test('TAVILY_API_KEY becomes required when WR signals contain URLs', () => {
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _credential_matrix, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "m = {item['secret']: item for item in _credential_matrix(sigs)};" +
+    "print(json.dumps({'required': m['TAVILY_API_KEY']['required'], 'configured': m['TAVILY_API_KEY']['configured']}))";
+  const data = pyJson(snippet);
+  assertEq(data, { required: true, configured: false }, 'tavily required when WR has URLs');
+});
+
+test('research_mode = jules-only when no URLs and no research credentials', () => {
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=[], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "r = _control_plane_readiness(sigs); print(json.dumps(r['research_mode']))";
+  const data = pyJson(snippet);
+  assertEq(data, 'jules-only', 'research_mode for empty signals');
+});
+
+test('research_mode = firecrawl-agent when URLs + only Firecrawl key', () => {
+  const env = {
+    ...process.env,
+    PYTHONPATH: path.join(SERVER_DIR),
+    GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
+    JULES_API_KEY: '', COMPOSIO_API_KEY: '',
+    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: '',
+    OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
+    WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
+  };
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
+  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  if (r.status !== 0) throw new Error(r.stderr);
+  assertEq(JSON.parse(r.stdout.trim()), 'firecrawl-agent', 'firecrawl-agent mode');
+});
+
+test('research_mode = tavily-search when URLs + only Tavily key', () => {
+  const env = {
+    ...process.env,
+    PYTHONPATH: path.join(SERVER_DIR),
+    GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
+    JULES_API_KEY: '', COMPOSIO_API_KEY: '',
+    FIRECRAWL_API_KEY: '', TAVILY_API_KEY: 'tvly-test',
+    OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
+    WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
+  };
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
+  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  if (r.status !== 0) throw new Error(r.stderr);
+  assertEq(JSON.parse(r.stdout.trim()), 'tavily-search', 'tavily-search mode');
+});
+
+test('research_mode = jules-plus-firecrawl-and-tavily when URLs + both keys', () => {
+  const env = {
+    ...process.env,
+    PYTHONPATH: path.join(SERVER_DIR),
+    GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
+    JULES_API_KEY: '', COMPOSIO_API_KEY: '',
+    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: 'tvly-test',
+    OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
+    WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
+  };
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
+  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  if (r.status !== 0) throw new Error(r.stderr);
+  assertEq(JSON.parse(r.stdout.trim()), 'jules-plus-firecrawl-and-tavily', 'both-tools mode');
+});
+
+test('research_mode = jules-plus-firecrawl-pdf when PDF URLs + Firecrawl key', () => {
+  const env = {
+    ...process.env,
+    PYTHONPATH: path.join(SERVER_DIR),
+    GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
+    JULES_API_KEY: '', COMPOSIO_API_KEY: '',
+    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: 'tvly-test',
+    OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
+    WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
+  };
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
+    "sigs = IssueSignalSet(urls=['https://example.com/spec.pdf'], pdf_urls=['https://example.com/spec.pdf'], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
+    "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
+  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  if (r.status !== 0) throw new Error(r.stderr);
+  assertEq(JSON.parse(r.stdout.trim()), 'jules-plus-firecrawl-pdf', 'pdf mode wins');
+});
+
+test('_issue_packet handles GitHub `"user": null` without crashing', () => {
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import _issue_packet;" +
+    "issue = {'number': 42, 'title': '[WR] X', 'body': 'b', 'state': 'open', 'labels': [], 'user': None};" +
+    "comments = [{'body': 'c1', 'user': None, 'created_at': '2026-01-01'}];" +
+    "p = _issue_packet(issue, comments, 'midnghtsapphire/revvel-standards');" +
+    "print(json.dumps({'author': p['author'], 'comment_authors': [c['author'] for c in p['recent_comments']]}))";
+  const data = pyJson(snippet);
+  assertEq(data.author, null, 'issue author None-safe');
+  assertEq(data.comment_authors, [null], 'comment author None-safe');
+});
+
 // ────────────────────────────────────────────────────────────────────────────
 // 4. control_plane_status — structured readiness payload
 // ────────────────────────────────────────────────────────────────────────────
@@ -247,6 +369,7 @@ test('control_plane_status returns server, default_repo, providers, readiness', 
     'jules',
     'composio',
     'firecrawl',
+    'tavily',
     'obot',
   ]) {
     assert(provider in data.providers, `providers.${provider} missing`);
@@ -283,6 +406,7 @@ test('render_control_plane_mcp_entry returns documented entry for repo profile',
     'OPENROUTER_API_KEY',
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
+    'TAVILY_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -343,7 +467,7 @@ test('env_schema lists every required and optional variable', () => {
   ]) {
     assert(data.required.includes(v), `required missing ${v}`);
   }
-  for (const v of ['FIRECRAWL_API_KEY', 'OBOT_ALLOWED_HOSTS', 'WR_DEFAULT_REPO']) {
+  for (const v of ['FIRECRAWL_API_KEY', 'TAVILY_API_KEY', 'OBOT_ALLOWED_HOSTS', 'WR_DEFAULT_REPO']) {
     assert(data.optional.includes(v), `optional missing ${v}`);
   }
   assertEq(
@@ -371,6 +495,36 @@ test('architecture_summary documents both current and next layers', () => {
   assert(data.review_layer.includes('BITO AI'), 'BITO AI in review_layer');
 });
 
+test('architecture_summary advertises Tavily on the next research layer', () => {
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import architecture_summary; print(json.dumps(architecture_summary()))";
+  const data = pyJson(snippet);
+  assert(
+    data.next_research_layer.some((s) => /tavily/i.test(s)),
+    'Tavily must appear in next_research_layer'
+  );
+  assert(
+    data.next_research_layer.some((s) => /firecrawl/i.test(s)),
+    'Firecrawl must remain in next_research_layer'
+  );
+});
+
+test('architecture_summary exposes machine-readable v0_1_0_trade_offs', () => {
+  const snippet =
+    "import json, sys; sys.path.insert(0, r'" +
+    path.join(SERVER_DIR) +
+    "'); from wr_control_plane.server import architecture_summary; print(json.dumps(architecture_summary()))";
+  const data = pyJson(snippet);
+  assert(Array.isArray(data.v0_1_0_trade_offs), 'v0_1_0_trade_offs must be a list');
+  assert(data.v0_1_0_trade_offs.length >= 3, 'expect at least 3 documented trade-offs');
+  const blob = data.v0_1_0_trade_offs.join(' ').toLowerCase();
+  assert(/substring|tokenizer|integration/.test(blob), 'trade-offs should cover substring match');
+  assert(/paginat|comment/.test(blob), 'trade-offs should cover pagination');
+  assert(/env|memois|cache/.test(blob), 'trade-offs should cover env reads / caching');
+});
+
 // ────────────────────────────────────────────────────────────────────────────
 // 7. Repo wiring — .mcp.json, .env.example, templates, scripts, docs
 // ────────────────────────────────────────────────────────────────────────────
@@ -392,6 +546,7 @@ test('.env.example documents every required control-plane variable', () => {
   for (const v of [
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
+    'TAVILY_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -400,6 +555,7 @@ test('.env.example documents every required control-plane variable', () => {
   ]) {
     assert(env.includes(v + '='), `.env.example missing ${v}`);
   }
+  assert(/api\.tavily\.com/.test(env), '.env.example OBOT_ALLOWED_HOSTS must include api.tavily.com');
 });
 
 test('templates/mcp/.env.mcp.example mirrors the control-plane variables', () => {
@@ -410,6 +566,7 @@ test('templates/mcp/.env.mcp.example mirrors the control-plane variables', () =>
   for (const v of [
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
+    'TAVILY_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -417,6 +574,8 @@ test('templates/mcp/.env.mcp.example mirrors the control-plane variables', () =>
   ]) {
     assert(env.includes(v + '='), `template env example missing ${v}`);
   }
+  assert(/api\.tavily\.com/.test(env),
+    'template .env.mcp.example OBOT_ALLOWED_HOSTS must include api.tavily.com');
 });
 
 test('templates/mcp/mcp.revvel-custom.json exposes the wr-pr-control-plane entry', () => {
@@ -432,6 +591,8 @@ test('templates/mcp/mcp.revvel-custom.json exposes the wr-pr-control-plane entry
     entry.args.some((a) => a.includes('mcp-servers/wr-control-plane')),
     'template entry must reference the in-tree server path'
   );
+  assert(entry.env && 'TAVILY_API_KEY' in entry.env,
+    'template wr-pr-control-plane entry must wire TAVILY_API_KEY');
 });
 
 test('scripts/setup-mcp.sh references the control-plane install path', () => {
@@ -450,6 +611,19 @@ test('docs/MCP_REVVEL_CATALOG.md documents the wr-pr-control-plane entry', () =>
   assert(/`mcp-servers\/wr-control-plane`/i.test(cat) ||
          /mcp-servers\/wr-control-plane/.test(cat),
     'catalog must link to in-tree server path');
+  assert(/Tavily/i.test(cat), 'catalog must mention Tavily');
+  assert(/v0\.1\.0 trade-offs/i.test(cat), 'catalog must include v0.1.0 trade-offs section');
+  assert(/TAVILY_API_KEY/.test(cat), 'catalog must show TAVILY_API_KEY in MCP entry');
+});
+
+test('mcp-servers/wr-control-plane/README.md documents trade-offs and Tavily', () => {
+  const readme = fs.readFileSync(README, 'utf8');
+  assert(/Tavily/i.test(readme), 'server README must mention Tavily');
+  assert(/Known v0\.1\.0 trade-offs/i.test(readme),
+    'server README must include a Known v0.1.0 trade-offs section');
+  assert(/research_mode|jules-only|tavily-search|firecrawl-agent/i.test(readme),
+    'server README must document research_mode values');
+  assert(/TAVILY_API_KEY/.test(readme), 'server README must list TAVILY_API_KEY in env block');
 });
 
 test('SYSTEM_STATE.md records the wr-pr-control-plane MCP server', () => {

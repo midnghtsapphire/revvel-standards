@@ -83,13 +83,14 @@
         "JULES_API_KEY": "${JULES_API_KEY}",
         "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
         "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
         "OBOT_BASE_URL": "${OBOT_BASE_URL}",
         "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
-        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev}",
+        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev,api.tavily.com}",
         "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
       },
       "disabled": true,
-      "disabledReason": "Enable after installing the local server (cd mcp-servers/wr-control-plane && uv pip install -e .) and provisioning credentials in your secrets manager: GITHUB_TOKEN, COMPOSIO_API_KEY, OBOT_BASE_URL, and OBOT_IDP_CONFIG. FIRECRAWL_API_KEY is strongly recommended when WRs include docs or PDFs."
+      "disabledReason": "Enable after installing the local server (cd mcp-servers/wr-control-plane && uv pip install -e .) and provisioning credentials in your secrets manager: GITHUB_TOKEN, COMPOSIO_API_KEY, OBOT_BASE_URL, and OBOT_IDP_CONFIG. FIRECRAWL_API_KEY and TAVILY_API_KEY are strongly recommended when WRs include docs, PDFs, or external research targets."
     }
   }
 }
