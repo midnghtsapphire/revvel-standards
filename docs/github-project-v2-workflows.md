@@ -28,11 +28,11 @@ Create these as repository, organization, or environment variables:
 ```text
 PROJECT_ID
 PRIORITY_FIELD_ID
-EFFORT_FIELD_ID
-CUSTOM_SELECT_FIELD_ID
-PRIORITY_HIGH_OPTION_ID
-EFFORT_MEDIUM_OPTION_ID
-CUSTOM_DEFAULT_OPTION_ID
+STATUS_FIELD_ID
+RESEARCH_MODE_FIELD_ID
+PRIORITY_MEDIUM_OPTION_ID
+STATUS_INBOX_OPTION_ID
+RESEARCH_MODE_STANDARD_OPTION_ID
 ```
 
 The values come from the helper workflow output.
@@ -94,5 +94,5 @@ Enter an `issue_number` to add or update defaults for an existing issue.
 
 - The main workflow triggers on `issues.opened`.
 - If the issue is already in the project, the workflow attempts to find the existing Project v2 item and update it.
-- The default-field workflow assumes Priority, Effort, and the custom field are all single-select fields.
+- The default-field workflow assumes Priority, Status, and Research Mode are all single-select fields.
 - If your field names or option names differ, only the variable names need to map to the correct field and option IDs.

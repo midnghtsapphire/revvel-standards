@@ -109,7 +109,7 @@ Rules:
 
 ## 3. GitHub Project
 
-A single GitHub Project tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
+A single GitHub Project (https://github.com/users/midnghtsapphire/projects/5) tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
 
 Status lifecycle:
 
