@@ -32,12 +32,19 @@ jobs:
   trivy-fs:
     name: trivy
     runs-on: ubuntu-latest
+    # Trivy intentionally runs on Dependabot PRs (unlike Semgrep) because SCA
+    # vulnerability checks on dependency-bump PRs are exactly when this scanner
+    # is most valuable.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@master
+        # Pinned to v0.36.0 release commit SHA (not @master) to avoid the
+        # supply-chain risk of an arbitrary push to the action's master branch
+        # executing in CI with security-events: write permissions.
+        # Refresh: bump SHA when a new release is cut.
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8  # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
