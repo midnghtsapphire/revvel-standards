@@ -15,6 +15,31 @@ permissions:
   issues: read
 
 jobs:
+  preflight:
+    # Probe whether the classic PAT secret is configured. We must use a job
+    # step (not the job-level if:) because GitHub Actions does not permit the
+    # secrets context in job-level if conditions; only step-level if and env:
+    # / with: contexts can read secrets. The downstream job consumes the
+    # boolean output via needs.preflight.outputs.has_creds.
+    name: Check Project v2 PAT credentials
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      has_creds: ${{ steps.check.outputs.has_creds }}
+    steps:
+      - id: check
+        env:
+          PAT: ${{ secrets.PROJECTS_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -n "${PAT}" ]; then
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+            echo "Classic PAT configured (PROJECTS_PAT)."
+          else
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::PROJECTS_PAT not configured; skipping PAT default-field setter."
+          fi
+
   set-project-defaults:
     name: Add issue to Project v2 and set default fields
     # Skip silently when the classic PAT secret is not configured. This lets
@@ -22,7 +47,8 @@ jobs:
     # without one always failing on every issue when only one auth path is
     # provisioned. Manual workflow_dispatch always runs so operators can see
     # the actual configuration error if they invoke it intentionally.
-    if: ${{ github.event_name == 'workflow_dispatch' || secrets.PROJECTS_PAT != '' }}
+    needs: preflight
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.preflight.outputs.has_creds == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
