@@ -826,7 +826,7 @@ The repo-wide operating model that decides whether a request gets built,
 held, or archived — and which deliverable type it ends up as — is documented
 in [`docs/operating-model.md`](docs/operating-model.md).
 
-- Intake: [`Devin Work Request`](.github/ISSUE_TEMPLATE/devin-work-request.yml) — the structured form for every work request
+- Intake: [`Work Request`](.github/ISSUE_TEMPLATE/00-work-request.yml) (primary, anti-under-scoping bundle) and [`Devin System WR`](.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) (lightweight, for internal/agent-driven work)
 - Viability gate: [`templates/viability-gate-template.md`](templates/viability-gate-template.md) — 1–5 rubric across 6 dimensions, BUILD / HOLD / ARCHIVE thresholds
 - Step 0 router: [`promptforproject.md`](promptforproject.md) — runs before any implementation work
 - Invention flow: [`templates/invention-flow-template.md`](templates/invention-flow-template.md)

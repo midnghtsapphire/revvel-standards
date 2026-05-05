@@ -178,9 +178,16 @@ jobs:
               #
               #   production-app
               #
-              # Some fields can render as `_No response_` when the user left
-              # the value blank (only happens for textareas, but be defensive).
-              pattern = rf"###\s+{re.escape(label)}\s*\n+([^\n#].*?)(?=\n###|\n*$)"
+              # Tolerant of:
+              #   - trailing parenthetical annotations like "Output Type (required)"
+              #     (some forms label required fields explicitly even though GitHub
+              #     already shows a "Required" indicator natively)
+              #   - `_No response_` placeholder for blank textareas
+              pattern = (
+                  rf"###\s+{re.escape(label)}"
+                  rf"(?:\s*\([^)]*\))?"   # optional " (required)" or similar
+                  rf"\s*\n+([^\n#].*?)(?=\n###|\n*$)"
+              )
               m = re.search(pattern, body, re.DOTALL)
               if not m:
                   return None

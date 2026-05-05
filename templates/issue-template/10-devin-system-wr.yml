@@ -1,40 +1,30 @@
-name: Devin Work Request
-description: Research, score, route, and build only when appropriate.
+name: Devin System WR (Quick / Internal)
+description: Lightweight WR for low-risk, internal, or agent-driven work. The auto-classifier fills routing fields from your description.
 title: "[WR] "
 labels:
   - work-request
+  - quick
   - devin
 body:
   - type: markdown
     attributes:
       value: |
-        ## Devin Work Request
-        This form is the intake layer for revvel-standards.
+        ## Devin System WR
 
-        Rules:
-        - Deepresearch means research deeply, not auto-build.
-        - Output Type is the hard constraint on the deliverable.
-        - Every request should be researched and scored before implementation.
-        - Weak ideas should be held or archived instead of built.
+        Lightweight intake for low-risk, internal, or agent-driven work.
+        Use this when the heavy `Work Request` form (the first card in the
+        chooser) would be overkill — e.g. small internal scripts, follow-up
+        fixes, agent-routed automation tasks.
 
-  - type: markdown
-    attributes:
-      value: |
-        ### 1. Choose the mode
-
-        This single Work Request template handles everything.
-        **Output Type** below is the only routing decision you need to make —
-        it tells the system whether you're asking for an app, CLI, API, PDF,
-        docs, or invention work. Every other routing dropdown is optional and
-        will be filled in automatically from your description.
+        Output Type is the only routing decision you must make. Every other
+        routing dropdown defaults to `auto-classify` and is filled in from
+        your description by [`wr-auto-classify.yml`](../workflows/wr-auto-classify.yml).
 
   - type: dropdown
     id: output_type
     attributes:
       label: Output Type (required)
-      description: >
-        What are you asking Devin to create? This is the only required routing
-        choice; it controls the entire flow.
+      description: What are you asking Devin to create or change?
       options:
         - production-app
         - desktop-tool
@@ -211,5 +201,3 @@ body:
         If there is a new 2025–2026 API, agent framework, or MCP pattern that materially improves this, surface it.
     validations:
       required: false
-
-
