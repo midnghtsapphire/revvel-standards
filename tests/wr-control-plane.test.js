@@ -426,7 +426,7 @@ test('render_control_plane_mcp_entry uses template path for template profile', (
   const args = data['wr-pr-control-plane'].args;
   assert(
     args.some((a) => a.includes('${REVVEL_STANDARDS_PATH}')),
-    'template profile should use ${REVVEL_STANDARDS_PATH} placeholder'
+    'template profile should reference the ${REVVEL_STANDARDS_PATH} env variable'
   );
 });
 

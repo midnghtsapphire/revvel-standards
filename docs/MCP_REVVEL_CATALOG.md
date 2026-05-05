@@ -89,7 +89,7 @@ Automated code quality, accessibility, security, and deployment readiness scanni
 | `validate_typescript` | Run TypeScript compiler in standard or strict mode |
 | `scan_accessibility` | WCAG 2.1 Level A/AA/AAA scan — alt text, ARIA, keyboard nav |
 | `detect_security_issues` | XSS, injection, unsafe regex, npm audit, secret detection |
-| `analyze_performance` | Performance bottleneck detection (coming soon) |
+| `analyze_performance` | Performance bottleneck detection — tracked in the roadmap backlog |
 | `generate_quality_report` | Full report in markdown, HTML, or JSON format |
 | `validate_deployment_readiness` | Gate check for dev/test/live — tests, build, critical issues, security |
 | `integrate_coderabbit` | Trigger CodeRabbit review on a GitHub PR |
