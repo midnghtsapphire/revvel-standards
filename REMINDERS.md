@@ -40,6 +40,9 @@ When you're about to start something new, grep this file with the verb of your a
 
 - Run `.github/workflows/print-project-v2-ids.yml` (App auth) or `.github/workflows/print-project-v2-ids-pat.yml` (PAT auth) manually from the Actions tab. Pass `owner_type`, `owner`, and `project_number` (for the live `revvel-standards` board: `user`, `midnghtsapphire`, `5`). The workflow prints `PROJECT_ID`, every field's node ID, and every option ID. Copy them into repo or org variables.
 
+**If you change Project field names/options:**
+- Update the default-field workflows and schema docs to match the new names. The workflows dynamically query the project schema, but their fallback values are hardcoded in `.github/scripts/set-project-fields.js`.
+
 ---
 
 ## Filing a new Work Request (intake → score → route → build)

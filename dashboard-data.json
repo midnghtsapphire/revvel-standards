@@ -130,105 +130,105 @@
       "name": "Soul2Bowl",
       "status": "In Development",
       "description": "Premium online ordering and catering platform for St. Louis fusion cuisine — BBQ, Asian-Hawaiian, Southern soul food. Features glassmorphic design, animated UI, booking calendar, Stripe payments (one-time + subscriptions), Clerk auth (Google/Apple/Email), admin CMS panel, and eco-friendly LIFEMADE compostable bowl showcase.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "Pawsitting",
       "status": "Deployed",
       "description": "Pet sitting management app with a purple glassmorphism UI, 10-table database, Stripe billing, and AI chat features.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Pawsitting",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "the-alt-text",
       "status": "Deployed",
       "description": "AI-powered SaaS for generating SEO-optimized alt text for images. Includes a 3-tier Stripe subscription model and a REST API.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/the-alt-text",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "steel-white",
       "status": "Deployed",
       "description": "(Reese Reviews) An application for Amazon Vine reviewers to track products, ETV (Estimated Tax Value), and inventory. Includes an affiliate engine.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/steel-white",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "revvel-forensic-studio",
       "status": "Deployed",
       "description": "An AI-powered image analysis and enhancement tool with a \"Glass Observatory\" theme, 12 distinct workspaces, and a FastAPI backend.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-forensic-studio",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "mindmappr",
       "status": "Deployed",
       "description": "The backend service for the MindMappr AI agent, which is integrated with Telegram and Slack.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/mindmappr",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "meetaudreyevans-dashboard",
       "status": "Deployed",
       "description": "The full React-based dashboard for the `meetaudreyevans.com` hub, running in a Docker container.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/meetaudreyevans-dashboard",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "revvel-standards",
       "status": "Live",
       "description": "The single source of truth for all documentation, including templates, deployment guides, and infrastructure maps.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-standards",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "revvel-app-template",
       "status": "In Development",
       "description": "A working boilerplate repository for all new applications, pre-configured with the required stack and features.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-app-template",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "rvvel",
       "status": "Live",
       "description": "The source code for the main portfolio and hub website, `meetaudreyevans.com`, deployed via GitHub Pages.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/rvvel",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "Claude-Skills-Governance-Risk-and-Compliance",
       "status": "Active (Fork)",
       "description": "Expert-level GRC compliance guidance for ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered as a Claude Code plugin marketplace. Fork of `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0. Benchmarked at 94% accuracy across 18 test cases.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Claude-Skills-Governance-Risk-and-Compliance",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "ai-conversation-extractions",
       "status": "Archived",
       "description": "A massive archive of over 1,000 AI conversation logs from ChatGPT and Grok, containing prompts, code snippets, and project ideas.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/ai-conversation-extractions",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "SSRN_Whitepapers",
       "status": "Archived",
       "description": "A collection of academic and technical whitepapers, primarily for submission to SSRN (Social Science Research Network).",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/SSRN_Whitepapers",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "business-ideas-vault",
       "status": "Archived",
       "description": "A master collection of business concepts, plans, and validation research.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/business-ideas-vault",
       "source": "PROJECT_CATALOG.md"
     },
     {
       "name": "cyber-security-turn-business",
       "status": "Archived",
       "description": "Business plans, research, and documentation related to cybersecurity ventures.",
-      "link": "",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/cyber-security-turn-business",
       "source": "PROJECT_CATALOG.md"
     }
   ],
@@ -1186,166 +1186,10 @@
   },
   "urls": [
     {
-      "url": "https://vitest.dev",
-      "project": "revvel-standards",
+      "url": "https://github.com/kaelzhang/node-ignore/blob/master/CHANGELOG.md",
+      "project": "ignore",
       "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://jestjs.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://mochajs.org",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://chaijs.com",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://avajs.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://playwright.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://cypress.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://pptr.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://webdriver.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://testcafe.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://postman.com",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://insomnia.rest",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://httpie.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://hoppscotch.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://zaproxy.org",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://snyk.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://semgrep.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://trivy.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://sonarqube.org",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://webpagetest.org",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://k6.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://artillery.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://locust.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://eslint.org",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://biomejs.dev",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://prettier.io",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
-    },
-    {
-      "url": "https://codeclimate.com",
-      "project": "revvel-standards",
-      "type": "test",
-      "source": "/README.md"
+      "source": "/node_modules/ignore/README.md"
     },
     {
       "url": "https://github.com/janl/node-jsonpointer/actions/workflows/node.js.yml/badge.svg",
@@ -1358,12 +1202,6 @@
       "project": "jsonpointer",
       "type": "test",
       "source": "/node_modules/jsonpointer/README.md"
-    },
-    {
-      "url": "https://github.com/kaelzhang/node-ignore/blob/master/CHANGELOG.md",
-      "project": "ignore",
-      "type": "test",
-      "source": "/node_modules/ignore/README.md"
     },
     {
       "url": "https://github.com/DavidAnson/markdownlint/blob/v0.40.0/doc/CustomRules.md",
@@ -1400,6 +1238,168 @@
       "project": "Soul2Bowl",
       "type": "vercel",
       "source": "/docs/Soul2Bowl/README.md"
+    },
+    {
+      "url": "https://vitest.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://jestjs.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://mochajs.org",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://chaijs.com",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://avajs.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://playwright.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://cypress.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://pptr.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://webdriver.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://testcafe.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://postman.com",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://insomnia.rest",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://httpie.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://hoppscotch.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://zaproxy.org",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://snyk.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://semgrep.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://trivy.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://sonarqube.org",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://webpagetest.org",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://k6.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://artillery.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://locust.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://eslint.org",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://biomejs.dev",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://prettier.io",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://codeclimate.com",
+      "project": "app",
+      "type": "test",
+      "source": "/README.md"
     }
   ],
   "domains": [
@@ -1478,10 +1478,10 @@
   ],
   "projectStatus": [
     {
-      "project": "revvel-standards",
+      "project": "app",
       "file": "/SYSTEM_STATE.md",
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-05T16:33:18.313Z"
+  "lastUpdated": "2026-05-05T18:44:42.109Z"
 }

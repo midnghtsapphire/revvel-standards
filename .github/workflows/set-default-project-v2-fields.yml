@@ -61,16 +61,6 @@ jobs:
       # Store this as a repository/org/environment variable named PROJECT_ID.
       PROJECT_ID: ${{ vars.PROJECT_ID }}
 
-      # Required Project v2 field node IDs. Example format: PVTSSF_lAHO...
-      PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
-      EFFORT_FIELD_ID: ${{ vars.EFFORT_FIELD_ID }}
-      CUSTOM_SELECT_FIELD_ID: ${{ vars.CUSTOM_SELECT_FIELD_ID }}
-
-      # Required single-select option IDs. Example format: 47fc9ee4.
-      PRIORITY_HIGH_OPTION_ID: ${{ vars.PRIORITY_HIGH_OPTION_ID }}
-      EFFORT_MEDIUM_OPTION_ID: ${{ vars.EFFORT_MEDIUM_OPTION_ID }}
-      CUSTOM_DEFAULT_OPTION_ID: ${{ vars.CUSTOM_DEFAULT_OPTION_ID }}
-
     steps:
       # Recommended for organization-owned Project v2 boards.
       # Create a GitHub App with:
@@ -188,58 +178,11 @@ jobs:
           echo "item_id=${ITEM_ID}" >> "${GITHUB_OUTPUT}"
 
       - name: Set default Project v2 fields
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           ITEM_ID: ${{ steps.project-item.outputs.item_id }}
-        run: |
-          set -euo pipefail
-
-          gh api graphql \
-            -f project="${PROJECT_ID}" \
-            -f item="${ITEM_ID}" \
-            -f priority_field="${PRIORITY_FIELD_ID}" \
-            -f priority_value="${PRIORITY_HIGH_OPTION_ID}" \
-            -f effort_field="${EFFORT_FIELD_ID}" \
-            -f effort_value="${EFFORT_MEDIUM_OPTION_ID}" \
-            -f custom_field="${CUSTOM_SELECT_FIELD_ID}" \
-            -f custom_value="${CUSTOM_DEFAULT_OPTION_ID}" \
-            -f query='
-              mutation(
-                $project: ID!
-                $item: ID!
-                $priority_field: ID!
-                $priority_value: String!
-                $effort_field: ID!
-                $effort_value: String!
-                $custom_field: ID!
-                $custom_value: String!
-              ) {
-                set_priority: updateProjectV2ItemFieldValue(input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $priority_field
-                  value: { singleSelectOptionId: $priority_value }
-                }) {
-                  projectV2Item { id }
-                }
-
-                set_effort: updateProjectV2ItemFieldValue(input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $effort_field
-                  value: { singleSelectOptionId: $effort_value }
-                }) {
-                  projectV2Item { id }
-                }
-
-                set_custom_default: updateProjectV2ItemFieldValue(input: {
-                  projectId: $project
-                  itemId: $item
-                  fieldId: $custom_field
-                  value: { singleSelectOptionId: $custom_value }
-                }) {
-                  projectV2Item { id }
-                }
-              }
-            ' \
-            --silent
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const script = require('./.github/scripts/set-project-fields.js');
+            await script({ github, context, core });

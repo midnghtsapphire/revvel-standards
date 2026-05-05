@@ -10,29 +10,30 @@ This bundle contains GitHub Actions workflows for automatically setting default 
 
 **Auth path in use:** classic PAT (`PROJECTS_PAT` repo secret on `midnghtsapphire/revvel-standards`). The GitHub App path stays defined in the workflow files but is intentionally unconfigured; its preflight job emits a `::notice::` and the main job is `skipped` per [PR #13333](https://github.com/midnghtsapphire/revvel-standards/pull/13333).
 
-**ID storage:** repo variables on `midnghtsapphire/revvel-standards` (not org-level). All seven workflow inputs are populated; see the [Live values](#live-values) section below.
+**ID storage:** repo variables on `midnghtsapphire/revvel-standards` (not org-level). Only `PROJECT_ID` is strictly required for the automation to run, as the node.js script dynamically fetches the field nodes based on the schema.
 
 **Default fields written by the workflow on every new issue:**
 
-| Repo variable name | Project field | Default option |
-| ------------------ | ------------- | -------------- |
-| `PRIORITY_FIELD_ID` | `Priority` | `medium` |
-| `EFFORT_FIELD_ID` *(legacy name)* | `Status` | `Inbox` |
-| `CUSTOM_SELECT_FIELD_ID` *(legacy name)* | `Research Mode` | `standard` |
+The workflow runs a node script (`.github/scripts/set-project-fields.js`) that dynamically queries the project schema to map the following 8 fields:
 
-The legacy variable names (`EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`) are retained from the original workflow template to keep the existing workflow YAML untouched. They point at fields whose actual names are `Status` and `Research Mode`. The variable name is opaque to the workflow — only the value (the field/option node ID) matters at runtime.
+- **Status**: `Inbox`
+- **Priority**: `medium`
+- **Research Mode**: `standard`
+- **Delivery Mode**: `build-direct`
+- **Iteration Mode**: `single-pass`
+- **Lifecycle Mode**: `new-build`
+- **Commercial Mode**: `digital-product`
+- **Marketing Ready**: `No`
+
+**Explicit choice preservation**: The node script parses the Work Request issue body. If it finds a deliberate user choice in the markdown for any of the fields (e.g., `Lifecycle Mode=refresh-existing`), it will prioritize the user's choice over the hardcoded default listed above.
 
 ### Live values
 
 ```text
-PROJECT_ID                = PVT_kwHOAEa8uc4BU_1U
-PRIORITY_FIELD_ID         = PVTSSF_lAHOAEa8uc4BU_1UzhSD5Fo   (Priority field)
-EFFORT_FIELD_ID           = PVTSSF_lAHOAEa8uc4BU_1UzhQer44   (Status field)
-CUSTOM_SELECT_FIELD_ID    = PVTSSF_lAHOAEa8uc4BU_1UzhSD5EM   (Research Mode field)
-PRIORITY_HIGH_OPTION_ID   = be3c0726                          (Priority: medium)
-EFFORT_MEDIUM_OPTION_ID   = 0aff196f                          (Status: Inbox)
-CUSTOM_DEFAULT_OPTION_ID  = e971d6c3                          (Research Mode: standard)
+PROJECT_ID = PVT_kwHOAEa8uc4BU_1U
 ```
+
+*(Note: Legacy individual ID variables like `PRIORITY_FIELD_ID` were removed in favor of dynamic GraphQL schema lookup via the Node script)*
 
 ### Validation evidence (bootstrap WR)
 
@@ -71,19 +72,13 @@ If you add new fields, change option IDs, or move the project, re-run the helper
 
 ## Required variables for the main workflow
 
-Create these as repository, organization, or environment variables:
+Create this as a repository, organization, or environment variable:
 
 ```text
 PROJECT_ID
-PRIORITY_FIELD_ID
-EFFORT_FIELD_ID
-CUSTOM_SELECT_FIELD_ID
-PRIORITY_HIGH_OPTION_ID
-EFFORT_MEDIUM_OPTION_ID
-CUSTOM_DEFAULT_OPTION_ID
 ```
 
-The values come from the helper workflow output. For the live values currently set on this repo, see the [Live deployment](#live-deployment-for-revvel-standards-v01) section above.
+*(The workflow parses the issue body and queries the GraphQL schema dynamically, eliminating the need to store a dozen separate option/field IDs in repository variables.)*
 
 ## GitHub App authentication
 
@@ -142,6 +137,5 @@ Enter an `issue_number` to add or update defaults for an existing issue.
 
 - The main workflow triggers on `issues.opened`.
 - If the issue is already in the project, the workflow attempts to find the existing Project v2 item and update it.
-- The default-field workflow assumes the three default-set fields are all single-select fields.
-- If your field names or option names differ from the template defaults, only the variable values need to point at the correct field and option IDs — the variable *names* remain `PRIORITY_FIELD_ID` / `EFFORT_FIELD_ID` / `CUSTOM_SELECT_FIELD_ID` regardless of which field they actually target.
+- The default-field workflow parses the issue body and queries the API dynamically. If you change a Project v2 field name or option in the future, you must update the fallback mappings in `.github/scripts/set-project-fields.js`.
 - Each workflow has a preflight job that probes its credentials in step-level `env:` (where the `secrets` context is allowed) and exposes a boolean output. The main job gates on `needs.preflight.outputs.has_creds == 'true'`. This pattern was added in [PR #13333](https://github.com/midnghtsapphire/revvel-standards/pull/13333) because the GitHub Actions parser rejects `secrets.X` references in job-level `if:` conditions.

@@ -68,7 +68,20 @@ The remaining project fields are populated by reviewers during the research, sco
 
 ## Default-Field Automation
 
-New issues are automatically added to the project board and given default field values by [`.github/workflows/set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml). The workflow runs on every issue open and can also be re-run manually for backfill.
+New issues are automatically added to the project board by [`.github/workflows/set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml) (or its PAT variant). The workflow runs on every issue open and can also be re-run manually for backfill.
+
+The workflow applies the following "Revvel-standard" default values to new work items:
+
+- **Status**: `Inbox`
+- **Priority**: `medium`
+- **Research Mode**: `standard`
+- **Delivery Mode**: `build-direct`
+- **Iteration Mode**: `single-pass`
+- **Lifecycle Mode**: `new-build`
+- **Commercial Mode**: `digital-product`
+- **Marketing Ready**: `No`
+
+**Explicit choice preservation**: The automation parses the Work Request issue body. If you explicitly select a non-default value in the WR form (e.g., `Lifecycle Mode=refresh-existing`), the automation will respect your choice and will not overwrite it.
 
 It expects these to be configured at the org or repo level before it will succeed:
 
@@ -77,12 +90,6 @@ It expects these to be configured at the org or repo level before it will succee
 | Variable                   | What it is                                       | Example format        |
 | -------------------------- | ------------------------------------------------ | --------------------- |
 | `PROJECT_ID`               | Project v2 node ID                               | `PVT_kwHOA...`        |
-| `PRIORITY_FIELD_ID`        | Priority field node ID                           | `PVTSSF_lAHO...`      |
-| `EFFORT_FIELD_ID`          | Effort field node ID                             | `PVTSSF_lAHO...`      |
-| `CUSTOM_SELECT_FIELD_ID`   | Additional default field node ID                 | `PVTSSF_lAHO...`      |
-| `PRIORITY_HIGH_OPTION_ID`  | Default Priority option ID                       | `47fc9ee4`            |
-| `EFFORT_MEDIUM_OPTION_ID`  | Default Effort option ID                         | `47fc9ee4`            |
-| `CUSTOM_DEFAULT_OPTION_ID` | Default option ID for the custom field           | `47fc9ee4`            |
 | `PROJECTS_APP_ID`          | GitHub App ID used to authenticate to Project v2 | `123456`              |
 
 **Repository / organization secret**:
