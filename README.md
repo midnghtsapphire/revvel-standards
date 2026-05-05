@@ -779,6 +779,25 @@ This is a complement to — not a replacement for — Jules research and
 OpenRouter orchestration. It is the home for the blueprint stack inside
 `revvel-standards` so every downstream repo gets the same path.
 
+### Revvel Operating Model (intake → score → route → build → launch)
+
+The repo-wide operating model that decides whether a request gets built,
+held, or archived — and which deliverable type it ends up as — is documented
+in [`docs/operating-model.md`](docs/operating-model.md).
+
+- Intake: [`Devin Work Request`](.github/ISSUE_TEMPLATE/devin-work-request.yml) — the structured form for every work request
+- Viability gate: [`templates/viability-gate-template.md`](templates/viability-gate-template.md) — 1–5 rubric across 6 dimensions, BUILD / HOLD / ARCHIVE thresholds
+- Step 0 router: [`promptforproject.md`](promptforproject.md) — runs before any implementation work
+- Invention flow: [`templates/invention-flow-template.md`](templates/invention-flow-template.md)
+- Legacy refresh flow: [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md)
+- GitHub Project schema: [`docs/github-project-schema.md`](docs/github-project-schema.md)
+- Notion knowledge layer: [`docs/notion-structure.md`](docs/notion-structure.md)
+
+Hard rules: deepresearch never auto-builds; `OUTPUT_TYPE` is the hard
+constraint on the deliverable; CLI / MCP / API / PDF requests are not
+silently converted into web apps; viability scoring is mandatory before
+implementation; marketing automation only fires for launch-qualified work.
+
 ---
 
 ## GOALS — GOAP Agent Master Prompt (One Source of Truth)

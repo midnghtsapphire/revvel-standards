@@ -81,9 +81,30 @@
 
 ---
 
+## Operating Model
+
+| Component | Status | Details |
+|---|---|---|
+| Intake form | ✅ live | [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](.github/ISSUE_TEMPLATE/devin-work-request.yml) |
+| Viability gate template | ✅ live | [`templates/viability-gate-template.md`](templates/viability-gate-template.md) |
+| Invention flow template | ✅ live | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) |
+| Legacy refresh checklist | ✅ live | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) |
+| GitHub Project schema | ✅ documented | [`docs/github-project-schema.md`](docs/github-project-schema.md) — provisioned per-org |
+| Notion knowledge layer | ✅ documented | [`docs/notion-structure.md`](docs/notion-structure.md) — provisioned per-org |
+| Step 0 router | ✅ live | [`promptforproject.md`](promptforproject.md) |
+| Operating model doc | ✅ live | [`docs/operating-model.md`](docs/operating-model.md) |
+
+`Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
+
+---
+
 ## Last Updated
 
 ```
+Last updated: 2026-05-04 19:05 UTC
+Updated by: devin
+Session summary: Added the Revvel operating model layer — Devin Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, and the operating-model.md master document. Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
+
 Last updated: 2026-05-04 18:56 UTC
 Updated by: devin
 Session summary: (1) Merged PR #9577 to fix WR/PR automation by killing workflow_run loops, restoring [WR] intake, OpenRouter as sole orchestrator, BITO as sole reviewer, and bot-spam guards. (2) Closed ~999 bot-spam [FAILURE]/[ALERT] issues. (3) Added in-tree wr-pr-control-plane MCP server at mcp-servers/wr-control-plane/ implementing the 2026 WR-PR Automation Blueprint integration contract for Composio + Firecrawl + Obot + FastMCP. Server is disabled by default in .mcp.json until credentials are provisioned.
