@@ -111,11 +111,28 @@ Rules:
 
 A single GitHub Project tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
 
+**Live board:** [https://github.com/users/midnghtsapphire/projects/5](https://github.com/users/midnghtsapphire/projects/5) — `Revvel-Standards`
+
 Status lifecycle:
 
 ```
 Inbox → Researching → Scored → { Hold | Archived | Approved → In Build → In Review → Ready to Launch → Launched → Measuring }
 ```
+
+### Day in the life: WR → Project → PR → merge
+
+The expected end-to-end flow once the operating model is wired:
+
+1. **File a WR.** Open a new issue using the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) form. Required dropdowns (`Output Type`, `Research Mode`, `Delivery Mode`, `Iteration Mode`, `Lifecycle Mode`, `Commercial Mode`, `Deployment Target`, `Launch Priority`) capture the routing constraints. The form auto-applies labels `work-request` and `devin`.
+2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
+3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
+4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).
+5. **PR opens against `main`.** The PR follows [`.github/pull_request_template.md`](../.github/pull_request_template.md) and references the WR with `Closes #N`. CI runs against the PR.
+6. **Review → Ready to Launch.** When the PR squash-merges under the `Protect main` ruleset, the WR auto-closes. Reviewer transitions `Status` → `In Review` → `Ready to Launch` once the deliverable is verified.
+7. **Launched.** When the deliverable ships (deployed, published, distributed), `Status` → `Launched`. If `Marketing Ready = Yes` and `Launch Channel ≠ None`, the marketing automation layer (Section 8) takes over.
+8. **Measuring.** Once metrics start arriving, `Status` → `Measuring`. The portfolio review loop (Stage F) re-evaluates measuring items monthly.
+
+The operator-facing setup walkthrough — auth path, repo variable wiring, ID discovery, validation evidence — lives in [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md).
 
 ---
 
