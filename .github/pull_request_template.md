@@ -15,7 +15,7 @@ Closes #<!-- issue number -->
 
 ## Checklist
 
-<!-- These four are the only things humans need to confirm; everything else is auto-applied by .github/workflows/pr-template-autocomplete.yml when this PR opens. Edit only if the PR genuinely violates one. -->
+<!-- These four are pre-checked because they apply to almost every PR. Uncheck any that this PR genuinely violates and explain in the Summary or Validation section above. -->
 - [x] Closes #N is present so the issue auto-closes on merge
 - [x] No hardcoded secrets or credentials
 - [x] PR title uses conventional-commit format (`feat:`, `fix:`, `docs:`, `chore:`, etc.)
