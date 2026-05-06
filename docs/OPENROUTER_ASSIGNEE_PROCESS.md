@@ -8,8 +8,8 @@ This document describes the process, the implementation, and how to tune it.
 
 ## TL;DR
 
-1. Every new issue in `revvel-standards` is **automatically assigned to `@Copilot`** — the GitHub-visible orchestrator backed by OpenRouter. Open pull requests are picked up by the hourly cron sweep.
-2. The issue / PR is labelled **`openrouter`**, **`auto-fix`**, **`copilot`**, plus the default **`role:orchestrator`** label.
+1. Every new issue in `revvel-standards` first receives routing labels — **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** — as the idempotency marker for routing.
+2. The workflow then attempts to assign **`@Copilot`** (non-fatal if GitHub cannot apply the assignee in that context). Open pull requests are picked up by the hourly cron sweep.
 3. A **first-line-of-sight comment** is posted that references the `OPENROUTER_API_KEY` secret, the optional `ADMIN_GITHUB_TOKEN`, and the relevant skills.
 4. A **cron sweep runs every hour, 24/7**, to pick up anything that was opened while the event workflow missed it or that arrived before the secret was configured.
 5. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
@@ -73,9 +73,9 @@ on:
 
 For every open issue and PR in the repo it:
 
-1. Skips items that already have an assignee (the orchestrator or a human already owns it).
-2. Skips items already labelled `openrouter` (already routed in a previous sweep).
-3. Otherwise: assigns `@Copilot`, adds the routing labels, posts a sweep comment.
+1. Skips items already labelled `openrouter` (already routed in a previous sweep).
+2. Skips items with `no-triage`.
+3. Otherwise: applies routing labels first, attempts `@Copilot` assignment (non-fatal), then posts a sweep comment.
 
 A run summary is written to the workflow summary page (`Routed / Skipped / Total open / Dry run / Secret status`).
 
