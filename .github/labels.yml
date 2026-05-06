@@ -99,10 +99,6 @@ labels:
     description: "Blocked by external dependency"
 
   # ── PR Lifecycle (managed by pr-lifecycle.yml) ─────────────────────────────────
-  - name: draft
-    color: "6e7681"
-    description: "Work in progress, not ready for review"
-
   - name: awaiting-review
     color: "0075ca"
     description: "Waiting for reviewer feedback"
@@ -118,6 +114,23 @@ labels:
   - name: ready-to-merge
     color: "008672"
     description: "Approved + checks pass — ready to merge"
+
+  # ── Issue Lifecycle (managed by issue-lifecycle.yml) ──────────────────────────
+  - name: "issue:in-progress"
+    color: "0075ca"
+    description: "Issue has a linked PR in progress"
+
+  - name: "issue:done"
+    color: "0e8a16"
+    description: "Issue resolved — linked PR merged"
+
+  - name: "issue:stale"
+    color: "e4e669"
+    description: "No activity for 7+ days — needs attention"
+
+  - name: "lifecycle:stuck"
+    color: "d93f0b"
+    description: "Label watchdog detected a stuck state"
 
   # ── Third-Party / External Contributions ──────────────────────────────────────
   - name: third-party
