@@ -3,7 +3,7 @@ name: Agent Audit Logger
 # This workflow logs all agent actions to provide visibility and accountability
 # Addresses: "I NEED A LOG OF WHO IS DOING WHAT"
 #
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
 # The `workflow_run: workflows: ["*"]` trigger and the unguarded `issues:opened`
 # trigger together caused a feedback loop: every workflow ran the audit logger,
 # every audit-logger failure produced a `[FAILURE] ...` issue (via Workflow
@@ -14,7 +14,7 @@ name: Agent Audit Logger
 #     `[FAILURE] ...` or `[ALERT] ...` issues from github-actions[bot].
 #   - cron health-check stays so we don't lose periodic visibility.
 #
-# DEVIN-RESTRUCTURE 2026-05-05 (Audrey ask: "stuff that constantly never gets
+# OpenHands-RESTRUCTURE 2026-05-05 (Audrey ask: "stuff that constantly never gets
 # fixed"): the `pull_request` trigger has been removed because the commit step
 # fundamentally cannot push to main from a PR-branch checkout under the
 # `Protect main` ruleset, so it failed on every single PR with a 100% failure
@@ -56,7 +56,7 @@ permissions:
   actions: read
 
 # Serialize audit log appends so two runs don't race on `git push` to main.
-# DEVIN-RESTRUCTURE 2026-05-04.
+# OpenHands-RESTRUCTURE 2026-05-04.
 concurrency:
   group: agent-audit-logger
   cancel-in-progress: false
@@ -80,7 +80,7 @@ jobs:
          startsWith(github.event.issue.title, '[ALERT]')))
     steps:
       - name: Checkout main
-        # DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: "tons of wr get stuck in
+        # OpenHands-RESTRUCTURE 2026-05-06 (Audrey ask: "tons of wr get stuck in
         # checks failing"): explicitly check out main, not the detached-HEAD
         # SHA from the triggering event. Without `ref: main`, issue_comment
         # and pull_request_review events leave you in detached HEAD, and
@@ -156,7 +156,7 @@ jobs:
             console.log('✅ Audit entry logged:', entry.entry_hash.substring(0, 8));
 
       - name: Commit audit log
-        # DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: chronic red X cleanup):
+        # OpenHands-RESTRUCTURE 2026-05-06 (Audrey ask: chronic red X cleanup):
         # Branch protection on `main` blocks `git push` from the default
         # GITHUB_TOKEN with `push declined due to repository rule violations`.
         # The previous `ref: main` checkout fix moved the failure from

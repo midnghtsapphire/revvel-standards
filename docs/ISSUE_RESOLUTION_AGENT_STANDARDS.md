@@ -12,9 +12,9 @@ User reported multiple concerns:
 
 1. **Agents proposing phased implementations** - Files proposing "Phase 1-4" implementations, violating AGENTS.md rule: *"One iteration, all-inclusive. Deliver the complete solution. Do not propose 'Phase 1' or 'MVP first' unless explicitly told to."*
 
-2. **CircleCI disabled** - User wanted CircleCI re-enabled for PR reviews instead of using paid agents (Copilot/Devin)
+2. **CircleCI disabled** - User wanted CircleCI re-enabled for PR reviews instead of using paid agents (Copilot/OpenHands)
 
-3. **Agent routing issues** - Devin (paid) was preferred over free alternatives; BITO failing; wanted affordable automation
+3. **Agent routing issues** - OpenHands (paid) was preferred over free alternatives; BITO failing; wanted affordable automation
 
 ---
 
@@ -49,7 +49,7 @@ User reported multiple concerns:
 
 **Finding:** `agent-fallback.yml` had routing order:
 ```
-Devin (paid, ~$50/task) → Cursor → OpenRouter (affordable)
+OpenHands (paid, ~$50/task) → Cursor → OpenRouter (affordable)
 ```
 
 **Analysis:** This prioritized expensive paid agents over affordable alternatives, contradicting the user's cost optimization goals.
@@ -137,24 +137,24 @@ jobs:
 
 **Old routing:**
 ```
-Devin (paid) → Cursor → OpenRouter
+OpenHands (paid) → Cursor → OpenRouter
 ```
 
 **New routing:**
 ```
-OpenRouter (affordable) → Cursor → Devin (opt-in only)
+OpenRouter (affordable) → Cursor → OpenHands (opt-in only)
 ```
 
 **Key changes:**
 - Changed default `prefer_agent` from `"auto"` to `"openrouter"`
 - Reordered execution steps to try OpenRouter first
-- Made Devin require explicit `prefer_agent: "devin"` parameter
+- Made OpenHands require explicit `prefer_agent: "OpenHands"` parameter
 - Updated health check to prefer OpenRouter when multiple agents available
 - Updated all comments and fallback messages to reflect new order
 
 **Impact:**
 - Minimizes costs by defaulting to affordable OpenRouter
-- Devin only used when explicitly requested
+- OpenHands only used when explicitly requested
 - Maintains fallback capabilities for resilience
 
 ### 5. Created Comprehensive Agent Routing Policy
@@ -187,7 +187,7 @@ OpenRouter (affordable) → Cursor → Devin (opt-in only)
 | `skills/grant-mgmt-agent/IMPLEMENTATION_GUIDE.md` | Added planning document disclaimer | Prevent confusion |
 | `docs/Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md` | Added planning document disclaimer | Prevent confusion |
 | `.circleci/config.yml` | Re-enabled with OpenRouter integration | Enable CircleCI reviews |
-| `.github/workflows/agent-fallback.yml` | Reordered to OpenRouter → Cursor → Devin | Minimize costs |
+| `.github/workflows/agent-fallback.yml` | Reordered to OpenRouter → Cursor → OpenHands | Minimize costs |
 | `docs/AGENT_ROUTING_POLICY.md` | **NEW** comprehensive routing policy | Document standards |
 
 ---
@@ -247,7 +247,7 @@ OpenRouter (affordable) → Cursor → Devin (opt-in only)
 
 3. **When Using Agents:**
    - Default to OpenRouter for cost efficiency
-   - Only use `prefer_agent: devin` if absolutely necessary
+   - Only use `prefer_agent: OpenHands` if absolutely necessary
    - Document reasons for using paid agents
 
 ---
@@ -255,7 +255,7 @@ OpenRouter (affordable) → Cursor → Devin (opt-in only)
 ## Cost Impact
 
 ### Before Changes
-- Default agent: Devin (~$50/task)
+- Default agent: OpenHands (~$50/task)
 - Typical usage: 10 tasks/month = **$500/month**
 - CircleCI: Disabled, all reviews via GitHub Actions
 

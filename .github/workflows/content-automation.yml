@@ -1,6 +1,6 @@
 name: Content Automation
 
-# DEVIN-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
+# OpenHands-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
 # with openrouter-coder + jules-invoke + wr-pr-creation on every newly-opened
 # issue. Weekly cron and workflow_dispatch are unchanged. Re-enable the issues
 # trigger only with a label specific to content (e.g. `content`) so it does not

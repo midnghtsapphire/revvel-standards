@@ -1,15 +1,15 @@
-name: Devin System WR (Quick / Internal)
+name: OpenHands System WR (Quick / Internal)
 description: Lightweight WR for low-risk, internal, or agent-driven work. The auto-classifier fills routing fields from your description.
 title: "[WR] "
 labels:
   - work-request
   - quick
-  - devin
+  - OpenHands
 body:
   - type: markdown
     attributes:
       value: |
-        ## Devin System WR
+        ## OpenHands System WR
 
         Lightweight intake for low-risk, internal, or agent-driven work.
         Use this when the heavy `Work Request` form (the first card in the
@@ -24,7 +24,7 @@ body:
     id: output_type
     attributes:
       label: Output Type (required)
-      description: What are you asking Devin to create or change?
+      description: What are you asking OpenHands to create or change?
       options:
         - production-app
         - desktop-tool
@@ -56,7 +56,7 @@ body:
     id: delivery_mode
     attributes:
       label: Delivery Mode
-      description: How should Devin handle the output? Leave on 'auto-classify' to let the agent decide.
+      description: How should OpenHands handle the output? Leave on 'auto-classify' to let the agent decide.
       options:
         - auto-classify
         - build-direct

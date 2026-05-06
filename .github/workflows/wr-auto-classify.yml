@@ -1,6 +1,6 @@
 name: WR Auto-Classify Project v2 Fields
 
-# Reads issue body for new Devin Work Requests, asks OpenRouter to classify any
+# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
 # routing dropdowns the user left on 'auto-classify', and writes the chosen
 # values to the matching Project v2 single-select fields.
 #

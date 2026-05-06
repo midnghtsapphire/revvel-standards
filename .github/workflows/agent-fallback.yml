@@ -1,11 +1,11 @@
 name: Agent Fallback Handler
 
-# DEVIN-RESTRUCTURE 2026-05-04: Issue trigger disabled. Was racing with
+# OpenHands-RESTRUCTURE 2026-05-04: Issue trigger disabled. Was racing with
 # openrouter-coder + needs-action-router on `wr:code` / `wr:auto` /
 # `agent-fallback` labels. Now the issue side of the fallback chain lives in
 # openrouter-coder.yml. This workflow remains available for PR review handling
 # and as a reusable workflow_call target if a future flow wants the
-# Devin → Cursor → OpenRouter chain explicitly.
+# OpenHands → Cursor → OpenRouter chain explicitly.
 
 on:
   # # Automatic triggers for issues with specific labels  -- DISABLED, racing
@@ -29,7 +29,7 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (openrouter, cursor, devin, auto)"
+        description: "Preferred agent (openrouter, cursor, OpenHands, auto)"
         required: false
         type: string
         default: "openrouter"
@@ -52,7 +52,7 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (openrouter, cursor, devin, auto)"
+        description: "Preferred agent (openrouter, cursor, OpenHands, auto)"
         required: false
         type: string
         default: "openrouter"
@@ -75,7 +75,7 @@ jobs:
     # 1. PR ready for review (opened/reopened/ready_for_review), OR
     # 2. Manual workflow_dispatch, OR
     # 3. Called as reusable workflow
-    # (DEVIN-RESTRUCTURE: issues path removed — see workflow header.)
+    # (OpenHands-RESTRUCTURE: issues path removed — see workflow header.)
     if: |
       github.event_name == 'workflow_dispatch' ||
       inputs.issue_number ||
@@ -88,7 +88,7 @@ jobs:
         github.event.action == 'reopened' ||
         github.event.action == 'ready_for_review'))
     outputs:
-      devin_available: ${{ steps.check.outputs.devin_available }}
+      OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
       cursor_available: ${{ steps.check.outputs.cursor_available }}
       openrouter_available: ${{ steps.check.outputs.openrouter_available }}
       recommended_agent: ${{ steps.check.outputs.recommended_agent }}
@@ -99,20 +99,20 @@ jobs:
       - name: Check agent availability
         id: check
         env:
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          OpenHands_API_KEY: ${{ secrets.OpenHands_API_KEY }}
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Check which agents are configured
-          DEVIN_AVAILABLE="false"
+          OpenHands_AVAILABLE="false"
           CURSOR_AVAILABLE="false"
           OPENROUTER_AVAILABLE="false"
 
-          if [ -n "${DEVIN_API_KEY}" ]; then
-            DEVIN_AVAILABLE="true"
-            echo "✅ Devin API key configured"
+          if [ -n "${OpenHands_API_KEY}" ]; then
+            OpenHands_AVAILABLE="true"
+            echo "✅ OpenHands API key configured"
           else
-            echo "⚠️  Devin API key not configured"
+            echo "⚠️  OpenHands API key not configured"
           fi
 
           if [ -n "${CURSOR_API_KEY}" ]; then
@@ -130,19 +130,19 @@ jobs:
           fi
 
           # Determine recommended agent based on availability and preference
-          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents (Devin)
-          # Devin is opt-in only via explicit prefer_agent parameter
+          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents (OpenHands)
+          # OpenHands is opt-in only via explicit prefer_agent parameter
           RECOMMENDED="openrouter"  # Default to free/affordable option
           if [ "$OPENROUTER_AVAILABLE" = "true" ]; then
             RECOMMENDED="openrouter"
           elif [ "$CURSOR_AVAILABLE" = "true" ]; then
             RECOMMENDED="cursor"
-          elif [ "$DEVIN_AVAILABLE" = "true" ]; then
-            # Devin is last resort due to cost
-            RECOMMENDED="devin"
+          elif [ "$OpenHands_AVAILABLE" = "true" ]; then
+            # OpenHands is last resort due to cost
+            RECOMMENDED="OpenHands"
           fi
 
-          echo "devin_available=${DEVIN_AVAILABLE}" >> $GITHUB_OUTPUT
+          echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
@@ -294,23 +294,23 @@ jobs:
           echo "🔧 Attempting to use Cursor..."
           bash scripts/call-cursor-api.sh
 
-      - name: Try Devin AI (Opt-in Only - Paid Service)
+      - name: Try OpenHands AI (Opt-in Only - Paid Service)
         if: >-
           steps.openrouter.outcome != 'success' &&
           (steps.cursor.outcome == 'failure' ||
           steps.cursor.outcome == 'skipped') &&
-          needs.health-check.outputs.devin_available == 'true' &&
-          inputs.prefer_agent == 'devin'
-        id: devin
+          needs.health-check.outputs.OpenHands_available == 'true' &&
+          inputs.prefer_agent == 'OpenHands'
+        id: OpenHands
         continue-on-error: true
         env:
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          OpenHands_API_KEY: ${{ secrets.OpenHands_API_KEY }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
-          echo "🤖 Using Devin AI (paid service - opt-in only)..."
-          bash scripts/call-devin-api.sh
+          echo "🤖 Using OpenHands AI (paid service - opt-in only)..."
+          bash scripts/call-OpenHands-api.sh
 
       - name: Determine result
         if: always()
@@ -324,10 +324,10 @@ jobs:
             echo "agent=cursor" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
             echo "✅ Task completed by Cursor"
-          elif [ "${{ steps.devin.outcome }}" = "success" ]; then
-            echo "agent=devin" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.OpenHands.outcome }}" = "success" ]; then
+            echo "agent=OpenHands" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by Devin AI (paid service)"
+            echo "✅ Task completed by OpenHands AI (paid service)"
           else
             echo "agent=none" >> $GITHUB_OUTPUT
             echo "success=false" >> $GITHUB_OUTPUT
@@ -354,7 +354,7 @@ jobs:
             issue #${{ steps.issue.outputs.issue_number }}.
 
             **Agent used:** ${{ steps.result.outputs.agent }}
-            **Fallback chain:** OpenRouter → Cursor → Devin (opt-in)
+            **Fallback chain:** OpenRouter → Cursor → OpenHands (opt-in)
 
             ### Issue
             ${{ steps.issue.outputs.issue_body }}
@@ -427,7 +427,7 @@ jobs:
         uses: actions/github-script@v8
         env:
           ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
-          DEVIN_OUTCOME: ${{ steps.devin.outcome }}
+          OpenHands_OUTCOME: ${{ steps.OpenHands.outcome }}
           CURSOR_OUTCOME: ${{ steps.cursor.outcome }}
           OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
         with:
@@ -440,7 +440,7 @@ jobs:
               body: `❌ All agents failed to complete this task.
 
               **Attempted:**
-              - Devin AI: ${process.env.DEVIN_OUTCOME}
+              - OpenHands AI: ${process.env.OpenHands_OUTCOME}
               - Cursor: ${process.env.CURSOR_OUTCOME}
               - OpenRouter: ${process.env.OPENROUTER_OUTCOME}
 

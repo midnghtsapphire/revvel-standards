@@ -141,7 +141,7 @@ jobs:
   # Audrey's rule: every new work request gets a deep-research pass before any
   # code is written.
   #
-  # DEVIN-RESTRUCTURE 2026-05-04: Originally this required a `jules` or
+  # OpenHands-RESTRUCTURE 2026-05-04: Originally this required a `jules` or
   # `deep-research` label, but those labels are stripped when issues are opened
   # via API / Copilot UI (the [WR] issue template's `labels:` defaults only fire
   # on the GitHub form). We now ALSO fire on title prefix `[WR]` so Jules runs

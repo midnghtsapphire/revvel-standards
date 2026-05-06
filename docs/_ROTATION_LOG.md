@@ -5,5 +5,5 @@
 
 | Date | Item | Old Suffix | New Suffix | Method | Agent |
 |------|------|-----------|-----------|--------|-------|
-| 2026-04-26 | SSH_PRIVATE_KEY | (new) | ...xzyQ | auto-generated | devin |
+| 2026-04-26 | SSH_PRIVATE_KEY | (new) | ...xzyQ | auto-generated | OpenHands |
 | 2026-04-25 | DOPPLER_TOKEN | (new) | ...nTk0 | manual | Audrey |

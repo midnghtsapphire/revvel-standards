@@ -1,7 +1,7 @@
 # Implementation Summary: Agent Fallback System
 
 **Date:** April 30, 2026  
-**Issue:** [WR] add cursor in as backup to devin ai and other processes it can do. devin has limits use until run out then cursor  
+**Issue:** [WR] add cursor in as backup to OpenHands ai and other processes it can do. OpenHands has limits use until run out then cursor  
 **Status:** ✅ Complete  
 **Agent:** @copilot  
 
@@ -15,7 +15,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 
 ```
 ┌─────────────┐
-│  Devin AI   │ ← Primary (most capable)
+│  OpenHands AI   │ ← Primary (most capable)
 └──────┬──────┘
        │ Rate limit / failure
        ↓
@@ -42,13 +42,13 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 2. **`.github/workflows/agent-fallback.yml`** → Main fallback workflow (14KB)
 3. **`docs/AGENT_FALLBACK_PROCESS.md`** → Complete documentation (13KB)
 4. **`docs/AGENT_FALLBACK_QUICKSTART.md`** → Quick start guide (7KB)
-5. **`scripts/call-devin-api.sh`** → Devin API wrapper with retry logic (3KB)
+5. **`scripts/call-OpenHands-api.sh`** → OpenHands API wrapper with retry logic (3KB)
 6. **`scripts/call-cursor-api.sh`** → Cursor API wrapper with retry logic (3KB)
 7. **`scripts/setup-agent-fallback.sh`** → Automated setup script (6KB)
 
 ## Files Modified
 
-1. **`.env.example`** — Added `DEVIN_API_KEY` and `CURSOR_API_KEY`
+1. **`.env.example`** — Added `OpenHands_API_KEY` and `CURSOR_API_KEY`
 2. **`docs/AGENTS.md`** — Added fallback system documentation
 3. **`skills/REGISTRY.md`** — Added agent-fallback skill entry
 4. **`README.md`** — Added prominent fallback system overview
@@ -89,7 +89,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 - Smart routing based on task complexity
 - Simple tasks → OpenRouter (cheapest)
 - Medium tasks → Cursor (balanced)
-- Complex tasks → Devin (most capable)
+- Complex tasks → OpenHands (most capable)
 - Tracks usage and prevents overages
 
 ### 6. Setup Automation
@@ -110,7 +110,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 # 2. Configure secrets (choose one method)
 
 # Method A: From Vault (recommended)
-vault kv get -field=api_key revvel/shared/llm/devin | gh secret set DEVIN_API_KEY
+vault kv get -field=api_key revvel/shared/llm/OpenHands | gh secret set OpenHands_API_KEY
 vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_KEY
 vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY
 
@@ -118,7 +118,7 @@ vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROU
 gh workflow run credential-gatekeeper.yml
 
 # Method C: Manual entry
-gh secret set DEVIN_API_KEY
+gh secret set OpenHands_API_KEY
 gh secret set CURSOR_API_KEY
 gh secret set OPENROUTER_API_KEY
 ```
@@ -158,8 +158,8 @@ gh issue list --label auto-fallback
 # View recent fallbacks (last 7 days)
 gh issue list --label auto-fallback --created ">=@{7 days ago}"
 
-# Check if Devin is consistently failing
-gh issue list --label devin-limit --state open
+# Check if OpenHands is consistently failing
+gh issue list --label OpenHands-limit --state open
 ```
 
 ---
@@ -170,7 +170,7 @@ gh issue list --label devin-limit --state open
 |---------|-------------|
 | **Zero Downtime** | Always have a working agent, even when primary hits limits |
 | **No Manual Work** | Automatic switching requires no human intervention |
-| **Cost Efficient** | Routes simple tasks to cheaper agents, reserves Devin for complex work |
+| **Cost Efficient** | Routes simple tasks to cheaper agents, reserves OpenHands for complex work |
 | **Observable** | Track all fallback events in GitHub issues |
 | **Reliable** | Retry logic with exponential backoff prevents transient failures |
 | **Easy Setup** | One-command setup script configures everything |
@@ -222,11 +222,11 @@ gh issue list --label devin-limit --state open
 
 This implementation directly addresses the issue request: 
 
-> "add cursor in as backup to devin ai and other processes it can do. devin has limits use until run out then cursor"
+> "add cursor in as backup to OpenHands ai and other processes it can do. OpenHands has limits use until run out then cursor"
 
 The system:
-- ✅ Uses Devin as primary (most capable)
-- ✅ Falls back to Cursor when Devin hits limits
+- ✅ Uses OpenHands as primary (most capable)
+- ✅ Falls back to Cursor when OpenHands hits limits
 - ✅ Falls back to OpenRouter as final backup
 - ✅ Handles "other processes" through the reusable workflow
 - ✅ Requires no manual intervention ("automatically")
@@ -238,7 +238,7 @@ The system:
 
 **Implemented by:** @copilot  
 **Session:** April 30, 2026  
-**PR:** copilot/add-cursor-backup-to-devin-ai  
+**PR:** copilot/add-cursor-backup-to-OpenHands-ai  
 **Commits:** 2  
 **Lines:** ~1,600 added  
 **Validation:** ✅ Passed
