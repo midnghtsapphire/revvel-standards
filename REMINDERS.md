@@ -53,7 +53,12 @@ When you're about to start something new, grep this file with the verb of your a
 
 **The form to use:**
 
-- [`.github/ISSUE_TEMPLATE/00-work-request.yml`](./.github/ISSUE_TEMPLATE/00-work-request.yml) — open via `New issue` → `Devin Work Request`. The `00-` prefix forces this template to sort first in the chooser; it is the only template in `.github/ISSUE_TEMPLATE/` other than `config.yml`. Older templates are archived under `templates/issue-template-archive/`. Routing dropdowns default to `auto-classify`; leave them alone unless you want to override what the LLM picks.
+The `New issue` chooser shows two cards, both of which file a Work Request and apply the `work-request` label so the auto-classifier and downstream automation treat them identically:
+
+- [`.github/ISSUE_TEMPLATE/00-work-request.yml`](./.github/ISSUE_TEMPLATE/00-work-request.yml) — open via `New issue` → `Work Request`. **Primary, anti-under-scoping form.** The `00-` prefix forces this template to sort first in the chooser. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. The implementer's PR must mirror the Required Bundle and not silently drop items.
+- [`.github/ISSUE_TEMPLATE/10-devin-system-wr.yml`](./.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) — open via `New issue` → `Devin System WR (Quick / Internal)`. **Lightweight system form.** Output Type is the only required routing decision; every other routing dropdown defaults to `auto-classify` and is filled from your prose by [`wr-auto-classify.yml`](./.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill. Carries the extra `quick` and `devin` labels so workflows can distinguish lightweight WRs.
+
+Older templates are archived under `templates/issue-template-archive/`.
 
 **Hard rules to remember:**
 
