@@ -22,7 +22,7 @@ providers:
       temperature: 0
 
 # Fallback: Claude 4.5 Sonnet
-  - id: anthropic/claude-sonnet-4-5-20255112
+  - id: anthropic/claude-3.7-sonnet
     config:
       api_key: ${OPENROUTER_API_KEY}
 ```

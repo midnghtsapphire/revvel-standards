@@ -129,7 +129,7 @@ providers:
       max_tokens: 2048
 
 # Fallback: Claude 4.5 Sonnet
-  - id: anthropic/claude-sonnet-4-5-20255112
+  - id: anthropic/claude-3.7-sonnet
 
 prompts:
   - label: "Standard invocation"

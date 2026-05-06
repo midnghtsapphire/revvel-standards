@@ -50,7 +50,7 @@ providers:
 
 **Fallback: Claude 4.5 Sonnet**
 ```yaml
-  - id: anthropic/claude-sonnet-4-5-20255112
+  - id: anthropic/claude-3.7-sonnet
 ```
 
 **GitHub Action:** https://github.com/promptfoo/promptfoo-action
