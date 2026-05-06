@@ -7,9 +7,25 @@ Enforce Revvel code review standards including security, accessibility, test cov
 > **Note:** Updated May 6, 2026 — reflects current production setup
 
 1. **Bito AI** — Primary AI PR reviewer (assigned automatically via workflow labels)
-2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture
-3. **AI Code Reviewer Pro** (OpenRouter/gemini-2.5-flash) — High-volume scanning and heuristics
-4. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
+2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture  
+3. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
+4. **PromptFoo** — Skill/LLM testing with Claude 3.5 Sonnet (replaces PandaOps)
+
+### Primary Model Configuration (Claude 3.5 Sonnet via OpenRouter)
+```yaml
+# promptfooconfig.yaml
+providers:
+  - id: anthropic:claude-sonnet-4-20251101  # Claude 3.5 Sonnet
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
+```
+
+### Fallback Model Chain
+```
+Bito AI → OpenRouter (Claude 3.5 Sonnet) → GPT-5.2/GPT-4o (fallback)
+```
 
 ### Integration (How to Enable)
 
@@ -17,18 +33,31 @@ Enforce Revvel code review standards including security, accessibility, test cov
 # Bito AI - enable via GitHub Marketplace
 # https://github.com/marketplace/bito-ai-code-reviewer
 
-# AI Code Reviewer Pro - copy template to your repo
-cp templates/cicd/ai-code-reviewer-pro.yml .github/workflows/
+# PromptFoo for skill/LLM testing - GitHub Action
+# https://github.com/promptfoo/promptfoo-action
+cp templates/cicd/prompt-eval.yml .github/workflows/
 
 # Coderabbit - enable via GitHub Marketplace
 # https://github.com/marketplace/coderabbit-ai
 ```
 
-### Fallback Chain (When Primary Unavailable)
+### Skill Testing with PromptFoo
 
-| Primary | Fallback 1 | Fallback 2 |
-|---------|------------|------------|
-| Bito AI | OpenRouter (Claude) | AI Code Reviewer Pro (OpenRouter) |
+For testing Revvel skills (ephemeral agents), use PromptFoo with Claude 3.5 Sonnet:
+
+```bash
+# Run skill tests
+npm install -g promptfoo
+promptfoo eval --config skills/my-skill/tests/promptfoo.yml
+
+# Or use GitHub Action - runs on PR changes to skills/
+```
+
+**Why PromptFoo over PandaOps:**
+- Tests actual skill/prompt outputs, not code diffs
+- Claude 3.5 Sonnet via OpenRouter as primary
+- Red-teaming security built-in
+- GitHub Action for CI automation
 
 ## Deployment Pipeline
 

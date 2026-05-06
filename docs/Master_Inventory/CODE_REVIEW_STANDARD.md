@@ -46,16 +46,59 @@ All pull requests (PRs) must integrate with Coderabbit for automated line-by-lin
 1. Enable via GitHub Marketplace: https://github.com/marketplace/coderabbit-ai
 2. Or add `.coderabbit.yaml` to repository root
 
-### 2.4. AI PR Review (PandaOps) — Backup
+### 2.4. Skill/LLM Testing (PromptFoo) — Replacing PandaOps
 
-> **Note (May 6, 2026):** PandaOps is currently **disabled** in revvel-standards to reduce reviewer noise. Bito AI is the primary. Re-enable via workflow_dispatch if needed.
+> **Updated May 6, 2026** — Use PromptFoo instead of PandaOps for LLM/skill testing.
 
-PandaOps can be used as a backup when Bito AI is unavailable for extended periods. It runs on every pull request, fetches the diff, performs heuristic scanning (e.g., `console.log`, `debugger`, TODOs, large diffs), and then calls OpenAI to post inline code-level feedback.
+PromptFoo provides GitHub Action integration for testing prompts and LLM outputs. It's the recommended tool for skill testing, LLM assertions, and red-teaming security scanning.
 
-- **Workflow template:** `templates/cicd/panda-ops.yml` → copy to `.github/workflows/panda-ops.yml`
-- **Required secret:** `OPENAI_API_KEY` (add via GitHub → Settings → Secrets and variables → Actions)
-- **Interaction with Coderabbit:** PandaOps and Coderabbit operate independently and complement each other
-- **Blocking policy:** `fail_on_warnings` defaults to `false`. Set it to `true` in repos where you want AI warnings to block merges
+**Why PromptFoo over PandaOps:**
+- Tests actual prompt/skill outputs, not just code
+- Supports Claude 3.5 Sonnet via OpenRouter
+- Has GitHub Action for CI automation
+- Better for skill/LLM regression testing
+
+**Primary Model: Claude 3.5 Sonnet via OpenRouter**
+```yaml
+# In promptfooconfig.yaml
+providers:
+  - id: anthropic:claude-sonnet-4-20251101  # 3.5 Sonnet
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+```
+
+**Fallback: GPT-5.2 (when available) or GPT-4o**
+```yaml
+providers:
+  - id: openai:gpt-4o
+  - id: anthropic:claude-sonnet-4-20251101  # fallback
+```
+
+**GitHub Action Setup:**
+```yaml
+# .github/workflows/prompt-eval.yml
+name: PromptFoo Evaluation
+on:
+  pull_request:
+    paths:
+      - 'prompts/**'
+      - 'promptfooconfig.yaml'
+      - 'skills/**/tests/**'
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: promptfoo/promptfoo-action@v1
+        with:
+          config: promptfooconfig.yaml
+```
+
+**Resources:**
+- GitHub Action: https://github.com/promptfoo/promptfoo-action
+- PromptFoo MCP Server: https://github.com/promptfoo/promptfoo-mcp
 
 ### 2.5. MCP Code Review Server (Optional)
 
