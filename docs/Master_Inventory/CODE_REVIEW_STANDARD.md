@@ -42,15 +42,23 @@ All pull requests (PRs) must integrate with Coderabbit for automated line-by-lin
 
 PromptFoo provides GitHub Action integration for testing prompts and LLM outputs.
 
-**Primary Model: Claude 3.7 Sonnet via OpenRouter**
+**Primary Model: Claude Sonnet 4 via OpenRouter**
 ```yaml
 providers:
-  - id: anthropic/claude-3.7-sonnet
+  - id: anthropic/claude-sonnet-4
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
 ```
 
-**Fallback: Claude 4.5 Sonnet**
+**Fallback: Claude Sonnet 4.5**
 ```yaml
-  - id: anthropic/claude-3.7-sonnet
+  - id: anthropic/claude-sonnet-4.5
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
 ```
 
 **GitHub Action:** https://github.com/promptfoo/promptfoo-action

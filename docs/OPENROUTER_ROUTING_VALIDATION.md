@@ -54,7 +54,7 @@ node scripts/openrouter-routing-example.js repo_surgery "Fix the bug in the user
 ```
 
 **Expected behavior:**
-- Models tried in order: `anthropic/claude-3.7-sonnet` → `deepseek/deepseek-v3.2` → `openai/gpt-5.2-codex`
+- Models tried in order: `anthropic/claude-sonnet-4` → `deepseek/deepseek-v3.2` → `openai/gpt-5.2-codex`
 - Response should show independent reasoning and suggest improvements
 - Should return the actual model used
 
@@ -66,8 +66,8 @@ OpenRouter Routing Example
 
 🔀 Routing profile: repo_surgery
 📝 Description: Multi-file edits, bug fixing, refactors, and "take initiative" tasks
-🎯 Requested models (fallback order): anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
-✅ Model used: anthropic/claude-3.7-sonnet
+🎯 Requested models (fallback order): anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
+✅ Model used: anthropic/claude-sonnet-4
 
 ================================================================================
 Response
@@ -80,8 +80,8 @@ Metadata
 ================================================================================
 Profile: repo_surgery
 Description: Multi-file edits, bug fixing, refactors, and "take initiative" tasks
-Requested models: anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
-Model used: anthropic/claude-3.7-sonnet
+Requested models: anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
+Model used: anthropic/claude-sonnet-4
 ================================================================================
 ```
 
@@ -92,7 +92,7 @@ node scripts/openrouter-routing-example.js cheap_batch_edits "Generate unit test
 ```
 
 **Expected behavior:**
-- Models tried in order: `deepseek/deepseek-v3.2` → `anthropic/claude-3.7-sonnet`
+- Models tried in order: `deepseek/deepseek-v3.2` → `anthropic/claude-sonnet-4`
 - Should prioritize cost-effective model first
 - Response should be practical and focused on the task
 
@@ -104,7 +104,7 @@ OpenRouter Routing Example
 
 🔀 Routing profile: cheap_batch_edits
 📝 Description: Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes
-🎯 Requested models (fallback order): deepseek/deepseek-v3.2 → anthropic/claude-3.7-sonnet
+🎯 Requested models (fallback order): deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 ✅ Model used: deepseek/deepseek-v3.2
 
 ================================================================================
@@ -118,7 +118,7 @@ Metadata
 ================================================================================
 Profile: cheap_batch_edits
 Description: Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes
-Requested models: deepseek/deepseek-v3.2 → anthropic/claude-3.7-sonnet
+Requested models: deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 Model used: deepseek/deepseek-v3.2
 ================================================================================
 ```
@@ -130,7 +130,7 @@ node scripts/openrouter-routing-example.js hard_debug "The application crashes w
 ```
 
 **Expected behavior:**
-- Models tried in order: `openai/gpt-5.2-codex` → `anthropic/claude-3.7-sonnet` → `deepseek/deepseek-v3.2`
+- Models tried in order: `openai/gpt-5.2-codex` → `anthropic/claude-sonnet-4` → `deepseek/deepseek-v3.2`
 - Should provide deep debugging insights
 - May suggest multiple approaches and root causes
 
@@ -142,7 +142,7 @@ OpenRouter Routing Example
 
 🔀 Routing profile: hard_debug
 📝 Description: Difficult failures, ambiguous root-cause analysis, and second-opinion patches
-🎯 Requested models (fallback order): openai/gpt-5.2-codex → anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2
+🎯 Requested models (fallback order): openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 ✅ Model used: openai/gpt-5.2-codex
 
 ================================================================================
@@ -156,7 +156,7 @@ Metadata
 ================================================================================
 Profile: hard_debug
 Description: Difficult failures, ambiguous root-cause analysis, and second-opinion patches
-Requested models: openai/gpt-5.2-codex → anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2
+Requested models: openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 Model used: openai/gpt-5.2-codex
 ================================================================================
 ```
@@ -173,7 +173,7 @@ To simulate a fallback scenario, you can:
 const { callOpenRouter } = require('./scripts/openrouter-routing');
 
 const result = await callOpenRouter({
-  models: ['invalid/model-name', 'anthropic/claude-3.7-sonnet'],
+  models: ['invalid/model-name', 'anthropic/claude-sonnet-4'],
   messages: [{ role: 'user', content: 'Hello!' }],
 });
 
@@ -211,7 +211,7 @@ node scripts/openrouter-routing-eval.js "Refactor the database layer to use conn
 
 | Profile | Model Used | Response Time | Response Length | Status |
 |---------|-----------|---------------|-----------------|--------|
-| repo_surgery | anthropic/claude-3.7-sonnet | 2341ms | 1543 chars | ✅ Success |
+| repo_surgery | anthropic/claude-sonnet-4 | 2341ms | 1543 chars | ✅ Success |
 | cheap_batch_edits | deepseek/deepseek-v3.2 | 1876ms | 1234 chars | ✅ Success |
 | hard_debug | openai/gpt-5.2-codex | 2103ms | 1678 chars | ✅ Success |
 

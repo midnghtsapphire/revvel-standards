@@ -1,7 +1,7 @@
 # PromptFoo Evaluation Workflow
 #
 # Runs PromptFoo tests on PR changes to prompts, skills, or promptfoo config.
-# Uses Claude 3.5 Sonnet via OpenRouter as primary model.
+# Uses Claude Sonnet 4 via OpenRouter as primary model.
 #
 # Required secret: OPENROUTER_API_KEY
 #   → GitHub → Settings → Secrets and variables → Actions → New repository secret
@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   eval:
-    name: PromptFoo Eval (Claude 3.5 Sonnet)
+    name: PromptFoo Eval (Claude Sonnet 4)
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
@@ -51,9 +51,9 @@ jobs:
       - name: Install PromptFoo
         run: npm install -g promptfoo
 
-      - name: Setup OpenRouter for Claude 3.7
+      - name: Setup OpenRouter for Claude Sonnet 4
         run: |
-          echo "Using Claude 3.7 Sonnet via OpenRouter as primary model"
+          echo "Using Claude Sonnet 4 via OpenRouter as primary model"
 
       - name: Find promptfoo configs
         id: configs
@@ -77,12 +77,22 @@ jobs:
             promptfoo eval -c "$config" --no-cache -o "$RESULTS_DIR/results-$index.json" || true
             index=$((index + 1))
           done
-          # Merge results if multiple files exist
+          # Merge results across configs.
+          # PromptFoo emits an object shaped like {results: {results: [...], stats: {...}, ...}}.
+          # Naive `jq -s '.[0] + .[1]'` overwrites duplicate top-level keys instead of
+          # combining per-test results, so explicitly concatenate the inner result arrays
+          # and sum the stats counters for a meaningful aggregate.
           if [ "$index" -gt 2 ]; then
-            echo "[]" > results.json
-            for f in "$RESULTS_DIR"/*.json; do
-              [ -f "$f" ] && jq -s '.[0] + .[1]' results.json "$f" > tmp.json && mv tmp.json results.json
-            done
+            jq -s '{
+              results: {
+                version: (.[0].results.version // null),
+                results: ([.[].results.results // []] | add),
+                stats: {
+                  successes: ([.[].results.stats.successes // 0] | add),
+                  failures: ([.[].results.stats.failures // 0] | add)
+                }
+              }
+            }' "$RESULTS_DIR"/*.json > results.json
           elif [ -f "$RESULTS_DIR/results-1.json" ]; then
             cp "$RESULTS_DIR/results-1.json" results.json
           fi
@@ -97,7 +107,8 @@ jobs:
         run: |
           if [ -f results.json ]; then
             echo "📊 PromptFoo Results" >> $GITHUB_STEP_SUMMARY
-            cat results.json | jq -r '.results.stats | "Passed: \(.passes), Failed: \(.failures)"' >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+            # PromptFoo stats use `successes`/`failures`; tolerate older `passes` field too.
+            jq -r '.results.stats | "Passed: \(.successes // .passes // 0), Failed: \(.failures // 0)"' results.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
           fi
 
       - name: Upload Results

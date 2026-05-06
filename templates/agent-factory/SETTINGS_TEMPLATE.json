@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "profile": "default",
   "models": {
-    "primary": "claude-3.5-sonnet",
+    "primary": "claude-sonnet-4",
     "fallback": "claude-3-haiku"
   },
   "tools": {
