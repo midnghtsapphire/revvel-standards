@@ -1,64 +1,30 @@
 ## Summary
 
-<!-- What does this PR do? Link the issue it resolves. -->
+<!-- One paragraph: what does this do? -->
 Closes #<!-- issue number -->
-
-## Scope of this PR
-
-<!-- State whether this PR is the full requested bundle or a partial/blocker-driven subset. -->
-- [ ] This PR delivers the full requested bundle from the WR/issue
-- [ ] This PR is intentionally partial because of a blocker, and the blocker is explained below
 
 ## Changes
 
-<!-- Bullet-point list of the key changes made -->
--
--
+<!-- Bullet list of key changes -->
 -
 
-## Discoverability and docs
+## Validation
 
-<!-- Check all that apply -->
-- [ ] README updated
-- [ ] Reference table / index updated
-- [ ] Top-of-doc callout or cross-link added
-- [ ] Knowledge note / docs file added or updated
-- [ ] No doc/discoverability changes were needed, and why is explained below
+<!-- One paragraph: how do you know this works? Link runs/screenshots/preview URLs. -->
 
-## Ops / reminders / runbooks
-
-<!-- Check all that apply -->
-- [ ] REMINDERS.md updated or added
-- [ ] Runbook / follow-up notes updated
-- [ ] No ops/reminder changes were needed, and why is explained below
-
-## Testing
-
-<!-- Describe how you tested the change -->
-- [ ] Manually verified locally
-- [ ] Existing tests pass
-- [ ] New tests added (if applicable)
-- [ ] Validation steps are described below
-
-### Validation notes
-<!-- Briefly describe what you tested and how -->
--
-
-## Deferred items
-
-<!-- List anything explicitly deferred; do not leave silent omissions -->
-- [ ] Nothing deferred
-- [ ] Deferred items listed below
-
-### Deferred / blocked work
--
--
 
 ## Checklist
 
-- [ ] No hardcoded secrets or credentials
-- [ ] Follows revvel-standards conventions
-- [ ] PR title uses conventional-commit format (`feat:`, `fix:`, `docs:`, `chore:`, etc.) [web:147][web:153]
-- [ ] `Closes #N` is present in the summary above so GitHub auto-closes the issue on merge [web:148][web:151]
-- [ ] I reviewed the WR/issue and did not silently omit explicitly requested items
-- [ ] If this PR is partial, the blocker and next step are clearly documented
+<!-- These four are pre-checked because they apply to almost every PR. Uncheck any that this PR genuinely violates and explain in the Summary or Validation section above. -->
+- [x] Closes #N is present so the issue auto-closes on merge
+- [x] No hardcoded secrets or credentials
+- [x] PR title uses conventional-commit format (`feat:`, `fix:`, `docs:`, `chore:`, etc.)
+- [x] WR/issue scope is delivered in full or partial-with-blocker is documented above
+
+<!--
+For reference (not user-facing — kept here for the PR-template-autocomplete workflow to inspect):
+- Discoverability/docs: README, knowledge note, reference table, doc cross-links
+- Ops/runbooks: REMINDERS.md, follow-up notes
+- Testing: manual verification, CI passing, new tests
+- Deferred items: list explicitly in Validation section above
+-->

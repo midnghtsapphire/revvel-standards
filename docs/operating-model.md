@@ -35,35 +35,70 @@ The system does **not** auto-build every idea. It researches first, scores it, a
 
 ## 1. Intake
 
-Work requests for the operating model are filed through the [`Devin Work Request`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) issue form. The legacy [`Issue (Jules / triage)`](../.github/ISSUE_TEMPLATE/issue.yml) form is retained for the existing Jules deep-research path; both share the `[WR]` title prefix so downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`) handles either source.
+Work requests are filed through one of two issue templates. Both apply the `work-request` label so the auto-classifier and downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat them identically. Downstream automation keys off the `[WR]` title prefix; both templates use it.
 
-Required fields (intake will reject the form if any are blank):
+### Two templates: when to use which
 
-- OUTPUT_TYPE
-- RESEARCH_MODE
-- DELIVERY_MODE
-- ITERATION_MODE
-- LIFECYCLE_MODE
-- COMMERCIAL_MODE
-- DEPLOYMENT_TARGET
-- Launch Priority
-- High-level goal
-- Problem to solve
-- Success definition
+The New Issue chooser shows two cards, sorted by filename:
 
-Optional fields:
+1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. Anti-under-scoping is baked into the form itself: every WR carries its own bundle contract into the implementer's context, so README updates, REMINDERS scaffolds, and discoverability work cannot be silently dropped from the resulting PR.
 
-- Constraints and must-haves
-- Existing assets / repos / links
-- Cutting-edge notes
+2. **[`Devin System WR (Quick / Internal)`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml)** (`10-devin-system-wr.yml`) — the **lightweight system form**. Output Type is the only required field; every other routing dropdown defaults to `auto-classify` and is filled in from your description by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill (small follow-up fixes, internal scripts, agent-routed automation).
+
+The lightweight form additionally applies the `quick` and `devin` labels so workflows can distinguish lightweight WRs from the primary heavy ones if needed.
+
+### Required fields
+
+**Heavy form (`00-work-request.yml`)** — intake rejects the form if any of these are blank:
+
+- **Output Type** — the hard constraint on the deliverable (production-app, cli-product, api-product, sellable-pdf, etc.)
+- **Research Mode** — `standard` or `deepresearch`
+- **Delivery Mode** — `build-direct`, `build-with-brief-options`, or `proposal-first`
+- **Lifecycle Mode** — `new-build`, `refresh-existing`, or `audit-only`
+- **Commercial Mode** — `digital-product`, `saas-app`, `api-usage`, `license`, `client-billable`, or `internal-only`
+- **Summary** — one-line description
+- **Objective** — what should be true after this work is done
+- **Required Bundle** — everything that must be included in the same PR unless there is a hard blocker
+- **Definition of Done** — what makes this WR complete
+- **Do Not Under-Scope** — explicit statement of what must not be silently deferred
+- **Delivery Shape** — `One PR`, `One PR preferred, split only if blocked`, `Proposal first`, or `Multiple PRs intentionally planned`
+- **Blocker Rule** — what should happen if one part cannot be completed
+
+**Lightweight form (`10-devin-system-wr.yml`)** — only two are required:
+
+- **Output Type** — same options as the heavy form
+- **High-Level Goal** — prose description of what you're trying to achieve
+
+Optional in the lightweight form (auto-classifier fills any left on `auto-classify`):
+
+- Research Mode, Delivery Mode, Iteration Mode, Lifecycle Mode, Commercial Mode, Deployment Target, Launch Priority
+- Problem to Solve, Success Definition, Constraints and must-haves, Existing assets / repos / links, Cutting-edge notes
+
+### Picking the right mode
+
+The **Output Type** dropdown at the top of either form is the routing decision that controls the entire flow:
+
+- `production-app` / `desktop-tool` — build an app or tool
+- `cli-product` / `mcp-product` / `api-product` — code-facing product
+- `sellable-pdf` / `technical-documentation` — documents, briefs, and PDFs
+- `project-management-doc` — process and planning
+- `client-code-task` — small client-scoped work
+- `internal-script-automation` — internal tooling, no external surface
+- `invention-flow` — invention evaluation, not a build
+
+Everything else the auto-classifier needs (research depth, lifecycle, commercial mode, deployment target, priority) is derived from your prose by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml) when those fields are left on `auto-classify` or omitted entirely. The classifier respects user choices and only fills fields left on `auto-classify`.
 
 Field semantics:
 
-- **RESEARCH_MODE** controls research depth only. It does not change the deliverable.
-- **OUTPUT_TYPE** is the hard constraint on the final deliverable.
-- **DELIVERY_MODE** controls whether Devin proposes first or builds immediately.
-- **ITERATION_MODE = single-pass** means do not expand into multi-stage roadmaps unless blocked.
-- **LIFECYCLE_MODE = refresh-existing** means audit first before proposing rebuilds.
+- **Research Mode** controls research depth only. It does not change the deliverable.
+- **Output Type** is the hard constraint on the final deliverable.
+- **Delivery Mode** controls whether Devin proposes first or builds immediately.
+- **Iteration Mode = single-pass** means do not expand into multi-stage roadmaps unless blocked.
+- **Lifecycle Mode = refresh-existing** means audit first before proposing rebuilds.
+
+### Heavy-form fields the classifier does not auto-fill
+
+The heavy form intentionally captures bundled-scope expectations (`Summary`, `Objective`, `Required Bundle`, `Definition of Done`, `Do Not Under-Scope`, `Explicit Exclusions`, `Expected Scope`, `Validation Expectations`, `Blocker Rule`, `Acknowledgements`) as free-text in the issue body. These are read by the implementer (and downstream review automation) but are NOT mapped to Project v2 fields today. A future WR will map a subset of them (Summary -> "Owner Notes", Required Bundle -> a new "Required Bundle" text field, Definition of Done -> a new "Definition of Done" text field) once the Project v2 schema is updated.
 
 ---
 
@@ -111,11 +146,28 @@ Rules:
 
 A single GitHub Project (https://github.com/users/midnghtsapphire/projects/5) tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
 
+**Live board:** [https://github.com/users/midnghtsapphire/projects/5](https://github.com/users/midnghtsapphire/projects/5) — `Revvel-Standards`
+
 Status lifecycle:
 
 ```
 Inbox → Researching → Scored → { Hold | Archived | Approved → In Build → In Review → Ready to Launch → Launched → Measuring }
 ```
+
+### Day in the life: WR → Project → PR → merge
+
+The expected end-to-end flow once the operating model is wired:
+
+1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`Devin System WR`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` label so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) fires on either; the lightweight form additionally applies `quick` + `devin`.
+2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
+3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
+4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).
+5. **PR opens against `main`.** The PR follows [`.github/pull_request_template.md`](../.github/pull_request_template.md) and references the WR with `Closes #N`. CI runs against the PR.
+6. **Review → Ready to Launch.** When the PR squash-merges under the `Protect main` ruleset, the WR auto-closes. Reviewer transitions `Status` → `In Review` → `Ready to Launch` once the deliverable is verified.
+7. **Launched.** When the deliverable ships (deployed, published, distributed), `Status` → `Launched`. If `Marketing Ready = Yes` and `Launch Channel ≠ None`, the marketing automation layer (Section 8) takes over.
+8. **Measuring.** Once metrics start arriving, `Status` → `Measuring`. The portfolio review loop (Stage F) re-evaluates measuring items monthly.
+
+The operator-facing setup walkthrough — auth path, repo variable wiring, ID discovery, validation evidence — lives in [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md).
 
 ---
 
@@ -290,7 +342,8 @@ The operating model is successful when:
 
 | Asset                                                                                  | Purpose                                                |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](../.github/ISSUE_TEMPLATE/devin-work-request.yml) | Intake form for every work request                     |
+| [`.github/ISSUE_TEMPLATE/00-work-request.yml`](../.github/ISSUE_TEMPLATE/00-work-request.yml)                | Primary human Work Request form (anti-under-scoping)   |
+| [`.github/ISSUE_TEMPLATE/10-devin-system-wr.yml`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml)          | Lightweight WR for internal/agent-driven work          |
 | [`templates/viability-gate-template.md`](../templates/viability-gate-template.md)       | Viability scoring rubric                               |
 | [`templates/invention-flow-template.md`](../templates/invention-flow-template.md)       | Invention evaluation flow                              |
 | [`templates/legacy-refresh-checklist.md`](../templates/legacy-refresh-checklist.md)     | Refresh-existing audit checklist                       |

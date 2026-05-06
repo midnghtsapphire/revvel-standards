@@ -8,19 +8,26 @@ When you're about to start something new, grep this file with the verb of your a
 
 ## Provisioning a new GitHub Project v2 board (https://github.com/users/midnghtsapphire/projects/5)
 
-**Read before you start:**
+**For the live `revvel-standards` Project board:**
+
+- Live board: [https://github.com/users/midnghtsapphire/projects/5](https://github.com/users/midnghtsapphire/projects/5) (`Revvel-Standards`)
+- Active auth path: classic PAT — `PROJECTS_PAT` repo secret on `midnghtsapphire/revvel-standards`
+- Live IDs and validation evidence: see the [Live deployment](./docs/github-project-v2-workflows.md#live-deployment-for-revvel-standards) section in the workflows doc
+
+**Read before you provision a new (different) board:**
 
 - [`docs/reference/github-projects-automation-guide.pdf`](./docs/reference/github-projects-automation-guide.pdf) — GraphQL API, auth scope rules, hard limits (50 fields per Project, 50 options per single-select, 25 issue fields per org, 10 pinned per issue type)
 - [`docs/github-project-schema.md`](./docs/github-project-schema.md) — the field/option/status schema this repo expects
 - [`docs/github-project-v2-workflows.md`](./docs/github-project-v2-workflows.md) — operator setup walkthrough for the default-field-setter workflows
 
-**Why these first:** The auth model dictates which workflow variant you use (App vs PAT), and the platform limits dictate whether `Priority` and `Effort` should be Project fields or org-level issue fields. Decide both before you create the board, or you'll re-create it.
+**Why these first:** The auth model dictates which workflow variant you use (App vs PAT), and the platform limits dictate whether single-select fields should live on the Project or as org-level issue fields. Decide both before you create the board, or you'll re-create it.
 
 **Workflows that fire automatically once configured:**
 
 - `.github/workflows/set-default-project-v2-fields.yml` — runs when `vars.PROJECTS_APP_ID` is set (GitHub App auth)
-- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth)
-- Both skip silently when their credentials are absent. Configure exactly one.
+- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth). Sets the **floor**: `Status=Inbox`, `Priority=medium`, `Research Mode=standard` on every new issue.
+- `.github/workflows/wr-auto-classify.yml` — runs alongside the PAT workflow on `issues.opened` with the `work-request` label. **Extends** the floor by reading the issue body and asking OpenRouter to classify the routing dropdowns the user left on `auto-classify`. Respects explicit picks; falls back to opinionated defaults if OpenRouter is unavailable; tags `auto:default-fallback` when any fallback was used so a human can spot-check ambiguous cases.
+- All three skip silently when their credentials are absent. The currently active auth path for `revvel-standards` is PAT + OpenRouter; both `PROJECTS_PAT` and `OPENROUTER_API_KEY` are configured.
 
 ---
 
@@ -28,11 +35,11 @@ When you're about to start something new, grep this file with the verb of your a
 
 **Read before you start:**
 
-- [`docs/github-project-v2-workflows.md`](./docs/github-project-v2-workflows.md) — full setup walkthrough including the seven repo/org variables and one secret you need
+- [`docs/github-project-v2-workflows.md`](./docs/github-project-v2-workflows.md) — full setup walkthrough including the seven repo/org variables and one secret you need, plus the live values currently set on `revvel-standards`
 
 **One-shot helper to retrieve the IDs you need:**
 
-- Run `.github/workflows/print-project-v2-ids.yml` (App auth) or `.github/workflows/print-project-v2-ids-pat.yml` (PAT auth) manually from the Actions tab. Pass `owner_type`, `owner`, and `project_number`. The workflow prints `PROJECT_ID`, every field's node ID, and every option ID. Copy them into repo or org variables.
+- Run `.github/workflows/print-project-v2-ids.yml` (App auth) or `.github/workflows/print-project-v2-ids-pat.yml` (PAT auth) manually from the Actions tab. Pass `owner_type`, `owner`, and `project_number` (for the live `revvel-standards` board: `user`, `midnghtsapphire`, `5`). The workflow prints `PROJECT_ID`, every field's node ID, and every option ID. Copy them into repo or org variables.
 
 ---
 
@@ -46,7 +53,12 @@ When you're about to start something new, grep this file with the verb of your a
 
 **The form to use:**
 
-- [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](./.github/ISSUE_TEMPLATE/devin-work-request.yml) — open via `New issue` → `Devin Work Request`
+The `New issue` chooser shows two cards, both of which file a Work Request and apply the `work-request` label so the auto-classifier and downstream automation treat them identically:
+
+- [`.github/ISSUE_TEMPLATE/00-work-request.yml`](./.github/ISSUE_TEMPLATE/00-work-request.yml) — open via `New issue` → `Work Request`. **Primary, anti-under-scoping form.** The `00-` prefix forces this template to sort first in the chooser. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. The implementer's PR must mirror the Required Bundle and not silently drop items.
+- [`.github/ISSUE_TEMPLATE/10-devin-system-wr.yml`](./.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) — open via `New issue` → `Devin System WR (Quick / Internal)`. **Lightweight system form.** Output Type is the only required routing decision; every other routing dropdown defaults to `auto-classify` and is filled from your prose by [`wr-auto-classify.yml`](./.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill. Carries the extra `quick` and `devin` labels so workflows can distinguish lightweight WRs.
+
+Older templates are archived under `templates/issue-template-archive/`.
 
 **Hard rules to remember:**
 
