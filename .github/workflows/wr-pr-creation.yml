@@ -348,7 +348,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const prNumber = ${{ steps.create_pr.outputs.result }}.number;
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
             
             const labels = [
               'weekly-research',
@@ -373,10 +373,15 @@ jobs:
 
       - name: Request Jules review
         if: env.JULES_API_KEY != ''
-        uses: BeksOmega/jules-action@v1
+        # NOTE: must be a real published tag. BeksOmega/jules-action does not
+        # publish a floating `@v1` major-version tag — only `@v1.0.0`,
+        # `@v0.1.2`, etc. Using `@v1` makes the entire job fail at "Set up
+        # job" with `Unable to resolve action … unable to find version v1`,
+        # which means the PR is never created. Pin to `@v1.0.0`.
+        uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: |
-            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.result }}.number.
+            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.pr_number }}.
             
             Your task:
             1. Review the research findings already documented
@@ -395,13 +400,14 @@ jobs:
         with:
           script: |
             const issueNumber = ${{ env.ISSUE_NUMBER }};
-            const prResult = ${{ steps.create_pr.outputs.result }};
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
+            const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
             
             const comment = `🎉 **WR PR Created!**
 
             I've created a pull request with the initial WR document based on the research findings.
 
-            **PR:** #${prResult.number}  
+            **PR:** #${prNumber}  
             **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
             **Status:** 🟡 Awaiting Jules refinement
 
@@ -411,7 +417,7 @@ jobs:
             2. **You can review** the PR and provide feedback
             3. **Once approved**, the WR will be merged and marked as complete
 
-            [View the PR →](${prResult.url})
+            [View the PR →](${prUrl})
 
             ---
 
