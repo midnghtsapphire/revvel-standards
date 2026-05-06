@@ -9,22 +9,27 @@ Enforce Revvel code review standards including security, accessibility, test cov
 1. **Bito AI** — Primary AI PR reviewer (assigned automatically via workflow labels)
 2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture  
 3. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
-4. **PromptFoo** — Skill/LLM testing with Claude 3.5 Sonnet (replaces PandaOps)
+4. **PromptFoo** — Skill/LLM testing with Claude 3.7 Sonnet (replaces PandaOps)
 
-### Primary Model Configuration (Claude 3.5 Sonnet via OpenRouter)
+### Primary Model Configuration (Claude 3.7 Sonnet via OpenRouter)
 ```yaml
 # promptfooconfig.yaml
 providers:
-  - id: anthropic:claude-sonnet-4-20251101  # Claude 3.5 Sonnet
+  - id: anthropic/claude-3.7-sonnet  # Primary - default in OpenRouter
     config:
       api_key: ${OPENROUTER_API_KEY}
       base_url: https://openrouter.ai/api/v1
       temperature: 0
+
+# Fallback: Claude 4.5 Sonnet
+  - id: anthropic/claude-sonnet-4-5-20255112
+    config:
+      api_key: ${OPENROUTER_API_KEY}
 ```
 
 ### Fallback Model Chain
 ```
-Bito AI → OpenRouter (Claude 3.5 Sonnet) → GPT-5.2/GPT-4o (fallback)
+Bito AI → Claude 3.7 Sonnet (OpenRouter) → Claude 4.5 Sonnet (fallback)
 ```
 
 ### Integration (How to Enable)

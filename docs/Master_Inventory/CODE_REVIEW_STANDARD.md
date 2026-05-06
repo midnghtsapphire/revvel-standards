@@ -54,25 +54,27 @@ PromptFoo provides GitHub Action integration for testing prompts and LLM outputs
 
 **Why PromptFoo over PandaOps:**
 - Tests actual prompt/skill outputs, not just code
-- Supports Claude 3.5 Sonnet via OpenRouter
+- Supports Claude 3.7 Sonnet via OpenRouter
 - Has GitHub Action for CI automation
 - Better for skill/LLM regression testing
 
-**Primary Model: Claude 3.5 Sonnet via OpenRouter**
+**Primary Model: Claude 3.7 Sonnet via OpenRouter**
 ```yaml
 # In promptfooconfig.yaml
 providers:
-  - id: anthropic:claude-sonnet-4-20251101  # 3.5 Sonnet
+  - id: anthropic/claude-3.7-sonnet
     config:
       api_key: ${OPENROUTER_API_KEY}
       base_url: https://openrouter.ai/api/v1
 ```
 
-**Fallback: GPT-5.2 (when available) or GPT-4o**
+**Fallback: Claude 4.5 Sonnet**
 ```yaml
 providers:
-  - id: openai:gpt-4o
-  - id: anthropic:claude-sonnet-4-20251101  # fallback
+  - id: anthropic/claude-sonnet-4-5-20255112
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
 ```
 
 **GitHub Action Setup:**
@@ -99,6 +101,7 @@ jobs:
 **Resources:**
 - GitHub Action: https://github.com/promptfoo/promptfoo-action
 - PromptFoo MCP Server: https://github.com/promptfoo/promptfoo-mcp
+- OpenRouter Claude 3.7: https://openrouter.ai/anthropic%2Fclaude-3.7-sonnet
 
 ### 2.5. MCP Code Review Server (Optional)
 
