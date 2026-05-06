@@ -2,8 +2,7 @@
 
 **Version:** 1.2.0  
 **Date:** May 6, 2026  
-**Status:** Mandatory Policy  
-**Update:** Reflects current production setup with Bito AI
+**Status:** Mandatory Policy
 
 ## 1. Introduction
 
@@ -15,18 +14,11 @@ Every commit pushed to any application repository is subject to a multi-tiered A
 
 ### 2.1. Primary Reviewer: Bito AI
 
-> **Updated May 6, 2026** — Bito AI is the current primary AI PR reviewer, assigned automatically via the `openrouter-assignee.yml` workflow.
-
-Bito AI is the mandatory primary reviewer for all code before it is pushed to the `main` branch. It acts as the first line of defense, checking for logic errors, adherence to standards, and security vulnerabilities.
-
-**How it works:**
-1. When a PR is opened, the `openrouter-assignee.yml` workflow applies labels including `openrouter` and assigns Bito AI as reviewer
-2. Bito AI reviews the PR and provides feedback
-3. No code may bypass the Bito AI review before merge
+Bito AI is the primary reviewer for all code before it is pushed to the `main` branch.
 
 **Setup:**
 - Enable via GitHub Marketplace: https://github.com/marketplace/bito-ai-code-reviewer
-- Or use the `openrouter-assignee.yml` workflow that routes to available agents
+- Or use the `openrouter-assignee.yml` workflow
 
 ### 2.2. Fallback Reviewers
 
@@ -46,62 +38,22 @@ All pull requests (PRs) must integrate with Coderabbit for automated line-by-lin
 1. Enable via GitHub Marketplace: https://github.com/marketplace/coderabbit-ai
 2. Or add `.coderabbit.yaml` to repository root
 
-### 2.4. Skill/LLM Testing (PromptFoo) — Replacing PandaOps
+### 2.4. Skill/LLM Testing (PromptFoo)
 
-> **Updated May 6, 2026** — Use PromptFoo instead of PandaOps for LLM/skill testing.
-
-PromptFoo provides GitHub Action integration for testing prompts and LLM outputs. It's the recommended tool for skill testing, LLM assertions, and red-teaming security scanning.
-
-**Why PromptFoo over PandaOps:**
-- Tests actual prompt/skill outputs, not just code
-- Supports Claude 3.7 Sonnet via OpenRouter
-- Has GitHub Action for CI automation
-- Better for skill/LLM regression testing
+PromptFoo provides GitHub Action integration for testing prompts and LLM outputs.
 
 **Primary Model: Claude 3.7 Sonnet via OpenRouter**
 ```yaml
-# In promptfooconfig.yaml
 providers:
   - id: anthropic/claude-3.7-sonnet
-    config:
-      api_key: ${OPENROUTER_API_KEY}
-      base_url: https://openrouter.ai/api/v1
 ```
 
 **Fallback: Claude 4.5 Sonnet**
 ```yaml
-providers:
   - id: anthropic/claude-sonnet-4-5-20255112
-    config:
-      api_key: ${OPENROUTER_API_KEY}
-      base_url: https://openrouter.ai/api/v1
 ```
 
-**GitHub Action Setup:**
-```yaml
-# .github/workflows/prompt-eval.yml
-name: PromptFoo Evaluation
-on:
-  pull_request:
-    paths:
-      - 'prompts/**'
-      - 'promptfooconfig.yaml'
-      - 'skills/**/tests/**'
-
-jobs:
-  eval:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: promptfoo/promptfoo-action@v1
-        with:
-          config: promptfooconfig.yaml
-```
-
-**Resources:**
-- GitHub Action: https://github.com/promptfoo/promptfoo-action
-- PromptFoo MCP Server: https://github.com/promptfoo/promptfoo-mcp
-- OpenRouter Claude 3.7: https://openrouter.ai/anthropic%2Fclaude-3.7-sonnet
+**GitHub Action:** https://github.com/promptfoo/promptfoo-action
 
 ### 2.5. MCP Code Review Server (Optional)
 
@@ -140,23 +92,7 @@ The official software development lifecycle for Revvel applications mandates a s
 
 *Important Note: While the Dev → Test → Live pipeline is the official standard, we are currently operating under a "Live-First" deployment exception to save time and avoid sandbox environment limitations.*
 
-Currently, code is pushed directly to the `main` branch, triggering immediate deployment to the live production environment. This makes the pre-push AI code review (Section 2) absolutely critical, as there is no staging buffer to catch errors before users see them.
-
-**⚠️ Risk Acknowledgment (May 6, 2026):**
-- No staging buffer means bugs go directly to production
-- Users may encounter issues before AI review catches them
-- Rollback is the primary recovery mechanism (not staging)
-
-**Timeline to Fix:**
-- Target: Q3 2026 — implement proper Dev → Test → Live pipeline
-- Requires: DigitalOcean staged environment setup
-- Status: Not yet scheduled
-
-**Mitigation (Current):**
-1. Strong AI code review is mandatory (Section 2)
-2. Comprehensive test coverage required
-3. Waydev monitoring for deployment issues
-4. Quick rollback capability
+Currently, code is pushed directly to the `main` branch, triggering immediate deployment to the live production environment. This makes the pre-push AI code review (Section 2) absolutely critical, as there is no staging buffer to catch errors before users see them. The organization plans to transition to the full gated pipeline in the future.
 
 ## 4. CI/CD Integration
 
