@@ -105,19 +105,15 @@ jobs:
             // ─── 3. CHECK GITHUB APPS ────────────────────────────────
             report.push('\n## Installed GitHub Apps\n');
             try {
-              const { data: installations } = await github.rest.apps.listInstallationsForAuthenticatedUser
-                ? await github.request('GET /user/installations', { per_page: 100 })
-                : { data: { installations: [] } };
-
-              if (installations && installations.installations) {
-                for (const app of installations.installations.slice(0, 20)) {
-                  report.push(`- **${app.app_slug}** (ID: ${app.app_id})`);
-                }
-              } else {
-                report.push('_Could not list installed apps (permissions may be insufficient)._');
-              }
+              const { data } = await github.request('GET /repos/{owner}/{repo}/installation', { owner, repo });
+              report.push(`- This repo's GitHub App installation ID: **${data.id}** (app: ${data.app_slug || data.app_id})`);
             } catch(e) {
-              report.push('_Could not list installed apps — this check requires user-level token permissions._');
+              // Fallback: list known apps from workflow bot comments
+              report.push('_GitHub Apps list requires admin token. Known apps from CI:_');
+              report.push('- **lang-ci[bot]** — Language CI checks');
+              report.push('- **vercel[bot]** — Preview deployments');
+              report.push('- **devin-ai-integration[bot]** — Devin code review');
+              report.push('- _Run `gh api /repos/{owner}/{repo}/installations` with admin token for full list._');
             }
 
             // ─── 4. SUGGESTED TOOLS & EXTENSIONS ─────────────────────

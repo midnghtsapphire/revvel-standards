@@ -48,17 +48,27 @@ jobs:
               // Fix conflicting labels: approved + needs-action
               if (labelNames.includes('approved') && labelNames.includes('needs-action')) {
                 try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'needs-action' }); } catch(e) {}
-                await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                labelNames.splice(labelNames.indexOf('needs-action'), 1);
+                if (!labelNames.includes('lifecycle:stuck')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  labelNames.push('lifecycle:stuck');
+                }
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
                   body: '🔍 **Watchdog:** Detected conflicting labels (`approved` + `needs-action`). Removed `needs-action`. Please verify the PR state.' });
+                continue;
               }
 
               // Fix conflicting labels: checks-passing + checks-failing
               if (labelNames.includes('checks-passing') && labelNames.includes('checks-failing')) {
                 try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-failing' }); } catch(e) {}
-                await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                labelNames.splice(labelNames.indexOf('checks-failing'), 1);
+                if (!labelNames.includes('lifecycle:stuck')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  labelNames.push('lifecycle:stuck');
+                }
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
                   body: '🔍 **Watchdog:** Detected conflicting labels (`checks-passing` + `checks-failing`). Removed `checks-failing`. Please verify CI status.' });
+                continue;
               }
 
               // awaiting-review for 24h+ → ping

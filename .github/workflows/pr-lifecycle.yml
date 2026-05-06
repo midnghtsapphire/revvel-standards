@@ -22,6 +22,7 @@ jobs:
   on-ready:
     if: >-
       github.event_name == 'pull_request' &&
+      github.event.pull_request.draft == false &&
       (github.event.action == 'opened' || github.event.action == 'ready_for_review' || github.event.action == 'reopened')
     runs-on: ubuntu-latest
     steps:
