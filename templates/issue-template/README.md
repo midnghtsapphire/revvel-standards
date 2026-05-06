@@ -1,13 +1,24 @@
-# The One Issue Template
+# Issue Templates (canonical, portable copies)
 
-**Audrey's standing rule:** every MIDNGHTSAPPHIRE repository uses exactly
-**one** user-facing issue template — and every issue filed through it gets
-deep-researched before any code is written. Bugs, features, questions,
-refactors, docs — all routed through the same intake form, the same `jules`
-label, and the same `jules-invoke.yml` workflow.
+MIDNGHTSAPPHIRE repositories use **two** issue templates that both feed the
+same Work Request pipeline:
 
-This directory is the **canonical, portable copy** of that template. Drop
-it into any new (or existing) MIDNGHTSAPPHIRE repo to bring it onto the
+1. **`00-work-request.yml`** — the **primary, anti-under-scoping form**. Heavy
+   on explicit scope: required fields for Output Type, Research Mode, Delivery
+   Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle,
+   Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule,
+   plus a 4-checkbox Acknowledgements block.
+2. **`10-OpenHands-system-wr.yml`** — the **lightweight system form**. Output Type
+   is the only required field; every other routing dropdown defaults to
+   `auto-classify` and is filled in by the [auto-classifier workflow](../../.github/workflows/wr-auto-classify.yml).
+   Use this for low-risk, internal, or agent-driven work.
+
+Both templates apply the `work-request` label so the auto-classifier and
+downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project
+v2 board sync) treat them identically. Both use the `[WR] ` title prefix.
+
+This directory is the **canonical, portable copy** of both templates. Drop
+them into any new (or existing) MIDNGHTSAPPHIRE repo to bring it onto the
 standard.
 
 Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
@@ -17,10 +28,19 @@ Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
 
 ## Files
 
-| File         | Where it goes in your app repo                |
-|--------------|-----------------------------------------------|
-| `issue.yml`  | `.github/ISSUE_TEMPLATE/issue.yml`            |
-| `config.yml` | `.github/ISSUE_TEMPLATE/config.yml`           |
+| File                          | Where it goes in your app repo                                |
+|-------------------------------|---------------------------------------------------------------|
+| `00-work-request.yml`         | `.github/ISSUE_TEMPLATE/00-work-request.yml`                  |
+| `10-OpenHands-system-wr.yml`      | `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`               |
+| `config.yml`                  | `.github/ISSUE_TEMPLATE/config.yml`                           |
+
+Filename prefixes (`00-`, `10-`) force the chooser ordering ([per the
+docs][gh-template-order] — `.yml` before `.md`, alpha within each group):
+the heavy primary form sorts first, the lightweight system form sorts second.
+Without numeric prefixes, alphabetical ordering can scatter the templates
+behind unrelated `.yml` forms.
+
+[gh-template-order]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
 
 ---
 
@@ -29,10 +49,11 @@ Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
 ```bash
 # from the root of the target repo
 mkdir -p .github/ISSUE_TEMPLATE
-cp ../revvel-standards/templates/issue-template/issue.yml   .github/ISSUE_TEMPLATE/issue.yml
-cp ../revvel-standards/templates/issue-template/config.yml  .github/ISSUE_TEMPLATE/config.yml
+cp ../revvel-standards/templates/issue-template/00-work-request.yml      .github/ISSUE_TEMPLATE/00-work-request.yml
+cp ../revvel-standards/templates/issue-template/10-OpenHands-system-wr.yml   .github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml
+cp ../revvel-standards/templates/issue-template/config.yml               .github/ISSUE_TEMPLATE/config.yml
 git add .github/ISSUE_TEMPLATE
-git commit -m "chore(issues): adopt the One Template (deep-research by default)"
+git commit -m "chore(issues): adopt the canonical WR templates (heavy + lightweight)"
 ```
 
 If the target repo already has `bug-report.yml`, `deep-research.yml`, or
@@ -88,19 +109,20 @@ template.
 
 ## Keeping the two copies in sync
 
-`templates/issue-template/issue.yml` and
-`.github/ISSUE_TEMPLATE/issue.yml` in `revvel-standards` must stay
-identical. Same for the two `config.yml` copies. If you change one,
-change the other in the same PR.
+For each template, `templates/issue-template/<name>.yml` and
+`.github/ISSUE_TEMPLATE/<name>.yml` in `revvel-standards` must stay identical.
+Same for the `config.yml` pair. If you change one, change the other in the
+same PR.
 
-Until a CI drift check exists, verify manually before committing:
+Verify manually before committing:
 
 ```bash
-diff .github/ISSUE_TEMPLATE/issue.yml  templates/issue-template/issue.yml
-diff .github/ISSUE_TEMPLATE/config.yml templates/issue-template/config.yml
+diff .github/ISSUE_TEMPLATE/00-work-request.yml      templates/issue-template/00-work-request.yml
+diff .github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml   templates/issue-template/10-OpenHands-system-wr.yml
+diff .github/ISSUE_TEMPLATE/config.yml               templates/issue-template/config.yml
 ```
 
-Both `diff` calls must produce no output.
+All three `diff` calls must produce no output.
 
 **Automation:** The `.github/workflows/template-sync-check.yml` workflow
 automatically verifies that both copies stay in sync on every PR or push

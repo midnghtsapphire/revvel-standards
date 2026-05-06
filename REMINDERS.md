@@ -6,7 +6,7 @@ When you're about to start something new, grep this file with the verb of your a
 
 ---
 
-## Provisioning a new GitHub Project v2 board
+## Provisioning a new GitHub Project v2 board (https://github.com/users/midnghtsapphire/projects/5)
 
 **For the live `revvel-standards` Project board:**
 
@@ -25,12 +25,13 @@ When you're about to start something new, grep this file with the verb of your a
 **Workflows that fire automatically once configured:**
 
 - `.github/workflows/set-default-project-v2-fields.yml` — runs when `vars.PROJECTS_APP_ID` is set (GitHub App auth)
-- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth)
-- Both skip silently when their credentials are absent. Configure exactly one. The currently active one for `revvel-standards` is the PAT variant.
+- `.github/workflows/default-project-v2-fields-pat.yml` — runs when `secrets.PROJECTS_PAT` is set (classic PAT auth). Sets the **floor**: `Status=Inbox`, `Priority=medium`, `Research Mode=standard` on every new issue.
+- `.github/workflows/wr-auto-classify.yml` — runs alongside the PAT workflow on `issues.opened` with the `work-request` label. **Extends** the floor by reading the issue body and asking OpenRouter to classify the routing dropdowns the user left on `auto-classify`. Respects explicit picks; falls back to opinionated defaults if OpenRouter is unavailable; tags `auto:default-fallback` when any fallback was used so a human can spot-check ambiguous cases.
+- All three skip silently when their credentials are absent. The currently active auth path for `revvel-standards` is PAT + OpenRouter; both `PROJECTS_PAT` and `OPENROUTER_API_KEY` are configured.
 
 ---
 
-## Wiring the Project v2 default-field-setter workflows
+## Wiring the Project v2 default-field-setter workflows (for https://github.com/users/midnghtsapphire/projects/5)
 
 **Read before you start:**
 
@@ -55,7 +56,12 @@ When you're about to start something new, grep this file with the verb of your a
 
 **The form to use:**
 
-- [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](./.github/ISSUE_TEMPLATE/devin-work-request.yml) — open via `New issue` → `Devin Work Request`
+The `New issue` chooser shows two cards, both of which file a Work Request and apply the `work-request` label so the auto-classifier and downstream automation treat them identically:
+
+- [`.github/ISSUE_TEMPLATE/00-work-request.yml`](./.github/ISSUE_TEMPLATE/00-work-request.yml) — open via `New issue` → `Work Request`. **Primary, anti-under-scoping form.** The `00-` prefix forces this template to sort first in the chooser. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. The implementer's PR must mirror the Required Bundle and not silently drop items.
+- [`.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`](./.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) — open via `New issue` → `OpenHands System WR (Quick / Internal)`. **Lightweight system form.** Output Type is the only required routing decision; every other routing dropdown defaults to `auto-classify` and is filled from your prose by [`wr-auto-classify.yml`](./.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill. Carries the extra `quick` and `OpenHands` labels so workflows can distinguish lightweight WRs.
+
+Older templates are archived under `templates/issue-template-archive/`.
 
 **Hard rules to remember:**
 

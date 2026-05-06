@@ -8,7 +8,7 @@
 ## When to Use This Shape
 
 - The deliverable teaches an AI agent how to do something new
-- ClawBot, Devin, Claude Code, Cursor, or other agents need reusable procedures
+- ClawBot, OpenHands, Claude Code, Cursor, or other agents need reusable procedures
 - Problem is a repeatable workflow that agents execute autonomously
 - Low build cost — skills are primarily documentation + tested procedures
 - Can be bundled with MCP servers, CLIs, or APIs as the "how-to" layer
@@ -20,8 +20,8 @@
 | Task | Tool | Output |
 |------|------|--------|
 | Validate agent workflow gap | Agent forums, Discord, GitHub discussions | Confirmed gap — agents struggle with this task |
-| Audit existing skills/playbooks | Devin skills, Claude projects, Cursor rules | `research/competitors.md` — what exists |
-| Identify target agents | Which platforms support skill files | `research/audience.md` — Devin (.agents/), Claude (.claude/), Cursor (.cursor/) |
+| Audit existing skills/playbooks | OpenHands skills, Claude projects, Cursor rules | `research/competitors.md` — what exists |
+| Identify target agents | Which platforms support skill files | `research/audience.md` — OpenHands (.agents/), Claude (.claude/), Cursor (.cursor/) |
 | Define skill scope | What the skill teaches vs. what it doesn't | `research/scope.md` — boundaries |
 | Determine pricing | Free / paid / bundled | `decision/pricing.json` |
 
@@ -45,8 +45,8 @@ build/skill/
     tests/                # Verification scripts
       test-skill.sh       # Automated skill validation
   adapters/               # Platform-specific wrappers
-    devin/
-      SKILL.md            # Devin-format skill
+    OpenHands/
+      SKILL.md            # OpenHands-format skill
     claude/
       CLAUDE.md           # Claude project instructions
     cursor/
@@ -128,7 +128,7 @@ Skills are text-based but still need:
 | Channel | Format | How |
 |---------|--------|-----|
 | **GitHub repo** | `.agents/skills/<name>/SKILL.md` | PR to target repos |
-| **Devin marketplace** | Devin skill format | Submit via Devin MCP |
+| **OpenHands marketplace** | OpenHands skill format | Submit via OpenHands MCP |
 | **npm** | Installable skill package | `npm publish` → `npx install-skill <name>` |
 | **Gumroad** | Premium skill pack (zip) | Upload zip with all platform adapters |
 | **Own site** | Landing page + download | Stripe Payment Link |
@@ -173,7 +173,7 @@ echo "Skill installed to $SKILL_DIR/SKILL.md"
 ## Acceptance Criteria
 
 - [ ] Skill executes on a clean environment without errors
-- [ ] Adapters exist for Devin + at least one other platform
+- [ ] Adapters exist for OpenHands + at least one other platform
 - [ ] Automated test script passes
 - [ ] Published to at least one distribution channel
 - [ ] README has installation instructions for each platform

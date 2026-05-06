@@ -160,5 +160,5 @@ plugins:
 
 # ── Consumers ──────────────────────────────────────────────────
 consumers:
-  - username: agent-devin
+  - username: agent-OpenHands
   - username: agent-copilot

@@ -1,27 +1,30 @@
-name: Devin Work Request
-description: Research, score, route, and build only when appropriate.
+name: OpenHands System WR (Quick / Internal)
+description: Lightweight WR for low-risk, internal, or agent-driven work. The auto-classifier fills routing fields from your description.
 title: "[WR] "
 labels:
   - work-request
-  - devin
+  - quick
+  - OpenHands
 body:
   - type: markdown
     attributes:
       value: |
-        ## Devin Work Request
-        This form is the intake layer for revvel-standards.
+        ## OpenHands System WR
 
-        Rules:
-        - Deepresearch means research deeply, not auto-build.
-        - Output Type is the hard constraint on the deliverable.
-        - Every request should be researched and scored before implementation.
-        - Weak ideas should be held or archived instead of built.
+        Lightweight intake for low-risk, internal, or agent-driven work.
+        Use this when the heavy `Work Request` form (the first card in the
+        chooser) would be overkill — e.g. small internal scripts, follow-up
+        fixes, agent-routed automation tasks.
+
+        Output Type is the only routing decision you must make. Every other
+        routing dropdown defaults to `auto-classify` and is filled in from
+        your description by [`wr-auto-classify.yml`](../workflows/wr-auto-classify.yml).
 
   - type: dropdown
     id: output_type
     attributes:
-      label: Output Type
-      description: What is the primary deliverable?
+      label: Output Type (required)
+      description: What are you asking OpenHands to create or change?
       options:
         - production-app
         - desktop-tool
@@ -41,54 +44,59 @@ body:
     id: research_mode
     attributes:
       label: Research Mode
-      description: How aggressively should current tools, APIs, competitors, and workflows be researched?
+      description: How aggressively should current tools, APIs, competitors, and workflows be researched? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - standard
         - deepresearch
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: delivery_mode
     attributes:
       label: Delivery Mode
-      description: How should Devin handle the output?
+      description: How should OpenHands handle the output? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - build-direct
         - build-with-brief-options
         - proposal-first
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: iteration_mode
     attributes:
       label: Iteration Mode
-      description: How should iteration be handled?
+      description: How should iteration be handled? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - single-pass
         - multi-iteration
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: lifecycle_mode
     attributes:
       label: Lifecycle Mode
-      description: Is this net-new work, a refresh, or just an audit?
+      description: Is this net-new work, a refresh, or just an audit? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - new-build
         - refresh-existing
         - audit-only
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: commercial_mode
     attributes:
       label: Commercial Mode
-      description: How should this be thought of commercially?
+      description: How should this be thought of commercially? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - digital-product
         - saas-app
         - api-usage
@@ -96,14 +104,15 @@ body:
         - client-billable
         - internal-only
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: deployment_target
     attributes:
       label: Deployment Target
-      description: Where should this end up running or being delivered?
+      description: Where should this end up running or being delivered? Leave on 'auto-classify' to let the agent decide.
       options:
+        - auto-classify
         - none
         - vercel
         - desktop-env
@@ -112,20 +121,21 @@ body:
         - package-manager
         - api-host
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: launch_priority
     attributes:
       label: Launch Priority
-      description: How important is launch speed for this request?
+      description: How important is launch speed for this request? Leave on 'auto-classify' to let the agent decide based on urgency cues in your description.
       options:
+        - auto-classify
         - low
         - medium
         - high
         - urgent
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: high_level_goal
@@ -143,22 +153,22 @@ body:
     id: problem_to_solve
     attributes:
       label: Problem To Solve
-      description: What pain/problem/user need is this addressing?
+      description: What pain/problem/user need is this addressing? Optional — the classifier will infer from High-Level Goal if blank.
       placeholder: |
         Describe the real user pain, who has it, and what happens if it is not solved.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: success_definition
     attributes:
       label: Success Definition
-      description: What would make this worth doing?
+      description: What would make this worth doing? Optional — the classifier will infer from High-Level Goal if blank.
       placeholder: |
         Example:
         A shippable CLI with strong install UX, differentiated value, and a realistic path to paid adoption.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: constraints
@@ -191,14 +201,3 @@ body:
         If there is a new 2025–2026 API, agent framework, or MCP pattern that materially improves this, surface it.
     validations:
       required: false
-
-  - type: checkboxes
-    id: execution_acknowledgements
-    attributes:
-      label: Execution Acknowledgements
-      description: Confirm the operating rules for this request.
-      options:
-        - label: I want research and viability scoring before implementation.
-        - label: Deepresearch should not automatically trigger a build.
-        - label: If this idea scores poorly, hold or archive it instead of building it.
-        - label: Output Type should remain the hard constraint unless I explicitly change it.

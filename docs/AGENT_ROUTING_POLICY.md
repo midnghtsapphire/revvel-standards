@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document defines the agent routing policy for all automation in the `midnghtsapphire/revvel-standards` repository. The policy prioritizes **free and affordable agents** (OpenRouter) over paid services (Devin, GitHub Copilot) to minimize operational costs while maintaining high-quality automation.
+This document defines the agent routing policy for all automation in the `midnghtsapphire/revvel-standards` repository. The policy prioritizes **free and affordable agents** (OpenRouter) over paid services (OpenHands, GitHub Copilot) to minimize operational costs while maintaining high-quality automation.
 
 ---
 
@@ -21,11 +21,11 @@ This document defines the agent routing policy for all automation in the `midngh
 All automation workflows must default to free or affordable agent options:
 1. **OpenRouter** (primary) - Pay-per-use with affordable models
 2. **Cursor** (fallback) - If available and cost-effective
-3. **Devin** (opt-in only) - Requires explicit `prefer_agent: devin` parameter
+3. **OpenHands** (opt-in only) - Requires explicit `prefer_agent: OpenHands` parameter
 
 ### Prohibited Actions
 
-❌ **DO NOT** route to paid agents (Devin, Copilot) by default  
+❌ **DO NOT** route to paid agents (OpenHands, Copilot) by default  
 ❌ **DO NOT** use `auto` mode that prefers paid agents  
 ❌ **DO NOT** add paid agents to workflows without explicit approval  
 
@@ -46,7 +46,7 @@ All automation workflows must default to free or affordable agent options:
 | **CircleCI** | CI/CD | Free tier available | PR reviews, automated checks | ✅ Yes |
 | **BITO AI** | Code review | Free tier | Code reviews with repo memory | ✅ Yes |
 | **Cursor** | IDE agent | Subscription (~$20/month) | Interactive development | ⚠️ Fallback |
-| **Devin AI** | Autonomous | Pay-per-task (~$50+/task) | Complex multi-file tasks | ❌ Opt-in only |
+| **OpenHands AI** | Autonomous | Pay-per-task (~$50+/task) | Complex multi-file tasks | ❌ Opt-in only |
 | **GitHub Copilot** | Code assist | $10-19/month | Inline code suggestions | ❌ Not for automation |
 
 ---
@@ -59,7 +59,7 @@ All automation workflows must default to free or affordable agent options:
 
 **Default chain:**
 ```
-OpenRouter (primary) → Cursor (fallback) → Devin (opt-in only)
+OpenRouter (primary) → Cursor (fallback) → OpenHands (opt-in only)
 ```
 
 **Configuration:**
@@ -67,9 +67,9 @@ OpenRouter (primary) → Cursor (fallback) → Devin (opt-in only)
 prefer_agent: "openrouter"  # Default value
 ```
 
-**Opt-in to Devin:**
+**Opt-in to OpenHands:**
 ```yaml
-prefer_agent: "devin"  # Must be explicit
+prefer_agent: "OpenHands"  # Must be explicit
 ```
 
 ### 2. pr-auto-review.yml
@@ -116,7 +116,7 @@ prefer_agent: "devin"  # Must be explicit
 | OpenRouter | $50/month | ~5000 requests | Auto-throttle at 80% |
 | BITO AI | $0/month | Free tier only | Upgrade requires approval |
 | CircleCI | $0/month | Free tier only | Paid plan requires approval |
-| Devin AI | $0/month | Explicit opt-in only | Per-task approval required |
+| OpenHands AI | $0/month | Explicit opt-in only | Per-task approval required |
 
 ### Cost Monitoring
 
@@ -205,20 +205,20 @@ workflows:
 4. Posts completion comment
 5. Creates fallback monitoring issue
 
-### Example 3: Opt-in Devin
+### Example 3: Opt-in OpenHands
 
 **Trigger:** Manual workflow dispatch
 
 **Input:**
 ```yaml
-prefer_agent: "devin"
+prefer_agent: "OpenHands"
 issue_number: 123
 ```
 
 **Flow:**
 1. Skips OpenRouter (explicit opt-in)
 2. Skips Cursor (explicit opt-in)
-3. Calls Devin AI
+3. Calls OpenHands AI
 4. **Cost:** ~$50-100
 
 ---
@@ -268,9 +268,9 @@ issue_number: 123
 
 ### 2026-05-03 - v1.0.0
 - Initial policy document
-- Changed default from Devin → OpenRouter
+- Changed default from OpenHands → OpenRouter
 - Re-enabled CircleCI for PR reviews
-- Made Devin opt-in only
+- Made OpenHands opt-in only
 - Updated agent-fallback.yml routing order
 
 ---

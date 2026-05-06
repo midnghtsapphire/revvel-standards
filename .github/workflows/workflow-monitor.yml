@@ -3,7 +3,7 @@ name: Workflow Monitor (Real-Time)
 # Real-time monitoring of all workflows with instant alerts for stuck or failed runs.
 # Automatically retries transient failures and creates issues for persistent problems.
 #
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
 # The `workflow_run: workflows: ["*"]` trigger created a feedback loop with
 # Agent Audit Logger and Ralph Loop, saturating the Actions queue and causing
 # every real workflow (jules-invoke, wr-pr-creation, openrouter-coder) to fail

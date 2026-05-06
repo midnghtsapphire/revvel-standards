@@ -9,7 +9,7 @@
 # - OPENROUTER_API_KEY (for AI-powered reviews)
 # - GITHUB_TOKEN (for PR/issue operations)
 #
-# This replaces paid agent workflows (Devin, Copilot) with OpenRouter-based automation
+# This replaces paid agent workflows (OpenHands, Copilot) with OpenRouter-based automation
 # per user request to use affordable/free agents for reviews.
 
 version: 2.1
@@ -120,17 +120,20 @@ jobs:
 
 workflows:
   version: 2
-  
-  # Run on every PR
+
+  # Run on every PR.
+  #
+  # OpenHands-RESTRUCTURE 2026-05-05 (Audrey ask: "stuff that constantly never gets
+  # fixed"): the `pr-review` job was removed from this workflow because (a) it
+  # required OPENROUTER_API_KEY to be set in CircleCI project settings (it
+  # wasn't, so the job exited 1 on every PR and was the chronic
+  # `ci/circleci: pr-review` red X), and (b) it duplicated work that's already
+  # done by OpenHands Review, Jules, and BITO AI on every PR via GitHub Actions.
+  # If you ever want a 4th PR reviewer in CircleCI, restore the job and set
+  # OPENROUTER_API_KEY in the CircleCI project's Environment Variables.
   pr-workflow:
     jobs:
       - lint-and-test:
-          filters:
-            branches:
-              ignore: main
-      - pr-review:
-          requires:
-            - lint-and-test
           filters:
             branches:
               ignore: main

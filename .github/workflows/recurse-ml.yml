@@ -10,7 +10,7 @@
 
 name: RecurseML — Autonomous Code Review
 
-# DEVIN-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
+# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
 # RecurseML is kept as a manual fallback / push-to-main scanner only.
 # Re-enable the `pull_request` trigger if you want a 2nd opinion alongside BITO.
 

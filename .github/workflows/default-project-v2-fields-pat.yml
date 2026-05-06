@@ -64,6 +64,16 @@ jobs:
       # Store this as a repository/org/environment variable named PROJECT_ID.
       PROJECT_ID: ${{ vars.PROJECT_ID }}
 
+      # Required Project v2 field node IDs. Example format: PVTSSF_lAHO...
+      PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
+      STATUS_FIELD_ID: ${{ vars.STATUS_FIELD_ID }}
+      RESEARCH_MODE_FIELD_ID: ${{ vars.RESEARCH_MODE_FIELD_ID }}
+
+      # Required single-select option IDs. Example format: 47fc9ee4.
+      PRIORITY_MEDIUM_OPTION_ID: ${{ vars.PRIORITY_MEDIUM_OPTION_ID }}
+      STATUS_INBOX_OPTION_ID: ${{ vars.STATUS_INBOX_OPTION_ID }}
+      RESEARCH_MODE_STANDARD_OPTION_ID: ${{ vars.RESEARCH_MODE_STANDARD_OPTION_ID }}
+
     steps:
       - name: Validate configuration
         run: |
@@ -73,7 +83,13 @@ jobs:
 
           for var_name in \
             GH_TOKEN \
-            PROJECT_ID
+            PROJECT_ID \
+            PRIORITY_FIELD_ID \
+            STATUS_FIELD_ID \
+            RESEARCH_MODE_FIELD_ID \
+            PRIORITY_MEDIUM_OPTION_ID \
+            STATUS_INBOX_OPTION_ID \
+            RESEARCH_MODE_STANDARD_OPTION_ID
           do
             if [ -z "${!var_name}" ]; then
               echo "Missing required secret or variable: ${var_name}"
@@ -187,11 +203,57 @@ jobs:
           echo "item_id=${ITEM_ID}" >> "${GITHUB_OUTPUT}"
 
       - name: Set default Project v2 fields
-        uses: actions/github-script@v7
         env:
           ITEM_ID: ${{ steps.project-item.outputs.item_id }}
-        with:
-          github-token: ${{ secrets.PROJECTS_PAT }}
-          script: |
-            const script = require('./.github/scripts/set-project-fields.js');
-            await script({ github, context, core });
+        run: |
+          set -euo pipefail
+
+          gh api graphql \
+            -f project="${PROJECT_ID}" \
+            -f item="${ITEM_ID}" \
+            -f priority_field="${PRIORITY_FIELD_ID}" \
+            -f priority_value="${PRIORITY_MEDIUM_OPTION_ID}" \
+            -f status_field="${STATUS_FIELD_ID}" \
+            -f status_value="${STATUS_INBOX_OPTION_ID}" \
+            -f research_mode_field="${RESEARCH_MODE_FIELD_ID}" \
+            -f research_mode_value="${RESEARCH_MODE_STANDARD_OPTION_ID}" \
+            -f query='
+              mutation(
+                $project: ID!
+                $item: ID!
+                $priority_field: ID!
+                $priority_value: String!
+                $status_field: ID!
+                $status_value: String!
+                $research_mode_field: ID!
+                $research_mode_value: String!
+              ) {
+                set_priority: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $priority_field
+                  value: { singleSelectOptionId: $priority_value }
+                }) {
+                  projectV2Item { id }
+                }
+
+                set_status: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $status_field
+                  value: { singleSelectOptionId: $status_value }
+                }) {
+                  projectV2Item { id }
+                }
+
+                set_research_mode: updateProjectV2ItemFieldValue(input: {
+                  projectId: $project
+                  itemId: $item
+                  fieldId: $research_mode_field
+                  value: { singleSelectOptionId: $research_mode_value }
+                }) {
+                  projectV2Item { id }
+                }
+              }
+            ' \
+            --silent

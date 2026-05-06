@@ -1,7 +1,7 @@
 # Secrets Management — Workflow ↔ Secret Matrix
 
 > **Last audited:** 2026-05-01
-> **Source:** Gap analysis session ([link](https://app.devin.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
+> **Source:** Gap analysis session ([link](https://app.OpenHands.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
 > **NEW:** 🛡️ Secret Persistence Guard now active — hourly monitoring & auto-recovery
 
 This document maps every GitHub Actions workflow to the secrets it requires

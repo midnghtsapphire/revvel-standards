@@ -1,0 +1,471 @@
+name: WR Auto-Classify Project v2 Fields
+
+# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
+# routing dropdowns the user left on 'auto-classify', and writes the chosen
+# values to the matching Project v2 single-select fields.
+#
+# Respects explicit user choices: only fills in fields whose body section is
+# 'auto-classify' or empty.
+#
+# Falls back to opinionated defaults if OpenRouter is unavailable or replies
+# with malformed output:
+#   Output Type        = internal-script-automation
+#   Research Mode      = standard
+#   Delivery Mode      = build-direct
+#   Iteration Mode     = single-pass
+#   Lifecycle Mode     = new-build
+#   Commercial Mode    = internal-only
+#   Deployment Target  = none
+#   Launch Priority    = medium
+#
+# When a fallback is used (OpenRouter unreachable, parse error, or value not in
+# the option list) the issue is labeled 'auto:default-fallback' so an operator
+# can spot-check.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: wr-auto-classify-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Preflight credential check
+    runs-on: ubuntu-latest
+    outputs:
+      has_pat: ${{ steps.check.outputs.has_pat }}
+      has_openrouter: ${{ steps.check.outputs.has_openrouter }}
+    steps:
+      - name: Probe credentials
+        id: check
+        env:
+          PAT: ${{ secrets.PROJECTS_PAT }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -n "${PAT}" ]; then
+            echo "has_pat=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::PROJECTS_PAT is configured."
+          else
+            echo "has_pat=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::PROJECTS_PAT not configured; classifier cannot write to Project v2."
+          fi
+          if [ -n "${OPENROUTER_API_KEY}" ]; then
+            echo "has_openrouter=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::OPENROUTER_API_KEY is configured."
+          else
+            echo "has_openrouter=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::OPENROUTER_API_KEY not configured; classifier will use opinionated defaults."
+          fi
+
+  classify:
+    name: Classify routing fields and write to Project v2
+    needs: preflight
+    if: needs.preflight.outputs.has_pat == 'true' && contains(github.event.issue.labels.*.name, 'work-request')
+    runs-on: ubuntu-latest
+    env:
+      PAT: ${{ secrets.PROJECTS_PAT }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      HAS_OPENROUTER: ${{ needs.preflight.outputs.has_openrouter }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+      ISSUE_BODY: ${{ github.event.issue.body }}
+      ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name }}
+      PROJECT_OWNER_TYPE: user
+      PROJECT_OWNER: midnghtsapphire
+      PROJECT_NUMBER: 5
+      MODEL: anthropic/claude-sonnet-4
+    steps:
+      - name: Classify and apply
+        run: |
+          set -euo pipefail
+          python3 <<'PYEOF'
+          import json
+          import os
+          import re
+          import sys
+          import urllib.request
+          import urllib.error
+
+          PAT = os.environ["PAT"]
+          OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+          HAS_OPENROUTER = os.environ.get("HAS_OPENROUTER", "false") == "true"
+          ISSUE_NUMBER = os.environ["ISSUE_NUMBER"]
+          ISSUE_TITLE = os.environ["ISSUE_TITLE"]
+          ISSUE_BODY = os.environ.get("ISSUE_BODY", "") or ""
+          ISSUE_NODE_ID = os.environ["ISSUE_NODE_ID"]
+          OWNER = os.environ["OWNER"]
+          REPO = os.environ["REPO"]
+          PROJECT_OWNER_TYPE = os.environ["PROJECT_OWNER_TYPE"]
+          PROJECT_OWNER = os.environ["PROJECT_OWNER"]
+          PROJECT_NUMBER = int(os.environ["PROJECT_NUMBER"])
+          MODEL = os.environ["MODEL"]
+
+          DROPDOWN_FIELDS = {
+              "Output Type": [
+                  "production-app", "desktop-tool", "sellable-pdf",
+                  "technical-documentation", "client-code-task",
+                  "project-management-doc", "internal-script-automation",
+                  "cli-product", "mcp-product", "api-product", "invention-flow",
+              ],
+              "Research Mode": ["standard", "deepresearch"],
+              "Delivery Mode": ["build-direct", "build-with-brief-options", "proposal-first"],
+              "Iteration Mode": ["single-pass", "multi-iteration"],
+              "Lifecycle Mode": ["new-build", "refresh-existing", "audit-only"],
+              "Commercial Mode": [
+                  "digital-product", "saas-app", "api-usage", "license",
+                  "client-billable", "internal-only",
+              ],
+              "Deployment Target": [
+                  "none", "vercel", "desktop-env", "client-env",
+                  "docs-only", "package-manager", "api-host",
+              ],
+              "Priority": ["low", "medium", "high", "urgent"],
+          }
+
+          DEFAULTS = {
+              "Output Type": "internal-script-automation",
+              "Research Mode": "standard",
+              "Delivery Mode": "build-direct",
+              "Iteration Mode": "single-pass",
+              "Lifecycle Mode": "new-build",
+              "Commercial Mode": "internal-only",
+              "Deployment Target": "none",
+              "Priority": "medium",
+          }
+
+          # Map issue-form label -> project-v2 field name. The form has
+          # 'Launch Priority'; the project field is just 'Priority'.
+          FORM_TO_FIELD = {
+              "Output Type": "Output Type",
+              "Research Mode": "Research Mode",
+              "Delivery Mode": "Delivery Mode",
+              "Iteration Mode": "Iteration Mode",
+              "Lifecycle Mode": "Lifecycle Mode",
+              "Commercial Mode": "Commercial Mode",
+              "Deployment Target": "Deployment Target",
+              "Launch Priority": "Priority",
+          }
+
+          def gh_graphql(query, variables=None, token=None):
+              token = token or PAT
+              data = json.dumps({"query": query, "variables": variables or {}}).encode()
+              req = urllib.request.Request(
+                  "https://api.github.com/graphql",
+                  data=data,
+                  headers={
+                      "Authorization": f"bearer {token}",
+                      "Content-Type": "application/json",
+                      "Accept": "application/json",
+                  },
+              )
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  body = json.loads(resp.read().decode())
+              if "errors" in body:
+                  raise RuntimeError(f"GraphQL errors: {body['errors']}")
+              return body["data"]
+
+          def parse_form_section(body, label):
+              # Issue-form output looks like:
+              #   ### Output Type
+              #
+              #   production-app
+              #
+              # Tolerant of:
+              #   - trailing parenthetical annotations like "Output Type (required)"
+              #     (some forms label required fields explicitly even though GitHub
+              #     already shows a "Required" indicator natively)
+              #   - `_No response_` placeholder for blank textareas
+              pattern = (
+                  rf"(?:^|\s)###\s+{re.escape(label)}"
+                  rf"(?:\s*\([^)]*\))?"   # optional " (required)" or similar
+                  rf"\s*\n+([^\n#].*?)(?=\n###|\n*$)"
+              )
+              m = re.search(pattern, body, re.DOTALL)
+              if not m:
+                  return None
+              value = m.group(1).strip()
+              if value.lower() in ("_no response_", "no response", ""):
+                  return None
+              return value
+
+          def parse_form(body):
+              parsed = {}
+              for form_label, field_name in FORM_TO_FIELD.items():
+                  parsed[field_name] = parse_form_section(body, form_label)
+              return parsed
+
+          def fields_needing_classification(parsed):
+              needed = []
+              for field, value in parsed.items():
+                  if value is None or value == "auto-classify":
+                      needed.append(field)
+              return needed
+
+          def call_openrouter(needed, body, title):
+              prompt = (
+                  "You are classifying a software work request into routing fields for a "
+                  "GitHub Project v2 board. Only return JSON; no commentary.\n\n"
+                  f"Title: {title}\n\nBody:\n{body[:6000]}\n\n"
+                  "For each field below, pick exactly one option from its list that best "
+                  "matches the request. If the request gives no clear signal, pick the "
+                  "safest opinionated default (which is the first option in each list).\n\n"
+              )
+              for field in needed:
+                  prompt += f"- {field}: {DROPDOWN_FIELDS[field]}\n"
+              prompt += (
+                  "\nReturn a single JSON object whose keys are the field names above and "
+                  "whose values are the chosen option strings. Example: "
+                  '{"Output Type": "cli-product", "Priority": "medium"}'
+              )
+
+              data = json.dumps({
+                  "model": MODEL,
+                  "messages": [{"role": "user", "content": prompt}],
+                  "temperature": 0.2,
+                  "response_format": {"type": "json_object"},
+              }).encode()
+              req = urllib.request.Request(
+                  "https://openrouter.ai/api/v1/chat/completions",
+                  data=data,
+                  headers={
+                      "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                      "Content-Type": "application/json",
+                      "HTTP-Referer": f"https://github.com/{OWNER}/{REPO}",
+                      "X-Title": "Revvel WR Auto-Classify",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as resp:
+                      payload = json.loads(resp.read().decode())
+              except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as e:
+                  print(f"::warning::OpenRouter call failed: {e}")
+                  return {}
+              try:
+                  content = payload["choices"][0]["message"]["content"]
+                  return json.loads(content)
+              except (KeyError, IndexError, json.JSONDecodeError) as e:
+                  print(f"::warning::OpenRouter response parse failed: {e}")
+                  return {}
+
+          def fetch_project_and_item(item_node_id):
+              # Resolve project + fields, plus the item's existing field values.
+              owner_block = (
+                  f'user(login: "{PROJECT_OWNER}")'
+                  if PROJECT_OWNER_TYPE == "user"
+                  else f'organization(login: "{PROJECT_OWNER}")'
+              )
+              query = f"""
+              query {{
+                {owner_block} {{
+                  projectV2(number: {PROJECT_NUMBER}) {{
+                    id
+                    fields(first: 50) {{
+                      nodes {{
+                        ... on ProjectV2SingleSelectField {{
+                          id
+                          name
+                          options {{ id name }}
+                        }}
+                      }}
+                    }}
+                  }}
+                }}
+              }}
+              """
+              data = gh_graphql(query)
+              proj = (data.get(PROJECT_OWNER_TYPE) or {}).get("projectV2")
+              if not proj:
+                  raise RuntimeError("Project not found")
+              return proj
+
+          def find_or_add_item(project_id, content_id):
+              # Add issue to project; getIfExists semantics not in v2, so just add
+              # and ignore the duplicate-ish error.
+              query = """
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                  item { id }
+                }
+              }
+              """
+              try:
+                  data = gh_graphql(query, {"projectId": project_id, "contentId": content_id})
+                  return data["addProjectV2ItemById"]["item"]["id"]
+              except RuntimeError as e:
+                  msg = str(e)
+                  if "already exists" in msg.lower() or "duplicate" in msg.lower():
+                      # Look up existing item ID
+                      lookup = """
+                      query($projectId: ID!) {
+                        node(id: $projectId) {
+                          ... on ProjectV2 {
+                            items(first: 100) {
+                              nodes { id content { ... on Issue { id } } }
+                            }
+                          }
+                        }
+                      }
+                      """
+                      data = gh_graphql(lookup, {"projectId": project_id})
+                      for node in data["node"]["items"]["nodes"]:
+                          if (node.get("content") or {}).get("id") == content_id:
+                              return node["id"]
+                  raise
+
+          def update_single_select(project_id, item_id, field_id, option_id):
+              query = """
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId,
+                  itemId: $itemId,
+                  fieldId: $fieldId,
+                  value: { singleSelectOptionId: $optionId }
+                }) { projectV2Item { id } }
+              }
+              """
+              gh_graphql(query, {
+                  "projectId": project_id,
+                  "itemId": item_id,
+                  "fieldId": field_id,
+                  "optionId": option_id,
+              })
+
+          def add_label(label):
+              data = json.dumps({"labels": [label]}).encode()
+              req = urllib.request.Request(
+                  f"https://api.github.com/repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/labels",
+                  data=data,
+                  headers={
+                      "Authorization": f"bearer {PAT}",
+                      "Accept": "application/vnd.github+json",
+                  },
+              )
+              try:
+                  urllib.request.urlopen(req, timeout=15).read()
+              except (urllib.error.URLError, urllib.error.HTTPError) as e:
+                  print(f"::warning::could not add label '{label}': {e}")
+
+          def post_comment(text):
+              data = json.dumps({"body": text}).encode()
+              req = urllib.request.Request(
+                  f"https-github-api-base/repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/comments".replace(
+                      "https-github-api-base", "https://api.github.com"
+                  ),
+                  data=data,
+                  headers={
+                      "Authorization": f"bearer {PAT}",
+                      "Accept": "application/vnd.github+json",
+                  },
+              )
+              try:
+                  urllib.request.urlopen(req, timeout=15).read()
+              except (urllib.error.URLError, urllib.error.HTTPError) as e:
+                  print(f"::warning::could not post classification comment: {e}")
+
+          # ---------- main ----------
+
+          parsed = parse_form(ISSUE_BODY)
+          print(f"Parsed form values: {parsed}")
+          needed = fields_needing_classification(parsed)
+          print(f"Fields needing classification: {needed}")
+
+          classified = {}
+          used_fallback = False
+
+          if needed and HAS_OPENROUTER:
+              classified = call_openrouter(needed, ISSUE_BODY, ISSUE_TITLE)
+              print(f"OpenRouter returned: {classified}")
+          elif needed:
+              print("OpenRouter not configured; using opinionated defaults for blank fields.")
+              used_fallback = True
+
+          # Merge: explicit > classified > defaults. Validate against allowed options.
+          final = {}
+          for field, allowed in DROPDOWN_FIELDS.items():
+              explicit = parsed.get(field)
+              if explicit and explicit != "auto-classify" and explicit in allowed:
+                  final[field] = explicit
+                  continue
+              suggested = classified.get(field)
+              if suggested in allowed:
+                  final[field] = suggested
+                  continue
+              # fallback
+              final[field] = DEFAULTS[field]
+              used_fallback = True
+
+          print(f"Final field values to write: {final}")
+
+          # Resolve project + fields
+          project = fetch_project_and_item(ISSUE_NODE_ID)
+          project_id = project["id"]
+
+          field_index = {}  # name -> {id, options: {name -> id}}
+          for f in project["fields"]["nodes"]:
+              if not f or "name" not in f:
+                  continue
+              field_index[f["name"]] = {
+                  "id": f["id"],
+                  "options": {opt["name"]: opt["id"] for opt in f.get("options", [])},
+              }
+
+          # Ensure issue is on project
+          item_id = find_or_add_item(project_id, ISSUE_NODE_ID)
+          print(f"Project item id: {item_id}")
+
+          # Apply each field
+          summary_lines = []
+          for field, value in final.items():
+              info = field_index.get(field)
+              if not info:
+                  print(f"::warning::Field '{field}' not found in project; skipping.")
+                  used_fallback = True
+                  continue
+              opt_id = info["options"].get(value)
+              if not opt_id:
+                  print(f"::warning::Option '{value}' not found in '{field}'; falling back to default.")
+                  used_fallback = True
+                  value = DEFAULTS[field]
+                  opt_id = info["options"].get(value)
+                  if not opt_id:
+                      print(f"::warning::Default '{value}' not found in '{field}' either; skipping.")
+                      continue
+              update_single_select(project_id, item_id, info["id"], opt_id)
+              source = (
+                  "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
+                  else "fallback"
+              )
+              summary_lines.append(f"- `{field}` = `{value}` _({source})_")
+
+          # Always set Status = Inbox at intake (lifecycle, not a classification).
+          status = field_index.get("Status")
+          if status and "Inbox" in status["options"]:
+              update_single_select(project_id, item_id, status["id"], status["options"]["Inbox"])
+              summary_lines.append("- `Status` = `Inbox` _(intake floor)_")
+
+          if used_fallback:
+              add_label("auto:default-fallback")
+
+          comment_lines = [
+              "**WR Auto-Classify ran on this issue.**",
+              "",
+              *summary_lines,
+              "",
+              f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
+          ]
+          if used_fallback:
+              comment_lines.append("")
+              comment_lines.append("Label `auto:default-fallback` was added so this can be spot-checked.")
+
+          post_comment("\n".join(comment_lines))
+          print("Classification complete.")
+          PYEOF

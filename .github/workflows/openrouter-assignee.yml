@@ -16,7 +16,7 @@ name: OpenRouter Assignee — First Line of Sight
 # Reference: docs/OPENROUTER_ASSIGNEE_PROCESS.md
 
 on:
-  # DEVIN-RESTRUCTURE 2026-05-04: `issues` live trigger disabled — was racing
+  # OpenHands-RESTRUCTURE 2026-05-04: `issues` live trigger disabled — was racing
   # with openrouter-coder, jules-invoke, openrouter-triage, priority-router
   # on every new issue (5+ workflows fighting for first comment). The hourly
   # cron sweep still picks up anything missed and assigns @Copilot, so
@@ -140,6 +140,7 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const labelsToAdd = ['openrouter', 'auto-fix', 'copilot', 'role:orchestrator'];
@@ -164,6 +165,7 @@ jobs:
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const displayKind = '${{ steps.resolve.outputs.display_kind }}';
