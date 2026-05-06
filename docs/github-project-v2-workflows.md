@@ -76,11 +76,11 @@ Create these as repository, organization, or environment variables:
 ```text
 PROJECT_ID
 PRIORITY_FIELD_ID
-EFFORT_FIELD_ID
-CUSTOM_SELECT_FIELD_ID
-PRIORITY_HIGH_OPTION_ID
-EFFORT_MEDIUM_OPTION_ID
-CUSTOM_DEFAULT_OPTION_ID
+STATUS_FIELD_ID
+RESEARCH_MODE_FIELD_ID
+PRIORITY_MEDIUM_OPTION_ID
+STATUS_INBOX_OPTION_ID
+RESEARCH_MODE_STANDARD_OPTION_ID
 ```
 
 The values come from the helper workflow output. For the live values currently set on this repo, see the [Live deployment](#live-deployment-for-revvel-standards) section above.
@@ -255,6 +255,6 @@ Findings from Semgrep and Trivy are uploaded as SARIF and surface under
 
 - The main workflow triggers on `issues.opened`.
 - If the issue is already in the project, the workflow attempts to find the existing Project v2 item and update it.
-- The default-field workflow assumes the three default-set fields are all single-select fields.
-- If your field names or option names differ from the template defaults, only the variable values need to point at the correct field and option IDs — the variable *names* remain `PRIORITY_FIELD_ID` / `EFFORT_FIELD_ID` / `CUSTOM_SELECT_FIELD_ID` regardless of which field they actually target.
+- The default-field workflow assumes Priority, Status, and Research Mode are all single-select fields.
+- If your field names or option names differ, only the variable names need to map to the correct field and option IDs.
 - Each workflow has a preflight job that probes its credentials in step-level `env:` (where the `secrets` context is allowed) and exposes a boolean output. The main job gates on `needs.preflight.outputs.has_creds == 'true'`. This pattern was added in [PR #13333](https://github.com/midnghtsapphire/revvel-standards/pull/13333) because the GitHub Actions parser rejects `secrets.X` references in job-level `if:` conditions.
