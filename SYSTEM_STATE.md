@@ -94,7 +94,8 @@
 
 | Component | Status | Details |
 |---|---|---|
-| Intake form | ✅ live | [`.github/ISSUE_TEMPLATE/devin-work-request.yml`](.github/ISSUE_TEMPLATE/devin-work-request.yml) |
+| Intake form (primary) | ✅ live | [`.github/ISSUE_TEMPLATE/00-work-request.yml`](.github/ISSUE_TEMPLATE/00-work-request.yml) |
+| Intake form (lightweight) | ✅ live | [`.github/ISSUE_TEMPLATE/10-devin-system-wr.yml`](.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) |
 | Viability gate template | ✅ live | [`templates/viability-gate-template.md`](templates/viability-gate-template.md) |
 | Invention flow template | ✅ live | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) |
 | Legacy refresh checklist | ✅ live | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) |

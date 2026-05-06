@@ -180,7 +180,7 @@ missing the main classify job is `skipped`, not failed.
 
 The `New Issue` chooser is intentionally minimal:
 
-- `.github/ISSUE_TEMPLATE/00-devin-work-request.yml` — the single intake form.
+- `.github/ISSUE_TEMPLATE/00-work-request.yml` — the single intake form.
   Numeric `00-` prefix forces it to sort first among `.yml` forms (which sort
   before `.md`) per [GitHub's documented ordering rules][gh-template-order].
 - `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false` plus a

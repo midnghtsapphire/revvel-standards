@@ -53,7 +53,7 @@ When you're about to start something new, grep this file with the verb of your a
 
 **The form to use:**
 
-- [`.github/ISSUE_TEMPLATE/00-devin-work-request.yml`](./.github/ISSUE_TEMPLATE/00-devin-work-request.yml) — open via `New issue` → `Devin Work Request`. The `00-` prefix forces this template to sort first in the chooser; it is the only template in `.github/ISSUE_TEMPLATE/` other than `config.yml`. Older templates are archived under `templates/issue-template-archive/`. Routing dropdowns default to `auto-classify`; leave them alone unless you want to override what the LLM picks.
+- [`.github/ISSUE_TEMPLATE/00-work-request.yml`](./.github/ISSUE_TEMPLATE/00-work-request.yml) — open via `New issue` → `Devin Work Request`. The `00-` prefix forces this template to sort first in the chooser; it is the only template in `.github/ISSUE_TEMPLATE/` other than `config.yml`. Older templates are archived under `templates/issue-template-archive/`. Routing dropdowns default to `auto-classify`; leave them alone unless you want to override what the LLM picks.
 
 **Hard rules to remember:**
 
