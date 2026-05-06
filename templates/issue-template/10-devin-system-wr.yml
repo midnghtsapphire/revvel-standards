@@ -37,6 +37,7 @@ body:
         - mcp-product
         - api-product
         - invention-flow
+        - test-dev
     validations:
       required: true
 

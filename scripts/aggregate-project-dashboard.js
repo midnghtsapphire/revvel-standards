@@ -233,6 +233,7 @@ function parseProjectCatalog(content) {
         const lastCell = cells[cells.length - 1];
         const linkMatch = lastCell ? lastCell.match(/\[.*?\]\((.*?)\)/) : null;
         if (linkMatch) {
+          link = linkMatch[1];
         }
         
         projects.push({

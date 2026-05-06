@@ -85,6 +85,7 @@ The **Output Type** dropdown at the top of either form is the routing decision t
 - `client-code-task` — small client-scoped work
 - `internal-script-automation` — internal tooling, no external surface
 - `invention-flow` — invention evaluation, not a build
+- `test-dev` — testing, validation, and sandbox work
 
 Everything else the auto-classifier needs (research depth, lifecycle, commercial mode, deployment target, priority) is derived from your prose by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml) when those fields are left on `auto-classify` or omitted entirely. The classifier respects user choices and only fills fields left on `auto-classify`.
 
