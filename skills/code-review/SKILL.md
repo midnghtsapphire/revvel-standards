@@ -4,10 +4,31 @@ Enforce Revvel code review standards including security, accessibility, test cov
 
 ## Review Pipeline
 
-1. **Venice AI** — mandatory primary reviewer for all code before push to `main`
-2. **Claude Sonnet 4.5** — first fallback for complex logic/architecture
-3. **DeepSeek V3.2 Speciale** — second fallback for high-volume scanning
-4. **Coderabbit** — automated PR review; all comments must be addressed before merge
+> **Note:** Updated May 6, 2026 — reflects current production setup
+
+1. **Bito AI** — Primary AI PR reviewer (assigned automatically via workflow labels)
+2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture
+3. **AI Code Reviewer Pro** (OpenRouter/gemini-2.5-flash) — High-volume scanning and heuristics
+4. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
+
+### Integration (How to Enable)
+
+```bash
+# Bito AI - enable via GitHub Marketplace
+# https://github.com/marketplace/bito-ai-code-reviewer
+
+# AI Code Reviewer Pro - copy template to your repo
+cp templates/cicd/ai-code-reviewer-pro.yml .github/workflows/
+
+# Coderabbit - enable via GitHub Marketplace
+# https://github.com/marketplace/coderabbit-ai
+```
+
+### Fallback Chain (When Primary Unavailable)
+
+| Primary | Fallback 1 | Fallback 2 |
+|---------|------------|------------|
+| Bito AI | OpenRouter (Claude) | AI Code Reviewer Pro (OpenRouter) |
 
 ## Deployment Pipeline
 

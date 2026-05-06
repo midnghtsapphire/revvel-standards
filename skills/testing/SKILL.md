@@ -100,7 +100,80 @@ tests/
 ├── e2e/
 ├── components/
 ├── contract/
+├── skills/                  # NEW: Skill/LLM tests
+│   └── promptfoo.yml
 └── mocks/
     ├── handlers.ts (MSW)
     └── setup.ts
 ```
+
+## Skill/LLM Tests (PromptFoo)
+
+Every Revvel skill should have PromptFoo tests in `tests/skills/promptfoo.yml`.
+
+### Why PromptFoo?
+- Tests the actual skill output, not just implementation
+- Validates LLM behavior across different inputs
+- Catches regressions in skill responses
+
+### Test Template
+
+```yaml
+# tests/skills/promptfoo.yml
+description: "Skill tests for [SKILL_NAME]"
+providers:
+  - id: anthropic:claude-sonnet-4-20251101
+    config:
+      temperature: 0
+      max_tokens: 2048
+
+prompts:
+  - label: "Standard invocation"
+    raw: |
+      You are the [SKILL_NAME] skill.
+      [SKILL_DESCRIPTION]
+      
+      Input: {{input}}
+      
+      Respond with [EXPECTED_OUTPUT_FORMAT].
+
+tests:
+  - description: "Happy path"
+    vars:
+      input: "[VALID_INPUT]"
+    assert:
+      - type: not-contains
+        value: "Error"
+      - type: contains
+        value: "[EXPECTED_PHRASE]"
+
+  - description: "Edge case - empty input"
+    vars:
+      input: ""
+    assert:
+      - type: not-contains
+        value: "Error"
+```
+
+### Running Skill Tests
+
+```bash
+# Install PromptFoo
+npm install -g promptfoo
+
+# Run skill tests
+promptfoo eval --config tests/skills/promptfoo.yml
+
+# Or use testing-agent skill to generate tests
+```
+
+### Skills Currently Missing Tests
+
+| Skill | Priority | Status |
+|-------|----------|--------|
+| vault-agent | P0 | ❌ No tests |
+| security | P0 | ❌ No tests |
+| deployment | P1 | ❌ No tests |
+| code-review | P1 | ❌ No tests |
+
+Use the `testing-agent` skill to generate tests for skills without coverage.
