@@ -1,5 +1,12 @@
-# DISABLED by Audrey Evans - blocking on docs content - replaced by ship-quality.yml
-# name: Anti-Scaffolding Enforcer
+# ═══════════════════════════════════════════════════════════════════════════════
+# ANTI-SCAFFOLDING ENFORCER
+# Who: Audrey Evans (midnghtsapphire)
+# When: 2026-05-06
+# Why: Removed false positive check for "torrents/pirate bay" - legitimate content in docs
+# What: Removed only torrent/pirate bay check, preserving all other checks
+# NOTE: Workflow is kept active - only removed one false positive pattern
+# ═══════════════════════════════════════════════════════════════════════════════════════
+
 
 # Prevents PRs with scaffolding language from being merged
 # Enforces the Prime Directive: Ship working code, not plans
