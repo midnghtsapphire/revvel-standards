@@ -166,6 +166,9 @@ Behavior:
    `auto:default-fallback` so a human can spot-check.
 4. **Posts a comment** on the issue summarizing each field's value AND its
    source (`explicit` / `classifier` / `fallback`).
+5. **Applies an `output-type:<type>` label** to the issue so downstream
+   automation can easily read the routing decision (e.g. `wr-pr-creation.yml`
+   skipping app scaffolding for PDF/docs).
 
 Required credentials (both already configured for `revvel-standards`):
 

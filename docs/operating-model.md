@@ -169,6 +169,8 @@ The expected end-to-end flow once the operating model is wired:
 
 The operator-facing setup walkthrough — auth path, repo variable wiring, ID discovery, validation evidence — lives in [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md).
 
+*Note: The auto-classifier also adds an `output-type:<type>` label so automation workflows can adapt to the requested deliverable (e.g., `wr-pr-creation.yml` skips deployment scaffolding when creating the WR document if the output type is PDF/documentation).*
+
 ---
 
 ## 4. Router Logic

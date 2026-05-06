@@ -261,6 +261,15 @@ jobs:
           
           mv temp_header.md "${WR_FILE}"
           
+          # Read Output Type from issue body and skip app scaffolding if it's a PDF/doc
+          OUTPUT_TYPE=$(echo "${{ env.ISSUE_BODY }}" | grep -A 2 "### Output Type" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
+
+          if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
+            echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
+            sed -i '/## Step 5: Deployment Verification/,/## Step 6: Documentation Requirements/{/## Step 6: Documentation Requirements/!d}' "${WR_FILE}"
+            sed -i '/### Deployment Section/,/### Additional Documentation/{/### Additional Documentation/!d}' "${WR_FILE}"
+          fi
+
           echo "Generated WR document: ${WR_FILE}"
 
       - name: Commit WR document
