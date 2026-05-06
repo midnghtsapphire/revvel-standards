@@ -1,0 +1,205 @@
+name: OpenHands Resolver
+
+# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack):
+# When an issue is labeled `fix-me`, hand it to the All-Hands-AI/OpenHands
+# resolver running through OpenRouter. The resolver reads the issue, makes
+# code changes against `main`, and opens a PR.
+#
+# Trigger model:
+#   - issues: [labeled]   when label == fix-me
+#   - workflow_dispatch   manual
+#
+# Fail-soft: if neither `OPENROUTER_API_KEY` nor `OPENHANDS_API_KEY` is set,
+# the workflow exits clean with a one-time issue comment so the WR isn't
+# silently stalled. Same pattern as bito-ai.yml + agent-fallback.yml.
+#
+# Docs: docs/agent-stack/AGENT_STACK_SETUP.md
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to resolve"
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: openhands-resolver-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Check OpenHands credentials
+    runs-on: ubuntu-latest
+    if: >-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' &&
+       github.event.label.name == 'fix-me' &&
+       github.event.issue.user.login != 'github-actions[bot]')
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+      issue_number: ${{ steps.check.outputs.issue_number }}
+    steps:
+      - name: Verify required secrets
+        id: check
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number || github.event.inputs.issue_number }}"
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+
+          if [[ -z "$OPENROUTER_API_KEY" && -z "$OPENHANDS_API_KEY" ]]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Neither OPENROUTER_API_KEY nor OPENHANDS_API_KEY is configured. Set one in Settings → Secrets and variables → Actions. See docs/agent-stack/AGENT_STACK_SETUP.md."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "OpenHands resolver is configured."
+          fi
+
+  notify-missing-creds:
+    name: Notify when credentials are missing
+    needs: preflight
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.configured == 'false'
+    steps:
+      - name: Post one-time setup-needed notice
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = parseInt(
+              '${{ needs.preflight.outputs.issue_number }}',
+              10
+            );
+            if (!issueNumber) return;
+
+            // Don't repeat the notice on every label-fire; check for an
+            // existing notice first.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+            const marker = '<!-- openhands-resolver:setup-needed -->';
+            if (comments.some(c => c.body && c.body.includes(marker))) {
+              core.info('Setup-needed notice already posted; skipping.');
+              return;
+            }
+
+            const body = [
+              marker,
+              '## OpenHands Resolver — setup needed',
+              '',
+              'This issue is labeled `fix-me`, but the OpenHands resolver',
+              'has no credentials configured. To enable autonomous code',
+              'resolution:',
+              '',
+              '1. Add either secret to **Settings → Secrets and variables → Actions**:',
+              '   - `OPENROUTER_API_KEY` (cheapest path — uses OpenRouter to access multiple models)',
+              '   - `OPENHANDS_API_KEY` (direct OpenHands SaaS account)',
+              '',
+              '2. Re-apply the `fix-me` label or comment `/retry-openhands` on this issue.',
+              '',
+              'Until then, the issue is auto-labeled `credentials-missing` so',
+              'a human can take it up. See `docs/agent-stack/AGENT_STACK_SETUP.md`.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body,
+            });
+
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['credentials-missing'],
+              });
+            } catch (e) {
+              core.warning(`Could not add credentials-missing label: ${e.message}`);
+            }
+
+  resolve:
+    name: Run OpenHands resolver
+    needs: preflight
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.configured == 'true'
+    env:
+      ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
+      LLM_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      LLM_BASE_URL: https://openrouter.ai/api/v1
+      LLM_MODEL: ${{ vars.OPENHANDS_MODEL || 'anthropic/claude-sonnet-4.5' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install OpenHands CLI
+        run: |
+          pip install --upgrade pip
+          # Pin to a known-good release. The unpinned `openhands-ai` package
+          # ships breaking minor bumps; track the latest stable from the docs.
+          # See: https://docs.all-hands.dev/usage/installation
+          pip install "openhands-ai>=0.21,<0.22"
+
+      - name: Run resolver against the issue
+        id: resolve
+        # Fail-soft. If the resolver can't run for any reason (rate limit,
+        # network blip, model error), we still want to surface that to the
+        # WR rather than blocking it.
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -e
+          # Headless resolution: read issue body, propose changes, open PR.
+          # The CLI reads LLM_* env vars for the model config.
+          openhands resolve-issue \
+            --issue-number "$ISSUE_NUMBER" \
+            --repo "$GH_REPO" \
+            --output-pr-branch "openhands/issue-$ISSUE_NUMBER" \
+            --max-iterations 30
+
+      - name: Post resolver outcome to the issue
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          OUTCOME: ${{ steps.resolve.outcome }}
+        with:
+          script: |
+            const outcome = process.env.OUTCOME || 'unknown';
+            const emoji = outcome === 'success' ? '✅' : '⚠️';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: [
+                `${emoji} **OpenHands Resolver** — outcome: \`${outcome}\``,
+                '',
+                outcome === 'success'
+                  ? 'A PR has been opened against `openhands/issue-${{ env.ISSUE_NUMBER }}`. See the linked Pull Request below.'
+                  : 'The resolver did not produce a clean PR. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for diagnostics.',
+                '',
+                `_Triggered by label \`fix-me\` on issue #${issueNumber}._`,
+              ].join('\n'),
+            });
