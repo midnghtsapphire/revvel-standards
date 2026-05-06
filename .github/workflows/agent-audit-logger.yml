@@ -79,9 +79,18 @@ jobs:
         (startsWith(github.event.issue.title, '[FAILURE]') ||
          startsWith(github.event.issue.title, '[ALERT]')))
     steps:
-      - name: Checkout repository
+      - name: Checkout main
+        # DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: "tons of wr get stuck in
+        # checks failing"): explicitly check out main, not the detached-HEAD
+        # SHA from the triggering event. Without `ref: main`, issue_comment
+        # and pull_request_review events leave you in detached HEAD, and
+        # `git push` then fails 100% of the time with
+        # `fatal: You are not currently on a branch`. This was the chronic
+        # red X on every PR. Audit logs always live on main, so checking
+        # out main directly is correct AND lets `git push` work.
         uses: actions/checkout@v4
         with:
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up audit log directory

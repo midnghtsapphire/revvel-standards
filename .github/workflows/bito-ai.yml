@@ -119,8 +119,12 @@ jobs:
               prNumber = context.payload.issue.number;
               prUrl = context.payload.issue.pull_request.html_url;
             } else {
-              // workflow_dispatch
-              prNumber = parseInt(core.getInput('pr_number') || '0', 10);
+              // workflow_dispatch — read from event payload, NOT core.getInput().
+              // core.getInput() reads INPUT_* env vars set by the step's `with:`
+              // block; for workflow-level dispatch inputs the canonical access
+              // is `context.payload.inputs.<name>` (matches the rest of the repo,
+              // e.g. wr-pr-creation.yml:62, weekly-research.yml:56).
+              prNumber = parseInt(context.payload.inputs?.pr_number || '0', 10);
               if (!prNumber) {
                 core.setFailed('workflow_dispatch requires pr_number input.');
                 return;
@@ -218,10 +222,17 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Use whichever step actually ran.
+            // Use whichever step actually ran. GitHub Actions reports
+            // `${{ steps.<id>.outcome }}` as one of: success | failure |
+            // cancelled | skipped (or empty string when the step never
+            // existed). Pick the first concrete success/failure value so
+            // the OR-chain doesn't short-circuit on a literal 'skipped'.
+            const candidates = [
+              process.env.BITO_OUTCOME_PR,
+              process.env.BITO_OUTCOME_COMMENT,
+            ];
             const outcome =
-              process.env.BITO_OUTCOME_PR ||
-              process.env.BITO_OUTCOME_COMMENT ||
+              candidates.find(o => o === 'success' || o === 'failure') ||
               'skipped';
 
             const labelsToAdd = ['bito-ai:review'];
