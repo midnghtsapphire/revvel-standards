@@ -1,15 +1,15 @@
-name: Devin System WR (Quick / Internal)
+name: OpenHands System WR (Quick / Internal)
 description: Lightweight WR for low-risk, internal, or agent-driven work. The auto-classifier fills routing fields from your description.
 title: "[WR] "
 labels:
   - work-request
   - quick
-  - devin
+  - openhands
 body:
   - type: markdown
     attributes:
       value: |
-        ## Devin System WR
+        ## OpenHands System WR
 
         Lightweight intake for low-risk, internal, or agent-driven work.
         Use this when the heavy `Work Request` form (the first card in the
