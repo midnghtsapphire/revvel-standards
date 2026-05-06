@@ -212,15 +212,25 @@ When disabling a workflow or check:
 | Workflow timeout | PR comment + retry | Low |
 | Required check fails | PR comment + block | High |
 | Optional check fails | PR comment only | Low |
-| Security issue | All channels | + `security` label | Critical
+| Security issue | All channels + `security` label | Critical |
+
+---
+
+## 7C. Auto-Close Completed Issues
+
+> **Added:** 2026-05-06  
+> **Who:** Claude (openhands)  
+> **Why:** Issues marked "completed" but left open should auto-close
+
+When an issue body or label contains "completed": auto-close.
 
 ## 8. Verification
 
 All changes should:
-- ✅ Have Who/When/Why in file header
-- ✅ Have proper commit message
-- ✅ Pass all required checks
-- ✅ Be transparent to team members
+- Have Who/When/Why in file header
+- Have proper commit message
+- Pass all required checks
+- Be transparent to team members
 
 ---
 
