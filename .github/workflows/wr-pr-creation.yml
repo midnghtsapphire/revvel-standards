@@ -348,7 +348,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const prNumber = ${{ steps.create_pr.outputs.result }}.number;
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
             
             const labels = [
               'weekly-research',
@@ -381,7 +381,7 @@ jobs:
         uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: |
-            Please review and rewrite the WR document in PR #${{ fromJson(steps.create_pr.outputs.result).number }}.
+            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.pr_number }}.
             
             Your task:
             1. Review the research findings already documented
@@ -400,13 +400,14 @@ jobs:
         with:
           script: |
             const issueNumber = ${{ env.ISSUE_NUMBER }};
-            const prResult = ${{ steps.create_pr.outputs.result }};
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
+            const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
             
             const comment = `🎉 **WR PR Created!**
 
             I've created a pull request with the initial WR document based on the research findings.
 
-            **PR:** #${prResult.number}  
+            **PR:** #${prNumber}  
             **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
             **Status:** 🟡 Awaiting Jules refinement
 
@@ -416,7 +417,7 @@ jobs:
             2. **You can review** the PR and provide feedback
             3. **Once approved**, the WR will be merged and marked as complete
 
-            [View the PR →](${prResult.url})
+            [View the PR →](${prUrl})
 
             ---
 
