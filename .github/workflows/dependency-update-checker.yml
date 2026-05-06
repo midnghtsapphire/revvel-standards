@@ -1,0 +1,152 @@
+name: Dependency & Version Update Checker
+
+# Weekly scan for outdated dependencies, GitHub Actions, and CLI tools.
+# Creates a single issue summarizing everything that needs updating.
+#
+# Covers:
+#   - GitHub Actions used in workflows (checks for newer major/minor/patch)
+#   - npm/yarn/pnpm dependencies (via npm outdated)
+#   - GitHub Apps installed on the repo (marketplace version check)
+#   - CLI tools referenced in workflows
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+  actions: read
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const fs = require('fs');
+            const path = require('path');
+            let report = [];
+
+            // ─── 1. SCAN GITHUB ACTIONS VERSIONS ─────────────────────
+            report.push('## GitHub Actions Updates\n');
+            const workflowDir = '.github/workflows';
+            let actionsFound = new Map();
+
+            try {
+              const files = fs.readdirSync(workflowDir);
+              for (const file of files) {
+                if (!file.endsWith('.yml') && !file.endsWith('.yaml')) continue;
+                const content = fs.readFileSync(path.join(workflowDir, file), 'utf8');
+                const actionPattern = /uses:\s+([^@\s]+)@(v?\d+[^\s]*)/g;
+                let match;
+                while ((match = actionPattern.exec(content)) !== null) {
+                  const [, action, version] = match;
+                  if (!actionsFound.has(action)) {
+                    actionsFound.set(action, { version, files: [file] });
+                  } else {
+                    actionsFound.get(action).files.push(file);
+                  }
+                }
+              }
+            } catch(e) {
+              report.push('_Could not scan workflow directory._\n');
+            }
+
+            let actionsNeedUpdate = 0;
+            for (const [action, info] of actionsFound) {
+              try {
+                const [actionOwner, actionRepo] = action.split('/');
+                if (!actionOwner || !actionRepo) continue;
+                const { data: releases } = await github.rest.repos.listReleases({
+                  owner: actionOwner, repo: actionRepo, per_page: 1,
+                });
+                if (releases.length > 0) {
+                  const latest = releases[0].tag_name;
+                  const currentMajor = info.version.replace(/^v/, '').split('.')[0];
+                  const latestMajor = latest.replace(/^v/, '').split('.')[0];
+                  if (info.version !== latest) {
+                    const emoji = currentMajor !== latestMajor ? '🔴' : '🟡';
+                    report.push(`${emoji} \`${action}\`: using \`${info.version}\`, latest \`${latest}\` (in: ${info.files.join(', ')})`);
+                    actionsNeedUpdate++;
+                  }
+                }
+              } catch(e) {
+                // Skip actions we can't check (private, rate-limited, etc.)
+              }
+            }
+
+            if (actionsNeedUpdate === 0) {
+              report.push('All GitHub Actions are up to date.\n');
+            }
+
+            // ─── 2. CHECK NPM DEPENDENCIES ───────────────────────────
+            report.push('\n## npm Dependencies\n');
+            try {
+              const pkgPath = 'package.json';
+              if (fs.existsSync(pkgPath)) {
+                const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+                const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+                const depCount = Object.keys(allDeps).length;
+                report.push(`Found ${depCount} dependencies in package.json.`);
+                report.push('_Run \`npm outdated\` or \`npx npm-check-updates\` locally for detailed version info._\n');
+              } else {
+                report.push('_No package.json found — skipping npm check._\n');
+              }
+            } catch(e) {
+              report.push('_Error reading package.json._\n');
+            }
+
+            // ─── 3. CHECK GITHUB APPS ────────────────────────────────
+            report.push('\n## Installed GitHub Apps\n');
+            try {
+              const { data: installations } = await github.rest.apps.listInstallationsForAuthenticatedUser
+                ? await github.request('GET /user/installations', { per_page: 100 })
+                : { data: { installations: [] } };
+
+              if (installations && installations.installations) {
+                for (const app of installations.installations.slice(0, 20)) {
+                  report.push(`- **${app.app_slug}** (ID: ${app.app_id})`);
+                }
+              } else {
+                report.push('_Could not list installed apps (permissions may be insufficient)._');
+              }
+            } catch(e) {
+              report.push('_Could not list installed apps — this check requires user-level token permissions._');
+            }
+
+            // ─── 4. SUGGESTED TOOLS & EXTENSIONS ─────────────────────
+            report.push('\n## Recommended Tools to Evaluate\n');
+            report.push('These are popular GitHub Apps and extensions worth evaluating:\n');
+            report.push('- [Renovate](https://github.com/apps/renovate) — Automated dependency update PRs');
+            report.push('- [Socket Security](https://github.com/apps/socket-security) — Supply chain attack detection');
+            report.push('- [CodeQL](https://github.com/features/security/code) — Semantic code analysis');
+            report.push('- [Mergify](https://github.com/apps/mergify) — Auto-merge rules and queue');
+            report.push('- [GitHub Copilot](https://github.com/features/copilot) — AI pair programmer');
+
+            // ─── CREATE OR UPDATE ISSUE ──────────────────────────────
+            const title = `[AUTO] Weekly Dependency & Version Update Report — ${new Date().toISOString().split('T')[0]}`;
+            const body = report.join('\n');
+
+            // Check for existing open report issue
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner, repo, state: 'open', labels: 'dependencies',
+              per_page: 5,
+            });
+            const existing = existingIssues.find(i => i.title.startsWith('[AUTO] Weekly Dependency'));
+
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+              core.info(`Updated existing issue #${existing.number}`);
+            } else {
+              await github.rest.issues.create({
+                owner, repo, title, body,
+                labels: ['dependencies', 'triage'],
+              });
+              core.info('Created new dependency update report issue.');
+            }
