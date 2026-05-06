@@ -99,7 +99,7 @@ jobs:
       - name: Check agent availability
         id: check
         env:
-          OpenHands_API_KEY: ${{ secrets.OpenHands_API_KEY }}
+          OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
@@ -108,7 +108,7 @@ jobs:
           CURSOR_AVAILABLE="false"
           OPENROUTER_AVAILABLE="false"
 
-          if [ -n "${OpenHands_API_KEY}" ]; then
+          if [ -n "${OPENHANDS_API_KEY}" ]; then
             OpenHands_AVAILABLE="true"
             echo "✅ OpenHands API key configured"
           else
@@ -304,13 +304,13 @@ jobs:
         id: OpenHands
         continue-on-error: true
         env:
-          OpenHands_API_KEY: ${{ secrets.OpenHands_API_KEY }}
+          OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
           echo "🤖 Using OpenHands AI (paid service - opt-in only)..."
-          bash scripts/call-OpenHands-api.sh
+          bash scripts/call-openhands-api.sh
 
       - name: Determine result
         if: always()
