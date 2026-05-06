@@ -1,7 +1,7 @@
 # Revvel Code Review and Deployment Standard
 
-**Version:** 1.1.0
-**Date:** April 3, 2026
+**Version:** 1.2.0  
+**Date:** May 6, 2026  
 **Status:** Mandatory Policy
 
 ## 1. Introduction
@@ -12,31 +12,71 @@ This document outlines the mandatory code review and deployment pipeline for all
 
 Every commit pushed to any application repository is subject to a multi-tiered AI review process. Human review is secondary to this automated pipeline.
 
-### 2.1. Primary Reviewer: Venice AI
+### 2.1. Primary Reviewer: Bito AI
 
-Venice AI is the mandatory primary reviewer for all code before it is pushed to the `main` branch. It acts as the first line of defense, checking for logic errors, adherence to the `MASTER_APP_TEMPLATE.md` standards, and security vulnerabilities. No code may bypass the Venice AI review.
+Bito AI is the primary reviewer for all code before it is pushed to the `main` branch.
+
+**Setup:**
+- Enable via GitHub Marketplace: https://github.com/marketplace/bito-ai-code-reviewer
+- Or use the `openrouter-assignee.yml` workflow
 
 ### 2.2. Fallback Reviewers
 
-If Venice AI is unavailable, encounters an error, or flags code that requires a second opinion, the following fallback sequence must be used:
+If Bito AI is unavailable, encounters an error, or flags code that requires a second opinion, the following fallback sequence must be used:
 
-1.  **First Fallback: Claude Sonnet 4.5.** Used for complex logic analysis, architectural review, and deep reasoning tasks where Venice AI requires assistance.
-2.  **Second Fallback: DeepSeek V3.2 Speciale.** Used specifically for high-speed, high-volume code scanning and pattern matching if the primary and first fallback systems are engaged or unavailable.
+1. **First Fallback: OpenRouter (Claude Sonnet 4).**  
+   Used for complex logic analysis, architectural review, and deep reasoning tasks. Use the `ai-code-reviewer-pro.yml` template.
+
+2. **Second Fallback: AI Code Reviewer Pro (OpenRouter/gemini-2.5-flash).**  
+   Used specifically for high-speed, high-volume code scanning and pattern matching. Copy from `templates/cicd/ai-code-reviewer-pro.yml`.
 
 ### 2.3. Automated PR Reviews (Coderabbit)
 
 All pull requests (PRs) must integrate with Coderabbit for automated line-by-line review. Coderabbit provides immediate feedback on syntax, style, and common anti-patterns directly within the GitHub PR interface. Developers must address all Coderabbit comments before a PR can be merged.
 
-### 2.4. AI PR Review (PandaOps)
+**Setup:**
+1. Enable via GitHub Marketplace: https://github.com/marketplace/coderabbit-ai
+2. Or add `.coderabbit.yaml` to repository root
 
-All repositories must include the **PandaOps** GitHub Actions workflow (`omnedia/panda-ops@v1`). PandaOps runs on every pull request, fetches the diff, performs heuristic scanning (e.g. `console.log`, `debugger`, TODOs, large diffs), and then calls OpenAI to post inline code-level feedback and a summary comment directly to the PR.
+### 2.4. Skill/LLM Testing (PromptFoo)
 
-- **Workflow template:** `templates/cicd/panda-ops.yml` → copy to `.github/workflows/panda-ops.yml`
-- **Required secret:** `OPENAI_API_KEY` (add via GitHub → Settings → Secrets and variables → Actions)
-- **Interaction with Coderabbit:** PandaOps and Coderabbit operate independently and complement each other — PandaOps focuses on AI reasoning over the full diff while Coderabbit provides line-by-line rule-based checks.
-- **Blocking policy:** `fail_on_warnings` defaults to `false`. Set it to `true` in repos where you want AI warnings to block merges at the CI level.
+PromptFoo provides GitHub Action integration for testing prompts and LLM outputs.
 
-See [`templates/cicd/README.md`](../../templates/cicd/README.md) for full configuration options and setup instructions.
+**Primary Model: Claude 3.7 Sonnet via OpenRouter**
+```yaml
+providers:
+  - id: anthropic/claude-3.7-sonnet
+```
+
+**Fallback: Claude 4.5 Sonnet**
+```yaml
+  - id: anthropic/claude-sonnet-4-5-20255112
+```
+
+**GitHub Action:** https://github.com/promptfoo/promptfoo-action
+
+### 2.5. MCP Code Review Server (Optional)
+
+For local/dev-time scanning, use the `code-review-mcp-server`:
+
+```bash
+# Clone and build
+git clone https://github.com/midnghtsapphire/code-review-mcp-server ~/mcp/code-review
+cd ~/mcp/code-review && npm install && npm run build
+
+# Add to .mcp.json
+"code-review": {
+  "command": "node",
+  "args": ["${CODE_REVIEW_MCP_PATH}/dist/index.js"]
+}
+```
+
+Tools available:
+- `validate_deployment_readiness` — Gate check for dev/test/live
+- `detect_security_issues` — XSS, injection, unsafe regex, secrets
+- `scan_accessibility` — WCAG 2.1 scan
+
+See [`docs/MCP_REVVEL_CATALOG.md`](../../MCP_REVVEL_CATALOG.md) for full documentation.
 
 ## 3. Deployment Pipeline Structure
 

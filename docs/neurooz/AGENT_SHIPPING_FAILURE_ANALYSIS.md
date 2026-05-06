@@ -2,7 +2,7 @@
 
 **Date:** April 6, 2026  
 **Author:** MIDNGHTSAPPHIRE / GlowStarLabs  
-**Context:** Repeated experience of AI coding agents (Claude, GPT, Manus, Devin, Cursor, Copilot) failing to deliver complete, production-ready applications  
+**Context:** Repeated experience of AI coding agents (Claude, GPT, Manus, OpenHands, Cursor, Copilot) failing to deliver complete, production-ready applications  
 **Audience:** Solo developers and small teams using AI agents for rapid development  
 
 ---
@@ -381,6 +381,6 @@ Four major agent communication protocols in 2026: MCP (Model Context Protocol), 
 - Ox Security: "AI-Generated Code Anti-Patterns" (2025)
 - Anthropic: "2026 Agentic Coding Trends Report"
 - Andrej Karpathy: "Agentic Engineering" framework (2026)
-- Devin AI: 2025 Annual Performance Review (cognition.ai)
+- OpenHands AI: 2025 Annual Performance Review (cognition.ai)
 - Red Hat: "Vibes, Specs, Skills, and Agents" (developers.redhat.com)
 - Harvard Business Review: "To Scale AI Agents, Think of Them Like Team Members" (2026)

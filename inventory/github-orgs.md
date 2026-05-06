@@ -12,7 +12,7 @@ Audrey almost forgot she pays for GitHub Enterprise. This file ensures it never 
 
 | Name | Status | Purpose | Target Date | Owner |
 |------|--------|---------|-------------|-------|
-| devina-imposter | Planning | Evaluation framework for AI coding agents | 2026-Q2 | midnghtsapphire |
+| OpenHandsa-imposter | Planning | Evaluation framework for AI coding agents | 2026-Q2 | midnghtsapphire |
 
 ## Paid infrastructure (seed)
 - GitHub Enterprise (verify tier + cost)

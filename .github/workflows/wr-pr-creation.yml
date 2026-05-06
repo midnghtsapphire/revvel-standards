@@ -1,6 +1,6 @@
 name: WR PR Creation
 
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure",
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure",
 # issue #9417 "WR AND PR CREATED AT THE SAME TIME THEN DEEP SEARCH CAN MODIFY"):
 # Previously this workflow only fired AFTER Jules finished deep-research (gated
 # on `wr:complete` label or a 'Research Findings:' comment). Audrey's stated
@@ -42,7 +42,7 @@ jobs:
   detect-completion:
     name: Detect WR issue / Jules research completion
     runs-on: ubuntu-latest
-    # Skip on bot-spam `[FAILURE] ...` / `[ALERT] ...` issues (DEVIN-RESTRUCTURE).
+    # Skip on bot-spam `[FAILURE] ...` / `[ALERT] ...` issues (OpenHands-RESTRUCTURE).
     if: >-
       !(github.event_name == 'issues' &&
         github.event.issue.user.login == 'github-actions[bot]' &&
@@ -77,7 +77,7 @@ jobs:
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
 
             // Check if this is a WR issue (title prefix [WR] or label `weekly-research`).
-            // DEVIN-RESTRUCTURE 2026-05-04: also accept the title prefix on its own,
+            // OpenHands-RESTRUCTURE 2026-05-04: also accept the title prefix on its own,
             // because the [WR] issue template's `labels:` array is dropped when issues
             // are opened via the API/Copilot UI rather than the GitHub form. The
             // title prefix is the most reliable signal.
@@ -145,7 +145,7 @@ jobs:
               return;
             }
 
-            // DEVIN-RESTRUCTURE 2026-05-04: WR PR is now created on issue OPEN
+            // OpenHands-RESTRUCTURE 2026-05-04: WR PR is now created on issue OPEN
             // (or reopen / `wr:complete` / manual dispatch / Jules findings comment),
             // not gated on Jules being done.
             const isOpenEvent = context.eventName === 'issues' &&

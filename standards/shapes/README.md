@@ -10,7 +10,7 @@ Each product that exits the Solution-Shape Router (step 5 of [`AUTOMATED_PRODUCT
 | CLI tool | [`CLI.md`](CLI.md) | Developer tooling; single binary; brew/npm install |
 | MCP server | [`MCP.md`](MCP.md) | LLM agents call it; extends agent capabilities |
 | API service | [`API.md`](API.md) | Other devs/apps call it; recurring SaaS revenue |
-| Agent skill | [`SKILL.md`](SKILL.md) | ClawBot / Devin / other agents execute it |
+| Agent skill | [`SKILL.md`](SKILL.md) | ClawBot / OpenHands / other agents execute it |
 | Excel / spreadsheet | [`EXCEL.md`](EXCEL.md) | Business users; template-driven; data-heavy |
 | Token / credits | [`TOKEN.md`](TOKEN.md) | Usage-based access; prepaid credits; gated content |
 | Full app | [`APP.md`](APP.md) | Full application through revvel-standards pipeline |

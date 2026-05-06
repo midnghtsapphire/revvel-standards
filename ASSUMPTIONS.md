@@ -19,7 +19,7 @@
 | A001 | OpenRouter API key will remain available | low | Enterprise tier, SLA | pending |
 | A002 | GitHub Pages sufficient for static sites | low | No dynamic backend needed | yes |
 | A003 | Weekly audit frequency is appropriate | med | Could be daily for critical paths | pending |
-| A004 | Proposal prosecution catches 80% of flaws | med | Based on Devin research | pending |
+| A004 | Proposal prosecution catches 80% of flaws | med | Based on OpenHands research | pending |
 
 ---
 

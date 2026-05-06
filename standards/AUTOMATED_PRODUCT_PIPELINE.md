@@ -140,7 +140,7 @@ Decisions are logged in [`DECISIONS-TODAY.md`](../DECISIONS-TODAY.md) and the lo
 | **CLI** | Developers; one binary; brew/scoop install | [`shapes/CLI.md`](shapes/CLI.md) |
 | **MCP server** | LLM agents will call it | [`shapes/MCP.md`](shapes/MCP.md) |
 | **API** | Other devs will call it; recurring revenue likely | [`shapes/API.md`](shapes/API.md) |
-| **Agent skill** | Reusable procedure for ClawBot / Devin / other agents | [`shapes/SKILL.md`](shapes/SKILL.md) |
+| **Agent skill** | Reusable procedure for ClawBot / OpenHands / other agents | [`shapes/SKILL.md`](shapes/SKILL.md) |
 | **Excel / spreadsheet** | Business users; template-driven; data-heavy | [`shapes/EXCEL.md`](shapes/EXCEL.md) |
 | **Token / credits** | Usage-based access; prepaid credits; gated content | [`shapes/TOKEN.md`](shapes/TOKEN.md) |
 | **Full app** | Only when ROI gate strongly justifies | [`shapes/APP.md`](shapes/APP.md) |

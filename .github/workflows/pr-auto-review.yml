@@ -20,7 +20,7 @@ name: PR Auto Review via OpenRouter
 #
 # Documentation: docs/PR_AUTO_REVIEW_AUTOMATION.md
 
-# DEVIN-RESTRUCTURE 2026-05-04: BITO AI is the sole assigned PR reviewer.
+# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is the sole assigned PR reviewer.
 # pr-auto-review duplicated that work via OpenRouter. Disabled live trigger;
 # manual dispatch retained for emergency / experimentation.
 on:

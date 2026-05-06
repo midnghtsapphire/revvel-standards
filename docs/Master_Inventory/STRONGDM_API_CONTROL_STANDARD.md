@@ -216,7 +216,7 @@ curl -s -X POST http://localhost:8001/services/postgres-api/plugins \
   -d "config.hide_groups_header=true"
 
 # Add the consumer to the allowed group
-curl -s -X POST http://localhost:8001/consumers/agent-devin/acls \
+curl -s -X POST http://localhost:8001/consumers/agent-OpenHands/acls \
   -d "group=db-admins"
 ```
 
