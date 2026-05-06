@@ -65,11 +65,27 @@ jobs:
 
       - name: Run PromptFoo Evaluation
         if: env.OPENROUTER_API_KEY != '' && steps.configs.outputs.configs != ''
+        env:
+          CONFIGS: ${{ steps.configs.outputs.configs }}
         run: |
-          for config in ${{ steps.configs.outputs.configs }}; do
+          # Safe iteration over configs - write to separate files then merge
+          RESULTS_DIR="promptfoo-results"
+          mkdir -p "$RESULTS_DIR"
+          index=1
+          for config in $CONFIGS; do
             echo "Running: $config"
-            promptfoo eval -c "$config" --no-cache --randomize -o results.json || true
+            promptfoo eval -c "$config" --no-cache -o "$RESULTS_DIR/results-$index.json" || true
+            index=$((index + 1))
           done
+          # Merge results if multiple files exist
+          if [ "$index" -gt 2 ]; then
+            echo "[]" > results.json
+            for f in "$RESULTS_DIR"/*.json; do
+              [ -f "$f" ] && jq -s '.[0] + .[1]' results.json "$f" > tmp.json && mv tmp.json results.json
+            done
+          elif [ -f "$RESULTS_DIR/results-1.json" ]; then
+            cp "$RESULTS_DIR/results-1.json" results.json
+          fi
 
       - name: Run PromptFoo (no API key fallback)
         if: env.OPENROUTER_API_KEY == ''
@@ -89,5 +105,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: promptfoo-results
-          path: results.json
+          path: |
+            results.json
+            promptfoo-results/
+          if-no-files-found: ignore
           retention-days: 7
