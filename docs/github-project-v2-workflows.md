@@ -173,8 +173,15 @@ Required credentials (both already configured for `revvel-standards`):
 - `secrets.OPENROUTER_API_KEY` — call the LLM. Optional; classifier degrades to
   fallback defaults if missing.
 
-Both are checked by a preflight job (same pattern as #13333). If either is
-missing the main classify job is `skipped`, not failed.
+Both are checked by a preflight job (same pattern as #13333). The skip
+behavior differs by which credential is missing:
+
+- `PROJECTS_PAT` missing → main `classify` job is **skipped** (cannot
+  write to Project v2 without it). The preflight emits a `::notice::`
+  explaining why; nothing fails.
+- `OPENROUTER_API_KEY` missing → main `classify` job **still runs** and
+  applies opinionated fallback defaults instead of LLM-inferred values.
+  This is intentional so missing LLM access never blocks WR routing.
 
 ## Issue template structure
 
