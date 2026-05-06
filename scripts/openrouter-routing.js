@@ -61,7 +61,7 @@ const ROUTING_PROFILES = {
  * @param {string} [params.appTitle] - X-Title header (defaults to env var or app name)
  * @returns {Promise<Object>} Response with content, modelUsed, and requestedModels
  */
-function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
+async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
   const key = apiKey || process.env.OPENROUTER_API_KEY;
   
   if (!key) {
