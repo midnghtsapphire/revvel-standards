@@ -61,7 +61,7 @@ jobs:
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           FORCE_ESCALATE: ${{ github.event.inputs.force_escalate || 'false' }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const TRACKING_TITLE = 'OpenRouter Instantiation Status';
             const ESCALATE_AFTER_MS = 24 * 60 * 60 * 1000; // 24 hours

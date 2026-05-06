@@ -100,7 +100,7 @@ jobs:
       - name: Run mabl tests
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token != '' && steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
         run: |
           # Build optional flags
           FLAGS=""
