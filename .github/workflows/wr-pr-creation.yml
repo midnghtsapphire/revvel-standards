@@ -96,21 +96,51 @@ jobs:
               return;
             }
 
-            // Check if PR already exists for this issue
+            // Check if a WR-skeleton PR already exists for this issue.
+            //
+            // DEVIN-RESTRUCTURE 2026-05-06: tightened the dedup match. The
+            // previous logic matched ANY open OR closed PR that mentioned
+            // `Closes #${issueNumber}` ANYWHERE in its body, OR whose title
+            // happened to contain the WR-stripped title substring. Both are
+            // false-positive prone: a hardening PR that fixes a chronic
+            // workflow bug can legitimately close a stuck-WR issue without
+            // BEING the WR's skeleton PR (e.g. #13352 closed #13347 by
+            // shipping the auto-heal fix; that does NOT mean a WR-skeleton
+            // PR exists for #13347 — quite the opposite).
+            //
+            // The right signal: this exact workflow always applies the
+            // labels `weekly-research`, `jules`, `documentation`,
+            // `wr:in-progress` to its created PR (see the "Apply labels to
+            // PR" step ~30 lines below). Match those instead. We require
+            // BOTH the issue-reference AND the `weekly-research` label so
+            // the dedup is correct even if a different workflow ever
+            // applied one of the others.
+            //
+            // Search OPEN PRs only — a previously-closed/merged WR-skeleton
+            // PR doesn't block a fresh WR-skeleton PR; that's a re-trigger
+            // of the same WR after the original was abandoned.
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'all',
+              state: 'open',
               per_page: 100,
             });
 
-            const existingPR = prs.find(pr =>
-              (pr.body && pr.body.includes(`Closes #${issueNumber}`)) ||
-              pr.title.includes(title.replace(/^\[WR\]\s*/i, ''))
+            const issueRefRegex = new RegExp(
+              `(closes|fixes|resolves)\\s+#${issueNumber}\\b`,
+              'i'
             );
+            const existingPR = prs.find(pr => {
+              const prLabels = (pr.labels || []).map(l => typeof l === 'string' ? l : l.name);
+              const isWrSkeleton =
+                prLabels.includes('weekly-research') &&
+                prLabels.includes('wr:in-progress');
+              const refsThisIssue = pr.body && issueRefRegex.test(pr.body);
+              return isWrSkeleton && refsThisIssue;
+            });
 
             if (existingPR) {
-              core.info(`PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
+              core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
               core.setOutput('should_create_pr', 'false');
               return;
             }
