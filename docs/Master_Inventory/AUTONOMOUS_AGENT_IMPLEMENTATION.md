@@ -191,7 +191,7 @@ Trigger Auto-Error Workflow
     ↓
 Attempt Recovery:
     1. Try anthropic/claude-sonnet-4
-    2. Try anthropic/claude-sonnet-4
+    2. Try anthropic/claude-sonnet-4.5
     3. Try openai/gpt-4-turbo-preview
     ↓
 If Still Failing:

@@ -382,7 +382,7 @@ OpenRouter may use a fallback model if the primary model is unavailable. Check t
 
 Different models have different costs per token. The routing profiles are designed with cost-effectiveness in mind:
 
-- **repo_surgery**: Prioritizes quality over cost (Claude 3.7 Sonnet first)
+- **repo_surgery**: Prioritizes quality over cost (Claude Sonnet 4 first)
 - **cheap_batch_edits**: Prioritizes cost over quality (DeepSeek first)
 - **hard_debug**: Prioritizes specialized reasoning (GPT-5.2 Codex first)
 

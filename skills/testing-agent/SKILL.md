@@ -116,7 +116,12 @@ providers:
       max_tokens: 2048
 
 # Fallback: Claude Sonnet 4.5
-  - id: anthropic/claude-sonnet-4
+  - id: anthropic/claude-sonnet-4.5
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
+      max_tokens: 2048
 
 prompts:
   - label: "Standard invocation"

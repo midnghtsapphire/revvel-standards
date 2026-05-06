@@ -50,7 +50,7 @@ cp templates/cicd/prompt-eval.yml .github/workflows/
 
 ### Skill Testing with PromptFoo
 
-For testing Revvel skills (ephemeral agents), use PromptFoo with Claude 3.7 Sonnet:
+For testing Revvel skills (ephemeral agents), use PromptFoo with Claude Sonnet 4:
 
 ```bash
 # Run skill tests
