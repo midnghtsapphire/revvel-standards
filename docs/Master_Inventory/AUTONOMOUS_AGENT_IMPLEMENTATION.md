@@ -259,7 +259,7 @@ try {
 // Auto-recovery with alternatives
 const attemptedFixes = [];
 
-for (const model of ["claude-sonnet-4", "claude-sonnet-4", "gpt-4-turbo"]) {
+for (const model of ["claude-sonnet-4", "claude-sonnet-4.5", "gpt-4-turbo"]) {
   try {
     const result = await callOpenRouter(prompt, { model });
     return result;
