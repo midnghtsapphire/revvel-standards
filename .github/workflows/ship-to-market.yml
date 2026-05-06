@@ -1,0 +1,552 @@
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ship-to-market.yml
+# Wires every delivery channel to the existing revvel-standards agent stack.
+# Trigger: PR merged into main that carries one or more deliver:* labels.
+# Each job is independent — any failure auto-labels needs-human on the issue.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: 🚀 Ship to Market
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+  # Manual dispatch for re-shipping a specific channel without a new PR
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Delivery channel to run (api | app | pdf | cli | docker | mcp | docs | video | all)"
+        required: true
+        default: all
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  packages: write
+
+# ─────────────────────────────────────────────────────────────────────────────
+env:
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  PRIMARY_MODEL: anthropic/claude-3.7-sonnet
+  FALLBACK_MODEL: google/gemini-pro-1.5
+  BUDGET_MODEL: deepseek/deepseek-chat
+
+jobs:
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GATE — only continue when the PR was actually merged
+  # ──────────────────────────────────────────────────────────────────────────
+  gate:
+    name: 🔒 Merge Gate
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true)
+    outputs:
+      run_api:    ${{ steps.labels.outputs.api }}
+      run_app:    ${{ steps.labels.outputs.app }}
+      run_pdf:    ${{ steps.labels.outputs.pdf }}
+      run_cli:    ${{ steps.labels.outputs.cli }}
+      run_docker: ${{ steps.labels.outputs.docker }}
+      run_mcp:    ${{ steps.labels.outputs.mcp }}
+      run_docs:   ${{ steps.labels.outputs.docs }}
+      run_video:  ${{ steps.labels.outputs.video }}
+      issue_num:  ${{ steps.meta.outputs.issue_num }}
+    steps:
+      - name: Parse delivery labels / dispatch input
+        id: labels
+        run: |
+          INPUT="${{ github.event.inputs.channel }}"
+          LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+          ALL="$([[ $INPUT == 'all' || $LABELS == *'deliver:all'* ]] && echo true || echo false)"
+
+          check() {
+            local ch=$1
+            if [[ $ALL == 'true' || $INPUT == $ch || $LABELS == *"deliver:$ch"* ]]; then
+              echo "true"
+            else
+              echo "false"
+            fi
+          }
+
+          echo "api=$(check api)"       >> $GITHUB_OUTPUT
+          echo "app=$(check app)"       >> $GITHUB_OUTPUT
+          echo "pdf=$(check pdf)"       >> $GITHUB_OUTPUT
+          echo "cli=$(check cli)"       >> $GITHUB_OUTPUT
+          echo "docker=$(check docker)" >> $GITHUB_OUTPUT
+          echo "mcp=$(check mcp)"       >> $GITHUB_OUTPUT
+          echo "docs=$(check docs)"     >> $GITHUB_OUTPUT
+          echo "video=$(check video)"   >> $GITHUB_OUTPUT
+
+      - name: Extract linked issue number
+        id: meta
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
+          echo "issue_num=$ISSUE" >> $GITHUB_OUTPUT
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. API DEPLOY
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-api:
+    name: 🔌 Deliver → API
+    needs: gate
+    if: needs.gate.outputs.run_api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --if-present
+
+      - name: Run build
+        run: npm run build --if-present
+
+      - name: Deploy API (Railway / Fly / Render)
+        id: deploy
+        run: |
+          if command -v railway &>/dev/null; then
+            railway up --detach
+            echo "url=$(railway status --json | jq -r '.url')" >> $GITHUB_OUTPUT
+          elif [[ -n "${{ secrets.FLY_API_TOKEN }}" ]]; then
+            curl -fsSL https://fly.io/install.sh | sh
+            flyctl deploy --remote-only
+            echo "url=https://$(flyctl info --json | jq -r '.Hostname')" >> $GITHUB_OUTPUT
+          else
+            echo "url=NOT_DEPLOYED—add_RAILWAY_TOKEN_or_FLY_API_TOKEN_secret" >> $GITHUB_OUTPUT
+          fi
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Smoke-test deployed URL
+        if: steps.deploy.outputs.url != '' && !contains(steps.deploy.outputs.url, 'NOT_DEPLOYED')
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL/health" || curl -o /dev/null -s -w "%{http_code}" "$URL")
+          echo "HTTP $STATUS for $URL"
+          [[ "$STATUS" =~ ^[23] ]] || exit 1
+
+      - name: Comment result on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.url }}';
+            const body = url.includes('NOT_DEPLOYED')
+              ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
+              : `✅ **API deployed** → ${url}`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0, body
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. WEB APP DEPLOY (Vercel / Netlify)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-app:
+    name: 🌐 Deliver → App
+    needs: gate
+    if: needs.gate.outputs.run_app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+
+      - run: npm ci --if-present && npm run build --if-present
+
+      - name: Deploy to Vercel
+        id: vercel
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          npm i -g vercel
+          URL=$(vercel --prod --yes --token $VERCEL_TOKEN 2>&1 | grep -oP 'https://[^\s]+' | tail -1)
+          echo "url=$URL" >> $GITHUB_OUTPUT
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Netlify (fallback)
+        id: netlify
+        if: env.VERCEL_TOKEN == '' && env.NETLIFY_AUTH_TOKEN != ''
+        run: |
+          npm i -g netlify-cli
+          URL=$(netlify deploy --prod --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID --dir ./dist 2>&1 | grep -oP 'https://[^\s]+' | tail -1)
+          echo "url=$URL" >> $GITHUB_OUTPUT
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.vercel.outputs.url || steps.netlify.outputs.url }}';
+            const body = url
+              ? `✅ **App deployed** → ${url}`
+              : '⚠️ **App deploy skipped** — add `VERCEL_TOKEN` or `NETLIFY_AUTH_TOKEN` to secrets.';
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0, body
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. PDF GENERATION (pandoc)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-pdf:
+    name: 📄 Deliver → PDF
+    needs: gate
+    if: needs.gate.outputs.run_pdf == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc + LaTeX
+        run: sudo apt-get update -qq && sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended
+
+      - name: Convert docs to PDF
+        id: build_pdf
+        run: |
+          mkdir -p dist/pdf
+          FOUND=0
+          for f in docs/*.md README.md CHANGELOG.md; do
+            [[ -f "$f" ]] || continue
+            NAME=$(basename "$f" .md)
+            pandoc "$f" -o "dist/pdf/$NAME.pdf" --pdf-engine=xelatex -V geometry:margin=1in -V fontsize=11pt --toc 2>/dev/null && FOUND=$((FOUND+1)) || true
+          done
+          echo "count=$FOUND" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdfs-${{ github.run_id }}
+          path: dist/pdf/*.pdf
+          retention-days: 30
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const count = '${{ steps.build_pdf.outputs.count }}';
+            const run = '${{ github.run_id }}';
+            const body = count > 0
+              ? `✅ **PDF(s) generated** (${count} file(s)) → [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${run})`
+              : '⚠️ **PDF deliver** — no .md docs found. Add files to /docs/ or update source glob.';
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0, body
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 4. CLI PUBLISH (npm)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-cli:
+    name: 🖥️ Deliver → CLI (npm)
+    needs: gate
+    if: needs.gate.outputs.run_cli == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci --if-present && npm run build --if-present
+
+      - name: Publish to npm
+        id: publish
+        run: |
+          if [[ -z "${{ secrets.NPM_TOKEN }}" ]]; then
+            echo "result=SKIPPED — add NPM_TOKEN secret" >> $GITHUB_OUTPUT
+          else
+            npm publish --access public 2>&1 | tail -5
+            PKG=$(node -p "require('./package.json').name + '@' + require('./package.json').version" 2>/dev/null || echo "unknown")
+            echo "result=Published $PKG" >> $GITHUB_OUTPUT
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ steps.publish.outputs.result }}';
+            const ok = !result.includes('SKIPPED');
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: ok ? `✅ **CLI published** → \`${result}\`` : `⚠️ **CLI publish skipped** — ${result}`
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 5. DOCKER BUILD + PUSH (ghcr.io)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-docker:
+    name: 🐳 Deliver → Docker
+    needs: gate
+    if: needs.gate.outputs.run_docker == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: `✅ **Docker image pushed** → \`ghcr.io/${{ github.repository }}:${{ github.sha }}\``
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 6. MCP SERVER DEPLOY + SMOKE TEST
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-mcp:
+    name: 🤖 Deliver → MCP Server
+    needs: gate
+    if: needs.gate.outputs.run_mcp == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - run: npm ci --if-present && (npm run build:mcp --if-present || npm run build --if-present)
+
+      - name: Deploy MCP server
+        id: deploy_mcp
+        run: |
+          if [[ -n "${{ secrets.RAILWAY_TOKEN }}" ]]; then
+            railway up --service mcp --detach 2>/dev/null || railway up --detach
+            URL=$(railway status --json 2>/dev/null | jq -r '.url // empty' || echo "")
+            echo "url=$URL" >> $GITHUB_OUTPUT
+          else
+            echo "url=NOT_DEPLOYED—add_RAILWAY_TOKEN" >> $GITHUB_OUTPUT
+          fi
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Smoke-test /mcp endpoint
+        if: "!contains(steps.deploy_mcp.outputs.url, 'NOT_DEPLOYED') && steps.deploy_mcp.outputs.url != ''"
+        run: |
+          URL="${{ steps.deploy_mcp.outputs.url }}"
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL/mcp" || curl -o /dev/null -s -w "%{http_code}" "$URL")
+          echo "MCP smoke test HTTP $STATUS"
+          [[ "$STATUS" =~ ^[23] ]] || exit 1
+
+      - name: Validate mcp.json manifest
+        run: |
+          if [[ -f mcp.json ]]; then
+            node -e "
+              const m = require('./mcp.json');
+              console.assert(m.name, 'mcp.json missing name');
+              console.assert(Array.isArray(m.tools), 'mcp.json tools must be array');
+              console.log('MCP manifest OK:', m.name, '—', m.tools.length, 'tool(s)');
+            "
+          fi
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy_mcp.outputs.url }}';
+            const body = url && !url.includes('NOT_DEPLOYED')
+              ? `✅ **MCP server deployed** → ${url}/mcp`
+              : `⚠️ **MCP deploy skipped** — add \`RAILWAY_TOKEN\` secret.`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0, body
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 7. DOCS SITE (GitHub Pages — mkdocs / docusaurus / /docs folder)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-docs:
+    name: 📚 Deliver → Docs Site
+    needs: gate
+    if: needs.gate.outputs.run_docs == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect framework and build
+        id: build_docs
+        run: |
+          if [[ -f mkdocs.yml ]]; then
+            pip install mkdocs mkdocs-material 2>/dev/null
+            mkdocs build --site-dir ./site
+            echo "dir=site" >> $GITHUB_OUTPUT
+          elif [[ -f docusaurus.config.js || -f docusaurus.config.ts ]]; then
+            npm ci && npm run build
+            echo "dir=build" >> $GITHUB_OUTPUT
+          elif [[ -d docs ]]; then
+            echo "dir=docs" >> $GITHUB_OUTPUT
+          else
+            mkdir -p site
+            echo '<h1>Docs</h1><p>Add mkdocs.yml, docusaurus.config.js, or a /docs folder.</p>' > site/index.html
+            echo "dir=site" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./${{ steps.build_docs.outputs.dir }}
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = '${{ github.repository }}'.split('/');
+            const pagesUrl = `https://${repo[0]}.github.io/${repo[1]}/`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: `✅ **Docs deployed** → ${pagesUrl}`
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 8. VIDEO (Playwright screen recording → run artifact)
+  # ──────────────────────────────────────────────────────────────────────────
+  deliver-video:
+    name: 🎬 Deliver → Video Recording
+    needs: gate
+    if: needs.gate.outputs.run_video == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - run: npm ci --if-present && npx playwright install --with-deps chromium 2>/dev/null || true
+
+      - name: Run recording script
+        id: record
+        run: |
+          if [[ -f scripts/record.ts || -f scripts/record.js ]]; then
+            npx ts-node scripts/record.ts 2>/dev/null || node scripts/record.js
+            echo "recorded=true" >> $GITHUB_OUTPUT
+          else
+            echo "recorded=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: steps.record.outputs.recorded == 'true'
+        with:
+          name: video-${{ github.run_id }}
+          path: |
+            videos/
+            playwright-report/
+          retention-days: 14
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const recorded = '${{ steps.record.outputs.recorded }}';
+            const run = '${{ github.run_id }}';
+            const body = recorded === 'true'
+              ? `✅ **Video recorded** → [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${run})`
+              : `⚠️ **Video step** — no \`scripts/record.ts\` found. Create it with a Playwright script and re-run with \`deliver:video\`.`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0, body
+            });
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # FINAL GATE — label needs-human if ANY delivery job failed
+  # ──────────────────────────────────────────────────────────────────────────
+  ship-complete:
+    name: ✅ Ship Complete
+    needs:
+      - gate
+      - deliver-api
+      - deliver-app
+      - deliver-pdf
+      - deliver-cli
+      - deliver-docker
+      - deliver-mcp
+      - deliver-docs
+      - deliver-video
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for failures
+        id: check
+        run: |
+          RESULTS="${{ join(needs.*.result, ' ') }}"
+          if echo "$RESULTS" | grep -qw "failure"; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=ok" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Label needs-human on failure
+        if: steps.check.outputs.status == 'failed' && needs.gate.outputs.issue_num != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = parseInt('${{ needs.gate.outputs.issue_num }}');
+            if (!issue) return;
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: issue, labels: ['needs-human']
+            });
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: issue,
+              body: `🚨 **Ship to Market — delivery failure**\n\nOne or more delivery jobs failed. [View run logs](${runUrl})\n\nThis issue has been labeled \`needs-human\`.`
+            });
+
+      - name: Post success summary
+        if: steps.check.outputs.status == 'ok'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request?.number;
+            if (!pr) return;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: pr,
+              body: `🎉 **All delivery channels shipped successfully.**\n\nCheck individual job comments above for URLs and artifact links.`
+            });
