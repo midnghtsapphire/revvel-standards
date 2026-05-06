@@ -56,9 +56,12 @@ const ROUTING_PROFILES = {
  * @param {number} [params.temperature=0.7] - Sampling temperature
  * @param {number} [params.max_tokens=4000] - Maximum tokens to generate
  * @param {string} [params.apiKey] - OpenRouter API key (defaults to env var)
+ * @param {number} [params.timeout=60000] - Request timeout in milliseconds
+ * @param {string} [params.httpReferer] - HTTP-Referer header (defaults to env var or repo URL)
+ * @param {string} [params.appTitle] - X-Title header (defaults to env var or app name)
  * @returns {Promise<Object>} Response with content, modelUsed, and requestedModels
  */
-function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey }) {
+function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
   const key = apiKey || process.env.OPENROUTER_API_KEY;
   
   if (!key) {
@@ -72,6 +75,10 @@ function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     throw new Error("messages array is required and must contain at least one message");
   }
+
+  // Allow configurable headers for reusability
+  const referer = httpReferer || process.env.OPENROUTER_HTTP_REFERER || "https://github.com/midnghtsapphire/revvel-standards";
+  const title = appTitle || process.env.OPENROUTER_APP_TITLE || "Revvel Standards OpenRouter Routing";
 
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
@@ -89,8 +96,8 @@ function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000
         "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(body),
         "Authorization": `Bearer ${key}`,
-        "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
-        "X-Title": "Revvel Standards OpenRouter Routing",
+        "HTTP-Referer": referer,
+        "X-Title": title,
       },
     };
 
@@ -102,6 +109,13 @@ function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000
       });
       
       res.on("end", () => {
+        // Check status code before parsing
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          const truncatedBody = data.length > 500 ? data.substring(0, 500) + "..." : data;
+          reject(new Error(`OpenRouter API returned status ${res.statusCode}: ${truncatedBody}`));
+          return;
+        }
+
         try {
           const parsed = JSON.parse(data);
           
@@ -137,6 +151,12 @@ function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000
       });
     });
 
+    // Set request timeout
+    req.setTimeout(timeout, () => {
+      req.destroy();
+      reject(new Error(`Request timeout after ${timeout}ms`));
+    });
+
     req.on("error", (err) => {
       reject(new Error(`OpenRouter request failed: ${err.message}`));
     });
@@ -155,9 +175,13 @@ function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000
  * @param {number} [params.temperature] - Sampling temperature (profile-specific defaults)
  * @param {number} [params.max_tokens] - Maximum tokens to generate
  * @param {string} [params.apiKey] - OpenRouter API key
+ * @param {boolean} [params.silent=false] - Suppress console logging
+ * @param {number} [params.timeout] - Request timeout in milliseconds
+ * @param {string} [params.httpReferer] - HTTP-Referer header
+ * @param {string} [params.appTitle] - X-Title header
  * @returns {Promise<Object>} Response with text, modelUsed, requestedModels, and profile
  */
-async function routedChat({ profile, messages, temperature, max_tokens, apiKey }) {
+async function routedChat({ profile, messages, temperature, max_tokens, apiKey, silent = false, timeout, httpReferer, appTitle }) {
   const profileConfig = ROUTING_PROFILES[profile];
   
   if (!profileConfig) {
@@ -165,9 +189,11 @@ async function routedChat({ profile, messages, temperature, max_tokens, apiKey }
     throw new Error(`Unknown profile: ${profile}. Available profiles: ${available}`);
   }
 
-  console.log(`🔀 Routing profile: ${profile}`);
-  console.log(`📝 Description: ${profileConfig.description}`);
-  console.log(`🎯 Requested models (fallback order): ${profileConfig.models.join(" → ")}`);
+  if (!silent) {
+    console.log(`🔀 Routing profile: ${profile}`);
+    console.log(`📝 Description: ${profileConfig.description}`);
+    console.log(`🎯 Requested models (fallback order): ${profileConfig.models.join(" → ")}`);
+  }
 
   try {
     const result = await callOpenRouter({
@@ -176,9 +202,14 @@ async function routedChat({ profile, messages, temperature, max_tokens, apiKey }
       temperature,
       max_tokens,
       apiKey,
+      timeout,
+      httpReferer,
+      appTitle,
     });
 
-    console.log(`✅ Model used: ${result.modelUsed || "unknown"}`);
+    if (!silent) {
+      console.log(`✅ Model used: ${result.modelUsed || "unknown"}`);
+    }
     
     return {
       ...result,
@@ -186,7 +217,9 @@ async function routedChat({ profile, messages, temperature, max_tokens, apiKey }
       profileDescription: profileConfig.description,
     };
   } catch (err) {
-    console.error(`❌ All models in fallback chain failed: ${err.message}`);
+    if (!silent) {
+      console.error(`❌ All models in fallback chain failed: ${err.message}`);
+    }
     throw err;
   }
 }
@@ -209,7 +242,8 @@ function getProfiles() {
 function getProfileModels(profile) {
   const profileConfig = ROUTING_PROFILES[profile];
   if (!profileConfig) {
-    throw new Error(`Unknown profile: ${profile}`);
+    const available = Object.keys(ROUTING_PROFILES).join(", ");
+    throw new Error(`Unknown profile: ${profile}. Available profiles: ${available}`);
   }
   return profileConfig.models;
 }

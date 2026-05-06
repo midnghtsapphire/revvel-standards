@@ -11,7 +11,6 @@
 const {
   getProfiles,
   getProfileModels,
-  ROUTING_PROFILES,
   routedChat,
 } = require("../scripts/openrouter-routing");
 
@@ -117,10 +116,22 @@ async function runTests() {
   console.log("\nTest Group: Error Handling");
   assertThrows(
     () => getProfileModels("invalid_profile"),
-    "Should throw error for unknown profile"
+    "Should throw error for unknown profile with available profiles listed"
   );
 
-  // Test 6: routedChat validation
+  // Test 6: Silent mode
+  console.log("\nTest Group: Silent Mode");
+  process.env.OPENROUTER_API_KEY = "test-key";
+  await assertRejects(
+    routedChat({
+      profile: "repo_surgery",
+      messages: [{ role: "user", content: "test" }],
+      silent: true,
+    }),
+    "Should work in silent mode (no console output)"
+  );
+
+  // Test 7: routedChat validation
   console.log("\nTest Group: routedChat Validation");
   
   // Save original API key
@@ -162,7 +173,7 @@ async function runTests() {
     delete process.env.OPENROUTER_API_KEY;
   }
 
-  // Test 7: Integration test (only if API key is available)
+  // Test 8: Integration test (only if API key is available)
   if (process.env.OPENROUTER_API_KEY) {
     console.log("\nTest Group: Integration Tests (with API key)");
     console.log("⚠️  Skipping live API tests to avoid costs. To test manually, run:");

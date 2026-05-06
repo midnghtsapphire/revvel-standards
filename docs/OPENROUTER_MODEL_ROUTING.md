@@ -107,6 +107,10 @@ Execute a chat completion using a named routing profile.
 - `temperature` (number, optional): Sampling temperature (0.0-2.0, default: 0.7)
 - `max_tokens` (number, optional): Maximum tokens to generate (default: 4000)
 - `apiKey` (string, optional): OpenRouter API key (defaults to `OPENROUTER_API_KEY` env var)
+- `silent` (boolean, optional): Suppress console logging (default: false)
+- `timeout` (number, optional): Request timeout in milliseconds (default: 60000)
+- `httpReferer` (string, optional): HTTP-Referer header (defaults to `OPENROUTER_HTTP_REFERER` env var or repo URL)
+- `appTitle` (string, optional): X-Title header (defaults to `OPENROUTER_APP_TITLE` env var or app name)
 
 **Returns:** Promise resolving to:
 ```javascript
@@ -130,6 +134,7 @@ const result = await routedChat({
   ],
   temperature: 0.5,
   max_tokens: 2000,
+  silent: true, // Suppress console logging
 });
 ```
 
@@ -143,6 +148,9 @@ Low-level function to call OpenRouter directly with custom model arrays.
 - `temperature` (number, optional): Sampling temperature
 - `max_tokens` (number, optional): Maximum tokens to generate
 - `apiKey` (string, optional): OpenRouter API key
+- `timeout` (number, optional): Request timeout in milliseconds (default: 60000)
+- `httpReferer` (string, optional): HTTP-Referer header (configurable for different environments)
+- `appTitle` (string, optional): X-Title header (configurable for different applications)
 
 **Returns:** Promise resolving to response object (same structure as `routedChat` but without profile metadata)
 
@@ -205,8 +213,10 @@ try {
 **Common error scenarios:**
 - Missing `OPENROUTER_API_KEY`: Throws immediately
 - All models in fallback chain fail: Throws after exhausting chain
-- Invalid profile name: Throws before making any requests
+- Invalid profile name: Throws before making any requests (includes list of available profiles)
 - Empty messages array: Throws validation error
+- Request timeout: Throws after configured timeout (default 60 seconds)
+- Non-2xx HTTP status: Throws with status code and response body excerpt
 
 ## OpenRouter Fallback Behavior
 
@@ -228,10 +238,12 @@ For more details, see [OpenRouter's fallback documentation](https://openrouter.a
 ### Environment Variables
 
 - `OPENROUTER_API_KEY` (required): Your OpenRouter API key
+- `OPENROUTER_HTTP_REFERER` (optional): Custom HTTP-Referer header for API requests
+- `OPENROUTER_APP_TITLE` (optional): Custom X-Title header for API requests
 
 ### Logging
 
-The module logs routing decisions to `stdout`:
+The module logs routing decisions to `stdout` by default:
 
 ```
 🔀 Routing profile: repo_surgery
@@ -240,7 +252,15 @@ The module logs routing decisions to `stdout`:
 ✅ Model used: anthropic/claude-3.7-sonnet
 ```
 
-To suppress logs, redirect `stdout` or modify the module's `console.log` calls.
+To suppress logs, use the `silent` option:
+
+```javascript
+const result = await routedChat({
+  profile: 'repo_surgery',
+  messages: [{ role: 'user', content: 'test' }],
+  silent: true, // No console output
+});
+```
 
 ## Testing
 
