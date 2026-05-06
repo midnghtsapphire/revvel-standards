@@ -30,6 +30,10 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request.number;
+            // Remove stale lifecycle labels from prior state (especially relevant for reopened PRs)
+            for (const label of ['approved', 'needs-action', 'checks-failing', 'checks-passing', 'ready-to-merge', 'lifecycle:stuck']) {
+              try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
+            }
             await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['awaiting-review'] });
             await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: '👀 **Status: Waiting for Review** — This PR is ready for review. A reviewer has been requested.' });
 
