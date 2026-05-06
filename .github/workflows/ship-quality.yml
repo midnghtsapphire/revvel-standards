@@ -3,6 +3,10 @@ name: Intelligent Code Quality Scanner
 # AI-powered code quality gate that understands context
 # Instead of blind pattern matching, uses LLM to determine if code is ship-ready
 
+# Added 2026-05-06:
+# - Fixed GH_TOKEN missing for gh CLI (was exit code 4)
+# - Added env: GH_TOKEN for gh commands
+
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
@@ -10,6 +14,9 @@ on:
 permissions:
   contents: read
   pull-requests: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   scan:
