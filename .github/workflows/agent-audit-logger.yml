@@ -156,17 +156,57 @@ jobs:
             console.log('✅ Audit entry logged:', entry.entry_hash.substring(0, 8));
 
       - name: Commit audit log
+        # DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: chronic red X cleanup):
+        # Branch protection on `main` blocks `git push` from the default
+        # GITHUB_TOKEN with `push declined due to repository rule violations`.
+        # The previous `ref: main` checkout fix moved the failure from
+        # detached-HEAD to branch-protection-rejection — the push was always
+        # going to be blocked. So this audit-log-on-main pattern has never
+        # actually worked in this repo with the protection rules in place.
+        #
+        # Instead of bypassing branch protection (which would require a PAT
+        # with admin/bypass rights — a security regression), we accept the
+        # push failure as expected and surface the audit entry via the GitHub
+        # Actions job summary so it's still visible on every run. The
+        # `continue-on-error: true` ensures the chronic red X goes away.
+        #
+        # Long-term, audit entries should go to a dedicated audit destination
+        # (e.g. an issue, a database, or an external log service) rather than
+        # tracked in `main`. Tracked as a follow-up in REMINDERS.md.
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           if [[ -n $(git status --porcelain logs/agent-audit/) ]]; then
             git add logs/agent-audit/
             git commit -m "chore: log agent action [skip ci]"
-            git push
-            echo "✅ Audit log committed"
+            if git push 2>&1; then
+              echo "✅ Audit log committed"
+              {
+                echo "## Audit Log"
+                echo ""
+                echo "Latest audit entry committed to \`main\`."
+              } >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::notice::Audit log push blocked by branch protection — entry logged to job summary instead."
+              {
+                echo "## Audit Log (not committed)"
+                echo ""
+                echo "Push to \`main\` is blocked by branch protection rules. The audit entry"
+                echo "for this run is preserved here in the job summary instead:"
+                echo ""
+                echo '```jsonl'
+                cat logs/agent-audit/audit.jsonl | tail -1
+                echo '```'
+                echo ""
+                echo "_Long-term, route audit entries to a dedicated destination instead of \`main\`. See \`REMINDERS.md\`._"
+              } >> "$GITHUB_STEP_SUMMARY"
+              # Exit cleanly — branch-protection block is expected.
+              exit 0
+            fi
           else
-            echo "ℹ️ No changes to commit"
+            echo "ℹ No changes to commit"
           fi
 
   health-check:
