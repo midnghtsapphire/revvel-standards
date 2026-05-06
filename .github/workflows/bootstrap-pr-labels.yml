@@ -1,0 +1,36 @@
+name: Bootstrap PR Labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  create-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const labels = [
+              { name: 'draft',           color: '6e7681', description: '🚧 Work in progress, not ready for review' },
+              { name: 'awaiting-review', color: '0075ca', description: '👀 Waiting for reviewer feedback' },
+              { name: 'needs-action',    color: 'e4e669', description: '🔄 Author must address review feedback' },
+              { name: 'approved',        color: '0e8a16', description: '✅ Approved by reviewer' },
+              { name: 'checks-failing',  color: 'd73a4a', description: '❌ CI checks are failing' },
+              { name: 'checks-passing',  color: 'a2eeef', description: '✔️ All CI checks pass' },
+              { name: 'ready-to-merge',  color: '008672', description: '🚀 Approved + checks pass — ready to merge' },
+            ];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.createLabel({ owner, repo, ...label });
+                console.log(`Created: ${label.name}`);
+              } catch(e) {
+                if (e.status === 422) {
+                  await github.rest.issues.updateLabel({ owner, repo, ...label });
+                  console.log(`Updated: ${label.name}`);
+                }
+              }
+            }

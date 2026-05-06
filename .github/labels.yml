@@ -97,7 +97,28 @@ labels:
   - name: blocked
     color: "e4e669"
     description: "Blocked by external dependency"
-  
+
+  # ── PR Lifecycle (managed by pr-lifecycle.yml) ─────────────────────────────────
+  - name: draft
+    color: "6e7681"
+    description: "Work in progress, not ready for review"
+
+  - name: awaiting-review
+    color: "0075ca"
+    description: "Waiting for reviewer feedback"
+
+  - name: checks-failing
+    color: "d73a4a"
+    description: "CI checks are failing"
+
+  - name: checks-passing
+    color: "a2eeef"
+    description: "All CI checks pass"
+
+  - name: ready-to-merge
+    color: "008672"
+    description: "Approved + checks pass — ready to merge"
+
   # ── Third-Party / External Contributions ──────────────────────────────────────
   - name: third-party
     color: "bfdadc"
