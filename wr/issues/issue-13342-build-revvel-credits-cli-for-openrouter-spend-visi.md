@@ -4,16 +4,13 @@
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-06  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
+**WR Status:** ✅ Complete
 
 ---
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+The `revvel-credits` CLI is an internal, lightweight tool built with Node.js to provide instant visibility into OpenRouter API spend and credit balances. It requires only the `OPENROUTER_API_KEY` environment variable and relies on native Node.js (v20+) `fetch` to keep the dependency footprint minimal. This ensures developers can execute a 5-second sanity check (`npx revvel-credits` or `npm i -g revvel-credits`) directly from the terminal.
 
 ---
 
@@ -27,456 +24,155 @@
 | Created | 2026-05-06 |
 | Last Updated | 2026-05-06 |
 | Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | {DESCRIPTION} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Target Package | `revvel-credits` CLI |
+| Internal Tooling | Yes |
 
 ### Current Status
 
-- **Active Development:** [Yes/No - based on recent commits]
-- **Last Commit:** [Date and summary]
-- **Open PRs:** [Count and notable ones]
-- **Open Issues:** [Count and critical ones]
-- **Deployment Status:** [Deployed/Not Deployed - Vercel URL if exists]
-- **CI/CD Status:** [Passing/Failing/Not configured]
+- **Active Development:** Yes - this is a new tooling initiative
+- **Open Issues:** Addresses Issue #13342
+- **Deployment Status:** To be deployed globally via npm (`npm i -g revvel-credits`)
+- **CI/CD Status:** Will require basic linting and syntax checking per `revvel-standards`
 
-### Repository Structure
+### Proposed Structure
 
 ```
-[Tree structure of key directories and files]
+tools/revvel-credits/
+├── bin/
+│   └── revvel-credits.js  # CLI entry point
+├── package.json
+├── README.md
+└── .npmignore
 ```
 
 ### Key Technologies
 
-- **Frontend:** [Framework/libraries]
-- **Backend:** [Framework/libraries]
-- **Database:** [Type and provider]
-- **Deployment:** [Platform]
-- **CI/CD:** [Tooling]
+- **Environment:** Node.js (v20+)
+- **API Fetching:** Native Node.js `fetch` (no `axios` or heavy deps)
+- **API Target:** OpenRouter `/api/v1/credits` endpoint
 
 ---
 
-## Step 2: Deep Web Research
+## Step 2: Tech Stack Analysis
 
-### Market Opportunity Analysis
+### Approach & Implementation
 
-#### Current Market Trends
+#### Minimal Dependency Strategy
+Since the goal is a rapid execution CLI tool with a small install footprint, the tool will avoid heavy frameworks like `commander` or `yargs` if basic `process.argv` parsing is sufficient, and will use the native `fetch` API available in Node.js 20+.
 
-[Research findings about market trends in this domain]
+#### API Interaction
+**Endpoint:** `GET https://openrouter.ai/api/v1/credits`
+**Headers:** `Authorization: Bearer $OPENROUTER_API_KEY`
 
-**Sources:**
-- [Link 1]: [Description]
-- [Link 2]: [Description]
-
-#### Competitors & Alternatives
-
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| [Name 1] | [Key features] | [Pricing model] | [Estimate] |
-| [Name 2] | [Key features] | [Pricing model] | [Estimate] |
-
-#### Gaps in Existing Solutions
-
-1. **Gap 1:** [Description]
-   - **Opportunity:** [How this repo can fill it]
-   
-2. **Gap 2:** [Description]
-   - **Opportunity:** [How this repo can fill it]
-
-#### Monetization Opportunities
-
-1. **Direct Revenue:**
-   - [Strategy 1]: [Description and potential]
-   - [Strategy 2]: [Description and potential]
-
-2. **Affiliate Partnerships:**
-   - [Partner 1]: [Commission structure]
-   - [Partner 2]: [Commission structure]
-
-3. **Premium Features:**
-   - [Feature 1]: [Pricing potential]
-   - [Feature 2]: [Pricing potential]
-
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates]
-
-### Technology Stack Research
-
-#### Dependency Audit
-
-**Current Dependencies:**
-```json
-[List key dependencies with versions]
-```
-
-**Outdated Dependencies:**
-| Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| [name] | [version] | [version] | [CVE if any] | [High/Med/Low] |
-
-**Recommended Updates:**
-1. [Package]: [Current] → [Target] - [Reason]
-2. [Package]: [Current] → [Target] - [Reason]
-
-#### Security Vulnerabilities
-
-**Critical Issues:**
-- [CVE-XXXX]: [Description] - [Impact] - [Fix]
-
-**Medium Issues:**
-- [Description] - [Impact] - [Fix]
-
-**Low Issues:**
-- [Description] - [Impact] - [Fix]
-
-**Security Score:** [Rating/10]
-
-#### Performance Optimization Opportunities
-
-1. **[Area 1]:** [Current issue] → [Optimization] → [Expected improvement]
-2. **[Area 2]:** [Current issue] → [Optimization] → [Expected improvement]
-
-#### FOSS Alternatives to Paid Dependencies
-
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
-| [Package] | [Alternative] | [List] | [List] | [Replace/Keep/Evaluate] |
-
-### SEO & Content Research
-
-#### Relevant Keywords
-
-**Primary Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-**Long-tail Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-#### Competitor Content Strategies
-
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| [Name] | [Type] | [Frequency] | [Metrics] | [What to learn] |
-
-#### Partnership Opportunities
-
-1. **[Partner 1]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-2. **[Partner 2]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-#### Affiliate Programs
-
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| [Name] | [Rate] | [Days] | [Rating/5] |
+#### Expected Output Formatting
+The CLI will extract and output the following in a clear, tabular or list format:
+- **Total Credit Remaining:** (e.g., `$25.40`)
+- **This-Month Spend:** (Extracted from the credits API response)
+- **Last-7-Day Spend by Model:** (Formatted directly from the API response objects)
 
 ---
 
 ## Step 3: Requirements from revvel-standards
 
-### Prime Directive Alignment
-
-**10M by 2030 Goal:**
-- Current contribution: [$amount/month or $0]
-- Potential contribution: [$amount/month]
-- Path to contribution: [Strategy]
-
-**$2000+/month Target (Start: May 1, 2026):**
-- Revenue streams identified: [Count]
-- Estimated monthly revenue: [$amount]
-- Time to first revenue: [Weeks/months]
-
 ### Obsessive Autonomy Assessment
 
-**Current Autonomy Level:** [Low/Medium/High]
-
-**Blockers Identified:**
-1. [Blocker 1]: [Impact] → [Solution]
-2. [Blocker 2]: [Impact] → [Solution]
+**Current Autonomy Level:** High
 
 **Autonomous Capabilities:**
-- [Capability 1]: [Status]
-- [Capability 2]: [Status]
-
-### Self-Healing Capabilities
-
-**Current Self-Healing:** [None/Partial/Full]
-
-**Implemented:**
-- [Feature 1]: [Description]
-- [Feature 2]: [Description]
-
-**Missing:**
-- [Feature 1]: [Description and priority]
-- [Feature 2]: [Description and priority]
+- The CLI tool operates entirely on local environment variables (`OPENROUTER_API_KEY`) without requiring external configuration files or setup wizards.
 
 ### Ship to Market Status
 
-**Current Status:** [Not Ready / Needs Work / Ready / Deployed]
-
 **Readiness Checklist:**
-- [ ] All tests passing
-- [ ] No linting errors
-- [ ] No security vulnerabilities
-- [ ] Deployment configured
-- [ ] UI verified
-- [ ] Documentation complete
-- [ ] TEST section in README
-- [ ] Vercel URL available
+- [ ] Initialize `tools/revvel-credits` with `package.json` specifying `"bin": { "revvel-credits": "./bin/revvel-credits.js" }`
+- [ ] Implement `fetch` to OpenRouter `/api/v1/credits`
+- [ ] Parse and format response data (Total, This Month, Last 7 Days)
+- [ ] Add basic error handling for missing `OPENROUTER_API_KEY`
+- [ ] Test execution locally via `node ./bin/revvel-credits.js`
+- [ ] Verify `npm i -g` installation behaves correctly
+- [ ] Add README.md with usage instructions
+- [ ] Ensure no heavy dependencies are added
 
 ---
 
-## Step 4: Redevelopment & Redesign
+## Step 4: Development & Implementation Plan
 
-### Fix All Errors
+### Step-by-Step Build Plan
 
-#### Test Failures
+1. **Initialize Project:**
+   Create the directory `tools/revvel-credits` and run `npm init -y`. Update `package.json` to include the `bin` mapping and set `"type": "module"`.
 
-**Current Status:** [Pass/Fail/No tests]
+2. **Develop CLI Entry Point (`bin/revvel-credits.js`):**
+   - Read the `OPENROUTER_API_KEY` from `process.env`.
+   - If missing, throw a clear error: `Error: OPENROUTER_API_KEY environment variable is missing.`
+   - Make a `GET` request to `https://openrouter.ai/api/v1/credits`.
+   - Handle network errors and non-200 responses gracefully.
 
-**Failures Identified:**
-1. [Test 1]: [Issue] → [Fix]
-2. [Test 2]: [Issue] → [Fix]
+3. **Data Parsing & Formatting:**
+   - Parse the JSON response.
+   - Extract `total_usage`, `total_credits`, and format them as currency.
+   - Iterate through model usage statistics (if provided by the endpoint) to summarize the last 7 days.
+   - Use standard `console.log` with simple ASCII formatting for readability.
 
-#### Linting Errors
-
-**Current Status:** [Pass/Fail/No linter]
-
-**Errors Identified:**
-1. [Error 1]: [Location] → [Fix]
-2. [Error 2]: [Location] → [Fix]
-
-#### Security Vulnerabilities
-
-**Critical:** [Count]
-1. [Vulnerability]: [Impact] → [Fix]
-
-**High:** [Count]
-**Medium:** [Count]
-**Low:** [Count]
-
-#### Deployment Issues
-
-**Current Status:** [Working/Broken/Not configured]
-
-**Issues Identified:**
-1. [Issue 1]: [Impact] → [Fix]
-2. [Issue 2]: [Impact] → [Fix]
-
-### Enhance Features
-
-#### Missing Features from Research
-
-1. **[Feature 1]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-2. **[Feature 2]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-#### UX/UI Improvements
-
-**Current UX Score:** [Rating/10]
-
-**Improvements:**
-1. [Improvement 1]: [Issue] → [Solution] → [Impact]
-2. [Improvement 2]: [Issue] → [Solution] → [Impact]
-
-#### Accessibility Features
-
-**Current Accessibility:** [WCAG level]
-
-**Required:**
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
-
-#### Performance Optimization
-
-**Current Performance:**
-- Lighthouse Score: [Rating/100]
-- Load Time: [Seconds]
-- Bundle Size: [KB]
-
-**Optimizations:**
-1. [Optimization 1]: [Improvement] → [Expected gain]
-2. [Optimization 2]: [Improvement] → [Expected gain]
-
-### Add Monetization
-
-#### Affiliate Links Integration
-
-**revvel-affiliate-links MCP:**
-- [ ] MCP server configured
-- [ ] Affiliate links identified
-- [ ] Links integrated in content
-- [ ] Tracking configured
-
-**Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
-
-#### Payment Integration
-
-**Gumroad:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**LemonSqueezy:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**Recommended Platform:** [Gumroad/LemonSqueezy/Both] - [Reason]
-
-#### Tracking & Analytics
-
-**Current Analytics:** [None/Partial/Full]
-
-**To Implement:**
-- [ ] Google Analytics 4
-- [ ] Plausible Analytics (privacy-friendly alternative)
-- [ ] Revenue tracking
-- [ ] Conversion tracking
-- [ ] User behavior tracking
-- [ ] A/B testing setup
+4. **Testing:**
+   - Run manual tests simulating successful and failed API responses.
+   - Verify Node 20+ compatibility.
 
 ---
 
-## Step 5: Deployment Verification
+## Step 5: Documentation Requirements
 
-### Vercel Deployment
+### README.md Template
 
-**Current Status:** [Deployed/Not deployed/Needs fix]
-
-**Configuration:**
-- [ ] `vercel.json` configured
-- [ ] Environment variables set
-- [ ] Build command correct
-- [ ] Output directory correct
-- [ ] Deployment protection configured
-
-**URLs:**
-- **Production:** [URL or "Not deployed"]
-- **Preview:** [URL or "Not configured"]
-
-**Deployment Issues:**
-[List any issues and fixes]
-
-### UI Verification
-
-**Verification Checklist:**
-- [ ] Homepage renders correctly
-- [ ] All pages render correctly
-- [ ] All forms work
-- [ ] Authentication works (if applicable)
-- [ ] API endpoints respond correctly
-- [ ] Mobile responsive (tested on [devices])
-- [ ] Tablet responsive
-- [ ] Desktop responsive
-- [ ] No console errors
-- [ ] No 404 errors
-- [ ] Images load correctly
-- [ ] Links work correctly
-
-**Issues Found:**
-1. [Issue 1]: [Description] → [Fix]
-2. [Issue 2]: [Description] → [Fix]
-
-**Screenshots:**
-[Link to screenshots or indicate if captured]
-
----
-
-## Step 6: Documentation Requirements
-
-### TEST Section
-
-**Current README Status:** [Has TEST section / Missing / Needs update]
-
-**Required Format:**
 ```markdown
-## Test
+# revvel-credits
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+A fast, zero-dependency CLI tool for checking OpenRouter API spend and remaining credits directly from your terminal.
+
+## Installation
+
+```bash
+npm install -g revvel-credits
+```
+*(Or run directly via `npx revvel-credits`)*
+
+## Usage
+
+Ensure your OpenRouter API key is exported in your environment:
+
+```bash
+export OPENROUTER_API_KEY="your-api-key"
 ```
 
-**Action Required:** [None / Add section / Update URLs]
+Then run:
 
-### Deployment Section
-
-**Current README Status:** [Has deployment section / Missing / Needs update]
-
-**Required Format:**
-```markdown
-## Deployment
-
-**Production:** https://{repo-name}.vercel.app
-**Preview:** https://{repo-name}-preview.vercel.app
-**Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
+```bash
+revvel-credits
 ```
 
-**Action Required:** [None / Add section / Update URLs]
+## Output
 
-### Additional Documentation
-
-**Existing Documentation:**
-- [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LICENSE
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
-- [ ] API documentation
-- [ ] User guide
-
-**Missing Documentation:**
-[List what needs to be created]
+Prints:
+- Total remaining credit
+- This month's spend
+- Last 7 days of spend, broken down by model
+```
 
 ---
 
-## Step 7: Save This Prompt & Findings
-
-### Saved Locations
-
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #[number]
+## Step 6: Save This Prompt & Findings
 
 ### Implementation Tasks Created
 
 **Issues Created:**
-1. [Issue #X]: [Title] - [Priority]
-2. [Issue #Y]: [Title] - [Priority]
+1. [Issue #13342]: Build revvel-credits CLI for OpenRouter spend visibility - P1
 
 ### Next Steps
 
-1. [ ] [Action 1] - [Owner] - [Deadline]
-2. [ ] [Action 2] - [Owner] - [Deadline]
-3. [ ] [Action 3] - [Owner] - [Deadline]
+1. [ ] Create `tools/revvel-credits` directory and `package.json`
+2. [ ] Implement the OpenRouter API fetch logic in `bin/revvel-credits.js`
+3. [ ] Test the CLI locally with a valid `OPENROUTER_API_KEY`
+4. [ ] Commit the changes and submit the PR for review
 
 ---
 
@@ -484,95 +180,22 @@
 
 ### Immediate Actions (P0)
 
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-### Short-Term Actions (P1) - Within 1-2 Weeks
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
-### Long-Term Actions (P2) - Within 1-2 Months
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
----
-
-## Risks & Considerations
-
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
-
----
-
-## Alternatives Considered
-
-### Alternative 1: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
-### Alternative 2: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
----
-
-## References
-
-### Documentation
-- [AGENTS.md](/docs/AGENTS.md)
-- [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
-- [promptforproject.md](/promptforproject.md)
-
-### External Resources
-- [Resource 1]: [Description]
-- [Resource 2]: [Description]
-- [Resource 3]: [Description]
-
-### Research Sources
-- [Source 1]: [Description]
-- [Source 2]: [Description]
+1. **Implement `revvel-credits` CLI**
+   - **Why:** Solves the immediate pain point of lack of cost visibility for OpenRouter usage across various repository workflows.
+   - **How:** Write a lightweight Node.js script using native `fetch` and publish/link it via npm.
+   - **Effort:** 1-2 hours
 
 ---
 
 ## Status Summary
 
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
+**Research Status:** ✅ Complete
+**Implementation Priority:** P1
+**Effort Required:** 1-2 hours
+**Ship-to-Market Ready:** Yes
 **Approval Required:** @midnghtsapphire
 
 ---
 
 **Last Updated:** 2026-05-06  
-**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+**Next Review:** After implementation
