@@ -68,7 +68,11 @@ jobs:
 
       - name: Invoke Jules
         if: env.JULES_API_KEY != ''
-        uses: BeksOmega/jules-action@v1
+        # NOTE: pin to a real published tag. The action repo does not have a
+        # floating `@v1` ref — only versioned tags (`@v1.0.0`, `@v0.1.x`).
+        # `@v1` fails the entire job at "Set up job" before any step runs.
+        # The other two invocations below already use `@v1.0.0`.
+        uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: ${{ github.event.inputs.prompt }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
