@@ -2,8 +2,8 @@ name: 🎛️ PR State Orchestrator
 
 # ─────────────────────────────────────────────────────────────────
 # Central brain that chains ALL existing PR lifecycle workflows.
-# Reacts to: PR events, review events, check_suite completions
-# and label changes — then applies correct labels + drives state.
+# Reacts to: PR events, review events, check_suite AND check_run
+# completions, label changes — then applies correct labels + drives state.
 #
 # STATE MACHINE:
 #   opened/draft         → 🚧 status:draft
@@ -26,20 +26,27 @@ on:
       - converted_to_draft
       - synchronize
       - closed
+      - labeled
   pull_request_review:
     types: [submitted]
   check_suite:
     types: [completed]
+  check_run:
+    types: [completed]
+  schedule:
+    # Re-sync every 30 min to catch any PRs that drifted out of state
+    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to re-evaluate'
-        required: true
+        description: 'PR number to re-evaluate (leave blank to re-sync all open PRs)'
+        required: false
 
 permissions:
   pull-requests: write
   contents: read
   issues: write
+  checks: read
 
 jobs:
 
@@ -68,7 +75,35 @@ jobs:
             });
             const currentLabels = labelData.map(l => l.name);
 
+            const ALL_STATUS = [
+              'status:draft','status:waiting-for-review','status:approved',
+              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+            ];
+
+            async function ensureLabelsExist(labels) {
+              const palette = {
+                'status:draft':              { color: 'BFD4F2', description: '🚧 Draft — not ready for review' },
+                'status:waiting-for-review': { color: '0075CA', description: '👀 Ready — awaiting review' },
+                'status:approved':           { color: '0E8A16', description: '✅ Approved by reviewer' },
+                'status:needs-action':       { color: 'E4E669', description: '🔧 Changes requested' },
+                'status:checks-failing':     { color: 'D93F0B', description: '❌ CI checks failing' },
+                'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
+                'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
+              };
+              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+              const existing = new Set(repoLabels.map(l => l.name));
+              for (const label of labels) {
+                if (!existing.has(label) && palette[label]) {
+                  try {
+                    await github.rest.issues.createLabel({ owner, repo, name: label, ...palette[label] });
+                    console.log(`🏷️ Created label: ${label}`);
+                  } catch(e) { console.log(`⚠️ Could not create label "${label}": ${e.message}`); }
+                }
+              }
+            }
+
             async function addLabel(label) {
+              await ensureLabelsExist([label]);
               if (!currentLabels.includes(label)) {
                 try {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
@@ -85,6 +120,12 @@ jobs:
                   console.log(`🗑️ Removed: ${label}`);
                 } catch (e) {}
               }
+            }
+
+            // Skip label events that are just our own automation echoing back
+            if (action === 'labeled' || action === 'unlabeled') {
+              console.log('🏷️ Label event — skipping to avoid echo loops');
+              return;
             }
 
             if (action === 'converted_to_draft' || (action === 'opened' && isDraft)) {
@@ -119,11 +160,7 @@ jobs:
             }
 
             if (action === 'closed') {
-              const allStatus = [
-                'status:draft','status:waiting-for-review','status:approved',
-                'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-              ];
-              for (const l of allStatus) await removeLabel(l);
+              for (const l of ALL_STATUS) await removeLabel(l);
               console.log(pr.merged ? '🎉 Merged — all status labels cleared' : '🚫 Closed — labels cleared');
             }
 
@@ -166,11 +203,24 @@ jobs:
             if (state === 'approved') {
               await addLabel('status:approved');
               for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
-              if (currentLabels.includes('status:checks-passing')) {
+              // Re-check live CI status to immediately promote to ready-to-merge if checks already passed
+              const { data: checkRuns } = await github.rest.checks.listForRef({
+                owner, repo, ref: pr.head.sha, per_page: 100
+              });
+              const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
+              const failing = runs.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+              const passing = runs.filter(r => r.conclusion === 'success');
+              if (failing.length === 0 && passing.length > 0) {
+                await addLabel('status:checks-passing');
+                await removeLabel('status:checks-failing');
                 await addLabel('status:ready-to-merge');
-                console.log('🚀 Approved + checks passing = READY TO MERGE');
+                console.log('🚀 Approved + checks already passing = READY TO MERGE');
+              } else if (failing.length > 0) {
+                await addLabel('status:checks-failing');
+                await removeLabel('status:checks-passing');
+                console.log('✅ Approved — but checks are failing; not yet ready');
               } else {
-                console.log('✅ Approved — waiting for checks to pass');
+                console.log('✅ Approved — CI still running; will promote when checks complete');
               }
             }
 
@@ -181,10 +231,10 @@ jobs:
             }
 
   # ─────────────────────────────────────────────────────────────────
-  # JOB 3: Handle check_suite completions → update CI labels
+  # JOB 3a: Handle check_suite completions → update CI labels
   # ─────────────────────────────────────────────────────────────────
   check-suite-handler:
-    name: ✅ CI Check Labels
+    name: ✅ CI Check Suite Labels
     if: github.event_name == 'check_suite'
     runs-on: ubuntu-latest
     steps:
@@ -244,11 +294,195 @@ jobs:
             }
 
   # ─────────────────────────────────────────────────────────────────
-  # JOB 4: Manual re-evaluate any PR (workflow_dispatch)
+  # JOB 3b: Handle individual check_run completions (catches runners
+  # that don't emit check_suite events, e.g. promptfoo, mabl, etc.)
+  # ─────────────────────────────────────────────────────────────────
+  check-run-handler:
+    name: ✅ CI Check Run Labels
+    if: github.event_name == 'check_run'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply check_run result labels to matching PRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run = context.payload.check_run;
+            const conclusion = run.conclusion;
+            const headSha = run.head_sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            if (!conclusion || ['skipped','neutral','stale','action_required'].includes(conclusion)) {
+              console.log(`ℹ️ check_run conclusion: ${conclusion} — no action`);
+              return;
+            }
+
+            const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
+            if (matchingPRs.length === 0) return;
+
+            for (const pr of matchingPRs) {
+              const prNumber = pr.number;
+
+              // Get full picture of ALL checks for this SHA before deciding
+              const { data: checkRuns } = await github.rest.checks.listForRef({
+                owner, repo, ref: headSha, per_page: 100
+              });
+              const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+              const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+              const passing = completed.filter(r => r.conclusion === 'success');
+              const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              const currentLabels = labelData.map(l => l.name);
+
+              async function addLabel(label) {
+                if (!currentLabels.includes(label)) {
+                  try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
+                }
+              }
+              async function removeLabel(label) {
+                if (currentLabels.includes(label)) {
+                  try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
+                }
+              }
+
+              if (failing.length > 0) {
+                await addLabel('status:checks-failing');
+                for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
+                console.log(`❌ PR #${prNumber}: ${failing.length} check(s) failing`);
+              } else if (pending.length === 0 && passing.length > 0) {
+                // All checks done and all passing
+                await addLabel('status:checks-passing');
+                await removeLabel('status:checks-failing');
+                console.log(`✅ PR #${prNumber}: ALL checks PASSING`);
+                if (currentLabels.includes('status:approved')) {
+                  await addLabel('status:ready-to-merge');
+                  console.log(`🚀 PR #${prNumber}: approved + passing = READY TO MERGE`);
+                }
+              } else {
+                console.log(`⏳ PR #${prNumber}: ${pending.length} check(s) still running`);
+              }
+            }
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 4: Cron / manual re-sync — re-evaluates ALL open PRs to
+  # catch any state drift (e.g. PRs stuck in wrong label state)
+  # ─────────────────────────────────────────────────────────────────
+  resync-all-prs:
+    name: 🔄 Re-sync All Open PRs
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-evaluate every open PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const ALL_STATUS = [
+              'status:draft','status:waiting-for-review','status:approved',
+              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+            ];
+
+            const { data: openPRs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            console.log(`🔍 Re-syncing ${openPRs.length} open PRs...`);
+
+            for (const pr of openPRs) {
+              const prNumber = pr.number;
+              try {
+                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                let currentLabels = labelData.map(l => l.name);
+
+                async function addLabel(label) {
+                  if (!currentLabels.includes(label)) {
+                    try {
+                      await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
+                      currentLabels.push(label);
+                    } catch(e) {}
+                  }
+                }
+                async function removeLabel(label) {
+                  if (currentLabels.includes(label)) {
+                    try {
+                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
+                      currentLabels = currentLabels.filter(l => l !== label);
+                    } catch(e) {}
+                  }
+                }
+
+                // 1. Draft?
+                if (pr.draft) {
+                  await addLabel('status:draft');
+                  for (const l of ALL_STATUS.filter(s => s !== 'status:draft')) await removeLabel(l);
+                  console.log(`  PR #${prNumber}: DRAFT`);
+                  continue;
+                }
+                await removeLabel('status:draft');
+
+                // 2. Review state — latest per-reviewer decision wins
+                const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+                const latestReviews = {};
+                for (const r of reviews) {
+                  if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
+                }
+                const states = Object.values(latestReviews);
+                const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
+                const needsChanges = states.includes('CHANGES_REQUESTED');
+
+                if (needsChanges) {
+                  await addLabel('status:needs-action');
+                  for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
+                } else if (isApproved) {
+                  await addLabel('status:approved');
+                  for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
+                } else {
+                  await addLabel('status:waiting-for-review');
+                  for (const l of ['status:approved','status:needs-action','status:ready-to-merge']) await removeLabel(l);
+                }
+
+                // 3. CI state — full picture from check runs
+                const { data: checkRuns } = await github.rest.checks.listForRef({
+                  owner, repo, ref: pr.head.sha, per_page: 100
+                });
+                const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+                const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+                const passing = completed.filter(r => r.conclusion === 'success');
+                const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+
+                if (failing.length > 0) {
+                  await addLabel('status:checks-failing');
+                  for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
+                  console.log(`  PR #${prNumber}: ❌ ${failing.length} check(s) failing`);
+                } else if (pending.length === 0 && passing.length > 0) {
+                  await addLabel('status:checks-passing');
+                  await removeLabel('status:checks-failing');
+                  if (isApproved) {
+                    await addLabel('status:ready-to-merge');
+                    console.log(`  PR #${prNumber}: 🚀 READY TO MERGE`);
+                  } else {
+                    console.log(`  PR #${prNumber}: ✅ checks passing, awaiting approval`);
+                  }
+                } else if (pending.length > 0) {
+                  console.log(`  PR #${prNumber}: ⏳ ${pending.length} check(s) still running`);
+                } else {
+                  console.log(`  PR #${prNumber}: no check runs found`);
+                }
+
+              } catch(err) {
+                console.log(`  PR #${prNumber}: ⚠️ error — ${err.message}`);
+              }
+            }
+            console.log('✅ Re-sync complete');
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 5: Manual re-evaluate a single PR (workflow_dispatch with pr_number)
   # ─────────────────────────────────────────────────────────────────
   manual-reevaluate:
-    name: 🔄 Manual Re-evaluate PR
-    if: github.event_name == 'workflow_dispatch'
+    name: 🔄 Manual Re-evaluate Single PR
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
     runs-on: ubuntu-latest
     steps:
       - name: Re-evaluate PR state from scratch
@@ -263,29 +497,38 @@ jobs:
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
             const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-            const currentLabels = labelData.map(l => l.name);
+            let currentLabels = labelData.map(l => l.name);
+
+            const ALL_STATUS = [
+              'status:draft','status:waiting-for-review','status:approved',
+              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+            ];
 
             async function addLabel(label) {
               if (!currentLabels.includes(label)) {
-                try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
+                try {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
+                  currentLabels.push(label);
+                  console.log(`✅ Added: ${label}`);
+                } catch(e) {}
               }
             }
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
-                try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
+                try {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
+                  currentLabels = currentLabels.filter(l => l !== label);
+                  console.log(`🗑️ Removed: ${label}`);
+                } catch(e) {}
               }
             }
 
-            // Clear all status labels
-            const allStatus = [
-              'status:draft','status:waiting-for-review','status:approved',
-              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-            ];
-            for (const l of allStatus) await removeLabel(l);
+            // Clear all status labels first
+            for (const l of ALL_STATUS) await removeLabel(l);
 
             if (pr.draft) { await addLabel('status:draft'); console.log(`PR #${prNumber}: DRAFT`); return; }
 
-            // Determine review state from latest per-reviewer decisions
+            // Determine review state
             const latestReviews = {};
             for (const r of reviews) {
               if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
@@ -294,9 +537,13 @@ jobs:
             const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
             const needsChanges = states.includes('CHANGES_REQUESTED');
 
-            if (needsChanges) { await addLabel('status:needs-action'); }
-            else if (isApproved) { await addLabel('status:approved'); }
-            else { await addLabel('status:waiting-for-review'); }
+            if (needsChanges) {
+              await addLabel('status:needs-action');
+            } else if (isApproved) {
+              await addLabel('status:approved');
+            } else {
+              await addLabel('status:waiting-for-review');
+            }
 
             // Determine CI state from check runs
             const { data: checkRuns } = await github.rest.checks.listForRef({
@@ -304,15 +551,21 @@ jobs:
             });
             const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
             const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+            const passing = completed.filter(r => r.conclusion === 'success');
+            const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
             if (failing.length > 0) {
               await addLabel('status:checks-failing');
               console.log(`PR #${prNumber}: ${failing.length} check(s) failing`);
-            } else if (completed.length > 0) {
+            } else if (pending.length === 0 && passing.length > 0) {
               await addLabel('status:checks-passing');
               if (isApproved) {
                 await addLabel('status:ready-to-merge');
                 console.log(`PR #${prNumber}: READY TO MERGE 🚀`);
+              } else {
+                console.log(`PR #${prNumber}: checks passing, awaiting approval`);
               }
+            } else if (pending.length > 0) {
+              console.log(`PR #${prNumber}: ${pending.length} check(s) still running`);
             }
             console.log(`PR #${prNumber} re-evaluated successfully`);
