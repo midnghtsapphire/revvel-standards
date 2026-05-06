@@ -184,7 +184,7 @@ jobs:
               #     already shows a "Required" indicator natively)
               #   - `_No response_` placeholder for blank textareas
               pattern = (
-                  rf"###\s+{re.escape(label)}"
+                  rf"(?:^|\s)###\s+{re.escape(label)}"
                   rf"(?:\s*\([^)]*\))?"   # optional " (required)" or similar
                   rf"\s*\n+([^\n#].*?)(?=\n###|\n*$)"
               )

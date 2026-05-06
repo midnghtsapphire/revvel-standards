@@ -85,7 +85,7 @@ jobs:
             // trailing parenthetical annotations and case (matches the same
             // regex pattern as `wr-auto-classify.yml`).
             const sectionRegex =
-              /^###\s+Output Type[^\n]*\n+([^\n#]+)/im;
+              /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
             if (!m) {
               core.info('No Output Type section found in issue body — skipping route.');
