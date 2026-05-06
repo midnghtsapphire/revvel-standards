@@ -124,7 +124,7 @@ jobs:
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             
@@ -321,7 +321,7 @@ jobs:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
           TO_ROUTE_JSON: ${{ steps.discover.outputs.to_route }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
             const toRoute = JSON.parse(process.env.TO_ROUTE_JSON || '[]');
