@@ -63,7 +63,7 @@ jobs:
           # Prefer ADMIN_GITHUB_TOKEN when present — it can open issues
           # in external repos. Falls back to the default GITHUB_TOKEN
           # for the in-repo mirror issues.
-          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           SELF_REPO: ${{ github.repository }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
