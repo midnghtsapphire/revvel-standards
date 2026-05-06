@@ -48,7 +48,7 @@ cp templates/cicd/prompt-eval.yml .github/workflows/
 
 ### Skill Testing with PromptFoo
 
-For testing Revvel skills (ephemeral agents), use PromptFoo with Claude 3.5 Sonnet:
+For testing Revvel skills (ephemeral agents), use PromptFoo with Claude 3.7 Sonnet:
 
 ```bash
 # Run skill tests
@@ -60,7 +60,7 @@ promptfoo eval --config skills/my-skill/tests/promptfoo.yml
 
 **Why PromptFoo over PandaOps:**
 - Tests actual skill/prompt outputs, not code diffs
-- Claude 3.5 Sonnet via OpenRouter as primary
+- Claude 3.7 Sonnet via OpenRouter as primary
 - Red-teaming security built-in
 - GitHub Action for CI automation
 
