@@ -1,8 +1,8 @@
 # Agent Fallback System — Quick Start
 
-Automatic agent fallback: **Devin AI → Cursor → OpenRouter**
+Automatic agent fallback: **OpenHands AI → Cursor → OpenRouter**
 
-When Devin hits rate limits, the system automatically switches to Cursor, then OpenRouter, ensuring zero-downtime automation.
+When OpenHands hits rate limits, the system automatically switches to Cursor, then OpenRouter, ensuring zero-downtime automation.
 
 ---
 
@@ -22,12 +22,12 @@ cd revvel-standards
 gh workflow run credential-gatekeeper.yml
 
 # Option B: Set manually
-gh secret set DEVIN_API_KEY --repo midnghtsapphire/YOUR-REPO
+gh secret set OpenHands_API_KEY --repo midnghtsapphire/YOUR-REPO
 gh secret set CURSOR_API_KEY --repo midnghtsapphire/YOUR-REPO
 gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/YOUR-REPO
 
 # Option C: From Vault
-vault kv get -field=api_key revvel/shared/llm/devin | gh secret set DEVIN_API_KEY
+vault kv get -field=api_key revvel/shared/llm/OpenHands | gh secret set OpenHands_API_KEY
 vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_KEY
 vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY
 ```
@@ -65,7 +65,7 @@ The agent-fallback workflow **automatically triggers** on:
 ## 📋 Features
 
 ✅ **Automatic triggering** — No manual workflow dispatch needed
-✅ **Automatic fallback** — No manual intervention when Devin hits limits
+✅ **Automatic fallback** — No manual intervention when OpenHands hits limits
 ✅ **Zero downtime** — Always have a working agent
 ✅ **Rate limit detection** — Smart retry with exponential backoff
 ✅ **Monitoring** — Track fallback events automatically
@@ -76,7 +76,7 @@ The agent-fallback workflow **automatically triggers** on:
 
 ## 🔄 How It Works
 
-1. **Try Devin AI** (primary, most capable)
+1. **Try OpenHands AI** (primary, most capable)
    - Handles complex multi-file refactors
    - Full autonomous coding
    - Rate limited: ~10 requests/hour
@@ -120,9 +120,9 @@ gh workflow run agent-fallback.yml --ref main
 ## 🛠️ Files Added
 
 - `.cursorrules` → symlink to `AGENTS.md`
-- `.env.example` — Updated with `DEVIN_API_KEY`, `CURSOR_API_KEY`
+- `.env.example` — Updated with `OpenHands_API_KEY`, `CURSOR_API_KEY`
 - `.github/workflows/agent-fallback.yml` — Fallback workflow
-- `scripts/call-devin-api.sh` — Devin API wrapper
+- `scripts/call-OpenHands-api.sh` — OpenHands API wrapper
 - `scripts/call-cursor-api.sh` — Cursor API wrapper
 - `scripts/setup-agent-fallback.sh` — Setup automation
 - `docs/AGENT_FALLBACK_PROCESS.md` — Complete documentation
@@ -135,7 +135,7 @@ gh workflow run agent-fallback.yml --ref main
 
 | Agent | Best For | Rate Limit | Cost |
 |-------|----------|------------|------|
-| **Devin AI** | Complex features, architecture changes | ~10/hour | High |
+| **OpenHands AI** | Complex features, architecture changes | ~10/hour | High |
 | **Cursor** | Small features, bug fixes | ~100/hour | Medium |
 | **OpenRouter** | Docs, reviews, emergency backup | Unlimited* | Variable |
 
@@ -145,7 +145,7 @@ gh workflow run agent-fallback.yml --ref main
 
 ```bash
 # .env (not committed)
-DEVIN_API_KEY=sk-devin-...
+OpenHands_API_KEY=sk-OpenHands-...
 CURSOR_API_KEY=sk-cursor-...
 OPENROUTER_API_KEY=sk-or-v1-...
 ```
@@ -153,7 +153,7 @@ OPENROUTER_API_KEY=sk-or-v1-...
 ### Vault Paths
 
 ```
-revvel/shared/llm/devin        # Devin API key
+revvel/shared/llm/OpenHands        # OpenHands API key
 revvel/shared/llm/cursor       # Cursor API key
 revvel/shared/llm/openrouter   # OpenRouter API key
 ```
@@ -232,12 +232,12 @@ gh run view <RUN_ID> --log
 gh secret list
 
 # Verify keys work
-curl -H "Authorization: Bearer $DEVIN_API_KEY" https://api.devin.ai/v1/health
+curl -H "Authorization: Bearer $OpenHands_API_KEY" https://api.OpenHands.ai/v1/health
 curl -H "Authorization: Bearer $CURSOR_API_KEY" https://api.cursor.sh/v1/health
 curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models
 ```
 
-### Devin always fails
+### OpenHands always fails
 
 **Symptom:** Fallback events every time
 
@@ -250,9 +250,9 @@ curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1
 ```bash
 # Check quota (if API supports it)
 # Rotate key
-vault kv get revvel/shared/llm/devin | gh secret set DEVIN_API_KEY
+vault kv get revvel/shared/llm/OpenHands | gh secret set OpenHands_API_KEY
 
-# Or skip Devin temporarily
+# Or skip OpenHands temporarily
 gh workflow run agent-fallback.yml -f prefer_agent=cursor
 ```
 

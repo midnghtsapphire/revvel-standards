@@ -4,7 +4,7 @@
 
 > 🛠 **Then read:** [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md) for the operator setup walkthrough that wires the default-field-setter workflows to the schema below.
 
-The Revvel operating model uses a single GitHub Project to track every work request from intake through launch and measurement. The project enforces routing decisions made in either of the two intake forms — the heavy [Work Request](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (primary) and the lightweight [Devin System WR](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) form — and the [Viability Gate](../templates/viability-gate-template.md).
+The Revvel operating model uses a single GitHub Project to track every work request from intake through launch and measurement. The project enforces routing decisions made in either of the two intake forms — the heavy [Work Request](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (primary) and the lightweight [OpenHands System WR](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form — and the [Viability Gate](../templates/viability-gate-template.md).
 
 ## Field Schema
 
@@ -53,7 +53,7 @@ Rules:
 
 ## Field Mapping from the Work Request Forms
 
-Both Work Request forms (`00-work-request.yml` and `10-devin-system-wr.yml`)
+Both Work Request forms (`00-work-request.yml` and `10-OpenHands-system-wr.yml`)
 feed the same set of Project v2 fields via [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml).
 The heavy form makes the four routing modes explicit (Research / Delivery /
 Lifecycle / Commercial); the lightweight form leaves them at `auto-classify`

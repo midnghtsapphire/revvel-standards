@@ -109,8 +109,18 @@ Use this template for every new skill test. Save as `skills/<skill-name>/tests/p
 description: "Skill tests for [SKILL_NAME]"
 
 providers:
-  - id: anthropic:claude-sonnet-4-20251101
+  - id: anthropic/claude-sonnet-4  # Primary - Claude Sonnet 4
     config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
+      max_tokens: 2048
+
+# Fallback: Claude Sonnet 4.5
+  - id: anthropic/claude-sonnet-4.5
+    config:
+      api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
       temperature: 0
       max_tokens: 2048
 
@@ -306,8 +316,10 @@ Add this to every project's GitHub Actions workflow:
       promptfoo eval --config "$config" --no-cache
     done
   env:
-    ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 ```
+
+**Note:** Uses `OPENROUTER_API_KEY` to support Claude Sonnet 4 via OpenRouter. See `templates/cicd/prompt-eval.yml` for the full workflow template.
 
 ---
 

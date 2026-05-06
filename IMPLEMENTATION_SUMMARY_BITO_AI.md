@@ -3,7 +3,7 @@
 ## Issue Request
 "[WR] bito should be handling api retrieval and everything discussed"
 
-**Task:** Wire in bito ai, test it, make sure working with devin-ai-integration[bot]
+**Task:** Wire in bito ai, test it, make sure working with OpenHands-ai-integration[bot]
 
 ## What Was Implemented
 

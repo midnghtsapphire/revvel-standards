@@ -11,7 +11,7 @@
 
 name: AI PR Review (OpenRouter)
 
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "one of the many agents needs to be
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "one of the many agents needs to be
 # assigned to my review portion, and really do the work of reviewing"):
 # BITO AI is now the sole assigned PR reviewer (see bito-ai.yml). This OpenRouter
 # reviewer is kept as a manual fallback only — re-enable the `pull_request`

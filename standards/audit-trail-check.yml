@@ -1,0 +1,111 @@
+# GitHub Actions: Audit Trail Enforcement
+# Checks PRs for commented-out code blocks missing REVVEL-DISABLED headers
+# Intended location: .github/workflows/audit-trail-check.yml
+# Copy this file there to activate enforcement.
+#
+# Standard: RVS-AGENT-001
+# See: standards/COMMENT-DONT-DELETE.md
+
+name: Revvel Audit Trail Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-disabled-headers:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
+
+      - name: Check for bare comment-out blocks without REVVEL-DISABLED header
+        id: audit_check
+        run: |
+          python3 << 'EOF'
+          import re, sys
+
+          with open('/tmp/pr.diff', 'r', errors='replace') as f:
+              diff = f.read()
+
+          added_lines = [l[1:] for l in diff.split('\n') if l.startswith('+') and not l.startswith('++')]
+
+          violations = []
+          consec = 0
+          block_start = 0
+
+          for i, line in enumerate(added_lines):
+              stripped = line.strip()
+              is_comment = (
+                  stripped.startswith('// ') or
+                  stripped.startswith('# ') or
+                  stripped.startswith('* ') or
+                  stripped == '//' or stripped == '#'
+              )
+              if is_comment:
+                  if consec == 0:
+                      block_start = i
+                  consec += 1
+              else:
+                  if consec >= 3:
+                      context = added_lines[max(0, block_start-5):block_start+consec]
+                      if not any('REVVEL-DISABLED' in l for l in context):
+                          violations.append(f'Line ~{block_start}: {consec} consecutive commented lines without REVVEL-DISABLED header')
+                  consec = 0
+
+          if violations:
+              with open('/tmp/violations.txt', 'w') as f:
+                  f.write('\n'.join(violations))
+              print('AUDIT_FAIL=true')
+              sys.exit(1)
+          else:
+              print('AUDIT_PASS=true')
+          EOF
+
+      - name: Comment on PR if violations found
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let violations = '';
+            try { violations = fs.readFileSync('/tmp/violations.txt', 'utf8'); } catch(e) { violations = 'See workflow logs'; }
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `⚠️ **Audit Trail Violation — Missing REVVEL-DISABLED Headers**
+
+This PR contains commented-out code blocks without a structured \`REVVEL-DISABLED\` header.
+
+**Violations found:**
+\`\`\`
+${violations}
+\`\`\`
+
+**Required format** per [RVS-AGENT-001](../blob/main/standards/COMMENT-DONT-DELETE.md):
+\`\`\`
+// ============================================================
+// REVVEL-DISABLED
+// Author:      <agent or username>
+// Date:        YYYY-MM-DD
+// WR / Issue:  #<number>
+// Tool:        <OpenHands | Copilot | SWE-agent | Cursor | Human>
+// Model:       <model-name>
+// Reason:      <specific reason this was disabled>
+// Status:      <FAILED | BYPASSED | REPLACED | PENDING-REVIEW>
+// Replaced by: <replacement or "nothing yet">
+// ============================================================
+\`\`\`
+
+Update all commented-out blocks with the required header before this PR can merge.`
+            });

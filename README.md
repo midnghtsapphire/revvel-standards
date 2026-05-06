@@ -83,12 +83,12 @@ npm run dashboard open
 
 ## 🚀 Agent Fallback System (NEW!)
 
-**Automatic Devin → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
+**Automatic OpenHands → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
 
 ### Quick Setup
 ```bash
 ./scripts/setup-agent-fallback.sh midnghtsapphire/YOUR-REPO
-gh secret set DEVIN_API_KEY --repo YOUR-REPO
+gh secret set OpenHands_API_KEY --repo YOUR-REPO
 gh secret set CURSOR_API_KEY --repo YOUR-REPO
 ```
 
@@ -99,7 +99,7 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 - ✅ Reusable from other workflows
 
 **Fallback Chain:**
-1. **Devin AI** (primary) — Complex multi-file changes, full autonomy
+1. **OpenHands AI** (primary) — Complex multi-file changes, full autonomy
 2. **Cursor** (secondary) — Fast iteration, smaller features  
 3. **OpenRouter** (tertiary) — Multi-model backup, effectively unlimited
 4. **Manual escalation** — Creates `needs-human` issue with full diagnostics
@@ -826,7 +826,7 @@ The repo-wide operating model that decides whether a request gets built,
 held, or archived — and which deliverable type it ends up as — is documented
 in [`docs/operating-model.md`](docs/operating-model.md).
 
-- Intake: [`Work Request`](.github/ISSUE_TEMPLATE/00-work-request.yml) (primary, anti-under-scoping bundle) and [`Devin System WR`](.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) (lightweight, for internal/agent-driven work)
+- Intake: [`Work Request`](.github/ISSUE_TEMPLATE/00-work-request.yml) (primary, anti-under-scoping bundle) and [`OpenHands System WR`](.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) (lightweight, for internal/agent-driven work)
 - Viability gate: [`templates/viability-gate-template.md`](templates/viability-gate-template.md) — 1–5 rubric across 6 dimensions, BUILD / HOLD / ARCHIVE thresholds
 - Step 0 router: [`promptforproject.md`](promptforproject.md) — runs before any implementation work
 - Invention flow: [`templates/invention-flow-template.md`](templates/invention-flow-template.md)

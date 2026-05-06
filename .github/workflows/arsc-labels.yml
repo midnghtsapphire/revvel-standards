@@ -9,10 +9,7 @@
 #      operation, and optional label list.
 #   2. AUTO-LABEL NEW ISSUES: When an issue is opened without labels it
 #      receives the `triage` label so it appears in the project Backlog.
-#   3. AUTO-LABEL DRAFT PRs: Draft pull requests receive the `draft` label
-#      automatically so the project board can filter them.
-#   4. AUTO-CLEAR DRAFT LABEL: When a draft PR is marked Ready for Review
-#      the `draft` label is removed.
+#   3. (Removed — draft label management is no longer used)
 
 name: ARSC Labels
 
@@ -41,8 +38,6 @@ on:
   # ── Event-driven triggers ───────────────────────────────────────────────────
   issues:
     types: [opened]
-  pull_request:
-    types: [opened, ready_for_review]
 
 permissions:
   issues: write
@@ -109,53 +104,4 @@ jobs:
           operation: add
           labels: triage
 
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 3 — Auto-label draft PRs and remove `draft` on promotion
-  # ────────────────────────────────────────────────────────────────────────────
-  draft-pr-label:
-    name: Manage Draft Label on Pull Requests
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
 
-    steps:
-      - name: Ensure `draft` label exists
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              await github.rest.issues.getLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'draft',
-              });
-            } catch (e) {
-              if (e.status === 404) {
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'draft',
-                  color: 'cccccc',
-                  description: 'Pull request is still a draft',
-                });
-                core.info('Created label: draft');
-              }
-            }
-
-      - name: Add `draft` label when PR is opened as draft
-        if: github.event.action == 'opened' && github.event.pull_request.draft == true
-        uses: wagner-cotta/arsc-label@v1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: add
-          labels: draft
-
-      - name: Remove `draft` label when PR is marked Ready for Review
-        if: github.event.action == 'ready_for_review'
-        uses: wagner-cotta/arsc-label@v1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: remove
-          labels: draft

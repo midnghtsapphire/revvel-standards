@@ -2,7 +2,7 @@
 
 **Status:** Active  
 **Owner:** @midnghtsapphire  
-**Related standards:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md), [`SECURITY.md`](SECURITY.md), [`CREDENTIAL_AUDIT_SYSTEM.md`](CREDENTIAL_AUDIT_SYSTEM.md)  
+**Related standards:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md), [`SECURITY.md`](SECURITY.md), [`CREDENTIAL_AUDIT_SYSTEM.md (merged 2026-05-06)`](CREDENTIAL_AUDIT_SYSTEM.md)  
 **Related workflows:** [`.github/workflows/credential-gatekeeper.yml`](../.github/workflows/credential-gatekeeper.yml), [`templates/cicd/bom-self-heal.yml`](../templates/cicd/bom-self-heal.yml)  
 **Related scripts:** [`scripts/gatekeeper-sync.sh`](../scripts/gatekeeper-sync.sh), [`scripts/gatekeeper-rotate.sh`](../scripts/gatekeeper-rotate.sh)  
 **Related docs:** [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md), [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md)
@@ -420,7 +420,7 @@ revvel-standards/
 1. Secrets must only be stored in approved locations:
    - Doppler (primary — `revvel-standards/prd` for org-wide, `<project>/prd` for project-specific)
    - GitHub Actions Secrets (synced from Doppler by `gatekeeper-sync.sh`)
-   - Devin org secrets (for Devin sessions only)
+   - OpenHands org secrets (for OpenHands sessions only)
 2. Rotating a key requires updating both Doppler AND the registry.
 3. Registry entries must not be deleted while `used_by` is non-empty.
 4. All rotations must be logged in `_ROTATION_LOG.md`.

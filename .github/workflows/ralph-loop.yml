@@ -11,7 +11,7 @@ name: Ralph Loop — Self-Healing CI
 #
 # Reference: skills/ralph-loop/SKILL.md
 #
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
 # The `workflow_run: workflows: ["*"]` trigger combined with workflow-monitor
 # and agent-audit-logger created a 3-way feedback loop: any workflow failing
 # triggered Ralph, Ralph itself ran as a workflow → re-triggered Ralph, etc.

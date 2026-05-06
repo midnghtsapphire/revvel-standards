@@ -1,6 +1,6 @@
 name: OpenRouter Coder
 
-# DEVIN-RESTRUCTURE 2026-05-04 (Audrey ask: "OpenRouter acts as orchestrator for
+# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "OpenRouter acts as orchestrator for
 # code changes"): This is now the SOLE orchestrator that turns a researched WR
 # issue into code changes on a PR. Triggered by:
 #   - `wr:code` label (manual: research is done, push code now)

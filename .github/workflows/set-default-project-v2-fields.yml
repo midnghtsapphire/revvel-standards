@@ -63,13 +63,13 @@ jobs:
 
       # Required Project v2 field node IDs. Example format: PVTSSF_lAHO...
       PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
-      EFFORT_FIELD_ID: ${{ vars.EFFORT_FIELD_ID }}
-      CUSTOM_SELECT_FIELD_ID: ${{ vars.CUSTOM_SELECT_FIELD_ID }}
+      STATUS_FIELD_ID: ${{ vars.STATUS_FIELD_ID }}
+      RESEARCH_MODE_FIELD_ID: ${{ vars.RESEARCH_MODE_FIELD_ID }}
 
       # Required single-select option IDs. Example format: 47fc9ee4.
-      PRIORITY_HIGH_OPTION_ID: ${{ vars.PRIORITY_HIGH_OPTION_ID }}
-      EFFORT_MEDIUM_OPTION_ID: ${{ vars.EFFORT_MEDIUM_OPTION_ID }}
-      CUSTOM_DEFAULT_OPTION_ID: ${{ vars.CUSTOM_DEFAULT_OPTION_ID }}
+      PRIORITY_MEDIUM_OPTION_ID: ${{ vars.PRIORITY_MEDIUM_OPTION_ID }}
+      STATUS_INBOX_OPTION_ID: ${{ vars.STATUS_INBOX_OPTION_ID }}
+      RESEARCH_MODE_STANDARD_OPTION_ID: ${{ vars.RESEARCH_MODE_STANDARD_OPTION_ID }}
 
     steps:
       # Recommended for organization-owned Project v2 boards.
@@ -198,21 +198,21 @@ jobs:
             -f project="${PROJECT_ID}" \
             -f item="${ITEM_ID}" \
             -f priority_field="${PRIORITY_FIELD_ID}" \
-            -f priority_value="${PRIORITY_HIGH_OPTION_ID}" \
-            -f effort_field="${EFFORT_FIELD_ID}" \
-            -f effort_value="${EFFORT_MEDIUM_OPTION_ID}" \
-            -f custom_field="${CUSTOM_SELECT_FIELD_ID}" \
-            -f custom_value="${CUSTOM_DEFAULT_OPTION_ID}" \
+            -f priority_value="${PRIORITY_MEDIUM_OPTION_ID}" \
+            -f status_field="${STATUS_FIELD_ID}" \
+            -f status_value="${STATUS_INBOX_OPTION_ID}" \
+            -f research_mode_field="${RESEARCH_MODE_FIELD_ID}" \
+            -f research_mode_value="${RESEARCH_MODE_STANDARD_OPTION_ID}" \
             -f query='
               mutation(
                 $project: ID!
                 $item: ID!
                 $priority_field: ID!
                 $priority_value: String!
-                $effort_field: ID!
-                $effort_value: String!
-                $custom_field: ID!
-                $custom_value: String!
+                $status_field: ID!
+                $status_value: String!
+                $research_mode_field: ID!
+                $research_mode_value: String!
               ) {
                 set_priority: updateProjectV2ItemFieldValue(input: {
                   projectId: $project
@@ -223,20 +223,20 @@ jobs:
                   projectV2Item { id }
                 }
 
-                set_effort: updateProjectV2ItemFieldValue(input: {
+                set_status: updateProjectV2ItemFieldValue(input: {
                   projectId: $project
                   itemId: $item
-                  fieldId: $effort_field
-                  value: { singleSelectOptionId: $effort_value }
+                  fieldId: $status_field
+                  value: { singleSelectOptionId: $status_value }
                 }) {
                   projectV2Item { id }
                 }
 
-                set_custom_default: updateProjectV2ItemFieldValue(input: {
+                set_research_mode: updateProjectV2ItemFieldValue(input: {
                   projectId: $project
                   itemId: $item
-                  fieldId: $custom_field
-                  value: { singleSelectOptionId: $custom_value }
+                  fieldId: $research_mode_field
+                  value: { singleSelectOptionId: $research_mode_value }
                 }) {
                   projectV2Item { id }
                 }

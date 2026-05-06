@@ -1,4 +1,4 @@
-# Agent Fallback Process — Devin → Cursor → OpenRouter
+# Agent Fallback Process — OpenHands → Cursor → OpenRouter
 
 **Version:** 1.0.0
 **Date:** April 30, 2026
@@ -9,22 +9,22 @@
 
 ## Overview
 
-This document defines the **agent fallback chain** for automated code generation and task execution. When the primary agent (Devin AI) reaches rate limits or becomes unavailable, the system automatically falls back to secondary agents (Cursor, then OpenRouter) to ensure continuous operation.
+This document defines the **agent fallback chain** for automated code generation and task execution. When the primary agent (OpenHands AI) reaches rate limits or becomes unavailable, the system automatically falls back to secondary agents (Cursor, then OpenRouter) to ensure continuous operation.
 
 **Fallback Chain:**
 ```
-Devin AI → Cursor → OpenRouter (multi-model) → Manual escalation
+OpenHands AI → Cursor → OpenRouter (multi-model) → Manual escalation
 ```
 
 ---
 
 ## Why This Matters
 
-**The Problem:** AI coding agents have usage limits. Devin AI has both:
+**The Problem:** AI coding agents have usage limits. OpenHands AI has both:
 - **Rate limits** (requests per minute/hour)
 - **Monthly usage quotas** (total compute time/tokens per billing cycle)
 
-When these limits are reached, workflows that depend on Devin fail, blocking automation and requiring manual intervention.
+When these limits are reached, workflows that depend on OpenHands fail, blocking automation and requiring manual intervention.
 
 **The Solution:** A **fallback chain** that automatically switches to alternative agents when the primary agent is unavailable, ensuring **zero downtime** for automation.
 
@@ -34,7 +34,7 @@ When these limits are reached, workflows that depend on Devin fail, blocking aut
 
 | Agent | Strengths | Use Cases | Rate Limits | Cost |
 |-------|-----------|-----------|-------------|------|
-| **Devin AI** | Full autonomous coding, multi-file refactoring, complex debugging | Large features, architecture changes, system-wide refactors | ~10 requests/hour, monthly quota | High |
+| **OpenHands AI** | Full autonomous coding, multi-file refactoring, complex debugging | Large features, architecture changes, system-wide refactors | ~10 requests/hour, monthly quota | High |
 | **Cursor** | Fast iteration, inline editing, context-aware suggestions | Smaller features, bug fixes, targeted changes | ~100 requests/hour | Medium |
 | **OpenRouter** | Multi-model access (Sonnet, Opus, GPT-4), no hard limits | Code review, documentation, simple changes, emergency backup | Pay-per-use, effectively unlimited | Variable (model-dependent) |
 
@@ -44,11 +44,11 @@ When these limits are reached, workflows that depend on Devin fail, blocking aut
 
 The system switches to the next agent in the chain when:
 
-### Devin AI → Cursor
-- **429 Too Many Requests** response from Devin API
+### OpenHands AI → Cursor
+- **429 Too Many Requests** response from OpenHands API
 - **Quota exceeded** error
 - **No response** within 60 seconds (3 attempts with exponential backoff)
-- **Explicit failure** message from Devin
+- **Explicit failure** message from OpenHands
 
 ### Cursor → OpenRouter
 - **Rate limit exceeded** on Cursor API
@@ -71,19 +71,19 @@ All three API keys must be provisioned in the repository secrets:
 
 ```bash
 # .env.example (variable names only)
-DEVIN_API_KEY=        # Primary agent
+OpenHands_API_KEY=        # Primary agent
 CURSOR_API_KEY=       # Secondary agent
 OPENROUTER_API_KEY=   # Tertiary agent + emergency backup
 ```
 
 **Vault paths:**
-- `revvel/shared/llm/devin`
+- `revvel/shared/llm/OpenHands`
 - `revvel/shared/llm/cursor`
 - `revvel/shared/llm/openrouter`
 
 **Provision locally:**
 ```bash
-vault kv get -field=api_key revvel/shared/llm/devin
+vault kv get -field=api_key revvel/shared/llm/OpenHands
 vault kv get -field=api_key revvel/shared/llm/cursor
 vault kv get -field=api_key revvel/shared/llm/openrouter
 ```
@@ -91,7 +91,7 @@ vault kv get -field=api_key revvel/shared/llm/openrouter
 **Add to GitHub repo:**
 ```bash
 # Use the credential-gatekeeper workflow or manual:
-gh secret set DEVIN_API_KEY --repo midnghtsapphire/revvel-standards
+gh secret set OpenHands_API_KEY --repo midnghtsapphire/revvel-standards
 gh secret set CURSOR_API_KEY --repo midnghtsapphire/revvel-standards
 gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
 ```
@@ -199,13 +199,13 @@ jobs:
           # Handles: issues, pull_request_target, workflow_dispatch, workflow_call
           # Automatically detects event type and extracts issue/PR number
 
-      - name: Try Devin AI
-        id: devin
+      - name: Try OpenHands AI
+        id: OpenHands
         continue-on-error: true
-        run: scripts/call-devin-api.sh
+        run: scripts/call-OpenHands-api.sh
 
       - name: Fallback to Cursor
-        if: steps.devin.outcome == 'failure'
+        if: steps.OpenHands.outcome == 'failure'
         id: cursor
         continue-on-error: true
         run: scripts/call-cursor-api.sh
@@ -220,10 +220,10 @@ jobs:
 
 Three scripts implement the agent calls:
 
-#### `scripts/call-devin-api.sh`
+#### `scripts/call-OpenHands-api.sh`
 ```bash
 #!/bin/bash
-# Call Devin AI with retry logic and rate limit detection
+# Call OpenHands AI with retry logic and rate limit detection
 # Returns exit code 0 on success, non-zero on failure
 ```
 
@@ -263,7 +263,7 @@ Most workflows automatically use the fallback chain:
 Override the fallback and force a specific agent:
 
 ```yaml
-- name: Force Cursor (skip Devin)
+- name: Force Cursor (skip OpenHands)
   env:
     AGENT_OVERRIDE: cursor
     CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
@@ -278,11 +278,11 @@ Check agent availability before starting expensive operations:
 - name: Pre-flight health check
   id: health
   run: |
-    # Check Devin availability
-    if ! scripts/health-check-devin.sh; then
+    # Check OpenHands availability
+    if ! scripts/health-check-OpenHands.sh; then
       echo "agent=cursor" >> $GITHUB_OUTPUT
     else
-      echo "agent=devin" >> $GITHUB_OUTPUT
+      echo "agent=OpenHands" >> $GITHUB_OUTPUT
     fi
 
 - name: Use recommended agent
@@ -301,20 +301,20 @@ Every fallback event is logged and creates a GitHub issue for visibility:
 
 ```yaml
 - name: Log fallback event
-  if: steps.devin.outcome == 'failure'
+  if: steps.OpenHands.outcome == 'failure'
   uses: actions/github-script@v8
   with:
     script: |
       await github.rest.issues.create({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        title: `[AUTO-FALLBACK] Devin → Cursor (#${inputs.issue_number})`,
-        labels: ['auto-fallback', 'agent-monitoring', 'devin-limit'],
-        body: `Devin AI rate limit reached. Automatically failed over to Cursor.
+        title: `[AUTO-FALLBACK] OpenHands → Cursor (#${inputs.issue_number})`,
+        labels: ['auto-fallback', 'agent-monitoring', 'OpenHands-limit'],
+        body: `OpenHands AI rate limit reached. Automatically failed over to Cursor.
 
         **Original task:** #${inputs.issue_number}
         **Timestamp:** ${new Date().toISOString()}
-        **Reason:** ${steps.devin.outputs.error || 'Rate limit or quota exceeded'}
+        **Reason:** ${steps.OpenHands.outputs.error || 'Rate limit or quota exceeded'}
 
         No action required — fallback is working as designed.`
       });
@@ -330,7 +330,7 @@ Track fallback frequency in the `workflow-health-dashboard.yml`:
     # Count fallback events in the last 30 days
     gh issue list --label auto-fallback --state all --created ">=$(date -d '30 days ago' +%Y-%m-%d)"
 
-    # Calculate Devin success rate
+    # Calculate OpenHands success rate
     # Calculate Cursor usage percentage
     # Identify patterns (time of day, task type)
 ```
@@ -341,7 +341,7 @@ Track fallback frequency in the `workflow-health-dashboard.yml`:
 
 ### Smart Agent Routing
 
-Not all tasks require Devin's full capabilities. Route intelligently:
+Not all tasks require OpenHands's full capabilities. Route intelligently:
 
 ```yaml
 - name: Determine optimal agent
@@ -354,7 +354,7 @@ Not all tasks require Devin's full capabilities. Route intelligently:
     elif [ "$TASK_COMPLEXITY" = "medium" ]; then
       echo "agent=cursor" >> $GITHUB_OUTPUT      # Balanced
     else
-      echo "agent=devin" >> $GITHUB_OUTPUT       # Most capable
+      echo "agent=OpenHands" >> $GITHUB_OUTPUT       # Most capable
     fi
 ```
 
@@ -365,12 +365,12 @@ Not all tasks require Devin's full capabilities. Route intelligently:
 
 ### Quota Management
 
-Monitor Devin usage to avoid surprise overages:
+Monitor OpenHands usage to avoid surprise overages:
 
 ```bash
-# Check remaining Devin quota (hypothetical API)
-curl -H "Authorization: Bearer $DEVIN_API_KEY" \
-  https://api.devin.ai/v1/quota
+# Check remaining OpenHands quota (hypothetical API)
+curl -H "Authorization: Bearer $OpenHands_API_KEY" \
+  https://api.OpenHands.ai/v1/quota
 
 # Response:
 # { "used": 450, "limit": 500, "resets_at": "2026-05-01T00:00:00Z" }
@@ -384,7 +384,7 @@ When quota is <10% remaining, **proactively switch** to Cursor for non-critical 
 
 ### Scenario 1: All Agents Fail
 
-**What happens:** Devin, Cursor, and OpenRouter all fail (service outage, invalid keys, etc.)
+**What happens:** OpenHands, Cursor, and OpenRouter all fail (service outage, invalid keys, etc.)
 
 **Recovery:**
 1. Workflow creates a `needs-human` issue
@@ -400,20 +400,20 @@ When quota is <10% remaining, **proactively switch** to Cursor for non-critical 
 
 ### Scenario 2: Partial Agent Failure
 
-**What happens:** Devin works but Cursor fails (expired key, service down)
+**What happens:** OpenHands works but Cursor fails (expired key, service down)
 
 **Recovery:**
-- Workflow continues using Devin
+- Workflow continues using OpenHands
 - Creates a low-priority issue: `[WARNING] Cursor unavailable — fallback chain degraded`
 - Human should fix Cursor config when convenient
 - System continues working (no immediate impact)
 
 ### Scenario 3: Rate Limit Burst
 
-**What happens:** Multiple workflows trigger simultaneously, all hit Devin rate limit
+**What happens:** Multiple workflows trigger simultaneously, all hit OpenHands rate limit
 
 **Recovery:**
-- First N workflows use Devin (up to rate limit)
+- First N workflows use OpenHands (up to rate limit)
 - Next N workflows automatically fall back to Cursor
 - Remaining workflows fall back to OpenRouter
 - Concurrency limits prevent overwhelming any single agent
@@ -445,8 +445,8 @@ jobs:
   rotate:
     runs-on: ubuntu-latest
     steps:
-      - name: Rotate Devin key
-        run: scripts/rotate-devin-key.sh
+      - name: Rotate OpenHands key
+        run: scripts/rotate-OpenHands-key.sh
       - name: Rotate Cursor key
         run: scripts/rotate-cursor-key.sh
       - name: Rotate OpenRouter key
@@ -481,9 +481,9 @@ gh issue list --label auto-fallback --created ">=@{1 hour ago}" | wc -l
 ### Planned Improvements
 
 1. **Predictive Fallback**
-   - Monitor Devin quota usage
+   - Monitor OpenHands quota usage
    - Proactively switch to Cursor when quota <20%
-   - Switch back to Devin when quota resets
+   - Switch back to OpenHands when quota resets
 
 2. **Agent Performance Tracking**
    - Track success rate per agent per task type

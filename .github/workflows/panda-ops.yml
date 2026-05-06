@@ -7,7 +7,7 @@
 
 name: PandaOps AI PR Review
 
-# DEVIN-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
+# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
 # PandaOps disabled to stop reviewer noise. Re-enable the `pull_request`
 # trigger only if BITO AI is unavailable for an extended period.
 

@@ -1,6 +1,6 @@
 # Fork Cleanup Changelog — 2026-04-25
 
-**Performed by:** Devin (gap analysis session)
+**Performed by:** OpenHands (gap analysis session)
 **Total forks before cleanup:** 116
 **Deleted:** 94
 **Preserved:** 22
