@@ -148,7 +148,7 @@ Error → Capture context → Create issue → Try 3 alternatives → Document s
 
 **Models to try (in order):**
 1. `anthropic/claude-sonnet-4`
-2. `anthropic/claude-3.5-sonnet`
+2. `anthropic/claude-sonnet-4`
 3. `openai/gpt-4-turbo-preview`
 
 **Retry strategy:**

@@ -54,7 +54,7 @@ The module includes three pre-configured routing profiles:
 **Use for:** Multi-file edits, bug fixing, refactors, and "take initiative" tasks
 
 **Model fallback chain:**
-1. `anthropic/claude-3.7-sonnet` (primary: independent, high-quality reasoning)
+1. `anthropic/claude-sonnet-4` (primary: independent, high-quality reasoning)
 2. `deepseek/deepseek-v3.2` (fallback: cost-effective, strong coding)
 3. `openai/gpt-5.2-codex` (fallback: debugging specialist)
 
@@ -70,7 +70,7 @@ The module includes three pre-configured routing profiles:
 
 **Model fallback chain:**
 1. `deepseek/deepseek-v3.2` (primary: cost-effective, reliable)
-2. `anthropic/claude-3.7-sonnet` (fallback: higher quality if needed)
+2. `anthropic/claude-sonnet-4` (fallback: higher quality if needed)
 
 **When to use:**
 - Generating boilerplate code
@@ -85,7 +85,7 @@ The module includes three pre-configured routing profiles:
 
 **Model fallback chain:**
 1. `openai/gpt-5.2-codex` (primary: specialized debugging reasoning)
-2. `anthropic/claude-3.7-sonnet` (fallback: alternative perspective)
+2. `anthropic/claude-sonnet-4` (fallback: alternative perspective)
 3. `deepseek/deepseek-v3.2` (fallback: code-focused analysis)
 
 **When to use:**
@@ -159,7 +159,7 @@ Low-level function to call OpenRouter directly with custom model arrays.
 const { callOpenRouter } = require('./scripts/openrouter-routing');
 
 const result = await callOpenRouter({
-  models: ['anthropic/claude-3.7-sonnet', 'openai/gpt-4-turbo'],
+  models: ['anthropic/claude-sonnet-4', 'openai/gpt-4-turbo'],
   messages: [{ role: 'user', content: 'Hello!' }],
 });
 ```
@@ -191,7 +191,7 @@ Get the model fallback chain for a specific profile.
 **Example:**
 ```javascript
 const models = getProfileModels('repo_surgery');
-// ['anthropic/claude-3.7-sonnet', 'deepseek/deepseek-v3.2', 'openai/gpt-5.2-codex']
+// ['anthropic/claude-sonnet-4', 'deepseek/deepseek-v3.2', 'openai/gpt-5.2-codex']
 ```
 
 ## Error Handling
@@ -248,8 +248,8 @@ The module logs routing decisions to `stdout` by default:
 ```
 🔀 Routing profile: repo_surgery
 📝 Description: Multi-file edits, bug fixing, refactors, and "take initiative" tasks
-🎯 Requested models (fallback order): anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
-✅ Model used: anthropic/claude-3.7-sonnet
+🎯 Requested models (fallback order): anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
+✅ Model used: anthropic/claude-sonnet-4
 ```
 
 To suppress logs, use the `silent` option:
@@ -339,7 +339,7 @@ The routing module is designed to be drop-in compatible with existing OpenRouter
 **Before:**
 ```javascript
 const result = await callOpenRouter(
-  'anthropic/claude-3.7-sonnet',
+  'anthropic/claude-sonnet-4',
   messages,
   4000
 );
