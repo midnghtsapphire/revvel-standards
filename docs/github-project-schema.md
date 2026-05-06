@@ -51,7 +51,16 @@ Rules:
 - The `Decision` field is the gate between `Scored` and the build / hold / archive lanes.
 - Build work then progresses through `In Build → In Review → Ready to Launch → Launched → Measuring`.
 
-## Field Mapping from the Work Request Form
+## Field Mapping from the Work Request Forms
+
+Both Work Request forms (`00-work-request.yml` and `10-devin-system-wr.yml`)
+feed the same set of Project v2 fields via [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml).
+The heavy form makes the four routing modes explicit (Research / Delivery /
+Lifecycle / Commercial); the lightweight form leaves them at `auto-classify`
+and the LLM (or fallback defaults if `OPENROUTER_API_KEY` is missing) infers
+the values from the prose. Iteration Mode, Deployment Target, and Launch
+Priority are not present on either form — they are always inferred or
+defaulted.
 
 | Issue form field         | Project field          |
 | ------------------------ | ---------------------- |

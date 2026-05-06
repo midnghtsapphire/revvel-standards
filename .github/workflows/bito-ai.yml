@@ -1,10 +1,9 @@
 # BITO AI — Agentic Code Review with Persistent Repository Memory
 #
-# Runs on every non-draft PR open / synchronize / reopen event and posts
-# a structured review comment using BITO's persistent-memory code-review
-# engine. The review draws on BITO's full indexed knowledge of the
-# repository — not just the changed diff — so convention regressions,
-# security patterns, and project-specific rules are caught consistently.
+# Runs on every non-draft PR (open / synchronize / reopen / ready_for_review)
+# and on PR comments that invoke the agent (e.g. `/review`). Posts a structured
+# review using BITO's persistent-memory code-review engine, drawing on its
+# full indexed knowledge of the repository — not just the changed diff.
 #
 # After review, labels are updated to reflect the outcome:
 #   • bito-ai             — always applied; marks the PR as BITO-reviewed.
@@ -13,19 +12,40 @@
 #   • bito-ai:changes-needed + changes-requested
 #                         — applied when BITO finds blocking issues.
 #
-# Secret required : BITO_API_KEY
-# Skill           : skills/bito-ai/SKILL.md
-# Standard        : standards/BITO_AI_INTEGRATION_STANDARD.md
-# Integration doc : docs/BITO_AI_INTEGRATION.md
-# Env ref         : .env.example (BITO_API_KEY)
+# Action source : github.com/gitbito/CodeReviewAgent
+# Skill         : skills/bito-ai/SKILL.md
+# Standard      : standards/BITO_AI_INTEGRATION_STANDARD.md
+# Integration   : docs/BITO_AI_INTEGRATION.md
+#
+# REQUIRED SECRETS (workflow gracefully skips if either is missing):
+#   • BITO_ACCESS_KEY   — Bito access key from bito.ai → Settings → Access Keys
+#   • GIT_ACCESS_TOKEN  — GitHub Classic PAT with `repo` scope
+#                         (NOTE: BITO does not currently support fine-grained
+#                          tokens, so this MUST be a classic PAT)
+#
+# OPTIONAL repository VARIABLES (read via ${{ vars.* }}):
+#   • STATIC_ANALYSIS_TOOL  — e.g. fb_infer,astral_ruff,mypy
+#   • REVIEW_SCOPE          — e.g. all,changes
+#   • EXCLUDE_BRANCHES      — comma-separated list to skip
+#   • EXCLUDE_FILES         — comma-separated globs to skip
+#   • EXCLUDE_DRAFT_PR      — true / false
+#   • GIT_DOMAIN            — only for GitHub Enterprise / self-hosted
 #
 # Skip a PR from BITO review by including [skip-bito] in the PR title.
+#
+# NOTE on action ref: pinned to gitbito/codereviewagent@main per upstream's
+# canonical workflow recommendation (docs.bito.ai). The action publishes no
+# floating major-version tags; pinning to a SHA introduces stale-image risk
+# because the action runs as a docker container that pulls latest from
+# upstream's registry. Re-evaluate if upstream starts publishing semver tags.
 
 name: BITO AI — Code Review
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -39,96 +59,176 @@ permissions:
   issues: write
 
 concurrency:
-  group: bito-ai-${{ github.event.pull_request.number || github.run_id }}
+  group: bito-ai-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   review:
     name: BITO AI code review
     # Skip draft PRs and PRs that opt out with [skip-bito] in the title.
+    # For issue_comment events, only run when comment is on a PR (has
+    # pull_request property) and starts with `/review` or `/explain`.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (
+        github.event_name == 'pull_request' &&
         github.event.pull_request.draft == false &&
         !contains(github.event.pull_request.title, '[skip-bito]')
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request != null &&
+        (startsWith(github.event.comment.body, '/review') ||
+         startsWith(github.event.comment.body, '/explain'))
       )
     runs-on: ubuntu-latest
-    env:
-      BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
     steps:
-      # ── 0. Verify secret is provisioned ────────────────────────────────────
-      - name: Verify BITO_API_KEY is configured
+      # ── 0. Verify both secrets are provisioned ─────────────────────────────
+      # BITO requires BOTH a Bito access key AND a classic GitHub PAT. If
+      # either is missing, gracefully skip with a notice (do NOT fail). This
+      # prevents BITO mis-config from blocking PR merges.
+      - name: Verify BITO secrets are configured
+        env:
+          BITO_ACCESS_KEY: ${{ secrets.BITO_ACCESS_KEY }}
+          GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         run: |
-          if [ -z "${BITO_API_KEY}" ]; then
-            echo "::warning::BITO_API_KEY is not set — skipping BITO AI review."
-            echo "Configure it at: Settings → Secrets and variables → Actions → New repository secret"
-            echo "Obtain your key at: https://bito.ai → Settings → API Keys"
+          MISSING=()
+          [ -z "${BITO_ACCESS_KEY}" ] && MISSING+=("BITO_ACCESS_KEY")
+          [ -z "${GIT_ACCESS_TOKEN}" ] && MISSING+=("GIT_ACCESS_TOKEN")
+          if [ ${#MISSING[@]} -ne 0 ]; then
+            echo "::warning::BITO AI review skipped — missing secrets: ${MISSING[*]}"
             echo "BITO_KEY_MISSING=true" >> "$GITHUB_ENV"
+            echo "BITO_MISSING_SECRETS=${MISSING[*]}" >> "$GITHUB_ENV"
           else
-            echo "✅ BITO_API_KEY is configured."
+            echo "BITO secrets verified."
             echo "BITO_KEY_MISSING=false" >> "$GITHUB_ENV"
           fi
 
-      # ── 1. Apply bito-ai label immediately so the PR is visible ────────────
-      - name: Apply bito-ai label
-        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+      # ── 1. Resolve PR number / URL across event types ──────────────────────
+      - name: Resolve PR context
+        id: pr
+        if: env.BITO_KEY_MISSING == 'false'
+        uses: actions/github-script@v8
         with:
           script: |
-            try {
-              await github.rest.issues.addLabels({
+            let prNumber, prUrl;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+              prUrl = context.payload.pull_request.html_url;
+            } else if (context.eventName === 'issue_comment') {
+              prNumber = context.payload.issue.number;
+              prUrl = context.payload.issue.pull_request.html_url;
+            } else {
+              // workflow_dispatch
+              prNumber = parseInt(core.getInput('pr_number') || '0', 10);
+              if (!prNumber) {
+                core.setFailed('workflow_dispatch requires pr_number input.');
+                return;
+              }
+              const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                labels: ['bito-ai'],
+                pull_number: prNumber,
               });
-              core.info('Applied label: bito-ai');
-            } catch (e) {
-              core.notice(`Could not apply bito-ai label: ${e.message}`);
+              prUrl = pr.html_url;
             }
+            core.setOutput('number', prNumber);
+            core.setOutput('url', prUrl);
 
-      # ── 2. Run BITO AI review ───────────────────────────────────────────────
-      - name: BITO AI PR Review
-        id: bito_review
-        if: env.BITO_KEY_MISSING == 'false'
-        uses: bito-core/bito-github-action@v1
+      # ── 2. Apply bito-ai label early so the PR is visible ──────────────────
+      - name: Apply bito-ai label
+        if: env.BITO_KEY_MISSING == 'false' && steps.pr.outputs.number != ''
+        uses: actions/github-script@v8
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
-        with:
-          api_key: ${{ secrets.BITO_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          review_pr: true
-          review_suggestions_comment: 'true'
-
-      # ── 3. Update labels based on review outcome ────────────────────────────
-      - name: Update review labels
-        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        env:
-          BITO_REVIEW_OUTCOME: ${{ steps.bito_review.outcome }}
         with:
           script: |
-            const prNumber = context.payload.pull_request.number;
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ steps.pr.outputs.number }}', 10),
+              labels: ['bito-ai'],
+            });
+
+      # ── 3. Build OPTIONS string from repository variables ──────────────────
+      # Mirrors gitbito/codereviewagent's canonical wiring at
+      # github.com/gitbito/CodeReviewAgent/blob/main/.github/workflows/test_cra.yml
+      - name: Set Options Environment Variable
+        if: env.BITO_KEY_MISSING == 'false'
+        run: |
+          GIT_DOMAIN_OPTION=""
+          if [[ -n "${{ vars.GIT_DOMAIN }}" ]]; then
+            GIT_DOMAIN_OPTION=" --git.domain=${{ vars.GIT_DOMAIN }}"
+          fi
+          STATIC_ANALYSIS_TOOL_OPTION=""
+          if [[ -n "${{ vars.STATIC_ANALYSIS_TOOL }}" ]]; then
+            STATIC_ANALYSIS_TOOL_OPTION=" --static_analysis_tool=${{ vars.STATIC_ANALYSIS_TOOL }}"
+          fi
+          REVIEW_SCOPE_OPTION=""
+          if [[ -n "${{ vars.REVIEW_SCOPE }}" ]]; then
+            REVIEW_SCOPE_OPTION=" --review_scope=${{ vars.REVIEW_SCOPE }}"
+          fi
+          EXCLUDE_BRANCHES_OPTION=""
+          if [[ -n "${{ vars.EXCLUDE_BRANCHES }}" ]]; then
+            EXCLUDE_BRANCHES_OPTION=" --exclude_branches=${{ vars.EXCLUDE_BRANCHES }}"
+          fi
+          EXCLUDE_FILES_OPTION=""
+          if [[ -n "${{ vars.EXCLUDE_FILES }}" ]]; then
+            EXCLUDE_FILES_OPTION=" --exclude_files=${{ vars.EXCLUDE_FILES }}"
+          fi
+          EXCLUDE_DRAFT_PR_OPTION=""
+          if [[ -n "${{ vars.EXCLUDE_DRAFT_PR }}" ]]; then
+            EXCLUDE_DRAFT_PR_OPTION=" --exclude_draft_pr=${{ vars.EXCLUDE_DRAFT_PR }}"
+          fi
+          # The bee.path / bee.actn_dir args are container-internal; do not change.
+          echo "OPTIONS=--static_analysis.fb_infer.enabled=True --code_feedback=True --dependency_check.enabled=False --bee.path=/automation-platform --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules --git.access_token=${{ secrets.GIT_ACCESS_TOKEN }} --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}${GIT_DOMAIN_OPTION}${STATIC_ANALYSIS_TOOL_OPTION}${REVIEW_SCOPE_OPTION}${EXCLUDE_BRANCHES_OPTION}${EXCLUDE_FILES_OPTION}${EXCLUDE_DRAFT_PR_OPTION}" >> "$GITHUB_ENV"
+
+      # ── 4. Run BITO AI review (PR-triggered) ───────────────────────────────
+      - name: BITO Code Review — PR
+        id: bito_review_pr
+        if: env.BITO_KEY_MISSING == 'false' && (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
+        uses: gitbito/codereviewagent@main
+        continue-on-error: true
+        with:
+          pr: ${{ steps.pr.outputs.url }}
+          command: review
+          options: ${{ env.OPTIONS }}
+
+      # ── 5. Run BITO AI for slash-commands on PR comments (/review, /explain) ─
+      - name: BITO Code Review — Issue Comment
+        id: bito_review_comment
+        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'issue_comment'
+        uses: gitbito/codereviewagent@main
+        continue-on-error: true
+        with:
+          pr: ${{ steps.pr.outputs.url }}
+          command: ${{ github.event.comment.body }}
+          options: ${{ env.OPTIONS }}
+
+      # ── 6. Update labels based on review outcome ───────────────────────────
+      - name: Update review labels
+        if: env.BITO_KEY_MISSING == 'false' && steps.pr.outputs.number != ''
+        uses: actions/github-script@v8
+        continue-on-error: true
+        env:
+          BITO_OUTCOME_PR: ${{ steps.bito_review_pr.outcome }}
+          BITO_OUTCOME_COMMENT: ${{ steps.bito_review_comment.outcome }}
+        with:
+          script: |
+            const prNumber = parseInt('${{ steps.pr.outputs.number }}', 10);
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const outcome = process.env.BITO_REVIEW_OUTCOME || 'success';
 
-            // Always mark that BITO reviewed this PR.
+            // Use whichever step actually ran.
+            const outcome =
+              process.env.BITO_OUTCOME_PR ||
+              process.env.BITO_OUTCOME_COMMENT ||
+              'skipped';
+
             const labelsToAdd = ['bito-ai:review'];
-
-            // Determine review quality signal.
-            // outcome == 'failure' means the action itself failed (API error, etc.),
-            // not that BITO found blocking issues. We treat action failure as
-            // "no signal" and fall back to awaiting-approval.
             if (outcome === 'success') {
-              // BITO ran successfully — default to awaiting-approval.
-              // In future, wire BITO's structured output here to detect blockers.
               labelsToAdd.push('awaiting-approval');
             }
 
-            // Apply the computed labels.
             try {
               await github.rest.issues.addLabels({
                 owner, repo, issue_number: prNumber,
@@ -139,49 +239,51 @@ jobs:
               core.notice(`Could not apply review labels: ${e.message}`);
             }
 
-            // Remove bito-ai:changes-needed if it was set by a previous review
-            // and BITO now passes (no blockers).
+            // If BITO succeeded, clear any stale changes-needed label.
             if (outcome === 'success') {
               try {
                 await github.rest.issues.removeLabel({
                   owner, repo, issue_number: prNumber,
                   name: 'bito-ai:changes-needed',
                 });
-                core.info('Removed stale label: bito-ai:changes-needed');
-              } catch (_) {
-                // Label may not be present — ignore 404.
-              }
+              } catch (_) { /* not present */ }
             }
 
-      # ── 4. Post a comment when BITO API key is missing ─────────────────────
-      - name: Notify — BITO_API_KEY not configured
+      # ── 7. Post a one-time comment when secrets are missing ────────────────
+      - name: Notify — BITO secrets not configured
         if: env.BITO_KEY_MISSING == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
+        continue-on-error: true
+        env:
+          MISSING: ${{ env.BITO_MISSING_SECRETS }}
         with:
           script: |
-            // Only post this notice once per PR (check for existing comment).
+            const prNumber = context.payload.pull_request.number;
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: prNumber,
+              per_page: 100,
             });
             const alreadyPosted = comments.data.some(c =>
-              c.body && c.body.includes('BITO_API_KEY') && c.user.type === 'Bot'
+              c.body && c.body.includes('BITO AI review skipped') && c.user.type === 'Bot'
             );
-            if (!alreadyPosted) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: [
-                  '⚠️ **BITO AI review skipped** — `BITO_API_KEY` is not configured.',
-                  '',
-                  'To enable persistent-memory code review on this repository:',
-                  '1. Get your key at [bito.ai](https://bito.ai) → Settings → API Keys.',
-                  '2. Add it as a GitHub Actions secret named `BITO_API_KEY`.',
-                  '3. Re-run this workflow.',
-                  '',
-                  '> _See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup instructions._',
-                ].join('\n'),
-              });
-            }
+            if (alreadyPosted) return;
+            const missing = (process.env.MISSING || '').trim();
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: [
+                '⚠️ **BITO AI review skipped** — missing secrets: `' + missing + '`',
+                '',
+                'BITO requires **two** secrets to run:',
+                '1. `BITO_ACCESS_KEY` — get from [bito.ai](https://bito.ai) → Settings → Access Keys.',
+                '2. `GIT_ACCESS_TOKEN` — a GitHub **classic** PAT with `repo` scope. ',
+                '   (BITO does not currently support fine-grained tokens.)',
+                '',
+                'Add both at: Settings → Secrets and variables → Actions → New repository secret.',
+                '',
+                '> _See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup. This skip is non-blocking — the rest of the PR pipeline continues normally._',
+              ].join('\n'),
+            });
