@@ -137,7 +137,84 @@ The system auto-updates when:
 
 ---
 
-## 7. Verification
+## 7A. Failure Notification Protocol
+
+> **Added:** 2026-05-06  
+> **Who:** Claude (openhands)  
+> **Why:** Account for every failure with notification, not block
+
+### 7A.1 When Things Fail
+
+When a workflow, automation, or process **fails but shouldn't block**:
+
+| Scenario | Action | Notification |
+|----------|--------|--------------|
+| Non-critical check fails | Continue anyway | Notify in PR comment |
+| Required credential missing | Continue with fallback | Label `credentials-missing` |
+| Optional workflow fails | Skip, don't block | Log failure, proceed |
+| Automation timeout | Retry with backoff | Alert to channel |
+
+### 7A.2 Notification Rules
+
+✅ **DO:**
+- Alert failures to appropriate channel (Slack, PR comment, etc.)
+- Include context: what failed, why, what tried
+- Add `credentials-missing` or `fix-me` label
+- Log in running conversation
+
+❌ **DON'T:**
+- Block the entire PR/issue just because one check fails
+- Stop everything for optional dependencies
+- Leave failures unacknowledged
+
+### 7A.3 Example: Credential Missing
+
+```yaml
+# Before blocking:
+if [ -z "$OPENROUTER_API_KEY" ]; then
+  echo "⚠️ OPENROUTER_API_KEY not set - using fallback"
+  # Continue with alternative, don't block
+fi
+
+# Notify (not block):
+gh issue comment $ISSUE_NUMBER --body "⚠️ Missing OPENROUTER_API_KEY - proceeding with fallback"
+```
+
+### 7A.4 Comment-Out vs Delete (Always Comment-Out)
+
+When disabling a workflow or check:
+
+1. **Comment it out** with full documentation header
+2. **Never delete** - always preserve for history
+
+```yaml
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# DISABLED WORKFLOW: OLD_CHECK
+# Who: [username]
+# When: YYYY-MM-DD
+# Why: [reason for disabling]
+# What: [what was disabled]
+# Alternative: [what now runs instead]
+# NOTE: Keeping for history - do not delete
+# ═══════════════════════════════════════════════════════════════════════════════════════
+
+# name: Old Check (commented out - see header)
+# on: [pull_request]
+```
+
+---
+
+## 7B. Notification Channels
+
+| Failure Type | Channel | Priority |
+|--------------|---------|----------|
+| Credential missing | PR comment + `credentials-missing` label | Medium |
+| Workflow timeout | PR comment + retry | Low |
+| Required check fails | PR comment + block | High |
+| Optional check fails | PR comment only | Low |
+| Security issue | All channels | + `security` label | Critical
+
+## 8. Verification
 
 All changes should:
 - ✅ Have Who/When/Why in file header
@@ -147,7 +224,7 @@ All changes should:
 
 ---
 
-## 8. Related
+## 9. Related
 
 - `AGENTS.md` - Agent instructions and skills
 - `.github/ISSUE_TEMPLATE/00-work-request.md` - WR process
