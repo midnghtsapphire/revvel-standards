@@ -56,11 +56,11 @@ jobs:
               { name: 'checks-passing',    color: 'a2eeef', description: 'All CI checks pass' },
               { name: 'ready-to-merge',    color: '008672', description: 'Approved + checks pass — ready to merge' },
               // Issue Lifecycle (managed by issue-lifecycle.yml)
-              { name: 'issue:in-progress', color: '0075ca', description: 'Linked PR is open — work underway' },
-              { name: 'issue:done',        color: '0e8a16', description: 'Linked PR merged — issue resolved' },
-              { name: 'issue:stale',       color: 'e4e669', description: 'No activity for 7+ days' },
+              { name: 'issue:in-progress', color: '0075ca', description: 'Issue has a linked PR in progress' },
+              { name: 'issue:done',        color: '0e8a16', description: 'Issue resolved — linked PR merged' },
+              { name: 'issue:stale',       color: 'e4e669', description: 'No activity for 7+ days — needs attention' },
               // Watchdog
-              { name: 'lifecycle:stuck',    color: 'd93f0b', description: 'Watchdog detected an invalid label state' },
+              { name: 'lifecycle:stuck',    color: 'd93f0b', description: 'Label watchdog detected a stuck state' },
               // Third-Party / External Contributions
               { name: 'third-party',       color: 'bfdadc', description: 'PR from forked repository - external contributor' },
               { name: 'external-contributor', color: '7057ff', description: 'Contribution from outside the organization' },

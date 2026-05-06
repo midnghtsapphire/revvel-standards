@@ -50,7 +50,13 @@ jobs:
                   if (!actionsFound.has(action)) {
                     actionsFound.set(action, { version, files: [file] });
                   } else {
-                    actionsFound.get(action).files.push(file);
+                    const existing = actionsFound.get(action);
+                    existing.files.push(file);
+                    if (existing.version !== version && !existing.mixedVersions) {
+                      existing.mixedVersions = [existing.version, version];
+                    } else if (existing.mixedVersions && !existing.mixedVersions.includes(version)) {
+                      existing.mixedVersions.push(version);
+                    }
                   }
                 }
               }
@@ -70,9 +76,12 @@ jobs:
                   const latest = releases[0].tag_name;
                   const currentMajor = info.version.replace(/^v/, '').split('.')[0];
                   const latestMajor = latest.replace(/^v/, '').split('.')[0];
-                  if (info.version !== latest) {
+                  if (info.version !== latest || info.mixedVersions) {
                     const emoji = currentMajor !== latestMajor ? '🔴' : '🟡';
-                    report.push(`${emoji} \`${action}\`: using \`${info.version}\`, latest \`${latest}\` (in: ${info.files.join(', ')})`);
+                    const versionStr = info.mixedVersions
+                      ? `mixed versions: \`${info.mixedVersions.join('`, `')}\``
+                      : `using \`${info.version}\``;
+                    report.push(`${emoji} \`${action}\`: ${versionStr}, latest \`${latest}\` (in: ${info.files.join(', ')})`);
                     actionsNeedUpdate++;
                   }
                 }
