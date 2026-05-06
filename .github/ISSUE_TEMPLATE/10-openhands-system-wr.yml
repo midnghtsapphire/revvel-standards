@@ -4,7 +4,7 @@ title: "[WR] "
 labels:
   - work-request
   - quick
-  - openhands
+  - OpenHands
 body:
   - type: markdown
     attributes:

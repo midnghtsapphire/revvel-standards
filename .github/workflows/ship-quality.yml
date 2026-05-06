@@ -22,13 +22,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head_sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Get diff
         id: diff
         run: |
-          git fetch origin ${{ github.event.pull_request.base_ref }}
-          echo "diff=$(git diff origin/${{ github.event.pull_request.base_ref }}..HEAD -- '*.py' '*.js' '*.ts' '*.md' | head -5000)" >> $GITHUB_OUTPUT
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          echo "diff=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- '*.py' '*.js' '*.ts' '*.md' | head -5000)" >> $GITHUB_OUTPUT
 
       - name: Analyze with AI
         if: env.OPENROUTER_API_KEY != ''
@@ -96,4 +96,4 @@ jobs:
             BODY="$BODY\n\n❌ Code needs completion"
           fi
           
-          gh pr review --body "$BODY" --event COMMENT ${{ github.event.pull_request.number }}
+          gh pr review --body "$BODY" --comment ${{ github.event.pull_request.number }}

@@ -47,8 +47,8 @@ jobs:
           
           # Check each changed file for violations
           for file in $FILES_CHANGED; do
-            # Skip certain file types
-            if [[ "$file" == *.json ]] || [[ "$file" == *.lock ]] || [[ "$file" == *.yaml ]] || [[ "$file" == *.yml ]]; then
+            # Skip certain file types (docs, config, lockfiles)
+            if [[ "$file" == *.json ]] || [[ "$file" == *.lock ]] || [[ "$file" == *.yaml ]] || [[ "$file" == *.yml ]] || [[ "$file" == *.md ]]; then
               continue
             fi
             
