@@ -381,7 +381,7 @@ jobs:
         uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: |
-            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.result }}.number.
+            Please review and rewrite the WR document in PR #${{ fromJson(steps.create_pr.outputs.result).number }}.
             
             Your task:
             1. Review the research findings already documented
