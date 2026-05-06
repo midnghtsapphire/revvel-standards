@@ -247,5 +247,4 @@ gh issue edit $ISSUE_NUMBER --add-label "type:bug-fix"
 - [CODE_REVIEW_WORKFLOW_STATUS.md](CODE_REVIEW_WORKFLOW_STATUS.md) - Current workflow status
 - [OPENROUTER_MODEL_ROUTING.md](OPENROUTER_MODEL_ROUTING.md) - Task-based model routing
 - [AGENT_ROUTING_POLICY.md](AGENT_ROUTING_POLICY.md) - Agent routing rules
-- [standards/VAULT_INTEGRATION_STANDARD.md](../standards/VAULT_INTEGRATION_STANDARD.md) - Secrets management
 - [PROJECT_PROMPT_TEMPLATE.md](PROJECT_PROMPT_TEMPLATE.md) - Where output classification should live (TODO)

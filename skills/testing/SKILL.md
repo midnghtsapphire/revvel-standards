@@ -122,14 +122,14 @@ Every Revvel skill should have PromptFoo tests in `tests/skills/promptfoo.yml`.
 # tests/skills/promptfoo.yml
 description: "Skill tests for [SKILL_NAME]"
 providers:
-  - id: anthropic/claude-3.7-sonnet  # Primary - Claude 3.7 Sonnet
+  - id: anthropic/claude-sonnet-4  # Primary - Claude 3.7 Sonnet
     config:
       api_key: ${OPENROUTER_API_KEY}
       temperature: 0
       max_tokens: 2048
 
 # Fallback: Claude 4.5 Sonnet
-  - id: anthropic/claude-3.7-sonnet
+  - id: anthropic/claude-sonnet-4
 
 prompts:
   - label: "Standard invocation"

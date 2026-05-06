@@ -109,14 +109,14 @@ Use this template for every new skill test. Save as `skills/<skill-name>/tests/p
 description: "Skill tests for [SKILL_NAME]"
 
 providers:
-  - id: anthropic/claude-3.7-sonnet  # Primary - Claude 3.7 Sonnet
+  - id: anthropic/claude-sonnet-4  # Primary - Claude Sonnet 4
     config:
       api_key: ${OPENROUTER_API_KEY}
       temperature: 0
       max_tokens: 2048
 
-# Fallback: Claude 4.5 Sonnet
-  - id: anthropic/claude-3.7-sonnet
+# Fallback: Claude Sonnet 4.5
+  - id: anthropic/claude-sonnet-4
 
 prompts:
   - label: "Standard invocation"
