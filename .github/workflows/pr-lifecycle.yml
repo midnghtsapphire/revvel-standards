@@ -5,8 +5,6 @@ on:
     types:
       - opened
       - ready_for_review
-      - converted_to_draft
-      - synchronize
       - reopened
   pull_request_review:
     types: [submitted]
@@ -19,30 +17,12 @@ permissions:
   contents: read
 
 jobs:
-  # ─── DRAFT STATE ───────────────────────────────────────────────
-  on-draft:
-    if: github.event.pull_request.draft == true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const pr = context.payload.pull_request.number;
-            // Remove non-draft labels
-            const removeLabels = ['awaiting-review','needs-action','approved','checks-failing','ready-to-merge'];
-            for (const label of removeLabels) {
-              try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); }
-              catch(e) {}
-            }
-            // Add draft label
-            await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['draft'] });
-            // Post status comment
-            await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: '🚧 **Status: Not Ready** — This PR is a draft. Mark it ready for review when complete.' });
-
-  # ─── READY FOR REVIEW ──────────────────────────────────────────
+  # ─── PR OPENED / READY FOR REVIEW ─────────────────────────────
   on-ready:
-    if: github.event_name == 'pull_request' && github.event.action == 'ready_for_review'
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.draft == false &&
+      (github.event.action == 'opened' || github.event.action == 'ready_for_review' || github.event.action == 'reopened')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
@@ -50,7 +30,16 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request.number;
-            try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: 'draft' }); } catch(e) {}
+            const action = context.payload.action;
+            // Remove stale lifecycle labels from prior state
+            // CI labels (checks-passing/checks-failing) are only stripped on reopened (stale CI) — not on ready_for_review (CI results still valid)
+            const staleLabels = ['approved', 'needs-action', 'ready-to-merge', 'lifecycle:stuck'];
+            if (action === 'reopened') {
+              staleLabels.push('checks-failing', 'checks-passing');
+            }
+            for (const label of staleLabels) {
+              try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
+            }
             await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['awaiting-review'] });
             await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: '👀 **Status: Waiting for Review** — This PR is ready for review. A reviewer has been requested.' });
 
@@ -66,23 +55,31 @@ jobs:
             const pr = context.payload.pull_request.number;
             const state = context.payload.review.state;
             const reviewer = context.payload.review.user.login;
-            const removeLabels = ['awaiting-review','needs-action','approved'];
-
-            for (const label of removeLabels) {
-              try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
-            }
 
             if (state === 'approved') {
+              for (const label of ['awaiting-review', 'needs-action']) {
+                try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
+              }
               await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['approved'] });
-              await github.rest.issues.createComment({ owner, repo, issue_number: pr,
-                body: `✅ **Status: Approved** — @${reviewer} approved this PR. Checking if it's ready to merge...` });
+              const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: pr });
+              const labelNames = labels.map(l => l.name);
+              if (labelNames.includes('checks-passing')) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['ready-to-merge'] });
+                await github.rest.issues.createComment({ owner, repo, issue_number: pr,
+                  body: `🚀 **Status: Ready to Merge** — @${reviewer} approved this PR and all checks pass. You may merge.` });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: pr,
+                  body: `✅ **Status: Approved** — @${reviewer} approved this PR. Waiting for CI checks to pass...` });
+              }
             } else if (state === 'changes_requested') {
+              for (const label of ['awaiting-review', 'approved', 'ready-to-merge']) {
+                try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
+              }
               await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['needs-action'] });
               await github.rest.issues.createComment({ owner, repo, issue_number: pr,
                 body: `🔄 **Status: Needs Action** — @${reviewer} requested changes. Please address the feedback and re-request review.` });
-            } else if (state === 'commented') {
-              await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['awaiting-review'] });
             }
+            // Comments don't change label state — approved PRs stay approved
 
   # ─── CHECKS PASS / FAIL ────────────────────────────────────────
   on-checks:
@@ -95,7 +92,6 @@ jobs:
             const { owner, repo } = context.repo;
             const suite = context.payload.check_suite;
             const conclusion = suite.conclusion;
-            // Find open PRs associated with this check suite
             const prs = suite.pull_requests;
             for (const pr of prs) {
               const prNumber = pr.number;
@@ -106,10 +102,9 @@ jobs:
                 await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-failing'] });
                 try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'ready-to-merge' }); } catch(e) {}
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: `❌ **Status: Checks Failing** — One or more CI checks failed. Please review the [check results](${context.payload.check_suite.url}) and push a fix.` });
+                  body: `❌ **Status: Checks Failing** — One or more CI checks failed. Please review the [check results](${context.payload.repository.html_url}/commit/${suite.head_sha}/checks) and push a fix.` });
               } else if (conclusion === 'success') {
                 await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-passing'] });
-                // Check if also approved — if so, mark ready-to-merge
                 const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
                 const labelNames = labels.map(l => l.name);
                 if (labelNames.includes('approved')) {
