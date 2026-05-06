@@ -4,7 +4,7 @@
 
 > 🛠 **Then read:** [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md) for the operator setup walkthrough that wires the default-field-setter workflows to the schema below.
 
-The Revvel operating model uses a single GitHub Project to track every work request from intake through launch and measurement. The project enforces routing decisions made in the [Devin Work Request](../.github/ISSUE_TEMPLATE/work-request.yml) form and the [Viability Gate](../templates/viability-gate-template.md).
+The Revvel operating model uses a single GitHub Project to track every work request from intake through launch and measurement. The project enforces routing decisions made in either of the two intake forms — the heavy [Work Request](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (primary) and the lightweight [Devin System WR](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) form — and the [Viability Gate](../templates/viability-gate-template.md).
 
 ## Field Schema
 

@@ -178,11 +178,26 @@ missing the main classify job is `skipped`, not failed.
 
 ## Issue template structure
 
-The `New Issue` chooser is intentionally minimal:
+The `New Issue` chooser shows two cards, both of which apply the
+`work-request` label so the auto-classifier and downstream automation
+(`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat
+them identically. Numeric prefixes force the sort order per
+[GitHub's documented ordering rules][gh-template-order].
 
-- `.github/ISSUE_TEMPLATE/00-work-request.yml` — the single intake form.
-  Numeric `00-` prefix forces it to sort first among `.yml` forms (which sort
-  before `.md`) per [GitHub's documented ordering rules][gh-template-order].
+- `.github/ISSUE_TEMPLATE/00-work-request.yml` — primary, anti-under-scoping
+  human form. The `00-` prefix sorts it first. Heavy on explicit scope: 12
+  required fields covering Output Type, the four routing modes (Research /
+  Delivery / Lifecycle / Commercial), Summary, Objective, Required Bundle,
+  Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule, plus
+  a 4-checkbox Acknowledgements block. The implementer's PR must mirror the
+  Required Bundle and not silently drop items.
+- `.github/ISSUE_TEMPLATE/10-devin-system-wr.yml` — lightweight system form.
+  The `10-` prefix sorts it after the heavy form. Output Type is the only
+  required routing decision; every other routing dropdown defaults to
+  `auto-classify` and is filled from prose by [`wr-auto-classify.yml`](
+  ../.github/workflows/wr-auto-classify.yml). Carries the extra `quick` and
+  `devin` labels so workflows can distinguish lightweight WRs from primary
+  ones if needed. Use this for low-risk, internal, or agent-driven work.
 - `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false` plus a
   single `contact_link` to the operating docs.
 
