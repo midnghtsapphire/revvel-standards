@@ -38,8 +38,6 @@ on:
   # ── Event-driven triggers ───────────────────────────────────────────────────
   issues:
     types: [opened]
-  pull_request:
-    types: [opened, ready_for_review]
 
 permissions:
   issues: write
