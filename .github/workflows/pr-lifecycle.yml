@@ -30,8 +30,14 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request.number;
-            // Remove stale lifecycle labels from prior state (especially relevant for reopened PRs)
-            for (const label of ['approved', 'needs-action', 'checks-failing', 'checks-passing', 'ready-to-merge', 'lifecycle:stuck']) {
+            const action = context.payload.action;
+            // Remove stale lifecycle labels from prior state
+            // CI labels (checks-passing/checks-failing) are only stripped on reopened (stale CI) — not on ready_for_review (CI results still valid)
+            const staleLabels = ['approved', 'needs-action', 'ready-to-merge', 'lifecycle:stuck'];
+            if (action === 'reopened') {
+              staleLabels.push('checks-failing', 'checks-passing');
+            }
+            for (const label of staleLabels) {
               try { await github.rest.issues.removeLabel({ owner, repo, issue_number: pr, name: label }); } catch(e) {}
             }
             await github.rest.issues.addLabels({ owner, repo, issue_number: pr, labels: ['awaiting-review'] });
