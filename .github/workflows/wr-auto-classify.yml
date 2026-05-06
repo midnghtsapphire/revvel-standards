@@ -455,6 +455,10 @@ jobs:
           if used_fallback:
               add_label("auto:default-fallback")
 
+          # Apply the output-type label so other automation can easily read the routing decision
+          if final.get("Output Type"):
+              add_label(f"output-type:{final['Output Type']}")
+
           comment_lines = [
               "**WR Auto-Classify ran on this issue.**",
               "",
