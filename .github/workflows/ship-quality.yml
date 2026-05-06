@@ -35,12 +35,18 @@ jobs:
         id: diff
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }}
-          echo "diff=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- '*.py' '*.js' '*.ts' '*.md' | head -5000)" >> $GITHUB_OUTPUT
+          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- '*.py' '*.js' '*.ts' '*.md' | head -5000)
+          # Properly escape for GITHUB_OUTPUT - use base64
+          echo "$DIFF" | base64 | tr -d '\n' >> $GITHUB_OUTPUT
+          echo "diff_length=${#DIFF}" >> $GITHUB_OUTPUT
 
       - name: Analyze with AI
-        if: env.OPENROUTER_API_KEY != ''
+        if: env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0
         id: ai
         run: |
+          # Decode base64 diff
+          DIFF=$(cat $GITHUB_OUTPUT | grep ^diff= | cut -d= -f2- | base64 -d)
+          
           # Smart analysis - understand context
           RESPONSE=$(curl -s https://openrouter.ai/api/v1/chat/completions \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" \
@@ -53,7 +59,7 @@ jobs:
                 "content": "You are a code quality reviewer. Analyze PR changes for:\n1. Real TODOs/FIXMEs that are incomplete code\n2. Placeholder code that needs implementation\n3. Phased implementation language in code\n\nIGNORE:\n- Documentation explaining rules (like AGENTS.md)\n- README and docs files\n- Comments about what NOT to do\n\nRespond with:\n- BLOCK only if there are real incomplete code TODOs\n- WARN for minor issues\n- PASS if code is ship-ready\n\nFormat: VERDICT: BLOCK|WARN|PASS\nReason: one line exactly why"
               }, {
                 "role": "user",
-                "content": "Here are the PR changes to review:\n\n${{ steps.diff.outputs.diff }}"
+                "content": "Here are the PR changes to review:\n\n$DIFF"
               }]
             }' | jq -r '.choices[0].message.content')
           
