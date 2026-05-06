@@ -59,9 +59,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("=" .repeat(80));
+  console.log("=".repeat(80));
   console.log("OpenRouter Routing Example");
-  console.log("=" .repeat(80));
+  console.log("=".repeat(80));
   console.log();
 
   try {

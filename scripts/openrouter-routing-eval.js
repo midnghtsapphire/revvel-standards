@@ -235,9 +235,9 @@ async function main() {
   
   const systemPrompt = "You are an expert software engineer. Provide a detailed, practical response with code examples where appropriate.";
   
-  console.log("=" .repeat(80));
+  console.log("=".repeat(80));
   console.log("OpenRouter Routing Evaluation Harness");
-  console.log("=" .repeat(80));
+  console.log("=".repeat(80));
   console.log();
   console.log("Running the same prompt through all routing profiles...");
   console.log();
