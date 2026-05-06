@@ -76,11 +76,11 @@ Create these as repository, organization, or environment variables:
 ```text
 PROJECT_ID
 PRIORITY_FIELD_ID
-EFFORT_FIELD_ID
-CUSTOM_SELECT_FIELD_ID
-PRIORITY_HIGH_OPTION_ID
-EFFORT_MEDIUM_OPTION_ID
-CUSTOM_DEFAULT_OPTION_ID
+STATUS_FIELD_ID
+RESEARCH_MODE_FIELD_ID
+PRIORITY_MEDIUM_OPTION_ID
+STATUS_INBOX_OPTION_ID
+RESEARCH_MODE_STANDARD_OPTION_ID
 ```
 
 The values come from the helper workflow output. For the live values currently set on this repo, see the [Live deployment](#live-deployment-for-revvel-standards) section above.
@@ -173,16 +173,38 @@ Required credentials (both already configured for `revvel-standards`):
 - `secrets.OPENROUTER_API_KEY` — call the LLM. Optional; classifier degrades to
   fallback defaults if missing.
 
-Both are checked by a preflight job (same pattern as #13333). If either is
-missing the main classify job is `skipped`, not failed.
+Both are checked by a preflight job (same pattern as #13333). The skip
+behavior differs by which credential is missing:
+
+- `PROJECTS_PAT` missing → main `classify` job is **skipped** (cannot
+  write to Project v2 without it). The preflight emits a `::notice::`
+  explaining why; nothing fails.
+- `OPENROUTER_API_KEY` missing → main `classify` job **still runs** and
+  applies opinionated fallback defaults instead of LLM-inferred values.
+  This is intentional so missing LLM access never blocks WR routing.
 
 ## Issue template structure
 
-The `New Issue` chooser is intentionally minimal:
+The `New Issue` chooser shows two cards, both of which apply the
+`work-request` label so the auto-classifier and downstream automation
+(`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat
+them identically. Numeric prefixes force the sort order per
+[GitHub's documented ordering rules][gh-template-order].
 
-- `.github/ISSUE_TEMPLATE/00-work-request.yml` — the single intake form.
-  Numeric `00-` prefix forces it to sort first among `.yml` forms (which sort
-  before `.md`) per [GitHub's documented ordering rules][gh-template-order].
+- `.github/ISSUE_TEMPLATE/00-work-request.yml` — primary, anti-under-scoping
+  human form. The `00-` prefix sorts it first. Heavy on explicit scope: 12
+  required fields covering Output Type, the four routing modes (Research /
+  Delivery / Lifecycle / Commercial), Summary, Objective, Required Bundle,
+  Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule, plus
+  a 4-checkbox Acknowledgements block. The implementer's PR must mirror the
+  Required Bundle and not silently drop items.
+- `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml` — lightweight system form.
+  The `10-` prefix sorts it after the heavy form. Output Type is the only
+  required routing decision; every other routing dropdown defaults to
+  `auto-classify` and is filled from prose by [`wr-auto-classify.yml`](
+  ../.github/workflows/wr-auto-classify.yml). Carries the extra `quick` and
+  `OpenHands` labels so workflows can distinguish lightweight WRs from primary
+  ones if needed. Use this for low-risk, internal, or agent-driven work.
 - `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false` plus a
   single `contact_link` to the operating docs.
 
@@ -201,7 +223,7 @@ that originated inside this repo were fixed in this PR; the third is external.
 | Check | Status | Resolution |
 | ----- | ------ | ---------- |
 | `log-agent-action` (Agent Audit Logger) | **fixed** | The `pull_request` trigger was removed from `.github/workflows/agent-audit-logger.yml`. The job tried to push the audit log to `main` from a PR-branch checkout, which the `Protect main` ruleset blocks → 100% failure rate. Issue/comment/review/cron triggers stay because they CAN push. |
-| `ci/circleci: pr-review` | **fixed** | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by Devin Review + Jules + BITO AI on every PR. |
+| `ci/circleci: pr-review` | **fixed** | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by OpenHands Review + Jules + BITO AI on every PR. |
 | `recurseml/analysis` | **external** | Posted by the RecurseML GitHub App, not by a workflow in this repo. The in-repo workflow `.github/workflows/recurse-ml.yml` already disables its `pull_request` trigger. To make this status check stop appearing on PRs, uninstall the RecurseML app at https://github.com/settings/installations or set its `RECURSE_ML_API_KEY` so it succeeds. Branch protection on `main` does not require this check, so it's visual noise rather than a merge blocker. |
 | `Analyze (ruby)` (CodeQL Advanced) | **fixed** | Replaced CodeQL with [Semgrep](https://semgrep.dev/) + [Trivy](https://trivy.dev/) in a follow-up PR after #13338. CodeQL's per-language matrix included Ruby (auto-detected by GitHub) but the repo has zero `.rb` files, so the analyzer exited 32 (`CodeQL could not process any code written in Ruby`) on every PR. `.github/workflows/codeql.yml` was deleted; replacements are at `.github/workflows/semgrep.yml` and `.github/workflows/trivy.yml`. |
 
@@ -233,6 +255,6 @@ Findings from Semgrep and Trivy are uploaded as SARIF and surface under
 
 - The main workflow triggers on `issues.opened`.
 - If the issue is already in the project, the workflow attempts to find the existing Project v2 item and update it.
-- The default-field workflow assumes the three default-set fields are all single-select fields.
-- If your field names or option names differ from the template defaults, only the variable values need to point at the correct field and option IDs — the variable *names* remain `PRIORITY_FIELD_ID` / `EFFORT_FIELD_ID` / `CUSTOM_SELECT_FIELD_ID` regardless of which field they actually target.
+- The default-field workflow assumes Priority, Status, and Research Mode are all single-select fields.
+- If your field names or option names differ, only the variable names need to map to the correct field and option IDs.
 - Each workflow has a preflight job that probes its credentials in step-level `env:` (where the `secrets` context is allowed) and exposes a boolean output. The main job gates on `needs.preflight.outputs.has_creds == 'true'`. This pattern was added in [PR #13333](https://github.com/midnghtsapphire/revvel-standards/pull/13333) because the GitHub Actions parser rejects `secrets.X` references in job-level `if:` conditions.

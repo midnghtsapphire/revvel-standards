@@ -211,10 +211,10 @@ curl -s http://localhost:8001/services/growlingeyes/plugins | python3 -m json.to
 ```bash
 # Create a consumer
 curl -s -X POST http://localhost:8001/consumers \
-  -d "username=agent-devin"
+  -d "username=agent-OpenHands"
 
 # Generate an API key for a consumer
-curl -s -X POST http://localhost:8001/consumers/agent-devin/key-auth \
+curl -s -X POST http://localhost:8001/consumers/agent-OpenHands/key-auth \
   -d "key=your-api-key-here"
 
 # List consumers
@@ -433,7 +433,7 @@ curl -s http://localhost:8000/api/my-service/health
 NEW_KEY=$(openssl rand -hex 32)
 
 # 2. Add new key to consumer
-curl -s -X POST http://localhost:8001/consumers/agent-devin/key-auth \
+curl -s -X POST http://localhost:8001/consumers/agent-OpenHands/key-auth \
   -d "key=$NEW_KEY"
 
 # 3. Store new key in Doppler
@@ -443,13 +443,13 @@ curl -s -X POST https://api.doppler.com/v3/configs/config/secrets \
   -d "{\"project\":\"growlingeyes\",\"config\":\"prd\",\"secrets\":{\"KONG_API_KEY\":\"$NEW_KEY\"}}"
 
 # 4. Delete old key (after confirming new key works)
-OLD_KEY_ID=$(curl -s http://localhost:8001/consumers/agent-devin/key-auth | python3 -c "
+OLD_KEY_ID=$(curl -s http://localhost:8001/consumers/agent-OpenHands/key-auth | python3 -c "
 import sys, json
 keys = json.load(sys.stdin)['data']
 if len(keys) > 1:
     print(keys[0]['id'])  # oldest key
 ")
-curl -s -X DELETE "http://localhost:8001/consumers/agent-devin/key-auth/$OLD_KEY_ID"
+curl -s -X DELETE "http://localhost:8001/consumers/agent-OpenHands/key-auth/$OLD_KEY_ID"
 ```
 
 ---

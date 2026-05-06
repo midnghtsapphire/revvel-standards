@@ -1,0 +1,238 @@
+# Workflow Action-Ref Auditor
+#
+# Scans every `uses: <owner>/<repo>@<ref>` in `.github/workflows/*.yml` and
+# verifies that `<ref>` actually resolves on GitHub. If any ref is broken,
+# the workflow fails the run AND opens a GitHub issue with the full list so
+# the failure is permanently visible (not just a buried CI red X).
+#
+# Why this exists:
+#   GitHub Actions resolves every `uses:` ref upfront when a job starts. If
+#   ANY ref is unresolvable, the entire job aborts at "Set up job" before
+#   any step runs — including any safety/skip steps. This means a single
+#   bad ref can silently kill a critical workflow (e.g. WR PR creation),
+#   and the failure looks identical to "missing secret" or "transient
+#   network error" if you don't read the logs carefully.
+#
+#   This auditor catches the problem PROACTIVELY: on every push to a
+#   workflow file, on every PR, AND on a daily cron (so upstream
+#   delete/rename of a tag is caught within 24h).
+#
+# Triggers:
+#   - push to main (paths: .github/workflows/**)        — catches new bad refs
+#   - pull_request (paths: .github/workflows/**)        — block bad refs at PR
+#   - schedule (daily at 13:00 UTC)                     — catches upstream churn
+#   - workflow_dispatch                                  — manual run
+#
+# Skipped refs:
+#   - `./` local action paths
+#   - `docker://` image refs (validated separately)
+#   - any line that is commented out (#)
+#
+# When auditing finds broken refs, it:
+#   1. Fails this workflow run.
+#   2. On schedule/push to main, opens a GitHub issue tagged `auto-error`,
+#      `workflow-broken-ref` so it appears in the human-visible queue.
+
+name: Workflow Action-Ref Auditor
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+  schedule:
+    # 13:00 UTC daily (catches tag deletion / repo rename within 24h).
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: workflow-action-ref-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: "Audit uses: refs across all workflows"
+    runs-on: ubuntu-latest
+    outputs:
+      broken_count: ${{ steps.audit.outputs.broken_count }}
+      broken_refs: ${{ steps.audit.outputs.broken_refs }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit workflow action references
+        id: audit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+
+          # Extract every `uses: owner/repo@ref` from workflow YAML files.
+          # Skip:
+          #   - lines that start with `#` (commented-out)
+          #   - `./` local action paths
+          #   - `docker://` image refs
+          mapfile -t REFS < <(
+            grep -RhnE '^\s*-?\s*uses:\s*[^#[:space:]]+' .github/workflows/ .github/actions/ 2>/dev/null \
+              | sed -E 's/^[^:]+:[0-9]+:\s*//; s/^-?\s*uses:\s*//' \
+              | tr -d '"' | tr -d "'" \
+              | grep -vE '^(\./|docker:\/\/|#)' \
+              | grep -E '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@' \
+              | sort -u
+          )
+
+          echo "Discovered ${#REFS[@]} unique action refs."
+          BROKEN=()
+          for full_ref in "${REFS[@]}"; do
+            owner_repo="${full_ref%@*}"
+            ref="${full_ref#*@}"
+            # Strip subdirectory paths like `actions/cache/restore@v4` → `actions/cache`.
+            owner="${owner_repo%%/*}"
+            repo_with_path="${owner_repo#*/}"
+            repo="${repo_with_path%%/*}"
+
+            # Resolve via GitHub API. A ref can be a tag, branch, OR commit SHA.
+            # Try in that order; first 2xx wins.
+            ok=0
+            for endpoint in "git/refs/tags/${ref}" "git/refs/heads/${ref}" "commits/${ref}"; do
+              status=$(curl -s -o /dev/null -w '%{http_code}' \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${owner}/${repo}/${endpoint}")
+              if [ "${status}" = "200" ]; then
+                ok=1
+                break
+              fi
+            done
+
+            if [ "${ok}" -ne 1 ]; then
+              BROKEN+=("${full_ref}")
+              echo "::error::Broken action ref: ${full_ref} (https://github.com/${owner}/${repo})"
+            fi
+          done
+
+          {
+            echo "broken_count=${#BROKEN[@]}"
+            if [ "${#BROKEN[@]}" -gt 0 ]; then
+              # Multi-line output via heredoc.
+              echo "broken_refs<<EOF"
+              printf '%s\n' "${BROKEN[@]}"
+              echo "EOF"
+            else
+              echo "broken_refs="
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+          if [ "${#BROKEN[@]}" -gt 0 ]; then
+            echo ""
+            echo "❌ ${#BROKEN[@]} broken action ref(s) found."
+            exit 1
+          fi
+          echo "✅ All ${#REFS[@]} action refs resolved."
+
+      - name: Open / update tracking issue (scheduled or main-branch run)
+        if: |
+          failure() &&
+          (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+           (github.event_name == 'push' && github.ref == 'refs/heads/main'))
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
+            if (!broken) return;
+            const lines = broken.split('\n').filter(Boolean);
+
+            const title = `[AUTO-ERROR] Workflow action-ref auditor found ${lines.length} broken ref(s)`;
+            const body = [
+              '## Broken action references detected',
+              '',
+              'The [Workflow Action-Ref Auditor](.github/workflows/workflow-action-ref-audit.yml) found `uses:` lines that point to refs which no longer resolve on GitHub. Any workflow job that contains one of these refs will fail at "Set up job" before any step runs — including safety/skip steps.',
+              '',
+              '### Broken refs',
+              '',
+              ...lines.map(r => `- \`${r}\``),
+              '',
+              '### How to fix',
+              '',
+              '1. Visit each ref above and check what tags / branches the upstream repo actually publishes.',
+              '2. Pin to a real published tag (preferred) or branch.',
+              '3. If the upstream repo was renamed/deleted, find a maintained fork or replace the action.',
+              '4. After fixing, re-run this workflow via `workflow_dispatch` to confirm.',
+              '',
+              `**Run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '',
+              '_This issue is opened automatically by `.github/workflows/workflow-action-ref-audit.yml`. It will be updated rather than re-created on subsequent failures._',
+            ].join('\n');
+
+            // Reuse a single tracking issue so we don't spam.
+            const labels = ['auto-error', 'workflow-broken-ref', 'priority-p0'];
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'workflow-broken-ref',
+              per_page: 5,
+            });
+
+            if (existing.data.length > 0) {
+              const issue = existing.data[0];
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                title,
+                body,
+              });
+              core.notice(`Updated existing tracking issue #${issue.number}.`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels,
+              });
+              core.notice(`Opened tracking issue #${created.data.number}.`);
+            }
+
+      - name: Close tracking issue when audit is clean
+        if: |
+          success() &&
+          (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+           (github.event_name == 'push' && github.ref == 'refs/heads/main'))
+        uses: actions/github-script@v8
+        continue-on-error: true
+        with:
+          script: |
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'workflow-broken-ref',
+              per_page: 5,
+            });
+            for (const issue of existing.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ Auditor run [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) is clean. Closing.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+              });
+              core.notice(`Closed tracking issue #${issue.number}.`);
+            }

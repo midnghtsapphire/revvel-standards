@@ -1,6 +1,6 @@
 name: OpenRouter Triage
 
-# DEVIN-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
+# OpenHands-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
 # with openrouter-coder, jules-invoke, openrouter-assignee, and priority-router
 # on every new issue. The hourly schedule still triages anything that gets
 # missed. PR-side triage is unchanged.

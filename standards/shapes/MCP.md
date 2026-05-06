@@ -8,7 +8,7 @@
 
 ## When to Use This Shape
 
-- LLM agents (Claude, Devin, Cursor, Copilot) need to interact with a service
+- LLM agents (Claude, OpenHands, Cursor, Copilot) need to interact with a service
 - The problem is best solved by giving AI agents a new capability
 - Data access, API wrapping, or workflow automation for agents
 - Growing market: AI-native tooling is the fastest-growing dev segment
@@ -22,7 +22,7 @@
 |------|------|--------|
 | Validate agent demand | mcp.so registry, GitHub MCP repos, AI dev forums | Confirmed gap — no existing MCP server for this |
 | Audit existing MCP servers | `mcp.so`, Smithery, GitHub search `mcp-server-*` | `research/competitors.md` — what exists, what's missing |
-| Identify target agents | Claude Desktop, Devin, Cursor, Windsurf, Cline | `research/audience.md` — which agents would use this |
+| Identify target agents | Claude Desktop, OpenHands, Cursor, Windsurf, Cline | `research/audience.md` — which agents would use this |
 | Define tool surface | User complaints about what agents can't do | `research/tools.md` — proposed tools, inputs, outputs |
 | Determine pricing | Free vs. API-key-gated vs. hosted | `decision/pricing.json` |
 
@@ -96,7 +96,7 @@ await server.connect(transport);
 - [ ] Error responses use MCP error codes (not raw throws)
 - [ ] Unit tests for each tool (≥ 60% coverage)
 - [ ] Integration test: connect via stdio, call each tool, verify response shape
-- [ ] `README.md` has MCP config snippet for Claude Desktop, Cursor, and Devin
+- [ ] `README.md` has MCP config snippet for Claude Desktop, Cursor, and OpenHands
 - [ ] No secrets in source (gitleaks clean)
 - [ ] TypeScript strict mode, no `any`
 
@@ -169,7 +169,7 @@ Must include:
 - Config snippets for top 5 agent platforms
 - Demo video showing an agent using the tools
 - Pricing (if applicable)
-- Badge: "Works with Claude, Cursor, Devin, Copilot"
+- Badge: "Works with Claude, Cursor, OpenHands, Copilot"
 
 ---
 
@@ -201,7 +201,7 @@ Must include:
 - [ ] All tools work end-to-end with real API (not mocked)
 - [ ] Published to npm
 - [ ] Submitted to mcp.so registry
-- [ ] README has config snippets for Claude Desktop + Cursor + Devin
+- [ ] README has config snippets for Claude Desktop + Cursor + OpenHands
 - [ ] Tests pass with ≥ 60% coverage
 - [ ] Landing page deployed
 - [ ] Stripe Product created (even if free)

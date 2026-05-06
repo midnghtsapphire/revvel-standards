@@ -1,6 +1,6 @@
 name: WR Auto-Classify Project v2 Fields
 
-# Reads issue body for new Devin Work Requests, asks OpenRouter to classify any
+# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
 # routing dropdowns the user left on 'auto-classify', and writes the chosen
 # values to the matching Project v2 single-select fields.
 #
@@ -185,7 +185,7 @@ jobs:
               #     already shows a "Required" indicator natively)
               #   - `_No response_` placeholder for blank textareas
               pattern = (
-                  rf"###\s+{re.escape(label)}"
+                  rf"(?:^|\s)###\s+{re.escape(label)}"
                   rf"(?:\s*\([^)]*\))?"   # optional " (required)" or similar
                   rf"\s*\n+([^\n#].*?)(?=\n###|\n*$)"
               )

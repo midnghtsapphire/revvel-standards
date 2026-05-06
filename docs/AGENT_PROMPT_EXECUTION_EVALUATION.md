@@ -3,7 +3,7 @@
 **Evaluation Date:** May 3, 2026  
 **Evaluator:** GitHub Copilot Coding Agent  
 **Repository:** midnghtsapphire/revvel-standards  
-**Issue:** [WR] Assign agent to perform Devin's comment prompt - Can CircleCI, Bito, Roo, or GOAP handle this?
+**Issue:** [WR] Assign agent to perform OpenHands's comment prompt - Can CircleCI, Bito, Roo, or GOAP handle this?
 
 ---
 
@@ -17,7 +17,7 @@
 
 ---
 
-## Context: What Are "Devin's Comment Prompts"?
+## Context: What Are "OpenHands's Comment Prompts"?
 
 Based on research, this refers to:
 1. **TODO/FIXME comments in code** tagged for agent execution (e.g., `TODO @agent: implement retry logic`)

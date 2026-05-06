@@ -1,0 +1,318 @@
+name: 🎛️ PR State Orchestrator
+
+# ─────────────────────────────────────────────────────────────────
+# Central brain that chains ALL existing PR lifecycle workflows.
+# Reacts to: PR events, review events, check_suite completions
+# and label changes — then applies correct labels + drives state.
+#
+# STATE MACHINE:
+#   opened/draft         → 🚧 status:draft
+#   ready_for_review     → 👀 status:waiting-for-review  (remove draft)
+#   review: approved     → ✅ status:approved             (remove waiting)
+#   review: changes_req  → 🔧 status:needs-action         (remove waiting)
+#   new push on PR       → remove approved, back to waiting-for-review
+#   checks all pass      → ✅ status:checks-passing        (remove checks-failing)
+#   checks fail          → ❌ status:checks-failing        (remove checks-passing)
+#   approved+checks pass → 🚀 status:ready-to-merge
+#   merged/closed        → clean all status labels
+# ─────────────────────────────────────────────────────────────────
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - converted_to_draft
+      - synchronize
+      - closed
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to re-evaluate'
+        required: true
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+jobs:
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 1: Handle PR lifecycle events (open, draft, ready, push, close)
+  # ─────────────────────────────────────────────────────────────────
+  pr-lifecycle:
+    name: 🔄 PR Lifecycle Labels
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine draft vs ready state
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const isDraft = pr.draft;
+            const action = context.payload.action;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
+              owner, repo, issue_number: prNumber
+            });
+            const currentLabels = labelData.map(l => l.name);
+
+            async function addLabel(label) {
+              if (!currentLabels.includes(label)) {
+                try {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
+                  console.log(`✅ Added: ${label}`);
+                } catch (e) {
+                  console.log(`⚠️ Could not add "${label}": ${e.message}`);
+                }
+              }
+            }
+            async function removeLabel(label) {
+              if (currentLabels.includes(label)) {
+                try {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
+                  console.log(`🗑️ Removed: ${label}`);
+                } catch (e) {}
+              }
+            }
+
+            if (action === 'converted_to_draft' || (action === 'opened' && isDraft)) {
+              await addLabel('status:draft');
+              for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge','status:needs-action']) await removeLabel(l);
+              return;
+            }
+
+            if (action === 'ready_for_review') {
+              await addLabel('status:waiting-for-review');
+              for (const l of ['status:draft','status:approved','status:needs-action']) await removeLabel(l);
+              return;
+            }
+
+            if (action === 'opened' && !isDraft) {
+              await addLabel('status:waiting-for-review');
+              await removeLabel('status:draft');
+              return;
+            }
+
+            if (action === 'reopened') {
+              await (isDraft ? addLabel('status:draft') : addLabel('status:waiting-for-review'));
+              for (const l of ['status:approved','status:ready-to-merge']) await removeLabel(l);
+              return;
+            }
+
+            if (action === 'synchronize') {
+              for (const l of ['status:approved','status:ready-to-merge']) await removeLabel(l);
+              if (!isDraft) await addLabel('status:waiting-for-review');
+              console.log('📤 New commits — approval invalidated, back to review');
+              return;
+            }
+
+            if (action === 'closed') {
+              const allStatus = [
+                'status:draft','status:waiting-for-review','status:approved',
+                'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+              ];
+              for (const l of allStatus) await removeLabel(l);
+              console.log(pr.merged ? '🎉 Merged — all status labels cleared' : '🚫 Closed — labels cleared');
+            }
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 2: Handle review submissions (approved / changes_requested)
+  # ─────────────────────────────────────────────────────────────────
+  review-handler:
+    name: 🔍 Review State Labels
+    if: github.event_name == 'pull_request_review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply review state labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const review = context.payload.review;
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const state = review.state.toLowerCase();
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
+
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            const currentLabels = labelData.map(l => l.name);
+
+            async function addLabel(label) {
+              if (!currentLabels.includes(label)) {
+                try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
+              }
+            }
+            async function removeLabel(label) {
+              if (currentLabels.includes(label)) {
+                try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
+              }
+            }
+
+            if (state === 'approved') {
+              await addLabel('status:approved');
+              for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
+              if (currentLabels.includes('status:checks-passing')) {
+                await addLabel('status:ready-to-merge');
+                console.log('🚀 Approved + checks passing = READY TO MERGE');
+              } else {
+                console.log('✅ Approved — waiting for checks to pass');
+              }
+            }
+
+            if (state === 'changes_requested') {
+              await addLabel('status:needs-action');
+              for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
+              console.log('🔧 Changes requested — needs action');
+            }
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 3: Handle check_suite completions → update CI labels
+  # ─────────────────────────────────────────────────────────────────
+  check-suite-handler:
+    name: ✅ CI Check Labels
+    if: github.event_name == 'check_suite'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply check result labels to matching PRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const suite = context.payload.check_suite;
+            const conclusion = suite.conclusion;
+            const headSha = suite.head_sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            if (!conclusion || ['skipped','neutral','stale'].includes(conclusion)) {
+              console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
+              return;
+            }
+
+            const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
+
+            if (matchingPRs.length === 0) {
+              console.log(`No open PRs for SHA ${headSha}`);
+              return;
+            }
+
+            for (const pr of matchingPRs) {
+              const prNumber = pr.number;
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              const currentLabels = labelData.map(l => l.name);
+
+              async function addLabel(label) {
+                if (!currentLabels.includes(label)) {
+                  try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
+                }
+              }
+              async function removeLabel(label) {
+                if (currentLabels.includes(label)) {
+                  try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
+                }
+              }
+
+              if (conclusion === 'success') {
+                await addLabel('status:checks-passing');
+                await removeLabel('status:checks-failing');
+                console.log(`✅ PR #${prNumber}: checks PASSING`);
+                if (currentLabels.includes('status:approved')) {
+                  await addLabel('status:ready-to-merge');
+                  console.log(`🚀 PR #${prNumber}: approved + passing = READY TO MERGE`);
+                }
+              } else if (['failure','timed_out','cancelled'].includes(conclusion)) {
+                await addLabel('status:checks-failing');
+                for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
+                console.log(`❌ PR #${prNumber}: checks FAILING (${conclusion})`);
+              }
+            }
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 4: Manual re-evaluate any PR (workflow_dispatch)
+  # ─────────────────────────────────────────────────────────────────
+  manual-reevaluate:
+    name: 🔄 Manual Re-evaluate PR
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-evaluate PR state from scratch
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = parseInt('${{ github.event.inputs.pr_number }}');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+            const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            const currentLabels = labelData.map(l => l.name);
+
+            async function addLabel(label) {
+              if (!currentLabels.includes(label)) {
+                try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
+              }
+            }
+            async function removeLabel(label) {
+              if (currentLabels.includes(label)) {
+                try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
+              }
+            }
+
+            // Clear all status labels
+            const allStatus = [
+              'status:draft','status:waiting-for-review','status:approved',
+              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+            ];
+            for (const l of allStatus) await removeLabel(l);
+
+            if (pr.draft) { await addLabel('status:draft'); console.log(`PR #${prNumber}: DRAFT`); return; }
+
+            // Determine review state from latest per-reviewer decisions
+            const latestReviews = {};
+            for (const r of reviews) {
+              if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
+            }
+            const states = Object.values(latestReviews);
+            const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
+            const needsChanges = states.includes('CHANGES_REQUESTED');
+
+            if (needsChanges) { await addLabel('status:needs-action'); }
+            else if (isApproved) { await addLabel('status:approved'); }
+            else { await addLabel('status:waiting-for-review'); }
+
+            // Determine CI state from check runs
+            const { data: checkRuns } = await github.rest.checks.listForRef({
+              owner, repo, ref: pr.head.sha, per_page: 100
+            });
+            const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+            const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+
+            if (failing.length > 0) {
+              await addLabel('status:checks-failing');
+              console.log(`PR #${prNumber}: ${failing.length} check(s) failing`);
+            } else if (completed.length > 0) {
+              await addLabel('status:checks-passing');
+              if (isApproved) {
+                await addLabel('status:ready-to-merge');
+                console.log(`PR #${prNumber}: READY TO MERGE 🚀`);
+              }
+            }
+            console.log(`PR #${prNumber} re-evaluated successfully`);

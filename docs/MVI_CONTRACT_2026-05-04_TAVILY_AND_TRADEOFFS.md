@@ -15,7 +15,7 @@ Current production state: main contains the v0.1.0 control-plane server with
 4 tools, 2 resources, 21 regression tests, and a disabled-by-default entry in
 .mcp.json. Composio, Firecrawl, Obot, and FastMCP are modeled as the next
 control-plane layer.
-Known bugs relevant to this MVI: none. Devin Review BUG_0001 (duplicate
+Known bugs relevant to this MVI: none. OpenHands Review BUG_0001 (duplicate
 step-5 in setup-mcp.sh) and #0004 (unused asdict / parse imports) were both
 fixed in PR #10191.
 SYSTEM_STATE.md last updated: 2026-05-04 (PR #10191 merge).

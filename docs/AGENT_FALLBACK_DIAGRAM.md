@@ -25,7 +25,7 @@
                     ┌─────────────────┼─────────────────┐
                     ↓                 ↓                 ↓
         ┌───────────────────┐ ┌──────────────┐ ┌─────────────────┐
-        │ DEVIN_API_KEY     │ │CURSOR_API_KEY│ │OPENROUTER_API_KEY│
+        │ OpenHands_API_KEY     │ │CURSOR_API_KEY│ │OPENROUTER_API_KEY│
         │ configured?       │ │configured?   │ │configured?       │
         └─────────┬─────────┘ └──────┬───────┘ └────────┬─────────┘
                   │                  │                   │
@@ -37,7 +37,7 @@
                                  │
                                  ↓
                     ┌─────────────────────────────────┐
-                    │  Step 1: Try Devin AI           │
+                    │  Step 1: Try OpenHands AI           │
                     │  - Most capable                 │
                     │  - Complex multi-file changes   │
                     │  - Retry 3x with backoff        │
@@ -114,7 +114,7 @@
 ```
                     ┌──────────────────────────┐
                     │  Fallback Event          │
-                    │  (Devin → Cursor)        │
+                    │  (OpenHands → Cursor)        │
                     └───────────┬──────────────┘
                                 │
                                 ↓
@@ -122,7 +122,7 @@
                     │  Create GitHub Issue     │
                     │  Title: [AUTO-FALLBACK]  │
                     │  Labels: auto-fallback,  │
-                    │          devin-limit     │
+                    │          OpenHands-limit     │
                     └───────────┬──────────────┘
                                 │
                                 ↓
@@ -167,7 +167,7 @@
                │               │               │
                ↓               ↓               ↓
         ┌──────────────┐ ┌────────────┐ ┌──────────────┐
-        │ OpenRouter   │ │ Cursor     │ │ Devin AI     │
+        │ OpenRouter   │ │ Cursor     │ │ OpenHands AI     │
         │ (Cheapest)   │ │ (Balanced) │ │ (Most $$)    │
         └──────────────┘ └────────────┘ └──────────────┘
 ```

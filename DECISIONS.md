@@ -18,9 +18,9 @@
 |-----|----------|----------|------|-------|
 | D001 | Use OpenRouter for multi-LLM routing | Cost-effective, unified API | 2026-02-20 | @midnghtsapphire |
 | D002 | GitHub Actions for in-repo automation | No external orchestration needed | 2026-02-20 | @midnghtsapphire |
-| D003 | Proposal lifecycle: active→approved→implementing→shipped | Prevents limbo, clear terminal states | 2026-04-20 | @devin |
-| D004 | Weekly ship status audit on Mondays | Catches stale items before they rot | 2026-04-20 | @devin |
-| D005 | Prosecution workflow for proposals | Adversarial review catches 80% of flaws | 2026-04-20 | @devin |
+| D003 | Proposal lifecycle: active→approved→implementing→shipped | Prevents limbo, clear terminal states | 2026-04-20 | @OpenHands |
+| D004 | Weekly ship status audit on Mondays | Catches stale items before they rot | 2026-04-20 | @OpenHands |
+| D005 | Prosecution workflow for proposals | Adversarial review catches 80% of flaws | 2026-04-20 | @OpenHands |
 
 ---
 

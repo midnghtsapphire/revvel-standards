@@ -43,9 +43,9 @@ The New Issue chooser shows two cards, sorted by filename:
 
 1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. Anti-under-scoping is baked into the form itself: every WR carries its own bundle contract into the implementer's context, so README updates, REMINDERS scaffolds, and discoverability work cannot be silently dropped from the resulting PR.
 
-2. **[`Devin System WR (Quick / Internal)`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml)** (`10-devin-system-wr.yml`) — the **lightweight system form**. Output Type is the only required field; every other routing dropdown defaults to `auto-classify` and is filled in from your description by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill (small follow-up fixes, internal scripts, agent-routed automation).
+2. **[`OpenHands System WR (Quick / Internal)`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml)** (`10-OpenHands-system-wr.yml`) — the **lightweight system form**. Output Type is the only required field; every other routing dropdown defaults to `auto-classify` and is filled in from your description by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill (small follow-up fixes, internal scripts, agent-routed automation).
 
-The lightweight form additionally applies the `quick` and `devin` labels so workflows can distinguish lightweight WRs from the primary heavy ones if needed.
+The lightweight form additionally applies the `quick` and `OpenHands` labels so workflows can distinguish lightweight WRs from the primary heavy ones if needed.
 
 ### Required fields
 
@@ -64,7 +64,7 @@ The lightweight form additionally applies the `quick` and `devin` labels so work
 - **Delivery Shape** — `One PR`, `One PR preferred, split only if blocked`, `Proposal first`, or `Multiple PRs intentionally planned`
 - **Blocker Rule** — what should happen if one part cannot be completed
 
-**Lightweight form (`10-devin-system-wr.yml`)** — only two are required:
+**Lightweight form (`10-OpenHands-system-wr.yml`)** — only two are required:
 
 - **Output Type** — same options as the heavy form
 - **High-Level Goal** — prose description of what you're trying to achieve
@@ -93,7 +93,7 @@ Field semantics:
 
 - **Research Mode** controls research depth only. It does not change the deliverable.
 - **Output Type** is the hard constraint on the final deliverable.
-- **Delivery Mode** controls whether Devin proposes first or builds immediately.
+- **Delivery Mode** controls whether OpenHands proposes first or builds immediately.
 - **Iteration Mode = single-pass** means do not expand into multi-stage roadmaps unless blocked.
 - **Lifecycle Mode = refresh-existing** means audit first before proposing rebuilds.
 
@@ -145,7 +145,7 @@ Rules:
 
 ## 3. GitHub Project
 
-A single GitHub Project tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
+A single GitHub Project (https://github.com/users/midnghtsapphire/projects/5) tracks every work request. The full field schema and lifecycle are documented in [`docs/github-project-schema.md`](./github-project-schema.md).
 
 **Live board:** [https://github.com/users/midnghtsapphire/projects/5](https://github.com/users/midnghtsapphire/projects/5) — `Revvel-Standards`
 
@@ -159,7 +159,7 @@ Inbox → Researching → Scored → { Hold | Archived | Approved → In Build �
 
 The expected end-to-end flow once the operating model is wired:
 
-1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`Devin System WR`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` label so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) fires on either; the lightweight form additionally applies `quick` + `devin`.
+1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`OpenHands System WR`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` label so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) fires on either; the lightweight form additionally applies `quick` + `OpenHands`.
 2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
 3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
 4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).
@@ -344,7 +344,7 @@ The operating model is successful when:
 | Asset                                                                                  | Purpose                                                |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | [`.github/ISSUE_TEMPLATE/00-work-request.yml`](../.github/ISSUE_TEMPLATE/00-work-request.yml)                | Primary human Work Request form (anti-under-scoping)   |
-| [`.github/ISSUE_TEMPLATE/10-devin-system-wr.yml`](../.github/ISSUE_TEMPLATE/10-devin-system-wr.yml)          | Lightweight WR for internal/agent-driven work          |
+| [`.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml)          | Lightweight WR for internal/agent-driven work          |
 | [`templates/viability-gate-template.md`](../templates/viability-gate-template.md)       | Viability scoring rubric                               |
 | [`templates/invention-flow-template.md`](../templates/invention-flow-template.md)       | Invention evaluation flow                              |
 | [`templates/legacy-refresh-checklist.md`](../templates/legacy-refresh-checklist.md)     | Refresh-existing audit checklist                       |

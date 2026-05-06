@@ -1,9 +1,9 @@
 # Implementation Summary: Agent Prompt Execution Research
 
 **Date:** May 3, 2026  
-**Issue:** [WR] ASSIGNT AGENT TO PERFROM DEVINS COMMENT PROMPT LEFT FOR AGENTS CAN CIRCLECI? BITO? ROO? GOAP?  
+**Issue:** [WR] ASSIGNT AGENT TO PERFROM OpenHandsS COMMENT PROMPT LEFT FOR AGENTS CAN CIRCLECI? BITO? ROO? GOAP?  
 **Agent:** GitHub Copilot Coding Agent  
-**PR Branch:** `copilot/research-devins-comment-prompt`
+**PR Branch:** `copilot/research-OpenHandss-comment-prompt`
 
 ---
 

@@ -13,7 +13,7 @@ All AI agents that need to manage the MIDNGHTSAPPHIRE droplet (164.90.148.7) use
 
 | Agent Platform | How to Get the Key |
 |---|---|
-| **Devin** | `$SSH_PRIVATE_KEY` org secret (auto-injected) |
+| **OpenHands** | `$SSH_PRIVATE_KEY` org secret (auto-injected) |
 | **Claude Code / Cursor / Windsurf** | DoppleMCP → `doppler_secrets_get(project=revvel-standards, config=prd, name=SSH_PRIVATE_KEY)` |
 | **GitHub Actions (Copilot)** | `${{ secrets.SSH_PRIVATE_KEY }}` repository secret |
 | **Any agent with shell** | `doppler secrets get SSH_PRIVATE_KEY --project revvel-standards --config prd --plain` |
@@ -28,7 +28,7 @@ All AI agents that need to manage the MIDNGHTSAPPHIRE droplet (164.90.148.7) use
 | **Key comment** | `agent-access@midnghtsapphire` |
 | **Droplet IP** | `164.90.148.7` |
 | **Droplet user** | `root` |
-| **Key storage (Devin)** | Org secret: `SSH_PRIVATE_KEY` |
+| **Key storage (OpenHands)** | Org secret: `SSH_PRIVATE_KEY` |
 | **Key storage (Doppler)** | `revvel-standards/prd/SSH_PRIVATE_KEY` |
 | **Key storage (GitHub)** | Repository secret: `SSH_PRIVATE_KEY` |
 
@@ -174,10 +174,10 @@ done
 
 ## 6. Security Rules
 
-1. **Never commit the private key.** It lives in Doppler and Devin org secrets only.
+1. **Never commit the private key.** It lives in Doppler and OpenHands org secrets only.
 2. **Never log the key value.** When debugging, log the fingerprint: `ssh-keygen -lf ~/.ssh/agent-access`
 3. **One key for all agents.** Don't generate per-agent keys — use the shared `agent-access` key.
-4. **Rotate annually.** Generate a new key pair, update Doppler + Devin secrets, update droplet `authorized_keys`.
+4. **Rotate annually.** Generate a new key pair, update Doppler + OpenHands secrets, update droplet `authorized_keys`.
 5. **StrictHostKeyChecking=no is acceptable** for agent automation (the droplet IP is known and stable). For production CI/CD, use `ssh-keyscan` to pin the host key.
 
 ---
@@ -186,7 +186,7 @@ done
 
 - [x] Generate `agent-access` Ed25519 key pair
 - [x] Add public key to droplet: `echo "PUBLIC_KEY" >> /root/.ssh/authorized_keys`
-- [x] Store private key in Devin org secret as `SSH_PRIVATE_KEY`
+- [x] Store private key in OpenHands org secret as `SSH_PRIVATE_KEY`
 - [x] Store private key in Doppler `revvel-standards/prd` as `SSH_PRIVATE_KEY`
 - [ ] Add private key as GitHub repository secret `SSH_PRIVATE_KEY` (all 3 repos)
 - [x] Test: `ssh -i ~/.ssh/agent-access root@164.90.148.7 uptime`

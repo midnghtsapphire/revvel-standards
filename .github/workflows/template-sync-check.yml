@@ -4,30 +4,30 @@ name: Template Sync Check
 # (portable) stay identical for the canonical WR templates. Triggered on any
 # push that touches either location.
 #
-# DEVIN-RESTRUCTURE 2026-05-05 (PR #13344): the canonical filenames moved to
+# OpenHands-RESTRUCTURE 2026-05-05 (PR #13344): the canonical filenames moved to
 # `00-work-request.yml` (primary human form, anti-under-scoping bundle) and
-# `10-devin-system-wr.yml` (lightweight system form for internal/agent work).
+# `10-openhands-system-wr.yml` (lightweight system form for internal/agent work).
 # Both templates apply the `work-request` label so the auto-classifier still
-# fires on either; the lightweight form additionally applies `quick` + `devin`.
+# fires on either; the lightweight form additionally applies `quick` + `OpenHands`.
 
 on:
   pull_request:
     paths:
       - '.github/ISSUE_TEMPLATE/00-work-request.yml'
-      - '.github/ISSUE_TEMPLATE/10-devin-system-wr.yml'
+      - '.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml'
       - '.github/ISSUE_TEMPLATE/config.yml'
       - 'templates/issue-template/00-work-request.yml'
-      - 'templates/issue-template/10-devin-system-wr.yml'
+      - 'templates/issue-template/10-openhands-system-wr.yml'
       - 'templates/issue-template/config.yml'
   push:
     branches:
       - main
     paths:
       - '.github/ISSUE_TEMPLATE/00-work-request.yml'
-      - '.github/ISSUE_TEMPLATE/10-devin-system-wr.yml'
+      - '.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml'
       - '.github/ISSUE_TEMPLATE/config.yml'
       - 'templates/issue-template/00-work-request.yml'
-      - 'templates/issue-template/10-devin-system-wr.yml'
+      - 'templates/issue-template/10-openhands-system-wr.yml'
       - 'templates/issue-template/config.yml'
 
 permissions:
@@ -56,19 +56,19 @@ jobs:
             echo "00-work-request.yml files are in sync"
           fi
 
-      - name: Compare 10-devin-system-wr.yml files
+      - name: Compare 10-openhands-system-wr.yml files
         run: |
-          echo "Comparing .github/ISSUE_TEMPLATE/10-devin-system-wr.yml with templates/issue-template/10-devin-system-wr.yml..."
-          if ! diff -u .github/ISSUE_TEMPLATE/10-devin-system-wr.yml templates/issue-template/10-devin-system-wr.yml; then
-            echo "ERROR: 10-devin-system-wr.yml files are out of sync!"
+          echo "Comparing .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml with templates/issue-template/10-openhands-system-wr.yml..."
+          if ! diff -u .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml templates/issue-template/10-openhands-system-wr.yml; then
+            echo "ERROR: 10-openhands-system-wr.yml files are out of sync!"
             echo ""
-            echo "The active template (.github/ISSUE_TEMPLATE/10-devin-system-wr.yml) and the portable"
-            echo "copy (templates/issue-template/10-devin-system-wr.yml) must be identical."
+            echo "The active template (.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml) and the portable"
+            echo "copy (templates/issue-template/10-openhands-system-wr.yml) must be identical."
             echo ""
             echo "To fix: Copy the desired version to both locations and commit both files."
             exit 1
           else
-            echo "10-devin-system-wr.yml files are in sync"
+            echo "10-openhands-system-wr.yml files are in sync"
           fi
 
       - name: Compare config.yml files
@@ -92,10 +92,10 @@ jobs:
           echo ""
           echo "Active templates:"
           echo "  - .github/ISSUE_TEMPLATE/00-work-request.yml      (primary human form)"
-          echo "  - .github/ISSUE_TEMPLATE/10-devin-system-wr.yml   (lightweight system form)"
+          echo "  - .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml   (lightweight system form)"
           echo "  - .github/ISSUE_TEMPLATE/config.yml"
           echo ""
           echo "Portable copies (for installing in other repos):"
           echo "  - templates/issue-template/00-work-request.yml"
-          echo "  - templates/issue-template/10-devin-system-wr.yml"
+          echo "  - templates/issue-template/10-openhands-system-wr.yml"
           echo "  - templates/issue-template/config.yml"
