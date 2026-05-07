@@ -87,8 +87,9 @@ if (!repo) {
 
 console.log(`Setting up Vercel deploy for ${repo}...`);
 
-const branch = `automation/vercel-deploy-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
-const tempDir = `/tmp/vercel-deploy-${repo.replace('/', '-')}-${Date.now()}`;
+const runId = Date.now();
+const branch = `automation/vercel-deploy-${runId}-${crypto.randomBytes(4).toString('hex')}`;
+const tempDir = `/tmp/vercel-deploy-${repo.replace('/', '-')}-${runId}`;
 const targetDir = `${tempDir}/target`;
 const prBodyFile = `${tempDir}/pr-body.md`;
 
@@ -111,13 +112,14 @@ try {
   hasChanges = false;
 } catch (error) {
   // git diff --quiet exits 1 when differences are present.
-  if (error.status !== 1 && error.code !== 1) {
+  if (error.status !== 1) {
     throw error;
   }
 }
 
 if (!hasChanges) {
   console.log('No changes detected. deploy.yml is already up to date.');
+  execSync(`rm -rf "${tempDir}"`, { stdio: 'inherit' });
   process.exit(0);
 }
 
@@ -130,3 +132,4 @@ execSync(
   { cwd: targetDir, stdio: 'inherit' }
 );
 console.log(`Opened PR in ${repo} from branch ${branch}.`);
+execSync(`rm -rf "${tempDir}"`, { stdio: 'inherit' });
