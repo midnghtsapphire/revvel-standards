@@ -97,19 +97,30 @@ execSync('mkdir -p .github/workflows', { cwd: targetDir, stdio: 'inherit' });
 fs.writeFileSync(`${targetDir}/.github/workflows/deploy.yml`, WORKFLOW_TEMPLATE);
 fs.writeFileSync(prBodyFile, `Adds .github/workflows/deploy.yml for Vercel auto-deploy.\n\n${DEPLOY_SECRETS}\n`);
 
+execSync(`git checkout -b ${branch}`, { cwd: targetDir, stdio: 'inherit' });
+execSync('git add .github/workflows/deploy.yml', { cwd: targetDir, stdio: 'inherit' });
+
+let hasChanges = true;
 try {
-  execSync(`git checkout -b ${branch}`, { cwd: targetDir, stdio: 'inherit' });
-  execSync('git add .github/workflows/deploy.yml', { cwd: targetDir, stdio: 'inherit' });
   execSync('git diff --cached --quiet', { cwd: targetDir, stdio: 'inherit' });
-  console.log('No changes detected. deploy.yml is already up to date.');
-} catch {
-  execSync('git config user.name "revvel-automation[bot]"', { cwd: targetDir, stdio: 'inherit' });
-  execSync('git config user.email "revvel-automation@users.noreply.github.com"', { cwd: targetDir, stdio: 'inherit' });
-  execSync('git commit -m "ci: add Vercel deploy workflow"', { cwd: targetDir, stdio: 'inherit' });
-  execSync(`git push -u origin ${branch}`, { cwd: targetDir, stdio: 'inherit' });
-  execSync(
-    `gh pr create --repo ${repo} --base main --head ${branch} --title "ci: add Vercel deploy workflow" --body-file "${prBodyFile}"`,
-    { cwd: targetDir, stdio: 'inherit' }
-  );
-  console.log(`Opened PR in ${repo} from branch ${branch}.`);
+  hasChanges = false;
+} catch (error) {
+  if (error.status !== 1) {
+    throw error;
+  }
 }
+
+if (!hasChanges) {
+  console.log('No changes detected. deploy.yml is already up to date.');
+  process.exit(0);
+}
+
+execSync('git config user.name "revvel-automation[bot]"', { cwd: targetDir, stdio: 'inherit' });
+execSync('git config user.email "revvel-automation@users.noreply.github.com"', { cwd: targetDir, stdio: 'inherit' });
+execSync('git commit -m "ci: add Vercel deploy workflow"', { cwd: targetDir, stdio: 'inherit' });
+execSync(`git push -u origin ${branch}`, { cwd: targetDir, stdio: 'inherit' });
+execSync(
+  `gh pr create --repo ${repo} --base main --head ${branch} --title "ci: add Vercel deploy workflow" --body-file "${prBodyFile}"`,
+  { cwd: targetDir, stdio: 'inherit' }
+);
+console.log(`Opened PR in ${repo} from branch ${branch}.`);
