@@ -65,18 +65,18 @@ jobs:
             
             # Check for TODO without issue reference
             if grep -n "TODO" "$file" | grep -v "TODO: See issue #" | grep -v "github.com.*issues" > /dev/null 2>&1; then
-              VIOLATIONS+=("❌ $file: Contains TODO without issue reference")
+              VIOLATIONS+=("$file: Contains TODO without issue reference")
             fi
             
             # Check for FIXME
             if grep -n "FIXME" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("❌ $file: Contains FIXME")
+              VIOLATIONS+=("$file: Contains FIXME")
             fi
             
             # Check for "scaffold" in code files
             if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]] || [[ "$file" == *.jsx ]] || [[ "$file" == *.tsx ]] || [[ "$file" == *.py ]]; then
               if grep -in "scaffold" "$file" | grep -v "scaffolding tools like npm init" > /dev/null 2>&1; then
-                VIOLATIONS+=("❌ $file: Contains 'scaffold' - ship complete code")
+                VIOLATIONS+=("$file: Contains 'scaffold' - ship complete code")
               fi
             fi
             
@@ -89,24 +89,24 @@ jobs:
                 grep -v 'placeholder values' | \
                 grep -v 'alt="placeholder"' | \
                 grep -v 'Search projects' > /dev/null 2>&1; then
-                VIOLATIONS+=("❌ $file: Contains 'placeholder' - implement complete functionality")
+                VIOLATIONS+=("$file: Contains 'placeholder' - implement complete functionality")
               fi
             fi
             
             # Check for empty TODO implement comments
             if grep -n "// TODO: implement" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("❌ $file: Contains '// TODO: implement' - implement it now")
+              VIOLATIONS+=("$file: Contains '// TODO: implement' - implement it now")
             fi
             
             # Check for "Phase 1", "MVP first" type language in code comments
             if grep -in "phase 1\|phase 2\|mvp first\|coming soon\|not yet implemented" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("❌ $file: Contains phased implementation language - deliver complete solution")
+              VIOLATIONS+=("$file: Contains phased implementation language - deliver complete solution")
             fi
             
             # Check for empty/stub functions in new code
             if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]]; then
               if grep -Pzo "function\s+\w+\s*\([^)]*\)\s*\{\s*\}" "$file" > /dev/null 2>&1; then
-                VIOLATIONS+=("❌ $file: Contains empty function stubs - implement functionality")
+                VIOLATIONS+=("$file: Contains empty function stubs - implement functionality")
               fi
             fi
           done
@@ -141,7 +141,7 @@ jobs:
             // Check title - but exclude workflow name matches
             const titleLower = title.toLowerCase().replace(/check-for-scaffolding/gi, '').replace(/anti-scaffolding/gi, '');
             if (titleLower.includes('scaffold') || titleLower.includes('wip') || titleLower.includes('draft')) {
-              violations.push('❌ PR title contains scaffolding language: ' + title);
+              violations.push('PR title contains scaffolding language: ' + title);
             }
             
             // Check body for concerning patterns
@@ -159,7 +159,7 @@ jobs:
             
             for (const phrase of concerningPhrases) {
               if (bodyLower.includes(phrase)) {
-                violations.push(`❌ PR description contains: "${phrase}" - deliver complete work`);
+                violations.push(`PR description contains: "${phrase}" - deliver complete work`);
               }
             }
             
@@ -275,7 +275,7 @@ jobs:
             });
             
             console.log('⚠️ PR requires completion before merge');
-            core.setOutput('scaffolding-found', 'true'); echo '::warning::PR contains scaffolding language - see comment for details' - see comment for details');
+            core.setOutput('scaffolding-found', 'true');
 
       - name: Remove label if no violations
         if: steps.scan.outputs.violations == 'false' && steps.check_pr.outputs.pr_violations == 'false'
