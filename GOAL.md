@@ -33,3 +33,13 @@
 - 80% autonomous operation
 - 3+ acquirer interest
 
+---
+
+## Agent Swarm Targets
+
+| Agent | Focus | Metrics |
+|-------|-------|---------|
+| OSINT Agent | Research + intel | 50 reports/week |
+| Product Agent | Auto-build + ship | 10 products/week |
+| Sales Agent | Conversion | $10k/day revenue |
+| Support Agent | Auto-resolve | 90% self-service |
