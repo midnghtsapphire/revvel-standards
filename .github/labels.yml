@@ -97,7 +97,41 @@ labels:
   - name: blocked
     color: "e4e669"
     description: "Blocked by external dependency"
-  
+
+  # ── PR Lifecycle (managed by pr-lifecycle.yml) ─────────────────────────────────
+  - name: awaiting-review
+    color: "0075ca"
+    description: "Waiting for reviewer feedback"
+
+  - name: checks-failing
+    color: "d73a4a"
+    description: "CI checks are failing"
+
+  - name: checks-passing
+    color: "a2eeef"
+    description: "All CI checks pass"
+
+  - name: ready-to-merge
+    color: "008672"
+    description: "Approved + checks pass — ready to merge"
+
+  # ── Issue Lifecycle (managed by issue-lifecycle.yml) ──────────────────────────
+  - name: "issue:in-progress"
+    color: "0075ca"
+    description: "Issue has a linked PR in progress"
+
+  - name: "issue:done"
+    color: "0e8a16"
+    description: "Issue resolved — linked PR merged"
+
+  - name: "issue:stale"
+    color: "e4e669"
+    description: "No activity for 7+ days — needs attention"
+
+  - name: "lifecycle:stuck"
+    color: "d93f0b"
+    description: "Label watchdog detected a stuck state"
+
   # ── Third-Party / External Contributions ──────────────────────────────────────
   - name: third-party
     color: "bfdadc"
@@ -115,6 +149,10 @@ labels:
   - name: "awaiting-approval"
     color: "fbca04"
     description: "PR is awaiting review and approval"
+
+  - name: "awaiting-review"
+    color: "0075ca"
+    description: "PR is ready and awaiting reviewer"
 
   - name: "changes-requested"
     color: "d93f0b"
@@ -480,3 +518,16 @@ labels:
   - name: resolved
     color: "0e8a16"
     description: "Issue resolved — workflow recovered or fixed"
+
+  # ── PR Status (for lifecycle automation) ────────────────────────────
+  - name: checks-passing
+    color: "16a34a"
+    description: "All CI checks pass"
+
+  - name: checks-failing
+    color: "dc2626"
+    description: "One or more CI checks failed"
+
+  - name: ready-to-merge
+    color: "8b5cf6"
+    description: "Approved + checks passing — ready to merge"

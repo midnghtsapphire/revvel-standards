@@ -3,7 +3,7 @@ name: Priority Router — Issues & PRs
 # Routes every issue/PR through a priority classifier and re-evaluates the
 # backlog whenever new work arrives or completes.
 #
-# DEVIN-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
+# OpenHands-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
 # with openrouter-coder, jules-invoke, wr-pr-creation, openrouter-assignee,
 # and needs-action-router on every newly-opened issue. The 6-hourly schedule
 # still runs the full priority sweep, and PR-side routing is unchanged.

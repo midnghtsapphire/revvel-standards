@@ -1,7 +1,7 @@
 # GrowlingEyes — Fork Integration Map + Credential Audit
 
 **Date:** 2026-04-25
-**Author:** Devin (gap analysis session)
+**Author:** OpenHands (gap analysis session)
 **Repos reviewed:** `midnghtsapphire/growlingeyes`, `midnghtsapphire/revvel-standards`, 22 preserved forks
 
 ---

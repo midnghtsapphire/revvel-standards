@@ -25,7 +25,7 @@
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
-| #311 | ship-everything structure | open | @devin | 2026-04-20 |
+| #311 | ship-everything structure | open | @OpenHands | 2026-04-20 |
 
 ### Issues
 

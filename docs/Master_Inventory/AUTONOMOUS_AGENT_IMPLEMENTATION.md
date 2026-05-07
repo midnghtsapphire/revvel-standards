@@ -191,7 +191,7 @@ Trigger Auto-Error Workflow
     ↓
 Attempt Recovery:
     1. Try anthropic/claude-sonnet-4
-    2. Try anthropic/claude-3.5-sonnet
+    2. Try anthropic/claude-sonnet-4.5
     3. Try openai/gpt-4-turbo-preview
     ↓
 If Still Failing:
@@ -259,7 +259,7 @@ try {
 // Auto-recovery with alternatives
 const attemptedFixes = [];
 
-for (const model of ["claude-sonnet-4", "claude-3.5-sonnet", "gpt-4-turbo"]) {
+for (const model of ["claude-sonnet-4", "claude-sonnet-4.5", "gpt-4-turbo"]) {
   try {
     const result = await callOpenRouter(prompt, { model });
     return result;
