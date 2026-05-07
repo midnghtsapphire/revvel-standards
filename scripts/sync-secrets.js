@@ -2,8 +2,8 @@
 /**
  * Secrets Propagation Script
  * 
- * Reads .env.example from revvel-standards and syncs to target repos.
- * Uses docs/SECRETS_MANAGEMENT.md as source of truth.
+ * Reads from SSOT: docs/SECRETS_MATRIX.md
+ * Syncs to ANY target repo.
  * 
  * Usage: node scripts/sync-secrets.js --repo owner/repo
  */
@@ -13,37 +13,48 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const REVVEL_STANDARDS = path.join(__dirname, '..');
-const SECRETS_DOC = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MANAGEMENT.md');
+const SECRETS_DOC = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MATRIX.md');
+const SECRETS_LEGACY = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MANAGEMENT.md');
 const ENV_TEMPLATE = path.join(REVVEL_STANDARDS, '.env.example');
 
-// Parse secrets from documentation
-function parseSecretsFromDoc() {
-  const content = fs.readFileSync(SECRETS_DOC, 'utf-8');
-  const secrets = [];
+// Parse SSOT matrix for all secrets
+function parseSecretsMatrix() {
+  const fileToCheck = fs.existsSync(SECRETS_DOC) ? SECRETS_DOC : SECRETS_LEGACY;
+  const content = fs.readFileSync(fileToCheck, 'utf-8');
+  const secrets = {
+    required: [],
+    optional: [],
+    all: []
+  };
   
-  // Match table rows with secret names
-  const regex = /\| `([A-Z_]+)` \|/g;
+  // Match table format: | `SECRET_NAME` |
+  const regex = /\| \`([A-Z_][A-Z0-9_]*)\` \|/g;
   let match;
+  const found = new Set();
+  
   while ((match = regex.exec(content)) !== null) {
-    secrets.push(match[1]);
+    const secret = match[1];
+    // Skip workflow filenames
+    if (!secret.endsWith('.yml') && !secret.endsWith('.yaml')) {
+      found.add(secret);
+    }
   }
   
-  return [...new Set(secrets)]; // Dedupe
-}
-
-// Parse .env.example
-function parseEnvTemplate() {
-  const content = fs.readFileSync(ENV_TEMPLATE, 'utf-8');
-  const vars = [];
+  // Also read .env.example
+  if (fs.existsSync(ENV_TEMPLATE)) {
+    const env = fs.readFileSync(ENV_TEMPLATE, 'utf-8');
+    env.split('\n').forEach(line => {
+      const m = line.match(/^([A-Z_][A-Z0-9_]*)=/);
+      if (m) found.add(m[1]);
+    });
+  }
   
-  content.split('\n').forEach(line => {
-    const match = line.match(/^([A-Z_]+)=/);
-    if (match && !line.startsWith('#')) {
-      vars.push(match[1]);
-    }
-  });
-  
-  return vars;
+  const all = [...found].sort();
+  return {
+    required: all.filter(s => !['GROQ_API_KEY', 'JULES_API_KEY', 'RECURSE_ML_API_KEY', 'HEYGEN_API_KEY', 'LEONARDO_API_KEY', 'ELEVEN_API_KEY'].includes(s)),
+    optional: all.filter(s => ['GROQ_API_KEY', 'JULES_API_KEY', 'RECURSE_ML_API_KEY', 'HEYGEN_API_KEY', 'LEONARDO_API_KEY', 'ELEVEN_API_KEY'].includes(s)),
+    all
+  };
 }
 
 // Get GH CLI
@@ -62,32 +73,39 @@ const repo = repoFlag ? repoFlag.split('=')[1] : null;
 if (!repo) {
   console.log('Usage: node scripts/sync-secrets.js --repo=owner/repo');
   console.log('');
-  console.log('Secrets found in docs/SECRETS_MANAGEMENT.md:');
-  const docSecrets = parseSecretsFromDoc();
-  console.log(`  Total: ${docSecrets.length}`);
-  console.log(`  ${docSecrets.slice(0, 10).join(', ')}...`);
+  const matrix = parseSecretsMatrix();
+  console.log('Secrets from SSOT (docs/SECRETS_MATRIX.md):');
+  console.log(`  Total: ${matrix.all.length}`);
+  console.log(`  Required: ${matrix.required.length}`);
+  console.log(`  Optional: ${matrix.optional.length}`);
   console.log('');
-  console.log('Variables in .env.example:');
-  const envVars = parseEnvTemplate();
-  console.log(`  Total: ${envVars.length}`);
+  console.log('Required for ALL projects:');
+  console.log(`  ${matrix.required.slice(0, 8).join(', ')}`);
+  console.log('');
+  console.log('Optional (depends on features):');
+  console.log(`  ${matrix.optional.join(', ')}`);
   process.exit(0);
 }
 
 console.log(`Syncing to ${repo}...`);
-const docSecrets = parseSecretsFromDoc();
+const docSecrets = parseSecretsMatrix();
 const envVars = parseEnvTemplate();
 
 // Combine both sources
-const allVars = [...new Set([...docSecrets, ...envVars])];
+const allVars = [...new Set([...docSecrets.all, ...envVars])];
 
 console.log(`Found ${allVars.length} secrets/variables to sync`);
 
-// Create .env.example update
-const output = allVars.map(v => `${v}=`).join('\n');
+// Create .env.example update with REQUIRED + OPTIONAL sections
+const requiredLines = docSecrets.required.map(v => `${v}=`).join('\n');
+const optionalLines = docSecrets.optional.map(v => `# ${v}=`).join('\n');
+const output = `# REQUIRED FOR ALL PROJECTS\n${requiredLines}\n\n# OPTIONAL (depends on features)\n${optionalLines}`;
+
 const localFile = `/tmp/${repo.replace('/', '-')}.env.example`;
 
-fs.writeFileSync(localFile, `# Synced from revvel-standards\n# ${new Date().toISOString()}\n\n${output}\n`);
+fs.writeFileSync(localFile, `# Synced from revvel-standards (SSOT)\n# ${new Date().toISOString()}\n\n${output}\n`);
 
 console.log(`Created: ${localFile}`);
 console.log('');
-console.log('TODO: Push to target repo via GitHub API or git clone + PR');
+console.log('In target repo, add secrets via:');
+console.log(`  gh secret set SECRET_NAME --repo=${repo}`);

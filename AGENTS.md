@@ -23,9 +23,9 @@ npm run workflows:validate
 - `templates/` — Reusable templates
 
 ### For Secrets & API Keys
-- `docs/SECRETS_MANAGEMENT.md` — **SOURCE OF TRUTH** for all API keys
-- `.env.example` — Variable templates
-- `doppler-secrets-sync.yml` — Sync to any repo
+- `docs/SECRETS_MATRIX.md` — **SSOT: ALWAYS LOOK HERE FIRST**
+- `docs/SECRETS_MANAGEMENT.md` — Workflow secret mapping
+- `docs/Soul2Bowl/IMAGE_GENERATION.md` - Image generation APIs
 
 ### For GitHub Actions
 - `.github/workflows/` — All workflows
