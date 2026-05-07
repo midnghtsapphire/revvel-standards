@@ -28,7 +28,7 @@ jobs:
         env:
           ERROR_MESSAGE: ${{ inputs.error_message }}
         run: |
-          if [[ "$ERROR_MESSAGE" == *"rate"*limit* ]]; then
+          if [[ "$ERROR_MESSAGE" == *rate*limit* ]]; then
             echo "is_rate_limit=true" >> $GITHUB_OUTPUT
           else
             echo "is_rate_limit=false" >> $GITHUB_OUTPUT
@@ -47,7 +47,7 @@ jobs:
           EXISTING=$(gh search issues --repo "$REPO" \
             --state open --json number,title 2>/dev/null | \
             jq -r --arg failed "$FAILED_WORKFLOW" --arg rate "API rate limit" \
-            '.[] | select(.title as $title | ($title | index($failed) and $title | index($rate))) | .number' | head -1 || echo "")
+            '.[] | select(.title | (contains($failed) and contains($rate))) | .number' | head -1 || echo "")
           
           if [[ -z "$EXISTING" ]]; then
             BODY=$(cat <<EOF
