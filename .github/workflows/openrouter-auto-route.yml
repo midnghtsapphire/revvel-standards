@@ -1,58 +1,29 @@
 name: OpenRouter Auto-Route
-
-# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack auto-route):
-# Reads a `[WR]`-prefixed issue body, parses the routing-profile dropdowns from
-# the canonical `00-work-request.yml` form, and applies agent-trigger labels so
-# downstream agent workflows fire automatically:
-#
-#   Output Type = cli-product / api-product / mcp-product / production-app
-#     → label `swe-fix` (princeton-nlp/SWE-agent handles code-heavy WRs)
-#
-#   Output Type = sellable-pdf / technical-documentation / project-management-doc
-#     → label `noimosai`     (NoimosAI handles content/marketing assets)
-#     → label `fix-me`       (OpenHands resolver handles doc fixes if it's a refresh)
-#
-#   Output Type = client-code-task / internal-script-automation
-#     → label `fix-me`       (OpenHands resolver — small, scoped fixes)
-#
-#   Output Type = invention-flow / desktop-tool
-#     → label `swe-fix` + `bito-ai`   (deeper review on novel architecture)
-#
-# Always applies the `bito-ai` label so BITO reviews every WR's resulting PR.
-#
-# This workflow is read-only on the issue body — never modifies the WR text.
-# It only adds labels (idempotent — won't duplicate existing labels).
-#
-# Fail-soft: if the routing profile can't be parsed (e.g. user filled in via API
-# without the form), it does nothing and exits clean.
-
 on:
   issues:
-    types: [opened, reopened, edited, labeled]
+    types:
+      - opened
+      - reopened
+      - edited
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to route"
+        description: Issue number to route
         required: true
         type: number
-
 permissions:
   contents: read
   issues: write
-
 concurrency:
   group: openrouter-auto-route-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   auto-route:
     name: Apply agent-trigger labels based on Output Type
     runs-on: ubuntu-latest
-    # Skip bot-spam issues and non-WR issues at the job level so we don't waste
-    # a runner.
-    if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
@@ -146,3 +117,6 @@ jobs:
               .addRaw(`Output Type: \`${outputType}\`\n\n`)
               .addRaw(`Labels applied: ${labelsToApply.length ? labelsToApply.map(l => `\`${l}\``).join(', ') : '_(none — all already present)_'}\n`)
               .write();
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

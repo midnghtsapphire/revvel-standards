@@ -514,3 +514,31 @@ growlingeyes/
 - [ ] Telegram bot registered and responding to commands
 - [ ] Axion MCP tools respond to satellite data and map generation requests
 - [ ] `/satellite` and `/map` commands work in Discord and Telegram
+
+---
+
+## ADDED: Money & Execution Ethic
+
+### OSINT Monetization
+- **Research to revenue in 24 hours**
+- **Sell intel, not reports** — actionable > pretty
+- **If not monetizeable, deprioritize**
+
+### Extreme Programming Ethic
+1. **Ship fast** — OSINT tools in hours
+2. **Test with real targets** — not synthetic
+3. **Break things** — learn faster  
+4. **No specs** — build then ship
+5. **Done = paid**
+6. **Automate** — manual intel is failure
+7. **Code talks** — meetings kill velocity
+8. **Revenue > reports** — money proves value
+
+### The OSINT Rule
+- Hunt → Verify → Package → Sell → Repeat
+- Speed is everything
+- Real intel > perfect reports
+
+---
+
+*ADDED: Phase 1 upgrade ($3k → $10k/month) + execution ethic*

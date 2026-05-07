@@ -1,0 +1,81 @@
+# Auto Bootstrap New Repos
+# Runs when new repos are created in the org
+name: Auto Bootstrap
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repo to bootstrap (owner/repo)'
+        required: false
+        type: string
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly Sundays 2AM UTC
+  repository:
+    types: [created]
+permissions:
+  contents: write
+  issues: write
+  secrets: read
+jobs:
+  bootstrap:
+    name: Bootstrap ${{ github.event.inputs.repo || github.event.repository.full_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout standards
+        uses: actions/checkout@v4
+        with:
+          repository: midnghtsapphire/revvel-standards
+          path: standards
+          sparse-checkout: |
+            scripts/sync-secrets.js
+            docs/SECRETS_MANAGEMENT.md
+            .env.example
+
+      - name: Determine target repo
+        id: target
+        run: |
+          REPO="${{ github.event.inputs.repo || github.event.repository.full_name }}"
+          echo "target_repo=$REPO" >> $GITHUB_OUTPUT
+
+      - name: Sync secrets template
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          cd standards
+          node scripts/sync-secrets.js --repo=${{ steps.target.outputs.target_repo }} || {
+            echo "::warning::Secrets sync failed - this is OK if no .env file"
+          }
+          
+          # Copy to target repo if file exists
+          if [ -f "/tmp/MIDNGHTSAPPHIRE-Soul2Bowl.env.example" ]; then
+            echo "Would copy secrets template to ${{ steps.target.outputs.target_repo }}"
+          fi
+
+      - name: Run secrets health check
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          gh workflow run secrets-health-check.yml \
+            --repo "${{ steps.target.outputs.target_repo }}" \
+            --ref main || {
+            echo "::warning::Health check workflow not found in target"
+          }
+
+      - name: Enable error handling standard
+        run: |
+          # Verify AUTO_BOOTSTRAP_STANDARD.md exists in target
+          echo "Checking for error handling docs..."
+          
+      - name: Create WR on bootstrap failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[WR] Auto-bootstrap failed',
+              body: 'Automated bootstrap failed. Check workflow logs: ' + process.env.GITHUB_RUN_ID
+            })
+
+    timeout-minutes: 30

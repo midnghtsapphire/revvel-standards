@@ -1,28 +1,13 @@
-# ARSC Labels — Add / Remove / Set / Clear labels on issues and pull requests.
-#
-# Uses: wagner-cotta/arsc-label@v1.0
-# Docs: https://github.com/wagner-cotta/arsc-label
-#
-# What this workflow does:
-#   1. MANUAL (workflow_dispatch): Operator can add, remove, set, or clear
-#      labels on any open issue or PR by supplying the object number,
-#      operation, and optional label list.
-#   2. AUTO-LABEL NEW ISSUES: When an issue is opened without labels it
-#      receives the `triage` label so it appears in the project Backlog.
-#   3. (Removed — draft label management is no longer used)
-
 name: ARSC Labels
-
 on:
-  # ── Manual trigger ─────────────────────────────────────────────────────────
   workflow_dispatch:
     inputs:
       object-id:
-        description: "Issue or Pull Request number"
+        description: Issue or Pull Request number
         required: true
         type: string
       operation:
-        description: "Label operation to perform"
+        description: Label operation to perform
         required: true
         type: choice
         options:
@@ -31,28 +16,20 @@ on:
           - set
           - clear
       labels:
-        description: "Comma-separated label names (not required for 'clear')"
+        description: Comma-separated label names (not required for 'clear')
         required: false
         type: string
-
-  # ── Event-driven triggers ───────────────────────────────────────────────────
   issues:
-    types: [opened]
-
+    types:
+      - opened
 permissions:
   issues: write
   pull-requests: write
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Manual label management via workflow_dispatch
-  # ────────────────────────────────────────────────────────────────────────────
   manual-label:
     name: Manual Label Operation
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
-
     steps:
       - name: Manage Labels (ARSC)
         uses: wagner-cotta/arsc-label@v1.0
@@ -61,15 +38,11 @@ jobs:
           object-id: ${{ github.event.inputs['object-id'] }}
           operation: ${{ github.event.inputs.operation }}
           labels: ${{ github.event.inputs.labels }}
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Auto-label new issues with `triage`
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   triage-new-issue:
     name: Apply Triage Label to New Issues
     runs-on: ubuntu-latest
     if: github.event_name == 'issues' && github.event.action == 'opened'
-
     steps:
       - name: Ensure `triage` label exists
         uses: actions/github-script@v8
@@ -94,7 +67,6 @@ jobs:
                 core.info('Created label: triage');
               }
             }
-
       - name: Add `triage` label to new issue
         if: toJSON(github.event.issue.labels) == '[]'
         uses: wagner-cotta/arsc-label@v1.0
@@ -103,5 +75,6 @@ jobs:
           object-id: ${{ github.event.issue.number }}
           operation: add
           labels: triage
-
-
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

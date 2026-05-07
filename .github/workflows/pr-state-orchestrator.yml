@@ -1,22 +1,4 @@
 name: 🎛️ PR State Orchestrator
-
-# ─────────────────────────────────────────────────────────────────
-# Central brain that chains ALL existing PR lifecycle workflows.
-# Reacts to: PR events, review events, check_suite AND check_run
-# completions, label changes — then applies correct labels + drives state.
-#
-# STATE MACHINE:
-#   opened/draft         → 🚧 status:draft
-#   ready_for_review     → 👀 status:waiting-for-review  (remove draft)
-#   review: approved     → ✅ status:approved             (remove waiting)
-#   review: changes_req  → 🔧 status:needs-action         (remove waiting)
-#   new push on PR       → remove approved, back to waiting-for-review
-#   checks all pass      → ✅ status:checks-passing        (remove checks-failing)
-#   checks fail          → ❌ status:checks-failing        (remove checks-passing)
-#   approved+checks pass → 🚀 status:ready-to-merge
-#   merged/closed        → clean all status labels
-# ─────────────────────────────────────────────────────────────────
-
 on:
   pull_request:
     types:
@@ -28,31 +10,27 @@ on:
       - closed
       - labeled
   pull_request_review:
-    types: [submitted]
+    types:
+      - submitted
   check_suite:
-    types: [completed]
+    types:
+      - completed
   check_run:
-    types: [completed]
+    types:
+      - completed
   schedule:
-    # Re-sync every 30 min to catch any PRs that drifted out of state
-    - cron: '*/30 * * * *'
+    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to re-evaluate (leave blank to re-sync all open PRs)'
+        description: PR number to re-evaluate (leave blank to re-sync all open PRs)
         required: false
-
 permissions:
   pull-requests: write
   contents: read
   issues: write
   checks: read
-
 jobs:
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 1: Handle PR lifecycle events (open, draft, ready, push, close)
-  # ─────────────────────────────────────────────────────────────────
   pr-lifecycle:
     name: 🔄 PR Lifecycle Labels
     if: github.event_name == 'pull_request'
@@ -163,10 +141,7 @@ jobs:
               for (const l of ALL_STATUS) await removeLabel(l);
               console.log(pr.merged ? '🎉 Merged — all status labels cleared' : '🚫 Closed — labels cleared');
             }
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 2: Handle review submissions (approved / changes_requested)
-  # ─────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   review-handler:
     name: 🔍 Review State Labels
     if: github.event_name == 'pull_request_review'
@@ -229,10 +204,7 @@ jobs:
               for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
               console.log('🔧 Changes requested — needs action');
             }
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 3a: Handle check_suite completions → update CI labels
-  # ─────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   check-suite-handler:
     name: ✅ CI Check Suite Labels
     if: github.event_name == 'check_suite'
@@ -292,11 +264,7 @@ jobs:
                 console.log(`❌ PR #${prNumber}: checks FAILING (${conclusion})`);
               }
             }
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 3b: Handle individual check_run completions (catches runners
-  # that don't emit check_suite events, e.g. promptfoo, mabl, etc.)
-  # ─────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   check-run-handler:
     name: ✅ CI Check Run Labels
     if: github.event_name == 'check_run'
@@ -365,11 +333,7 @@ jobs:
                 console.log(`⏳ PR #${prNumber}: ${pending.length} check(s) still running`);
               }
             }
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 4: Cron / manual re-sync — re-evaluates ALL open PRs to
-  # catch any state drift (e.g. PRs stuck in wrong label state)
-  # ─────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   resync-all-prs:
     name: 🔄 Re-sync All Open PRs
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
@@ -476,10 +440,7 @@ jobs:
               }
             }
             console.log('✅ Re-sync complete');
-
-  # ─────────────────────────────────────────────────────────────────
-  # JOB 5: Manual re-evaluate a single PR (workflow_dispatch with pr_number)
-  # ─────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   manual-reevaluate:
     name: 🔄 Manual Re-evaluate Single PR
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
@@ -569,3 +530,6 @@ jobs:
               console.log(`PR #${prNumber}: ${pending.length} check(s) still running`);
             }
             console.log(`PR #${prNumber} re-evaluated successfully`);
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

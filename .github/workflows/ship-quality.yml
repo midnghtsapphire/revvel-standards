@@ -1,53 +1,53 @@
 name: Intelligent Code Quality Scanner
-
-# AI-powered code quality gate that understands context
-# Instead of blind pattern matching, uses LLM to determine if code is ship-ready
-
-# Added 2026-05-06:
-# - Fixed GH_TOKEN missing for gh CLI (was exit code 4)
-# - Added env: GH_TOKEN for gh commands
-
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
-
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
 permissions:
   contents: read
   pull-requests: write
-
 env:
   GH_TOKEN: ${{ github.token }}
-
 jobs:
   scan:
     name: Ship Quality Check
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'pull_request'
-
     steps:
       - name: Checkout PR
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-
       - name: Get diff
         id: diff
-        run: |
+        run: >
           git fetch origin ${{ github.event.pull_request.base.ref }}
-          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD -- '*.py' '*.js' '*.ts' '*.md' | head -5000)
-          # Properly escape for GITHUB_OUTPUT - use base64
-          echo "$DIFF" | base64 | tr -d '\n' >> $GITHUB_OUTPUT
-          echo "diff_length=${#DIFF}" >> $GITHUB_OUTPUT
 
+          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD
+          -- '*.py' '*.js' '*.ts' '*.md' | head -5000)
+
+          # Properly escape for GITHUB_OUTPUT - use base64
+
+          echo "$DIFF" | base64 | tr -d '\n' >> $GITHUB_OUTPUT
+
+          echo "diff_length=${#DIFF}" >> $GITHUB_OUTPUT
       - name: Analyze with AI
         if: env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0
         id: ai
-        run: |
+        run: >
           # Decode base64 diff
+
           DIFF=$(cat $GITHUB_OUTPUT | grep ^diff= | cut -d= -f2- | base64 -d)
-          
+
+
           # Smart analysis - understand context
+
           RESPONSE=$(curl -s https://openrouter.ai/api/v1/chat/completions \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
@@ -62,9 +62,10 @@ jobs:
                 "content": "Here are the PR changes to review:\n\n$DIFF"
               }]
             }' | jq -r '.choices[0].message.content')
-          
+
           echo "$RESPONSE" >> $GITHUB_STEP_SUMMARY
-          
+
+
           if echo "$RESPONSE" | grep -q "BLOCK"; then
             echo "result=fail" >> $GITHUB_OUTPUT
           elif echo "$RESPONSE" | grep -q "WARN"; then
@@ -72,20 +73,21 @@ jobs:
           else
             echo "result=pass" >> $GITHUB_OUTPUT
           fi
-
       - name: Smart pass for docs-only
         if: steps.ai.outputs.result == ''
         run: |
           # If no AI key, pass by default - don't block artificially
           echo "result=pass" >> $GITHUB_OUTPUT
-
       - name: Report
-        run: |
+        run: >
           RESULT=${{ steps.ai.outputs.result || 'pass' }}
-          
+
+
           echo "## 🧠 Intelligent Code Quality Scan" >> $GITHUB_STEP_SUMMARY
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
+
           if [ "$RESULT" = "pass" ]; then
             echo "✅ **PASS** - Code is ship-ready" >> $GITHUB_STEP_SUMMARY
           elif [ "$RESULT" = "warn" ]; then
@@ -94,13 +96,14 @@ jobs:
             echo "❌ **BLOCK** - Real scaffolding found" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
-
       - name: Post as PR review
         if: always()
-        run: |
+        run: >
           RESULT=${{ steps.ai.outputs.result || 'pass' }}
+
           BODY="## Ship Quality Check"
-          
+
+
           if [ "$RESULT" = "pass" ]; then
             BODY="$BODY\n\n✅ **PASS** - Ready to ship"
           elif [ "$RESULT" = "warn" ]; then
@@ -108,5 +111,8 @@ jobs:
           else
             BODY="$BODY\n\n❌ Code needs completion"
           fi
-          
-          gh pr review --body "$BODY" --comment ${{ github.event.pull_request.number }}
+
+
+          gh pr review --body "$BODY" --comment ${{
+          github.event.pull_request.number }}
+    timeout-minutes: 30

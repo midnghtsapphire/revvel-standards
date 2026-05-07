@@ -1,49 +1,24 @@
 name: Fork-Audit Bot
-
-# Cron-driven swarm that audits candidate external repos, scores them,
-# and opens compliant mirror issues (+ optional upstream issues) that
-# flow straight into the existing OpenRouter orchestrator via
-# .github/workflows/openrouter-assignee.yml.
-#
-# Required routing labels (`openrouter`, `auto-fix`, `copilot`,
-# `role:orchestrator`, `fork-audit`) + `Copilot` assignee are set by the
-# bot itself — this answers the issue comment "if you handle the PR
-# with required label, assign to openrouter so it actually works".
-#
-# Secrets:
-#   GITHUB_TOKEN       provided automatically by GitHub Actions
-#   ADMIN_GITHUB_TOKEN optional — needed for writes to external repos
-#                       that the default GITHUB_TOKEN cannot reach.
-#
-# Docs: docs/FORK_AUDIT_BOT_PROCESS.md
-# Skill: skills/fork-audit-bot/SKILL.md
-
 on:
   schedule:
-    # Daily at 13:15 UTC — cadence is cost-free for this repo (routing
-    # only; OpenRouter spend happens when the orchestrator picks work
-    # up downstream). See docs/FORK_AUDIT_BOT_PROCESS.md § Cadence.
-    - cron: "15 13 * * *"
+    - cron: 15 13 * * *
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Log intended actions without creating issues"
+        description: Log intended actions without creating issues
         type: boolean
         default: false
       config_path:
-        description: "Path to candidates config (relative to repo root)"
+        description: Path to candidates config (relative to repo root)
         type: string
         default: fork-audit/candidates.json
-
 permissions:
   contents: read
   issues: write
   pull-requests: write
-
 concurrency:
   group: fork-audit-bot
   cancel-in-progress: false
-
 jobs:
   audit:
     name: Audit candidate repos
@@ -52,19 +27,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - name: Run fork-audit bot
         env:
-          # Prefer ADMIN_GITHUB_TOKEN when present — it can open issues
-          # in external repos. Falls back to the default GITHUB_TOKEN
-          # for the in-repo mirror issues.
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           SELF_REPO: ${{ github.repository }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
         run: node scripts/fork-audit-bot.js "${{ inputs.config_path }}" | tee -a "$GITHUB_STEP_SUMMARY"
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

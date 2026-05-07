@@ -1,26 +1,18 @@
 name: Issue Lifecycle Automation
-
-# Manages issue labels based on PR linkage and merge events.
-#
-# State transitions:
-#   Issue opened          → triage (if no type label present)
-#   PR opened linking issue → issue:in-progress, remove triage
-#   PR merged closing issue → issue:done, close issue
-#   PR closed without merge → revert to triage (remove issue:in-progress)
-
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
   pull_request:
-    types: [opened, closed, reopened]
-
+    types:
+      - opened
+      - closed
+      - reopened
 permissions:
   pull-requests: read
   issues: write
   contents: read
-
 jobs:
-  # ─── NEW ISSUE → TRIAGE ──────────────────────────────────────
   on-issue-opened:
     if: github.event_name == 'issues' && github.event.action == 'opened'
     runs-on: ubuntu-latest
@@ -40,8 +32,7 @@ jobs:
             if (!hasType) {
               await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['triage'] });
             }
-
-  # ─── PR LINKED TO ISSUE → IN-PROGRESS / DONE ─────────────────
+    timeout-minutes: 30
   on-pr-issue-link:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -101,3 +92,6 @@ jobs:
                 core.warning(`Could not process issue #${issueNumber}: ${e.message}`);
               }
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

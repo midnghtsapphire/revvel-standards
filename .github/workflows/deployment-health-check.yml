@@ -1,38 +1,20 @@
 name: Deployment Health Check
-
-# Checks that key deployment URLs respond with HTTP 2xx.
-# Opens a GitHub issue when a URL is down; re-uses the same issue
-# (by label search) to avoid duplicate spam. Closes the issue
-# automatically when the URL recovers.
-#
-# Add new deployment URLs to the DEPLOYMENTS variable in the
-# "Build deployment matrix" step.
-#
-# Secrets required: none (public URLs only).
-# VERCEL_TOKEN is NOT needed here — the check is a plain HTTP GET.
-#
-# Docs: docs/Soul2Bowl/VERCEL_DEPLOYMENT.md
-
 on:
   schedule:
-    # Every 6 hours
-    - cron: "0 */6 * * *"
+    - cron: 0 */6 * * *
   workflow_dispatch:
     inputs:
       url:
-        description: "Optional single URL to test (leave blank to test all)"
+        description: Optional single URL to test (leave blank to test all)
         type: string
         required: false
         default: ""
-
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: deployment-health-check
   cancel-in-progress: false
-
 jobs:
   check:
     name: Check deployment URLs
@@ -69,7 +51,6 @@ jobs:
               printf "{\"name\":\"%s\",\"url\":\"%s\"},", name, url
           }' | sed 's/,$//')
           echo "matrix=[${JSON}]" >> "$GITHUB_OUTPUT"
-
       - name: Ping deployments
         id: ping
         env:
@@ -142,7 +123,6 @@ jobs:
 
             // Persist results for the next step
             core.exportVariable('HEALTH_RESULTS', JSON.stringify(results));
-
       - name: Create or close issues for down deployments
         uses: actions/github-script@v8
         env:
@@ -267,3 +247,6 @@ jobs:
                 }
               }
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

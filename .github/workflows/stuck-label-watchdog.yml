@@ -1,28 +1,12 @@
 name: Stuck Label Watchdog
-
-# Hourly sweep that detects PRs and issues stuck in invalid or stale label states.
-#
-# Checks:
-#   PRs:
-#     - awaiting-review for 24h+ with no reviewer activity → ping author
-#     - checks-failing for 12h+ with no new push → ping author
-#     - approved but no checks-passing/checks-failing → re-evaluate
-#     - conflicting labels (e.g. approved + needs-action) → correct
-#   Issues:
-#     - issue:in-progress but linked PR is closed/merged → correct to issue:done or triage
-#     - triage for 7+ days with no activity → mark issue:stale
-#     - No lifecycle label at all on open issue → add triage
-
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
-
+    - cron: 0 * * * *
+  workflow_dispatch: null
 permissions:
   pull-requests: write
   issues: write
   contents: read
-
 jobs:
   sweep:
     runs-on: ubuntu-latest
@@ -163,3 +147,6 @@ jobs:
             }
 
             core.info('Watchdog sweep complete.');
+    timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
