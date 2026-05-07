@@ -10,6 +10,8 @@
 const fs = require('fs');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
+const GIT_USER_NAME = 'revvel-automation[bot]';
+const GIT_USER_EMAIL = 'revvel-automation@users.noreply.github.com';
 
 const WORKFLOW_TEMPLATE = `name: Deploy
 on:
@@ -92,12 +94,18 @@ const branch = `automation/vercel-deploy-${runId}-${crypto.randomBytes(4).toStri
 const tempDir = `/tmp/vercel-deploy-${repo.replace('/', '-')}-${runId}`;
 const targetDir = `${tempDir}/target`;
 const prBodyFile = `${tempDir}/pr-body.md`;
+const cleanupTempDir = () => {
+  if (!tempDir.startsWith('/tmp/vercel-deploy-')) {
+    throw new Error(`Refusing to delete unexpected temp path: ${tempDir}`);
+  }
+  execSync(`rm -rf "${tempDir}"`, { stdio: 'inherit' });
+};
 
 execSync(`mkdir -p "${tempDir}"`, { stdio: 'inherit' });
 try {
   execSync(`gh repo clone ${repo} "${targetDir}"`, { stdio: 'inherit' });
 } catch (error) {
-  throw new Error(`Failed to clone ${repo}. Check repository name and permissions. (${error.message})`);
+  throw new Error(`Failed to clone ${repo}. Verify repo format (owner/repo), run "gh auth status", and check repository permissions. (${error.message})`);
 }
 execSync('mkdir -p .github/workflows', { cwd: targetDir, stdio: 'inherit' });
 fs.writeFileSync(`${targetDir}/.github/workflows/deploy.yml`, WORKFLOW_TEMPLATE);
@@ -119,12 +127,12 @@ try {
 
 if (!hasChanges) {
   console.log('No changes detected. deploy.yml is already up to date.');
-  execSync(`rm -rf "${tempDir}"`, { stdio: 'inherit' });
+  cleanupTempDir();
   process.exit(0);
 }
 
-execSync('git config user.name "revvel-automation[bot]"', { cwd: targetDir, stdio: 'inherit' });
-execSync('git config user.email "revvel-automation@users.noreply.github.com"', { cwd: targetDir, stdio: 'inherit' });
+execSync(`git config user.name "${GIT_USER_NAME}"`, { cwd: targetDir, stdio: 'inherit' });
+execSync(`git config user.email "${GIT_USER_EMAIL}"`, { cwd: targetDir, stdio: 'inherit' });
 execSync('git commit -m "ci: add Vercel deploy workflow"', { cwd: targetDir, stdio: 'inherit' });
 execSync(`git push -u origin ${branch}`, { cwd: targetDir, stdio: 'inherit' });
 execSync(
@@ -132,4 +140,4 @@ execSync(
   { cwd: targetDir, stdio: 'inherit' }
 );
 console.log(`Opened PR in ${repo} from branch ${branch}.`);
-execSync(`rm -rf "${tempDir}"`, { stdio: 'inherit' });
+cleanupTempDir();
