@@ -40,11 +40,15 @@ concurrency:
   group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'cron-sweep' }}
   cancel-in-progress: false
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   route-new:
     name: Route new issue/PR to OpenRouter
     if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Resolve issue/PR number
         id: resolve
@@ -214,6 +218,7 @@ jobs:
     name: Hourly cron sweep — catch missed items
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Determine if dry run
         id: dry-run-check
