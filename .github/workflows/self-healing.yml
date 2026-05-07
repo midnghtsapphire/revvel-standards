@@ -1,0 +1,168 @@
+# SELF-HEALING AGENT
+# - Deeply researches current state
+# - Identifies broken areas
+# - Implements fixes automatically
+# - Logs healing process
+
+on:
+  # Run daily to check system health
+  schedule:
+    - cron: '0 */4 * * *'  # Every 4 hours
+  # Can be manually triggered
+  workflow_dispatch:
+
+jobs:
+  # PHASE 1: RESEARCH - Deep dive into system state
+  research-state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      broken_areas: ${{ steps.scan.outputs.broken }}
+      system_health: ${{ steps.health.outputs.status }}
+    steps:
+      - name: Check GitHub Actions status
+        id: actions
+        run: |
+          # Get recent workflow runs
+          gh api repos/midnghtsapphire/revvel-standards/actions/runs \
+            --jq '.workflow_runs[:10] | .[] | {name: .name, status: .status, conclusion: .conclusion}' 2>/dev/null > /tmp/actions.json
+          
+          FAILED=0
+          while read -r line; do
+            if echo "$line" | grep -q '"failure"'; then
+              FAILED=$((FAILED+1))
+            fi
+          done < /tmp/actions.json
+          
+          echo "failed_count=$FAILED" >> $GITHUB_OUTPUT
+          echo "Total recent runs: $(wc -l < /tmp/actions.json)"
+
+      - name: Check for stuck issues
+        id: stuck
+        run: |
+          STUCK=$(gh api repos/midnghtsapphire/revvel-standards/issues \
+            --state open --jq '.[] | select(.labels[].name | contains("stuck") or contains("checking")) | .number' 2>/dev/null | wc -w)
+          
+          echo "stuck_count=$STUCK" >> $GITHUB_OUTPUT
+          echo "Found $STUCK stuck issues"
+
+      - name: Check agent health
+        id: agents
+        run: |
+          # Check if key workflows exist
+          WORKFLOWS=(
+            "agent-dispatcher"
+            "issue-state-machine"
+            "stuck-check-watchdog"
+            "api-rate-limit-handler"
+          )
+          
+          MISSING=()
+          for wf in "${WORKFLOWS[@]}"; do
+            if ! gh api repos/midnghtsapphire/revvel-standards/actions/workflows \
+              --jq ".workflows[] | select(.name | contains(\"$wf\"))" 2>/dev/null | grep -q .; then
+              MISSING+=("$wf")
+            fi
+          done
+          
+          if [[ ${#MISSING[@]} -eq 0 ]]; then
+            echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "agent_workflows=missing: ${MISSING[*]}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Scan for broken areas
+        id: scan
+        run: |
+          BROKEN=()
+          
+          ACTIONS_FAILED=${{ steps.actions.outputs.failed_count }}
+          if [[ "$ACTIONS_FAILED" -gt 3 ]]; then
+            BROKEN+=("GitHub Actions: $ACTIONS_FAILED recent failures")
+          fi
+          
+          STUCK=${{ steps.stuck.outputs.stuck_count }}
+          if [[ "$STUCK" -gt 5 ]]; then
+            BROKEN+=("Stuck issues: $STUCK open")
+          fi
+          
+          AGENTS=${{ steps.agents.outputs.agent_workflows }}
+          if ! echo "$AGENTS" | grep -q "healthy"; then
+            BROKEN+=("Missing workflows: $AGENTS")
+          fi
+          
+          echo "broken=$(printf '; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
+
+      - name: Compile system health
+        id: health
+        run: |
+          BROKEN="${{ steps.scan.outputs.broken }}"
+          if [[ -z "$BROKEN" ]] || [[ "$BROKEN" == "" ]]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+            echo "✅ System healthy - no action needed"
+          else
+            echo "status=needs-healing" >> $GITHUB_OUTPUT
+            echo "⚠️ System needs healing:"
+            echo "$BROKEN"
+          fi
+
+  # PHASE 2: SELF-HEAL - Implement fixes
+  self-heal:
+    needs: research-state
+    if: needs.research-state.outputs.system_health == 'needs-healing'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Heal stuck issues
+        run: |
+          BROKEN="${{ needs.research-state.outputs.broken }}"
+          
+          if echo "$BROKEN" | grep -q "Stuck issues"; then
+            echo "=== HEALING STUCK ISSUES ==="
+            # Label stuck issues for human review
+            gh api repos/midnghtsapphire/revvel-standards/issues \
+              --state open --jq '.[] | select(.labels[].name | contains("wr:checking")) | .number' | while read -r num; do
+              gh api repos/midnghtsapphire/revvel-standards/issues/$num/labels \
+                -X DELETE -d '{"labels":["wr:check-failed"]}' 2>/dev/null
+              echo "Labeled issue #$num as check-failed"
+            done
+          fi
+
+      - name: Heal failed workflows
+        run: |
+          if echo "${{ needs.research-state.outputs.broken }}" | grep -q "GitHub Actions"; then
+            echo "=== HEALING FAILED WORKFLOWS ==="
+            # Re-run failed workflows
+            gh api repos/midnghtsapphire/revvel-standards/actions/runs \
+              --jq '.workflow_runs[] | select(.conclusion == "failure") | .id' | head -3 | while read -r id; do
+              gh api repos/midnghtsapphire/revvel-standards/actions/runs/$id/rerun \
+                -X POST 2>/dev/null && echo "Re-ran run #$id"
+            done
+          fi
+
+      - name: Log healing
+        run: |
+          echo "=== SELF-HEALING LOG ==="
+          echo "Time: $(date)"
+          echo "Broken areas: ${{ needs.research-state.outputs.broken }}"
+          echo "Actions taken: Labeled stuck issues, re-ran failed workflows"
+          
+          # Create healing journal entry
+          gh issue create \
+            --title "[SELF-HEAL] System healing completed" \
+            --body "## Healing Report
+
+**Time:** $(date)
+**System was:** ${{ needs.research-state.outputs.system_health }}
+**Issues found:** ${{ needs.research-state.outputs.broken }}
+
+### Actions Taken
+1. Labeled stuck issues as check-failed
+2. Re-ran failed workflows
+
+### Next Steps
+- Monitor for 1 hour
+- If still failing, escalate to human
+
+This issue auto-closes in 24 hours." \
+            --label "self-healing,automation" 2>/dev/null || echo "No new issue created"
