@@ -121,8 +121,7 @@ jobs:
                 break;
 
               case 'converted_to_draft':
-                await remove('awaiting-review', 'awaiting-approval',
-                             'approved', 'checks-passing', 'ready-to-merge');
+                await remove(...ALL);
                 break;
 
               case 'opened':
