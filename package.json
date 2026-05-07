@@ -12,7 +12,8 @@
     "automation:doctor": "node scripts/automation-doctor.js",
     "workflows:validate": "node scripts/automation-doctor.js --validate",
     "labels:check": "node scripts/automation-doctor.js --labels",
-    "deploy:vercel": "node scripts/deploy-vercel.js --repo=\\0"
+    "deploy:vercel": "node scripts/deploy-vercel.js --repo=\\0",
+    "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
