@@ -131,7 +131,9 @@ jobs:
                 break;
 
               case 'ready_for_review':
-                await remove(...ALL);
+                await remove('awaiting-approval', 'approved',
+                             'changes-requested', 'review-started',
+                             'ready-to-merge', 'needs-action');
                 await add('awaiting-review');
                 break;
 
