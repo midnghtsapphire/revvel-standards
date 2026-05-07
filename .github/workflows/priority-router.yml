@@ -38,6 +38,8 @@ jobs:
   route-priority:
     name: Route priority
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Route priority for issues and PRs
         uses: actions/github-script@v8
