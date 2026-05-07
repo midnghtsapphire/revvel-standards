@@ -276,7 +276,12 @@ jobs:
             
             console.log('⚠️ PR requires completion before merge');
             core.setOutput('scaffolding-found', 'true');
-
+            if (process.env.ALLOW_SCAFFOLDING_CHECK_FAIL === 'true') {
+              core.warning('PR contains scaffolding language but ALLOW_SCAFFOLDING_CHECK_FAIL is set — not blocking');
+              core.setOutput('scaffolding-found', 'true');
+            } else {
+              core.setFailed('PR contains scaffolding language - see comment for details');
+            }
       - name: Remove label if no violations
         if: steps.scan.outputs.violations == 'false' && steps.check_pr.outputs.pr_violations == 'false'
         uses: actions/github-script@v7
