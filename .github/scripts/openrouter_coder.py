@@ -92,10 +92,28 @@ def comment_issue(repo: str, issue_number: str, github_token: str, body: str) ->
         print(f"Warning: failed to post issue comment: {exc}", file=sys.stderr)
 
 
+MISSION_CONTEXT = """
+## MISSION: $10M in 3 Years
+**PRIME DIRECTIVE:** Start at $10k/month → Scale to $10M total by year 3
+
+## GOAL STRUCTURE
+- Phase 1: $10k/month (Month 1-6)
+- Phase 2: $30k/month (Month 6-18)
+- Phase 3: $100k/month (Month 18-30)
+- Phase 4: $10M total (Month 30-36)
+
+## FOCUS AREAS
+1. POLAR.SH - GitHub funding platform
+2. OSINT tools
+3. Automated product pipeline
+"""
+
 def build_system_prompt() -> str:
     return (
         "You are an automated coding agent working in a GitHub repository.\n"
         "Use the issue title/body to decide exact file edits.\n"
+        "ALWAYS prioritize the PRIME DIRECTIVE: $10k/month → $10M in 3 years.\n"
+        + MISSION_CONTEXT + "\n"
         "Return ONLY JSON in this exact shape:\n"
         '{"files":[{"path":"relative/path.ext","content":"full file content"}],'
         '"commit_message":"feat: short message"}\n'

@@ -337,3 +337,34 @@ All cron jobs comply with [`CRON_REQUIREMENTS.md`](CRON_REQUIREMENTS.md) and [`C
 ## What This Standard Replaces
 
 Nothing. This standard composes existing standards (`SAAS_PRODUCTS.md`, `ZERO_HUMAN_FRAMEWORK.md`, `PRICING.md`, `CRON_SYSTEM.md`, `OAUDREY_DEPLOYMENT_STANDARD.md`, `MVI_CONTRACT_STANDARD.md`) and existing skills (`product-pipeline`, `vault-agent`, `code-review`, `security`, `accessibility`, `seo-metadata`, `tax-legal-agent`, `error-reporting`, `deployment`, `mvi-contract`) into a single, named pipeline so every agent in every Revvel repo executes it the same way.
+
+---
+
+## ADDED: Money & Execution Ethic
+
+### Monetization First
+- **Ship to monetize in 24 hours** — not months
+- **$1 day 1** — free then paid, upsell always
+- **If it doesn't make money, kill it** — fast feedback loop
+- **Revenue > vanity** — real users, real payments
+
+### Extreme Programming Ethic
+1. **One iteration** — ship complete, not perfect
+2. **Test in production** — real data, real feedback
+3. **Break things fast** — learn faster
+4. **No meetings** — code talks
+5. **No specs** — specs emerge from shipping
+6. **Perfect is the enemy of done**
+7. **Done means paid**
+8. **Ship daily** — automate everything
+9. **Automate or die** — manual = failure
+10. **Revenue is the only metric**
+
+### The Rule
+- Create → Ship → Monetize → Iterate → Scale
+- Skip any step = failure
+- Reverse any step = failure
+
+---
+
+*ADDED: Phase 1 upgrade ($3k → $10k/month) + execution ethic*
