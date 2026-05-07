@@ -54,5 +54,76 @@ test('At least 20 workflow files exist', () => {
   }
 });
 
+test('openrouter-assignee.yml uses openrouter label as routing idempotency key', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'openrouter-assignee.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const routeNewCheck = doc.jobs['route-new'].steps.find(
+    (step) => step.name === 'Check if already routed'
+  );
+  const discover = doc.jobs['ralph-cron-sweep'].steps.find(
+    (step) => step.name === 'Discover unrouted open issues and PRs'
+  );
+
+  if (!routeNewCheck || !discover) throw new Error('Required steps not found');
+
+  const routeCheckScript = routeNewCheck.with?.script || '';
+  const discoverScript = discover.with?.script || '';
+
+  if (routeCheckScript.includes('assignees.length > 0')) {
+    throw new Error('route-new check still uses assignee-based skip');
+  }
+  if (discoverScript.includes('assignees.length > 0')) {
+    throw new Error('cron discover still uses assignee-based skip');
+  }
+  if (!routeCheckScript.includes("labels.includes('openrouter')")) {
+    throw new Error('route-new check is missing openrouter label gate');
+  }
+  if (!discoverScript.includes("labels.includes('openrouter')")) {
+    throw new Error('cron discover is missing openrouter label gate');
+  }
+});
+
+test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'openrouter-assignee.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  const routeNewSteps = doc.jobs['route-new'].steps;
+  const labelsIndex = routeNewSteps.findIndex((step) => step.name === 'Apply routing labels');
+  const assignIndex = routeNewSteps.findIndex((step) => step.name === 'Assign to Copilot orchestrator');
+  if (labelsIndex < 0 || assignIndex < 0 || labelsIndex > assignIndex) {
+    throw new Error('route-new step order must be labels before assignment');
+  }
+
+  const routeNewAssign = routeNewSteps[assignIndex];
+  const routeNewAssignScript = routeNewAssign.with?.script || '';
+  if (!routeNewAssignScript.includes('try {') || !routeNewAssignScript.includes('non-fatal')) {
+    throw new Error('route-new assignment is not wrapped as non-fatal');
+  }
+
+  const routeDiscovered = doc.jobs['ralph-cron-sweep'].steps.find(
+    (step) => step.name === 'Route discovered items'
+  );
+  if (!routeDiscovered) throw new Error('Route discovered items step not found');
+
+  const routeDiscoveredScript = routeDiscovered.with?.script || '';
+  const labelsPos = routeDiscoveredScript.indexOf('addLabels');
+  const assignPos = routeDiscoveredScript.indexOf('addAssignees');
+  if (labelsPos < 0 || assignPos < 0 || labelsPos > assignPos) {
+    throw new Error('cron routing must apply labels before assignment');
+  }
+  if (!routeDiscoveredScript.includes('Could not assign @Copilot (non-fatal)')) {
+    throw new Error('cron assignment should log non-fatal notice');
+  }
+  if (routeDiscoveredScript.includes('process.env.TO_ROUTE_JSON')) {
+    throw new Error('cron routing must not depend on TO_ROUTE_JSON env payload');
+  }
+  if ((routeDiscovered.env || {}).TO_ROUTE_JSON) {
+    throw new Error('Route discovered items step should not define TO_ROUTE_JSON env');
+  }
+  if (!routeDiscoveredScript.includes('github.paginate(github.rest.issues.listForRepo,')) {
+    throw new Error('cron routing should recompute candidates from GitHub API pagination');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
