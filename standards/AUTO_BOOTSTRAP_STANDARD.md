@@ -104,7 +104,17 @@ Every new project with a web frontend should have Vercel deployment automated:
 |--------|--------|------|------|
 | `amondnet/vercel-action@v25` | Production deploys | 1k+ | [vercel-action](https://github.com/marketplace/vercel-action) |
 | `zentered/vercel-preview-url@v7` | PR preview URLs | 2k+ | [vercel-preview-url](https://github.com/marketplace/vercel-preview-url) |
-| `Ahmadnassri/cancel-workflow-action` | Cancel stale deploys | 500+ | |
+| `Vercel Deploy Comment` | PR comments | 500+ | [Deploy Comment](https://github.com/marketplace/vercel-deploy-comment) |
+| `vercel-wait-action` | Wait for deploy | 400+ | [Wait](https://github.com/marketplace/vercel-wait) |
+| `cancel-workflow-action` | Cancel stale deploys | 500+ | [Cancel](https://github.com/marketplace/cancel-workflow-action) |
+| `vercel-env-push-action` | Sync env vars | 200+ | [Env Push](https://github.com/marketplace/vercel-env) |
+
+### Popular Actions to Search First
+
+> Search https://github.com/marketplace when starting any new automation:
+> - Use verified actions with 100+ stars
+> - Check last commit date (should be < 6 months ago)
+> - Prefer actions with `vX` tags (stable versions)
 
 ### Required Workflow: `.github/workflows/deploy.yml`
 
