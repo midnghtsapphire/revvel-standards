@@ -93,3 +93,59 @@ grep "^WR\|^PF" issue-list
 
 *Part of Revvel Standards — Auto-Healing Automation*
 *Updated: 2026-05-07*
+## Vercel Deployment Automation
+
+Every new project with a web frontend should have Vercel deployment automated:
+
+### Required Workflow: `.github/workflows/deploy.yml`
+
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Required Secrets for All Web Projects
+
+| Secret | Required? | Where |
+|--------|----------|-------|
+| `VERCEL_TOKEN` | Yes | vercel.com/account/tokens |
+| `VERCEL_ORG_ID` | Yes | Project settings |
+| `VERCEL_PROJECT_ID` | Yes | Project settings |
+
+### Auto-Deploy Pattern
+
+```bash
+# In revvel-standards, add to all new repos:
+node scripts/deploy-vercel.js --repo=owner/repo
+```
+
+### Error Handling
+
+```yaml
+- name: Deploy
+  id: deploy
+  uses: amondnet/vercel-action@v25
+  with: ...
+  
+- name: Create WR on failure
+  if: failure()
+  run: gh issue create --title "[WR] Deploy failed" ...
+```

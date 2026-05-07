@@ -11,7 +11,8 @@
     "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
     "automation:doctor": "node scripts/automation-doctor.js",
     "workflows:validate": "node scripts/automation-doctor.js --validate",
-    "labels:check": "node scripts/automation-doctor.js --labels"
+    "labels:check": "node scripts/automation-doctor.js --labels",
+    "deploy:vercel": "node scripts/deploy-vercel.js --repo=\\0"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
