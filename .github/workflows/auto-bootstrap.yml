@@ -39,12 +39,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           cd standards
-          node scripts/sync-secrets.js --repo=${{ steps.target.outputs.target_repo }} || {
+          TARGET_REPO="${{ steps.target.outputs.target_repo }}"
+          TMP_ENV_FILE="/tmp/${TARGET_REPO//\//-}.env.example"
+
+          node scripts/sync-secrets.js --repo="$TARGET_REPO" || {
             echo "::warning::Secrets sync failed - this is OK if no .env file"
           }
           
           # Copy to target repo if file exists
-          if [ -f "/tmp/MIDNGHTSAPPHIRE-Soul2Bowl.env.example" ]; then
+          if [ -f "$TMP_ENV_FILE" ]; then
             echo "Would copy secrets template to ${{ steps.target.outputs.target_repo }}"
           fi
 
