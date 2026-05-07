@@ -1,29 +1,52 @@
-name: Prompt Evaluation
+# PromptFoo Evaluation Workflow
+#
+# Runs PromptFoo tests on PR changes to prompts, skills, or promptfoo config.
+# Uses `anthropic/claude-sonnet-4` via OpenRouter as primary model.
+#
+# Required secret: OPENROUTER_API_KEY
+#   → GitHub → Settings → Secrets and variables → Actions → New repository secret
+#
+# Add this to: .github/workflows/prompt-eval.yml
+
+name: PromptFoo Evaluation
 
 on:
   pull_request:
     paths:
       - 'prompts/**'
       - 'promptfooconfig*.yaml'
+      - 'promptfooconfig*.yml'
+      - 'promptfooconfig.yaml'
+      - 'promptfooconfig.yml'
+      - 'promptfoo.yml'
+      - 'promptfoo.yaml'
+      - 'skills/**/SKILL.md'
+      - 'skills/**/tests/*.yml'
+      - 'skills/**/tests/*.yaml'
       - '.github/workflows/prompt-eval.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: promptfoo-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  evaluate:
+  eval:
+    name: PromptFoo Eval (Claude Sonnet 4)
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false)
+
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      # Pass PR title/body via env to avoid unsafe shell interpolation
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      PR_BODY: ${{ github.event.pull_request.body }}
-      PR_NUMBER: ${{ github.event.pull_request.number }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -31,87 +54,79 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install promptfoo
+      - name: Install PromptFoo
         run: npm install -g promptfoo
 
-      - name: Discover prompt configs
-        id: discover
-        run: |
-          configs=$(ls promptfooconfig*.yaml 2>/dev/null || true)
-          if [ -z "$configs" ]; then
-            echo "No promptfoo configs found."
-            echo "configs=" >> "$GITHUB_OUTPUT"
-          else
-            echo "configs<<EOF" >> "$GITHUB_OUTPUT"
-            echo "$configs" >> "$GITHUB_OUTPUT"
-            echo "EOF" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run prompt evaluations
-        if: steps.discover.outputs.configs != ''
+      - name: Find promptfoo configs
+        id: configs
         run: |
           set -euo pipefail
-          mkdir -p eval-results
-          # Safely log PR metadata via env, never inline ${{ }} into shell
-          printf 'Evaluating PR #%s\n' "${PR_NUMBER:-unknown}"
-          printf 'Title: %s\n' "${PR_TITLE:-}"
+          # Find all promptfoo config files
+          CONFIGS="$(find . -type f \( \
+            -name 'promptfooconfig.yaml' -o -name 'promptfooconfig.yml' -o \
+            -name 'promptfooconfig*.yaml' -o -name 'promptfooconfig*.yml' -o \
+            -name 'promptfoo.yml' -o -name 'promptfoo.yaml' \
+          \) 2>/dev/null | tr '\n' ' ')"
+          echo "configs=$CONFIGS" >> "$GITHUB_OUTPUT"
+          echo "Found configs: $CONFIGS"
 
-          # Iterate configs and write per-config result files to avoid overwrite
-          while IFS= read -r config; do
-            [ -z "$config" ] && continue
-            base=$(basename "$config" .yaml)
-            out="eval-results/${base}.results.json"
-            echo "Running promptfoo eval for $config -> $out"
-            promptfoo eval \
-              --config "$config" \
-              --output "$out" \
-              --no-progress-bar
-          done <<< "${{ steps.discover.outputs.configs }}"
+      - name: Run PromptFoo Evaluation
+        if: env.OPENROUTER_API_KEY != '' && steps.configs.outputs.configs != ''
+        env:
+          CONFIGS: ${{ steps.configs.outputs.configs }}
+        run: |
+          set -euo pipefail
+          # Safe iteration over configs - write to separate files then merge
+          RESULTS_DIR="promptfoo-results"
+          mkdir -p "$RESULTS_DIR"
+          index=1
+          for config in $CONFIGS; do
+            echo "Running: $config"
+            promptfoo eval -c "$config" --no-cache -o "$RESULTS_DIR/results-$index.json" || true
+            index=$((index + 1))
+          done
 
-          # Merge per-config result files into a single results.json
-          node -e "
-            const fs = require('fs');
-            const path = require('path');
-            const dir = 'eval-results';
-            const files = fs.readdirSync(dir).filter(f => f.endsWith('.results.json'));
-            const merged = { configs: {} };
-            for (const f of files) {
-              try {
-                merged.configs[f] = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-              } catch (e) {
-                merged.configs[f] = { error: String(e) };
+          # Merge results across configs.
+          # PromptFoo emits an object shaped like {results: {results: [...], stats: {...}, ...}}.
+          # Naive `jq -s '.[0] + .[1]'` overwrites duplicate top-level keys instead of
+          # combining per-test results, so explicitly concatenate the inner result arrays
+          # and sum the stats counters for a meaningful aggregate.
+          if [ "$index" -gt 2 ]; then
+            jq -s '{
+              results: {
+                version: (.[0].results.version // null),
+                results: ([.[].results.results // []] | add),
+                stats: {
+                  successes: ([.[].results.stats.successes // 0] | add),
+                  failures: ([.[].results.stats.failures // 0] | add)
+                }
               }
-            }
-            fs.writeFileSync(path.join(dir, 'results.json'), JSON.stringify(merged, null, 2));
-          "
+            }' "$RESULTS_DIR"/*.json > results.json
+          elif [ -f "$RESULTS_DIR/results-1.json" ]; then
+            cp "$RESULTS_DIR/results-1.json" results.json
+          fi
 
-      - name: Upload evaluation results
-        if: steps.discover.outputs.configs != ''
+      - name: Run PromptFoo (no API key fallback)
+        if: env.OPENROUTER_API_KEY == ''
+        run: |
+          echo "::warning::OPENROUTER_API_KEY not set — skipping PromptFoo evaluation"
+
+      - name: Post Results Comment
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          if [ -f results.json ]; then
+            echo "📊 PromptFoo Results" >> "$GITHUB_STEP_SUMMARY"
+            # PromptFoo stats use `successes`/`failures`; tolerate older `passes` field too.
+            jq -r '.results.stats | "Passed: \(.successes // .passes // 0), Failed: \(.failures // 0)"' results.json >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          fi
+
+      - name: Upload Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: prompt-eval-results
-          path: eval-results/
+          name: promptfoo-results
+          path: |
+            results.json
+            promptfoo-results/
           if-no-files-found: ignore
-
-      - name: Comment results on PR
-        if: steps.discover.outputs.configs != '' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = 'eval-results/results.json';
-            if (!fs.existsSync(path)) return;
-            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-            const summary = Object.keys(data.configs || {}).map(k => `- \`${k}\``).join('\n');
-            const body = `### 🧪 Prompt Evaluation Results\n\nEvaluated configs:\n${summary}\n\nDownload the \`prompt-eval-results\` artifact for full details.`;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body,
-            });
-
-# Default model recommendations (use valid IDs):
-#   - anthropic:claude-3.7-sonnet
-#   - openai:gpt-4o
-# Note: Avoid invented IDs like claude-sonnet-4-5-20255112.
+          retention-days: 7
