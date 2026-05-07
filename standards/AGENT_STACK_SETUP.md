@@ -1,72 +1,45 @@
-# AGENT_STACK_SETUP
+# AI Agent Stack Setup
 
-> Standard for bootstrapping an AI agent stack that ships WR (Work Request) artifacts.
+## What this does
+When you open a WR issue:
+1. **auto-route.yml** reads the body, applies labels (`fix-me`, `swe-fix`, routing profile, model tags), assigns bot.
+2. **openhands-resolver.yml** triggers on `fix-me` → calls OpenRouter (claude-3.7-sonnet → deepseek-v3.2 fallback) → attempts a PR.
+3. **swe-agent.yml** triggers on `swe-fix` → runs SWE-agent with OpenRouter backend → attempts a PR.
+4. **augment-check.yml** checks every new PR for Augment Code review — prompts you to install the App if missing.
+5. If any agent fails, it comments on the issue with a direct workflow log link.
 
-## Purpose
+## Setup checklist
 
-Define the minimum setup required for an AI agent (or team of agents) to reliably produce, review, and deliver artifacts against a Work Request (WR). This standard pairs with `DELIVERY_MATRIX.md`, which specifies *what* gets delivered and *where*.
+### 1. Bot account
+- [ ] Create GitHub account: `yourorg-openrouter-bot`
+- [ ] Enable 2FA on it
+- [ ] Add to this repo with **Write** access
+- [ ] Generate a PAT with `repo` + `workflow` scope on that account
 
-## Scope
+### 2. Repo secrets (Settings → Secrets → Actions)
+| Secret | Value |
+|---|---|
+| `BOT_GITHUB_TOKEN` | PAT from bot account |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key |
 
-Applies to any automated or semi-automated agent workflow that:
+### 3. Repo variables (Settings → Variables → Actions)
+| Variable | Value |
+|---|---|
+| `BOT_USERNAME` | e.g. `yourorg-openrouter-bot` |
 
-- Consumes issues, tickets, or WRs as input.
-- Produces code, docs, configs, or other artifacts as output.
-- Commits or proposes changes to a repository.
+### 4. Repo Actions permissions (Settings → Actions → General)
+- [x] Read and write permissions
+- [x] Allow GitHub Actions to create and approve pull requests
 
-## Required Components
+### 5. Augment Code GitHub App (manual install)
+👉 https://app.augmentcode.com/settings/code-review
+- Click Install GitHub App
+- Select this repo
+- Done — Augment Code will auto-review every PR
 
-1. **Identity**
-   - Agent name (e.g., `claude`, `openhands`, `copilot`).
-   - Operator/owner contact.
-   - Commit author identity (name + email) distinct from humans.
+## Usage
+Open an issue using the WR template. Everything else is automatic.
 
-2. **Source of Truth**
-   - Canonical repository URL.
-   - Default branch.
-   - Branching convention (e.g., `agent/<issue-id>-<slug>`).
-
-3. **Inputs**
-   - WR/issue template with: title, summary, files, why, who/when.
-   - Required labels or front-matter for routing.
-
-4. **Capabilities**
-   - Read repo tree.
-   - Read/write files on a working branch.
-   - Open pull requests (or direct commits where policy allows).
-   - Run local checks (lint, tests) when available.
-
-5. **Guardrails**
-   - Paths allow-list / deny-list.
-   - Max files changed per WR.
-   - Required reviewers for merge.
-   - Secret scanning before commit.
-
-6. **Observability**
-   - Structured commit messages (Conventional Commits).
-   - WR id referenced in commit trailer or message.
-   - Run logs retained per delivery.
-
-## Setup Checklist
-
-- [ ] Agent identity configured (name, email, token scope).
-- [ ] Repo cloned with correct default branch.
-- [ ] WR template present in `.github/ISSUE_TEMPLATE/` or equivalent.
-- [ ] `standards/DELIVERY_MATRIX.md` reviewed.
-- [ ] Guardrails (allow-list, max changes) loaded.
-- [ ] CI hooks verified to run on agent-authored PRs.
-- [ ] Escalation path documented for failures.
-
-## Minimal Runtime Contract
-
-An agent conforming to this standard MUST:
-
-1. Accept a WR as the unit of work.
-2. Produce artifacts only for files listed (or allowed by policy).
-3. Return a machine-readable delivery payload (see `DELIVERY_MATRIX.md`).
-4. Never push to the default branch directly unless explicitly permitted.
-5. Fail closed: on any ambiguity, produce no changes and report back.
-
-## Related
-
-- `standards/DELIVERY_MATRIX.md` — what/where of delivery.
+## Failure path
+Agent fails → comments on issue with log link → you jump in.
+No silent failures.
