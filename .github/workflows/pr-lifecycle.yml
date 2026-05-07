@@ -140,7 +140,7 @@ jobs:
               case 'synchronize': {
                 // New commits: drop approval state; keep CI labels
                 await remove('approved', 'ready-to-merge', 'review-started',
-                             'changes-requested');
+                             'changes-requested', 'needs-action');
                 const cur = await currentLabels();
                 if (!cur.includes('awaiting-review')) await add('awaiting-review');
                 break;
