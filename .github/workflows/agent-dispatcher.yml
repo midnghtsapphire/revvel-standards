@@ -120,15 +120,20 @@ jobs:
         run: |
           echo "Dispatching $AGENT for issue #$ISSUE_NUMBER..."
           
-          # The actual agent would be triggered here
-          # For now, add a comment with the prompt
-          
-          gh issue comment "$ISSUE_NUMBER" --body "
-// agent: $AGENT
-// status: dispatched
-
-${{ steps.prompt.outputs.prompt }}
-"
+          case "$AGENT" in
+            perplexity)
+              # Trigger Perplexity workflow
+              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+            jules)
+              # Trigger Jules - uses your JULES_TOKEN
+              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+            openrouter)
+              # Trigger OpenRouter coder
+              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+          esac
 
       - name: Update labels
         env:
