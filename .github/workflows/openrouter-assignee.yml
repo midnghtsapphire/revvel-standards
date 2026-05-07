@@ -136,6 +136,7 @@ jobs:
             }
 
       - name: Assign to Copilot orchestrator
+        id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
         with:
@@ -151,8 +152,10 @@ jobs:
                 assignees: ['Copilot'],
               });
               core.info(`✅ Assigned @Copilot to #${issueNumber}`);
+              core.setOutput('assigned', 'true');
             } catch (error) {
               core.notice(`Could not assign @Copilot to #${issueNumber} (non-fatal): ${error.message}`);
+              core.setOutput('assigned', 'false');
             }
 
       - name: Post first-line-of-sight comment
@@ -170,13 +173,21 @@ jobs:
               ? '🟢 Configured' 
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
             
+            const assignSucceeded = '${{ steps.assign.outputs.assigned }}' === 'true';
+            const assigneeLine = assignSucceeded
+              ? '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)'
+              : '- ⚠️ Assignee: `@Copilot` — assignment attempted but failed (labels still applied; cron sweep will retry)';
+            const assignedText = assignSucceeded
+              ? `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`
+              : `This ${displayKind} has been routed to the OpenRouter orchestrator. **Note:** @Copilot assignment failed (non-fatal) — labels are applied and the hourly cron sweep will retry assignment.`;
+
             const comment = [
               '🤖 **OpenRouter First Line of Sight**',
               '',
-              `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`,
+              assignedText,
               '',
               '**Routing applied:**',
-              '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)',
+              assigneeLine,
               '- ✅ Labels: `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`',
               '',
               `**OpenRouter API:** ${apiKeyStatus}`,
@@ -347,6 +358,7 @@ jobs:
                 core.info(`  ✅ Applied routing labels`);
 
                 // Assign to Copilot (non-fatal)
+                let assignSucceeded = false;
                 try {
                   await github.rest.issues.addAssignees({
                     owner: context.repo.owner,
@@ -354,20 +366,27 @@ jobs:
                     issue_number: item.number,
                     assignees: ['Copilot'],
                   });
+                  assignSucceeded = true;
                   core.info(`  ✅ Assigned @Copilot`);
                 } catch (error) {
                   core.notice(`  Could not assign @Copilot (non-fatal): ${error.message}`);
                 }
                 
-                // Post comment
+                // Post comment — text reflects actual assignment outcome
                 const displayKind = item.kind === 'PR' ? 'pull request' : 'issue';
+                const assigneeLine = assignSucceeded
+                  ? '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)'
+                  : '- ⚠️ Assignee: `@Copilot` — assignment attempted but failed (labels still applied; cron sweep will retry)';
+                const assignedText = assignSucceeded
+                  ? `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`
+                  : `This ${displayKind} has been routed to the OpenRouter orchestrator. **Note:** @Copilot assignment failed (non-fatal) — labels are applied and the next cron sweep will retry assignment.`;
                 const comment = [
                   '🤖 **OpenRouter First Line of Sight** (cron sweep)',
                   '',
-                  `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`,
+                  assignedText,
                   '',
                   '**Routing applied:**',
-                  '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)',
+                  assigneeLine,
                   '- ✅ Labels: `openrouter`, `auto-fix`, `copilot`, `role:orchestrator`',
                   '',
                   `**OpenRouter API:** ${apiKeyStatus}`,
