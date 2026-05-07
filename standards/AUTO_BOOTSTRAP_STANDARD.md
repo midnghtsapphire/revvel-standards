@@ -47,7 +47,7 @@ jobs:
           your-command || { 
             echo "::warning::Task failed - creating WR"
             gh issue create \
-              --title "[WR] Task failed in ${{ github.repo }}" \
+              --title "[WR] Task failed in ${{ github.repository }}" \
               --body "Automated issue: Task failed. See logs."
           }
 ```
