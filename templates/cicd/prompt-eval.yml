@@ -89,6 +89,25 @@ jobs:
             promptfoo eval -c "$config" --no-cache -o "$RESULTS_DIR/results-$index.json" || true
             index=$((index + 1))
           done
+          # Merge results across configs.
+          # PromptFoo emits an object shaped like {results: {results: [...], stats: {...}, ...}}.
+          # Naive `jq -s '.[0] + .[1]'` overwrites duplicate top-level keys instead of
+          # combining per-test results, so explicitly concatenate the inner result arrays
+          # and sum the stats counters for a meaningful aggregate.
+          if [ "$index" -gt 2 ]; then
+            jq -s '{
+              results: {
+                version: (.[0].results.version // null),
+                results: ([.[].results.results // []] | add),
+                stats: {
+                  successes: ([.[].results.stats.successes // 0] | add),
+                  failures: ([.[].results.stats.failures // 0] | add)
+                }
+              }
+            }' "$RESULTS_DIR"/*.json > results.json
+          elif [ -f "$RESULTS_DIR/results-1.json" ]; then
+            cp "$RESULTS_DIR/results-1.json" results.json
+          fi
 
           # Merge results across configs.
           # PromptFoo emits an object shaped like {results: {results: [...], stats: {...}, ...}}.
