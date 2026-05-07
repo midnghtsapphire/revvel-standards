@@ -1,76 +1,68 @@
-# Copy to .github/workflows/ready-for-review.yml in your app repo.
-# No configuration required — works out of the box with GITHUB_TOKEN.
-# 04/18/2026 modified GITHUB_TOKEN to READY_FOR_REVIEW_TOKEN Fine Grain PAT required. Queue I am the Champion-Audrey
-# What this workflow does:
-#   1. AUTO-PROMOTE: When all CI checks pass on a draft PR, it is automatically
-#      converted to "Ready for Review" so reviewers are notified without manual action.
-#   2. LABEL LINKED ISSUES: When a PR is opened (non-draft) or promoted to Ready
-#      for Review, any issues referenced with "Closes #N / Fixes #N / Resolves #N"
-#      in the PR title or body are labeled `in-review` so the project board
-#      moves them to the In Review column automatically.
-#   3. CHECKLIST COMMENT + AI REVIEWER HANDOFF: A review-readiness checklist
-#      comment is posted to the PR when it first becomes ready for review. The
-#      comment @-mentions the AI reviewer fleet (CodeRabbit, Copilot, Roo,
-#      Antigravity, …) and assigns each checklist section to a specific bot so
-#      the bots "take over" verification instead of the checklist sitting idle.
-#   4. CLEANUP: When a PR is merged or closed, the `in-review` label is removed
-#      from all linked issues (GitHub closes them automatically on merge).
-
 name: Ready for Review Automation
-
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review, closed]
-
-# P1 - Important workflow: can cancel old runs for newer events
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - closed
 concurrency:
   group: ready-for-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 permissions:
   contents: read
   pull-requests: write
   issues: write
   checks: read
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Auto-promote a draft PR once all CI checks turn green
-  # ────────────────────────────────────────────────────────────────────────────
   promote-draft:
     name: Promote Draft PR When CI Passes
     runs-on: ubuntu-latest
-    # Only run on push-to-draft-PR events (not when it is already ready)
-    if: |
+    if: >
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.draft == true &&
-      (github.event.action == 'synchronize' || github.event.action == 'reopened')
 
+      github.event.pull_request.draft == true &&
+
+      (github.event.action == 'synchronize' || github.event.action ==
+      'reopened')
     steps:
       - name: Check all CI status checks for this commit
         id: check-status
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: |
+          script: >
             // Job names that belong to this workflow — exclude them from the
+
             // external-check evaluation so we never block on ourselves.
+
             const SELF_JOB_NAMES = new Set([
               'Promote Draft PR When CI Passes',
               'Label Linked Issues as In-Review',
               'Remove In-Review Label on PR Close',
             ]);
-            const ALLOWED_CONCLUSIONS = new Set(['success', 'skipped', 'neutral']);
+
+            const ALLOWED_CONCLUSIONS = new Set(['success', 'skipped',
+            'neutral']);
+
 
             // Poll until all external checks complete or we time out.
-            const INITIAL_WAIT_MS  = 15_000;   // 15 s — let checks register first
+
+            const INITIAL_WAIT_MS  = 15_000;   // 15 s — let checks register
+            first
+
             const POLL_INTERVAL_MS = 30_000;   // re-check every 30 s
-            const MAX_WAIT_MS      = 8 * 60 * 1000; // 8 minutes — give up after this
+
+            const MAX_WAIT_MS      = 8 * 60 * 1000; // 8 minutes — give up after
+            this
+
 
             await new Promise(r => setTimeout(r, INITIAL_WAIT_MS));
 
+
             let elapsed = INITIAL_WAIT_MS;
+
 
             while (true) {
               const { data } = await github.rest.checks.listForRef({
@@ -116,13 +108,14 @@ jobs:
               await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
               elapsed += POLL_INTERVAL_MS;
             }
-
       - name: Convert draft PR to Ready for Review
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
-          script: |
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' &&
+            secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != ''
+            && secrets.ADMIN_GITHUB_TOKEN || github.token }}
+          script: >
             await github.graphql(`
               mutation($prId: ID!) {
                 markPullRequestReadyForReview(input: { pullRequestId: $prId }) {
@@ -131,24 +124,22 @@ jobs:
               }
             `, { prId: context.payload.pull_request.node_id });
 
+
             core.notice(
               `✅ PR #${context.payload.pull_request.number} — all CI checks passed. ` +
               `Promoted from Draft to Ready for Review.`
             );
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Label linked issues as `in-review` and post checklist comment
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   label-linked-issues:
     name: Label Linked Issues as In-Review
     runs-on: ubuntu-latest
-    if: |
+    if: >
       github.event.pull_request.head.repo.full_name == github.repository &&
+
       (
         github.event.action == 'ready_for_review' ||
         (github.event.action == 'opened' && github.event.pull_request.draft == false)
       )
-
     steps:
       - name: Ensure `in-review` label exists
         uses: actions/github-script@v8
@@ -173,39 +164,63 @@ jobs:
                 core.info('Created label: in-review');
               }
             }
-
       - name: Find linked issues and apply `in-review` label
         id: find-issues
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: |
+          script: >
             const body  = context.payload.pull_request.body  || '';
+
             const title = context.payload.pull_request.title || '';
+
             const text  = `${title}\n${body}`;
 
+
             // ── 1. Match closing keywords in PR title / body ─────────────────
+
             // Match: Closes #N, Fixes #N, Resolves #N (all common variants)
-            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
+            const pattern =
+            /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
             const matches = [...text.matchAll(pattern)];
+
             const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
 
-            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
+
+            // ── 2. Parse branch name for issue/<N>- pattern
+            ───────────────────
+
             // Covers branches created by the create-issue-branch action using
+
             // the label-based prefixes defined in .github/issue-branch.yml:
+
             //   issue/69-i-need-the-issue-to-close-...   (fallback prefix)
+
             //   feature/69-some-title                    (enhancement)
+
             //   bugfix/69-some-title                     (bug)
+
             //   docs/69-some-title                       (documentation)
+
             //   hotfix/69-some-title                     (security)
+
             //   chore/69-some-title                      (dependencies)
-            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
-            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
+
+            const branchPattern =
+            /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+
+            const branchMatch = (context.payload.pull_request.head.ref ||
+            '').match(branchPattern);
+
             if (branchMatch) {
               issueNumberSet.add(parseInt(branchMatch[1], 10));
             }
 
+
             const issueNumbers = [...issueNumberSet];
+
 
             if (issueNumbers.length === 0) {
               core.info('No linked issues found in PR title, body, or branch name.');
@@ -213,8 +228,11 @@ jobs:
               return;
             }
 
+
             core.info(`Linked issue(s): ${issueNumbers.join(', ')}`);
+
             core.setOutput('issue_list', issueNumbers.join(','));
+
 
             for (const num of issueNumbers) {
               try {
@@ -229,27 +247,25 @@ jobs:
                 core.warning(`  • Could not label issue #${num}: ${e.message}`);
               }
             }
-
       - name: Check out repository (base ref, for scanner script)
         uses: actions/checkout@v4
         with:
-          # Use the PR's base ref (target branch) rather than the PR head,
-          # so the scanner we execute is trusted code from the repository
-          # default branch, never code introduced by the PR being scanned.
           ref: ${{ github.event.pull_request.base.ref }}
           persist-credentials: false
-
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: |
+          script: >
             const { scanDiff, renderCheckboxLine } = require(
               `${process.env.GITHUB_WORKSPACE}/scripts/pr-review-scan.js`
             );
 
+
             // ── Fetch changed files (paginated) so the scanner can look
+
             //    at the added lines of the diff.
+
             const files = await github.paginate(
               github.rest.pulls.listFiles,
               {
@@ -260,10 +276,14 @@ jobs:
               }
             );
 
+
             const { checks } = scanDiff(files);
 
+
             const issueList = '${{ steps.find-issues.outputs.issue_list }}';
+
             const closesAutoChecked = issueList ? '- [x]' : '- [ ]';
+
             const linkedSection = issueList
               ? `\n\n**Linked issue(s):** ${issueList.split(',').map(n => `#${n.trim()}`).join(', ')} — labeled \`in-review\` ✅`
               : '';
@@ -325,49 +345,64 @@ jobs:
               '_Reviewer bots that are not yet installed in this repo will silently no-op; add them via their GitHub App / Action when available._',
             ].join('\n');
 
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
               body,
             });
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 3 — Remove `in-review` label from linked issues when PR is closed
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.action == 'closed'
-
+    if: github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.action == 'closed'
     steps:
       - name: Remove `in-review` label from linked issues
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: |
+          script: >
             const body  = context.payload.pull_request.body  || '';
+
             const title = context.payload.pull_request.title || '';
+
             const text  = `${title}\n${body}`;
 
+
             // ── 1. Match closing keywords in PR title / body ─────────────────
-            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
+            const pattern =
+            /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
             const matches = [...text.matchAll(pattern)];
+
             const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
 
-            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
-            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
-            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
+
+            // ── 2. Parse branch name for issue/<N>- pattern
+            ───────────────────
+
+            const branchPattern =
+            /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+
+            const branchMatch = (context.payload.pull_request.head.ref ||
+            '').match(branchPattern);
+
             if (branchMatch) {
               issueNumberSet.add(parseInt(branchMatch[1], 10));
             }
 
+
             const issueNumbers = [...issueNumberSet];
+
 
             if (issueNumbers.length === 0) {
               core.info('No linked issues found — nothing to clean up.');
               return;
             }
+
 
             for (const num of issueNumbers) {
               try {
@@ -385,3 +420,4 @@ jobs:
                 }
               }
             }
+    timeout-minutes: 15

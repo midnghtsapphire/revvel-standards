@@ -1,0 +1,64 @@
+# Agent Models Configuration
+# Defines routing profiles for different agent types
+# Used by workflows to reference models without hardcoding names
+
+profiles:
+  # Triage: Quick classification and routing
+  triage:
+    description: "Quick issue classification, label assignment, and routing to appropriate workflow"
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o-mini"
+    max_tokens: 4000
+    temperature: 0.3
+
+  # Research: Deep investigation and analysis
+  research:
+    description: "Deep research on issues, gathering context, and documentation"
+    primary: "anthropic/claude-opus-4.7"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 15000
+    temperature: 0.5
+
+  # code_patch: Code changes and implementation
+  code_patch:
+    description: "Writing and modifying code to resolve issues"
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 12000
+    temperature: 0.4
+
+  # review: Code review and quality checks
+  review:
+    description: "Reviewing code changes for quality, bugs, and best practices"
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 8000
+    temperature: 0.2
+
+  # cheap_summary: Lightweight summarization
+  cheap_summary:
+    description: "Quick summaries and simple responses"
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 2000
+    temperature: 0.1
+
+# Model selection helpers
+helpers:
+  # OpenRouter model identifiers
+  get_model: |
+    ${{ vars.AGENT_MODEL || 'anthropic/claude-sonnet-4-20250514' }}
+  
+  # Get model from profile
+  get_profile_model: |
+    ${{ vars.AGENT_MODEL_PROFILE == 'triage' && vars.TRIAGE_MODEL || 
+        vars.AGENT_MODEL_PROFILE == 'research' && vars.RESEARCH_MODEL ||
+        vars.AGENT_MODEL_PROFILE == 'code_patch' && vars.CODE_MODEL ||
+        vars.AGENT_MODEL_PROFILE == 'review' && vars.REVIEW_MODEL ||
+        vars.AGENT_MODEL_PROFILE == 'cheap_summary' && vars.SUMMARY_MODEL ||
+        'anthropic/claude-sonnet-4-20250514' }}
+
+# Environment variable defaults for GitHub Actions
+env:
+  DEFAULT_TIMEOUT_MINUTES: 30
+  MAX_RERUNS: 1

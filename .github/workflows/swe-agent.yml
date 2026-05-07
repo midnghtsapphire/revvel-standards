@@ -1,47 +1,29 @@
 name: SWE-Agent
-
-# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack):
-# When an issue is labeled `swe-fix`, hand it to princeton-nlp/SWE-agent
-# running through OpenRouter. SWE-agent is targeted at code-heavy WRs:
-# CLI / API / MCP / production-app builds where the resolver needs to
-# navigate the repo, edit multiple files, and run tests.
-#
-# Trigger model:
-#   - issues: [labeled]   when label == swe-fix
-#   - workflow_dispatch   manual
-#
-# Fail-soft: if `OPENROUTER_API_KEY` (or fallback `SWE_AGENT_API_KEY`) is
-# missing, the workflow exits clean with a one-time issue comment so the WR
-# isn't silently stalled. Same pattern as openhands-resolver.yml.
-#
-# Docs: docs/agent-stack/AGENT_STACK_SETUP.md
-
 on:
   issues:
-    types: [labeled]
+    types:
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to resolve"
+        description: Issue number to resolve
         required: true
         type: number
-
 permissions:
   contents: write
   issues: write
   pull-requests: write
-
 concurrency:
-  group: swe-agent-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  group: swe-agent-${{ github.event.issue.number ||
+    github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   preflight:
     name: Check SWE-agent credentials
     runs-on: ubuntu-latest
     if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' &&
+      (github.event_name == 'workflow_dispatch') || (github.event_name ==
+      'issues' &&
        github.event.label.name == 'swe-fix' &&
        github.event.issue.user.login != 'github-actions[bot]')
     outputs:
@@ -53,9 +35,12 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           SWE_AGENT_API_KEY: ${{ secrets.SWE_AGENT_API_KEY }}
-        run: |
-          ISSUE_NUMBER="${{ github.event.issue.number || github.event.inputs.issue_number }}"
+        run: >
+          ISSUE_NUMBER="${{ github.event.issue.number ||
+          github.event.inputs.issue_number }}"
+
           echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+
 
           if [[ -z "$OPENROUTER_API_KEY" && -z "$SWE_AGENT_API_KEY" ]]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
@@ -64,7 +49,7 @@ jobs:
             echo "configured=true" >> "$GITHUB_OUTPUT"
             echo "SWE-agent is configured."
           fi
-
+    timeout-minutes: 30
   notify-missing-creds:
     name: Notify when credentials are missing
     needs: preflight
@@ -74,12 +59,14 @@ jobs:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const issueNumber = parseInt(
               '${{ needs.preflight.outputs.issue_number }}',
               10
             );
+
             if (!issueNumber) return;
+
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -87,11 +74,14 @@ jobs:
               issue_number: issueNumber,
               per_page: 100,
             });
+
             const marker = '<!-- swe-agent:setup-needed -->';
+
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
               return;
             }
+
 
             const body = [
               marker,
@@ -110,12 +100,14 @@ jobs:
               'See `docs/agent-stack/AGENT_STACK_SETUP.md`.',
             ].join('\n');
 
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               body,
             });
+
 
             try {
               await github.rest.issues.addLabels({
@@ -127,7 +119,7 @@ jobs:
             } catch (e) {
               core.warning(`Could not add credentials-missing label: ${e.message}`);
             }
-
+    timeout-minutes: 30
   resolve:
     name: Run SWE-Agent
     needs: preflight
@@ -143,34 +135,33 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Install SWE-Agent CLI
         run: |
           pip install --upgrade pip
           # Pin to a known-good release of the upstream PyPI package.
           # See: https://github.com/SWE-agent/SWE-agent
           pip install "sweagent>=1.0,<2.0"
-
       - name: Resolve the issue with SWE-Agent
         id: resolve
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
-          # Use OpenRouter when available; SWE-Agent's litellm shim accepts
-          # the OpenAI-compatible base URL.
           LLM_BASE_URL: https://openrouter.ai/api/v1
           LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'anthropic/claude-sonnet-4.5' }}
-        run: |
+        run: >
           set -e
+
           # SWE-Agent has multiple invocation modes. The GitHub-issue mode is
+
           # the most ergonomic for our use case.
+
           # See: https://swe-agent.com/latest/usage/coding_challenges/
+
           sweagent run \
             --agent.model.name "$LLM_MODEL" \
             --agent.model.api_base "$LLM_BASE_URL" \
@@ -178,17 +169,19 @@ jobs:
             --env.repo.github_url "https://github.com/$GH_REPO" \
             --actions.open_pr true \
             --actions.pr_config.skip_if_commits_reference_issue true
-
       - name: Post resolver outcome
         if: always()
         uses: actions/github-script@v8
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
         with:
-          script: |
+          script: >
             const outcome = process.env.OUTCOME || 'unknown';
+
             const emoji = outcome === 'success' ? '✅' : '⚠️';
+
             const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -203,3 +196,4 @@ jobs:
                 `_Triggered by label \`swe-fix\` on issue #${issueNumber}._`,
               ].join('\n'),
             });
+    timeout-minutes: 30

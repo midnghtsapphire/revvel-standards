@@ -1,34 +1,12 @@
 name: Auto-Approve Clean PRs
-
-# Submits a formal GitHub APPROVE review when Bito AI marks a PR clean.
-#
-# Flow: Bito reviews PR → applies `awaiting-approval` label → this workflow
-# fires → submits APPROVE review via GIT_ACCESS_TOKEN (PAT) → pr-lifecycle.yml detects
-# the `approved` review state and applies the `approved` label → if checks
-# also pass, `ready-to-merge` is applied automatically.
-#
-# This closes the gap where Bito labels PRs but never submits a formal review,
-# preventing the lifecycle automation from progressing past `awaiting-review`.
-#
-# Safety:
-#   - Only fires on label events (not every PR push)
-#   - Checks that `bito-ai:changes-needed` is NOT present before approving
-#   - Requires the PR to have the `bito-ai:review` label (proof Bito ran)
-#
-# Related workflows:
-#   - bito-ai.yml            — Runs Bito review, applies awaiting-approval
-#   - pr-lifecycle.yml        — Reacts to APPROVE review, applies approved label
-#   - stuck-label-automation.yml — Pings reviewers after 24h if still stuck
-
 on:
   pull_request:
-    types: [labeled]
-
+    types:
+      - labeled
 permissions:
   pull-requests: write
   issues: write
   contents: read
-
 jobs:
   auto-approve:
     name: Auto-approve Bito-clean PR
@@ -38,32 +16,46 @@ jobs:
       - uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GIT_ACCESS_TOKEN }}
-          script: |
+          script: >
             const { owner, repo } = context.repo;
+
             const pr = context.payload.pull_request;
+
             const prNumber = pr.number;
 
-            // Verify Bito actually reviewed this PR (bito-ai:review label present)
-            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+
+            // Verify Bito actually reviewed this PR (bito-ai:review label
+            present)
+
+            const { data: labels } = await
+            github.rest.issues.listLabelsOnIssue({
               owner, repo, issue_number: prNumber,
             });
+
             const labelNames = labels.map(l => l.name);
+
 
             if (labelNames.includes('bito-ai:changes-needed')) {
               core.notice(`PR #${prNumber} has bito-ai:changes-needed — skipping auto-approve.`);
               return;
             }
 
-            if (!labelNames.includes('bito-ai:review') && !labelNames.includes('bito-ai')) {
+
+            if (!labelNames.includes('bito-ai:review') &&
+            !labelNames.includes('bito-ai')) {
               core.notice(`PR #${prNumber} has no Bito review labels — skipping auto-approve.`);
               return;
             }
 
+
             // Submit formal APPROVE review
+
             await github.rest.pulls.createReview({
               owner, repo, pull_number: prNumber,
               event: 'APPROVE',
               body: '🤖 **Auto-Approved** — Bito AI code review passed with no blocking findings. Lifecycle automation will handle label progression.',
             });
 
+
             core.info(`Submitted APPROVE review on PR #${prNumber}`);
+    timeout-minutes: 30

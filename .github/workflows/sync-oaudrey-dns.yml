@@ -1,70 +1,48 @@
 name: Sync oAudrey DNS records
-
-# Pushes the declarative DNS records in oaudrey/dns-records.yml to whichever
-# registrar holds oaudrey.com (Namecheap, GoDaddy, or Porkbun). The active
-# registrar is auto-detected from the credential set provisioned via the
-# Credential Gatekeeper:
-#
-#   namecheap : NAMECHEAP_API_KEY + (NAMECHEAP_API_USER | NAMECHEAP_USERNAME)
-#               NAMECHEAP_CLIENT_IP recommended
-#   godaddy   : GODADDY_API_KEY + GODADDY_API_SECRET
-#   porkbun   : PORKBUN_API_KEY + PORKBUN_SECRET_API_KEY
-#
-# The DigitalOcean App Platform ingress hostname is resolved at run-time via
-# `doctl` and substituted for {{APP_TARGET}} in the records file. This
-# avoids the records file going stale every time DO rotates the ingress.
-#
-# Trigger: workflow_dispatch (one click), workflow_run after a successful
-# deploy, or weekly on Mondays as a drift-correction sweep.
-
 on:
   workflow_dispatch:
     inputs:
       provider:
-        description: "Force a specific registrar (otherwise auto-detected)"
+        description: Force a specific registrar (otherwise auto-detected)
         type: choice
         required: false
-        default: "auto"
+        default: auto
         options:
           - auto
           - namecheap
           - godaddy
           - porkbun
       dry_run:
-        description: "Build + log the API requests but don't call them"
+        description: Build + log the API requests but don't call them
         type: boolean
         required: false
         default: false
   workflow_run:
-    workflows: ["Deploy oAudrey Hub → DigitalOcean App Platform"]
-    types: [completed]
+    workflows:
+      - Deploy oAudrey Hub → DigitalOcean App Platform
+    types:
+      - completed
   schedule:
-    # Mondays at 06:30 UTC — drift correction sweep
-    - cron: "30 6 * * 1"
-
+    - cron: 30 6 * * 1
 permissions:
   contents: read
   issues: write
-
 jobs:
   sync:
     name: Sync DNS via registrar API
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+      github.event_name == 'workflow_dispatch' || github.event_name ==
+      'schedule' || (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success')
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - name: Install dependencies
         run: npm ci --omit=optional
-
       - name: Detect registrar credentials
         id: detect
         env:
@@ -76,8 +54,9 @@ jobs:
           GODADDY_API_SECRET: ${{ secrets.GODADDY_API_SECRET }}
           PORKBUN_API_KEY: ${{ secrets.PORKBUN_API_KEY }}
           PORKBUN_SECRET_API_KEY: ${{ secrets.PORKBUN_SECRET_API_KEY }}
-        run: |
+        run: >
           set -e
+
           provider=$(node -e "
             const { detectProvider } = require('./scripts/sync-dns-records.js');
             const force = process.env.FORCE_PROVIDER;
@@ -85,6 +64,7 @@ jobs:
             if (!p) { console.error('no-provider'); process.exit(0); }
             console.log(p);
           ")
+
           if [ -z "$provider" ] || [ "$provider" = "no-provider" ]; then
             echo "::warning::No registrar credentials provisioned — skipping DNS sync. Run the Credential Gatekeeper to surface what's missing."
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -93,54 +73,65 @@ jobs:
             echo "provider=$provider" >> "$GITHUB_OUTPUT"
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Install doctl
         if: steps.detect.outputs.skip != 'true'
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-
       - name: Resolve App Platform ingress hostname
         if: steps.detect.outputs.skip != 'true'
         id: ingress
-        run: |
+        run: >
           set -e
-          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header 2>/dev/null \
+
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header 2>/dev/null
+          \
             | awk '$2 == "oaudrey-hub" { print $1; exit }' \
             || true)
           if [ -z "$APP_ID" ]; then
             echo "::error::Could not find DO App Platform app 'oaudrey-hub'. Deploy it first via deploy-oaudrey.yml."
             exit 1
           fi
-          INGRESS=$(doctl apps get "$APP_ID" --format DefaultIngress --no-header 2>/dev/null \
+
+          INGRESS=$(doctl apps get "$APP_ID" --format DefaultIngress --no-header
+          2>/dev/null \
             | sed -E 's#https?://##' \
             | sed 's:/*$::')
           if [ -z "$INGRESS" ]; then
             echo "::error::App Platform ingress hostname is empty — has the first deploy completed?"
             exit 1
           fi
-          echo "Resolved APP_TARGET: $INGRESS"
-          echo "app_target=$INGRESS" >> "$GITHUB_OUTPUT"
 
+          echo "Resolved APP_TARGET: $INGRESS"
+
+          echo "app_target=$INGRESS" >> "$GITHUB_OUTPUT"
       - name: Resolve GoDaddy apex target IP
-        if: steps.detect.outputs.skip != 'true' && steps.detect.outputs.provider == 'godaddy'
+        if: steps.detect.outputs.skip != 'true' && steps.detect.outputs.provider ==
+          'godaddy'
         id: ingress_ip
-        run: |
+        run: >
           set -e
+
           INGRESS_HOST='${{ steps.ingress.outputs.app_target }}'
-          APP_TARGET_IP=$(getent ahostsv4 "$INGRESS_HOST" | awk 'NR == 1 { print $1; exit }')
+
+          APP_TARGET_IP=$(getent ahostsv4 "$INGRESS_HOST" | awk 'NR == 1 { print
+          $1; exit }')
+
           if [ -z "$APP_TARGET_IP" ]; then
             echo "::error::Could not resolve IPv4 address for GoDaddy apex target: $INGRESS_HOST"
             exit 1
           fi
-          echo "Resolved GoDaddy APP_TARGET IP: $APP_TARGET_IP"
-          echo "app_target_ip=$APP_TARGET_IP" >> "$GITHUB_OUTPUT"
 
+          echo "Resolved GoDaddy APP_TARGET IP: $APP_TARGET_IP"
+
+          echo "app_target_ip=$APP_TARGET_IP" >> "$GITHUB_OUTPUT"
       - name: Sync DNS records
         if: steps.detect.outputs.skip != 'true'
         env:
           DNS_PROVIDER: ${{ steps.detect.outputs.provider }}
-          APP_TARGET: ${{ steps.detect.outputs.provider == 'godaddy' && steps.ingress_ip.outputs.app_target_ip || steps.ingress.outputs.app_target }}
+          APP_TARGET: ${{ steps.detect.outputs.provider == 'godaddy' &&
+            steps.ingress_ip.outputs.app_target_ip ||
+            steps.ingress.outputs.app_target }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           NAMECHEAP_API_KEY: ${{ secrets.NAMECHEAP_API_KEY }}
           NAMECHEAP_API_USER: ${{ secrets.NAMECHEAP_API_USER }}
@@ -151,24 +142,32 @@ jobs:
           PORKBUN_API_KEY: ${{ secrets.PORKBUN_API_KEY }}
           PORKBUN_SECRET_API_KEY: ${{ secrets.PORKBUN_SECRET_API_KEY }}
         run: node scripts/sync-dns-records.js
-
       - name: Post-sync summary
         if: success() && steps.detect.outputs.skip != 'true'
-        run: |
+        run: >
           echo "## oAudrey DNS Sync ✅" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Provider | \`${{ steps.detect.outputs.provider }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| App target | \`${{ steps.ingress.outputs.app_target }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Records file | \`oaudrey/dns-records.yml\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Hub URL | https://oaudrey.com |" >> "$GITHUB_STEP_SUMMARY"
 
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Provider | \`${{ steps.detect.outputs.provider }}\` |" >>
+          "$GITHUB_STEP_SUMMARY"
+
+          echo "| App target | \`${{ steps.ingress.outputs.app_target }}\` |" >>
+          "$GITHUB_STEP_SUMMARY"
+
+          echo "| Records file | \`oaudrey/dns-records.yml\` |" >>
+          "$GITHUB_STEP_SUMMARY"
+
+          echo "| Hub URL | https://oaudrey.com |" >> "$GITHUB_STEP_SUMMARY"
       - name: Open issue on failure
         if: failure() && steps.detect.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -187,3 +186,4 @@ jobs:
               ].join('\n'),
               labels: ['deploy-failure', 'oaudrey'],
             });
+    timeout-minutes: 15

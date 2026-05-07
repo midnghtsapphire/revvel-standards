@@ -1,65 +1,35 @@
-# Auto-Merge on Approval
-#
-# Enables GitHub's native pull request auto-merge when the `auto-merge` label is
-# added to a PR, and disables it when the label is removed or the `won't-merge`
-# label is added.
-#
-# How it works:
-#   1. Developer (or automation) adds the `auto-merge` label to a PR.
-#   2. This workflow calls `enablePullRequestAutoMerge` via the GraphQL API.
-#   3. GitHub merges the PR automatically once:
-#        • All required status checks pass
-#        • All required reviewers have approved
-#   4. Adding the `won't-merge` label — or removing `auto-merge` — disables
-#      auto-merge so a human can intervene without race conditions.
-#
-# Prerequisites (configure once per repo):
-#   • Branch protection on `main` must require:
-#       - At least 1 approved review
-#       - Status checks to pass before merging
-#     Without these rules, enablePullRequestAutoMerge will be rejected by GitHub.
-#   • If branch protection is not yet set up, GitHub will return an error and
-#     the job will fail-fast to alert the team.
-#
-# No secrets beyond GITHUB_TOKEN are required.
-
 name: Auto-Merge on Approval
-
 on:
   pull_request:
-    types: [labeled, unlabeled]
-
-# P2 - Optional workflow: can cancel old runs
+    types:
+      - labeled
+      - unlabeled
 concurrency:
   group: auto-merge-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Enable auto-merge when `auto-merge` label is applied
-  # ────────────────────────────────────────────────────────────────────────────
   enable-auto-merge:
     name: Enable Auto-Merge
     runs-on: ubuntu-latest
     if: |
       github.event.action == 'labeled' &&
       github.event.label.name == 'auto-merge'
-
     steps:
       - name: Enable pull request auto-merge (squash)
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const pr     = context.payload.pull_request;
+
             const labels = pr.labels.map(l => l.name);
 
+
             // Safety check: don't enable if 'won't-merge' is also present
+
             if (labels.includes("won't-merge")) {
               core.warning(
                 `PR #${pr.number} has both 'auto-merge' and 'won\\'t-merge' labels. ` +
@@ -67,6 +37,7 @@ jobs:
               );
               return;
             }
+
 
             try {
               await github.graphql(`
@@ -97,24 +68,24 @@ jobs:
               }
               throw e;
             }
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Disable auto-merge when `auto-merge` is removed OR `won't-merge` added
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   disable-auto-merge:
     name: Disable Auto-Merge
     runs-on: ubuntu-latest
-    if: |
-      (github.event.action == 'unlabeled' && github.event.label.name == 'auto-merge') ||
-      (github.event.action == 'labeled'   && github.event.label.name == 'won''t-merge')
+    if: >
+      (github.event.action == 'unlabeled' && github.event.label.name ==
+      'auto-merge') ||
 
+      (github.event.action == 'labeled'   && github.event.label.name ==
+      'won''t-merge')
     steps:
       - name: Disable pull request auto-merge
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const pr = context.payload.pull_request;
+
 
             try {
               await github.graphql(`
@@ -140,3 +111,4 @@ jobs:
                 core.warning(`Could not disable auto-merge on PR #${pr.number}: ${e.message}`);
               }
             }
+    timeout-minutes: 30

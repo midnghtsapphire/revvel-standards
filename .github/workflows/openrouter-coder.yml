@@ -1,45 +1,30 @@
 name: OpenRouter Coder
-
-# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "OpenRouter acts as orchestrator for
-# code changes"): This is now the SOLE orchestrator that turns a researched WR
-# issue into code changes on a PR. Triggered by:
-#   - `wr:code` label (manual: research is done, push code now)
-#   - `wr:research-complete` label (auto, set after Jules posts findings)
-#   - `issue_comment` containing "Research Findings:" (Jules signal)
-#   - workflow_dispatch (manual)
-#
-# Other orchestrators (needs-action-router, agent-fallback issue-path,
-# priority-router issue-path, content-automation issue-path) have had their
-# issue triggers commented out so they don't race on the same issue.
-
 on:
   issues:
-    types: [labeled]
+    types:
+      - labeled
   issue_comment:
-    types: [created]
+    types:
+      - created
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to process"
+        description: Issue number to process
         required: true
         type: number
-
 permissions:
   contents: write
   pull-requests: write
   issues: write
-
 concurrency:
-  group: openrouter-coder-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  group: openrouter-coder-${{ github.event.issue.number ||
+    github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   openrouter-coder:
-    # Skip bot-spam issues. Trigger on wr:code or wr:research-complete labels,
-    # on Jules' "Research Findings:" comment, or on manual workflow_dispatch.
     if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' &&
+      (github.event_name == 'workflow_dispatch') || (github.event_name ==
+      'issues' &&
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
@@ -54,15 +39,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests
-
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v8
@@ -83,7 +65,6 @@ jobs:
             core.setOutput('issue_number', String(issue.number));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
-
       - name: Generate code changes with OpenRouter
         id: coder
         env:
@@ -94,14 +75,21 @@ jobs:
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
           WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
-        run: |
-          python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
+        run: >
+          python .github/scripts/openrouter_coder.py --output-path
+          /tmp/openrouter-coder-result.json
+
           python - <<'PY'
+
           import json
+
           import os
+
           from pathlib import Path
 
+
           output_path = Path("/tmp/openrouter-coder-result.json")
+
           if not output_path.exists() or output_path.stat().st_size == 0:
               raise RuntimeError(
                   f"Coder step did not produce a usable output file at {output_path} "
@@ -111,8 +99,11 @@ jobs:
           with output_path.open("r", encoding="utf-8") as fh:
               result = json.load(fh)
 
-          commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()
+          commit_message = (result.get("commit_message") or "feat: apply
+          OpenRouter coding changes").strip()
+
           files_written = len(result.get("files_written") or [])
+
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write("commit_message<<__GITHUB_OUTPUT_EOF__\n")
@@ -120,7 +111,6 @@ jobs:
               out.write("__GITHUB_OUTPUT_EOF__\n")
               out.write(f"files_written={files_written}\n")
           PY
-
       - name: Create pull request
         id: cpr
         if: steps.coder.outputs.files_written != '0'
@@ -131,34 +121,37 @@ jobs:
           base: main
           title: "OpenRouter: ${{ steps.issue.outputs.issue_title }}"
           commit-message: ${{ steps.coder.outputs.commit_message }}
-          body: |
-            OpenRouter-generated code changes for issue #${{ steps.issue.outputs.issue_number }}.
+          body: >
+            OpenRouter-generated code changes for issue #${{
+            steps.issue.outputs.issue_number }}.
+
 
             ### Issue
+
             ${{ steps.issue.outputs.issue_body }}
 
-            Closes #${{ steps.issue.outputs.issue_number }}
 
+            Closes #${{ steps.issue.outputs.issue_number }}
       - name: Comment issue with PR link
         if: steps.cpr.outputs.pull-request-url != ''
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
               body: `✅ OpenRouter opened PR: ${{ steps.cpr.outputs.pull-request-url }}`,
             });
-
       - name: Comment issue when no changes were generated
         if: steps.coder.outputs.files_written == '0'
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
               body: '⚠️ OpenRouter returned no file changes. Please refine the issue details and re-run.',
             });
+    timeout-minutes: 45

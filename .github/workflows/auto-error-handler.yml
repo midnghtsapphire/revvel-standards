@@ -1,13 +1,9 @@
 name: Auto-Error Handler & Self-Healing
-
-# This workflow implements the obsessive self-healing protocol defined in AGENTS.md
-# It automatically creates issues when errors occur and triggers recovery attempts
-
 on:
   workflow_dispatch:
     inputs:
       error_type:
-        description: 'Type of error'
+        description: Type of error
         required: true
         type: choice
         options:
@@ -20,18 +16,17 @@ on:
           - dependency_failure
           - other
       error_message:
-        description: 'Error message'
+        description: Error message
         required: true
       error_context:
-        description: 'Full error context (logs, stack trace)'
+        description: Full error context (logs, stack trace)
         required: false
       attempted_fixes:
-        description: 'Fixes already attempted (JSON array)'
+        description: Fixes already attempted (JSON array)
         required: false
       workflow_run_id:
-        description: 'Related workflow run ID'
+        description: Related workflow run ID
         required: false
-
   workflow_call:
     inputs:
       error_type:
@@ -49,78 +44,97 @@ on:
       workflow_run_id:
         required: false
         type: string
-
 permissions:
   issues: write
   contents: read
   actions: read
-
 jobs:
   capture-and-create-issue:
     runs-on: ubuntu-latest
     outputs:
       issue_number: ${{ steps.create_issue.outputs.issue_number }}
       recovery_needed: ${{ steps.analyze.outputs.recovery_needed }}
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Analyze error
         id: analyze
-        run: |
+        run: >
           ERROR_TYPE="${{ inputs.error_type }}"
-          
+
+
           # Determine labels
+
           LABELS="auto-error,needs-fix,$ERROR_TYPE"
-          
+
+
           # Determine if auto-recovery should be attempted
+
           RECOVERY_NEEDED="true"
-          if [[ "$ERROR_TYPE" == "openrouter" ]] || [[ "$ERROR_TYPE" == "api_timeout" ]]; then
+
+          if [[ "$ERROR_TYPE" == "openrouter" ]] || [[ "$ERROR_TYPE" ==
+          "api_timeout" ]]; then
             LABELS="$LABELS,ralph-loop,auto-fix"
           fi
-          
+
+
           # Determine assignee
+
           ASSIGNEE="copilot"
+
           if [[ "$ERROR_TYPE" == "deploy_failure" ]]; then
             ASSIGNEE="midnghtsapphire"
             RECOVERY_NEEDED="false"
           fi
-          
-          echo "labels=$LABELS" >> $GITHUB_OUTPUT
-          echo "assignee=$ASSIGNEE" >> $GITHUB_OUTPUT
-          echo "recovery_needed=$RECOVERY_NEEDED" >> $GITHUB_OUTPUT
 
+
+          echo "labels=$LABELS" >> $GITHUB_OUTPUT
+
+          echo "assignee=$ASSIGNEE" >> $GITHUB_OUTPUT
+
+          echo "recovery_needed=$RECOVERY_NEEDED" >> $GITHUB_OUTPUT
       - name: Gather additional context
         id: context
-        run: |
+        run: >
           # Get workflow logs if run ID provided
+
           if [[ -n "${{ inputs.workflow_run_id }}" ]]; then
             gh run view ${{ inputs.workflow_run_id }} --log > workflow_logs.txt || true
             LOGS=$(head -n 100 workflow_logs.txt)
           else
             LOGS="No workflow logs available"
           fi
-          
+
+
           # Get recent commits
+
           RECENT_COMMITS=$(git log --oneline -5)
-          
+
+
           # Get current branch
+
           BRANCH=$(git branch --show-current)
-          
+
+
           # Save to outputs
+
           echo "logs<<EOF" >> $GITHUB_OUTPUT
+
           echo "$LOGS" >> $GITHUB_OUTPUT
+
           echo "EOF" >> $GITHUB_OUTPUT
-          
+
+
           echo "commits<<EOF" >> $GITHUB_OUTPUT
+
           echo "$RECENT_COMMITS" >> $GITHUB_OUTPUT
+
           echo "EOF" >> $GITHUB_OUTPUT
-          
+
+
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
-
       - name: Create error issue
         id: create_issue
         uses: actions/github-script@v7
@@ -136,7 +150,7 @@ jobs:
             const logs = `${{ steps.context.outputs.logs }}`;
             const commits = `${{ steps.context.outputs.commits }}`;
             const branch = '${{ steps.context.outputs.branch }}';
-            
+
             // Parse attempted fixes
             let fixes = [];
             try {
@@ -144,29 +158,29 @@ jobs:
             } catch (e) {
               fixes = attemptedFixes ? [attemptedFixes] : [];
             }
-            
+
             // Build issue body
             let body = `## Auto-Generated Error Report\n\n`;
             body += `**Error Type:** \`${errorType}\`\n`;
             body += `**Branch:** \`${branch}\`\n`;
             body += `**Timestamp:** ${new Date().toISOString()}\n\n`;
-            
+
             body += `### Error Message\n\n`;
             body += `\`\`\`\n${errorMessage}\n\`\`\`\n\n`;
-            
+
             if (errorContext) {
               body += `### Error Context\n\n`;
               body += `<details>\n<summary>Full context (click to expand)</summary>\n\n`;
               body += `\`\`\`\n${errorContext.substring(0, 5000)}\n\`\`\`\n\n`;
               body += `</details>\n\n`;
             }
-            
+
             if (workflowRunId) {
               body += `### Related Workflow\n\n`;
               body += `- Run ID: ${workflowRunId}\n`;
               body += `- [View run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${workflowRunId})\n\n`;
             }
-            
+
             if (fixes.length > 0) {
               body += `### Attempted Fixes\n\n`;
               fixes.forEach((fix, i) => {
@@ -174,27 +188,27 @@ jobs:
               });
               body += `\n`;
             }
-            
+
             if (logs && logs !== 'No workflow logs available') {
               body += `### Recent Workflow Logs\n\n`;
               body += `<details>\n<summary>Last 100 lines (click to expand)</summary>\n\n`;
               body += `\`\`\`\n${logs.substring(0, 3000)}\n\`\`\`\n\n`;
               body += `</details>\n\n`;
             }
-            
+
             body += `### Recent Commits\n\n`;
             body += `\`\`\`\n${commits}\n\`\`\`\n\n`;
-            
+
             body += `---\n\n`;
             body += `### Recovery Protocol\n\n`;
             body += `This error was automatically detected by the self-healing system. `;
-            
+
             if (labels.includes('ralph-loop')) {
               body += `@${assignee} will attempt automatic recovery. If recovery fails after 3 attempts, this will be escalated to @midnghtsapphire.\n\n`;
             } else {
               body += `@${assignee} should investigate and implement a fix.\n\n`;
             }
-            
+
             body += `**Required Actions:**\n`;
             body += `1. Analyze the error and root cause\n`;
             body += `2. Research 3+ alternative solutions\n`;
@@ -202,9 +216,9 @@ jobs:
             body += `4. Document the fix in error handlers\n`;
             body += `5. Update learnings.md with error pattern and solution\n`;
             body += `6. Close this issue when fixed\n\n`;
-            
+
             body += `**Reference:** See [AGENTS.md](docs/AGENTS.md#agent-autonomy--obsessive-self-sufficiency) for autonomy protocol.\n`;
-            
+
             // Create the issue
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
@@ -214,49 +228,49 @@ jobs:
               labels: labels,
               assignees: [assignee]
             });
-            
+
             console.log(`Created issue #${issue.data.number}`);
             core.setOutput('issue_number', issue.data.number);
             core.setOutput('issue_url', issue.data.html_url);
-            
-            return issue.data.number;
 
+            return issue.data.number;
       - name: Comment on related PR if exists
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
-          script: |
-            const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
+          script: >
+            const issueNumber = '${{ steps.create_issue.outputs.issue_number
+            }}';
+
             const issueUrl = '${{ steps.create_issue.outputs.issue_url }}';
-            
+
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: `🚨 **Automatic error detected**\n\nAn error was encountered and automatically logged: ${issueUrl}\n\nThe self-healing system will attempt recovery. If recovery fails, this will be escalated.`
             });
-
+    timeout-minutes: 30
   attempt-recovery:
     needs: capture-and-create-issue
     if: needs.capture-and-create-issue.outputs.recovery_needed == 'true'
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Attempt recovery for OpenRouter errors
         if: inputs.error_type == 'openrouter'
         run: |
           echo "Attempting OpenRouter recovery..."
-          
+
           # Try alternative models
           MODELS=(
             "anthropic/claude-sonnet-4"
             "anthropic/claude-3.5-sonnet"
             "openai/gpt-4-turbo-preview"
           )
-          
+
           for MODEL in "${MODELS[@]}"; do
             echo "Trying model: $MODEL"
             # Attempt to call with alternative model
@@ -264,25 +278,25 @@ jobs:
             # For now, just document the attempt
             echo "Recovery attempt with $MODEL" >> recovery_log.txt
           done
-
       - name: Attempt recovery for API timeouts
         if: inputs.error_type == 'api_timeout'
-        run: |
+        run: >
           echo "Implementing exponential backoff retry..."
-          
+
+
           # Try with increasing timeouts
+
           for ATTEMPT in 1 2 3; do
             TIMEOUT=$((10 * ATTEMPT * ATTEMPT))
             echo "Attempt $ATTEMPT with ${TIMEOUT}s timeout"
             # Actual retry logic would go here
             echo "Retry attempt $ATTEMPT with ${TIMEOUT}s timeout" >> recovery_log.txt
           done
-
       - name: Attempt recovery for CI failures
         if: inputs.error_type == 'ci_failure'
         run: |
           echo "Analyzing CI failure patterns..."
-          
+
           # Check for common CI issues
           if grep -q "ENOSPC" <<< "${{ inputs.error_message }}"; then
             echo "Disk space issue detected - cleaning up"
@@ -290,13 +304,12 @@ jobs:
             npm cache clean --force || true
             docker system prune -af || true
           fi
-          
+
           if grep -q "timeout" <<< "${{ inputs.error_message }}"; then
             echo "Timeout issue - suggesting increased timeout values"
           fi
-          
-          echo "CI recovery attempts logged" >> recovery_log.txt
 
+          echo "CI recovery attempts logged" >> recovery_log.txt
       - name: Upload recovery log
         if: always()
         uses: actions/upload-artifact@v4
@@ -304,45 +317,63 @@ jobs:
           name: recovery-log
           path: recovery_log.txt
           retention-days: 30
-
       - name: Comment recovery results
         uses: actions/github-script@v7
         with:
-          script: |
-            const issueNumber = ${{ needs.capture-and-create-issue.outputs.issue_number }};
+          script: >
+            const issueNumber = ${{
+            needs.capture-and-create-issue.outputs.issue_number }};
+
             const fs = require('fs');
-            
+
+
             let recoveryLog = 'No recovery log available';
+
             try {
               recoveryLog = fs.readFileSync('recovery_log.txt', 'utf8');
             } catch (e) {
               console.log('Could not read recovery log');
             }
-            
+
+
             const body = `### Automatic Recovery Attempt\n\n` +
               `Recovery protocol executed at ${new Date().toISOString()}\n\n` +
               `**Recovery Log:**\n\`\`\`\n${recoveryLog}\n\`\`\`\n\n` +
               `If this resolves the issue, please verify and close. Otherwise, manual intervention required.`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               body: body
             });
-
+    timeout-minutes: 30
   notify-completion:
-    needs: [capture-and-create-issue, attempt-recovery]
+    needs:
+      - capture-and-create-issue
+      - attempt-recovery
     if: always()
     runs-on: ubuntu-latest
-    
     steps:
       - name: Summary
-        run: |
+        run: >
           echo "## Auto-Error Handler Summary" >> $GITHUB_STEP_SUMMARY
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Error Type:** ${{ inputs.error_type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Issue Created:** #${{ needs.capture-and-create-issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Recovery Attempted:** ${{ needs.capture-and-create-issue.outputs.recovery_needed }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "- **Error Type:** ${{ inputs.error_type }}" >>
+          $GITHUB_STEP_SUMMARY
+
+          echo "- **Issue Created:** #${{
+          needs.capture-and-create-issue.outputs.issue_number }}" >>
+          $GITHUB_STEP_SUMMARY
+
+          echo "- **Recovery Attempted:** ${{
+          needs.capture-and-create-issue.outputs.recovery_needed }}" >>
+          $GITHUB_STEP_SUMMARY
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "View issue: ${{ needs.capture-and-create-issue.outputs.issue_url }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "View issue: ${{ needs.capture-and-create-issue.outputs.issue_url
+          }}" >> $GITHUB_STEP_SUMMARY
+    timeout-minutes: 30

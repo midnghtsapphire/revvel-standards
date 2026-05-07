@@ -1,26 +1,17 @@
-# Commit Queue Monitor
-#
-# Monitors merge/commit queue depth and escalates when the backlog is too large.
-# See templates/cicd/commit-queue-monitor.yml for the standard template.
-
 name: Commit Queue Monitor
-
 on:
   schedule:
-    - cron: "0 * * * *"
-  workflow_dispatch:
-
+    - cron: 0 * * * *
+  workflow_dispatch: null
 permissions:
   issues: write
   pull-requests: read
   contents: read
-
 env:
   QUEUE_THRESHOLD: ${{ vars.COMMIT_QUEUE_THRESHOLD || '200' }}
   QUEUE_LABEL: ${{ vars.COMMIT_QUEUE_LABEL || 'merge-queue-pr' }}
   QUEUE_BRANCH_PREFIX: ${{ vars.COMMIT_QUEUE_BRANCH_PREFIX || 'mergify/merge-queue/' }}
-  ALERT_TITLE: "Commit queue backlog alert"
-
+  ALERT_TITLE: Commit queue backlog alert
 jobs:
   monitor:
     runs-on: ubuntu-latest
@@ -29,15 +20,26 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const owner = context.repo.owner;
+
             const repo = context.repo.repo;
+
             const alertTitle = process.env.ALERT_TITLE;
-            const thresholdRaw = Number.parseInt(process.env.QUEUE_THRESHOLD, 10);
-            const threshold = Number.isNaN(thresholdRaw) || thresholdRaw <= 0 ? 200 : thresholdRaw;
+
+            const thresholdRaw = Number.parseInt(process.env.QUEUE_THRESHOLD,
+            10);
+
+            const threshold = Number.isNaN(thresholdRaw) || thresholdRaw <= 0 ?
+            200 : thresholdRaw;
+
             const queueLabel = process.env.QUEUE_LABEL || 'merge-queue-pr';
-            const queuePrefix = process.env.QUEUE_BRANCH_PREFIX || 'mergify/merge-queue/';
+
+            const queuePrefix = process.env.QUEUE_BRANCH_PREFIX ||
+            'mergify/merge-queue/';
+
             const timestamp = new Date().toISOString();
+
 
             const prs = await github.paginate(github.rest.pulls.list, {
               owner,
@@ -45,6 +47,7 @@ jobs:
               state: 'open',
               per_page: 100,
             });
+
 
             const queuedPrs = prs.filter(pr => {
               const labels = (pr.labels || []).map(label =>
@@ -55,11 +58,15 @@ jobs:
               return hasLabel || hasPrefix;
             });
 
+
             const queueCount = queuedPrs.length;
+
             const previewCount = Math.min(queueCount, 20);
+
             const preview = queuedPrs.slice(0, previewCount).map(pr =>
               `- #${pr.number} ${pr.title} (${pr.html_url})`
             );
+
 
             core.summary
               .addHeading('Commit Queue Monitor')
@@ -76,7 +83,10 @@ jobs:
             const search = await github.rest.search.issuesAndPullRequests({
               q: `repo:${owner}/${repo} is:issue is:open in:title "${alertTitle}"`,
             });
-            let existingAlert = search.data.items.find(item => !item.pull_request);
+
+            let existingAlert = search.data.items.find(item =>
+            !item.pull_request);
+
 
             if (queueCount < threshold) {
               if (existingAlert) {
@@ -102,12 +112,14 @@ jobs:
               return;
             }
 
+
             const labelsToEnsure = [
               { name: 'auto-fix', color: '0075ca', description: 'Created by auto-fix / Ralph Loop workflow' },
               { name: 'copilot', color: '7057ff', description: 'Assigned to GitHub Copilot for fixing' },
               { name: 'openrouter', color: '6f42c1', description: 'Routed to the OpenRouter orchestrator (first line of sight)' },
               { name: 'needs-human', color: 'd93f0b', description: 'Escalated — requires human intervention' },
             ];
+
 
             for (const label of labelsToEnsure) {
               try {
@@ -118,6 +130,7 @@ jobs:
                 }
               }
             }
+
 
             const body = [
               '## Commit Queue Backlog Alert',
@@ -138,6 +151,7 @@ jobs:
               '',
               '_This issue is maintained automatically by `commit-queue-monitor.yml`._',
             ].join('\n');
+
 
             if (!existingAlert) {
               const created = await github.rest.issues.create({
@@ -163,10 +177,18 @@ jobs:
               });
             }
 
+
             // Routing is handled by .github/workflows/openrouter-triage.yml
+
             // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md). Do
+
             // not assign @Copilot / copilot-swe-agent here — Automation Routing
+
             // Policy (see .github/copilot-instructions.md) forbids paid
+
             // GitHub Copilot Coding Agent routing.
 
-            core.notice(`Queue depth ${queueCount} exceeds threshold ${threshold}. Alert issue #${existingAlert.number} updated.`);
+
+            core.notice(`Queue depth ${queueCount} exceeds threshold
+            ${threshold}. Alert issue #${existingAlert.number} updated.`);
+    timeout-minutes: 30

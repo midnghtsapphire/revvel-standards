@@ -1,34 +1,16 @@
 name: Proof of Life — app-review revvel-standards-run
-
-# Proof-of-life process for the new app-review `revvel-standards-run` pipeline.
-#
-# Per the originating issue:
-#   "I need OpenRouter as the orchestrator or fixer and a choice in `assigned to`
-#    and work independently of Copilot or use Copilot or Codex within OpenRouter."
-#
-# This workflow is the manually-triggered "is it alive?" check for that pipeline.
-# It verifies the OpenRouter plumbing, lets the operator pick the role the
-# OpenRouter agent plays (orchestrator or fixer), and lets them pick who the
-# work is assigned to — so it can run independently of Copilot, or delegate to
-# Copilot / Codex via OpenRouter.
-#
-# Secret:   OPENROUTER_API_KEY  (Vault path: revvel/shared/llm/openrouter)
-# Doc:      docs/PROOF_OF_LIFE_PROCESS.md
-# Related:  .github/workflows/openrouter-assignee.yml  (event-driven routing)
-#           .github/workflows/ralph-loop.yml           (CI self-healing)
-
 on:
   workflow_dispatch:
     inputs:
       role:
-        description: "Role the OpenRouter agent plays for this run"
+        description: Role the OpenRouter agent plays for this run
         type: choice
         default: orchestrator
         options:
           - orchestrator
           - fixer
       assignee:
-        description: "Who does the work get assigned to? (independent = OpenRouter only)"
+        description: Who does the work get assigned to? (independent = OpenRouter only)
         type: choice
         default: openrouter
         options:
@@ -36,34 +18,33 @@ on:
           - Copilot
           - codex
       target_issue:
-        description: "Optional issue or PR number to post the proof-of-life onto (leave blank to only log)"
+        description: Optional issue or PR number to post the proof-of-life onto (leave
+          blank to only log)
         type: string
         required: false
         default: ""
       dry_run:
-        description: "Log the actions without assigning / labelling / commenting"
+        description: Log the actions without assigning / labelling / commenting
         type: boolean
         default: false
-
 permissions:
   issues: write
   pull-requests: write
   contents: read
-
 concurrency:
   group: proof-of-life-${{ github.event.inputs.target_issue || 'log-only' }}
   cancel-in-progress: false
-
 jobs:
   proof-of-life:
-    name: Proof of Life (${{ github.event.inputs.role }} → ${{ github.event.inputs.assignee }})
+    name: Proof of Life (${{ github.event.inputs.role }} → ${{
+      github.event.inputs.assignee }})
     runs-on: ubuntu-latest
     steps:
       - name: Verify OPENROUTER_API_KEY is configured
         id: verify
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
+        run: >
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "has_key=false" >> "$GITHUB_OUTPUT"
             echo "::warning::OPENROUTER_API_KEY is not set. The proof-of-life will still post, annotated as ⚠️ not configured. See docs/PROOF_OF_LIFE_PROCESS.md."
@@ -71,7 +52,6 @@ jobs:
             echo "has_key=true" >> "$GITHUB_OUTPUT"
             echo "OPENROUTER_API_KEY is configured."
           fi
-
       - name: Run proof of life
         uses: actions/github-script@v8
         env:
@@ -82,34 +62,58 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           HAS_KEY: ${{ steps.verify.outputs.has_key }}
         with:
-          script: |
+          script: >
             const role     = process.env.ROLE     || 'orchestrator';
+
             const assignee = process.env.ASSIGNEE || 'openrouter';
+
             const dryRun   = process.env.DRY_RUN === 'true';
+
             const hasKey   = process.env.HAS_KEY === 'true';
+
             const raw      = (process.env.TARGET_ISSUE || '').trim();
+
             const issue_number = raw === '' ? null : parseInt(raw, 10);
+
 
             if (raw !== '' && Number.isNaN(issue_number)) {
               core.setFailed(`target_issue must be a number, got: "${raw}"`);
               return;
             }
 
-            // ── Resolve the GitHub-visible assignee ─────────────────────────────
+
+            // ── Resolve the GitHub-visible assignee
+            ─────────────────────────────
+
             // OpenRouter is a service, not a GitHub user — when "openrouter" is
-            // selected we run *independently of Copilot* and do NOT set a GitHub
+
+            // selected we run *independently of Copilot* and do NOT set a
+            GitHub
+
             // assignee; the `openrouter` label carries the routing signal.
+
             // "Copilot" assigns GitHub Copilot. "codex" routes Codex via
+
             // OpenRouter — again no GitHub user exists, so we label only.
+
             let githubAssignee = null;
+
             if (assignee === 'Copilot')  githubAssignee = 'Copilot';
 
-            // ── Routing labels ─────────────────────────────────────────────────
+
+            // ── Routing labels
+            ─────────────────────────────────────────────────
+
             const labels = ['openrouter', 'proof-of-life', `role-${role}`];
+
             if (assignee === 'Copilot') labels.push('copilot');
+
             if (assignee === 'codex')   labels.push('codex');
 
-            // ── Summary line used in both the comment and the run summary ──────
+
+            // ── Summary line used in both the comment and the run summary
+            ──────
+
             const summary =
               `role=**${role}**, assignee=**${assignee}**, ` +
               `OPENROUTER_API_KEY=${hasKey ? '✅ configured' : '⚠️ not configured'}, ` +
@@ -117,7 +121,10 @@ jobs:
 
             core.info(`Proof of life — ${summary}`);
 
-            // ── Apply to a target issue / PR if one was supplied ───────────────
+
+            // ── Apply to a target issue / PR if one was supplied
+            ───────────────
+
             if (issue_number !== null) {
               if (dryRun) {
                 core.info(`[dry-run] would assign=${githubAssignee || '(none — independent)'}, ` +
@@ -185,7 +192,10 @@ jobs:
               core.info('No target_issue supplied — proof of life is log-only.');
             }
 
-            // ── Always write a run summary so it is visible in the Actions UI ──
+
+            // ── Always write a run summary so it is visible in the Actions UI
+            ──
+
             await core.summary
               .addHeading('Proof of Life — app-review revvel-standards-run')
               .addTable([
@@ -199,3 +209,4 @@ jobs:
                 ['Dry run',             String(dryRun)],
               ])
               .write();
+    timeout-minutes: 15

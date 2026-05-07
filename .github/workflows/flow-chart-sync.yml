@@ -1,24 +1,4 @@
-# Flow Chart Sync Workflow
-#
-# Automatically keeps "docs/Master Revvel-Standards Flow Charts/" up-to-date.
-#
-# Triggers:
-#   - Every push to main (when .md or .yml files change)
-#   - Manual dispatch (for immediate sync)
-#
-# What it does:
-#   1. Runs scripts/sync-flow-charts.js
-#      - Scans the whole repo for .md files
-#      - Updates metadata blocks (date, doc count) in all flow chart files
-#      - Patches any broken file references (if docs were moved or renamed)
-#   2. Commits and pushes any changes back to the branch
-#
-# Required secrets: none (uses built-in GITHUB_TOKEN)
-#
-# See: docs/Master Revvel-Standards Flow Charts/README.md
-
 name: Flow Chart Sync
-
 on:
   push:
     branches:
@@ -26,75 +6,83 @@ on:
     paths:
       - "**.md"
       - "**.yml"
-      - "docs/**"
-      - "scripts/**"
+      - docs/**
+      - scripts/**
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Dry run (print changes without writing files)"
+        description: Dry run (print changes without writing files)
         required: false
         default: "false"
         type: choice
         options:
           - "false"
           - "true"
-
 concurrency:
   group: flow-chart-sync-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   sync:
     name: Sync Flow Charts
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetch full history so we can detect renames
           fetch-depth: 0
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-
       - name: Run flow chart sync script
         env:
           REPO_ROOT: ${{ github.workspace }}
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
         run: node scripts/sync-flow-charts.js
-
       - name: Commit and push updated flow charts
         if: ${{ inputs.dry_run != 'true' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+        run: >
           set -euo pipefail
 
+
           git config user.name "revvel-automation[bot]"
-          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+
+          git config user.email
+          "revvel-automation[bot]@users.noreply.github.com"
+
 
           git add "docs/Master Revvel-Standards Flow Charts/"
+
 
           if git diff --staged --quiet; then
             echo "✅ Flow charts already up-to-date — nothing to commit."
             exit 0
           fi
 
+
           git commit -m "chore: auto-sync flow charts [skip ci]"
 
+
           # Another commit may have landed on main while this workflow was
+
           # running. Rebase onto the latest remote and retry the push so the
+
           # auto-sync commit is never rejected as non-fast-forward, which
+
           # previously caused changes to silently pile up behind main.
+
           # GITHUB_REF_NAME is always set by Actions; fail fast if not to
+
           # avoid silently pushing to the wrong branch.
+
           branch="${GITHUB_REF_NAME:?GITHUB_REF_NAME is not set}"
+
           attempts=5
+
           for i in $(seq 1 "$attempts"); do
             git fetch origin "$branch"
             # Rebase our single auto-sync commit onto the latest remote tip.
@@ -118,5 +106,8 @@ jobs:
             sleep $((i * 2))
           done
 
+
           echo "❌ Failed to push flow-chart auto-sync after $attempts attempts."
+
           exit 1
+    timeout-minutes: 15

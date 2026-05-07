@@ -1,56 +1,39 @@
 name: Augment Code App Check
-
-# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack):
-# Detects whether the Augment Code GitHub App is installed on this repo and
-# leaves a one-time reminder comment on PRs if it isn't. This is purely
-# informational — it never blocks a merge or modifies code.
-#
-# How "installed" is detected: the Augment Code App leaves a marker comment
-# on every PR within ~30 seconds of opening (signature: author begins with
-# `augment-` and a stable HTML tag in the comment body). We poll for that
-# signature once after the PR opens. If it's absent after ~5 minutes, post
-# a single reminder comment with the install link.
-#
-# Idempotency: the reminder uses an HTML marker so it's never posted twice
-# on the same PR.
-#
-# Fail-soft: if the API rate-limits or throws, we just exit. Never blocks.
-
 on:
   pull_request_target:
-    types: [opened, reopened, ready_for_review]
+    types:
+      - opened
+      - reopened
+      - ready_for_review
   workflow_dispatch:
     inputs:
       pr_number:
-        description: "PR number to check"
+        description: PR number to check
         required: true
         type: number
-
 permissions:
   contents: read
   issues: write
   pull-requests: write
-
 concurrency:
-  group: augment-check-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
+  group: augment-check-${{ github.event.pull_request.number ||
+    github.event.inputs.pr_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   detect-and-remind:
     name: Detect Augment Code App and remind once if missing
     runs-on: ubuntu-latest
     if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' &&
+      (github.event_name == 'workflow_dispatch') || (github.event_name ==
+      'pull_request_target' &&
        github.event.pull_request.draft == false)
     steps:
       - name: Wait briefly so Augment can post its marker
         run: sleep 60
-
       - name: Check for Augment marker, comment if missing
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const prNumber =
               context.payload.pull_request?.number ||
               parseInt(context.payload.inputs?.pr_number || '0', 10);
@@ -59,6 +42,7 @@ jobs:
               return;
             }
 
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -66,31 +50,43 @@ jobs:
               per_page: 100,
             });
 
+
             // Augment Code's app posts comments authored by users matching
+
             // /^augment-/i (per their public-marketplace docs). We also
+
             // accept their stable HTML marker if they ever change the bot
+
             // username.
+
             const augmentMarker = /<!--\s*augment-code:/i;
+
             const augmentInstalled = comments.some(c => {
               const author = (c.user?.login || '').toLowerCase();
               return /^augment-/.test(author) ||
                      (c.body && augmentMarker.test(c.body));
             });
 
+
             if (augmentInstalled) {
               core.info('Augment Code App detected on this PR; nothing to do.');
               return;
             }
 
+
             // Already-posted reminder?
+
             const reminderMarker = '<!-- augment-check:reminder -->';
+
             const alreadyReminded = comments.some(
               c => c.body && c.body.includes(reminderMarker)
             );
+
             if (alreadyReminded) {
               core.info('Augment reminder already posted; skipping.');
               return;
             }
+
 
             const body = [
               reminderMarker,
@@ -110,6 +106,7 @@ jobs:
               '> deleting that file or removing the `pull_request_target` trigger._',
             ].join('\n');
 
+
             try {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -121,3 +118,4 @@ jobs:
             } catch (e) {
               core.warning(`Failed to post reminder: ${e.message}. Skipping.`);
             }
+    timeout-minutes: 30

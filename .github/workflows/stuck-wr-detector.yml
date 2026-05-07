@@ -1,66 +1,28 @@
-# Stuck Work Request Detector & Auto-Healer
-#
-# Periodically scans open Work Request issues that look stuck (i.e. labeled
-# `work-request` and `wr:in-progress`, but no PR was ever created from them)
-# and either:
-#   1. Re-triggers the `WR PR Creation` workflow on the issue, OR
-#   2. Escalates by opening a tracking issue with the diagnostic logs.
-#
-# A WR is considered "stuck" if all of:
-#   - The issue is `open`.
-#   - The issue carries the `work-request` label.
-#   - The issue does NOT have an associated PR (searched by title prefix
-#     `[WR] <title>` and by body cross-reference).
-#   - The issue was created more than 15 minutes ago (give wr-pr-creation
-#     time to run normally on fresh issues).
-#
-# What this workflow does NOT do:
-#   - Modify the issue body (it might be in active editing).
-#   - Create a PR directly (that's the job of `wr-pr-creation.yml`).
-#   - Retry indefinitely. After 3 retrigger attempts (tracked via a
-#     dedicated `wr:retrigger-attempts-N` label), it escalates instead.
-#
-# Triggers:
-#   - schedule (every 30 min) — primary
-#   - workflow_dispatch       — manual sweep
-#
-# Why this exists:
-#   GitHub Actions resolves every `uses:` ref upfront. If `wr-pr-creation.yml`
-#   has even one bad ref (see workflow-action-ref-audit.yml), the entire job
-#   aborts at "Set up job" before the issue gets a PR. Without this
-#   detector, the issue sits in `wr:in-progress` indefinitely with no
-#   visible alarm. This workflow detects that condition and either fixes
-#   it (retrigger) or surfaces it (escalate).
-
 name: Stuck WR Detector & Auto-Healer
-
 on:
   schedule:
-    # Every 30 minutes.
-    - cron: '*/30 * * * *'
+    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       max_age_hours:
-        description: "Only consider WRs created within the last N hours (default 168 = 7 days)."
+        description: Only consider WRs created within the last N hours (default 168 = 7
+          days).
         required: false
         type: number
         default: 168
       dry_run:
-        description: "If true, log what would be done but don't retrigger or escalate."
+        description: If true, log what would be done but don't retrigger or escalate.
         required: false
         type: boolean
         default: false
-
 permissions:
   contents: read
   issues: write
   pull-requests: read
-  actions: write   # required to dispatch wr-pr-creation.yml
-
+  actions: write
 concurrency:
   group: stuck-wr-detector
   cancel-in-progress: false
-
 jobs:
   scan:
     name: Scan & heal stuck Work Requests
@@ -68,35 +30,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Detect stuck WRs and heal
         uses: actions/github-script@v8
         env:
           MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
           DRY_RUN: ${{ inputs.dry_run || false }}
         with:
-          # The default GITHUB_TOKEN can dispatch reusable workflows in the
-          # same repo and is what we use here.
-          script: |
+          script: >
             const owner = context.repo.owner;
+
             const repo = context.repo.repo;
-            const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
+
+            const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 *
+            1000;
+
             const dryRun = process.env.DRY_RUN === 'true';
+
             const cutoff = Date.now() - maxAgeMs;
+
             const minStuckAgeMs = 15 * 60 * 1000;  // 15 minutes
 
-            core.info(`Scanning open work-request issues younger than ${process.env.MAX_AGE_HOURS}h.`);
+
+            core.info(`Scanning open work-request issues younger than
+            ${process.env.MAX_AGE_HOURS}h.`);
+
             core.info(`Dry-run mode: ${dryRun}`);
 
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
+
+            const issues = await github.paginate(github.rest.issues.listForRepo,
+            {
               owner, repo,
               state: 'open',
               labels: 'work-request',
               per_page: 100,
             });
+
             core.info(`Found ${issues.length} open work-request issues.`);
 
+
             const stuck = [];
+
             for (const issue of issues) {
               if (issue.pull_request) continue;  // already a PR, not an issue
               const ageMs = Date.now() - new Date(issue.created_at).getTime();
@@ -119,16 +92,21 @@ jobs:
               stuck.push(issue);
             }
 
+
             core.info(`Identified ${stuck.length} stuck WR(s).`);
+
             if (stuck.length === 0) return;
 
+
             // Helpers -------------------------------------------------------
+
             function attemptCount(issue) {
               const m = (issue.labels || [])
                 .map(l => (typeof l === 'string' ? l : l.name))
                 .find(n => n && n.startsWith('wr:retrigger-attempts-'));
               return m ? parseInt(m.replace('wr:retrigger-attempts-', ''), 10) || 0 : 0;
             }
+
             async function setAttemptLabel(issue, n) {
               for (const lbl of issue.labels || []) {
                 const name = typeof lbl === 'string' ? lbl : lbl.name;
@@ -146,7 +124,9 @@ jobs:
               });
             }
 
+
             const MAX_ATTEMPTS = 3;
+
             for (const issue of stuck) {
               const attempts = attemptCount(issue);
               core.info(`#${issue.number}: stuck (attempts=${attempts}).`);
@@ -234,3 +214,4 @@ jobs:
                 }
               }
             }
+    timeout-minutes: 30

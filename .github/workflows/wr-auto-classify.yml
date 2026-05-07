@@ -1,39 +1,14 @@
 name: WR Auto-Classify Project v2 Fields
-
-# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
-# routing dropdowns the user left on 'auto-classify', and writes the chosen
-# values to the matching Project v2 single-select fields.
-#
-# Respects explicit user choices: only fills in fields whose body section is
-# 'auto-classify' or empty.
-#
-# Falls back to opinionated defaults if OpenRouter is unavailable or replies
-# with malformed output:
-#   Output Type        = internal-script-automation
-#   Research Mode      = standard
-#   Delivery Mode      = build-direct
-#   Iteration Mode     = single-pass
-#   Lifecycle Mode     = new-build
-#   Commercial Mode    = internal-only
-#   Deployment Target  = none
-#   Launch Priority    = medium
-#
-# When a fallback is used (OpenRouter unreachable, parse error, or value not in
-# the option list) the issue is labeled 'auto:default-fallback' so an operator
-# can spot-check.
-
 on:
   issues:
-    types: [opened]
-
+    types:
+      - opened
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: wr-auto-classify-${{ github.event.issue.number }}
   cancel-in-progress: false
-
 jobs:
   preflight:
     name: Preflight credential check
@@ -47,7 +22,7 @@ jobs:
         env:
           PAT: ${{ secrets.PROJECTS_PAT }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
+        run: >
           if [ -n "${PAT}" ]; then
             echo "has_pat=true" >> "$GITHUB_OUTPUT"
             echo "::notice::PROJECTS_PAT is configured."
@@ -55,6 +30,7 @@ jobs:
             echo "has_pat=false" >> "$GITHUB_OUTPUT"
             echo "::notice::PROJECTS_PAT not configured; classifier cannot write to Project v2."
           fi
+
           if [ -n "${OPENROUTER_API_KEY}" ]; then
             echo "has_openrouter=true" >> "$GITHUB_OUTPUT"
             echo "::notice::OPENROUTER_API_KEY is configured."
@@ -62,11 +38,12 @@ jobs:
             echo "has_openrouter=false" >> "$GITHUB_OUTPUT"
             echo "::notice::OPENROUTER_API_KEY not configured; classifier will use opinionated defaults."
           fi
-
+    timeout-minutes: 30
   classify:
     name: Classify routing fields and write to Project v2
     needs: preflight
-    if: needs.preflight.outputs.has_pat == 'true' && contains(github.event.issue.labels.*.name, 'work-request')
+    if: needs.preflight.outputs.has_pat == 'true' &&
+      contains(github.event.issue.labels.*.name, 'work-request')
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -84,29 +61,50 @@ jobs:
       MODEL: anthropic/claude-sonnet-4
     steps:
       - name: Classify and apply
-        run: |
+        run: >
           set -euo pipefail
+
           python3 <<'PYEOF'
+
           import json
+
           import os
+
           import re
+
           import sys
+
           import urllib.request
+
           import urllib.error
 
+
           PAT = os.environ["PAT"]
+
           OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+
           HAS_OPENROUTER = os.environ.get("HAS_OPENROUTER", "false") == "true"
+
           ISSUE_NUMBER = os.environ["ISSUE_NUMBER"]
+
           ISSUE_TITLE = os.environ["ISSUE_TITLE"]
+
           ISSUE_BODY = os.environ.get("ISSUE_BODY", "") or ""
+
           ISSUE_NODE_ID = os.environ["ISSUE_NODE_ID"]
+
           OWNER = os.environ["OWNER"]
+
           REPO = os.environ["REPO"]
+
           PROJECT_OWNER_TYPE = os.environ["PROJECT_OWNER_TYPE"]
+
           PROJECT_OWNER = os.environ["PROJECT_OWNER"]
+
           PROJECT_NUMBER = int(os.environ["PROJECT_NUMBER"])
+
           MODEL = os.environ["MODEL"]
+
 
           DROPDOWN_FIELDS = {
               "Output Type": [
@@ -130,6 +128,7 @@ jobs:
               "Priority": ["low", "medium", "high", "urgent"],
           }
 
+
           DEFAULTS = {
               "Output Type": "internal-script-automation",
               "Research Mode": "standard",
@@ -141,8 +140,11 @@ jobs:
               "Priority": "medium",
           }
 
+
           # Map issue-form label -> project-v2 field name. The form has
+
           # 'Launch Priority'; the project field is just 'Priority'.
+
           FORM_TO_FIELD = {
               "Output Type": "Output Type",
               "Research Mode": "Research Mode",
@@ -153,6 +155,7 @@ jobs:
               "Deployment Target": "Deployment Target",
               "Launch Priority": "Priority",
           }
+
 
           def gh_graphql(query, variables=None, token=None):
               token = token or PAT
@@ -372,13 +375,20 @@ jobs:
 
           # ---------- main ----------
 
+
           parsed = parse_form(ISSUE_BODY)
+
           print(f"Parsed form values: {parsed}")
+
           needed = fields_needing_classification(parsed)
+
           print(f"Fields needing classification: {needed}")
 
+
           classified = {}
+
           used_fallback = False
+
 
           if needed and HAS_OPENROUTER:
               classified = call_openrouter(needed, ISSUE_BODY, ISSUE_TITLE)
@@ -387,8 +397,11 @@ jobs:
               print("OpenRouter not configured; using opinionated defaults for blank fields.")
               used_fallback = True
 
-          # Merge: explicit > classified > defaults. Validate against allowed options.
+          # Merge: explicit > classified > defaults. Validate against allowed
+          options.
+
           final = {}
+
           for field, allowed in DROPDOWN_FIELDS.items():
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
@@ -404,11 +417,16 @@ jobs:
 
           print(f"Final field values to write: {final}")
 
+
           # Resolve project + fields
+
           project = fetch_project_and_item(ISSUE_NODE_ID)
+
           project_id = project["id"]
 
+
           field_index = {}  # name -> {id, options: {name -> id}}
+
           for f in project["fields"]["nodes"]:
               if not f or "name" not in f:
                   continue
@@ -418,11 +436,16 @@ jobs:
               }
 
           # Ensure issue is on project
+
           item_id = find_or_add_item(project_id, ISSUE_NODE_ID)
+
           print(f"Project item id: {item_id}")
 
+
           # Apply each field
+
           summary_lines = []
+
           for field, value in final.items():
               info = field_index.get(field)
               if not info:
@@ -446,8 +469,11 @@ jobs:
               )
               summary_lines.append(f"- `{field}` = `{value}` _({source})_")
 
-          # Always set Status = Inbox at intake (lifecycle, not a classification).
+          # Always set Status = Inbox at intake (lifecycle, not a
+          classification).
+
           status = field_index.get("Status")
+
           if status and "Inbox" in status["options"]:
               update_single_select(project_id, item_id, status["id"], status["options"]["Inbox"])
               summary_lines.append("- `Status` = `Inbox` _(intake floor)_")
@@ -455,7 +481,9 @@ jobs:
           if used_fallback:
               add_label("auto:default-fallback")
 
-          # Apply the output-type label so other automation can easily read the routing decision
+          # Apply the output-type label so other automation can easily read the
+          routing decision
+
           if final.get("Output Type"):
               add_label(f"output-type:{final['Output Type']}")
 
@@ -466,10 +494,14 @@ jobs:
               "",
               f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
           ]
+
           if used_fallback:
               comment_lines.append("")
               comment_lines.append("Label `auto:default-fallback` was added so this can be spot-checked.")
 
           post_comment("\n".join(comment_lines))
+
           print("Classification complete.")
+
           PYEOF
+    timeout-minutes: 30

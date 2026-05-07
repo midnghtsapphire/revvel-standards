@@ -1,33 +1,15 @@
 name: Workflow Monitor (Real-Time)
-
-# Real-time monitoring of all workflows with instant alerts for stuck or failed runs.
-# Automatically retries transient failures and creates issues for persistent problems.
-#
-# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
-# The `workflow_run: workflows: ["*"]` trigger created a feedback loop with
-# Agent Audit Logger and Ralph Loop, saturating the Actions queue and causing
-# every real workflow (jules-invoke, wr-pr-creation, openrouter-coder) to fail
-# with `startup_failure`. Trigger is disabled below; workflow remains available
-# via `workflow_dispatch` so monitoring can still be invoked manually or by an
-# explicit caller. Re-enable with care once a clear, scoped allowlist exists.
-
 on:
-  # workflow_run:
-  #   workflows: ["*"]  # Monitor all workflows  -- DISABLED, feedback loop
-  #   types: [completed, requested, in_progress]
-
   workflow_dispatch:
     inputs:
       workflow_run_id:
-        description: "Specific workflow run ID to monitor"
+        description: Specific workflow run ID to monitor
         type: string
         required: false
-
 permissions:
   actions: write
   issues: write
   contents: read
-
 jobs:
   monitor:
     name: Monitor workflow health
@@ -35,53 +17,75 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: npm
       - name: Install dependencies
         run: npm ci
-      
       - name: Monitor workflow
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const owner = context.repo.owner;
+
             const repo = context.repo.repo;
+
             const run = context.payload.workflow_run;
-            
+
+
             // Configuration
+
             const MAX_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
             const ALERT_LABEL = 'workflow-stuck';
+
             const AUTO_FIX_LABEL = 'auto-fix';
+
             const NEEDS_HUMAN_LABEL = 'needs-human';
-            
+
+
             if (!run) {
               core.info('No workflow run in payload, skipping monitoring');
               return;
             }
-            
+
+
             const runId = run.id;
+
             const runName = run.name;
+
             const runStatus = run.status;
+
             const runConclusion = run.conclusion;
+
             const runUrl = run.html_url;
+
             const headBranch = run.head_branch;
+
             const createdAt = new Date(run.created_at);
+
             const duration = Date.now() - createdAt.getTime();
+
             const maxDuration = MAX_DURATION_MS;
-            
+
+
             core.info(`Monitoring: ${runName} (ID: ${runId})`);
-            core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
+
+            core.info(`Status: ${runStatus}, Conclusion: ${runConclusion ||
+            'N/A'}`);
+
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
-            
+
+
             // ──────────────────────────────────────────────────────────────
+
             // Case 1: Workflow stuck (running too long)
+
             // ──────────────────────────────────────────────────────────────
+
             if (runStatus === 'in_progress' && duration > maxDuration) {
               core.warning(`⚠️ Workflow stuck: ${runName} running for ${Math.round(duration / 60000)} minutes`);
               
@@ -163,10 +167,14 @@ jobs:
                 core.warning(`⚠️ Could not cancel/retry workflow: ${error.message}`);
               }
             }
-            
+
+
             // ──────────────────────────────────────────────────────────────
+
             // Case 2: Workflow failed
+
             // ──────────────────────────────────────────────────────────────
+
             if (runConclusion === 'failure') {
               core.warning(`❌ Workflow failed: ${runName}`);
               
@@ -290,10 +298,14 @@ jobs:
                 });
               }
             }
-            
+
+
             // ──────────────────────────────────────────────────────────────
+
             // Case 3: Workflow succeeded (close any open alerts)
+
             // ──────────────────────────────────────────────────────────────
+
             if (runConclusion === 'success') {
               core.info('✅ Workflow succeeded');
               
@@ -341,15 +353,16 @@ jobs:
                 core.info(`✅ Closed alert issue #${alert.number}`);
               }
             }
-      
       - name: Update summary
         if: always()
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const run = context.payload.workflow_run;
+
             if (!run) return;
-            
+
+
             core.summary
               .addHeading('Workflow Monitor Report')
               .addTable([
@@ -362,5 +375,6 @@ jobs:
                 ['Duration', `${Math.round((Date.now() - new Date(run.created_at).getTime()) / 60000)} min`],
                 ['URL', run.html_url],
               ]);
-            
+
             await core.summary.write();
+    timeout-minutes: 30

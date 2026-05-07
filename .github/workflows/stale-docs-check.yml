@@ -1,16 +1,10 @@
 name: Stale Docs Check
-
-# Flags docs that haven't been updated in 30+ days.
-# Posts findings to the run summary. Runs weekly or on demand.
-
 on:
   schedule:
-    - cron: "0 11 * * 1"  # Every Monday at 11:00 UTC
-  workflow_dispatch:
-
+    - cron: 0 11 * * 1
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   check:
     name: Check for stale documentation
@@ -19,26 +13,38 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Find stale docs
-        run: |
+        run: >
           STALE_DAYS=30
-          CUTOFF=$(date -d "-${STALE_DAYS} days" +%s 2>/dev/null || date -v-${STALE_DAYS}d +%s)
+
+          CUTOFF=$(date -d "-${STALE_DAYS} days" +%s 2>/dev/null || date
+          -v-${STALE_DAYS}d +%s)
+
           STALE_COUNT=0
 
+
           echo "## Stale Documentation Report" >> "$GITHUB_STEP_SUMMARY"
+
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Files not updated in the last ${STALE_DAYS} days:" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "Files not updated in the last ${STALE_DAYS} days:" >>
+          "$GITHUB_STEP_SUMMARY"
+
           echo "" >> "$GITHUB_STEP_SUMMARY"
+
           echo "| File | Last Updated | Days Stale |" >> "$GITHUB_STEP_SUMMARY"
+
           echo "|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
 
+
           # Check key state docs that tend to go stale
+
           TRACKED_DOCS=(
             "docs/SPRINT_STATE.md"
             "docs/PROJECT_CATALOG.md"
             "docs/REPO_TODO_LIST.md"
           )
+
 
           for doc in "${TRACKED_DOCS[@]}"; do
             if [ -f "$doc" ]; then
@@ -52,13 +58,19 @@ jobs:
             fi
           done
 
+
           if [ "$STALE_COUNT" -eq 0 ]; then
             echo "| _(none)_ | — | — |" >> "$GITHUB_STEP_SUMMARY"
           fi
 
+
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "_Checked at $(date -u '+%Y-%m-%d %H:%M UTC'). Threshold: ${STALE_DAYS} days._" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "_Checked at $(date -u '+%Y-%m-%d %H:%M UTC'). Threshold:
+          ${STALE_DAYS} days._" >> "$GITHUB_STEP_SUMMARY"
+
 
           if [ "$STALE_COUNT" -gt 0 ]; then
             echo "::warning::${STALE_COUNT} tracked doc(s) are stale (not updated in ${STALE_DAYS}+ days)."
           fi
+    timeout-minutes: 30

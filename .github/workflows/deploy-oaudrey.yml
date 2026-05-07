@@ -1,46 +1,31 @@
 name: Deploy oAudrey Hub → DigitalOcean App Platform
-
-# Deploys the oAudrey static hub and FieldWork landing page to
-# DigitalOcean App Platform on every push to main that touches
-# the oaudrey/ or fieldwork/ directories.
-#
-# Required secrets (set in GitHub repo settings → Secrets and variables → Actions):
-#   DIGITALOCEAN_API_TOKEN  — DO personal access token (read+write on apps)
-#
-# Optional but recommended:
-#   DOPPLER_TOKEN           — injects all secrets for more complex workflows
-#
-# DNS setup: see standards/OAUDREY_DEPLOYMENT_STANDARD.md
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - 'oaudrey/**'
-      - 'fieldwork/**'
+      - oaudrey/**
+      - fieldwork/**
   workflow_dispatch:
     inputs:
       force_redeploy:
-        description: "Force redeploy even if no file changes"
+        description: Force redeploy even if no file changes
         type: boolean
         default: false
-
 permissions:
   contents: read
   issues: write
-
 jobs:
   deploy:
     name: Deploy to DigitalOcean App Platform
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
-
+      github.event_name == 'workflow_dispatch' || (github.event_name == 'push'
+      && github.ref == 'refs/heads/main')
     steps:
       - name: Check required secret
         id: check-secret
-        run: |
+        run: >
           if [ -z "$DO_TOKEN" ]; then
             echo "::warning::DIGITALOCEAN_API_TOKEN is not set — skipping deploy."
             echo "See standards/OAUDREY_DEPLOYMENT_STANDARD.md for provisioning steps."
@@ -50,48 +35,47 @@ jobs:
           fi
         env:
           DO_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-
       - uses: actions/checkout@v4
         if: steps.check-secret.outputs.skip != 'true'
-
       - name: Install doctl
         if: steps.check-secret.outputs.skip != 'true'
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-
       - name: Validate app spec
         if: steps.check-secret.outputs.skip != 'true'
         run: doctl apps spec validate oaudrey/.do/app.yaml
-
       - name: Get existing app ID (if any)
         id: app-lookup
         if: steps.check-secret.outputs.skip != 'true'
-        run: |
-          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header 2>/dev/null \
+        run: >
+          APP_ID=$(doctl apps list --format ID,Spec.Name --no-header 2>/dev/null
+          \
             | grep "oaudrey-hub" \
             | awk '{print $1}' \
             || true)
           echo "app_id=${APP_ID}" >> "$GITHUB_OUTPUT"
-
       - name: Create app (first deploy)
-        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id == ''
+        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id
+          == ''
         run: |
           doctl apps create --spec oaudrey/.do/app.yaml --wait
           echo "::notice::oAudrey Hub app created on DigitalOcean App Platform."
-
       - name: Update app (subsequent deploys)
-        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id != ''
+        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id
+          != ''
         run: |
           doctl apps update "${{ steps.app-lookup.outputs.app_id }}" \
             --spec oaudrey/.do/app.yaml
           echo "::notice::oAudrey Hub app spec updated."
-
       - name: Wait for deployment to complete
-        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id != ''
-        run: |
+        if: steps.check-secret.outputs.skip != 'true' && steps.app-lookup.outputs.app_id
+          != ''
+        run: >
           APP_ID="${{ steps.app-lookup.outputs.app_id }}"
+
           echo "Waiting up to 5 minutes for deployment..."
+
           for i in $(seq 1 30); do
             STATUS=$(doctl apps get "$APP_ID" --format ActiveDeployment.Phase --no-header 2>/dev/null || echo "UNKNOWN")
             echo "  Attempt $i/30 — phase: $STATUS"
@@ -106,25 +90,34 @@ jobs:
             fi
             sleep 10
           done
-          echo "::warning::Deployment did not reach ACTIVE within 5 minutes — check DO dashboard."
 
+          echo "::warning::Deployment did not reach ACTIVE within 5 minutes —
+          check DO dashboard."
       - name: Post success summary
         if: success() && steps.check-secret.outputs.skip != 'true'
-        run: |
+        run: >
           echo "## oAudrey Deploy ✅" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Hub URL | https://oaudrey.com |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| FieldWork | https://fieldwork.oaudrey.com |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Commit | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Triggered by | ${{ github.actor }} |" >> "$GITHUB_STEP_SUMMARY"
 
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Hub URL | https://oaudrey.com |" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| FieldWork | https://fieldwork.oaudrey.com |" >>
+          "$GITHUB_STEP_SUMMARY"
+
+          echo "| Commit | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Triggered by | ${{ github.actor }} |" >>
+          "$GITHUB_STEP_SUMMARY"
       - name: Post failure issue
         if: failure() && steps.check-secret.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -144,3 +137,4 @@ jobs:
               ].join('\n'),
               labels: ['deploy-failure', 'oaudrey'],
             });
+    timeout-minutes: 30

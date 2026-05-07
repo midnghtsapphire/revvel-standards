@@ -1,44 +1,19 @@
-# AI CI Failure Helper
-#
-# Marketplace: https://github.com/marketplace/actions/ai-ci-failure-helper
-# Action repo: https://github.com/maxlim0/actions-progci-fail
-#
-# Inspects the current workflow run after failure, tails the failed job/step
-# log, and asks OpenRouter for a likely root cause + concrete fixes. If the
-# run is tied to a PR, a tagged PR comment is created/updated.
-#
-# This complements `ralph-loop.yml` — `ralph-loop` opens an issue and routes
-# to the orchestrator, while this action posts an immediate diagnostic
-# comment from within the failing workflow.
-#
-# Secrets required: OPENROUTER_API_KEY
-# Copy this file to: .github/workflows/ai-ci-failure-helper.yml
-#
-# Usage: add a second job to any workflow, with `needs: [<job-to-watch>]`
-# and `if: failure()`, and invoke this reusable logic via the steps below.
-
 name: AI CI Failure Helper
-
 on:
   workflow_dispatch:
     inputs:
       workflow_run_id:
-        description: "Workflow run ID to analyze (defaults to this run)"
+        description: Workflow run ID to analyze (defaults to this run)
         type: string
         required: false
-
 permissions:
   actions: read
   contents: read
   pull-requests: write
-
-# Serialize helper runs for the same upstream workflow run so a retry
-# storm can't spawn unbounded parallel OpenRouter calls against the same
-# failure. `cancel-in-progress: false` preserves in-flight analysis.
 concurrency:
-  group: ai-ci-failure-helper-${{ github.event.inputs.workflow_run_id || github.run_id }}
+  group: ai-ci-failure-helper-${{ github.event.inputs.workflow_run_id ||
+    github.run_id }}
   cancel-in-progress: false
-
 jobs:
   ai-helper:
     name: AI failure helper
@@ -47,13 +22,12 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Verify OPENROUTER_API_KEY is configured
-        run: |
+        run: >
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set — skipping AI CI Failure Helper."
           else
             echo "OPENROUTER_API_KEY is configured."
           fi
-
       - name: AI failure helper
         if: env.OPENROUTER_API_KEY != ''
         uses: maxlim0/actions-progci-fail@v0.13
@@ -62,9 +36,6 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          # Switched to Claude Sonnet 4 for reliability — the previous
-          # x-ai/grok-4.1-fast slug was returning 404s after the free tier
-          # was retired. Claude Sonnet 4 is already used by openrouter-triage.
           model: anthropic/claude-sonnet-4
           max_log_lines: 200
           prompt_template: |
@@ -74,3 +45,4 @@ jobs:
             {{LOG}}
             Explain the likely root cause and suggest concrete fixes.
             Keep the explanation under 200 words.
+    timeout-minutes: 45

@@ -1,38 +1,25 @@
 name: Template Sync Check
-
-# Ensures `.github/ISSUE_TEMPLATE/` (active) and `templates/issue-template/`
-# (portable) stay identical for the canonical WR templates. Triggered on any
-# push that touches either location.
-#
-# OpenHands-RESTRUCTURE 2026-05-05 (PR #13344): the canonical filenames moved to
-# `00-work-request.yml` (primary human form, anti-under-scoping bundle) and
-# `10-openhands-system-wr.yml` (lightweight system form for internal/agent work).
-# Both templates apply the `work-request` label so the auto-classifier still
-# fires on either; the lightweight form additionally applies `quick` + `OpenHands`.
-
 on:
   pull_request:
     paths:
-      - '.github/ISSUE_TEMPLATE/00-work-request.yml'
-      - '.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml'
-      - '.github/ISSUE_TEMPLATE/config.yml'
-      - 'templates/issue-template/00-work-request.yml'
-      - 'templates/issue-template/10-openhands-system-wr.yml'
-      - 'templates/issue-template/config.yml'
+      - .github/ISSUE_TEMPLATE/00-work-request.yml
+      - .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml
+      - .github/ISSUE_TEMPLATE/config.yml
+      - templates/issue-template/00-work-request.yml
+      - templates/issue-template/10-openhands-system-wr.yml
+      - templates/issue-template/config.yml
   push:
     branches:
       - main
     paths:
-      - '.github/ISSUE_TEMPLATE/00-work-request.yml'
-      - '.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml'
-      - '.github/ISSUE_TEMPLATE/config.yml'
-      - 'templates/issue-template/00-work-request.yml'
-      - 'templates/issue-template/10-openhands-system-wr.yml'
-      - 'templates/issue-template/config.yml'
-
+      - .github/ISSUE_TEMPLATE/00-work-request.yml
+      - .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml
+      - .github/ISSUE_TEMPLATE/config.yml
+      - templates/issue-template/00-work-request.yml
+      - templates/issue-template/10-openhands-system-wr.yml
+      - templates/issue-template/config.yml
 permissions:
   contents: read
-
 jobs:
   check-sync:
     name: Verify template files are in sync
@@ -40,11 +27,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Compare 00-work-request.yml files
-        run: |
-          echo "Comparing .github/ISSUE_TEMPLATE/00-work-request.yml with templates/issue-template/00-work-request.yml..."
-          if ! diff -u .github/ISSUE_TEMPLATE/00-work-request.yml templates/issue-template/00-work-request.yml; then
+        run: >
+          echo "Comparing .github/ISSUE_TEMPLATE/00-work-request.yml with
+          templates/issue-template/00-work-request.yml..."
+
+          if ! diff -u .github/ISSUE_TEMPLATE/00-work-request.yml
+          templates/issue-template/00-work-request.yml; then
             echo "ERROR: 00-work-request.yml files are out of sync!"
             echo ""
             echo "The active template (.github/ISSUE_TEMPLATE/00-work-request.yml) and the portable"
@@ -55,11 +44,13 @@ jobs:
           else
             echo "00-work-request.yml files are in sync"
           fi
-
       - name: Compare 10-openhands-system-wr.yml files
-        run: |
-          echo "Comparing .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml with templates/issue-template/10-openhands-system-wr.yml..."
-          if ! diff -u .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml templates/issue-template/10-openhands-system-wr.yml; then
+        run: >
+          echo "Comparing .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml with
+          templates/issue-template/10-openhands-system-wr.yml..."
+
+          if ! diff -u .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml
+          templates/issue-template/10-openhands-system-wr.yml; then
             echo "ERROR: 10-openhands-system-wr.yml files are out of sync!"
             echo ""
             echo "The active template (.github/ISSUE_TEMPLATE/10-openhands-system-wr.yml) and the portable"
@@ -70,11 +61,13 @@ jobs:
           else
             echo "10-openhands-system-wr.yml files are in sync"
           fi
-
       - name: Compare config.yml files
-        run: |
-          echo "Comparing .github/ISSUE_TEMPLATE/config.yml with templates/issue-template/config.yml..."
-          if ! diff -u .github/ISSUE_TEMPLATE/config.yml templates/issue-template/config.yml; then
+        run: >
+          echo "Comparing .github/ISSUE_TEMPLATE/config.yml with
+          templates/issue-template/config.yml..."
+
+          if ! diff -u .github/ISSUE_TEMPLATE/config.yml
+          templates/issue-template/config.yml; then
             echo "ERROR: config.yml files are out of sync!"
             echo ""
             echo "The active config (.github/ISSUE_TEMPLATE/config.yml) and the portable"
@@ -85,17 +78,30 @@ jobs:
           else
             echo "config.yml files are in sync"
           fi
-
       - name: Success
-        run: |
+        run: >
           echo "All template files are in sync!"
+
           echo ""
+
           echo "Active templates:"
-          echo "  - .github/ISSUE_TEMPLATE/00-work-request.yml      (primary human form)"
-          echo "  - .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml   (lightweight system form)"
+
+          echo "  - .github/ISSUE_TEMPLATE/00-work-request.yml      (primary
+          human form)"
+
+          echo "  -
+          .github/ISSUE_TEMPLATE/10-openhands-system-wr.yml   (lightweight
+          system form)"
+
           echo "  - .github/ISSUE_TEMPLATE/config.yml"
+
           echo ""
+
           echo "Portable copies (for installing in other repos):"
+
           echo "  - templates/issue-template/00-work-request.yml"
+
           echo "  - templates/issue-template/10-openhands-system-wr.yml"
+
           echo "  - templates/issue-template/config.yml"
+    timeout-minutes: 15

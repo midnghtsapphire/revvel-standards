@@ -1,25 +1,14 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# ANTI-SCAFFOLDING ENFORCER
-# Who: Audrey Evans (midnghtsapphire)
-# When: 2026-05-06
-# Why: Removed false positive check for "torrents/pirate bay" - legitimate content in docs
-# What: Removed only torrent/pirate bay check, preserving all other checks
-# NOTE: Workflow is kept active - only removed one false positive pattern
-# ═══════════════════════════════════════════════════════════════════════════════════════
-
-
-# Prevents PRs with scaffolding language from being merged
-# Enforces the Prime Directive: Ship working code, not plans
-
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
-
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
 permissions:
   contents: read
   pull-requests: write
   issues: write
-
 jobs:
   check-for-scaffolding:
     runs-on: ubuntu-latest
@@ -29,23 +18,32 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-
       - name: Scan for scaffolding language
         id: scan
-        run: |
+        run: >
           echo "🔍 Scanning for scaffolding language violations..."
-          
+
+
           # Get files changed in this PR
+
           git fetch origin ${{ github.event.pull_request.base.ref }}
-          FILES_CHANGED=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}..HEAD)
-          
+
+          FILES_CHANGED=$(git diff --name-only origin/${{
+          github.event.pull_request.base.ref }}..HEAD)
+
+
           echo "Files changed in PR:"
+
           echo "$FILES_CHANGED"
-          
+
+
           # Forbidden patterns
+
           VIOLATIONS=()
-          
+
+
           # Check each changed file for violations
+
           for file in $FILES_CHANGED; do
             # Skip certain file types (docs, config, lockfiles)
             if [[ "$file" == *.json ]] || [[ "$file" == *.lock ]] || [[ "$file" == *.yaml ]] || [[ "$file" == *.yml ]] || [[ "$file" == *.md ]]; then
@@ -98,8 +96,10 @@ jobs:
               fi
             fi
           done
-          
+
+
           # Output results
+
           if [ ${#VIOLATIONS[@]} -eq 0 ]; then
             echo "✅ No scaffolding language detected"
             echo "violations=false" >> $GITHUB_OUTPUT
@@ -114,26 +114,34 @@ jobs:
             echo "$VIOLATIONS_TEXT" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           fi
-
       - name: Check PR title and description
         id: check_pr
         if: always()
         uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             const title = context.payload.pull_request.title;
+
             const body = context.payload.pull_request.body || '';
-            
+
+
             const violations = [];
-            
+
+
             // Check title
+
             const titleLower = title.toLowerCase();
-            if (titleLower.includes('scaffold') || titleLower.includes('wip') || titleLower.includes('draft')) {
+
+            if (titleLower.includes('scaffold') || titleLower.includes('wip') ||
+            titleLower.includes('draft')) {
               violations.push('❌ PR title contains scaffolding language: ' + title);
             }
-            
+
+
             // Check body for concerning patterns
+
             const bodyLower = body.toLowerCase();
+
             const concerningPhrases = [
               'will implement later',
               'coming soon',
@@ -144,13 +152,15 @@ jobs:
               'stub implementation',
               'not yet implemented'
             ];
-            
+
+
             for (const phrase of concerningPhrases) {
               if (bodyLower.includes(phrase)) {
                 violations.push(`❌ PR description contains: "${phrase}" - deliver complete work`);
               }
             }
-            
+
+
             if (violations.length > 0) {
               core.setOutput('pr_violations', 'true');
               core.exportVariable('PR_VIOLATIONS', violations.join('\n'));
@@ -160,15 +170,17 @@ jobs:
               core.setOutput('pr_violations', 'false');
               console.log('✅ PR title and description look good');
             }
-
       - name: Post review comment if violations found
-        if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
+        if: steps.scan.outputs.violations == 'true' ||
+          steps.check_pr.outputs.pr_violations == 'true'
         uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             const violations = process.env.VIOLATIONS || '';
+
             const prViolations = process.env.PR_VIOLATIONS || '';
-            
+
+
             const body = [
               '## 🚫 Scaffolding Language Detected',
               '',
@@ -177,7 +189,8 @@ jobs:
               'This PR contains language that suggests incomplete or placeholder implementation:',
               '',
             ];
-            
+
+
             if (violations) {
               body.push('### Code Violations');
               body.push('```');
@@ -185,7 +198,8 @@ jobs:
               body.push('```');
               body.push('');
             }
-            
+
+
             if (prViolations) {
               body.push('### PR Metadata Violations');
               body.push('```');
@@ -193,44 +207,79 @@ jobs:
               body.push('```');
               body.push('');
             }
-            
+
+
             body.push('### Required Actions');
+
             body.push('');
+
             body.push('Before this PR can be merged:');
+
             body.push('');
-            body.push('1. **Replace TODOs with GitHub issues:** Convert `// TODO` to `// See issue #123`');
-            body.push('2. **Implement all functionality:** Remove placeholder/stub code');
-            body.push('3. **Complete all features:** No "Phase 1" or "MVP first" - deliver the full solution');
+
+            body.push('1. **Replace TODOs with GitHub issues:** Convert `//
+            TODO` to `// See issue #123`');
+
+            body.push('2. **Implement all functionality:** Remove
+            placeholder/stub code');
+
+            body.push('3. **Complete all features:** No "Phase 1" or "MVP first"
+            - deliver the full solution');
+
             body.push('4. **Add tests:** All new code must have tests');
-            body.push('5. **Verify it works:** Test the functionality end-to-end');
+
+            body.push('5. **Verify it works:** Test the functionality
+            end-to-end');
+
             body.push('');
+
             body.push('### Why This Matters');
+
             body.push('');
+
             body.push('Per `docs/AGENTS.md`:');
+
             body.push('- "Ship code, not plans" (Prime Directive)');
-            body.push('- "Do not create placeholder files with `// TODO: implement`"');
-            body.push('- "Do not propose phases. Deliver the complete solution in one pass."');
+
+            body.push('- "Do not create placeholder files with `// TODO:
+            implement`"');
+
+            body.push('- "Do not propose phases. Deliver the complete solution
+            in one pass."');
+
             body.push('');
+
             body.push('Per `recurse-rules.md`:');
+
             body.push('- "No TODO or FIXME Left in Merged Code"');
+
             body.push('- "No Placeholder Escalation Labels Without Action"');
+
             body.push('');
+
             body.push('---');
-            body.push('*This check enforces autonomous, complete implementation. See `.github/workflows/anti-scaffolding-enforcer.yml`*');
-            
+
+            body.push('*This check enforces autonomous, complete implementation.
+            See `.github/workflows/anti-scaffolding-enforcer.yml`*');
+
+
             // Check if we already posted this comment
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number
             });
-            
+
+
             const existingComment = comments.find(c => 
               c.user.type === 'Bot' && c.body.includes('🚫 Scaffolding Language Detected')
             );
-            
+
+
             const commentBody = body.join('\n');
-            
+
+
             if (existingComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -248,25 +297,29 @@ jobs:
               });
               console.log('✅ Posted new comment');
             }
-
       - name: Request changes if violations found
-        if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
+        if: steps.scan.outputs.violations == 'true' ||
+          steps.check_pr.outputs.pr_violations == 'true'
         uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             // Add label to PR
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
               labels: ['scaffolding-detected', 'needs-completion']
             });
-            
-            console.log('⚠️ PR requires completion before merge');
-            core.setFailed('PR contains scaffolding language - see comment for details');
 
+
+            console.log('⚠️ PR requires completion before merge');
+
+            core.setFailed('PR contains scaffolding language - see comment for
+            details');
       - name: Remove label if no violations
-        if: steps.scan.outputs.violations == 'false' && steps.check_pr.outputs.pr_violations == 'false'
+        if: steps.scan.outputs.violations == 'false' &&
+          steps.check_pr.outputs.pr_violations == 'false'
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -283,7 +336,7 @@ jobs:
               // Label might not exist, that's OK
               console.log('ℹ️ Label not present or already removed');
             }
-            
+
             try {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
@@ -295,5 +348,6 @@ jobs:
             } catch (e) {
               console.log('ℹ️ Label not present or already removed');
             }
-            
+
             console.log('✅ PR passes anti-scaffolding checks');
+    timeout-minutes: 30

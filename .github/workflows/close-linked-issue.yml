@@ -1,74 +1,85 @@
-# Close Linked Issue on PR Merge
-#
-# Automatically closes any issues linked to a merged PR — even when the PR
-# body doesn't contain a "Closes #N" keyword.
-#
-# Detection order (both run together; results are de-duplicated):
-#   1. PR body / title keywords:  Closes #N, Fixes #N, Resolves #N (+ variants)
-#   2. Branch name pattern:       issue/<N>-... created by create-issue-branch
-#
-# This ensures that issues auto-close whether the PR was opened by a human,
-# Copilot, or any other automated tool, without requiring manual editing of
-# the PR description.
-
 name: Close Linked Issue on PR Merge
-
 on:
   pull_request:
-    types: [closed]
-
+    types:
+      - closed
 permissions:
   issues: write
-
 jobs:
   close-linked-issue:
     name: Close Linked Issue
     runs-on: ubuntu-latest
-    # Only act when the PR was actually merged, not just closed/abandoned
     if: github.event.pull_request.merged == true
-
     steps:
       - name: Detect and close linked issues
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const body   = context.payload.pull_request.body  || '';
+
             const title  = context.payload.pull_request.title || '';
+
             const branch = context.payload.pull_request.head.ref || '';
+
 
             const issueNumbers = new Set();
 
-            // ── 1. Parse PR body + title for closing keywords ─────────────────
+
+            // ── 1. Parse PR body + title for closing keywords
+            ─────────────────
+
             // Matches: close #N  closes #N  closed #N
+
             //          fix #N    fixes #N   fixed #N
+
             //          resolve #N resolves #N resolved #N
-            const keywordPattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
+            const keywordPattern =
+            /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
+
             for (const match of `${title}\n${body}`.matchAll(keywordPattern)) {
               issueNumbers.add(parseInt(match[1], 10));
             }
 
-            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
+
+            // ── 2. Parse branch name for issue/<N>- pattern
+            ───────────────────
+
             // Covers branches created by the create-issue-branch action using
+
             // the label-based prefixes defined in .github/issue-branch.yml:
+
             //   issue/69-i-need-the-issue-to-close-...   (fallback prefix)
+
             //   feature/69-some-title                    (enhancement)
+
             //   bugfix/69-some-title                     (bug)
+
             //   docs/69-some-title                       (documentation)
+
             //   hotfix/69-some-title                     (security)
+
             //   chore/69-some-title                      (dependencies)
-            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+
+            const branchPattern =
+            /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+
             const branchMatch = branch.match(branchPattern);
+
             if (branchMatch) {
               issueNumbers.add(parseInt(branchMatch[1], 10));
             }
+
 
             if (issueNumbers.size === 0) {
               core.info('No linked issues detected — nothing to close.');
               return;
             }
 
+
             core.info(`Linked issue(s) found: ${[...issueNumbers].join(', ')}`);
+
 
             for (const num of issueNumbers) {
               try {
@@ -107,4 +118,4 @@ jobs:
                 }
               }
             }
-
+    timeout-minutes: 30

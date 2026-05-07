@@ -1,133 +1,151 @@
 name: oAudrey — Post-Deploy Retro & Gap Analysis
-
-# Runs after every successful oAudrey deploy (or on a weekly schedule).
-# Does three things:
-#   1. Health-check: verifies oaudrey.com and subdomains are live
-#   2. Gap analysis: compares what's deployed vs what's listed in README
-#   3. Retrospective: opens a GitHub issue with findings, good/bad/needs-work
-#      and patches standards docs if new best practices are discovered.
-#
-# This is the "self-improvement" loop described in the Jules issue.
-# Reference: standards/OAUDREY_DEPLOYMENT_STANDARD.md
-
 on:
   workflow_run:
-    workflows: ["Deploy oAudrey Hub → DigitalOcean App Platform"]
-    types: [completed]
+    workflows:
+      - Deploy oAudrey Hub → DigitalOcean App Platform
+    types:
+      - completed
   schedule:
-    # Weekly Monday 06:00 UTC gap sweep
-    - cron: '0 6 * * 1'
+    - cron: 0 6 * * 1
   workflow_dispatch:
     inputs:
       skip_health_check:
-        description: "Skip live health checks (use when domain not yet pointed)"
+        description: Skip live health checks (use when domain not yet pointed)
         type: boolean
         default: false
-
 permissions:
   contents: write
   issues: write
   pull-requests: write
-
 jobs:
   retro:
     name: oAudrey Retro & Gap Analysis
     runs-on: ubuntu-latest
-    # Only run retro after a successful deploy (not on failed deploys)
     if: >
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' &&
+      github.event_name == 'schedule' || github.event_name ==
+      'workflow_dispatch' || (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success')
-
     steps:
       - uses: actions/checkout@v4
-
       - name: DNS check — oaudrey.com
         id: dns-main
         if: ${{ !inputs.skip_health_check }}
-        run: |
+        run: >
           RESOLVED=$(dig +short oaudrey.com 2>/dev/null | head -1 || true)
+
           echo "resolved=${RESOLVED}" >> "$GITHUB_OUTPUT"
+
           if [ -n "$RESOLVED" ]; then
             echo "::notice::oaudrey.com resolves to: $RESOLVED"
           else
             echo "::warning::oaudrey.com DNS does not resolve — Namecheap nameservers may not be pointed to DigitalOcean yet"
           fi
-
       - name: DNS check — fieldwork.oaudrey.com
         id: dns-fieldwork
         if: ${{ !inputs.skip_health_check }}
-        run: |
-          RESOLVED=$(dig +short fieldwork.oaudrey.com 2>/dev/null | head -1 || true)
+        run: >
+          RESOLVED=$(dig +short fieldwork.oaudrey.com 2>/dev/null | head -1 ||
+          true)
+
           echo "resolved=${RESOLVED}" >> "$GITHUB_OUTPUT"
+
           if [ -n "$RESOLVED" ]; then
             echo "::notice::fieldwork.oaudrey.com resolves to: $RESOLVED"
           else
             echo "::warning::fieldwork.oaudrey.com DNS does not resolve"
           fi
-
       - name: Health check — oaudrey.com
         id: health-main
         if: ${{ !inputs.skip_health_check }}
-        run: |
-          # curl's `-w "%{http_code}"` already emits `000` on connection/DNS/timeout
+        run: >
+          # curl's `-w "%{http_code}"` already emits `000` on
+          connection/DNS/timeout
+
           # failures, so we MUST NOT append a second `|| echo "000"` — doing so
+
           # concatenates to `000000` and produces nonsense status codes in the
+
           # retro report. Use `|| true` to keep the step from failing and let
+
           # `-w` be the single source of truth for the status string.
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://oaudrey.com 2>/dev/null || true)
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15
+          https://oaudrey.com 2>/dev/null || true)
+
           STATUS=${STATUS:-000}
+
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" =
+          "302" ]; then
             echo "::notice::oaudrey.com is live (HTTP $STATUS) ✅"
           else
             echo "::warning::oaudrey.com returned HTTP $STATUS — may be DNS propagation or deployment issue"
           fi
-
       - name: Health check — fieldwork.oaudrey.com
         id: health-fieldwork
         if: ${{ !inputs.skip_health_check }}
-        run: |
+        run: >
           # See note in the oaudrey.com step above: do not duplicate `000` via
+
           # `|| echo "000"`; rely on curl's `-w "%{http_code}"` which already
+
           # prints `000` for failed transfers.
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://fieldwork.oaudrey.com 2>/dev/null || true)
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15
+          https://fieldwork.oaudrey.com 2>/dev/null || true)
+
           STATUS=${STATUS:-000}
+
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" =
+          "302" ]; then
             echo "::notice::fieldwork.oaudrey.com is live (HTTP $STATUS) ✅"
           else
             echo "::warning::fieldwork.oaudrey.com returned HTTP $STATUS"
           fi
-
       - name: Gap analysis — products in README vs tabs in index.html
         id: gap-analysis
-        run: |
-          # NOTE: The tab button text extraction below depends on the HTML structure remaining
-          # consistent (role="tab" buttons with text content on the same line). If the HTML is
+        run: >
+          # NOTE: The tab button text extraction below depends on the HTML
+          structure remaining
+
+          # consistent (role="tab" buttons with text content on the same line).
+          If the HTML is
+
           # reformatted significantly, update this grep pattern to match.
-          TABS=$(grep -oP 'role="tab"[^>]*>\s*\K[^<]+' oaudrey/index.html | sed 's/&amp;/\&/g' | tr -d '\n ')
+
+          TABS=$(grep -oP 'role="tab"[^>]*>\s*\K[^<]+' oaudrey/index.html | sed
+          's/&amp;/\&/g' | tr -d '\n ')
+
           echo "tabs_found=$TABS" >> "$GITHUB_OUTPUT"
 
+
           # Check for 404.html (graceful error page)
+
           if [ -f "oaudrey/404.html" ]; then
             echo "has_404=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_404=false" >> "$GITHUB_OUTPUT"
           fi
 
+
           # Check for app spec
+
           if [ -f "oaudrey/.do/app.yaml" ]; then
             echo "has_app_spec=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_app_spec=false" >> "$GITHUB_OUTPUT"
           fi
 
-          # Count product tab panels
-          PANEL_COUNT=$(grep -c 'role="tabpanel"' oaudrey/index.html || echo "0")
-          echo "panel_count=$PANEL_COUNT" >> "$GITHUB_OUTPUT"
 
+          # Count product tab panels
+
+          PANEL_COUNT=$(grep -c 'role="tabpanel"' oaudrey/index.html || echo
+          "0")
+
+          echo "panel_count=$PANEL_COUNT" >> "$GITHUB_OUTPUT"
       - name: Generate retrospective report
         id: retro-report
         uses: actions/github-script@v7
@@ -299,12 +317,16 @@ jobs:
 
             // Always write to step summary
             await core.summary.addRaw(body).write();
-
       - name: Update SHIP_STATUS.md with retro timestamp
-        run: |
+        run: >
           DATE=$(date -u +"%Y-%m-%d")
+
           if grep -q "oAudrey hub" SHIP_STATUS.md; then
             echo "::notice::oAudrey hub entry found in SHIP_STATUS.md — retro ran on $DATE"
           fi
-          # Note: SHIP_STATUS.md is updated manually after retro findings are addressed.
+
+          # Note: SHIP_STATUS.md is updated manually after retro findings are
+          addressed.
+
           # The retro issue (opened above) tracks what needs to change.
+    timeout-minutes: 30

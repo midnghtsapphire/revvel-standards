@@ -1,19 +1,14 @@
 name: Vine → Marketplace Automation
-
 on:
-  # Daily fetch + post: 8am UTC every day
-  # Weekly stale repost: Monday 10am UTC (triggers repost-stale job)
   schedule:
-    - cron: '0 8 * * *'
-    - cron: '0 10 * * 1'
-
-  # Manual trigger from GitHub UI
+    - cron: 0 8 * * *
+    - cron: 0 10 * * 1
   workflow_dispatch:
     inputs:
       action:
-        description: 'Action to run'
+        description: Action to run
         required: true
-        default: 'fetch'
+        default: fetch
         type: choice
         options:
           - fetch
@@ -22,33 +17,28 @@ on:
           - summary
           - post-dry-run
       date_since:
-        description: 'Fetch emails since (YYYY-MM-DD) — optional'
+        description: Fetch emails since (YYYY-MM-DD) — optional
         required: false
         type: string
       date_before:
-        description: 'Fetch emails before (YYYY-MM-DD) — optional'
+        description: Fetch emails before (YYYY-MM-DD) — optional
         required: false
         type: string
-
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────
-  #  Daily: fetch new Amazon emails and post unlisted products
-  # ─────────────────────────────────────────────────────────────────────────
   fetch-and-post:
     name: Fetch Emails + Post New Products
     runs-on: ubuntu-latest
-    # Run on the daily 8am cron or on manual fetch/post dispatch
-    if: |
-      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * *') ||
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'fetch' || github.event.inputs.action == 'post'))
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * *')
+      ||
 
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.action
+      == 'fetch' || github.event.inputs.action == 'post'))
     permissions:
       contents: read
-
     defaults:
       run:
         working-directory: reesereviews/vine-marketplace
-
     env:
       GMAIL_USER: ${{ vars.GMAIL_USER || 'angelreporters@gmail.com' }}
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
@@ -56,25 +46,21 @@ jobs:
       META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
       META_CATALOG_ID: ${{ secrets.META_CATALOG_ID }}
       META_API_VERSION: v19.0
-      LISTING_DISCOUNT_RATE: '0.20'
-      MIN_LISTING_PRICE: '1.00'
-      REPOST_STALE_DAYS: '7'
-      ENABLE_AUTO_POSTING: 'true'
-
+      LISTING_DISCOUNT_RATE: "0.20"
+      MIN_LISTING_PRICE: "1.00"
+      REPOST_STALE_DAYS: "7"
+      ENABLE_AUTO_POSTING: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Restore inventory cache
         uses: actions/cache@v4
         with:
@@ -82,7 +68,6 @@ jobs:
           key: vine-inventory-${{ github.run_id }}
           restore-keys: |
             vine-inventory-
-
       - name: Check required secrets
         run: |
           if [ -z "$GMAIL_APP_PASSWORD" ]; then
@@ -93,17 +78,14 @@ jobs:
             echo "⚠️  META secrets not set — will run in dry-run mode"
             echo "DRY_RUN=true" >> $GITHUB_ENV
           fi
-
       - name: Fetch Amazon emails
         if: env.SKIP_FETCH != 'true'
         run: node index.js fetch
         env:
           SINCE: ${{ github.event.inputs.date_since }}
           BEFORE: ${{ github.event.inputs.date_before }}
-
       - name: Print inventory summary
         run: node index.js summary
-
       - name: Post unlisted products to Facebook Marketplace
         if: github.event.inputs.action != 'fetch'
         run: |
@@ -113,7 +95,6 @@ jobs:
           else
             node index.js post
           fi
-
       - name: Save inventory artifact
         uses: actions/upload-artifact@v4
         with:
@@ -121,44 +102,36 @@ jobs:
           path: reesereviews/vine-marketplace/data/inventory.json
           retention-days: 90
           if-no-files-found: ignore
-
-  # ─────────────────────────────────────────────────────────────────────────
-  #  Weekly: repost stale listings (Monday)
-  # ─────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   repost-stale:
     name: Repost Stale Listings
     runs-on: ubuntu-latest
-    # Run on the Monday 10am cron or on manual repost dispatch
-    if: |
-      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'repost')
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1')
+      ||
 
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.action ==
+      'repost')
     permissions:
       contents: read
-
     defaults:
       run:
         working-directory: reesereviews/vine-marketplace
-
     env:
       META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
       META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
-      REPOST_STALE_DAYS: '7'
-
+      REPOST_STALE_DAYS: "7"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Restore inventory cache
         uses: actions/cache@v4
         with:
@@ -166,45 +139,35 @@ jobs:
           key: vine-inventory-${{ github.run_id }}
           restore-keys: |
             vine-inventory-
-
       - name: Repost stale listings
         run: node index.js repost
-
-  # ─────────────────────────────────────────────────────────────────────────
-  #  Manual: any action (summary, dry-run post, etc.)
-  # ─────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 60
   manual-dispatch:
     name: Manual Action — ${{ github.event.inputs.action }}
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'summary' || github.event.inputs.action == 'post-dry-run')
-
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action ==
+      'summary' || github.event.inputs.action == 'post-dry-run')
     permissions:
       contents: read
-
     defaults:
       run:
         working-directory: reesereviews/vine-marketplace
-
     env:
       META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
       META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
       META_CATALOG_ID: ${{ secrets.META_CATALOG_ID }}
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Restore inventory cache
         uses: actions/cache@v4
         with:
@@ -212,11 +175,10 @@ jobs:
           key: vine-inventory-${{ github.run_id }}
           restore-keys: |
             vine-inventory-
-
       - name: Run inventory summary
         if: github.event.inputs.action == 'summary'
         run: node index.js summary
-
       - name: Dry-run post (preview prices, no API calls)
         if: github.event.inputs.action == 'post-dry-run'
         run: node index.js post --dry-run
+    timeout-minutes: 30

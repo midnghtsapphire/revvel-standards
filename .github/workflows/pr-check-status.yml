@@ -1,57 +1,38 @@
-# PR Check Status Automation
-#
-# Automatically manages PR labels based on CI check results.
-# Works with pr-review-status.yml to provide complete lifecycle automation.
-#
-# What this workflow does:
-#   1. CHECKS PASS: Adds "checks-passing" label, removes "checks-failing"
-#   2. CHECKS FAIL: Adds "checks-failing" label, removes "ready-to-merge"
-#   3. BOTH PASS + APPROVED: Marks PR as "ready-to-merge"
-#   4. Posts status comments so authors know what's happening
-#
-# Triggers:
-#   • check_suite — when CI checks complete
-#   • workflow_run — when a workflow completes
-
 name: PR Check Status Automation
-
 on:
   check_suite:
-    types: [completed]
+    types:
+      - completed
   workflow_run:
-    types: [completed]
-    branches: [main]
-
-# P0 - Critical for merge readiness
+    types:
+      - completed
+    branches:
+      - main
 concurrency:
-  group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number || github.event.workflow_run.pull_requests[0].number || 'unknown' }}
+  group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number ||
+    github.event.workflow_run.pull_requests[0].number || 'unknown' }}
   cancel-in-progress: false
-
 permissions:
   contents: read
   pull-requests: write
   issues: write
-
 jobs:
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Handle check_suite completion
-  # ────────────────────────────────────────────────────────────────────────────
   check-suite-status:
     name: Update Status from Check Suite
     runs-on: ubuntu-latest
     if: github.event_name == 'check_suite'
-
     steps:
       - name: Ensure check status labels exist
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const labels = [
               { name: 'checks-passing', color: '16a34a', description: 'All CI checks pass' },
               { name: 'checks-failing', color: 'dc2626', description: 'One or more CI checks failed' },
               { name: 'ready-to-merge', color: '8b5cf6', description: 'Approved + checks passing — ready to merge' },
             ];
+
             for (const label of labels) {
               try {
                 await github.rest.issues.getLabel({
@@ -72,20 +53,23 @@ jobs:
                 }
               }
             }
-
       - name: Update PR status based on check suite
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const suite = context.payload.check_suite;
+
             const conclusion = suite.conclusion;
+
             const prs = suite.pull_requests || [];
-            
+
+
             if (!prs || prs.length === 0) {
               core.info('No PRs associated with this check suite');
               return;
             }
+
 
             for (const pr of prs) {
               const prNumber = pr.number;
@@ -173,29 +157,29 @@ jobs:
                 });
               }
             }
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Handle workflow_run completion (backup)
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   workflow-run-status:
     name: Update Status from Workflow Run
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_run'
-
     steps:
       - name: Update PR status based on workflow run
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const run = context.payload.workflow_run;
+
             const conclusion = run.conclusion;
+
             const prs = run.pull_requests || [];
-            
+
+
             if (!prs || prs.length === 0) {
               core.info('No PRs associated with this workflow run');
               return;
             }
+
 
             for (const pr of prs) {
               const prNumber = pr.number;
@@ -217,3 +201,4 @@ jobs:
                 });
               }
             }
+    timeout-minutes: 30

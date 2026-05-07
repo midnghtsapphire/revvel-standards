@@ -1,23 +1,22 @@
 name: Project Board Sync
-
-# Syncs issues and PRs to the GitHub Projects v2 board based on label changes.
-# Adds items to the project and moves them between status columns.
-#
-# Requirements:
-#   - A GitHub Projects v2 board must exist for the org or repo
-#   - Set PROJECT_NUMBER below to match your board
-#   - ADMIN_GITHUB_TOKEN must have project:read and project:write scopes
-
 on:
   issues:
-    types: [opened, labeled, unlabeled, closed, reopened]
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - closed
+      - reopened
   pull_request:
-    types: [opened, labeled, unlabeled, closed, reopened]
-
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - closed
+      - reopened
 permissions:
   issues: read
   pull-requests: read
-
 jobs:
   sync:
     name: Sync to project board
@@ -26,7 +25,7 @@ jobs:
       ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
     steps:
       - name: Check for ADMIN_GITHUB_TOKEN
-        run: |
+        run: >
           if [ -z "${ADMIN_GITHUB_TOKEN}" ]; then
             echo "::warning::ADMIN_GITHUB_TOKEN is not set — skipping project board sync."
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -34,7 +33,6 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
         id: check
-
       - name: Sync item to project board
         if: steps.check.outputs.skip != 'true'
         uses: actions/github-script@v8
@@ -42,31 +40,49 @@ jobs:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          script: |
+          script: >
             // ── Configuration ──────────────────────────────────────────
+
             // Set this to your GitHub Projects v2 board number.
+
             // Find it in the project URL: github.com/orgs/ORG/projects/N
+
             const PROJECT_NUMBER = 1;
+
             const ORG = context.repo.owner;
 
+
             // Map labels to project board status field values.
+
             // Adjust these to match the column names in your project board.
+
             const LABEL_TO_STATUS = {
               'triage':      'Triage',
               'in-progress': 'In Progress',
               'in-review':   'In Review',
             };
 
+
             // ── Determine the content node ID ──────────────────────────
+
             const isIssue = !!context.payload.issue;
-            const item = isIssue ? context.payload.issue : context.payload.pull_request;
+
+            const item = isIssue ? context.payload.issue :
+            context.payload.pull_request;
+
             const contentId = item.node_id;
+
             const labels = (item.labels || []).map(l => l.name);
+
             const isClosed = item.state === 'closed';
 
-            core.info(`Processing ${isIssue ? 'issue' : 'PR'} #${item.number}: labels=[${labels}], closed=${isClosed}`);
+
+            core.info(`Processing ${isIssue ? 'issue' : 'PR'} #${item.number}:
+            labels=[${labels}], closed=${isClosed}`);
+
 
             // ── Find the project ───────────────────────────────────────
+
             const projectQuery = `
               query($org: String!, $number: Int!) {
                 organization(login: $org) {
@@ -86,7 +102,9 @@ jobs:
               }
             `;
 
+
             let project;
+
             try {
               const result = await github.graphql(projectQuery, { org: ORG, number: PROJECT_NUMBER });
               project = result.organization.projectV2;
@@ -95,12 +113,15 @@ jobs:
               return;
             }
 
+
             if (!project) {
               core.warning(`Project #${PROJECT_NUMBER} not found. Skipping.`);
               return;
             }
 
+
             // ── Add item to project ────────────────────────────────────
+
             const addMutation = `
               mutation($projectId: ID!, $contentId: ID!) {
                 addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
@@ -109,7 +130,9 @@ jobs:
               }
             `;
 
+
             let itemId;
+
             try {
               const addResult = await github.graphql(addMutation, {
                 projectId: project.id,
@@ -122,8 +145,11 @@ jobs:
               return;
             }
 
+
             // ── Determine target status ────────────────────────────────
+
             let targetStatus = 'Triage';
+
             if (isClosed) {
               targetStatus = 'Done';
             } else {
@@ -134,20 +160,29 @@ jobs:
               }
             }
 
+
             // ── Find the Status field and option ───────────────────────
-            const statusField = project.fields.nodes.find(f => f.name === 'Status');
+
+            const statusField = project.fields.nodes.find(f => f.name ===
+            'Status');
+
             if (!statusField) {
               core.warning('No "Status" field found on the project board. Skipping status update.');
               return;
             }
 
-            const option = statusField.options.find(o => o.name === targetStatus);
+
+            const option = statusField.options.find(o => o.name ===
+            targetStatus);
+
             if (!option) {
               core.warning(`Status option "${targetStatus}" not found. Available: ${statusField.options.map(o => o.name).join(', ')}`);
               return;
             }
 
+
             // ── Update the status ──────────────────────────────────────
+
             const updateMutation = `
               mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                 updateProjectV2ItemFieldValue(input: {
@@ -161,6 +196,7 @@ jobs:
               }
             `;
 
+
             try {
               await github.graphql(updateMutation, {
                 projectId: project.id,
@@ -172,3 +208,4 @@ jobs:
             } catch (err) {
               core.warning(`Failed to update status: ${err.message}`);
             }
+    timeout-minutes: 15

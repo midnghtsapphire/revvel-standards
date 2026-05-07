@@ -1,23 +1,16 @@
 name: Stale Branch Cleanup
-
-# Deletes remote branches whose PRs have been merged or closed for 7+ days.
-# Protects main, master, develop, and production branches.
-# Runs weekly on Sunday at 06:00 UTC; can also be triggered manually.
-
 on:
   schedule:
-    - cron: "0 6 * * 0"
+    - cron: 0 6 * * 0
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Log branches that would be deleted without deleting them"
+        description: Log branches that would be deleted without deleting them
         type: boolean
         default: true
-
 permissions:
   contents: write
   pull-requests: read
-
 jobs:
   cleanup:
     name: Delete stale branches
@@ -28,21 +21,31 @@ jobs:
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
-          script: |
+          script: >
             const dryRun = process.env.DRY_RUN === 'true';
-            const PROTECTED = new Set(['main', 'master', 'develop', 'production']);
+
+            const PROTECTED = new Set(['main', 'master', 'develop',
+            'production']);
+
             const STALE_DAYS = 7;
+
             const now = Date.now();
 
+
             // Paginate through all branches
-            const branches = await github.paginate(github.rest.repos.listBranches, {
+
+            const branches = await
+            github.paginate(github.rest.repos.listBranches, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             });
 
+
             let deleted = 0;
+
             let skipped = 0;
+
 
             for (const branch of branches) {
               if (PROTECTED.has(branch.name)) {
@@ -118,11 +121,15 @@ jobs:
               }
             }
 
+
             core.summary.addHeading('Stale Branch Cleanup');
+
             core.summary.addTable([
               [{data: 'Metric', header: true}, {data: 'Count', header: true}],
               ['Deleted', String(deleted)],
               ['Skipped', String(skipped)],
               ['Dry run', dryRun ? 'Yes' : 'No'],
             ]);
+
             await core.summary.write();
+    timeout-minutes: 30

@@ -1,42 +1,33 @@
 name: Stuck Label Watchdog
-
-# Hourly sweep that detects PRs and issues stuck in invalid or stale label states.
-#
-# Checks:
-#   PRs:
-#     - awaiting-review for 24h+ with no reviewer activity → ping author
-#     - checks-failing for 12h+ with no new push → ping author
-#     - approved but no checks-passing/checks-failing → re-evaluate
-#     - conflicting labels (e.g. approved + needs-action) → correct
-#   Issues:
-#     - issue:in-progress but linked PR is closed/merged → correct to issue:done or triage
-#     - triage for 7+ days with no activity → mark issue:stale
-#     - No lifecycle label at all on open issue → add triage
-
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
-
+    - cron: 0 * * * *
+  workflow_dispatch: null
 permissions:
   pull-requests: write
   issues: write
   contents: read
-
 jobs:
   sweep:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
         with:
-          script: |
+          script: >
             const { owner, repo } = context.repo;
+
             const now = new Date();
+
             const HOUR = 3600000;
+
             const DAY = 86400000;
 
+
             // ─── SWEEP OPEN PRs ──────────────────────────────────────
-            const { data: pulls } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+
+            const { data: pulls } = await github.rest.pulls.list({ owner, repo,
+            state: 'open', per_page: 100 });
+
 
             for (const pr of pulls) {
               const prNumber = pr.number;
@@ -133,8 +124,12 @@ jobs:
               }
             }
 
+
             // ─── SWEEP OPEN ISSUES ───────────────────────────────────
-            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+            owner, repo, state: 'open', per_page: 100 });
+
 
             for (const issue of issues) {
               if (issue.pull_request) continue; // skip PRs
@@ -162,4 +157,6 @@ jobs:
               }
             }
 
+
             core.info('Watchdog sweep complete.');
+    timeout-minutes: 45

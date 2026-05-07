@@ -1,43 +1,17 @@
 name: Ralph Loop — Self-Healing CI
-
-# Triggers on CI check completion or PR events.
-# When a check fails: posts a Ralph Loop fix-request comment, blocks merge
-#   with "won't-merge" label. OpenRouter triage (openrouter-triage.yml) picks
-#   up the comment and routes the fix — we do NOT @-mention or assign
-#   @Copilot / copilot-swe-agent (Automation Routing Policy: OpenRouter only,
-#   see .github/copilot-instructions.md).
-# When a check passes: removes blocking label and unblocks merge.
-# After 5 failed attempts: escalates to human reviewer.
-#
-# Reference: skills/ralph-loop/SKILL.md
-#
-# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
-# The `workflow_run: workflows: ["*"]` trigger combined with workflow-monitor
-# and agent-audit-logger created a 3-way feedback loop: any workflow failing
-# triggered Ralph, Ralph itself ran as a workflow → re-triggered Ralph, etc.
-# `check_suite` already gives the actual signal we want (CI pass/fail on a
-# PR head SHA), so the redundant workflow_run trigger is disabled.
-
 on:
   check_suite:
-    types: [completed]
-  # workflow_run:
-  #   workflows: ["*"]   -- DISABLED, feedback loop. check_suite is enough.
-  #   types: [completed]
-
+    types:
+      - completed
 permissions:
   pull-requests: write
   issues: write
   contents: read
-
 jobs:
-  # ─── Trigger OpenRouter Fix on Failure ───────────────────────────────────────
   ralph-trigger:
-    name: "Ralph Loop — Trigger Fix"
+    name: Ralph Loop — Trigger Fix
     runs-on: ubuntu-latest
-    # workflow_run path disabled (see header). check_suite is the only signal.
     if: github.event.check_suite.conclusion == 'failure'
-
     steps:
       - name: Find matching open PR
         id: find-pr
@@ -67,35 +41,41 @@ jobs:
 
             console.log(`Found PR #${pr.number}: ${pr.title}`);
             return pr.number;
-
       - name: Count existing Ralph Loop attempts
         id: count-attempts
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
               per_page: 100,
             });
+
             const count = comments.filter(c =>
               c.body.includes('🔄 **Ralph Loop**')
             ).length;
-            console.log(`Ralph Loop has fired ${count} time(s) on PR #${pr_number}`);
-            return count;
 
+            console.log(`Ralph Loop has fired ${count} time(s) on PR
+            #${pr_number}`);
+
+            return count;
       - name: Post Ralph Loop fix request
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
-            const attempt   = parseInt('${{ steps.count-attempts.outputs.result }}') + 1;
+
+            const attempt   = parseInt('${{ steps.count-attempts.outputs.result
+            }}') + 1;
+
             const workflow  =
               context.payload.check_suite?.app?.name ||
               context.payload.workflow_run?.name ||
@@ -120,8 +100,11 @@ jobs:
                 `> ⛔ This PR is blocked from merging until all CI checks pass.`,
             });
 
+
             // Add blocking labels
+
             const labels = ['won\'t-merge', 'auto-fix', 'copilot'];
+
             for (const label of labels) {
               try {
                 await github.rest.issues.addLabels({
@@ -136,10 +119,12 @@ jobs:
               }
             }
 
-            // Routing is handled by .github/workflows/openrouter-triage.yml
-            // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md); do
-            // not assign @Copilot / copilot-swe-agent here.
 
+            // Routing is handled by .github/workflows/openrouter-triage.yml
+
+            // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md); do
+
+            // not assign @Copilot / copilot-swe-agent here.
       - name: Escalate to human (max retries exceeded)
         if: |
           steps.find-pr.outputs.result != 'null' &&
@@ -181,15 +166,13 @@ jobs:
             } catch (err) {
               console.log(`Could not add escalation labels: ${err.message}`);
             }
-
-  # ─── Remove Block When CI Passes ─────────────────────────────────────────────
+    timeout-minutes: 30
   ralph-unblock:
-    name: "Ralph Loop — Unblock on Pass"
+    name: Ralph Loop — Unblock on Pass
     runs-on: ubuntu-latest
     if: |
       github.event.check_suite.conclusion == 'success' ||
       github.event.workflow_run.conclusion == 'success'
-
     steps:
       - name: Find matching open PR
         id: find-pr
@@ -210,30 +193,37 @@ jobs:
 
             const pr = prs.find(p => p.head.sha === head_sha);
             return pr?.number ?? null;
-
       - name: Remove won't-merge label on CI pass
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v8
         with:
-          script: |
+          script: >
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
 
+
             // Fetch current labels
+
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr_number,
             });
 
+
             const labelNames = pr.labels.map(l => l.name);
 
+
             // Only act if the Ralph Loop was managing this PR
-            if (!labelNames.includes('auto-fix') && !labelNames.includes("won't-merge")) {
+
+            if (!labelNames.includes('auto-fix') &&
+            !labelNames.includes("won't-merge")) {
               console.log('PR has no Ralph Loop labels — skipping');
               return;
             }
 
+
             // Remove blocking labels
+
             for (const label of ["won't-merge", 'auto-fix']) {
               try {
                 await github.rest.issues.removeLabel({
@@ -245,9 +235,11 @@ jobs:
               } catch (_) {}
             }
 
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
               body: `✅ **Ralph Loop — All checks passed!**\n\nMerge block removed. This PR is ready to merge.`,
             });
+    timeout-minutes: 30

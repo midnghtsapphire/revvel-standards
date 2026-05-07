@@ -1,41 +1,28 @@
-# Sync Standard Labels
-#
-# Ensures every Revvel standard label exists in this repository with the
-# correct color and description. Safe to run repeatedly — creates missing
-# labels and updates changed ones, but NEVER deletes existing labels.
-#
-# Triggers:
-#   • Push to main when labels.yml changes (keeps labels in sync automatically)
-#   • workflow_dispatch — run manually from the Actions tab at any time
-#
-# The canonical label definitions live in .github/labels.yml (documentation).
-# The workflow maintains its own inline copy so it is fully self-contained.
-
 name: Sync Standard Labels
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - .github/labels.yml
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   issues: write
-
 jobs:
   sync-labels:
     name: Sync Labels from Canonical Definition
     runs-on: ubuntu-latest
-
     steps:
       - name: Sync labels
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // ── Canonical Revvel label definitions ────────────────────────────
+          script: >
+            // ── Canonical Revvel label definitions
+            ────────────────────────────
+
             // Keep in sync with .github/labels.yml
+
             const LABELS = [
               // Triage / Type
               { name: 'bug',               color: 'd73a4a', description: "Something isn't working" },
@@ -124,9 +111,13 @@ jobs:
               { name: 'affiliate',           color: '4CAF50', description: 'Affiliate link / revenue task — handled by NoimosAI affiliate agent' },
             ];
 
+
             // Fetch existing labels (paginated — repos can have 100+)
+
             let existing = [];
+
             let page = 1;
+
             while (true) {
               const { data } = await github.rest.issues.listLabelsForRepo({
                 owner: context.repo.owner,
@@ -138,11 +129,17 @@ jobs:
               if (data.length < 100) break;
               page++;
             }
-            const existingMap = Object.fromEntries(existing.map(l => [l.name, l]));
+
+            const existingMap = Object.fromEntries(existing.map(l => [l.name,
+            l]));
+
 
             let created = 0;
+
             let updated = 0;
+
             let skipped = 0;
+
 
             for (const def of LABELS) {
               const { name, color, description } = def;
@@ -176,6 +173,8 @@ jobs:
               }
             }
 
+
             core.notice(
               `Label sync complete — created: ${created}, updated: ${updated}, already correct: ${skipped}`
             );
+    timeout-minutes: 15

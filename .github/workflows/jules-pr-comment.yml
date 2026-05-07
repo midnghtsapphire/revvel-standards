@@ -1,38 +1,21 @@
-# Jules PR Comment
-#
-# Marketplace: https://github.com/marketplace/actions/jules-pr-comment
-# Action repo: https://github.com/BeksOmega/jules-publish
-#
-# Posts a comment on a Pull Request with details from the associated Jules
-# session. Detects the Jules session ID from the PR description, fetches
-# session details and artifacts (like media), and posts a summary comment.
-#
-# Only works for tasks started from the account associated with the
-# `JULES_API_KEY` secret.
-#
-# Secret required: JULES_API_KEY
-# Copy this file to: .github/workflows/jules-pr-comment.yml
-
 name: Jules PR Comment
-
 on:
   pull_request:
-    types: [opened]
+    types:
+      - opened
   workflow_dispatch:
     inputs:
       pr_number:
-        description: "Pull request number to post the Jules summary on"
+        description: Pull request number to post the Jules summary on
         required: true
         type: string
-
 permissions:
   contents: read
   pull-requests: write
-
 concurrency:
-  group: jules-pr-comment-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  group: jules-pr-comment-${{ github.event.pull_request.number ||
+    github.event.inputs.pr_number }}
   cancel-in-progress: true
-
 jobs:
   comment:
     name: Post Jules session summary
@@ -41,21 +24,21 @@ jobs:
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Verify JULES_API_KEY is configured
-        run: |
+        run: >
           if [ -z "${JULES_API_KEY}" ]; then
             echo "::warning::JULES_API_KEY is not set — skipping Jules PR Comment."
           else
             echo "JULES_API_KEY is configured."
           fi
-
       - name: Checkout
         if: env.JULES_API_KEY != ''
         uses: actions/checkout@v4
-
       - name: Post Jules Comment
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-publish@v1.0.0
         with:
-          pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+          pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number
+            }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           pr_description: ${{ github.event.pull_request.body }}
+    timeout-minutes: 30

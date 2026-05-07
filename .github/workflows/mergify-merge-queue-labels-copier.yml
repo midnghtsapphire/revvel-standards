@@ -1,40 +1,21 @@
-# Mergify Merge-Queue Labels Copier
-#
-# When Mergify creates a temporary merge-queue PR it does not copy labels from
-# the source PR. Without this workflow, CI jobs that gate on labels (e.g. Docker-
-# based checks) skip on merge-queue PRs and the queue stalls.
-#
-# This workflow copies the specified labels from the source PR to every new
-# merge-queue PR that Mergify opens, keeping CI parity between normal PRs and
-# merge-queue PRs.
-#
-# See templates/cicd/mergify-merge-queue-labels-copier.yml for the template and
-# docs/GITHUB_PROJECTS_SETUP.md for the full Mergify integration guide.
-
 name: Mergify Merge-Queue Labels Copier
-
 on:
   pull_request_target:
     types:
       - opened
-
 permissions:
   contents: read
   pull-requests: write
-
 jobs:
   mergify-merge-queue-labels-copier:
     name: Copy Labels to Merge-Queue PR
     runs-on: ubuntu-latest
-    # Only run for PRs opened by Mergify (merge-queue branches)
     if: startsWith(github.event.pull_request.head.ref, 'mergify/merge-queue/')
-
     steps:
       - name: Copy labels to merge-queue PR
         uses: Mergifyio/gha-mergify-merge-queue-labels-copier@v6
         with:
-          # Labels to copy from the source PR
           labels: docker
-          # Additional labels applied to every merge-queue PR
           additional-labels: merge-queue-pr
           token: ${{ github.token }}
+    timeout-minutes: 15
