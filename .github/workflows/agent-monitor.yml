@@ -3,6 +3,8 @@
 # - Creates WR when agents fail to start
 # - Tracks agent health over time
 
+name: Agent Monitor
+
 on:
   # Run every 15 minutes
   schedule:
@@ -113,28 +115,32 @@ jobs:
         if: steps.existing.outputs.existing_wr == ''
         run: |
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
-          
+
+          BODY=$(cat <<EOF
+          ## Agent Health Check Failed
+
+          **Time:** ${{ github.event.repository.updated_at }}
+          **Issues:** $ISSUES
+
+          ### Required Action
+          - [ ] Check agent API keys
+          - [ ] Verify billing status
+          - [ ] Enable fallback agents
+
+          ### Agent Chain Status
+          | Agent | Status | Action |
+          |-------|--------|--------|
+          | OpenRouter | CHECK | Verify API key |
+          | Perplexity | CHECK | Verify billing |
+          | Jules | CHECK | Enable if disabled |
+
+          This WR auto-closes when agents recover.
+          EOF
+          )
+
           gh issue create \
             --title "[AGENT-FAILURE] Agent health check failed" \
-            --body "## Agent Health Check Failed
-
-**Time:** ${{ github.event.repository.updated_at }}
-**Issues:** $ISSUES
-
-### Required Action
-- [ ] Check agent API keys
-- [ ] Verify billing status
-- [ ] Enable fallback agents
-
-### Agent Chain Status
-| Agent | Status | Action |
-|-------|--------|--------|
-| OpenRouter | CHECK | Verify API key |
-| Perplexity | CHECK | Verify billing |
-| Jules | CHECK | Enable if disabled |
-
-This WR auto-closes when agents recover.
-" \
+            --body "$BODY" \
             --label "needs-human,agent-failure,automation-failure"
           
           echo "✅ Created WR for agent failure"

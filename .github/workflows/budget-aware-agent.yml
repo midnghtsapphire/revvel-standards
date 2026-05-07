@@ -3,6 +3,8 @@
 # - Falls back to free/cheaper alternatives if budget low
 # - NEVER blocks deployment - always has a path forward
 
+name: Budget-Aware Agent Router
+
 on:
   workflow_dispatch:
     inputs:

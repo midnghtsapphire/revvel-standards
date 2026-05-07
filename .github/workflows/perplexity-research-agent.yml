@@ -28,8 +28,8 @@ env:
 jobs:
   research:
     runs-on: ubuntu-latest
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     timeout-minutes: 20
     if: >-
       (github.event_name == 'workflow_dispatch') ||

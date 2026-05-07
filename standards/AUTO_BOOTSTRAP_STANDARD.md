@@ -13,8 +13,7 @@ This workflow automatically bootstraps every new repository in the org with:
 
 | Event | Description |
 |-------|-------------|
-| `repository.created` | When a new repo is created in the org |
-| `workflow_dispatch` | Manual Bootstrap (for repos created before this workflow) |
+| `workflow_dispatch` | Manual bootstrap for a target repository |
 | `schedule` | Weekly verification (`cron: 0 2 * * 0`) |
 
 ## What It Does
@@ -47,7 +46,7 @@ jobs:
           your-command || { 
             echo "::warning::Task failed - creating WR"
             gh issue create \
-              --title "[WR] Task failed in ${{ github.repo }}" \
+              --title "[WR] Task failed in ${{ github.repository }}" \
               --body "Automated issue: Task failed. See logs."
           }
 ```
@@ -93,3 +92,91 @@ grep "^WR\|^PF" issue-list
 
 *Part of Revvel Standards — Auto-Healing Automation*
 *Updated: 2026-05-07*
+
+## Vercel Deployment Automation
+
+Every new project with a web frontend should have Vercel deployment automated:
+
+### Verified GitHub Actions (from Marketplace)
+
+| Action | Use For | Stars | Link |
+|--------|--------|------|------|
+| `amondnet/vercel-action@v25` | Production deploys | 1k+ | [vercel-action](https://github.com/marketplace/vercel-action) |
+| `zentered/vercel-preview-url@v7` | PR preview URLs | 2k+ | [vercel-preview-url](https://github.com/marketplace/vercel-preview-url) |
+| `styfle/cancel-workflow-action@0.12.1` | Cancel stale deploys | 500+ | [cancel-workflow-action](https://github.com/marketplace/actions/cancel-workflow-action) |
+
+### Marketplace Search Terms (not `uses:` IDs)
+
+| Search Term | Use For | Marketplace Link |
+|------------|---------|------------------|
+| `vercel deploy comment` | PR comments | [Search](https://github.com/marketplace?query=vercel+deploy+comment) |
+| `vercel wait` | Wait for deploy | [Search](https://github.com/marketplace?query=vercel+wait) |
+| `vercel env` | Sync env vars | [Search](https://github.com/marketplace?query=vercel+env) |
+
+### Popular Actions to Search First
+
+> Search https://github.com/marketplace when starting any new automation:
+> - Use verified actions with 100+ stars
+> - Check last commit date (should be < 6 months ago)
+> - Prefer actions with `vX` tags (stable versions)
+
+### Additional Popular Actions for Web Projects
+
+| Action | Use For | Stars |
+|--------|--------|-------|
+| `vercel/pkg` | Binary builds | 5k+ |
+| `turborepo-setup` | Remote caching | 3k+ |
+| `actions/cache` | Build caching | Built-in |
+
+### Required Workflow: `.github/workflows/deploy.yml`
+
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Required Secrets for All Web Projects
+
+| Secret | Required? | Where |
+|--------|----------|-------|
+| `VERCEL_TOKEN` | Yes | vercel.com/account/tokens |
+| `VERCEL_ORG_ID` | Yes | Project settings |
+| `VERCEL_PROJECT_ID` | Yes | Project settings |
+
+### Auto-Deploy Pattern
+
+```bash
+# In revvel-standards, add to all new repos:
+node scripts/deploy-vercel.js --repo=owner/repo
+```
+
+### Error Handling
+
+```yaml
+- name: Deploy
+  id: deploy
+  uses: amondnet/vercel-action@v25
+  with: ...
+  
+- name: Create WR on failure
+  if: failure()
+  run: gh issue create --title "[WR] Deploy failed" ...
+```

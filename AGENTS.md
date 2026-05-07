@@ -1,23 +1,88 @@
-# Agents Guide
+# Revvel Standards — Agent Guide
 
-This document provides guidance for AI agents and human contributors working in this repository.
+> **ALWAYS LOOK HERE FIRST** before starting any new project, automation, or integration.
 
-## Credentials and Test Accounts
+## Quick Start
 
-When tests or demos require credentials:
+```bash
+# 1. Bootstrap new repo:
+node scripts/sync-secrets.js --repo=owner/repo
+node scripts/deploy-vercel.js --repo=owner/repo
 
-- **Use official test/demo accounts** provided by the service or vendor where available.
-- Prefer documented sandbox/staging environments over production.
-- Store credentials in the project's secret manager (e.g., Vault, GitHub Actions secrets) — never commit them to source control.
-- If no official test credentials exist, request them through the appropriate channel (vendor support, internal IT, or the project owner).
-- Document the source and rotation policy for any test credentials in the relevant runbook.
+# 2. Run automation doctor:
+npm run automation:doctor
 
-**Do not** attempt to obtain credentials through unauthorized means. All credentials used in this repository must come from legitimate, authorized sources.
+# 3. Validate workflows:
+npm run workflows:validate
+```
 
-## Code Review
+## Where to Look First
 
-See [CODE_REVIEW_STANDARD.md](./CODE_REVIEW_STANDARD.md) for the current code review process and AI reviewer configuration.
+### For Standards & Templates
+- `standards/*.md` — All automation standards
+- `templates/` — Reusable templates
 
-## Testing
+### For Secrets & API Keys
+- `docs/SECRETS_MANAGEMENT.md` — **SOURCE OF TRUTH** for all API keys
+- `.env.example` — Variable templates
+- `doppler-secrets-sync.yml` — Sync to any repo
 
-See [testing/SKILL.md](./testing/SKILL.md) for testing standards, including PromptFoo skill tests.
+### For GitHub Actions
+- `.github/workflows/` — All workflows
+- **Always search marketplace first:** https://github.com/marketplace
+  - Use verified actions with 100+ stars
+  - Check last commit date (< 6 months)
+  - Prefer `vX` tags
+
+### For Deployment
+- `vercel.com` — Import repo there
+- `docs/VERCEL_DEPLOYMENT.md` — Vercel setup docs
+- Workflow: `deploy.yml` (auto-generated)
+
+### For Error Handling
+- **Every workflow MUST have error handling:**
+```yaml
+- name: Run task
+  run: |
+    your-command || {
+      echo "::warning::Task failed - creating WR"
+      gh issue create --title "[WR] Task failed" ...
+    }
+```
+
+### For Issues & Automation
+- Wr (Work Request) — needs human
+- Wr:checking — in progress
+- Wr:check-failed — automation failed
+
+## Key Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/sync-secrets.js` | Sync API keys to target repos |
+| `scripts/deploy-vercel.js` | Setup Vercel deploy workflow |
+| `scripts/automation-doctor.js` | Validate workflows & find stuck issues |
+| `npm run automation:doctor` | Run diagnostics |
+| `npm run workflows:validate` | Validate YAML |
+
+## Common Patterns
+
+### New Web Project
+1. Add secrets: `scripts/sync-secrets.js --repo=...`
+2. Add deploy: `scripts/deploy-vercel.js --repo=...`
+3. Run automation doctor
+
+### New GitHub Action
+1. Search https://github.com/marketplace
+2. Use action with 100+ stars, `vX` tag
+3. Add error handling (`|| {}` + WR on fail)
+
+### Sync Secrets to Repo
+```bash
+gh workflow run sync-secrets-to-repos.yml -f target_repo=owner/repo
+```
+
+---
+
+*Updated: 2026-05-07*
+*Location: Always check this file first*

@@ -49,7 +49,8 @@ function parseEnvTemplate() {
 // Get GH CLI
 function ghAPI(endpoint, method = 'GET', body = null) {
   const args = ['api', endpoint];
-  if (method !== 'GET') args.unshift('-X', method);
+  if (method !== 'GET') args.push('-X', method);
+
   if (body) args.push('-f', JSON.stringify(body));
   return execSync(`gh ${args.join(' ')}`, { encoding: 'utf-8' });
 }
@@ -90,4 +91,4 @@ fs.writeFileSync(localFile, `# Synced from revvel-standards\n# ${new Date().toIS
 
 console.log(`Created: ${localFile}`);
 console.log('');
-console.log('TODO: Push to target repo via GitHub API or git clone + PR');
+console.log('Next step: open a PR in the target repo with this file as `.env.example`.');

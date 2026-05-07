@@ -4,6 +4,8 @@
 # - Cleans up stale files
 # - Moves files to where they belong
 
+name: Repo Organizer
+
 on:
   workflow_dispatch:
     inputs:

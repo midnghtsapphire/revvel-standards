@@ -4,6 +4,8 @@
 # - Implements fixes automatically
 # - Logs healing process
 
+name: Self-Healing Agent
+
 on:
   # Run daily to check system health
   schedule:
@@ -146,23 +148,28 @@ jobs:
           echo "Time: $(date)"
           echo "Broken areas: ${{ needs.research-state.outputs.broken }}"
           echo "Actions taken: Labeled stuck issues, re-ran failed workflows"
-          
+
+          BODY=$(cat <<EOF
+          ## Healing Report
+
+          **Time:** $(date)
+          **System was:** ${{ needs.research-state.outputs.system_health }}
+          **Issues found:** ${{ needs.research-state.outputs.broken }}
+
+          ### Actions Taken
+          1. Labeled stuck issues as check-failed
+          2. Re-ran failed workflows
+
+          ### Next Steps
+          - Monitor for 1 hour
+          - If still failing, escalate to human
+
+          This issue auto-closes in 24 hours.
+          EOF
+          )
+
           # Create healing journal entry
           gh issue create \
             --title "[SELF-HEAL] System healing completed" \
-            --body "## Healing Report
-
-**Time:** $(date)
-**System was:** ${{ needs.research-state.outputs.system_health }}
-**Issues found:** ${{ needs.research-state.outputs.broken }}
-
-### Actions Taken
-1. Labeled stuck issues as check-failed
-2. Re-ran failed workflows
-
-### Next Steps
-- Monitor for 1 hour
-- If still failing, escalate to human
-
-This issue auto-closes in 24 hours." \
+            --body "$BODY" \
             --label "self-healing,automation" 2>/dev/null || echo "No new issue created"
