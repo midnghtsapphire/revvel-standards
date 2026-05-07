@@ -113,9 +113,9 @@ jobs:
 
             const violations = [];
 
-            // Check title
-            const titleLower = title.toLowerCase();
-            if (titleLower.includes('scaffold') || titleLower.includes('wip') || titleLower.includes('draft')) {
+            // Check title - but exclude workflow name matches
+            const titleLower = title.toLowerCase().replace(/check-for-scaffolding/gi, '').replace(/anti-scaffolding/gi, '');
+            if (titleLower.includes('scaffold') || (titleLower.includes('wip') || titleLower.includes('draft'))) {
               violations.push('❌ PR title contains scaffolding language: ' + title);
             }
 
