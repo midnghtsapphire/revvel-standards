@@ -33,23 +33,26 @@ env:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     timeout-minutes: 30
     steps:
       - name: Determine agent to dispatch
         id: determine
+        env:
+          LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          DISPATCH_AGENT: ${{ inputs.agent }}
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
           
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
-            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "$DISPATCH_AGENT" ]; then
+            echo "agent=$DISPATCH_AGENT" >> $GITHUB_OUTPUT
             exit 0
           fi
           
           # Check issue labels
-          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+          LABELS="${LABELS:-}"
           
           case "$LABELS" in
             *wr:research*)

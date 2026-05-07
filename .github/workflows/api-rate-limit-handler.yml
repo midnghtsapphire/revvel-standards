@@ -25,11 +25,13 @@ jobs:
     steps:
       - name: Check if rate limited
         id: check
+        env:
+          ERROR_MESSAGE_EVENT: ${{ github.event.inputs.error_message }}
+          ERROR_MESSAGE_INPUT: ${{ inputs.error_message }}
         run: |
-          ERROR_MSG="${{ github.event.workflow_run.conclusion == 'failure' && contains(inputs.error_message, 'rate_limit') }}"
-          
-          # Or from workflow_dispatch
-          if [[ "${{ github.event.inputs.error_message }}" == *"rate"*limit* ]]; then
+          ERROR_MESSAGE="${ERROR_MESSAGE_EVENT:-${ERROR_MESSAGE_INPUT:-}}"
+
+          if [[ "$ERROR_MESSAGE" == *"rate"*limit* ]]; then
             echo "is_rate_limit=true" >> $GITHUB_OUTPUT
           else
             echo "is_rate_limit=false" >> $GITHUB_OUTPUT
@@ -37,28 +39,39 @@ jobs:
       
       - name: Create WR if rate limited
         if: steps.check.outputs.is_rate_limit == 'true'
+        env:
+          FAILED_WORKFLOW: ${{ inputs.failed_workflow }}
+          AGENT_USED: ${{ inputs.agent_used }}
+          ERROR_MESSAGE: ${{ inputs.error_message }}
+          RUN_STARTED_AT: ${{ github.event.workflow_run.run_started_at }}
+          REPO: ${{ github.repository }}
         run: |
           # Prevent duplicate - check if WR already exists for this workflow
-          EXISTING=$(gh search issues --repo ${{ github.repository }} \
-            --state open --json number \
-            -q ".[] | select(.title | contains(\"${{ inputs.failed_workflow }}\") and contains(title, \"API rate limit\")) | .number" 2>/dev/null || echo "")
+          EXISTING=$(gh search issues --repo "$REPO" \
+            --state open --json number,title 2>/dev/null | \
+            jq -r --arg failed "$FAILED_WORKFLOW" \
+            '.[] | select(.title | contains($failed) and contains("API rate limit")) | .number' | head -1 || echo "")
           
           if [[ -z "$EXISTING" ]]; then
-            gh issue create \
-              --title "[RATE LIMIT] ${{ inputs.failed_workflow }} - API rate limit hit" \
-              --body "## Rate Limit Hit
+            BODY=$(cat <<EOF
+## Rate Limit Hit
 
-**Failed Workflow:** ${{ inputs.failed_workflow }}
-**Agent:** ${{ inputs.agent_used }}
-**Error:** ${{ inputs.error_message }}
-**When:** ${{ github.event.workflow_run.run_started_at }}
+**Failed Workflow:** $FAILED_WORKFLOW
+**Agent:** $AGENT_USED
+**Error:** $ERROR_MESSAGE
+**When:** $RUN_STARTED_AT
 
 ## Required Action
 - [ ] Re-run with different agent (OpenRouter fallback)
 - [ ] Or wait and re-run later
 
 ## Label
-/label automation-failure,rate-limit-failure" \
+/label automation-failure,rate-limit-failure
+EOF
+)
+            gh issue create \
+              --title "[RATE LIMIT] $FAILED_WORKFLOW - API rate limit hit" \
+              --body "$BODY" \
               --label "automation-failure,needs-human"
           else
             echo "Duplicate WR #${EXISTING} already exists"
@@ -66,8 +79,10 @@ jobs:
       
       - name: Trigger fallback agent
         if: steps.check.outputs.is_rate_limit == 'true'
+        env:
+          AGENT_USED: ${{ inputs.agent_used }}
         run: |
           # Trigger OpenRouter fallback workflow
           gh workflow run openrouter-coder.yml \
             -f issue_number="${{ github.event.workflow_run.pull_requests[0].number || 0 }}" \
-            -f fallback_reason="rate_limit_from_${{ inputs.agent_used }}"
+            -f fallback_reason="rate_limit_from_${AGENT_USED}"
