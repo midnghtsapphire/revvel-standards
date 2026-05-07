@@ -49,8 +49,8 @@ jobs:
           # Prevent duplicate - check if WR already exists for this workflow
           EXISTING=$(gh search issues --repo "$REPO" \
             --state open --json number,title 2>/dev/null | \
-            jq -r --arg failed "$FAILED_WORKFLOW" \
-            '.[] | select(.title | contains($failed) and contains("API rate limit")) | .number' | head -1 || echo "")
+            jq -r --arg failed "$FAILED_WORKFLOW" --arg rate "API rate limit" \
+            '.[] | select(.title | contains($failed) and contains($rate)) | .number' | head -1 || echo "")
           
           if [[ -z "$EXISTING" ]]; then
             BODY=$(cat <<EOF

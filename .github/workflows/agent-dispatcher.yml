@@ -52,8 +52,6 @@ jobs:
           fi
           
           # Check issue labels
-          LABELS="${LABELS:-}"
-          
           case "$LABELS" in
             *wr:research*)
               echo "agent=perplexity" >> $GITHUB_OUTPUT
