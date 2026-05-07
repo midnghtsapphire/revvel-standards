@@ -76,6 +76,21 @@ profiles:
     enabled: true
     max_tokens: 15000
 
+  # Devin - AI coding agent for code review and implementation
+  devin:
+    description: "Devin AI coding agent - for code review and implementation tasks"
+    provider: devin
+    enabled: ${{ vars.DEVIN_ENABLED || 'false' }}
+    max_tokens: 20000
+    use_for: ["code-review", "implementation", "debug", "refactor"]
+
+  # CircleCI - CI/CD pipeline agent
+  circleci:
+    description: "CircleCI agent for CI/CD tasks"
+    provider: circleci
+    enabled: ${{ vars.CIRCLECI_ENABLED || 'false' }}
+    use_for: ["ci-cd", "deploy", "test"]
+
 #Orchestration flow:
 #  # Task-based routing:
 #  #   code/triage -> orchestrator (auto-select best model)
