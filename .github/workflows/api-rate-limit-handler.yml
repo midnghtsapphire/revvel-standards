@@ -47,7 +47,7 @@ jobs:
           EXISTING=$(gh search issues --repo "$REPO" \
             --state open --json number,title 2>/dev/null | \
             jq -r --arg failed "$FAILED_WORKFLOW" --arg rate "API rate limit" \
-            '.[] | select(.title | (contains($failed) and contains($rate))) | .number' | head -1 || echo "")
+            '.[] | select(.title as $title | ($title | index($failed) and $title | index($rate))) | .number' | head -1 || echo "")
           
           if [[ -z "$EXISTING" ]]; then
             BODY=$(cat <<EOF
