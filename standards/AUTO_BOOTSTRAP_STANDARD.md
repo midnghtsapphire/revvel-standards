@@ -116,6 +116,14 @@ Every new project with a web frontend should have Vercel deployment automated:
 > - Check last commit date (should be < 6 months ago)
 > - Prefer actions with `vX` tags (stable versions)
 
+### Additional Popular Actions for Web Projects
+
+| Action | Use For | Stars |
+|--------|--------|-------|
+| `vercel/pkg` | Binary builds | 5k+ |
+| `turborepo-setup` | Remote caching | 3k+ |
+| `actions/cache` | Build caching | Built-in |
+
 ### Required Workflow: `.github/workflows/deploy.yml`
 
 ```yaml
