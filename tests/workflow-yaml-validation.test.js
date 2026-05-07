@@ -120,6 +120,9 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   if ((routeDiscovered.env || {}).TO_ROUTE_JSON) {
     throw new Error('Route discovered items step should not define TO_ROUTE_JSON env');
   }
+  if (!routeDiscoveredScript.includes('github.paginate(github.rest.issues.listForRepo,')) {
+    throw new Error('cron routing should recompute candidates from GitHub API pagination');
+  }
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

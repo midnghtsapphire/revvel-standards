@@ -325,8 +325,9 @@ jobs:
               ? '🟢 Configured' 
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
             
-            // Recompute routing candidates here instead of passing full JSON through
-            // step outputs/env to avoid "argument list too long" on large backlogs.
+            // Recompute routing candidates here (same openrouter/no-triage filter as
+            // Discover step) instead of passing full JSON through step outputs/env to
+            // avoid "argument list too long" on large backlogs.
             const items = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
