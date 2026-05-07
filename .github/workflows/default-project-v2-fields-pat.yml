@@ -16,11 +16,6 @@ permissions:
 
 jobs:
   preflight:
-    # Probe whether the classic PAT secret is configured. We must use a job
-    # step (not the job-level if:) because GitHub Actions does not permit the
-    # secrets context in job-level if conditions; only step-level if and env:
-    # / with: contexts can read secrets. The downstream job consumes the
-    # boolean output via needs.preflight.outputs.has_creds.
     name: Check Project v2 PAT credentials
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -42,29 +37,19 @@ jobs:
 
   set-project-defaults:
     name: Add issue to Project v2 and set default fields
-    # Skip silently when the classic PAT secret is not configured. This lets
-    # the App and PAT default-setter workflows coexist in the same repo
-    # without one always failing on every issue when only one auth path is
-    # provisioned. Manual workflow_dispatch always runs so operators can see
-    # the actual configuration error if they invoke it intentionally.
     needs: preflight
     if: ${{ github.event_name == 'workflow_dispatch' || needs.preflight.outputs.has_creds == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     env:
-      # Required classic PAT.
-      # Create a repository or organization secret named PROJECTS_PAT.
-      # Recommended classic PAT scopes:
-      # - project
-      # - repo for private repositories, or public_repo for public repositories only
       GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
-
-      # Required Project v2 node ID. Example format: PVT_kwHOA...
-      # Store this as a repository/org/environment variable named PROJECT_ID.
       PROJECT_ID: ${{ vars.PROJECT_ID }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Validate configuration
         run: |
           set -euo pipefail
