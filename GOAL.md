@@ -1,20 +1,11 @@
-# GOAL: $10M in 3 Years
-
-## Prime Directive
-**$3,000/month → $10M/3yr**
-
----
+# Goal
 
 ## Revenue Path
 
-| Milestone | Target | Timeline |
-|----------|--------|----------|
-| Phase 1 | $3,000/month | Month 1-6 |
-| Phase 2 | $30,000/month | Month 6-18 |
-| Phase 3 | $100,000/month | Month 18-30 |
-| Phase 4 | $10M total | Month 30-36 |
+### Phase 1: $10,000/month
 
-## Focus Areas
-1. POLAR.SH - GitHub funding platform
-2. OSINT tools
-3. Automated product pipeline
+Achieve $10,000/month in recurring revenue.
+
+### Phase 2: Scale
+
+Scale beyond Phase 1 once stable MRR is established.
