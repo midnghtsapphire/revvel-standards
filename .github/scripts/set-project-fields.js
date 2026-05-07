@@ -46,7 +46,8 @@ module.exports = async ({ github, context, core }) => {
     const match = body.match(regex);
     if (match) {
       const val = match[1].trim();
-      return val && val !== '_No response_' ? val : null;
+      const normalizedVal = val.toLowerCase();
+      return val && val !== '_No response_' && normalizedVal !== 'auto-classify' ? val : null;
     }
     return null;
   };
