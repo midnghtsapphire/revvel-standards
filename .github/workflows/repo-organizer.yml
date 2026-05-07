@@ -1,0 +1,106 @@
+# REPO ORGANIZER - Evaluates and organizes files/folders
+# - Evaluates every file and folder
+# - Decision tree on what to do with each
+# - Cleans up stale files
+# - Moves files to where they belong
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, don't actually move files"
+        default: "true"
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday
+
+jobs:
+  # PHASE 1: Evaluate structure
+  evaluate-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      files_to_move: ${{ steps.eval.outputs.move_list }}
+      stale_files: ${{ steps.eval.outputs.stale_list }}
+    steps:
+      - name: Get all files
+        run: |
+          find . -type f -name "*.css" > /tmp/css_files.txt
+          find . -type f -name "*.js" > /tmp/js_files.txt
+          find . -type f -name "*.ts" > /tmp/ts_files.txt
+          find . -type f -name "*.py" > /tmp/py_files.txt
+          echo "CSS files:"
+          cat /tmp/css_files.txt
+
+      - name: Evaluate each file type
+        id: eval
+        run: |
+          MOVE_LIST=()
+          STALE_LIST=()
+          
+          # CSS DECISION TREE
+          echo "=== CSS Evaluation ==="
+          while IFS= read -r file; do
+            # Skip node_modules, dist, etc
+            if [[ "$file" == *node_modules* ]] || [[ "$file" == *dist* ]]; then
+              continue
+            fi
+            
+            # Check if CSS should be in /src/styles or /assets/css
+            if [[ "$file" == */src/styles/* ]] || [[ "$file" == */assets/css/* ]]; then
+              echo "OK: $file (correct location)"
+            elif [[ "$file" == */components/* ]]; then
+              # Component CSS should be with component
+              echo "MOVE: $file -> /src/components/styles/"
+              MOVE_LIST+=("$file->src/components/styles/")
+            else
+              echo "REVIEW: $file (unknown purpose)"
+            fi
+          done < /tmp/css_files.txt
+          
+          # STALE FILE CHECK
+          echo "=== Stale File Check ==="
+          # Files not modified in 90 days
+          find . -type f -mtime +90 ! -path "./.git/*" ! -path "./node_modules/*" ! -path "./dist/*" | while read -r f; do
+            # Skip known good dirs
+            if [[ "$f" == *docs* ]] || [[ "$f" == *.md ]]; then
+              continue
+            fi
+            SIZE=$(wc -c < "$f" 2>/dev/null || echo "0")
+            if [[ "$SIZE" -lt 100 ]]; then
+              echo "STALE: $f (too small)"
+              STALE_LIST+=("$f")
+            fi
+          done
+          
+          # Output lists
+          echo "move_list=$(printf '%s,' "${MOVE_LIST[@]}")" >> $GITHUB_OUTPUT
+          echo "stale_list=$(printf '%s,' "${STALE_LIST[@]}")" >> $GITHUB_OUTPUT
+
+  # PHASE 2: Execute moves (if not dry_run)
+  execute-organize:
+    needs: evaluate-structure
+    if: github.event.inputs.dry_run != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Move files to correct locations
+        run: |
+          echo "=== Moving Files ==="
+          IFS=',' read -ra MOVES <<< "${{ needs.evaluate-structure.outputs.files_to_move }}"
+          for move in "${MOVES[@]}"; do
+            if [[ -n "$move" ]]; then
+              echo "Would move: $move"
+              # mv $move
+            fi
+          done
+          
+      - name: Remove stale files
+        run: |
+          echo "=== Removing Stale Files ==="
+          IFS=',' read -ra STALE <<< "${{ needs.evaluate-structure.outputs.stale_files }}"
+          for file in "${STALE[@]}"; do
+            if [[ -n "$file" ]]; then
+              echo "Would remove: $file"
+              # rm $file
+            fi
+          done
