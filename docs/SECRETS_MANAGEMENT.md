@@ -52,6 +52,10 @@ See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AU
 | `GOOGLE_BUSINESS_PROFILE_KEY` | eeat-trust-cron | Yes (optional) | Google Business Profile API for E-E-A-T automation; create at Google Cloud Console |
 | `LINKEDIN_ACCESS_TOKEN` | eeat-trust-cron | Yes (optional) | LinkedIn API access token for profile sync; optional E-E-A-T feature |
 | `ORCID_API_KEY` | eeat-trust-cron | Yes (optional) | ORCID API key for publication sync; optional E-E-A-T feature |
+| `ELEVEN_API_KEY` | Eleven Labs text-to-speech | No guard | elevenlabs.io API key |
+| `HEYGEN_API_KEY` | HeyGen video/avatars | No guard | heygen.com API key |
+| `LEONARDO_API_KEY` | Leonardo AI image gen | No guard | leonardo.ai API key |
+| `MIDJOURNEY_DISCORD_BOT_TOKEN` | Midjourney bot | No guard | Discord bot for Midjourney |
 | `REVENUECAT_PUBLIC_API_KEY_IOS` / `_ANDROID` / `_AMAZON` / `_WEB` | Downstream Revvel apps (not workflows in this repo) | N/A | Per-platform public SDK keys for RevenueCat; safe to ship in client bundles. Standard: [`standards/REVENUECAT.md`](../standards/REVENUECAT.md) |
 | `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
 | `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
