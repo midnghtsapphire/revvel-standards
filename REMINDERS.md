@@ -35,14 +35,15 @@ When you're about to start something new, grep this file with the verb of your a
 
 **Read before you start:**
 
-- [`docs/github-project-v2-workflows.md`](./docs/github-project-v2-workflows.md) — full setup walkthrough including the seven repo/org variables and one secret you need, plus the live values currently set on `revvel-standards`
+- [`docs/github-project-v2-workflows.md`](./docs/github-project-v2-workflows.md) — full setup walkthrough including the repo/org variables and secret you need, plus the live values currently set on `revvel-standards`
+- [`docs/github-project-schema.md`](./docs/github-project-schema.md) — documents the current dynamic schema-introspection approach (requires only `PROJECT_ID`, `PROJECTS_APP_ID`, and `PROJECTS_APP_PRIVATE_KEY`)
 
-**One-shot helper to retrieve the IDs you need:**
+**One-shot helper to retrieve the PROJECT_ID you need:**
 
-- Run `.github/workflows/print-project-v2-ids.yml` (App auth) or `.github/workflows/print-project-v2-ids-pat.yml` (PAT auth) manually from the Actions tab. Pass `owner_type`, `owner`, and `project_number` (for the live `revvel-standards` board: `user`, `midnghtsapphire`, `5`). The workflow prints `PROJECT_ID`, every field's node ID, and every option ID. Copy them into repo or org variables.
+- Run `.github/workflows/print-project-v2-ids.yml` (App auth) or `.github/workflows/print-project-v2-ids-pat.yml` (PAT auth) manually from the Actions tab. Pass `owner_type`, `owner`, and `project_number` (for the live `revvel-standards` board: `user`, `midnghtsapphire`, `5`). The workflow prints `PROJECT_ID` (and field/option IDs for reference, though the default-field automation no longer requires them). Copy `PROJECT_ID` into a repo or org variable.
 
 **If you change Project field names/options:**
-- Update the default-field workflows and schema docs to match the new names. The workflows dynamically query the project schema, but their fallback values are hardcoded in `.github/scripts/set-project-fields.js`.
+- Update the schema docs to match the new names. The default-field automation (`.github/scripts/set-project-fields.js`) dynamically queries the project schema at runtime, so field/option renames are automatically picked up. You only need to update the hardcoded default values in the script if you want to change which defaults are applied.
 
 ---
 
