@@ -10,8 +10,6 @@ on:
         type: string
   schedule:
     - cron: '0 2 * * 0'  # Weekly Sundays 2AM UTC
-  repository:
-    types: [created]
 permissions:
   contents: write
   issues: write
