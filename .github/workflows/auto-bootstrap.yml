@@ -15,7 +15,6 @@ on:
 permissions:
   contents: write
   issues: write
-  secrets: read
 jobs:
   bootstrap:
     name: Bootstrap ${{ github.event.inputs.repo || github.event.repository.full_name }}
