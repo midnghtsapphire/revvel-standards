@@ -6,7 +6,31 @@
 # Use Claude Sonnet 4.6+ or GPT-5.5/GPT-5.1 class models
 
 profiles:
-  # Research: Perplexity for web-grounded research
+  # === OPENROUTER ORCHESTRATOR ===
+  # OpenRouter decides best model per task - recommended default
+  orchestrator:
+    description: "Let OpenRouter pick best model for the task - recommended for general use"
+    provider: openrouter
+    strategy: "auto"  # Let OpenRouter pick best model
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 15000
+    temperature: 0.4
+
+  # === TASK-SPECIFIC PROFILES ===
+  
+  # Best coder - high reasoning for complex file edits
+  best_coder:
+    description: "Best available coder - Claude Sonnet 4 or GPT-4o for complex code"
+    provider: openrouter
+    # OpenRouter will use best reasoning model
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 20000
+    temperature: 0.4
+    use_for: ["code", "file-edit", "refactor", "implement"]
+
+  # Best researcher - web-grounded with citations
   research:
     description: "Deep research using Perplexity Sonar for web-grounded answers"
     provider: perplexity
@@ -15,41 +39,27 @@ profiles:
     max_tokens: 10000
     temperature: 0.4
 
-  # Triage: Quick classification and routing
-  triage:
-    description: "Quick issue classification, label assignment, and routing"
-    provider: openrouter
-    primary: "openai/gpt-4o-mini"
-    fallback: "anthropic/claude-haiku-3.5"
-    max_tokens: 4000
-    temperature: 0.3
-
-  # code_patch: Coding agent - use direct LLM for file edits
-  code_patch:
-    description: "Writing and modifying code - use direct LLM for file edits"
-    provider: direct
-    primary: "anthropic/claude-sonnet-4-20250514"
-    fallback: "openai/gpt-4o"
-    max_tokens: 12000
-    temperature: 0.4
-
-  # jules: Jules coding agent (Google's CI Fixer)
-  jules:
-    description: "Jules coding agent with CI Fixer - PR creation and CI self-repair"
-    provider: google-jules
-    enabled: true
-    max_tokens: 15000
-
-  # review: Code review - direct LLM for quality checks
-  review:
-    description: "Reviewing code changes for quality, bugs, and best practices"
+  # Best reviewer - quality focused, lower temp
+  best_reviewer:
+    description: "Best available reviewer - GTP-4o or Claude for quality checks"
     provider: openrouter
     primary: "openai/gpt-4o"
     fallback: "anthropic/claude-sonnet-4-20250514"
     max_tokens: 8000
     temperature: 0.2
+    use_for: ["review", "pr-review", "code-review"]
 
-  # cheap_summary: Lightweight summarization
+  # Triage - quick classification, cheap
+  triage:
+    description: "Quick issue classification and routing - use cheap model"
+    provider: openrouter
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 4000
+    temperature: 0.3
+    use_for: ["triage", "classify", "route", "label"]
+
+  # Cheap summary - lightweight tasks only
   cheap_summary:
     description: "Quick summaries and simple responses"
     provider: openrouter
@@ -57,13 +67,36 @@ profiles:
     fallback: "anthropic/claude-haiku-3.5"
     max_tokens: 2000
     temperature: 0.1
+    use_for: ["summarize", "simple", "quick"]
+
+  # Jules - Google's CI Fixer agent
+  jules:
+    description: "Jules coding agent with CI Fixer - PR creation and CI self-repair"
+    provider: google-jules
+    enabled: true
+    max_tokens: 15000
 
 #Orchestration flow:
+#  # Task-based routing:
+#  #   code/triage -> orchestrator (auto-select best model)
+#  #   file-edit/code -> best_coder (Claude Sonnet 4 or GPT-4o)
+#  #   research -> Perplexity Sonar (web-grounded)
+#  #   review -> best_reviewer (quality focus)
+#  #   simple/quick -> cheap_summary (gpt-4o-mini)
+#
 #  wr:research -> Perplexity (research + WR handoff)
 #  wr:jules -> Jules (PR creation + CI Fixer)
 #  wr:code -> Direct LLM (file edits)
 #  wr:checking -> GitHub Actions
 #  lifecycle:stuck -> Perplexity diagnosis + requeue
+
+# Model selection logic:
+# 1. Check use_for match in task context
+# 2. Fall back to orchestrator (auto-select)
+# 3. Specific profiles override auto
+
+# For GitHub Actions usage:
+#   - ${{ fromJson(inputs.model_profile || 'orchestrator') }}
 
 # Model selection helpers for GitHub Actions
 env:
