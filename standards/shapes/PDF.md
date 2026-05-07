@@ -3,6 +3,8 @@
 **Parent pipeline:** [`AUTOMATED_PRODUCT_PIPELINE.md`](../AUTOMATED_PRODUCT_PIPELINE.md) → Step 5 shape = `pdf`
 **Template:** `templates/agent-generated-product/build/pdf/`
 
+**Work Request routing:** Filing a WR with **Output Type = sellable-pdf** uses the issue form fields (including **PDF pipeline batch**: Not applicable / Autocreate 3 / Autocreate 20) as the routing source of truth — see **[`workflows/PDF_WR_PLAYBOOK.md`](../../workflows/PDF_WR_PLAYBOOK.md)**. Prefer parsing the issue body over inventing new GitHub labels for PDF workflow triggers.
+
 ---
 
 ## When to Use This Shape
