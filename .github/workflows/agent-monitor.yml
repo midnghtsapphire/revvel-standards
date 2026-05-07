@@ -102,7 +102,7 @@ jobs:
         id: existing
         run: |
           # Search for recent unhandled agent failure WR
-          EXISTING=$(gh rep search issues --repo ${{ github.repository }} \
+          EXISTING=$(gh search issues --repo ${{ github.repository }} \
             --state open --json number \
             -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null | head -1 || echo "")
           
