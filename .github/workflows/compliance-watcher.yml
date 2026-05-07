@@ -15,39 +15,24 @@ jobs:
       - name: Evaluate deadlines and alert
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const fs = require('fs');
-
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
-
             const assignee = 'midnghtsapphire';
-
             const thresholds = new Set([60, 30, 14, 7, 3, 1]);
-
             const today = new Date();
-
-            const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(),
-            today.getUTCDate());
-
+            const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
             const MS_DAY = 24 * 60 * 60 * 1000;
 
-
             const md = fs.readFileSync('wr/cron/COMPLIANCE_WATCHER.md', 'utf8');
-
             const dated = [];
-
-            const lineRe = /^- \[(ACTIVE|PENDING|DEFERRED|ANNUAL)\] (.+?) —
-            (\d{4}-\d{2}-\d{2})/gm;
-
+            const lineRe = /^- \[(ACTIVE|PENDING|DEFERRED|ANNUAL)\] (.+?) — (\d{4}-\d{2}-\d{2})/gm;
             for (const m of md.matchAll(lineRe)) {
               dated.push({ name: m[2], due: m[3] });
             }
 
-
             const y = today.getUTCFullYear();
-
             const annual = [
               ['Tax calendar — quarterly estimates (Q4 prior year)', `${y}-01-15`],
               ['Tax calendar — 1099 issuance', `${y}-01-31`],
@@ -60,9 +45,7 @@ jobs:
               ['Tax calendar — extension checkpoint', `${y}-09-15`],
               ['Tax calendar — final extension checkpoint', `${y}-10-15`]
             ];
-
             annual.forEach(([name, due]) => dated.push({ name, due }));
-
 
             try {
               await github.rest.issues.getLabel({ owner, repo, name: 'urgent-compliance' });
@@ -73,7 +56,6 @@ jobs:
                 throw error;
               }
             }
-
 
             for (const item of dated) {
               const dueUtc = Date.parse(`${item.due}T00:00:00Z`);
@@ -102,3 +84,5 @@ jobs:
               core.info(`Opened issue: ${title}`);
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

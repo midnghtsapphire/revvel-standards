@@ -33,20 +33,14 @@ jobs:
         id: audit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
+        run: |
           set -uo pipefail
 
-
           # Extract every `uses: owner/repo@ref` from workflow YAML files.
-
           # Skip:
-
           #   - lines that start with `#` (commented-out)
-
           #   - `./` local action paths
-
           #   - `docker://` image refs
-
           mapfile -t REFS < <(
             grep -RhnE '^\s*-?\s*uses:\s*[^#[:space:]]+' .github/workflows/ .github/actions/ 2>/dev/null \
               | sed -E 's/^[^:]+:[0-9]+:\s*//; s/^-?\s*uses:\s*//' \
@@ -56,11 +50,8 @@ jobs:
               | sort -u
           )
 
-
           echo "Discovered ${#REFS[@]} unique action refs."
-
           BROKEN=()
-
           for full_ref in "${REFS[@]}"; do
             owner_repo="${full_ref%@*}"
             ref="${full_ref#*@}"
@@ -89,7 +80,6 @@ jobs:
             fi
           done
 
-
           {
             echo "broken_count=${#BROKEN[@]}"
             if [ "${#BROKEN[@]}" -gt 0 ]; then
@@ -102,35 +92,25 @@ jobs:
             fi
           } >> "$GITHUB_OUTPUT"
 
-
           if [ "${#BROKEN[@]}" -gt 0 ]; then
             echo ""
             echo "❌ ${#BROKEN[@]} broken action ref(s) found."
             exit 1
           fi
-
           echo "✅ All ${#REFS[@]} action refs resolved."
       - name: Open / update tracking issue (scheduled or main-branch run)
-        if: >
+        if: |
           failure() &&
-
-          (github.event_name == 'schedule' || github.event_name ==
-          'workflow_dispatch' ||
+          (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
         uses: actions/github-script@v8
         with:
-          script: >
-            const broken = (`${{ steps.audit.outputs.broken_refs }}` ||
-            '').trim();
-
+          script: |
+            const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
             if (!broken) return;
-
             const lines = broken.split('\n').filter(Boolean);
 
-
-            const title = `[AUTO-ERROR] Workflow action-ref auditor found
-            ${lines.length} broken ref(s)`;
-
+            const title = `[AUTO-ERROR] Workflow action-ref auditor found ${lines.length} broken ref(s)`;
             const body = [
               '## Broken action references detected',
               '',
@@ -152,11 +132,8 @@ jobs:
               '_This issue is opened automatically by `.github/workflows/workflow-action-ref-audit.yml`. It will be updated rather than re-created on subsequent failures._',
             ].join('\n');
 
-
             // Reuse a single tracking issue so we don't spam.
-
             const labels = ['auto-error', 'workflow-broken-ref', 'priority-p0'];
-
             const existing = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -164,7 +141,6 @@ jobs:
               labels: 'workflow-broken-ref',
               per_page: 5,
             });
-
 
             if (existing.data.length > 0) {
               const issue = existing.data[0];
@@ -187,16 +163,14 @@ jobs:
               core.notice(`Opened tracking issue #${created.data.number}.`);
             }
       - name: Close tracking issue when audit is clean
-        if: >
+        if: |
           success() &&
-
-          (github.event_name == 'schedule' || github.event_name ==
-          'workflow_dispatch' ||
+          (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
         uses: actions/github-script@v8
         continue-on-error: true
         with:
-          script: >
+          script: |
             const existing = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -204,7 +178,6 @@ jobs:
               labels: 'workflow-broken-ref',
               per_page: 5,
             });
-
             for (const issue of existing.data) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -221,3 +194,5 @@ jobs:
               core.notice(`Closed tracking issue #${issue.number}.`);
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -9,8 +9,7 @@ on:
     branches:
       - main
 concurrency:
-  group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number ||
-    github.event.workflow_run.pull_requests[0].number || 'unknown' }}
+  group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number || github.event.workflow_run.pull_requests[0].number || 'unknown' }}
   cancel-in-progress: false
 permissions:
   contents: read
@@ -26,13 +25,12 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const labels = [
               { name: 'checks-passing', color: '16a34a', description: 'All CI checks pass' },
               { name: 'checks-failing', color: 'dc2626', description: 'One or more CI checks failed' },
               { name: 'ready-to-merge', color: '8b5cf6', description: 'Approved + checks passing — ready to merge' },
             ];
-
             for (const label of labels) {
               try {
                 await github.rest.issues.getLabel({
@@ -57,19 +55,15 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const suite = context.payload.check_suite;
-
             const conclusion = suite.conclusion;
-
             const prs = suite.pull_requests || [];
-
 
             if (!prs || prs.length === 0) {
               core.info('No PRs associated with this check suite');
               return;
             }
-
 
             for (const pr of prs) {
               const prNumber = pr.number;
@@ -167,19 +161,15 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const run = context.payload.workflow_run;
-
             const conclusion = run.conclusion;
-
             const prs = run.pull_requests || [];
-
 
             if (!prs || prs.length === 0) {
               core.info('No PRs associated with this workflow run');
               return;
             }
-
 
             for (const pr of prs) {
               const prNumber = pr.number;
@@ -202,3 +192,5 @@ jobs:
               }
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

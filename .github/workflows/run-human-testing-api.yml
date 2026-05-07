@@ -55,7 +55,7 @@ jobs:
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::error::OPENROUTER_API_KEY is not set. Cannot proceed with human testing API."
             exit 1
@@ -73,14 +73,10 @@ jobs:
       - name: Commit test report
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
-        run: >
+        run: |
           git config user.name "revvel-automation[bot]"
-
-          git config user.email
-          "revvel-automation[bot]@users.noreply.github.com"
-
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
           git add "${{ inputs.output_file }}"
-
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
@@ -92,46 +88,32 @@ jobs:
         if: ${{ inputs.create_issue == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
-        run: >
+        run: |
           gh issue create \
             --repo "${{ github.repository }}" \
             --title "Human Testing Complete: ${{ inputs.app_name }}" \
             --label "testing" \
             --body "## Human Testing API Report
 
-          The Revvel Human Testing API has completed a S.H.I.F.T. behavioral
-          evaluation of:
-
+          The Revvel Human Testing API has completed a S.H.I.F.T. behavioral evaluation of:
 
           **Application:** ${{ inputs.app_name }}
-
           **Target URL:** ${{ inputs.target_url }}
-
           **Scenarios Tested:** ${{ inputs.test_scenarios }}
 
+          **Test report:** [\`${{ inputs.output_file }}\`](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/${{ inputs.output_file }})
 
-          **Test report:** [\`${{ inputs.output_file
-          }}\`](https://github.com/${{ github.repository }}/blob/${{
-          github.ref_name }}/${{ inputs.output_file }})
-
-
-          **Workflow run:** ${{ github.server_url }}/${{ github.repository
-          }}/actions/runs/${{ github.run_id }}
-
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
           ---
 
-
           Review the test report for:
-
           - **Critical Blockers** (P0) — must fix before production
-
           - **S.H.I.F.T. Compliance** — behavioral validation findings
-
           - **Accessibility** — neuro-inclusive design issues
-
           - **Performance Budget** — Lighthouse threshold compliance
-
 
           Create follow-up issues for each P0 blocker identified."
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

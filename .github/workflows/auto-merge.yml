@@ -22,14 +22,11 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const pr     = context.payload.pull_request;
-
             const labels = pr.labels.map(l => l.name);
 
-
             // Safety check: don't enable if 'won't-merge' is also present
-
             if (labels.includes("won't-merge")) {
               core.warning(
                 `PR #${pr.number} has both 'auto-merge' and 'won\\'t-merge' labels. ` +
@@ -37,7 +34,6 @@ jobs:
               );
               return;
             }
-
 
             try {
               await github.graphql(`
@@ -72,20 +68,16 @@ jobs:
   disable-auto-merge:
     name: Disable Auto-Merge
     runs-on: ubuntu-latest
-    if: >
-      (github.event.action == 'unlabeled' && github.event.label.name ==
-      'auto-merge') ||
-
-      (github.event.action == 'labeled'   && github.event.label.name ==
-      'won''t-merge')
+    if: |
+      (github.event.action == 'unlabeled' && github.event.label.name == 'auto-merge') ||
+      (github.event.action == 'labeled'   && github.event.label.name == 'won''t-merge')
     steps:
       - name: Disable pull request auto-merge
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const pr = context.payload.pull_request;
-
 
             try {
               await github.graphql(`
@@ -112,3 +104,5 @@ jobs:
               }
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

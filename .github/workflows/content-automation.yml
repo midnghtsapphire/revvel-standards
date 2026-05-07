@@ -71,34 +71,22 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const issue_number = context.issue.number;
-
             const comment = `🤖 **Content Automation Pipeline Activated**
 
-
-            The content automation system is now processing your request. This
-            will take approximately 10-15 minutes.
-
+            The content automation system is now processing your request. This will take approximately 10-15 minutes.
 
             **Pipeline Stages:**
-
             - [ ] Research & Topic Ideation (2-3 min)
-
             - [ ] Outline Generation (1 min)
-
             - [ ] Draft Generation (3-4 min)
-
             - [ ] Content Refinement (2-3 min)
-
             - [ ] Multi-Format Export (1 min)
-
 
             Results will be posted here when complete.
 
-
             *Powered by OpenRouter AI · Skill: content-automation*`;
-
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -110,9 +98,8 @@ jobs:
         id: params
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             let topic, format, urgency, audience, issueNumber;
-
 
             if (context.eventName === 'workflow_dispatch') {
               const rawTopic = context.payload.inputs.topic;
@@ -142,17 +129,11 @@ jobs:
               audience = process.env.CONTENT_TARGET_AUDIENCE || 'general audience';
             }
 
-
             // Set outputs
-
             core.setOutput('topic', topic);
-
             core.setOutput('format', format);
-
             core.setOutput('urgency', urgency);
-
             core.setOutput('audience', audience);
-
             if (issueNumber) {
               core.setOutput('issue_number', issueNumber.toString());
             }
@@ -171,12 +152,10 @@ jobs:
           CONTENT_BRAND_VOICE: ${{ vars.CONTENT_BRAND_VOICE || 'professional yet approachable' }}
           CONTENT_PRIMARY_KEYWORDS: ${{ vars.CONTENT_PRIMARY_KEYWORDS || '' }}
           CONTENT_AUTO_PUBLISH: ${{ vars.CONTENT_AUTO_PUBLISH || 'false' }}
-        run: >
+        run: |
           node scripts/content-automation.js
 
-
           # Capture output path from script stdout or check directory
-
           if [ -d content-automation-output ]; then
             # Find most recent directory
             OUTPUT_PATH=$(ls -td content-automation-output/*/ 2>/dev/null | head -1 | sed 's:/$::')
@@ -191,27 +170,18 @@ jobs:
           FORMAT: ${{ steps.params.outputs.format }}
           URGENCY: ${{ steps.params.outputs.urgency }}
           AUDIENCE: ${{ steps.params.outputs.audience }}
-        run: >
-          git config --local user.email
-          "github-actions[bot]@users.noreply.github.com"
-
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
 
           git add content-automation-output/
 
-
           # Use env vars to avoid injection in commit message
-
           git commit -m "🤖 Auto-generate content: ${TOPIC}
 
-
           Generated via content-automation skill
-
           Format: ${FORMAT}
-
           Urgency: ${URGENCY}
-
           Audience: ${AUDIENCE}" || echo "No changes to commit"
       - name: Push changes
         if: steps.generate.outputs.output_path != ''
@@ -222,73 +192,42 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const fs = require('fs');
-
             const path = require('path');
-
             const outputPath = '${{ steps.generate.outputs.output_path }}';
-
             const metadataPath = path.join(outputPath, 'metadata.json');
 
-
             let metadata = {};
-
             if (fs.existsSync(metadataPath)) {
               metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
             }
 
-
             const comment = `✅ **Content Generation Complete!**
 
-
             **Generated Content:**
-
-            - **Title:** ${metadata.title || '${{ steps.params.outputs.topic
-            }}'}
-
+            - **Title:** ${metadata.title || '${{ steps.params.outputs.topic }}'}
             - **Format:** ${{ steps.params.outputs.format }}
-
             - **Word Count:** ${metadata.word_count || 'N/A'}
-
 
             **Output Location:** \`${outputPath}\`
 
-
             **Available Formats:**
-
-            ${metadata.formats ? metadata.formats.map(f => `- ${f}`).join('\n')
-            : '- See output directory'}
-
+            ${metadata.formats ? metadata.formats.map(f => `- ${f}`).join('\n') : '- See output directory'}
 
             **Next Steps:**
-
             1. Review the generated content in the output directory
-
             2. Make any necessary edits for brand voice and accuracy
-
             3. Add visuals and format for final publication
-
             4. Close this issue when content is published
 
-
             **Quality Gates:**
-
             - SEO: ${metadata.quality_gates?.seo?.passed ? '✅' : '⚠️'}
+            - Readability: ${metadata.quality_gates?.readability?.passed ? '✅' : '⚠️'}
+            - Structure: ${metadata.quality_gates?.structure?.passed ? '✅' : '⚠️'}
+            - Technical: ${metadata.quality_gates?.technical?.passed ? '✅' : '⚠️'}
 
-            - Readability: ${metadata.quality_gates?.readability?.passed ? '✅' :
-            '⚠️'}
-
-            - Structure: ${metadata.quality_gates?.structure?.passed ? '✅' :
-            '⚠️'}
-
-            - Technical: ${metadata.quality_gates?.technical?.passed ? '✅' :
-            '⚠️'}
-
-
-            *Generated in ~${metadata.generation_time_seconds || 'N/A'}s using
-            ${metadata.models_used?.join(', ') || 'OpenRouter AI'}*`;
-
+            *Generated in ~${metadata.generation_time_seconds || 'N/A'}s using ${metadata.models_used?.join(', ') || 'OpenRouter AI'}*`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -297,11 +236,8 @@ jobs:
               body: comment
             });
 
-
             const autoPublish = '${{ vars.CONTENT_AUTO_PUBLISH }}' === 'true';
-
             const label = autoPublish ? 'content:final' : 'content:draft';
-
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -313,47 +249,30 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const issueNumber = context.payload.issue?.number;
-
             if (!issueNumber) {
               console.log('No issue number available, skipping error comment');
               return;
             }
 
-
             const comment = `❌ **Content Generation Failed**
 
-
-            The content automation pipeline encountered an error. Please check
-            the workflow logs for details.
-
+            The content automation pipeline encountered an error. Please check the workflow logs for details.
 
             **Common issues:**
-
             - Missing or invalid OPENROUTER_API_KEY
-
             - Topic is too vague or unclear
-
             - API rate limits exceeded
-
             - Network connectivity issues
 
-
             **Next Steps:**
-
-            1. Check workflow logs:
-            ${context.payload.repository.html_url}/actions/runs/${context.runId}
-
+            1. Check workflow logs: ${context.payload.repository.html_url}/actions/runs/${context.runId}
             2. Verify API keys are configured correctly
-
             3. Try again with a more specific topic
-
             4. Contact support if the issue persists
 
-
             *Error occurred in: content-automation workflow*`;
-
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -413,3 +332,5 @@ jobs:
               });
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

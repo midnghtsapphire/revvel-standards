@@ -15,52 +15,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Compliance Check
-        run: >
+        run: |
           echo "=== Compliance Check Started ==="
-
           echo "Date: $(date)"
 
-
           # Check compliance tracker
-
           echo "=== Checking Compliance Status ==="
-
           if [ -f docs/COMPLIANCE_TRACKER.md ]; then
             echo "Compliance tracker found"
           fi
 
-
           # Check for urgent items
-
           echo "=== Checking Urgent Items ==="
-
-          grep -i "URGENT\|May 2026\|CRITICAL" docs/*.md || echo "No urgent
-          items found"
-
+          grep -i "URGENT\|May 2026\|CRITICAL" docs/*.md || echo "No urgent items found"
 
           # Check Medicaid status
-
           echo "=== Medicaid Watchdog ==="
-
           if [ -f docs/MEDICAID_WATCHDOG.md ]; then
             echo "Medicaid tracker active"
           fi
 
-
           # Check grant deadlines
-
           echo "=== Grant Deadlines ==="
-
-          grep -i "due\|deadline\|expir" docs/GRANT_READINESS.md || echo "No
-          upcoming deadlines"
-
+          grep -i "due\|deadline\|expir" docs/GRANT_READINESS.md || echo "No upcoming deadlines"
 
           echo "=== Compliance Check Complete ==="
       - name: Create Issue on Failure
         if: failure()
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             github.rest.createIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -70,12 +54,9 @@ jobs:
       - name: Create Issue on Urgent
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const fs = require('fs');
-
-            const content = fs.readFileSync('docs/COMPLIANCE_TRACKER.md',
-            'utf8');
-
+            const content = fs.readFileSync('docs/COMPLIANCE_TRACKER.md', 'utf8');
             if (content.includes('URGENT') || content.includes('CRITICAL')) {
               github.rest.createIssue({
                 owner: context.repo.owner,
@@ -99,3 +80,5 @@ jobs:
           echo "- Business licenses"
           echo "=== Complete ==="
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

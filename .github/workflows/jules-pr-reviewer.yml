@@ -22,7 +22,7 @@ jobs:
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Verify JULES_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${JULES_API_KEY}" ]; then
             echo "::warning::JULES_API_KEY is not set — skipping Jules PR Reviewer."
           else
@@ -40,3 +40,5 @@ jobs:
           bypass_label: jules-override
           status_context: jules/review
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -38,24 +38,17 @@ jobs:
           node scripts/generate-daily-summary.js
       - name: Commit and push summary
         id: commit
-        run: >
+        run: |
           git config user.name "github-actions[bot]"
-
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
 
           DATE="${{ steps.generate.outputs.date }}"
 
-
           # Add generated files
-
           git add wr/summaries/"${DATE}.md"
-
           git add wr/summaries/"${DATE}.html"
 
-
           # Check if there are changes to commit
-
           if git diff --staged --quiet; then
             echo "No changes to commit"
             echo "committed=false" >> "$GITHUB_OUTPUT"
@@ -70,35 +63,21 @@ jobs:
             echo "✅ Summary committed and pushed"
           fi
       - name: Create summary in GitHub Actions
-        run: >
+        run: |
           DATE="${{ steps.generate.outputs.date }}"
-
           ISSUES_COUNT="${{ steps.generate.outputs.issues_count }}"
-
           PRS_COUNT="${{ steps.generate.outputs.prs_count }}"
 
-
           echo "## Daily WR & PR Summary — ${DATE}" >> "$GITHUB_STEP_SUMMARY"
-
           echo "" >> "$GITHUB_STEP_SUMMARY"
-
           echo "📊 **Summary:**" >> "$GITHUB_STEP_SUMMARY"
-
           echo "- Issues created: ${ISSUES_COUNT}" >> "$GITHUB_STEP_SUMMARY"
-
           echo "- PRs opened: ${PRS_COUNT}" >> "$GITHUB_STEP_SUMMARY"
-
           echo "" >> "$GITHUB_STEP_SUMMARY"
-
           echo "📄 **Files generated:**" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "- Markdown: \`wr/summaries/${DATE}.md\`" >>
-          "$GITHUB_STEP_SUMMARY"
-
+          echo "- Markdown: \`wr/summaries/${DATE}.md\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- HTML: \`wr/summaries/${DATE}.html\`" >> "$GITHUB_STEP_SUMMARY"
-
           echo "" >> "$GITHUB_STEP_SUMMARY"
-
 
           if [ "${{ steps.commit.outputs.committed }}" = "true" ]; then
             echo "✅ Summary committed to repository" >> "$GITHUB_STEP_SUMMARY"
@@ -107,15 +86,11 @@ jobs:
           fi
       - name: Update index if needed
         if: steps.commit.outputs.committed == 'true'
-        run: >
+        run: |
           # Generate an index of all summaries
-
           cat > wr/summaries/index.html << 'INDEXEOF'
-
           <!DOCTYPE html>
-
           <html lang="en">
-
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -172,20 +147,15 @@ jobs:
               }
             </style>
           </head>
-
           <body>
             <div class="container">
               <h1>📊 Daily WR & PR Summaries</h1>
               <ul class="summary-list">
           INDEXEOF
 
-
           # List all HTML summaries in reverse chronological order
-
           # Use find with proper filtering and validation
-
-          find wr/summaries -name "*.html" -type f ! -name "index.html" | sort
-          -r | while IFS= read -r file; do
+          find wr/summaries -name "*.html" -type f ! -name "index.html" | sort -r | while IFS= read -r file; do
             basename=$(basename "$file")
             # Validate filename matches YYYY-MM-DD.html pattern
             if [[ "$basename" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\.html$ ]]; then
@@ -195,23 +165,19 @@ jobs:
             fi
           done
 
-
           cat >> wr/summaries/index.html << 'INDEXEOF'
               </ul>
             </div>
           </body>
-
           </html>
-
           INDEXEOF
 
-
           # Commit index
-
           git add wr/summaries/index.html
-
           if ! git diff --staged --quiet; then
             git commit -m "Update summaries index"
             git push
           fi
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

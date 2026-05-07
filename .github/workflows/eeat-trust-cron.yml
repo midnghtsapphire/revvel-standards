@@ -22,24 +22,17 @@ jobs:
         id: quiet
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
 
-
-            // Use Search API to find the exact issue by title (no pagination
-            issues)
-
-            const { data: searchResults } = await
-            github.rest.search.issuesAndPullRequests({
+            // Use Search API to find the exact issue by title (no pagination issues)
+            const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
               q: `repo:${owner}/${repo} is:issue is:open "exit-quiet-mode" in:title`,
               per_page: 1
             });
 
-
             const active = searchResults.total_count > 0;
-
             core.setOutput('active', active ? 'true' : 'false');
-
 
             if (!active) {
               console.log('Quiet Mode is ACTIVE. TrustForge is paused.');
@@ -49,13 +42,10 @@ jobs:
             }
       - name: Quiet Mode active; skipping
         if: steps.quiet.outputs.active != 'true'
-        run: >
+        run: |
           echo "🔇 Quiet Mode active; TrustForge automation is paused"
-
           echo "To enable TrustForge, create an issue titled: exit-quiet-mode"
-
-          echo "Command: gh issue create --title 'exit-quiet-mode' --body
-          'Enabling TrustForge E-E-A-T automation'"
+          echo "Command: gh issue create --title 'exit-quiet-mode' --body 'Enabling TrustForge E-E-A-T automation'"
       - name: Checkout repository
         if: steps.quiet.outputs.active == 'true'
         uses: actions/checkout@v4
@@ -75,9 +65,7 @@ jobs:
         if: steps.quiet.outputs.active == 'true'
         uses: dopplerhq/secrets-fetch-action@v2
         with:
-          doppler-token: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN ||
-            secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY ||
-            secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
+          doppler-token: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY || secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
       - name: Install dependencies
         if: steps.quiet.outputs.active == 'true'
         run: |
@@ -138,55 +126,34 @@ jobs:
           RUN_NUMBER: ${{ github.run_number }}
           RUN_ID: ${{ github.run_id }}
           CONFIG_FILE: ${{ steps.config.outputs.config_file }}
-        run: >
+        run: |
           echo "🏗️  TrustForge E-E-A-T Automation Starting..."
-
           echo "Dry Run Mode: $DRY_RUN"
-
           echo "Run Number: $RUN_NUMBER"
-
           echo ""
 
-
           # Create reports directory
-
           mkdir -p docs/reports
 
-
           # Use GitHub run number for unique reports instead of date
-
           REPORT_FILE="docs/reports/eeat-health-run-${RUN_NUMBER}.md"
-
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S")
 
-
           echo "# TrustForge E-E-A-T Health Report" > "$REPORT_FILE"
-
           echo "**Date:** ${TIMESTAMP} UTC" >> "$REPORT_FILE"
-
           echo "**Run:** #${RUN_NUMBER}" >> "$REPORT_FILE"
-
           echo "**Agent:** TrustForge v1.0.0" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
-
 
           # Load properties from config
-
           PROPERTIES=$(jq -r '.properties[] | .url' "$CONFIG_FILE")
 
-
           # Task 1: Verify schema markup on key properties
-
           echo "## 1. Schema Markup Validation" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
 
-
           schema_errors=0
-
           echo "Checking schema.org markup on properties..." >> "$REPORT_FILE"
-
           for url in $PROPERTIES; do
             echo "- Checking $url..." | tee -a "$REPORT_FILE"
             
@@ -214,24 +181,15 @@ jobs:
               ((schema_errors++))
             fi
           done
-
           echo "" >> "$REPORT_FILE"
-
-          echo "**Schema Validation:** $schema_errors issue(s) found" >>
-          "$REPORT_FILE"
-
+          echo "**Schema Validation:** $schema_errors issue(s) found" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
-
 
           # Task 2: HTTPS certificate validation
-
           echo "## 2. HTTPS Certificate Check" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
 
-
           ssl_errors=0
-
           for url in $PROPERTIES; do
             echo "- Checking SSL for $url..." | tee -a "$REPORT_FILE"
             
@@ -243,24 +201,15 @@ jobs:
               ((ssl_errors++))
             fi
           done
-
           echo "" >> "$REPORT_FILE"
-
-          echo "**HTTPS Validation:** $ssl_errors issue(s) found" >>
-          "$REPORT_FILE"
-
+          echo "**HTTPS Validation:** $ssl_errors issue(s) found" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
-
 
           # Task 3: Link health check using linkchecker
-
           echo "## 3. Broken Link Detection" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
 
-
           link_errors=0
-
           for url in $PROPERTIES; do
             echo "- Checking links on $url..." | tee -a "$REPORT_FILE"
             
@@ -277,24 +226,15 @@ jobs:
               ((link_errors+=error_count))
             fi
           done
-
           echo "" >> "$REPORT_FILE"
-
-          echo "**Link Health:** $link_errors broken link(s) found" >>
-          "$REPORT_FILE"
-
+          echo "**Link Health:** $link_errors broken link(s) found" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
-
 
           # Task 4: Lighthouse SEO audit (if property is accessible)
-
           echo "## 4. Lighthouse SEO Scores" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
 
-
           SEO_MIN=$(jq -r '.thresholds.lighthouse_seo_min // 90' "$CONFIG_FILE")
-
 
           for url in $PROPERTIES; do
             echo "- Running Lighthouse for $url..." | tee -a "$REPORT_FILE"
@@ -324,16 +264,11 @@ jobs:
               echo "  - ⚠️  Lighthouse audit failed or timed out" >> "$REPORT_FILE"
             fi
           done
-
           echo "" >> "$REPORT_FILE"
-
 
           # Task 5: Google Search Console monitoring (requires API key)
-
           echo "## 5. Google Search Console" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
-
 
           if [ -n "${GOOGLE_SEARCH_CONSOLE_KEY:-}" ]; then
             echo "🔑 Google Search Console API key detected - checking status..." | tee -a "$REPORT_FILE"
@@ -346,60 +281,36 @@ jobs:
             echo "  - [ ] Sitemaps submitted and processed" >> "$REPORT_FILE"
             echo "  - [ ] No security issues" >> "$REPORT_FILE"
           fi
-
           echo "" >> "$REPORT_FILE"
-
 
           # Task 6: Knowledge Panel status (manual)
-
           echo "## 6. Google Knowledge Panel" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
-
           echo "Manual verification required:" >> "$REPORT_FILE"
-
-          echo "- [ ] Search 'Audrey Evans systems builder' on Google" >>
-          "$REPORT_FILE"
-
+          echo "- [ ] Search 'Audrey Evans systems builder' on Google" >> "$REPORT_FILE"
           echo "- [ ] Verify Knowledge Panel presence" >> "$REPORT_FILE"
-
           echo "- [ ] If present, verify information accuracy" >> "$REPORT_FILE"
-
-          echo "- [ ] If not present, continue structured data optimization" >>
-          "$REPORT_FILE"
-
+          echo "- [ ] If not present, continue structured data optimization" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
-
 
           # Summary
-
           echo "## Summary" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
 
-
           total_issues=$((schema_errors + ssl_errors + link_errors))
-
 
           if [ $total_issues -eq 0 ]; then
             echo "✅ **All automated checks passed!**" >> "$REPORT_FILE"
           else
             echo "⚠️  **$total_issues issue(s) detected across automated checks**" >> "$REPORT_FILE"
           fi
-
           echo "" >> "$REPORT_FILE"
-
           echo "- Schema issues: $schema_errors" >> "$REPORT_FILE"
-
           echo "- HTTPS issues: $ssl_errors" >> "$REPORT_FILE"
-
           echo "- Broken links: $link_errors" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
-
 
           echo "### Next Actions" >> "$REPORT_FILE"
-
           if [ $total_issues -gt 0 ]; then
             echo "1. Address issues identified above" >> "$REPORT_FILE"
             echo "2. Review checklist items marked as [ ]" >> "$REPORT_FILE"
@@ -408,107 +319,60 @@ jobs:
             echo "1. Review checklist items marked as [ ]" >> "$REPORT_FILE"
             echo "2. Continue weekly and monthly E-E-A-T maintenance" >> "$REPORT_FILE"
           fi
-
           echo "" >> "$REPORT_FILE"
-
 
           echo "---" >> "$REPORT_FILE"
-
           echo "" >> "$REPORT_FILE"
-
-          echo "*Generated by TrustForge — E-E-A-T Trust Authority Agent*" >>
-          "$REPORT_FILE"
-
-          echo "*Run ID: ${RUN_ID} | Run Number: ${RUN_NUMBER}*" >>
-          "$REPORT_FILE"
-
+          echo "*Generated by TrustForge — E-E-A-T Trust Authority Agent*" >> "$REPORT_FILE"
+          echo "*Run ID: ${RUN_ID} | Run Number: ${RUN_NUMBER}*" >> "$REPORT_FILE"
 
           echo ""
-
           echo "✅ TrustForge health report generated: $REPORT_FILE"
-
-          echo "📊 Issues found: $total_issues (Schema: $schema_errors, HTTPS:
-          $ssl_errors, Links: $link_errors)"
-
+          echo "📊 Issues found: $total_issues (Schema: $schema_errors, HTTPS: $ssl_errors, Links: $link_errors)"
 
           # Load notification preferences from config
-
-          NOTIFY_ON_FAILURE=$(jq -r '.notifications.on_failure // true'
-          "$CONFIG_FILE")
-
-          NOTIFY_ON_WARNING=$(jq -r '.notifications.on_warning // true'
-          "$CONFIG_FILE")
-
+          NOTIFY_ON_FAILURE=$(jq -r '.notifications.on_failure // true' "$CONFIG_FILE")
+          NOTIFY_ON_WARNING=$(jq -r '.notifications.on_warning // true' "$CONFIG_FILE")
 
           # Output for next steps
-
           echo "report_path=$REPORT_FILE" >> $GITHUB_OUTPUT
-
           echo "total_issues=$total_issues" >> $GITHUB_OUTPUT
-
           echo "run_number=$RUN_NUMBER" >> $GITHUB_OUTPUT
-
           echo "schema_errors=$schema_errors" >> $GITHUB_OUTPUT
-
           echo "ssl_errors=$ssl_errors" >> $GITHUB_OUTPUT
-
           echo "link_errors=$link_errors" >> $GITHUB_OUTPUT
-
           echo "notify_on_failure=$NOTIFY_ON_FAILURE" >> $GITHUB_OUTPUT
-
           echo "notify_on_warning=$NOTIFY_ON_WARNING" >> $GITHUB_OUTPUT
       - name: Create PR with health report
-        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true &&
-          steps.trustforge.outputs.report_path != ''
+        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "TrustForge: E-E-A-T health report run #${{
-            steps.trustforge.outputs.run_number }}"
-          title: "[TrustForge] E-E-A-T Health Report #${{
-            steps.trustforge.outputs.run_number }}"
-          body: >
+          commit-message: "TrustForge: E-E-A-T health report run #${{ steps.trustforge.outputs.run_number }}"
+          title: "[TrustForge] E-E-A-T Health Report #${{ steps.trustforge.outputs.run_number }}"
+          body: |
             ## TrustForge E-E-A-T Health Report
 
-
-            Automated daily E-E-A-T (Experience, Expertise, Authoritativeness,
-            Trustworthiness) health check.
-
+            Automated daily E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) health check.
 
             **Report:** `${{ steps.trustforge.outputs.report_path }}`  
-
             **Run Number:** #${{ steps.trustforge.outputs.run_number }}  
-
             **Issues Found:** ${{ steps.trustforge.outputs.total_issues }}
 
-
             ### Automated Checks Completed
-
             - ✅ Schema.org markup validation (with HTML parsing)
-
             - ✅ HTTPS certificate validation (with SSL verification)
-
             - ✅ Broken link detection (using linkchecker)
-
             - ✅ Lighthouse SEO audit (threshold from config)
-
             - ℹ️  Google Search Console monitoring (requires API key)
-
             - ℹ️  Knowledge Panel status (manual verification)
 
-
             ### Next Steps
-
-            Review the health report and address any issues identified by
-            automated checks.
-
+            Review the health report and address any issues identified by automated checks.
 
             ---
-
             *Generated by TrustForge — E-E-A-T Trust Authority Agent*  
-
             *Skill: `skills/eeat-trust-authority/`*  
-
             *Run ID: ${{ github.run_id }}*
           branch: trustforge/eeat-health-run-${{ steps.trustforge.outputs.run_number }}
           delete-branch: true
@@ -518,18 +382,13 @@ jobs:
             trustforge
             seo
       - name: Notify on failure
-        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true &&
-          steps.trustforge.outputs.notify_on_failure == 'true' &&
-          steps.trustforge.outputs.ssl_errors != '0'
+        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_failure == 'true' && steps.trustforge.outputs.ssl_errors != '0'
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
-
             const runNumber = '${{ steps.trustforge.outputs.run_number }}';
-
             const sslErrors = '${{ steps.trustforge.outputs.ssl_errors }}';
-
             await github.rest.issues.create({
               owner,
               repo,
@@ -550,22 +409,14 @@ jobs:
               labels: ['trustforge', 'failure', 'automated']
             });
       - name: Notify on warning
-        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true &&
-          steps.trustforge.outputs.notify_on_warning == 'true' &&
-          steps.trustforge.outputs.total_issues != '0' &&
-          steps.trustforge.outputs.ssl_errors == '0'
+        if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_warning == 'true' && steps.trustforge.outputs.total_issues != '0' && steps.trustforge.outputs.ssl_errors == '0'
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
-
             const runNumber = '${{ steps.trustforge.outputs.run_number }}';
-
-            const schemaErrors = '${{ steps.trustforge.outputs.schema_errors
-            }}';
-
+            const schemaErrors = '${{ steps.trustforge.outputs.schema_errors }}';
             const linkErrors = '${{ steps.trustforge.outputs.link_errors }}';
-
             await github.rest.issues.create({
               owner,
               repo,
@@ -598,22 +449,13 @@ jobs:
           echo "gh workflow run eeat-trust-cron.yml"
       - name: Job summary
         if: always()
-        run: >
-          echo "## TrustForge E-E-A-T Automation Summary" >>
-          $GITHUB_STEP_SUMMARY
-
+        run: |
+          echo "## TrustForge E-E-A-T Automation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
           echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-
-          echo "**Quiet Mode:** ${{ steps.quiet.outputs.active == 'true' && '🟢
-          OFF (running)' || '🔇 ON (paused)' }}" >> $GITHUB_STEP_SUMMARY
-
-          echo "**Dry Run:** ${{ inputs.dry_run && '✅ Yes' || '❌ No' }}" >>
-          $GITHUB_STEP_SUMMARY
-
+          echo "**Quiet Mode:** ${{ steps.quiet.outputs.active == 'true' && '🟢 OFF (running)' || '🔇 ON (paused)' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** ${{ inputs.dry_run && '✅ Yes' || '❌ No' }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
 
           if [ "${{ steps.quiet.outputs.active }}" == "true" ]; then
             echo "### Tasks Completed" >> $GITHUB_STEP_SUMMARY
@@ -630,3 +472,5 @@ jobs:
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

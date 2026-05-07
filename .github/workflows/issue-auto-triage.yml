@@ -17,65 +17,45 @@ jobs:
       - name: Auto-label based on title and body
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const issue = context.payload.issue;
-
             const title = issue.title.toLowerCase();
-
             const body = (issue.body || '').toLowerCase();
-
             const labels = [];
 
-
             // Type detection
-
-            if (title.includes('bug') || body.includes('error') ||
-            body.includes('crash')) {
+            if (title.includes('bug') || body.includes('error') || body.includes('crash')) {
               labels.push('bug');
             }
-
-            if (title.includes('feature') || title.includes('add') ||
-            title.includes('implement')) {
+            if (title.includes('feature') || title.includes('add') || title.includes('implement')) {
               labels.push('enhancement');
             }
-
             if (title.includes('doc') || body.includes('documentation')) {
               labels.push('documentation');
             }
-
             if (title.includes('question') || title.includes('how to')) {
               labels.push('question');
             }
 
-
             // Priority detection
-
-            if (title.includes('critical') || title.includes('urgent') ||
-            body.includes('production')) {
+            if (title.includes('critical') || title.includes('urgent') || body.includes('production')) {
               labels.push('priority:high');
             } else if (title.includes('important')) {
               labels.push('priority:medium');
             }
 
-
             // Component detection
-
-            if (body.includes('ui') || body.includes('interface') ||
-            body.includes('dashboard')) {
+            if (body.includes('ui') || body.includes('interface') || body.includes('dashboard')) {
               labels.push('area:ui');
             }
-
             if (body.includes('api') || body.includes('backend')) {
               labels.push('area:api');
             }
-
             if (body.includes('automation') || body.includes('workflow')) {
               labels.push('area:automation');
             }
 
-
             // Apply labels if any detected
-
             if (labels.length > 0) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -89,9 +69,8 @@ jobs:
         if: contains(github.event.issue.labels.*.name, 'enhancement')
         continue-on-error: true
         with:
-          script: >
+          script: |
             const issue = context.payload.issue;
-
             const branchName = `issue-${issue.number}-${issue.title
               .toLowerCase()
               .replace(/[^a-z0-9]/g, '-')
@@ -103,7 +82,6 @@ jobs:
               repo: context.repo.repo,
               branch: 'main'
             });
-
 
             try {
               await github.rest.git.createRef({
@@ -123,3 +101,5 @@ jobs:
               console.log('Branch creation skipped (may already exist):', error.message);
             }
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

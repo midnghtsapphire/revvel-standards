@@ -59,45 +59,32 @@ jobs:
         uses: actions/checkout@v4
       - name: Analyze error
         id: analyze
-        run: >
+        run: |
           ERROR_TYPE="${{ inputs.error_type }}"
 
-
           # Determine labels
-
           LABELS="auto-error,needs-fix,$ERROR_TYPE"
 
-
           # Determine if auto-recovery should be attempted
-
           RECOVERY_NEEDED="true"
-
-          if [[ "$ERROR_TYPE" == "openrouter" ]] || [[ "$ERROR_TYPE" ==
-          "api_timeout" ]]; then
+          if [[ "$ERROR_TYPE" == "openrouter" ]] || [[ "$ERROR_TYPE" == "api_timeout" ]]; then
             LABELS="$LABELS,ralph-loop,auto-fix"
           fi
 
-
           # Determine assignee
-
           ASSIGNEE="copilot"
-
           if [[ "$ERROR_TYPE" == "deploy_failure" ]]; then
             ASSIGNEE="midnghtsapphire"
             RECOVERY_NEEDED="false"
           fi
 
-
           echo "labels=$LABELS" >> $GITHUB_OUTPUT
-
           echo "assignee=$ASSIGNEE" >> $GITHUB_OUTPUT
-
           echo "recovery_needed=$RECOVERY_NEEDED" >> $GITHUB_OUTPUT
       - name: Gather additional context
         id: context
-        run: >
+        run: |
           # Get workflow logs if run ID provided
-
           if [[ -n "${{ inputs.workflow_run_id }}" ]]; then
             gh run view ${{ inputs.workflow_run_id }} --log > workflow_logs.txt || true
             LOGS=$(head -n 100 workflow_logs.txt)
@@ -105,32 +92,20 @@ jobs:
             LOGS="No workflow logs available"
           fi
 
-
           # Get recent commits
-
           RECENT_COMMITS=$(git log --oneline -5)
 
-
           # Get current branch
-
           BRANCH=$(git branch --show-current)
 
-
           # Save to outputs
-
           echo "logs<<EOF" >> $GITHUB_OUTPUT
-
           echo "$LOGS" >> $GITHUB_OUTPUT
-
           echo "EOF" >> $GITHUB_OUTPUT
-
 
           echo "commits<<EOF" >> $GITHUB_OUTPUT
-
           echo "$RECENT_COMMITS" >> $GITHUB_OUTPUT
-
           echo "EOF" >> $GITHUB_OUTPUT
-
 
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
         env:
@@ -238,12 +213,9 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
-          script: >
-            const issueNumber = '${{ steps.create_issue.outputs.issue_number
-            }}';
-
+          script: |
+            const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
             const issueUrl = '${{ steps.create_issue.outputs.issue_url }}';
-
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -280,12 +252,10 @@ jobs:
           done
       - name: Attempt recovery for API timeouts
         if: inputs.error_type == 'api_timeout'
-        run: >
+        run: |
           echo "Implementing exponential backoff retry..."
 
-
           # Try with increasing timeouts
-
           for ATTEMPT in 1 2 3; do
             TIMEOUT=$((10 * ATTEMPT * ATTEMPT))
             echo "Attempt $ATTEMPT with ${TIMEOUT}s timeout"
@@ -320,21 +290,16 @@ jobs:
       - name: Comment recovery results
         uses: actions/github-script@v7
         with:
-          script: >
-            const issueNumber = ${{
-            needs.capture-and-create-issue.outputs.issue_number }};
-
+          script: |
+            const issueNumber = ${{ needs.capture-and-create-issue.outputs.issue_number }};
             const fs = require('fs');
 
-
             let recoveryLog = 'No recovery log available';
-
             try {
               recoveryLog = fs.readFileSync('recovery_log.txt', 'utf8');
             } catch (e) {
               console.log('Could not read recovery log');
             }
-
 
             const body = `### Automatic Recovery Attempt\n\n` +
               `Recovery protocol executed at ${new Date().toISOString()}\n\n` +
@@ -356,24 +321,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Summary
-        run: >
+        run: |
           echo "## Auto-Error Handler Summary" >> $GITHUB_STEP_SUMMARY
-
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "- **Error Type:** ${{ inputs.error_type }}" >>
-          $GITHUB_STEP_SUMMARY
-
-          echo "- **Issue Created:** #${{
-          needs.capture-and-create-issue.outputs.issue_number }}" >>
-          $GITHUB_STEP_SUMMARY
-
-          echo "- **Recovery Attempted:** ${{
-          needs.capture-and-create-issue.outputs.recovery_needed }}" >>
-          $GITHUB_STEP_SUMMARY
-
+          echo "- **Error Type:** ${{ inputs.error_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Issue Created:** #${{ needs.capture-and-create-issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Recovery Attempted:** ${{ needs.capture-and-create-issue.outputs.recovery_needed }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "View issue: ${{ needs.capture-and-create-issue.outputs.issue_url
-          }}" >> $GITHUB_STEP_SUMMARY
+          echo "View issue: ${{ needs.capture-and-create-issue.outputs.issue_url }}" >> $GITHUB_STEP_SUMMARY
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

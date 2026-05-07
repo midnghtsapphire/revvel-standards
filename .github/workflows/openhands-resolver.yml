@@ -14,16 +14,14 @@ permissions:
   issues: write
   pull-requests: write
 concurrency:
-  group: openhands-resolver-${{ github.event.issue.number ||
-    github.event.inputs.issue_number || github.run_id }}
+  group: openhands-resolver-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 jobs:
   preflight:
     name: Check OpenHands credentials
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') || (github.event_name ==
-      'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.label.name == 'fix-me' &&
        github.event.issue.user.login != 'github-actions[bot]')
     outputs:
@@ -35,12 +33,9 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
-        run: >
-          ISSUE_NUMBER="${{ github.event.issue.number ||
-          github.event.inputs.issue_number }}"
-
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number || github.event.inputs.issue_number }}"
           echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
-
 
           if [[ -z "$OPENROUTER_API_KEY" && -z "$OPENHANDS_API_KEY" ]]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
@@ -59,33 +54,26 @@ jobs:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber = parseInt(
               '${{ needs.preflight.outputs.issue_number }}',
               10
             );
-
             if (!issueNumber) return;
 
-
             // Don't repeat the notice on every label-fire; check for an
-
             // existing notice first.
-
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
             });
-
             const marker = '<!-- openhands-resolver:setup-needed -->';
-
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
               return;
             }
-
 
             const body = [
               marker,
@@ -105,14 +93,12 @@ jobs:
               'a human can take it up. See `docs/agent-stack/AGENT_STACK_SETUP.md`.',
             ].join('\n');
 
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               body,
             });
-
 
             try {
               await github.rest.issues.addLabels({
@@ -173,13 +159,10 @@ jobs:
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
         with:
-          script: >
+          script: |
             const outcome = process.env.OUTCOME || 'unknown';
-
             const emoji = outcome === 'success' ? '✅' : '⚠️';
-
             const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -195,3 +178,5 @@ jobs:
               ].join('\n'),
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

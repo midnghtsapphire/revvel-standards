@@ -30,8 +30,7 @@ on:
   schedule:
     - cron: 0 8 * * *
 concurrency:
-  group: noimosai-${{ github.event_name }}-${{ github.event.issue.number ||
-    github.run_id }}
+  group: noimosai-${{ github.event_name }}-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
 jobs:
   dispatch:
@@ -46,7 +45,7 @@ jobs:
       NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
     steps:
       - name: Verify NOIMOSAI_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${NOIMOSAI_API_KEY}" ]; then
             echo "::warning::NOIMOSAI_API_KEY is not set — skipping NoimosAI invocation."
             echo "Configure it at: Settings → Secrets and variables → Actions → New repository secret"
@@ -61,7 +60,7 @@ jobs:
           PROJECT: ${{ github.event.inputs.project }}
           TASK_TYPE: ${{ github.event.inputs.task_type }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: >
+        run: |
           PAYLOAD=$(node -e "
             const payload = {
               prompt: String(process.env.PROMPT || ''),
@@ -77,18 +76,14 @@ jobs:
             console.log(JSON.stringify(payload));
           ")
 
-
-          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}"
-          \
+          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}" \
             -X POST "https://api.noimosai.com/v1/tasks" \
             -H "Authorization: Bearer ${NOIMOSAI_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD")
 
           echo "HTTP status: $HTTP_STATUS"
-
           cat /tmp/noimosai-response.json 2>/dev/null || true
-
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
             echo "✅ NoimosAI task submitted successfully."
@@ -99,9 +94,8 @@ jobs:
     timeout-minutes: 30
   invoke-on-issue:
     name: NoimosAI on marketing issue
-    if: >-
-      github.event_name == 'issues' && (github.event.action == 'opened' ||
-      github.event.action == 'reopened') && (
+    if: |-
+      github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && (
         contains(github.event.issue.labels.*.name, 'noimosai')    ||
         contains(github.event.issue.labels.*.name, 'marketing')   ||
         contains(github.event.issue.labels.*.name, 'seo')         ||
@@ -117,7 +111,7 @@ jobs:
       NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
     steps:
       - name: Verify NOIMOSAI_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${NOIMOSAI_API_KEY}" ]; then
             echo "::warning::NOIMOSAI_API_KEY is not set — skipping NoimosAI invocation."
           else
@@ -146,7 +140,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: >
+        run: |
           PAYLOAD=$(node -e "
             const labelStr = String(process.env.ISSUE_LABELS || '');
             const labels = labelStr.split(',').filter(Boolean);
@@ -168,16 +162,13 @@ jobs:
             console.log(JSON.stringify(payload));
           ")
 
-
-          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}"
-          \
+          HTTP_STATUS=$(curl -s -o /tmp/noimosai-response.json -w "%{http_code}" \
             -X POST "https://api.noimosai.com/v1/tasks" \
             -H "Authorization: Bearer ${NOIMOSAI_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD")
 
           echo "HTTP status: $HTTP_STATUS"
-
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
             echo "✅ NoimosAI task submitted for issue #${ISSUE_NUMBER}."
@@ -191,13 +182,9 @@ jobs:
         if: env.NOIMOSAI_API_KEY != ''
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const labels = context.payload.issue.labels.map(l => l.name);
-
-            const taskType = labels.find(l =>
-            ['seo','content','affiliate','email','social'].includes(l)) ||
-            'marketing';
-
+            const taskType = labels.find(l => ['seo','content','affiliate','email','social'].includes(l)) || 'marketing';
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -222,7 +209,7 @@ jobs:
       NOIMOSAI_WORKSPACE_ID: ${{ vars.NOIMOSAI_WORKSPACE_ID }}
     steps:
       - name: Verify NOIMOSAI_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${NOIMOSAI_API_KEY}" ]; then
             echo "::warning::NOIMOSAI_API_KEY is not set — skipping daily NoimosAI refresh."
           else
@@ -232,7 +219,7 @@ jobs:
         if: env.NOIMOSAI_API_KEY != ''
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: >
+        run: |
           for TASK_TYPE in seo content affiliate; do
             PAYLOAD=$(DAILY_TASK_TYPE="$TASK_TYPE" node -e "
               const taskType = String(process.env.DAILY_TASK_TYPE || 'general');
@@ -261,3 +248,5 @@ jobs:
             fi
           done
     timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

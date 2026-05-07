@@ -38,18 +38,12 @@ jobs:
             needs-human
           default_label: triage
       - name: Summarise match result
-        run: >
+        run: |
           echo "### Match Labels" >> "$GITHUB_STEP_SUMMARY"
-
           echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "- **matched_labels_count:** ${{
-          steps.match.outputs.matched_labels_count }}" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "- **matched_labels:** \`${{ steps.match.outputs.matched_labels
-          }}\`" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "- **matched_labels_array:** \`${{
-          steps.match.outputs.matched_labels_array }}\`" >>
-          "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels_count:** ${{ steps.match.outputs.matched_labels_count }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels:** \`${{ steps.match.outputs.matched_labels }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **matched_labels_array:** \`${{ steps.match.outputs.matched_labels_array }}\`" >> "$GITHUB_STEP_SUMMARY"
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

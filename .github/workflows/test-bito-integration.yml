@@ -231,3 +231,5 @@ jobs:
           echo "BITO_API_KEY is available — running API tests..."
           ./scripts/test-bito-api.sh
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

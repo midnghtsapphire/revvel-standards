@@ -16,16 +16,14 @@ permissions:
   contents: read
   issues: write
 concurrency:
-  group: openrouter-auto-route-${{ github.event.issue.number ||
-    github.event.inputs.issue_number || github.run_id }}
+  group: openrouter-auto-route-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 jobs:
   auto-route:
     name: Apply agent-trigger labels based on Output Type
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') || (github.event_name ==
-      'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
@@ -34,7 +32,7 @@ jobs:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber =
               context.payload.issue?.number ||
               parseInt(context.payload.inputs?.issue_number || '0', 10);
@@ -43,43 +41,31 @@ jobs:
               return;
             }
 
-
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
             });
 
-
             const body = issue.body || '';
-
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
 
-
             // Match the `### Output Type (required)` form section — tolerant of
-
             // trailing parenthetical annotations and case (matches the same
-
             // regex pattern as `wr-auto-classify.yml`).
-
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-
             if (!m) {
               core.info('No Output Type section found in issue body — skipping route.');
               return;
             }
-
             const outputType = m[1].trim().toLowerCase();
-
             core.info(`Parsed Output Type: "${outputType}"`);
 
-
             // Routing table — mode → list of agent-trigger labels.
-
             const routingTable = {
               'cli-product':                   ['swe-fix'],
               'api-product':                   ['swe-fix'],
@@ -94,22 +80,17 @@ jobs:
               'internal-script-automation':    ['fix-me'],
             };
 
-
             const agentLabels = routingTable[outputType] || [];
 
-
             // Always-on: BITO reviews every WR's resulting PR (idempotent).
-
             const labelsToApply = Array.from(
               new Set([...agentLabels, 'bito-ai'])
             ).filter(l => !existingLabels.includes(l));
-
 
             if (labelsToApply.length === 0) {
               core.info('All routing labels already present — nothing to do.');
               return;
             }
-
 
             try {
               await github.rest.issues.addLabels({
@@ -128,11 +109,8 @@ jobs:
               );
             }
 
-
             // Surface the routing decision in the run summary so it's visible
-
             // without checking the issue's label timeline.
-
             await core.summary
               .addHeading('Auto-routed WR')
               .addRaw(`Issue: #${issueNumber}\n\n`)
@@ -140,3 +118,5 @@ jobs:
               .addRaw(`Labels applied: ${labelsToApply.length ? labelsToApply.map(l => `\`${l}\``).join(', ') : '_(none — all already present)_'}\n`)
               .write();
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -27,9 +27,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: amplitude-events-${{ github.event_name }}-${{ github.event.issue.number
-    || github.event.pull_request.number || github.event.release.id ||
-    github.run_id }}
+  group: amplitude-events-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.event.release.id || github.run_id }}
   cancel-in-progress: false
 jobs:
   send:
@@ -42,23 +40,19 @@ jobs:
           AMPLITUDE_API_KEY: ${{ secrets.AMPLITUDE_API_KEY }}
           AMPLITUDE_ENABLED: ${{ vars.AMPLITUDE_ENABLED }}
           AMPLITUDE_REGION: ${{ vars.AMPLITUDE_REGION }}
-        run: >
+        run: |
           enabled="${AMPLITUDE_ENABLED:-true}"
-
           region="${AMPLITUDE_REGION:-us}"
-
           if [ "${enabled}" != "true" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "::notice::AMPLITUDE_ENABLED=${enabled} — skipping send."
             exit 0
           fi
-
           if [ -z "${AMPLITUDE_API_KEY}" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "::warning::AMPLITUDE_API_KEY is not set. Skipping. See standards/AMPLITUDE_INTEGRATION_STANDARD.md."
             exit 0
           fi
-
           case "${region}" in
             eu) endpoint="https://api.eu.amplitude.com/2/httpapi" ;;
             us|"") endpoint="https://api2.amplitude.com/2/httpapi" ;;
@@ -67,11 +61,8 @@ jobs:
               endpoint="https://api2.amplitude.com/2/httpapi"
               ;;
           esac
-
           echo "skip=false" >> "$GITHUB_OUTPUT"
-
           echo "endpoint=${endpoint}" >> "$GITHUB_OUTPUT"
-
           echo "region=${region}" >> "$GITHUB_OUTPUT"
       - name: Build event payload
         if: steps.verify.outputs.skip != 'true'
@@ -80,18 +71,13 @@ jobs:
         env:
           DISPATCH_EVENT_TYPE: ${{ github.event.inputs.event_type }}
         with:
-          script: >
+          script: |
             const e = context.eventName;
-
             const p = context.payload || {};
-
             const repo = `${context.repo.owner}/${context.repo.repo}`;
 
-
             // Map GitHub event → Amplitude event_type + properties.
-
             let eventType = `gh_${e}`;
-
             const props = {
               repo,
               workflow: context.workflow,
@@ -102,7 +88,6 @@ jobs:
               sha: context.sha || null,
               actor: context.actor || null,
             };
-
 
             if (e === 'issues' && p.issue) {
               eventType = `gh_issue_${p.action}`;
@@ -140,13 +125,9 @@ jobs:
               eventType = process.env.DISPATCH_EVENT_TYPE || 'amplitude_workflow_verify';
             }
 
-
             // Stable per-repo user_id so Amplitude can group by repo.
-
             const userId = `gh:${repo}`;
-
             const insertId = `${context.runId}-${context.runNumber}-${e}`;
-
 
             const event = {
               user_id: userId,
@@ -159,11 +140,8 @@ jobs:
               platform: 'github-actions',
             };
 
-
             core.setOutput('event_type', eventType);
-
             core.setOutput('event_json', JSON.stringify(event));
-
             core.summary
               .addHeading('Amplitude event')
               .addRaw(`Event type: \`${eventType}\``).addBreak()
@@ -176,35 +154,28 @@ jobs:
           AMPLITUDE_API_KEY: ${{ secrets.AMPLITUDE_API_KEY }}
           AMPLITUDE_ENDPOINT: ${{ steps.verify.outputs.endpoint }}
           EVENT_JSON: ${{ steps.payload.outputs.event_json }}
-        run: >
+        run: |
           set -euo pipefail
-
           # Wrap the single event in the V2 envelope and let jq inject the API
-
           # key safely (no shell-quoting risk, no key in the process table).
-
           body="$(
             EVENT_JSON="${EVENT_JSON}" AMPLITUDE_API_KEY="${AMPLITUDE_API_KEY}" \
               jq -n '{api_key: env.AMPLITUDE_API_KEY, events: [(env.EVENT_JSON | fromjson)]}'
           )"
-
           # Send and capture HTTP status; fail loudly on non-2xx.
-
           http_code="$(
             printf '%s' "${body}" | curl -sS -o /tmp/amplitude.out -w '%{http_code}' \
               -X POST "${AMPLITUDE_ENDPOINT}" \
               -H 'Content-Type: application/json' \
               --data-binary @-
           )"
-
           echo "Amplitude response (${http_code}):"
-
           cat /tmp/amplitude.out || true
-
           echo
-
           case "${http_code}" in
             2*) echo "✅ Sent to Amplitude (HTTP ${http_code})." ;;
             *)  echo "::error::Amplitude rejected the event (HTTP ${http_code})."; exit 1 ;;
           esac
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

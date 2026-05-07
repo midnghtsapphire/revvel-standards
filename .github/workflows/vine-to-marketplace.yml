@@ -28,12 +28,9 @@ jobs:
   fetch-and-post:
     name: Fetch Emails + Post New Products
     runs-on: ubuntu-latest
-    if: >
-      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * *')
-      ||
-
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.action
-      == 'fetch' || github.event.inputs.action == 'post'))
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'fetch' || github.event.inputs.action == 'post'))
     permissions:
       contents: read
     defaults:
@@ -106,12 +103,9 @@ jobs:
   repost-stale:
     name: Repost Stale Listings
     runs-on: ubuntu-latest
-    if: >
-      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1')
-      ||
-
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.action ==
-      'repost')
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * 1') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'repost')
     permissions:
       contents: read
     defaults:
@@ -145,8 +139,7 @@ jobs:
   manual-dispatch:
     name: Manual Action — ${{ github.event.inputs.action }}
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action ==
-      'summary' || github.event.inputs.action == 'post-dry-run')
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'summary' || github.event.inputs.action == 'post-dry-run')
     permissions:
       contents: read
     defaults:
@@ -182,3 +175,5 @@ jobs:
         if: github.event.inputs.action == 'post-dry-run'
         run: node index.js post --dry-run
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

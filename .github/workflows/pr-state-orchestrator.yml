@@ -40,33 +40,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const pr = context.payload.pull_request;
-
             const prNumber = pr.number;
-
             const isDraft = pr.draft;
-
             const action = context.payload.action;
-
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
 
-
-            const { data: labelData } = await
-            github.rest.issues.listLabelsOnIssue({
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
               owner, repo, issue_number: prNumber
             });
-
             const currentLabels = labelData.map(l => l.name);
-
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
               'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
             ];
-
 
             async function ensureLabelsExist(labels) {
               const palette = {
@@ -90,7 +80,6 @@ jobs:
               }
             }
 
-
             async function addLabel(label) {
               await ensureLabelsExist([label]);
               if (!currentLabels.includes(label)) {
@@ -102,7 +91,6 @@ jobs:
                 }
               }
             }
-
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
                 try {
@@ -112,22 +100,17 @@ jobs:
               }
             }
 
-
             // Skip label events that are just our own automation echoing back
-
             if (action === 'labeled' || action === 'unlabeled') {
               console.log('🏷️ Label event — skipping to avoid echo loops');
               return;
             }
 
-
-            if (action === 'converted_to_draft' || (action === 'opened' &&
-            isDraft)) {
+            if (action === 'converted_to_draft' || (action === 'opened' && isDraft)) {
               await addLabel('status:draft');
               for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge','status:needs-action']) await removeLabel(l);
               return;
             }
-
 
             if (action === 'ready_for_review') {
               await addLabel('status:waiting-for-review');
@@ -135,13 +118,11 @@ jobs:
               return;
             }
 
-
             if (action === 'opened' && !isDraft) {
               await addLabel('status:waiting-for-review');
               await removeLabel('status:draft');
               return;
             }
-
 
             if (action === 'reopened') {
               await (isDraft ? addLabel('status:draft') : addLabel('status:waiting-for-review'));
@@ -149,14 +130,12 @@ jobs:
               return;
             }
 
-
             if (action === 'synchronize') {
               for (const l of ['status:approved','status:ready-to-merge']) await removeLabel(l);
               if (!isDraft) await addLabel('status:waiting-for-review');
               console.log('📤 New commits — approval invalidated, back to review');
               return;
             }
-
 
             if (action === 'closed') {
               for (const l of ALL_STATUS) await removeLabel(l);
@@ -172,43 +151,29 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const review = context.payload.review;
-
             const pr = context.payload.pull_request;
-
             const prNumber = pr.number;
-
             const state = review.state.toLowerCase();
-
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
 
+            if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            if (state === 'commented') { console.log('💬 Comment only — no state
-            change'); return; }
-
-
-            const { data: labelData } = await
-            github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number:
-            prNumber });
-
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
             const currentLabels = labelData.map(l => l.name);
-
 
             async function addLabel(label) {
               if (!currentLabels.includes(label)) {
                 try { await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] }); } catch(e) {}
               }
             }
-
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
                 try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }); } catch(e) {}
               }
             }
-
 
             if (state === 'approved') {
               await addLabel('status:approved');
@@ -234,7 +199,6 @@ jobs:
               }
             }
 
-
             if (state === 'changes_requested') {
               await addLabel('status:needs-action');
               for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
@@ -250,36 +214,25 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const suite = context.payload.check_suite;
-
             const conclusion = suite.conclusion;
-
             const headSha = suite.head_sha;
-
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
 
-
-            if (!conclusion ||
-            ['skipped','neutral','stale'].includes(conclusion)) {
+            if (!conclusion || ['skipped','neutral','stale'].includes(conclusion)) {
               console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
               return;
             }
 
-
-            const { data: prs } = await github.rest.pulls.list({ owner, repo,
-            state: 'open', per_page: 100 });
-
+            const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
             const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
-
 
             if (matchingPRs.length === 0) {
               console.log(`No open PRs for SHA ${headSha}`);
               return;
             }
-
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
@@ -383,30 +336,23 @@ jobs:
     timeout-minutes: 30
   resync-all-prs:
     name: 🔄 Re-sync All Open PRs
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch'
-      && github.event.inputs.pr_number == '')
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
     runs-on: ubuntu-latest
     steps:
       - name: Re-evaluate every open PR
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
-
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
               'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
             ];
 
-
-            const { data: openPRs } = await github.rest.pulls.list({ owner,
-            repo, state: 'open', per_page: 100 });
-
+            const { data: openPRs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
             console.log(`🔍 Re-syncing ${openPRs.length} open PRs...`);
-
 
             for (const pr of openPRs) {
               const prNumber = pr.number;
@@ -493,45 +439,31 @@ jobs:
                 console.log(`  PR #${prNumber}: ⚠️ error — ${err.message}`);
               }
             }
-
             console.log('✅ Re-sync complete');
     timeout-minutes: 15
   manual-reevaluate:
     name: 🔄 Manual Re-evaluate Single PR
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number !=
-      ''
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
     runs-on: ubuntu-latest
     steps:
       - name: Re-evaluate PR state from scratch
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const prNumber = parseInt('${{ github.event.inputs.pr_number }}');
-
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
 
-
-            const { data: pr } = await github.rest.pulls.get({ owner, repo,
-            pull_number: prNumber });
-
-            const { data: reviews } = await github.rest.pulls.listReviews({
-            owner, repo, pull_number: prNumber });
-
-            const { data: labelData } = await
-            github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number:
-            prNumber });
-
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+            const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
             let currentLabels = labelData.map(l => l.name);
-
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
               'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
             ];
-
 
             async function addLabel(label) {
               if (!currentLabels.includes(label)) {
@@ -542,7 +474,6 @@ jobs:
                 } catch(e) {}
               }
             }
-
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
                 try {
@@ -553,31 +484,19 @@ jobs:
               }
             }
 
-
             // Clear all status labels first
-
             for (const l of ALL_STATUS) await removeLabel(l);
 
-
-            if (pr.draft) { await addLabel('status:draft'); console.log(`PR
-            #${prNumber}: DRAFT`); return; }
-
+            if (pr.draft) { await addLabel('status:draft'); console.log(`PR #${prNumber}: DRAFT`); return; }
 
             // Determine review state
-
             const latestReviews = {};
-
             for (const r of reviews) {
               if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
             }
-
             const states = Object.values(latestReviews);
-
-            const isApproved = states.includes('APPROVED') &&
-            !states.includes('CHANGES_REQUESTED');
-
+            const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
             const needsChanges = states.includes('CHANGES_REQUESTED');
-
 
             if (needsChanges) {
               await addLabel('status:needs-action');
@@ -587,24 +506,14 @@ jobs:
               await addLabel('status:waiting-for-review');
             }
 
-
             // Determine CI state from check runs
-
             const { data: checkRuns } = await github.rest.checks.listForRef({
               owner, repo, ref: pr.head.sha, per_page: 100
             });
-
-            const completed = checkRuns.check_runs.filter(r => r.status ===
-            'completed');
-
-            const failing = completed.filter(r =>
-            ['failure','timed_out','cancelled'].includes(r.conclusion));
-
+            const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+            const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
             const passing = completed.filter(r => r.conclusion === 'success');
-
-            const pending = checkRuns.check_runs.filter(r => r.status !==
-            'completed');
-
+            const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
             if (failing.length > 0) {
               await addLabel('status:checks-failing');
@@ -620,6 +529,7 @@ jobs:
             } else if (pending.length > 0) {
               console.log(`PR #${prNumber}: ${pending.length} check(s) still running`);
             }
-
             console.log(`PR #${prNumber} re-evaluated successfully`);
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

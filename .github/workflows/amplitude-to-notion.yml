@@ -40,3 +40,5 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: node scripts/amplitude-to-notion.js
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

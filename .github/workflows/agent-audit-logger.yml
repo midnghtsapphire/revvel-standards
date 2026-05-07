@@ -42,9 +42,8 @@ concurrency:
 jobs:
   log-agent-action:
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_dispatch' && github.event_name !=
-      'schedule' && !(github.event_name == 'issues' &&
+    if: |-
+      github.event_name != 'workflow_dispatch' && github.event_name != 'schedule' && !(github.event_name == 'issues' &&
         github.event.issue.user.login == 'github-actions[bot]' &&
         (startsWith(github.event.issue.title, '[FAILURE]') ||
          startsWith(github.event.issue.title, '[ALERT]'))) &&
@@ -65,30 +64,21 @@ jobs:
       - name: Log agent action
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const fs = require('fs');
-
             const crypto = require('crypto');
 
-
             // Determine agent/actor
-
             let actor = context.actor;
-
             let agentType = 'human';
-
 
             if (actor.includes('[bot]') || actor === 'github-actions[bot]') {
               agentType = 'bot';
             }
 
-
             // Get previous hash for chain integrity
-
             let prevHash = '0000000000000000';
-
             const logPath = 'logs/agent-audit/audit.jsonl';
-
 
             try {
               if (fs.existsSync(logPath)) {
@@ -102,9 +92,7 @@ jobs:
               console.log('Starting new audit chain');
             }
 
-
             // Build audit entry
-
             const entry = {
               timestamp: new Date().toISOString(),
               event_type: context.eventName,
@@ -121,29 +109,19 @@ jobs:
               repository: context.repo.repo,
             };
 
-
             // Calculate entry hash for chain integrity
-
             const entryStr = JSON.stringify(entry, null, 0);
-
-            entry.entry_hash =
-            crypto.createHash('sha256').update(entryStr).digest('hex');
-
+            entry.entry_hash = crypto.createHash('sha256').update(entryStr).digest('hex');
 
             // Append to log
-
             fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
 
-
-            console.log('✅ Audit entry logged:', entry.entry_hash.substring(0,
-            8));
+            console.log('✅ Audit entry logged:', entry.entry_hash.substring(0, 8));
       - name: Commit audit log
         continue-on-error: true
-        run: >
+        run: |
           git config user.name "github-actions[bot]"
-
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
 
           if [[ -n $(git status --porcelain logs/agent-audit/) ]]; then
             git add logs/agent-audit/
@@ -178,8 +156,7 @@ jobs:
     timeout-minutes: 30
   health-check:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch'
-      && github.event.inputs.action == 'health_check')
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'health_check')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -188,24 +165,17 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          script: >
+          script: |
             const fs = require('fs');
-
             const path = require('path');
-
 
             console.log('🔍 Analyzing agent health...');
 
-
             // Check for incomplete work indicators
-
             const problems = [];
 
-
             // 1. Check for TODO/placeholder language in recent commits
-
             const { execSync } = require('child_process');
-
             try {
               const recentDiff = execSync('git log --since="24 hours ago" -p --grep="TODO\\|FIXME\\|scaffold\\|placeholder\\|Phase 1" -i', {encoding: 'utf8'});
               if (recentDiff.includes('TODO') || recentDiff.includes('scaffold') || recentDiff.includes('placeholder')) {
@@ -220,9 +190,7 @@ jobs:
               // No matches found - good!
             }
 
-
             // 2. Check for stalled PRs
-
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -230,12 +198,10 @@ jobs:
               per_page: 100
             });
 
-
             const stalledPRs = prs.filter(pr => {
               const daysSinceUpdate = (Date.now() - new Date(pr.updated_at)) / (1000 * 60 * 60 * 24);
               return daysSinceUpdate > 2 && !pr.draft;
             });
-
 
             if (stalledPRs.length > 0) {
               problems.push({
@@ -248,23 +214,18 @@ jobs:
               });
             }
 
-
             // 3. Check for failed workflow runs
-
-            const { data: runs } = await
-            github.rest.actions.listWorkflowRunsForRepo({
+            const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               status: 'failure',
               per_page: 20
             });
 
-
             const recentFailures = runs.workflow_runs.filter(run => {
               const hoursSinceFailure = (Date.now() - new Date(run.updated_at)) / (1000 * 60 * 60);
               return hoursSinceFailure < 24;
             });
-
 
             if (recentFailures.length > 3) {
               problems.push({
@@ -277,11 +238,8 @@ jobs:
               });
             }
 
-
             // 4. Check audit log for issues
-
             const auditPath = 'logs/agent-audit/audit.jsonl';
-
             if (fs.existsSync(auditPath)) {
               const lines = fs.readFileSync(auditPath, 'utf8').trim().split('\n').filter(l => l);
               const last24h = lines.filter(line => {
@@ -309,23 +267,16 @@ jobs:
               }
             }
 
-
             // Report results
-
             if (problems.length === 0) {
               console.log('✅ All agent health checks passed');
               return;
             }
 
-
             console.log(`⚠️ Found ${problems.length} health issues`);
 
-
             // Create issue if critical problems found
-
-            const criticalProblems = problems.filter(p => p.severity ===
-            'high');
-
+            const criticalProblems = problems.filter(p => p.severity === 'high');
             if (criticalProblems.length > 0) {
               const body = [
                 '## 🚨 Agent Health Alert',
@@ -377,8 +328,7 @@ jobs:
     timeout-minutes: 30
   token-usage-report:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action ==
-      'token_report'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'token_report'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -387,24 +337,18 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          script: >
+          script: |
             const https = require('https');
-
 
             if (!process.env.OPENROUTER_API_KEY) {
               console.log('⚠️ OPENROUTER_API_KEY not configured, skipping token report');
               return;
             }
 
-
             console.log('📊 Fetching OpenRouter usage statistics...');
 
-
-            // Note: This is a placeholder - actual OpenRouter API endpoint for
-            usage may vary
-
+            // Note: This is a placeholder - actual OpenRouter API endpoint for usage may vary
             // Check OpenRouter docs for correct endpoint
-
             const options = {
               hostname: 'openrouter.ai',
               path: '/api/v1/auth/key',
@@ -413,7 +357,6 @@ jobs:
                 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
               }
             };
-
 
             const req = https.request(options, (res) => {
               let data = '';
@@ -445,77 +388,50 @@ jobs:
               });
             });
 
-
             req.on('error', (e) => {
               console.error('❌ OpenRouter request failed:', e.message);
             });
-
 
             req.end();
     timeout-minutes: 60
   log-analysis:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action ==
-      'log_analysis'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'log_analysis'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Analyze audit logs
-        run: >
+        run: |
           echo "📊 Audit Log Analysis"
-
           echo "===================="
-
 
           if [[ ! -f logs/agent-audit/audit.jsonl ]]; then
             echo "⚠️ No audit log found"
             exit 0
           fi
 
-
           echo ""
-
           echo "📈 Summary Statistics:"
-
           echo "Total entries: $(wc -l < logs/agent-audit/audit.jsonl)"
-
           echo ""
-
 
           echo "🤖 Agent Activity (last 100 entries):"
-
-          tail -100 logs/agent-audit/audit.jsonl | jq -r '.actor' | sort | uniq
-          -c | sort -rn
-
+          tail -100 logs/agent-audit/audit.jsonl | jq -r '.actor' | sort | uniq -c | sort -rn
           echo ""
-
 
           echo "📋 Event Types (last 100 entries):"
-
-          tail -100 logs/agent-audit/audit.jsonl | jq -r '.event_type' | sort |
-          uniq -c | sort -rn
-
+          tail -100 logs/agent-audit/audit.jsonl | jq -r '.event_type' | sort | uniq -c | sort -rn
           echo ""
-
 
           echo "🏷️ Most Active Resources (last 100 entries):"
-
-          tail -100 logs/agent-audit/audit.jsonl | jq -r
-          'select(.resource_number != null) | "#\(.resource_number):
-          \(.resource_title)"' | head -10
-
+          tail -100 logs/agent-audit/audit.jsonl | jq -r 'select(.resource_number != null) | "#\(.resource_number): \(.resource_title)"' | head -10
           echo ""
-
 
           echo "⏰ Activity Timeline (last 24 hours):"
-
-          tail -1000 logs/agent-audit/audit.jsonl | jq -r 'select(.timestamp >
-          (now - 86400 | todate)) | "\(.timestamp) | \(.actor) | \(.event_type)
-          | \(.resource_type) #\(.resource_number // "N/A")"' | tail -20
-
+          tail -1000 logs/agent-audit/audit.jsonl | jq -r 'select(.timestamp > (now - 86400 | todate)) | "\(.timestamp) | \(.actor) | \(.event_type) | \(.resource_type) #\(.resource_number // "N/A")"' | tail -20
           echo ""
 
-
-          echo "✅ Analysis complete. Review logs/agent-audit/audit.jsonl for
-          full details."
+          echo "✅ Analysis complete. Review logs/agent-audit/audit.jsonl for full details."
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

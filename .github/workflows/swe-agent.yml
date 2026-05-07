@@ -14,16 +14,14 @@ permissions:
   issues: write
   pull-requests: write
 concurrency:
-  group: swe-agent-${{ github.event.issue.number ||
-    github.event.inputs.issue_number || github.run_id }}
+  group: swe-agent-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 jobs:
   preflight:
     name: Check SWE-agent credentials
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') || (github.event_name ==
-      'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.label.name == 'swe-fix' &&
        github.event.issue.user.login != 'github-actions[bot]')
     outputs:
@@ -35,12 +33,9 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           SWE_AGENT_API_KEY: ${{ secrets.SWE_AGENT_API_KEY }}
-        run: >
-          ISSUE_NUMBER="${{ github.event.issue.number ||
-          github.event.inputs.issue_number }}"
-
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number || github.event.inputs.issue_number }}"
           echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
-
 
           if [[ -z "$OPENROUTER_API_KEY" && -z "$SWE_AGENT_API_KEY" ]]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
@@ -59,14 +54,12 @@ jobs:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber = parseInt(
               '${{ needs.preflight.outputs.issue_number }}',
               10
             );
-
             if (!issueNumber) return;
-
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -74,14 +67,11 @@ jobs:
               issue_number: issueNumber,
               per_page: 100,
             });
-
             const marker = '<!-- swe-agent:setup-needed -->';
-
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
               return;
             }
-
 
             const body = [
               marker,
@@ -100,14 +90,12 @@ jobs:
               'See `docs/agent-stack/AGENT_STACK_SETUP.md`.',
             ].join('\n');
 
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               body,
             });
-
 
             try {
               await github.rest.issues.addLabels({
@@ -153,15 +141,11 @@ jobs:
           GH_REPO: ${{ github.repository }}
           LLM_BASE_URL: https://openrouter.ai/api/v1
           LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'anthropic/claude-sonnet-4.5' }}
-        run: >
+        run: |
           set -e
-
           # SWE-Agent has multiple invocation modes. The GitHub-issue mode is
-
           # the most ergonomic for our use case.
-
           # See: https://swe-agent.com/latest/usage/coding_challenges/
-
           sweagent run \
             --agent.model.name "$LLM_MODEL" \
             --agent.model.api_base "$LLM_BASE_URL" \
@@ -175,13 +159,10 @@ jobs:
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
         with:
-          script: >
+          script: |
             const outcome = process.env.OUTCOME || 'unknown';
-
             const emoji = outcome === 'success' ? '✅' : '⚠️';
-
             const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -197,3 +178,5 @@ jobs:
               ].join('\n'),
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -20,8 +20,7 @@ permissions:
   pull-requests: write
   issues: write
 concurrency:
-  group: bito-ai-${{ github.event.pull_request.number || github.event.issue.number
-    || github.run_id }}
+  group: bito-ai-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
 jobs:
   review:
@@ -43,13 +42,10 @@ jobs:
         env:
           BITO_ACCESS_KEY: ${{ secrets.BITO_ACCESS_KEY }}
           GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
-        run: >
+        run: |
           MISSING=()
-
           [ -z "${BITO_ACCESS_KEY}" ] && MISSING+=("BITO_ACCESS_KEY")
-
           [ -z "${GIT_ACCESS_TOKEN}" ] && MISSING+=("GIT_ACCESS_TOKEN")
-
           if [ ${#MISSING[@]} -ne 0 ]; then
             echo "::warning::BITO AI review skipped — missing secrets: ${MISSING[*]}"
             echo "BITO_KEY_MISSING=true" >> "$GITHUB_ENV"
@@ -63,9 +59,8 @@ jobs:
         if: env.BITO_KEY_MISSING == 'false'
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             let prNumber, prUrl;
-
             if (context.eventName === 'pull_request') {
               prNumber = context.payload.pull_request.number;
               prUrl = context.payload.pull_request.html_url;
@@ -90,9 +85,7 @@ jobs:
               });
               prUrl = pr.html_url;
             }
-
             core.setOutput('number', prNumber);
-
             core.setOutput('url', prUrl);
       - name: Apply bito-ai label
         if: env.BITO_KEY_MISSING == 'false' && steps.pr.outputs.number != ''
@@ -137,8 +130,7 @@ jobs:
           echo "OPTIONS=--static_analysis.fb_infer.enabled=True --code_feedback=True --dependency_check.enabled=False --bee.path=/automation-platform --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules --git.access_token=${{ secrets.GIT_ACCESS_TOKEN }} --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}${GIT_DOMAIN_OPTION}${STATIC_ANALYSIS_TOOL_OPTION}${REVIEW_SCOPE_OPTION}${EXCLUDE_BRANCHES_OPTION}${EXCLUDE_FILES_OPTION}${EXCLUDE_DRAFT_PR_OPTION}" >> "$GITHUB_ENV"
       - name: BITO Code Review — PR
         id: bito_review_pr
-        if: env.BITO_KEY_MISSING == 'false' && (github.event_name == 'pull_request' ||
-          github.event_name == 'workflow_dispatch')
+        if: env.BITO_KEY_MISSING == 'false' && (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
         uses: gitbito/codereviewagent@main
         continue-on-error: true
         with:
@@ -211,24 +203,19 @@ jobs:
         env:
           MISSING: ${{ env.BITO_MISSING_SECRETS }}
         with:
-          script: >
+          script: |
             const prNumber = context.payload.pull_request.number;
-
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               per_page: 100,
             });
-
             const alreadyPosted = comments.data.some(c =>
               c.body && c.body.includes('BITO AI review skipped') && c.user.type === 'Bot'
             );
-
             if (alreadyPosted) return;
-
             const missing = (process.env.MISSING || '').trim();
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -247,3 +234,5 @@ jobs:
               ].join('\n'),
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -19,50 +19,34 @@ jobs:
   promote-draft:
     name: Promote Draft PR When CI Passes
     runs-on: ubuntu-latest
-    if: >
+    if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
-
       github.event.pull_request.draft == true &&
-
-      (github.event.action == 'synchronize' || github.event.action ==
-      'reopened')
+      (github.event.action == 'synchronize' || github.event.action == 'reopened')
     steps:
       - name: Check all CI status checks for this commit
         id: check-status
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: >
+          script: |
             // Job names that belong to this workflow — exclude them from the
-
             // external-check evaluation so we never block on ourselves.
-
             const SELF_JOB_NAMES = new Set([
               'Promote Draft PR When CI Passes',
               'Label Linked Issues as In-Review',
               'Remove In-Review Label on PR Close',
             ]);
-
-            const ALLOWED_CONCLUSIONS = new Set(['success', 'skipped',
-            'neutral']);
-
+            const ALLOWED_CONCLUSIONS = new Set(['success', 'skipped', 'neutral']);
 
             // Poll until all external checks complete or we time out.
-
-            const INITIAL_WAIT_MS  = 15_000;   // 15 s — let checks register
-            first
-
+            const INITIAL_WAIT_MS  = 15_000;   // 15 s — let checks register first
             const POLL_INTERVAL_MS = 30_000;   // re-check every 30 s
-
-            const MAX_WAIT_MS      = 8 * 60 * 1000; // 8 minutes — give up after
-            this
-
+            const MAX_WAIT_MS      = 8 * 60 * 1000; // 8 minutes — give up after this
 
             await new Promise(r => setTimeout(r, INITIAL_WAIT_MS));
 
-
             let elapsed = INITIAL_WAIT_MS;
-
 
             while (true) {
               const { data } = await github.rest.checks.listForRef({
@@ -112,10 +96,8 @@ jobs:
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' &&
-            secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != ''
-            && secrets.ADMIN_GITHUB_TOKEN || github.token }}
-          script: >
+          github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
+          script: |
             await github.graphql(`
               mutation($prId: ID!) {
                 markPullRequestReadyForReview(input: { pullRequestId: $prId }) {
@@ -123,7 +105,6 @@ jobs:
                 }
               }
             `, { prId: context.payload.pull_request.node_id });
-
 
             core.notice(
               `✅ PR #${context.payload.pull_request.number} — all CI checks passed. ` +
@@ -133,9 +114,8 @@ jobs:
   label-linked-issues:
     name: Label Linked Issues as In-Review
     runs-on: ubuntu-latest
-    if: >
+    if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
-
       (
         github.event.action == 'ready_for_review' ||
         (github.event.action == 'opened' && github.event.pull_request.draft == false)
@@ -169,58 +149,33 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: >
+          script: |
             const body  = context.payload.pull_request.body  || '';
-
             const title = context.payload.pull_request.title || '';
-
             const text  = `${title}\n${body}`;
 
-
             // ── 1. Match closing keywords in PR title / body ─────────────────
-
             // Match: Closes #N, Fixes #N, Resolves #N (all common variants)
-
-            const pattern =
-            /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
-
+            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
             const matches = [...text.matchAll(pattern)];
-
             const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
 
-
-            // ── 2. Parse branch name for issue/<N>- pattern
-            ───────────────────
-
+            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
             // Covers branches created by the create-issue-branch action using
-
             // the label-based prefixes defined in .github/issue-branch.yml:
-
             //   issue/69-i-need-the-issue-to-close-...   (fallback prefix)
-
             //   feature/69-some-title                    (enhancement)
-
             //   bugfix/69-some-title                     (bug)
-
             //   docs/69-some-title                       (documentation)
-
             //   hotfix/69-some-title                     (security)
-
             //   chore/69-some-title                      (dependencies)
-
-            const branchPattern =
-            /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
-
-            const branchMatch = (context.payload.pull_request.head.ref ||
-            '').match(branchPattern);
-
+            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
             if (branchMatch) {
               issueNumberSet.add(parseInt(branchMatch[1], 10));
             }
 
-
             const issueNumbers = [...issueNumberSet];
-
 
             if (issueNumbers.length === 0) {
               core.info('No linked issues found in PR title, body, or branch name.');
@@ -228,11 +183,8 @@ jobs:
               return;
             }
 
-
             core.info(`Linked issue(s): ${issueNumbers.join(', ')}`);
-
             core.setOutput('issue_list', issueNumbers.join(','));
-
 
             for (const num of issueNumbers) {
               try {
@@ -256,16 +208,13 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: >
+          script: |
             const { scanDiff, renderCheckboxLine } = require(
               `${process.env.GITHUB_WORKSPACE}/scripts/pr-review-scan.js`
             );
 
-
             // ── Fetch changed files (paginated) so the scanner can look
-
             //    at the added lines of the diff.
-
             const files = await github.paginate(
               github.rest.pulls.listFiles,
               {
@@ -276,14 +225,10 @@ jobs:
               }
             );
 
-
             const { checks } = scanDiff(files);
 
-
             const issueList = '${{ steps.find-issues.outputs.issue_list }}';
-
             const closesAutoChecked = issueList ? '- [x]' : '- [ ]';
-
             const linkedSection = issueList
               ? `\n\n**Linked issue(s):** ${issueList.split(',').map(n => `#${n.trim()}`).join(', ')} — labeled \`in-review\` ✅`
               : '';
@@ -345,7 +290,6 @@ jobs:
               '_Reviewer bots that are not yet installed in this repo will silently no-op; add them via their GitHub App / Action when available._',
             ].join('\n');
 
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -356,53 +300,35 @@ jobs:
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.action == 'closed'
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.action == 'closed'
     steps:
       - name: Remove `in-review` label from linked issues
         uses: actions/github-script@v8
         with:
           github-token: ${{ github.token }}
-          script: >
+          script: |
             const body  = context.payload.pull_request.body  || '';
-
             const title = context.payload.pull_request.title || '';
-
             const text  = `${title}\n${body}`;
 
-
             // ── 1. Match closing keywords in PR title / body ─────────────────
-
-            const pattern =
-            /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
-
+            const pattern = /(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)/gi;
             const matches = [...text.matchAll(pattern)];
-
             const issueNumberSet = new Set(matches.map(m => parseInt(m[1])));
 
-
-            // ── 2. Parse branch name for issue/<N>- pattern
-            ───────────────────
-
-            const branchPattern =
-            /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
-
-            const branchMatch = (context.payload.pull_request.head.ref ||
-            '').match(branchPattern);
-
+            // ── 2. Parse branch name for issue/<N>- pattern ───────────────────
+            const branchPattern = /^(?:issue|feature|bugfix|docs|hotfix|chore)\/(\d+)-/;
+            const branchMatch = (context.payload.pull_request.head.ref || '').match(branchPattern);
             if (branchMatch) {
               issueNumberSet.add(parseInt(branchMatch[1], 10));
             }
 
-
             const issueNumbers = [...issueNumberSet];
-
 
             if (issueNumbers.length === 0) {
               core.info('No linked issues found — nothing to clean up.');
               return;
             }
-
 
             for (const num of issueNumbers) {
               try {
@@ -421,3 +347,5 @@ jobs:
               }
             }
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

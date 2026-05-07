@@ -7,8 +7,7 @@ permissions:
   contents: read
   pull-requests: read
 concurrency:
-  group: jules-feedback-${{ github.event.pull_request.number }}-${{
-    github.event.review.id }}
+  group: jules-feedback-${{ github.event.pull_request.number }}-${{ github.event.review.id }}
   cancel-in-progress: false
 jobs:
   send-feedback:
@@ -19,13 +18,12 @@ jobs:
       FEEDBACK_USERS: ${{ vars.JULES_FEEDBACK_USERS }}
     steps:
       - name: Verify JULES_API_KEY and feedback allow-list are configured
-        run: >
+        run: |
           if [ -z "${JULES_API_KEY}" ]; then
             echo "::warning::JULES_API_KEY is not set — skipping Send Feedback to Jules."
           else
             echo "JULES_API_KEY is configured."
           fi
-
           if [ -z "${FEEDBACK_USERS}" ]; then
             echo "::warning::JULES_FEEDBACK_USERS repo variable is not set — no reviewers will be allowed through."
           else
@@ -38,3 +36,5 @@ jobs:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           feedback_users: ${{ env.FEEDBACK_USERS }}
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

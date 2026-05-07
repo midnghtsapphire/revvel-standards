@@ -40,16 +40,13 @@ jobs:
         id: check
         uses: actions/github-script@v8
         with:
-          script: >
-            const issueNumber = context.payload.issue?.number ||
-            context.payload.inputs?.issue_number;
-
+          script: |
+            const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
             if (!issueNumber) {
               core.notice('No issue number found');
               core.setOutput('should_create_pr', 'false');
               return;
             }
-
 
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
@@ -57,96 +54,53 @@ jobs:
               issue_number: issueNumber,
             });
 
-
             const title = issue.title || '';
-
             const body = issue.body || '';
+            const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
 
-            const labels = (issue.labels || []).map(l => typeof l === 'string' ?
-            l : l.name);
-
-
-            // Check if this is a WR issue (title prefix [WR] or label
-            `weekly-research`).
-
-            // OpenHands-RESTRUCTURE 2026-05-04: also accept the title prefix on
-            its own,
-
-            // because the [WR] issue template's `labels:` array is dropped when
-            issues
-
-            // are opened via the API/Copilot UI rather than the GitHub form.
-            The
-
+            // Check if this is a WR issue (title prefix [WR] or label `weekly-research`).
+            // OpenHands-RESTRUCTURE 2026-05-04: also accept the title prefix on its own,
+            // because the [WR] issue template's `labels:` array is dropped when issues
+            // are opened via the API/Copilot UI rather than the GitHub form. The
             // title prefix is the most reliable signal.
-
-            const isWR = title.match(/^\[WR\]/i) ||
-            labels.includes('weekly-research');
-
+            const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
             if (!isWR) {
               core.info(`Issue #${issueNumber} is not a WR issue`);
               core.setOutput('should_create_pr', 'false');
               return;
             }
 
-
             // Skip bot-created issues (defensive — bot-spam should be filtered
-
             // by the job-level `if:` already).
-
             if (issue.user && issue.user.login === 'github-actions[bot]') {
               core.info(`Issue #${issueNumber} is bot-created; skipping.`);
               core.setOutput('should_create_pr', 'false');
               return;
             }
 
-
             // Check if a WR-skeleton PR already exists for this issue.
-
             //
-
             // DEVIN-RESTRUCTURE 2026-05-06: tightened the dedup match. The
-
             // previous logic matched ANY open OR closed PR that mentioned
-
             // `Closes #${issueNumber}` ANYWHERE in its body, OR whose title
-
             // happened to contain the WR-stripped title substring. Both are
-
             // false-positive prone: a hardening PR that fixes a chronic
-
             // workflow bug can legitimately close a stuck-WR issue without
-
             // BEING the WR's skeleton PR (e.g. #13352 closed #13347 by
-
             // shipping the auto-heal fix; that does NOT mean a WR-skeleton
-
             // PR exists for #13347 — quite the opposite).
-
             //
-
             // The right signal: this exact workflow always applies the
-
             // labels `weekly-research`, `jules`, `documentation`,
-
             // `wr:in-progress` to its created PR (see the "Apply labels to
-
             // PR" step ~30 lines below). Match those instead. We require
-
             // BOTH the issue-reference AND the `weekly-research` label so
-
             // the dedup is correct even if a different workflow ever
-
             // applied one of the others.
-
             //
-
             // Search OPEN PRs only — a previously-closed/merged WR-skeleton
-
             // PR doesn't block a fresh WR-skeleton PR; that's a re-trigger
-
             // of the same WR after the original was abandoned.
-
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -154,12 +108,10 @@ jobs:
               per_page: 100,
             });
 
-
             const issueRefRegex = new RegExp(
               `(closes|fixes|resolves)\\s+#${issueNumber}\\b`,
               'i'
             );
-
             const existingPR = prs.find(pr => {
               const prLabels = (pr.labels || []).map(l => typeof l === 'string' ? l : l.name);
               const isWrSkeleton =
@@ -169,33 +121,21 @@ jobs:
               return isWrSkeleton && refsThisIssue;
             });
 
-
             if (existingPR) {
               core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
               core.setOutput('should_create_pr', 'false');
               return;
             }
 
-
-            // OpenHands-RESTRUCTURE 2026-05-04: WR PR is now created on issue
-            OPEN
-
-            // (or reopen / `wr:complete` / manual dispatch / Jules findings
-            comment),
-
+            // OpenHands-RESTRUCTURE 2026-05-04: WR PR is now created on issue OPEN
+            // (or reopen / `wr:complete` / manual dispatch / Jules findings comment),
             // not gated on Jules being done.
-
             const isOpenEvent = context.eventName === 'issues' &&
               (context.payload.action === 'opened' || context.payload.action === 'reopened');
-            const isComplete = labels.includes('wr:complete') ||
-            context.eventName === 'workflow_dispatch';
+            const isComplete = labels.includes('wr:complete') || context.eventName === 'workflow_dispatch';
 
-
-            // Check if Jules has posted research findings (comment contains
-            "Research Findings:")
-
+            // Check if Jules has posted research findings (comment contains "Research Findings:")
             let julesCompleted = false;
-
             if (context.eventName === 'issue_comment') {
               const comment = context.payload.comment;
               if (comment && comment.body && comment.body.includes('Research Findings:')) {
@@ -203,31 +143,19 @@ jobs:
               }
             }
 
-
             const shouldCreate = isOpenEvent || isComplete || julesCompleted;
 
-
             core.info(`Issue #${issueNumber}: "${title}"`);
-
             core.info(`Is WR: ${isWR}`);
-
             core.info(`Is Open Event: ${isOpenEvent}`);
-
             core.info(`Is Complete: ${isComplete}`);
-
             core.info(`Jules Completed: ${julesCompleted}`);
-
             core.info(`Should Create PR: ${shouldCreate}`);
-
             core.info(`Current labels: ${labels.join(', ')}`);
 
-
             core.setOutput('should_create_pr', shouldCreate ? 'true' : 'false');
-
             core.setOutput('issue_number', String(issueNumber));
-
             core.setOutput('issue_title', title);
-
             core.setOutput('issue_body', body);
     timeout-minutes: 30
   create-wr-pr:
@@ -279,26 +207,17 @@ jobs:
             return findings.substring(0, 1000); // Return preview
       - name: Create WR branch
         id: create_branch
-        run: >
+        run: |
           # Clean title for branch name
-
-          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed
-          's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' |
-          sed 's/^-*//;s/-*$//')
-
+          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
           BRANCH_NAME="wr/issue-${{ env.ISSUE_NUMBER }}-${CLEAN_TITLE:0:50}"
-
 
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
 
-
           git config user.name "github-actions[bot]"
-
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-
           git checkout -b "${BRANCH_NAME}"
-
           echo "Created branch: ${BRANCH_NAME}"
       - name: Generate WR document
         run: |
@@ -381,80 +300,48 @@ jobs:
         id: create_pr
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber = ${{ env.ISSUE_NUMBER }};
-
             const branchName = '${{ steps.create_branch.outputs.BRANCH_NAME }}';
-
-            const issueTitle = `${{ env.ISSUE_TITLE }}`.replace(/^\[WR\]\s*/i,
-            '');
-
+            const issueTitle = `${{ env.ISSUE_TITLE }}`.replace(/^\[WR\]\s*/i, '');
 
             const prTitle = `[WR] ${issueTitle}`;
 
-
             const prBody = `## Weekly Research (WR) - Ready for Jules Rewrite
 
-
-            This PR contains the initial WR (Weekly Research) document for issue
-            #${issueNumber}.
-
+            This PR contains the initial WR (Weekly Research) document for issue #${issueNumber}.
 
             ### 📋 Research Summary
 
+            The deep research phase has been completed by Jules and documented in this PR. The WR document includes:
 
-            The deep research phase has been completed by Jules and documented
-            in this PR. The WR document includes:
-
-
-            - ✅ Repository review (AGENTS.md, skills/, standards/, templates/,
-            .github/)
-
+            - ✅ Repository review (AGENTS.md, skills/, standards/, templates/, .github/)
             - ✅ Cross-repository consistency check
-
             - ✅ Skills vault review
-
             - ✅ External tools/extensions research
-
             - ✅ Compliance with Prime Directive
-
 
             ### 🎯 Next Steps
 
-
             **Jules:** Please review and rewrite this WR document to:
-
             1. Refine the research findings for clarity and actionability
-
             2. Ensure all recommendations are specific and implementable
-
             3. Add any missing context or considerations
-
             4. Structure the content for maximum impact
-
 
             ### 📁 Files Changed
 
-
-            - \`${process.env.WR_FILE}\` - Initial WR document with research
-            findings
-
+            - \`${process.env.WR_FILE}\` - Initial WR document with research findings
 
             ### 🔗 Related
 
-
             Closes #${issueNumber}
-
 
             ---
 
-
             **Workflow:** \`.github/workflows/wr-pr-creation.yml\`
-
             **Jules Rewrite:** Requested via \`jules\` label
-
             **Status:** 🟡 Awaiting Jules refinement`;
-
 
             const { data: pr } = await github.rest.pulls.create({
               owner: context.repo.owner,
@@ -465,22 +352,16 @@ jobs:
               base: 'main',
             });
 
-
             core.info(`Created PR #${pr.number}: ${pr.html_url}`);
-
             core.setOutput('pr_number', pr.number);
-
             core.setOutput('pr_url', pr.html_url);
-
 
             return { number: pr.number, url: pr.html_url };
       - name: Apply labels to PR
         uses: actions/github-script@v8
         with:
-          script: >
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number
-            }}', 10);
-
+          script: |
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
 
             const labels = [
               'weekly-research',
@@ -488,7 +369,6 @@ jobs:
               'documentation',
               'wr:in-progress'
             ];
-
 
             for (const label of labels) {
               try {
@@ -507,75 +387,47 @@ jobs:
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-action@v1.0.0
         with:
-          prompt: >
-            Please review and rewrite the WR document in PR #${{
-            steps.create_pr.outputs.pr_number }}.
-
+          prompt: |
+            Please review and rewrite the WR document in PR #${{ steps.create_pr.outputs.pr_number }}.
 
             Your task:
-
             1. Review the research findings already documented
-
             2. Refine and restructure the content for clarity
-
             3. Ensure all recommendations are actionable and specific
-
             4. Add implementation steps where appropriate
-
             5. Verify compliance with revvel-standards requirements
-
             6. Update the WR status to "✅ Complete" when done
 
-
-            Follow the WR template structure and ensure the final document is
-            ship-to-market ready.
+            Follow the WR template structure and ensure the final document is ship-to-market ready.
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
       - name: Comment on issue
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber = ${{ env.ISSUE_NUMBER }};
-
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number
-            }}', 10);
-
+            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
             const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
-
 
             const comment = `🎉 **WR PR Created!**
 
-
-            I've created a pull request with the initial WR document based on
-            the research findings.
-
+            I've created a pull request with the initial WR document based on the research findings.
 
             **PR:** #${prNumber}  
-
             **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
-
             **Status:** 🟡 Awaiting Jules refinement
-
 
             ### What's next?
 
-
-            1. **Jules will review and rewrite** the WR document to refine the
-            research findings
-
+            1. **Jules will review and rewrite** the WR document to refine the research findings
             2. **You can review** the PR and provide feedback
-
             3. **Once approved**, the WR will be merged and marked as complete
-
 
             [View the PR →](${prUrl})
 
-
             ---
 
-
             _Automated by \`.github/workflows/wr-pr-creation.yml\`_`;
-
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -586,12 +438,10 @@ jobs:
       - name: Update issue labels
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const issueNumber = ${{ env.ISSUE_NUMBER }};
 
-
             // Add in-review label
-
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -599,10 +449,7 @@ jobs:
               labels: ['in-review'],
             });
 
-
-            // Remove wr:complete if present (since we're now in refinement
-            phase)
-
+            // Remove wr:complete if present (since we're now in refinement phase)
             try {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
@@ -614,3 +461,5 @@ jobs:
               // Label might not exist, ignore
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

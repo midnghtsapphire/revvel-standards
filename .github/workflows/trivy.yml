@@ -39,3 +39,5 @@ jobs:
           sarif_file: trivy.sarif
           category: trivy
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

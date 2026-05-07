@@ -57,20 +57,14 @@ jobs:
           MATRIX: ${{ steps.urls.outputs.matrix }}
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const https = require('https');
-
             const http  = require('http');
-
             const { URL } = require('url');
 
-
             const matrix = JSON.parse(process.env.MATRIX || '[]');
-
             const results = [];
-
             const TIMEOUT_MS = 15000;
-
 
             async function checkUrl(name, rawUrl) {
               return new Promise((resolve) => {
@@ -103,7 +97,6 @@ jobs:
               });
             }
 
-
             for (const entry of matrix) {
               core.info(`Checking ${entry.name}: ${entry.url}`);
               const result = await checkUrl(entry.name, entry.url);
@@ -113,16 +106,13 @@ jobs:
               core.info(`  ${icon} ${detail}`);
             }
 
-
             // Write a run summary
-
             const rows = results.map(r => [
               r.name,
               r.url,
               r.ok ? '✅ UP' : '❌ DOWN',
               String(r.error || `HTTP ${r.status}`),
             ]);
-
             await core.summary
               .addHeading('Deployment Health Check')
               .addTable([
@@ -132,16 +122,14 @@ jobs:
               .write();
 
             // Persist results for the next step
-
             core.exportVariable('HEALTH_RESULTS', JSON.stringify(results));
       - name: Create or close issues for down deployments
         uses: actions/github-script@v8
         env:
           HEALTH_RESULTS: ${{ env.HEALTH_RESULTS }}
         with:
-          script: >
+          script: |
             const results = JSON.parse(process.env.HEALTH_RESULTS || '[]');
-
 
             for (const r of results) {
               const label = `deployment-down:${r.name}`;
@@ -260,3 +248,5 @@ jobs:
               }
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

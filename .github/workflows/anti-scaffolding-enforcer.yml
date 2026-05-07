@@ -282,3 +282,5 @@ jobs:
 
             console.log('✅ PR passes anti-scaffolding checks');
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

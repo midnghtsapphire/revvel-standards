@@ -46,23 +46,18 @@ jobs:
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
-
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
               per_page: 100,
             });
-
             const count = comments.filter(c =>
               c.body.includes('🔄 **Ralph Loop**')
             ).length;
-
-            console.log(`Ralph Loop has fired ${count} time(s) on PR
-            #${pr_number}`);
-
+            console.log(`Ralph Loop has fired ${count} time(s) on PR #${pr_number}`);
             return count;
       - name: Post Ralph Loop fix request
         if: |
@@ -70,12 +65,9 @@ jobs:
           fromJSON(steps.count-attempts.outputs.result) < 5
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
-
-            const attempt   = parseInt('${{ steps.count-attempts.outputs.result
-            }}') + 1;
-
+            const attempt   = parseInt('${{ steps.count-attempts.outputs.result }}') + 1;
             const workflow  =
               context.payload.check_suite?.app?.name ||
               context.payload.workflow_run?.name ||
@@ -100,11 +92,8 @@ jobs:
                 `> ⛔ This PR is blocked from merging until all CI checks pass.`,
             });
 
-
             // Add blocking labels
-
             const labels = ['won\'t-merge', 'auto-fix', 'copilot'];
-
             for (const label of labels) {
               try {
                 await github.rest.issues.addLabels({
@@ -119,11 +108,8 @@ jobs:
               }
             }
 
-
             // Routing is handled by .github/workflows/openrouter-triage.yml
-
             // via OpenRouter API (see docs/OPENROUTER_TRIAGE_PROCESS.md); do
-
             // not assign @Copilot / copilot-swe-agent here.
       - name: Escalate to human (max retries exceeded)
         if: |
@@ -197,33 +183,25 @@ jobs:
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
 
-
             // Fetch current labels
-
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr_number,
             });
 
-
             const labelNames = pr.labels.map(l => l.name);
 
-
             // Only act if the Ralph Loop was managing this PR
-
-            if (!labelNames.includes('auto-fix') &&
-            !labelNames.includes("won't-merge")) {
+            if (!labelNames.includes('auto-fix') && !labelNames.includes("won't-merge")) {
               console.log('PR has no Ralph Loop labels — skipping');
               return;
             }
 
-
             // Remove blocking labels
-
             for (const label of ["won't-merge", 'auto-fix']) {
               try {
                 await github.rest.issues.removeLabel({
@@ -235,7 +213,6 @@ jobs:
               } catch (_) {}
             }
 
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -243,3 +220,5 @@ jobs:
               body: `✅ **Ralph Loop — All checks passed!**\n\nMerge block removed. This PR is ready to merge.`,
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

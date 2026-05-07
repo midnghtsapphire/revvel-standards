@@ -107,17 +107,13 @@ jobs:
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-action@v1.0.0
         with:
-          prompt: ${{ fromJson(steps.get_issue.outputs.result).title }}. ${{
-            fromJson(steps.get_issue.outputs.result).body }}
+          prompt: ${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
     timeout-minutes: 30
   invoke-on-opened:
     name: Invoke Jules on new WR
-    if: >-
-      github.event_name == 'issues' && (github.event.action == 'opened' ||
-      github.event.action == 'reopened') && github.event.issue.user.login !=
-      'github-actions[bot]' && !startsWith(github.event.issue.title,
-      '[FAILURE]') && !startsWith(github.event.issue.title, '[ALERT]') && (
+    if: |-
+      github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && github.event.issue.user.login != 'github-actions[bot]' && !startsWith(github.event.issue.title, '[FAILURE]') && !startsWith(github.event.issue.title, '[ALERT]') && (
         startsWith(github.event.issue.title, '[WR]') ||
         contains(github.event.issue.labels.*.name, 'deep-research') ||
         contains(github.event.issue.labels.*.name, 'jules') ||
@@ -144,3 +140,5 @@ jobs:
           prompt: ${{ github.event.issue.title }}. ${{ github.event.issue.body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

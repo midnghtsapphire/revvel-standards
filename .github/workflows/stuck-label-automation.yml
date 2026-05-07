@@ -25,17 +25,12 @@ jobs:
         id: scan
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const MS_PER_HOUR = 1000 * 60 * 60;
-
             const MS_PER_DAY = MS_PER_HOUR * 24;
 
-
             // Define stuck patterns: [label, max_age_hours, next_action]
-
-            // REDUCED TIMEOUTS - See docs/WORKFLOW_STATE_MACHINE.md for
-            rationale
-
+            // REDUCED TIMEOUTS - See docs/WORKFLOW_STATE_MACHINE.md for rationale
             const STUCK_PATTERNS = [
               {
                 label: 'triage:in-progress',
@@ -95,16 +90,11 @@ jobs:
               },
             ];
 
-
             const now = Date.now();
-
             const stuck_issues = [];
-
             const stuck_prs = [];
 
-
             // Scan issues
-
             for (const pattern of STUCK_PATTERNS) {
               const issues = await github.rest.issues.listForRepo({
                 owner: context.repo.owner,
@@ -156,22 +146,16 @@ jobs:
               }
             }
 
-
             core.setOutput('stuck_issues', JSON.stringify(stuck_issues));
-
             core.setOutput('stuck_prs', JSON.stringify(stuck_prs));
 
-
             core.summary.addHeading('Stuck Label Detection');
-
             core.summary.addTable([
               [{data: 'Type', header: true}, {data: 'Count', header: true}],
               ['Issues', stuck_issues.length],
               ['Pull Requests', stuck_prs.length],
             ]);
-
             await core.summary.write();
-
 
             return { stuck_issues, stuck_prs };
     timeout-minutes: 30
@@ -179,8 +163,7 @@ jobs:
     name: Auto-progress stuck items
     needs: detect-stuck
     runs-on: ubuntu-latest
-    if: needs.detect-stuck.outputs.stuck_issues != '[]' ||
-      needs.detect-stuck.outputs.stuck_prs != '[]'
+    if: needs.detect-stuck.outputs.stuck_issues != '[]' || needs.detect-stuck.outputs.stuck_prs != '[]'
     strategy:
       matrix:
         include:
@@ -196,13 +179,10 @@ jobs:
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
-          script: >
+          script: |
             const itemsRaw = '${{ matrix.items }}';
-
             const items = JSON.parse(itemsRaw ? itemsRaw : '[]');
-
             const dry_run = process.env.DRY_RUN === 'true';
-
 
             for (const item of items) {
               core.info(`Processing #${item.number}: ${item.next_action}`);
@@ -388,20 +368,13 @@ jobs:
           STUCK_ISSUES: ${{ needs.detect-stuck.outputs.stuck_issues }}
           STUCK_PRS: ${{ needs.detect-stuck.outputs.stuck_prs }}
         with:
-          script: >
-            const issues = JSON.parse(process.env.STUCK_ISSUES ?
-            process.env.STUCK_ISSUES : '[]');
-
-            const prs = JSON.parse(process.env.STUCK_PRS ? process.env.STUCK_PRS
-            : '[]');
-
+          script: |
+            const issues = JSON.parse(process.env.STUCK_ISSUES ? process.env.STUCK_ISSUES : '[]');
+            const prs = JSON.parse(process.env.STUCK_PRS ? process.env.STUCK_PRS : '[]');
             const total = issues.length + prs.length;
 
-
             core.summary.addHeading('Stuck Label Automation Report');
-
             core.summary.addRaw(`**Total stuck items detected:** ${total}\n\n`);
-
 
             if (total > 0) {
               core.summary.addHeading('Stuck Issues', 3);
@@ -439,6 +412,7 @@ jobs:
               core.summary.addRaw('✅ No stuck labels detected!\n');
             }
 
-
             await core.summary.write();
     timeout-minutes: 60
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

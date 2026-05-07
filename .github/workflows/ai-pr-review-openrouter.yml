@@ -10,16 +10,15 @@ concurrency:
 jobs:
   review:
     name: AI PR review
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.draft == false &&
+    if: |-
+      github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == false &&
        !contains(github.event.pull_request.title, '[skip-review]'))
     runs-on: ubuntu-latest
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Verify OPENROUTER_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set — skipping AI PR review."
           else
@@ -39,3 +38,5 @@ jobs:
             briefly. Keep it under 200 words:
             {{DIFF}}
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -48,7 +48,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             try {
               await github.rest.issues.getLabel({
                 owner: context.repo.owner,
@@ -76,3 +76,5 @@ jobs:
           operation: add
           labels: triage
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

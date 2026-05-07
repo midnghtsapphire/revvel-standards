@@ -14,24 +14,19 @@ jobs:
         id: quiet
         uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
-
-            const { data: issues } = await github.rest.issues.listForRepo({
-            owner, repo, state: 'open', per_page: 100 });
-
-            const active = issues.some(i => i.title.trim().toLowerCase() ===
-            'exit-quiet-mode');
-
+            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+            const active = issues.some(i => i.title.trim().toLowerCase() === 'exit-quiet-mode');
             core.setOutput('active', active ? 'true' : 'false');
       - name: Quiet Mode active; skipping
         if: steps.quiet.outputs.active != 'true'
         run: echo "Quiet Mode active; skipping"
       - name: Placeholder triage action
         if: steps.quiet.outputs.active == 'true'
-        run: >
+        run: |
           echo "Quiet Mode exit signal detected."
-
-          echo "TODO: Integrate OpenRouter triage agent; write one proposal/day
-          to DECISIONS-TODAY.md."
+          echo "TODO: Integrate OpenRouter triage agent; write one proposal/day to DECISIONS-TODAY.md."
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

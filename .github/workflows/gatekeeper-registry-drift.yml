@@ -18,41 +18,31 @@ jobs:
           fi
       - name: Compare registry to Doppler
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN ||
-            secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY ||
-            secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY || secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
           DOPPLER_PROJECT: ${{ vars.DOPPLER_PROJECT || 'revvel-standards' }}
           DOPPLER_CONFIG: ${{ vars.DOPPLER_CONFIG || 'prd' }}
-        run: >
+        run: |
           if [[ -z "${DOPPLER_TOKEN:-}" ]]; then
             echo "::error::None of DOPPLER_AGENT_TOKEN, DOPPLER_TOKEN, DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, DOPPLER_AGENT_ODIC, or DOPPLER_CIRCLECI_OIDC is set — cannot check Doppler for drift"
             exit 1
           fi
 
-
           REGISTRY="docs/_GATEKEEPER_REGISTRY.json"
-
           if [[ ! -f "$REGISTRY" ]]; then
             echo "Registry file not found — skipping drift check"
             exit 0
           fi
-
 
           if ! jq empty "$REGISTRY" 2>/dev/null; then
             echo "::error::$REGISTRY is not valid JSON"
             exit 1
           fi
 
-
           DRIFT_COUNT=0
-
           SKIPPED=0
-
           REPORT=""
 
-
           # Check each registry entry with a Doppler path
-
           while IFS= read -r entry; do
             id=$(echo "$entry" | jq -r '.id')
             name=$(echo "$entry" | jq -r '.name')
@@ -103,12 +93,8 @@ jobs:
             fi
           done < <(jq -c '.entries[]' "$REGISTRY")
 
-
           echo ""
-
-          echo "Drift check complete: $DRIFT_COUNT mismatches, $SKIPPED skipped
-          (out of scope)"
-
+          echo "Drift check complete: $DRIFT_COUNT mismatches, $SKIPPED skipped (out of scope)"
 
           if [[ "$DRIFT_COUNT" -gt 0 ]]; then
             echo "::warning::Registry has $DRIFT_COUNT entries not found in Doppler"
@@ -116,3 +102,5 @@ jobs:
             exit 1
           fi
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

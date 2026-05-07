@@ -11,8 +11,7 @@ permissions:
   contents: read
   pull-requests: write
 concurrency:
-  group: ai-ci-failure-helper-${{ github.event.inputs.workflow_run_id ||
-    github.run_id }}
+  group: ai-ci-failure-helper-${{ github.event.inputs.workflow_run_id || github.run_id }}
   cancel-in-progress: false
 jobs:
   ai-helper:
@@ -22,7 +21,7 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Verify OPENROUTER_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set — skipping AI CI Failure Helper."
           else
@@ -46,3 +45,5 @@ jobs:
             Explain the likely root cause and suggest concrete fixes.
             Keep the explanation under 200 words.
     timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

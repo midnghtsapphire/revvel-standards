@@ -30,28 +30,18 @@ jobs:
         env:
           RECURSE_ML_API_KEY: ${{ secrets.RECURSE_ML_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
+        run: |
           echo "======================================================"
-
           echo "  RecurseML — Autonomous Bug Detection + Code Review"
-
           echo "======================================================"
-
           echo ""
-
           echo "Repository : ${{ github.repository }}"
-
           echo "Ref        : ${{ github.ref }}"
-
           echo "SHA        : ${{ github.sha }}"
-
           echo "Event      : ${{ github.event_name }}"
-
           echo ""
-
 
           # Verify the API key secret is set before proceeding.
-
           if [ -z "$RECURSE_ML_API_KEY" ]; then
             echo "⚠️  RECURSE_ML_API_KEY secret is not set."
             echo "   Add it under Settings → Secrets and variables → Actions."
@@ -61,14 +51,10 @@ jobs:
             exit 0
           fi
 
-
           echo "✅ RECURSE_ML_API_KEY found — submitting scan request…"
-
           echo ""
 
-
           # Determine the diff target for PR vs push events.
-
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
@@ -79,11 +65,8 @@ jobs:
             PR_NUMBER=""
           fi
 
-
           # Build the JSON payload for the RecurseML Scan API.
-
           PAYLOAD=$(cat <<EOF
-
           {
             "repository": "${{ github.repository }}",
             "base_sha": "${BASE_SHA}",
@@ -94,35 +77,23 @@ jobs:
             "post_pr_comments": true,
             "fail_on_critical": true
           }
-
           EOF
-
           )
 
-
           echo "Payload:"
-
           echo "$PAYLOAD" | python3 -m json.tool
 
-
           # Submit the scan to RecurseML API.
-
-          HTTP_STATUS=$(curl -s -o /tmp/recurse-response.json -w "%{http_code}"
-          \
+          HTTP_STATUS=$(curl -s -o /tmp/recurse-response.json -w "%{http_code}" \
             -X POST "https://api.recurse.ml/v1/scan" \
             -H "Authorization: Bearer ${RECURSE_ML_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD")
 
           echo ""
-
           echo "HTTP Status: $HTTP_STATUS"
-
           echo "Response:"
-
-          cat /tmp/recurse-response.json | python3 -m json.tool 2>/dev/null ||
-          cat /tmp/recurse-response.json
-
+          cat /tmp/recurse-response.json | python3 -m json.tool 2>/dev/null || cat /tmp/recurse-response.json
 
           if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
             echo ""
@@ -135,38 +106,25 @@ jobs:
           fi
       - name: Post RecurseML Summary to Step Summary
         if: always()
-        run: >
+        run: |
           echo "## 🤖 RecurseML Scan" >> $GITHUB_STEP_SUMMARY
-
           echo "" >> $GITHUB_STEP_SUMMARY
-
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
-
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Repository | \`${{ github.repository }}\` |" >>
-          $GITHUB_STEP_SUMMARY
-
-          echo "| Event | \`${{ github.event_name }}\` |" >>
-          $GITHUB_STEP_SUMMARY
-
+          echo "| Repository | \`${{ github.repository }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Event | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
-
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
-
           echo "| Rules File | \`recurse-rules.md\` |" >> $GITHUB_STEP_SUMMARY
-
           echo "" >> $GITHUB_STEP_SUMMARY
-
           if [ -f /tmp/recurse-response.json ]; then
             echo "### API Response" >> $GITHUB_STEP_SUMMARY
             echo '```json' >> $GITHUB_STEP_SUMMARY
             cat /tmp/recurse-response.json >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
-
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "_For full findings, visit the [RecurseML
-          Dashboard](https://app.recurse.ml)._" >> $GITHUB_STEP_SUMMARY
+          echo "_For full findings, visit the [RecurseML Dashboard](https://app.recurse.ml)._" >> $GITHUB_STEP_SUMMARY
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

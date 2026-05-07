@@ -53,7 +53,7 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     steps:
       - name: Verify OPENROUTER_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set. See docs/OPENROUTER_ASSIGNEE_PROCESS.md."
           else
@@ -71,3 +71,5 @@ jobs:
           force: ${{ inputs.force || false }}
           dry_run: ${{ inputs.dry_run || false }}
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

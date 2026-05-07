@@ -13,8 +13,7 @@ permissions:
   pull-requests: write
   contents: read
 concurrency:
-  group: openrouter-triage-${{ github.event_name }}-${{ github.event.issue.number
-    || github.event.pull_request.number || github.run_id }}
+  group: openrouter-triage-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
   cancel-in-progress: false
 jobs:
   route-new:
@@ -28,16 +27,13 @@ jobs:
         id: labels
         uses: actions/github-script@v8
         with:
-          script: >
-            const issue_number = context.payload.issue?.number ||
-            context.payload.pull_request?.number;
-
+          script: |
+            const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
             if (!issue_number) {
               core.notice('No issue/PR number found; skipping.');
               core.setOutput('skip_triage', 'true');
               return;
             }
-
 
             const labelNames = (
               context.payload.issue?.labels ||
@@ -45,16 +41,13 @@ jobs:
               []
             ).map((l) => typeof l === 'string' ? l : l.name);
 
-
             if (labelNames.includes('no-triage')) {
               core.notice(`Skipping triage for #${issue_number} due to no-triage label.`);
               core.setOutput('skip_triage', 'true');
               return;
             }
 
-
-            for (const label of ['openrouter', 'role:orchestrator',
-            'triage:new']) {
+            for (const label of ['openrouter', 'role:orchestrator', 'triage:new']) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
@@ -67,12 +60,11 @@ jobs:
               }
             }
 
-
             core.setOutput('skip_triage', 'false');
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage."
           else
@@ -103,9 +95,8 @@ jobs:
         id: collect
         uses: actions/github-script@v8
         with:
-          script: >
-            const items = await github.paginate(github.rest.issues.listForRepo,
-            {
+          script: |
+            const items = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
@@ -113,9 +104,7 @@ jobs:
               per_page: 100,
             });
 
-
             const triageTargets = [];
-
             for (const item of items) {
               const labels = (item.labels || []).map((l) => typeof l === 'string' ? l : l.name);
               if (labels.includes('openrouter') || labels.includes('no-triage')) continue;
@@ -141,16 +130,12 @@ jobs:
               });
             }
 
-
             core.setOutput('count', String(triageTargets.length));
-
-            core.setOutput('matrix', JSON.stringify({ include: triageTargets
-            }));
+            core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
     timeout-minutes: 45
   sweep-triage:
     name: Sweep triage via OpenRouter
-    if: needs.sweep-discover.outputs.count != '0' && secrets.OPENROUTER_API_KEY !=
-      ''
+    if: needs.sweep-discover.outputs.count != '0' && secrets.OPENROUTER_API_KEY != ''
     needs: sweep-discover
     runs-on: ubuntu-latest
     strategy:
@@ -172,3 +157,5 @@ jobs:
           MODEL: anthropic/claude-sonnet-4
         run: node scripts/openrouter-triage.js
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

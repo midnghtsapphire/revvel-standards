@@ -28,64 +28,39 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
-
             const run = context.payload.workflow_run;
 
-
             // Configuration
-
             const MAX_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-
             const ALERT_LABEL = 'workflow-stuck';
-
             const AUTO_FIX_LABEL = 'auto-fix';
-
             const NEEDS_HUMAN_LABEL = 'needs-human';
-
 
             if (!run) {
               core.info('No workflow run in payload, skipping monitoring');
               return;
             }
 
-
             const runId = run.id;
-
             const runName = run.name;
-
             const runStatus = run.status;
-
             const runConclusion = run.conclusion;
-
             const runUrl = run.html_url;
-
             const headBranch = run.head_branch;
-
             const createdAt = new Date(run.created_at);
-
             const duration = Date.now() - createdAt.getTime();
-
             const maxDuration = MAX_DURATION_MS;
 
-
             core.info(`Monitoring: ${runName} (ID: ${runId})`);
-
-            core.info(`Status: ${runStatus}, Conclusion: ${runConclusion ||
-            'N/A'}`);
-
+            core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
 
-
             // ──────────────────────────────────────────────────────────────
-
             // Case 1: Workflow stuck (running too long)
-
             // ──────────────────────────────────────────────────────────────
-
             if (runStatus === 'in_progress' && duration > maxDuration) {
               core.warning(`⚠️ Workflow stuck: ${runName} running for ${Math.round(duration / 60000)} minutes`);
               
@@ -168,13 +143,9 @@ jobs:
               }
             }
 
-
             // ──────────────────────────────────────────────────────────────
-
             // Case 2: Workflow failed
-
             // ──────────────────────────────────────────────────────────────
-
             if (runConclusion === 'failure') {
               core.warning(`❌ Workflow failed: ${runName}`);
               
@@ -299,13 +270,9 @@ jobs:
               }
             }
 
-
             // ──────────────────────────────────────────────────────────────
-
             // Case 3: Workflow succeeded (close any open alerts)
-
             // ──────────────────────────────────────────────────────────────
-
             if (runConclusion === 'success') {
               core.info('✅ Workflow succeeded');
               
@@ -357,11 +324,9 @@ jobs:
         if: always()
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const run = context.payload.workflow_run;
-
             if (!run) return;
-
 
             core.summary
               .addHeading('Workflow Monitor Report')
@@ -378,3 +343,5 @@ jobs:
 
             await core.summary.write();
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

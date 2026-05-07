@@ -9,9 +9,8 @@ jobs:
     steps:
       - uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
-
             const labels = [
               { name: 'awaiting-review', color: '0075ca', description: '👀 Waiting for reviewer feedback' },
               { name: 'needs-action',    color: 'e4e669', description: '🔄 Author must address review feedback' },
@@ -24,7 +23,6 @@ jobs:
               { name: 'issue:stale',     color: 'e4e669', description: '⏰ No activity for 7+ days' },
               { name: 'lifecycle:stuck', color: 'd93f0b', description: '🚨 Label watchdog detected a stuck state' },
             ];
-
             for (const label of labels) {
               try {
                 await github.rest.issues.createLabel({ owner, repo, ...label });
@@ -37,3 +35,5 @@ jobs:
               }
             }
     timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -53,3 +53,5 @@ jobs:
           file="$(ls revvel-standards-*.tar.gz | head -n1)"
           aws s3 cp "$file" "s3://${S3_BUCKET}/${file}"
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

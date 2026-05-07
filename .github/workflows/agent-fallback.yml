@@ -43,8 +43,7 @@ on:
         type: string
         default: openrouter
 concurrency:
-  group: agent-fallback-${{ github.event.issue.number ||
-    github.event.pull_request.number || inputs.issue_number || github.run_id }}
+  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 permissions:
   contents: write
@@ -79,15 +78,11 @@ jobs:
           OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: >
+        run: |
           # Check which agents are configured
-
           OpenHands_AVAILABLE="false"
-
           CURSOR_AVAILABLE="false"
-
           OPENROUTER_AVAILABLE="false"
-
 
           if [ -n "${OPENHANDS_API_KEY}" ]; then
             OpenHands_AVAILABLE="true"
@@ -96,14 +91,12 @@ jobs:
             echo "⚠️  OpenHands API key not configured"
           fi
 
-
           if [ -n "${CURSOR_API_KEY}" ]; then
             CURSOR_AVAILABLE="true"
             echo "✅ Cursor API key configured"
           else
             echo "⚠️  Cursor API key not configured"
           fi
-
 
           if [ -n "${OPENROUTER_API_KEY}" ]; then
             OPENROUTER_AVAILABLE="true"
@@ -112,16 +105,10 @@ jobs:
             echo "⚠️  OpenRouter API key not configured"
           fi
 
-
           # Determine recommended agent based on availability and preference
-
-          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents
-          (OpenHands)
-
+          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents (OpenHands)
           # OpenHands is opt-in only via explicit prefer_agent parameter
-
           RECOMMENDED="openrouter"  # Default to free/affordable option
-
           if [ "$OPENROUTER_AVAILABLE" = "true" ]; then
             RECOMMENDED="openrouter"
           elif [ "$CURSOR_AVAILABLE" = "true" ]; then
@@ -131,18 +118,12 @@ jobs:
             RECOMMENDED="OpenHands"
           fi
 
-
           echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
-
           echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
-
           echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
-
           echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
 
-
           echo ""
-
           echo "📊 Recommended agent: ${RECOMMENDED}"
     timeout-minutes: 30
   execute:
@@ -169,27 +150,19 @@ jobs:
           INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
           INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
-          script: >
+          script: |
             let issueNumber;
-
             let issueTitle = '';
-
             let issueBody = '';
-
             const taskDescription = process.env.INPUT_TASK_DESCRIPTION || '';
 
-
             // Determine issue number — explicit input takes priority
-
             const raw = process.env.INPUT_ISSUE_NUMBER || '';
-
             if (raw) {
               issueNumber = Number(raw);
             }
 
-
             // Fill in title/body from event payload when available
-
             if (context.eventName === 'issues') {
               if (!issueNumber) issueNumber = context.payload.issue.number;
               issueTitle = context.payload.issue.title || '';
@@ -200,15 +173,12 @@ jobs:
               issueBody = context.payload.pull_request.body || '';
             }
 
-
             if (issueNumber === undefined || issueNumber === null) {
               core.setFailed('Could not determine issue/PR number');
               return;
             }
 
-
             // Fetch full details if we don't have them yet
-
             if (!issueTitle || !issueBody) {
               try {
                 const { data: issue } = await github.rest.issues.get({
@@ -223,23 +193,16 @@ jobs:
               }
             }
 
-
             // Use task_description as fallback for body
-
             if (!issueBody && taskDescription) {
               issueBody = taskDescription;
             }
 
-
             core.setOutput('issue_number', String(issueNumber));
-
             core.setOutput('issue_title', issueTitle);
-
             core.setOutput('issue_body', issueBody);
       - name: Try OpenRouter (Primary)
-        if: needs.health-check.outputs.openrouter_available == 'true' &&
-          (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter'
-          || inputs.prefer_agent == '')
+        if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == '')
         id: openrouter
         continue-on-error: true
         env:
@@ -250,15 +213,11 @@ jobs:
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
           MODEL: anthropic/claude-sonnet-4
-        run: >
-          echo "🌐 Attempting to use OpenRouter (preferred free/affordable
-          agent)..."
-
+        run: |
+          echo "🌐 Attempting to use OpenRouter (preferred free/affordable agent)..."
 
           # OpenRouter is already implemented in the repository
-
           # Use the existing openrouter-coder workflow logic
-
 
           if [ ! -f ".github/scripts/openrouter_coder.py" ]; then
             echo "⚠️  OpenRouter coder script not found"
@@ -285,10 +244,7 @@ jobs:
             fi
           fi
       - name: Fallback to Cursor
-        if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome ==
-          'skipped') && needs.health-check.outputs.cursor_available == 'true' &&
-          (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' ||
-          inputs.prefer_agent == '')
+        if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
         id: cursor
         continue-on-error: true
         env:
@@ -300,10 +256,7 @@ jobs:
           echo "🔧 Attempting to use Cursor..."
           bash scripts/call-cursor-api.sh
       - name: Try OpenHands AI (Opt-in Only - Paid Service)
-        if: steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure'
-          || steps.cursor.outcome == 'skipped') &&
-          needs.health-check.outputs.OpenHands_available == 'true' &&
-          inputs.prefer_agent == 'OpenHands'
+        if: steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && inputs.prefer_agent == 'OpenHands'
         id: OpenHands
         continue-on-error: true
         env:
@@ -343,10 +296,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
-          title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title
-            }}"
-          commit-message: "feat: apply ${{ steps.result.outputs.agent }} changes for #${{
-            steps.issue.outputs.issue_number }}"
+          title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"
+          commit-message: "feat: apply ${{ steps.result.outputs.agent }} changes for #${{ steps.issue.outputs.issue_number }}"
           body: |
             Automated code changes for
             issue #${{ steps.issue.outputs.issue_number }}.
@@ -361,9 +312,8 @@ jobs:
       - name: Capture PR URL
         id: pr-url
         if: steps.cpr.outputs.pull-request-url != ''
-        run: >
-          echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >>
-          $GITHUB_OUTPUT
+        run: |
+          echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
       - name: Comment on issue with success
         if: steps.result.outputs.success == 'true'
         uses: actions/github-script@v8
@@ -391,21 +341,17 @@ jobs:
               body: body
             });
       - name: Create fallback event issue
-        if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent !=
-          'none'
+        if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
         uses: actions/github-script@v8
         env:
           AGENT: ${{ steps.result.outputs.agent }}
           ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
           TASK_SUCCESS: ${{ steps.result.outputs.success }}
         with:
-          script: >
+          script: |
             const agent = process.env.AGENT;
-
             const originalIssue = process.env.ORIGINAL_ISSUE;
-
             const success = process.env.TASK_SUCCESS;
-
 
             await github.rest.issues.create({
               owner: context.repo.owner,
@@ -430,9 +376,8 @@ jobs:
           CURSOR_OUTCOME: ${{ steps.cursor.outcome }}
           OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
         with:
-          script: >
+          script: |
             const issueNum = Number(process.env.ISSUE_NUM);
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -453,7 +398,6 @@ jobs:
               Adding \`needs-human\` label for manual review.`
             });
 
-
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -461,3 +405,5 @@ jobs:
               labels: ['needs-human']
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

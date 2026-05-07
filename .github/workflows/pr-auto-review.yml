@@ -12,9 +12,8 @@ jobs:
   auto-review:
     name: Submit Automated Review
     runs-on: ubuntu-latest
-    if: >
+    if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
-
       (
         (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'awaiting-approval') ||
         (github.event_name == 'pull_request' && github.event.pull_request.draft == false && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || github.event.action == 'synchronize'))
@@ -29,7 +28,7 @@ jobs:
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY is not set. Automated review will be skipped."
             exit 0
@@ -40,46 +39,32 @@ jobs:
         id: check-needs-review
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const prNumber = context.payload.pull_request.number;
-
             const pr = context.payload.pull_request;
 
-
             // Security: Validate PR is from same repository (not fork)
-
-            if (pr.head.repo.full_name !== context.repo.owner + '/' +
-            context.repo.repo) {
+            if (pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.repo) {
               core.notice('Skipping auto-review - PR is from untrusted fork');
               core.setOutput('needs_review', 'false');
               return;
             }
 
-
             // Cost management: Check PR size before proceeding
-
             const { data: prDetails } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber,
             });
 
-
             const additions = prDetails.additions || 0;
-
             const deletions = prDetails.deletions || 0;
-
             const totalChanges = additions + deletions;
-
             const changedFiles = prDetails.changed_files || 0;
 
-
             // Skip extremely large PRs to prevent excessive API costs
-
             const MAX_CHANGES = 5000;
-
             const MAX_FILES = 100;
-
 
             if (totalChanges > MAX_CHANGES) {
               core.warning(`PR has ${totalChanges} changes (>${MAX_CHANGES}). Skipping auto-review to control costs.`);
@@ -93,7 +78,6 @@ jobs:
               return;
             }
 
-
             if (changedFiles > MAX_FILES) {
               core.warning(`PR has ${changedFiles} files (>${MAX_FILES}). Skipping auto-review to control costs.`);
               await github.rest.issues.createComment({
@@ -106,28 +90,19 @@ jobs:
               return;
             }
 
-
             // Check if PR has awaiting-approval label or no review labels
-
-            const { data: labels } = await
-            github.rest.issues.listLabelsOnIssue({
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
 
-
             const labelNames = labels.map(l => l.name);
-
             const hasNoTriage = labelNames.includes('no-triage');
-
-            const hasAwaitingApproval =
-            labelNames.includes('awaiting-approval');
-
+            const hasAwaitingApproval = labelNames.includes('awaiting-approval');
             const hasAnyReviewStatus = labelNames.some(l => 
               ['changes-requested', 'approved', 'review-started'].includes(l)
             );
-
 
             if (hasNoTriage) {
               core.notice('Skipping auto-review due to no-triage label');
@@ -135,21 +110,17 @@ jobs:
               return;
             }
 
-
             // Check if there are already reviews from humans
-
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber,
             });
 
-
             const hasHumanReview = reviews.some(r => 
               r.user.type !== 'Bot' && 
               ['APPROVED', 'CHANGES_REQUESTED'].includes(r.state)
             );
-
 
             if (hasHumanReview) {
               core.notice('Skipping auto-review - human review already exists');
@@ -157,16 +128,12 @@ jobs:
               return;
             }
 
-
             // Check if bot has already submitted a review for this commit
-
             const currentSha = pr.head.sha;
-
             const hasBotReview = reviews.some(r => 
               r.user.login === 'github-actions[bot]' &&
               r.commit_id === currentSha
             );
-
 
             if (hasBotReview) {
               core.notice('Bot has already reviewed this commit');
@@ -174,9 +141,7 @@ jobs:
               return;
             }
 
-
-            if (hasAwaitingApproval || (!hasAnyReviewStatus && !hasHumanReview))
-            {
+            if (hasAwaitingApproval || (!hasAnyReviewStatus && !hasHumanReview)) {
               core.notice('PR needs automated review');
               core.setOutput('needs_review', 'true');
             } else {
@@ -197,3 +162,5 @@ jobs:
           MAX_FILES_TO_FETCH: 100
         run: node scripts/pr-auto-review.js
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

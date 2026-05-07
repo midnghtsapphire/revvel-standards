@@ -16,16 +16,14 @@ permissions:
   issues: write
   pull-requests: write
 concurrency:
-  group: augment-check-${{ github.event.pull_request.number ||
-    github.event.inputs.pr_number || github.run_id }}
+  group: augment-check-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
   cancel-in-progress: false
 jobs:
   detect-and-remind:
     name: Detect Augment Code App and remind once if missing
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') || (github.event_name ==
-      'pull_request_target' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false)
     steps:
       - name: Wait briefly so Augment can post its marker
@@ -33,7 +31,7 @@ jobs:
       - name: Check for Augment marker, comment if missing
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             const prNumber =
               context.payload.pull_request?.number ||
               parseInt(context.payload.inputs?.pr_number || '0', 10);
@@ -42,7 +40,6 @@ jobs:
               return;
             }
 
-
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -50,43 +47,31 @@ jobs:
               per_page: 100,
             });
 
-
             // Augment Code's app posts comments authored by users matching
-
             // /^augment-/i (per their public-marketplace docs). We also
-
             // accept their stable HTML marker if they ever change the bot
-
             // username.
-
             const augmentMarker = /<!--\s*augment-code:/i;
-
             const augmentInstalled = comments.some(c => {
               const author = (c.user?.login || '').toLowerCase();
               return /^augment-/.test(author) ||
                      (c.body && augmentMarker.test(c.body));
             });
 
-
             if (augmentInstalled) {
               core.info('Augment Code App detected on this PR; nothing to do.');
               return;
             }
 
-
             // Already-posted reminder?
-
             const reminderMarker = '<!-- augment-check:reminder -->';
-
             const alreadyReminded = comments.some(
               c => c.body && c.body.includes(reminderMarker)
             );
-
             if (alreadyReminded) {
               core.info('Augment reminder already posted; skipping.');
               return;
             }
-
 
             const body = [
               reminderMarker,
@@ -106,7 +91,6 @@ jobs:
               '> deleting that file or removing the `pull_request_target` trigger._',
             ].join('\n');
 
-
             try {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -119,3 +103,5 @@ jobs:
               core.warning(`Failed to post reminder: ${e.message}. Skipping.`);
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

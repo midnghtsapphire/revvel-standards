@@ -17,12 +17,9 @@ jobs:
   handle-review-request:
     name: Handle Changes Requested
     runs-on: ubuntu-latest
-    if: >
-      (github.event_name == 'pull_request_review' && github.event.review.state
-      == 'CHANGES_REQUESTED') ||
-
-      (github.event_name == 'pull_request' && github.event.action == 'labeled'
-      && github.event.label.name == 'changes-requested')
+    if: |
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'CHANGES_REQUESTED') ||
+      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'changes-requested')
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,7 +30,7 @@ jobs:
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: >
+        run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::error::OPENROUTER_API_KEY is not set. Cannot proceed with automated review handling."
             exit 1
@@ -44,17 +41,14 @@ jobs:
         id: check-skip
         uses: actions/github-script@v8
         with:
-          script: >
-            const { data: labels } = await
-            github.rest.issues.listLabelsOnIssue({
+          script: |
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
             });
 
-
             const hasNoTriage = labels.some(l => l.name === 'no-triage');
-
             if (hasNoTriage) {
               core.notice('Skipping review request handling due to no-triage label');
               core.setOutput('skip', 'true');
@@ -81,25 +75,19 @@ jobs:
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const prNumber = context.payload.pull_request.number;
 
-
             // Fetch current labels to determine status
-
-            const { data: labels } = await
-            github.rest.issues.listLabelsOnIssue({
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
 
-
             const labelNames = labels.map(l => l.name);
 
-
             let statusBadge, statusText;
-
             if (labelNames.includes('review-fix:complete')) {
               statusBadge = '![Review Fix Status](https://img.shields.io/badge/review_fix-complete-green?style=for-the-badge)';
               statusText = '✅ **Review feedback has been analyzed.** Check the analysis comment above for recommendations.';
@@ -115,12 +103,9 @@ jobs:
               return;
             }
 
-
             const marker = '<!-- pr-review-fix-status -->';
 
-
             // Check if status comment exists
-
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -128,10 +113,7 @@ jobs:
               per_page: 100,
             });
 
-
-            const existingComment = comments.find(c => c.body &&
-            c.body.includes(marker));
-
+            const existingComment = comments.find(c => c.body && c.body.includes(marker));
 
             const body = [
               marker,
@@ -144,7 +126,6 @@ jobs:
               '---',
               '_Status updated automatically by PR Review Request Handler workflow._',
             ].join('\n');
-
 
             if (existingComment) {
               await github.rest.issues.updateComment({
@@ -164,3 +145,5 @@ jobs:
               core.info('Created new review fix status comment');
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

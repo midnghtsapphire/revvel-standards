@@ -14,17 +14,14 @@ jobs:
       - name: Collect workflow statuses
         uses: actions/github-script@v8
         with:
-          script: >
-            const { data: workflows } = await
-            github.rest.actions.listRepoWorkflows({
+          script: |
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             });
 
-
             const rows = [];
-
 
             for (const wf of workflows.workflows) {
               const { data: runs } = await github.rest.actions.listWorkflowRuns({
@@ -53,7 +50,6 @@ jobs:
               rows.push(`| ${icon} | \`${wf.name}\` | ${status} | ${date} |`);
             }
 
-
             const header = [
               '## Workflow Health Dashboard',
               '',
@@ -63,17 +59,14 @@ jobs:
               '|---|---|---|---|',
             ];
 
-
             const summary = [...header, ...rows].join('\n');
-
             core.summary.addRaw(summary);
-
             await core.summary.write();
 
-
             const failed = rows.filter(r => r.includes(':x:'));
-
             if (failed.length > 0) {
               core.warning(`${failed.length} workflow(s) had their last run fail. Check the summary for details.`);
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

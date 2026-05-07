@@ -21,31 +21,21 @@ jobs:
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
-          script: >
+          script: |
             const dryRun = process.env.DRY_RUN === 'true';
-
-            const PROTECTED = new Set(['main', 'master', 'develop',
-            'production']);
-
+            const PROTECTED = new Set(['main', 'master', 'develop', 'production']);
             const STALE_DAYS = 7;
-
             const now = Date.now();
 
-
             // Paginate through all branches
-
-            const branches = await
-            github.paginate(github.rest.repos.listBranches, {
+            const branches = await github.paginate(github.rest.repos.listBranches, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             });
 
-
             let deleted = 0;
-
             let skipped = 0;
-
 
             for (const branch of branches) {
               if (PROTECTED.has(branch.name)) {
@@ -121,15 +111,14 @@ jobs:
               }
             }
 
-
             core.summary.addHeading('Stale Branch Cleanup');
-
             core.summary.addTable([
               [{data: 'Metric', header: true}, {data: 'Count', header: true}],
               ['Deleted', String(deleted)],
               ['Skipped', String(skipped)],
               ['Dry run', dryRun ? 'Yes' : 'No'],
             ]);
-
             await core.summary.write();
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

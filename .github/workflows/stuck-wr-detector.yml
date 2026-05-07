@@ -5,8 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       max_age_hours:
-        description: Only consider WRs created within the last N hours (default 168 = 7
-          days).
+        description: Only consider WRs created within the last N hours (default 168 = 7 days).
         required: false
         type: number
         default: 168
@@ -36,40 +35,26 @@ jobs:
           MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
           DRY_RUN: ${{ inputs.dry_run || false }}
         with:
-          script: >
+          script: |
             const owner = context.repo.owner;
-
             const repo = context.repo.repo;
-
-            const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 *
-            1000;
-
+            const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
             const dryRun = process.env.DRY_RUN === 'true';
-
             const cutoff = Date.now() - maxAgeMs;
-
             const minStuckAgeMs = 15 * 60 * 1000;  // 15 minutes
 
-
-            core.info(`Scanning open work-request issues younger than
-            ${process.env.MAX_AGE_HOURS}h.`);
-
+            core.info(`Scanning open work-request issues younger than ${process.env.MAX_AGE_HOURS}h.`);
             core.info(`Dry-run mode: ${dryRun}`);
 
-
-            const issues = await github.paginate(github.rest.issues.listForRepo,
-            {
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner, repo,
               state: 'open',
               labels: 'work-request',
               per_page: 100,
             });
-
             core.info(`Found ${issues.length} open work-request issues.`);
 
-
             const stuck = [];
-
             for (const issue of issues) {
               if (issue.pull_request) continue;  // already a PR, not an issue
               const ageMs = Date.now() - new Date(issue.created_at).getTime();
@@ -92,21 +77,16 @@ jobs:
               stuck.push(issue);
             }
 
-
             core.info(`Identified ${stuck.length} stuck WR(s).`);
-
             if (stuck.length === 0) return;
 
-
             // Helpers -------------------------------------------------------
-
             function attemptCount(issue) {
               const m = (issue.labels || [])
                 .map(l => (typeof l === 'string' ? l : l.name))
                 .find(n => n && n.startsWith('wr:retrigger-attempts-'));
               return m ? parseInt(m.replace('wr:retrigger-attempts-', ''), 10) || 0 : 0;
             }
-
             async function setAttemptLabel(issue, n) {
               for (const lbl of issue.labels || []) {
                 const name = typeof lbl === 'string' ? lbl : lbl.name;
@@ -124,9 +104,7 @@ jobs:
               });
             }
 
-
             const MAX_ATTEMPTS = 3;
-
             for (const issue of stuck) {
               const attempts = attemptCount(issue);
               core.info(`#${issue.number}: stuck (attempts=${attempts}).`);
@@ -215,3 +193,5 @@ jobs:
               }
             }
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

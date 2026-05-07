@@ -18,18 +18,11 @@ jobs:
     steps:
       - name: Resolve triggering username
         id: resolve-user
-        run: >
-          # organization member_added exposes the new member via
-          .membership.user.login
-
-          # pull_request events expose the PR author via
-          .pull_request.user.login
-
-          USERNAME="${{ github.event.membership.user.login ||
-          github.event.pull_request.user.login }}"
-
+        run: |
+          # organization member_added exposes the new member via .membership.user.login
+          # pull_request events expose the PR author via .pull_request.user.login
+          USERNAME="${{ github.event.membership.user.login || github.event.pull_request.user.login }}"
           echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
-
           echo "Checking SAML identity for: ${USERNAME}"
       - name: get-saml-identity-action
         id: saml-identity
@@ -39,11 +32,9 @@ jobs:
           username: ${{ steps.resolve-user.outputs.username }}
           organization: ${{ github.repository_owner }}
       - name: Report SAML identity result
-        run: >
+        run: |
           IDENTITY="${{ steps.saml-identity.outputs.identity }}"
-
           USERNAME="${{ steps.resolve-user.outputs.username }}"
-
 
           if [ -z "${IDENTITY}" ]; then
             echo "::warning title=SAML Identity Missing::User '${USERNAME}' does not have a linked SAML/SSO identity in the organization. Ask them to authorize via SSO at https://github.com/orgs/${{ github.repository_owner }}/sso"
@@ -51,17 +42,14 @@ jobs:
             echo "::notice title=SAML Identity Verified::User '${USERNAME}' → SSO identity: ${IDENTITY}"
           fi
       - name: Comment on PR if SAML identity is missing
-        if: >
-          github.event_name == 'pull_request' &&
-          steps.saml-identity.outputs.identity == ''
+        if: |
+          github.event_name == 'pull_request' && steps.saml-identity.outputs.identity == ''
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
+          script: |
             const username = '${{ steps.resolve-user.outputs.username }}';
-
             const org = '${{ github.repository_owner }}';
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -80,3 +68,5 @@ jobs:
               ].join('\n'),
             });
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

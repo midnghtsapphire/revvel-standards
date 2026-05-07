@@ -54,7 +54,7 @@ jobs:
       - name: Install mabl CLI
         run: npm install -g @mablhq/mabl-cli
       - name: Verify MABL_API_KEY is configured
-        run: >
+        run: |
           if [ -z "${{ secrets.MABL_API_KEY }}" ]; then
             echo "⚠️  MABL_API_KEY secret is not set."
             echo "   1. Log in to https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis"
@@ -64,7 +64,6 @@ jobs:
             echo "   Skipping mabl run (no credentials)."
             exit 0
           fi
-
           echo "✅ MABL_API_KEY is set — proceeding with mabl test run."
       - name: Run mabl tests
         env:
@@ -112,3 +111,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_Full results: [mabl Dashboard](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks)_" >> $GITHUB_STEP_SUMMARY
     timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

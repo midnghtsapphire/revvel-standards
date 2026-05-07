@@ -13,21 +13,14 @@ jobs:
     steps:
       - uses: actions/github-script@v7
         with:
-          script: >
+          script: |
             const { owner, repo } = context.repo;
-
             const now = new Date();
-
             const HOUR = 3600000;
-
             const DAY = 86400000;
 
-
             // ─── SWEEP OPEN PRs ──────────────────────────────────────
-
-            const { data: pulls } = await github.rest.pulls.list({ owner, repo,
-            state: 'open', per_page: 100 });
-
+            const { data: pulls } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
 
             for (const pr of pulls) {
               const prNumber = pr.number;
@@ -124,12 +117,8 @@ jobs:
               }
             }
 
-
             // ─── SWEEP OPEN ISSUES ───────────────────────────────────
-
-            const { data: issues } = await github.rest.issues.listForRepo({
-            owner, repo, state: 'open', per_page: 100 });
-
+            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
 
             for (const issue of issues) {
               if (issue.pull_request) continue; // skip PRs
@@ -157,6 +146,7 @@ jobs:
               }
             }
 
-
             core.info('Watchdog sweep complete.');
     timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

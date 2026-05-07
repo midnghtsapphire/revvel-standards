@@ -17,14 +17,12 @@ permissions:
   pull-requests: write
   issues: write
 concurrency:
-  group: openrouter-coder-${{ github.event.issue.number ||
-    github.event.inputs.issue_number || github.run_id }}
+  group: openrouter-coder-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 jobs:
   openrouter-coder:
-    if: >-
-      (github.event_name == 'workflow_dispatch') || (github.event_name ==
-      'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
@@ -75,21 +73,14 @@ jobs:
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
           WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
-        run: >
-          python .github/scripts/openrouter_coder.py --output-path
-          /tmp/openrouter-coder-result.json
-
+        run: |
+          python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
           python - <<'PY'
-
           import json
-
           import os
-
           from pathlib import Path
 
-
           output_path = Path("/tmp/openrouter-coder-result.json")
-
           if not output_path.exists() or output_path.stat().st_size == 0:
               raise RuntimeError(
                   f"Coder step did not produce a usable output file at {output_path} "
@@ -99,11 +90,8 @@ jobs:
           with output_path.open("r", encoding="utf-8") as fh:
               result = json.load(fh)
 
-          commit_message = (result.get("commit_message") or "feat: apply
-          OpenRouter coding changes").strip()
-
+          commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()
           files_written = len(result.get("files_written") or [])
-
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write("commit_message<<__GITHUB_OUTPUT_EOF__\n")
@@ -121,22 +109,18 @@ jobs:
           base: main
           title: "OpenRouter: ${{ steps.issue.outputs.issue_title }}"
           commit-message: ${{ steps.coder.outputs.commit_message }}
-          body: >
-            OpenRouter-generated code changes for issue #${{
-            steps.issue.outputs.issue_number }}.
-
+          body: |
+            OpenRouter-generated code changes for issue #${{ steps.issue.outputs.issue_number }}.
 
             ### Issue
-
             ${{ steps.issue.outputs.issue_body }}
-
 
             Closes #${{ steps.issue.outputs.issue_number }}
       - name: Comment issue with PR link
         if: steps.cpr.outputs.pull-request-url != ''
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -147,7 +131,7 @@ jobs:
         if: steps.coder.outputs.files_written == '0'
         uses: actions/github-script@v8
         with:
-          script: >
+          script: |
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -155,3 +139,5 @@ jobs:
               body: '⚠️ OpenRouter returned no file changes. Please refine the issue details and re-run.',
             });
     timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
