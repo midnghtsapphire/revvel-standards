@@ -18,6 +18,10 @@ production-app
 ### Lifecycle Mode
 
 refresh-existing
+
+### Delivery Mode
+
+auto-classify
             `
           }
         })
@@ -74,6 +78,14 @@ refresh-existing
 
   const deliveryMutation = mutations.find(m => m.variables.fieldId === 'F3');
   assert.strictEqual(deliveryMutation.variables.optionId, 'O4', 'Delivery Mode should fallback to default build-direct (O4)');
+  assert.ok(
+    logs.some(l => l.includes('- Delivery Mode: build-direct (default)')),
+    'Delivery Mode auto-classify should be treated as no explicit choice and use default'
+  );
+  assert.ok(
+    !logs.some(l => l.includes('Option "auto-classify" not found for Field "Delivery Mode"')),
+    'Should not attempt to set auto-classify as a project option'
+  );
 
   // 2. Expected warnings for missing fields (the mock schema only returned 3 of the 8 default fields)
   assert.ok(logs.some(l => l.includes('Field "Priority" not found')), 'Should warn about missing Priority field');
