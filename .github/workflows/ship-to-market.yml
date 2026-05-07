@@ -26,6 +26,8 @@ jobs:
   gate:
     name: 🔒 Merge Gate
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.merged == true)
@@ -91,6 +93,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_api == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node
@@ -150,6 +154,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_app == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -206,6 +212,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_pdf == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - name: Install pandoc + LaTeX
@@ -252,6 +260,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_cli == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -291,6 +301,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_docker == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3
@@ -321,6 +333,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_mcp == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -381,6 +395,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_docs == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     permissions:
       contents: write
       pages: write
@@ -427,6 +443,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.run_video == 'true'
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -482,6 +500,8 @@ jobs:
       - deliver-video
     if: always()
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Check for failures
         id: check
