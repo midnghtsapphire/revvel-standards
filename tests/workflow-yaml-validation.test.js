@@ -114,6 +114,12 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   if (!routeDiscoveredScript.includes('Could not assign @Copilot (non-fatal)')) {
     throw new Error('cron assignment should log non-fatal notice');
   }
+  if (routeDiscoveredScript.includes('process.env.TO_ROUTE_JSON')) {
+    throw new Error('cron routing must not depend on TO_ROUTE_JSON env payload');
+  }
+  if ((routeDiscovered.env || {}).TO_ROUTE_JSON) {
+    throw new Error('Route discovered items step should not define TO_ROUTE_JSON env');
+  }
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

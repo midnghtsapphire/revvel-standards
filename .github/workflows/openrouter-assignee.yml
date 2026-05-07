@@ -293,7 +293,6 @@ jobs:
               }
             }
             
-            core.setOutput('to_route', JSON.stringify(toRoute));
             core.setOutput('count', String(toRoute.length));
             core.setOutput('total_open', String(items.length));
             core.setOutput('already_routed', String(alreadyRouted.length));
@@ -317,16 +316,33 @@ jobs:
         uses: actions/github-script@v8
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
-          TO_ROUTE_JSON: ${{ steps.discover.outputs.to_route }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
-            const toRoute = JSON.parse(process.env.TO_ROUTE_JSON || '[]');
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey 
               ? '🟢 Configured' 
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
+            
+            // Recompute routing candidates here instead of passing full JSON through
+            // step outputs/env to avoid "argument list too long" on large backlogs.
+            const items = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const toRoute = items
+              .filter((item) => {
+                const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
+                return !labels.includes('openrouter') && !labels.includes('no-triage');
+              })
+              .map((item) => ({
+                number: item.number,
+                kind: item.pull_request ? 'PR' : 'Issue',
+                title: item.title,
+              }));
             
             core.info(`\n🚀 Starting routing ${isDryRun ? '(DRY RUN)' : ''}...`);
             
