@@ -74,7 +74,7 @@ refresh-existing
   assert.ok(/u1:\s*updateProjectV2ItemFieldValue/.test(mutationQuery), 'Batched mutation should include alias u1');
   assert.ok(/u2:\s*updateProjectV2ItemFieldValue/.test(mutationQuery), 'Batched mutation should include alias u2');
   const batchPairs = [];
-  for (let i = 0; Object.prototype.hasOwnProperty.call(mutationVariables, `fieldId${i}`); i += 1) {
+  for (let i = 0; Object.hasOwn(mutationVariables, `fieldId${i}`); i += 1) {
     batchPairs.push(`${mutationVariables[`fieldId${i}`]}:${mutationVariables[`optionId${i}`]}`);
   }
 
