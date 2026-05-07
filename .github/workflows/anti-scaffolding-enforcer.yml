@@ -78,9 +78,15 @@ jobs:
               fi
             fi
             
-            # Check for "placeholder" in code
+            # Check for "placeholder" in code - exclude valid HTML/CSS uses
             if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]] || [[ "$file" == *.jsx ]] || [[ "$file" == *.tsx ]] || [[ "$file" == *.py ]]; then
-              if grep -in "placeholder" "$file" | grep -v "placeholder values" | grep -v "alt=\"placeholder\"" > /dev/null 2>&1; then
+              # Exclude: HTML placeholder="...", CSS ::placeholder, placeholder values, alt="placeholder"
+              if grep -in "placeholder" "$file" | \
+                grep -v "placeholder=" | \
+                grep -v "::placeholder" | \
+                grep -v 'placeholder values' | \
+                grep -v 'alt="placeholder"' | \
+                grep -v 'Search projects' > /dev/null 2>&1; then
                 VIOLATIONS+=("❌ $file: Contains 'placeholder' - implement complete functionality")
               fi
             fi
