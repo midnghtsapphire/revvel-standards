@@ -1,54 +1,26 @@
 name: Stuck Label Detection & Auto-Progression
-
-# Detects labels that are "stuck" and automatically progresses them through
-# the workflow lifecycle. This addresses the requirement for labels to "move
-# autonomously from market to ship" with zero human intervention.
-#
-# Stuck label patterns:
-#   - triage:in-progress > 24h → auto-classify or escalate
-#   - wr:in-progress > 7 days → auto-complete or escalate
-#   - credentials-missing > 48h → auto-check or escalate
-#   - openrouter:instantiating > 2h → retry or fail
-#   - awaiting-approval > 72h → ping reviewers or auto-approve
-#
-# Auto-progression strategy:
-#   1. Detect stuck state (label + time threshold)
-#   2. Attempt automatic progression (re-run workflow, auto-classify, etc.)
-#   3. If can't auto-progress, escalate with specific next action
-#   4. Update label to reflect new state
-
 on:
   schedule:
-    # Run every 2 hours instead of 6 to catch stuck items faster
-    - cron: "0 */2 * * *"
-  
+    - cron: 0 */2 * * *
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Dry run (don't actually change labels)"
+        description: Dry run (don't actually change labels)
         type: boolean
         default: false
-
 permissions:
   issues: write
   pull-requests: write
   contents: read
-
 jobs:
-  
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Detect stuck labels
-  # ────────────────────────────────────────────────────────────────────────────
   detect-stuck:
     name: Detect stuck labels
     runs-on: ubuntu-latest
     outputs:
       stuck_issues: ${{ steps.scan.outputs.stuck_issues }}
       stuck_prs: ${{ steps.scan.outputs.stuck_prs }}
-    
     steps:
       - uses: actions/checkout@v4
-      
       - name: Scan for stuck labels
         id: scan
         uses: actions/github-script@v8
@@ -56,7 +28,7 @@ jobs:
           script: |
             const MS_PER_HOUR = 1000 * 60 * 60;
             const MS_PER_DAY = MS_PER_HOUR * 24;
-            
+
             // Define stuck patterns: [label, max_age_hours, next_action]
             // REDUCED TIMEOUTS - See docs/WORKFLOW_STATE_MACHINE.md for rationale
             const STUCK_PATTERNS = [
@@ -117,11 +89,11 @@ jobs:
                 description: 'New item not triaged'
               },
             ];
-            
+
             const now = Date.now();
             const stuck_issues = [];
             const stuck_prs = [];
-            
+
             // Scan issues
             for (const pattern of STUCK_PATTERNS) {
               const issues = await github.rest.issues.listForRepo({
@@ -173,10 +145,10 @@ jobs:
                 }
               }
             }
-            
+
             core.setOutput('stuck_issues', JSON.stringify(stuck_issues));
             core.setOutput('stuck_prs', JSON.stringify(stuck_prs));
-            
+
             core.summary.addHeading('Stuck Label Detection');
             core.summary.addTable([
               [{data: 'Type', header: true}, {data: 'Count', header: true}],
@@ -184,12 +156,9 @@ jobs:
               ['Pull Requests', stuck_prs.length],
             ]);
             await core.summary.write();
-            
+
             return { stuck_issues, stuck_prs };
-  
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Auto-progress stuck items
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   auto-progress:
     name: Auto-progress stuck items
     needs: detect-stuck
@@ -203,10 +172,8 @@ jobs:
           - type: pr
             items: ${{ needs.detect-stuck.outputs.stuck_prs }}
       fail-fast: false
-    
     steps:
       - uses: actions/checkout@v4
-      
       - name: Process stuck items
         uses: actions/github-script@v8
         env:
@@ -216,7 +183,7 @@ jobs:
             const itemsRaw = '${{ matrix.items }}';
             const items = JSON.parse(itemsRaw ? itemsRaw : '[]');
             const dry_run = process.env.DRY_RUN === 'true';
-            
+
             for (const item of items) {
               core.info(`Processing #${item.number}: ${item.next_action}`);
               
@@ -386,16 +353,14 @@ jobs:
                 core.info(`DRY RUN - Would post comment on #${item.number}`);
               }
             }
-  
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 3 — Report summary
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   report:
     name: Report stuck label summary
-    needs: [detect-stuck, auto-progress]
+    needs:
+      - detect-stuck
+      - auto-progress
     runs-on: ubuntu-latest
     if: always()
-    
     steps:
       - name: Generate summary
         uses: actions/github-script@v8
@@ -407,10 +372,10 @@ jobs:
             const issues = JSON.parse(process.env.STUCK_ISSUES ? process.env.STUCK_ISSUES : '[]');
             const prs = JSON.parse(process.env.STUCK_PRS ? process.env.STUCK_PRS : '[]');
             const total = issues.length + prs.length;
-            
+
             core.summary.addHeading('Stuck Label Automation Report');
             core.summary.addRaw(`**Total stuck items detected:** ${total}\n\n`);
-            
+
             if (total > 0) {
               core.summary.addHeading('Stuck Issues', 3);
               if (issues.length > 0) {
@@ -446,5 +411,8 @@ jobs:
             } else {
               core.summary.addRaw('✅ No stuck labels detected!\n');
             }
-            
+
             await core.summary.write();
+    timeout-minutes: 60
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

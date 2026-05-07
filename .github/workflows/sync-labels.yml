@@ -1,33 +1,17 @@
-# Sync Standard Labels
-#
-# Ensures every Revvel standard label exists in this repository with the
-# correct color and description. Safe to run repeatedly — creates missing
-# labels and updates changed ones, but NEVER deletes existing labels.
-#
-# Triggers:
-#   • Push to main when labels.yml changes (keeps labels in sync automatically)
-#   • workflow_dispatch — run manually from the Actions tab at any time
-#
-# The canonical label definitions live in .github/labels.yml (documentation).
-# The workflow maintains its own inline copy so it is fully self-contained.
-
 name: Sync Standard Labels
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - .github/labels.yml
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   issues: write
-
 jobs:
   sync-labels:
     name: Sync Labels from Canonical Definition
     runs-on: ubuntu-latest
-
     steps:
       - name: Sync labels
         uses: actions/github-script@v8
@@ -179,3 +163,6 @@ jobs:
             core.notice(
               `Label sync complete — created: ${created}, updated: ${updated}, already correct: ${skipped}`
             );
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

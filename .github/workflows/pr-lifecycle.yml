@@ -1,27 +1,4 @@
-# PR Lifecycle Automation
-#
-# Automatically moves PRs through every state by reacting to real GitHub events.
-#
-# STATE MACHINE:
-#   PR opened (draft)          → no label (draft badge implicit via GitHub UI)
-#   PR opened (ready)          → awaiting-review
-#   PR converted to draft      → strips awaiting-review / approved / ready-to-merge
-#   PR marked ready for review → awaiting-review
-#   Review approved            → approved; if checks-passing already → ready-to-merge
-#   Review changes_requested   → changes-requested + needs-action
-#   Review comment only        → review-started (non-destructive)
-#   PR synchronised (push)     → reset approval; re-add awaiting-review
-#   All check suites pass      → checks-passing; if approved → ready-to-merge
-#   Any check suite fails      → checks-failing + needs-action
-#   PR merged / closed         → all lifecycle labels removed
-#
-# Labels used (all defined in .github/labels.yml):
-#   awaiting-review · awaiting-approval · approved · changes-requested
-#   review-started  · checks-failing   · checks-passing · ready-to-merge
-#   needs-action
-
 name: PR Lifecycle
-
 on:
   pull_request:
     types:
@@ -33,45 +10,45 @@ on:
       - synchronize
       - closed
   pull_request_review:
-    types: [submitted]
+    types:
+      - submitted
   check_suite:
-    types: [completed]
+    types:
+      - completed
   workflow_run:
-    workflows: ["*"]
-    types: [completed]
-
+    workflows:
+      - "*"
+    types:
+      - completed
 permissions:
   pull-requests: write
   issues: write
   checks: read
   contents: read
-
 env:
-  LIFECYCLE_LABELS: >-
-    awaiting-review awaiting-approval approved changes-requested
+  LIFECYCLE_LABELS: awaiting-review awaiting-approval approved changes-requested
     review-started checks-failing checks-passing ready-to-merge needs-action
-
 jobs:
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Job 1 — Pull Request events
-  # ─────────────────────────────────────────────────────────────────────
   pr-state:
     name: PR State — ${{ github.event.action }}
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-
     steps:
       - name: Update lifecycle labels
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const pr     = context.payload.pull_request;
+
             const action = context.payload.action;
+
             const owner  = context.repo.owner;
+
             const repo   = context.repo.repo;
+
             const num    = pr.number;
+
 
             const ALL = [
               'awaiting-review', 'awaiting-approval', 'approved',
@@ -79,12 +56,15 @@ jobs:
               'checks-passing', 'ready-to-merge', 'needs-action'
             ];
 
+
             // ─ helpers ────────────────────────────────────────────
+
             const currentLabels = async () => (
               await github.rest.issues.listLabelsOnIssue({
                 owner, repo, issue_number: num
               })
             ).data.map(l => l.name);
+
 
             const add = async (...labels) => {
               for (const l of labels) {
@@ -96,6 +76,7 @@ jobs:
                 } catch (e) { core.warning(`add ${l}: ${e.message}`); }
               }
             };
+
 
             const remove = async (...labels) => {
               const cur = await currentLabels();
@@ -110,9 +91,12 @@ jobs:
               }
             };
 
+
             core.info(`PR #${num} event: ${action}`);
 
+
             // ─ state machine ──────────────────────────────────────
+
 
             switch (action) {
 
@@ -155,35 +139,39 @@ jobs:
               default:
                 core.info(`No label change for action: ${action}`);
             }
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Job 2 — Pull Request Review submitted
-  # ─────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   review-state:
     name: Review State — ${{ github.event.review.state }}
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_review'
-
     steps:
       - name: Update labels on review submission
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const review = context.payload.review;
+
             const pr     = context.payload.pull_request;
+
             const owner  = context.repo.owner;
+
             const repo   = context.repo.repo;
+
             const num    = pr.number;
+
             const state  = review.state.toLowerCase();
 
+
             core.info(`PR #${num} review state: ${state}`);
+
 
             const currentLabels = async () => (
               await github.rest.issues.listLabelsOnIssue({
                 owner, repo, issue_number: num
               })
             ).data.map(l => l.name);
+
 
             const add = async (...labels) => {
               for (const l of labels) {
@@ -195,6 +183,7 @@ jobs:
                 } catch (e) { core.warning(`add ${l}: ${e.message}`); }
               }
             };
+
 
             const remove = async (...labels) => {
               const cur = await currentLabels();
@@ -209,11 +198,13 @@ jobs:
               }
             };
 
+
             if (state === 'commented') {
               const cur = await currentLabels();
               if (!cur.includes('review-started')) await add('review-started');
               return;
             }
+
 
             if (state === 'approved') {
               await remove('awaiting-review', 'awaiting-approval',
@@ -230,30 +221,31 @@ jobs:
               }
             }
 
+
             if (state === 'changes_requested') {
               await remove('awaiting-review', 'awaiting-approval',
                            'approved', 'ready-to-merge');
               await add('changes-requested', 'needs-action');
             }
-
-  # ─────────────────────────────────────────────────────────────────────
-  # Job 3 — Check suite / workflow_run completed
-  # ─────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   check-state:
-    name: Check State — ${{ github.event.check_suite.conclusion || github.event.workflow_run.conclusion }}
+    name: Check State — ${{ github.event.check_suite.conclusion ||
+      github.event.workflow_run.conclusion }}
     runs-on: ubuntu-latest
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
-
     steps:
       - name: Find open PRs for this SHA and update check labels
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: >
             const owner = context.repo.owner;
+
             const repo  = context.repo.repo;
 
+
             let headSha, conclusion;
+
             if (context.eventName === 'check_suite') {
               headSha    = context.payload.check_suite.head_sha;
               conclusion = context.payload.check_suite.conclusion;
@@ -262,21 +254,27 @@ jobs:
               conclusion = context.payload.workflow_run.conclusion;
             }
 
+
             if (!conclusion) {
               core.info('No conclusion yet — skipping.');
               return;
             }
 
+
             // Find open PRs matching this head SHA
+
             const { data: prs } = await github.rest.pulls.list({
               owner, repo, state: 'open', per_page: 100
             });
+
             const targets = prs.filter(p => p.head.sha === headSha);
+
 
             if (targets.length === 0) {
               core.info(`No open PRs for SHA ${headSha.slice(0,7)}.`);
               return;
             }
+
 
             for (const pr of targets) {
               const num = pr.number;
@@ -349,3 +347,4 @@ jobs:
                 await add('checks-failing', 'needs-action');
               }
             }
+    timeout-minutes: 15

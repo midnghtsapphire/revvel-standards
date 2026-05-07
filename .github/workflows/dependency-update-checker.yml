@@ -1,30 +1,17 @@
 name: Dependency & Version Update Checker
-
-# Weekly scan for outdated dependencies, GitHub Actions, and CLI tools.
-# Creates a single issue summarizing everything that needs updating.
-#
-# Covers:
-#   - GitHub Actions used in workflows (checks for newer major/minor/patch)
-#   - npm/yarn/pnpm dependencies (via npm outdated)
-#   - GitHub Apps installed on the repo (marketplace version check)
-#   - CLI tools referenced in workflows
-
 on:
   schedule:
-    - cron: '0 9 * * 1'  # Every Monday at 09:00 UTC
-  workflow_dispatch:
-
+    - cron: 0 9 * * 1
+  workflow_dispatch: null
 permissions:
   issues: write
   contents: read
   actions: read
-
 jobs:
   check-updates:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/github-script@v7
         with:
           script: |
@@ -155,3 +142,6 @@ jobs:
               });
               core.info('Created new dependency update report issue.');
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

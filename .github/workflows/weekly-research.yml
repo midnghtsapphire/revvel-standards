@@ -1,45 +1,27 @@
 name: Weekly Research (WR) Automation
-
-# Automatically routes and processes [WR] prefixed issues through a specialized
-# research pipeline. WR issues receive enhanced deep-research treatment with
-# parallel agent coordination and structured findings documentation.
-#
-# Workflow:
-#   1. Detect [WR] prefix in issue title
-#   2. Apply weekly-research label + routing labels
-#   3. Trigger OpenRouter triage with research-focused prompt
-#   4. Optionally trigger 49Agents parallel research (if configured)
-#   5. Track progress with wr:in-progress / wr:complete labels
-#   6. Ensure findings are documented
-#
-# Docs: docs/WEEKLY_RESEARCH_PROCESS.md
-
 on:
   issues:
-    types: [opened, reopened, labeled]
+    types:
+      - opened
+      - reopened
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to process as WR"
+        description: Issue number to process as WR
         required: true
         type: number
-
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: weekly-research-${{ github.event.issue.number || github.event.inputs.issue_number }}
   cancel-in-progress: false
-
 jobs:
   detect-wr:
     name: Detect and label WR issue
     runs-on: ubuntu-latest
-    # OpenHands-RESTRUCTURE 2026-05-04: skip bot-spam issues so the WR label-applier
-    # doesn't fire on the [FAILURE]/[ALERT] issues the workflow-monitor used
-    # to create. (workflow-monitor's auto-issue trigger is now disabled too.)
-    if: >-
+    if: |-
       !(github.event_name == 'issues' &&
         github.event.issue.user.login == 'github-actions[bot]' &&
         (startsWith(github.event.issue.title, '[FAILURE]') ||
@@ -68,17 +50,16 @@ jobs:
 
             const title = issue.title || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
-            
+
             // Check if title starts with [WR] or if weekly-research label is already applied
             const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
-            
+
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
             core.info(`Current labels: ${labels.join(', ')}`);
-            
+
             core.setOutput('is_wr', isWR ? 'true' : 'false');
             core.setOutput('issue_number', String(issueNumber));
-
       - name: Apply WR labels
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v8
@@ -106,7 +87,6 @@ jobs:
                 core.notice(`Could not add label "${label}": ${error.message}`);
               }
             }
-
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v8
@@ -147,7 +127,7 @@ jobs:
               issue_number: issueNumber,
               body: welcomeComment,
             });
-
+    timeout-minutes: 30
   trigger-research:
     name: Trigger research agents
     needs: detect-wr
@@ -156,7 +136,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Run OpenRouter triage with research focus
         if: env.OPENROUTER_API_KEY != ''
         env:
@@ -170,18 +149,17 @@ jobs:
           ISSUE_DATA=$(gh api repos/${{ github.repository }}/issues/${{ needs.detect-wr.outputs.issue_number }})
           ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
           ISSUE_BODY=$(echo "$ISSUE_DATA" | jq -r '.body // ""')
-          
+
           # Run triage with research-enhanced context
           export ISSUE_TITLE
           export ISSUE_BODY
           export EVENT_KIND="issue"
-          
+
           node scripts/openrouter-triage.js || {
             echo "OpenRouter triage failed, but continuing..."
             gh issue comment ${{ needs.detect-wr.outputs.issue_number }} \
               --body "⚠️ OpenRouter triage encountered an error. Manual research coordination may be needed."
           }
-
       - name: Trigger 49Agents research (if configured)
         if: env.AGENT_HQ_TOKEN != ''
         env:
@@ -192,7 +170,7 @@ jobs:
           ISSUE_DATA=$(gh api repos/${{ github.repository }}/issues/${{ needs.detect-wr.outputs.issue_number }})
           ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
           ISSUE_BODY=$(echo "$ISSUE_DATA" | jq -r '.body // ""')
-          
+
           # Trigger 49Agents parallel research
           curl -X POST "$AGENT_HQ_URL/api/trigger" \
             -H "Authorization: Bearer $AGENT_HQ_TOKEN" \
@@ -210,10 +188,12 @@ jobs:
               gh issue comment ${{ needs.detect-wr.outputs.issue_number }} \
                 --body "ℹ️ 49Agents parallel research not available. Falling back to sequential research."
             }
-
+    timeout-minutes: 30
   monitor-completion:
     name: Monitor research completion
-    needs: [detect-wr, trigger-research]
+    needs:
+      - detect-wr
+      - trigger-research
     runs-on: ubuntu-latest
     steps:
       - name: Add completion tracker comment
@@ -221,7 +201,7 @@ jobs:
         with:
           script: |
             const issueNumber = ${{ needs.detect-wr.outputs.issue_number }};
-            
+
             const trackerComment = `📊 **Research Progress Tracker**
 
             This comment will be updated as research progresses.
@@ -261,3 +241,6 @@ jobs:
               issue_number: issueNumber,
               body: trackerComment,
             });
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

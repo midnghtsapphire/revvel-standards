@@ -8,7 +8,10 @@
     "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\"",
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
     "dashboard": "node scripts/dashboard-cli.js",
-    "dashboard:generate": "node scripts/aggregate-project-dashboard.js"
+    "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
+    "automation:doctor": "node scripts/automation-doctor.js",
+    "workflows:validate": "node scripts/automation-doctor.js --validate",
+    "labels:check": "node scripts/automation-doctor.js --labels"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"

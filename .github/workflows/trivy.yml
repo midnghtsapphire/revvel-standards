@@ -1,50 +1,27 @@
 name: Trivy
-
-# Multi-purpose security scanner: dependencies (SCA), Infrastructure-as-Code,
-# and supplementary secret scanning. Complements Semgrep (SAST) and
-# GitGuardian (runtime / git-leak secret scanning).
-#
-# Why Trivy:
-#   - Single tool covers SCA + IaC + secrets + Dockerfiles + Kubernetes manifests
-#   - No per-language matrix (auto-detects)
-#   - Fast (~30 sec for this repo)
-#   - OSS, no license / billing
-#   - https://trivy.dev/
-#
-# Output uploaded as SARIF to GitHub Code Scanning so findings appear in
-# Security → Code scanning alongside Semgrep.
-
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
   push:
-    branches: [main]
+    branches:
+      - main
   schedule:
-    - cron: '45 4 * * 1'  # Weekly Monday 04:45 UTC (15 min after Semgrep)
-  workflow_dispatch:
-
+    - cron: 45 4 * * 1
+  workflow_dispatch: null
 permissions:
   contents: read
   security-events: write
   actions: read
-
 jobs:
   trivy-fs:
     name: trivy
     runs-on: ubuntu-latest
-    # Trivy intentionally runs on Dependabot PRs (unlike Semgrep) because SCA
-    # vulnerability checks on dependency-bump PRs are exactly when this scanner
-    # is most valuable.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Run Trivy filesystem scan
-        # Pinned to v0.36.0 release commit SHA (not @master) to avoid the
-        # supply-chain risk of an arbitrary push to the action's master branch
-        # executing in CI with security-events: write permissions.
-        # Refresh: bump SHA when a new release is cut.
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8  # v0.36.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8
         with:
           scan-type: fs
           scan-ref: .
@@ -53,15 +30,14 @@ jobs:
           output: trivy.sarif
           severity: CRITICAL,HIGH,MEDIUM
           ignore-unfixed: true
-          exit-code: '0'  # don't fail the job; surface findings via SARIF
-
+          exit-code: "0"
       - name: Upload SARIF to GitHub Code Scanning
-        # continue-on-error so a transient GitHub installation rate-limit
-        # during SARIF upload doesn't fail the whole job. Findings will land
-        # in Code Scanning on the next run when the rate limit resets.
         if: hashFiles('trivy.sarif') != ''
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy.sarif
           category: trivy
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

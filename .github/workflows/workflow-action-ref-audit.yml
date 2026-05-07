@@ -1,63 +1,24 @@
-# Workflow Action-Ref Auditor
-#
-# Scans every `uses: <owner>/<repo>@<ref>` in `.github/workflows/*.yml` and
-# verifies that `<ref>` actually resolves on GitHub. If any ref is broken,
-# the workflow fails the run AND opens a GitHub issue with the full list so
-# the failure is permanently visible (not just a buried CI red X).
-#
-# Why this exists:
-#   GitHub Actions resolves every `uses:` ref upfront when a job starts. If
-#   ANY ref is unresolvable, the entire job aborts at "Set up job" before
-#   any step runs — including any safety/skip steps. This means a single
-#   bad ref can silently kill a critical workflow (e.g. WR PR creation),
-#   and the failure looks identical to "missing secret" or "transient
-#   network error" if you don't read the logs carefully.
-#
-#   This auditor catches the problem PROACTIVELY: on every push to a
-#   workflow file, on every PR, AND on a daily cron (so upstream
-#   delete/rename of a tag is caught within 24h).
-#
-# Triggers:
-#   - push to main (paths: .github/workflows/**)        — catches new bad refs
-#   - pull_request (paths: .github/workflows/**)        — block bad refs at PR
-#   - schedule (daily at 13:00 UTC)                     — catches upstream churn
-#   - workflow_dispatch                                  — manual run
-#
-# Skipped refs:
-#   - `./` local action paths
-#   - `docker://` image refs (validated separately)
-#   - any line that is commented out (#)
-#
-# When auditing finds broken refs, it:
-#   1. Fails this workflow run.
-#   2. On schedule/push to main, opens a GitHub issue tagged `auto-error`,
-#      `workflow-broken-ref` so it appears in the human-visible queue.
-
 name: Workflow Action-Ref Auditor
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - '.github/workflows/**'
-      - '.github/actions/**'
+      - .github/workflows/**
+      - .github/actions/**
   pull_request:
     paths:
-      - '.github/workflows/**'
-      - '.github/actions/**'
+      - .github/workflows/**
+      - .github/actions/**
   schedule:
-    # 13:00 UTC daily (catches tag deletion / repo rename within 24h).
-    - cron: '0 13 * * *'
-  workflow_dispatch:
-
+    - cron: 0 13 * * *
+  workflow_dispatch: null
 permissions:
   contents: read
   issues: write
-
 concurrency:
   group: workflow-action-ref-audit-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   audit:
     name: "Audit uses: refs across all workflows"
@@ -65,11 +26,9 @@ jobs:
     outputs:
       broken_count: ${{ steps.audit.outputs.broken_count }}
       broken_refs: ${{ steps.audit.outputs.broken_refs }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Audit workflow action references
         id: audit
         env:
@@ -139,7 +98,6 @@ jobs:
             exit 1
           fi
           echo "✅ All ${#REFS[@]} action refs resolved."
-
       - name: Open / update tracking issue (scheduled or main-branch run)
         if: |
           failure() &&
@@ -204,7 +162,6 @@ jobs:
               });
               core.notice(`Opened tracking issue #${created.data.number}.`);
             }
-
       - name: Close tracking issue when audit is clean
         if: |
           success() &&
@@ -236,3 +193,6 @@ jobs:
               });
               core.notice(`Closed tracking issue #${issue.number}.`);
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

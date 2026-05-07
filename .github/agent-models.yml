@@ -1,0 +1,72 @@
+# Agent Models Configuration
+# Defines routing profiles for different agent types
+# Used by workflows to reference models without hardcoding names
+
+# NOTE: Do NOT use Claude Sonnet 3.7 - it was retired Feb 2026
+# Use Claude Sonnet 4.6+ or GPT-5.5/GPT-5.1 class models
+
+profiles:
+  # Research: Perplexity for web-grounded research
+  research:
+    description: "Deep research using Perplexity Sonar for web-grounded answers"
+    provider: perplexity
+    primary: "sonar-pro"
+    fallback: "sonar-deep-research"
+    max_tokens: 10000
+    temperature: 0.4
+
+  # Triage: Quick classification and routing
+  triage:
+    description: "Quick issue classification, label assignment, and routing"
+    provider: openrouter
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 4000
+    temperature: 0.3
+
+  # code_patch: Coding agent - use direct LLM for file edits
+  code_patch:
+    description: "Writing and modifying code - use direct LLM for file edits"
+    provider: direct
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 12000
+    temperature: 0.4
+
+  # jules: Jules coding agent (Google's CI Fixer)
+  jules:
+    description: "Jules coding agent with CI Fixer - PR creation and CI self-repair"
+    provider: google-jules
+    enabled: true
+    max_tokens: 15000
+
+  # review: Code review - direct LLM for quality checks
+  review:
+    description: "Reviewing code changes for quality, bugs, and best practices"
+    provider: openrouter
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 8000
+    temperature: 0.2
+
+  # cheap_summary: Lightweight summarization
+  cheap_summary:
+    description: "Quick summaries and simple responses"
+    provider: openrouter
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 2000
+    temperature: 0.1
+
+#Orchestration flow:
+#  wr:research -> Perplexity (research + WR handoff)
+#  wr:jules -> Jules (PR creation + CI Fixer)
+#  wr:code -> Direct LLM (file edits)
+#  wr:checking -> GitHub Actions
+#  lifecycle:stuck -> Perplexity diagnosis + requeue
+
+# Model selection helpers for GitHub Actions
+env:
+  DEFAULT_TIMEOUT_MINUTES: 30
+  MAX_RERUNS: 1
+  # Set FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' for Node.js 24
