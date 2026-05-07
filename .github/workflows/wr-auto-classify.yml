@@ -114,7 +114,6 @@ jobs:
                   "technical-documentation", "client-code-task",
                   "project-management-doc", "internal-script-automation",
                   "cli-product", "mcp-product", "api-product", "invention-flow",
-                  "test-dev",
               ],
               "Research Mode": ["standard", "deepresearch"],
               "Delivery Mode": ["build-direct", "build-with-brief-options", "proposal-first"],
