@@ -1,39 +1,14 @@
 name: WR Auto-Classify Project v2 Fields
-
-# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
-# routing dropdowns the user left on 'auto-classify', and writes the chosen
-# values to the matching Project v2 single-select fields.
-#
-# Respects explicit user choices: only fills in fields whose body section is
-# 'auto-classify' or empty.
-#
-# Falls back to opinionated defaults if OpenRouter is unavailable or replies
-# with malformed output:
-#   Output Type        = internal-script-automation
-#   Research Mode      = standard
-#   Delivery Mode      = build-direct
-#   Iteration Mode     = single-pass
-#   Lifecycle Mode     = new-build
-#   Commercial Mode    = internal-only
-#   Deployment Target  = none
-#   Launch Priority    = medium
-#
-# When a fallback is used (OpenRouter unreachable, parse error, or value not in
-# the option list) the issue is labeled 'auto:default-fallback' so an operator
-# can spot-check.
-
 on:
   issues:
-    types: [opened]
-
+    types:
+      - opened
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: wr-auto-classify-${{ github.event.issue.number }}
   cancel-in-progress: false
-
 jobs:
   preflight:
     name: Preflight credential check
@@ -62,7 +37,7 @@ jobs:
             echo "has_openrouter=false" >> "$GITHUB_OUTPUT"
             echo "::notice::OPENROUTER_API_KEY not configured; classifier will use opinionated defaults."
           fi
-
+    timeout-minutes: 30
   classify:
     name: Classify routing fields and write to Project v2
     needs: preflight
@@ -455,6 +430,10 @@ jobs:
           if used_fallback:
               add_label("auto:default-fallback")
 
+          # Apply the output-type label so other automation can easily read the routing decision
+          if final.get("Output Type"):
+              add_label(f"output-type:{final['Output Type']}")
+
           comment_lines = [
               "**WR Auto-Classify ran on this issue.**",
               "",
@@ -469,3 +448,6 @@ jobs:
           post_comment("\n".join(comment_lines))
           print("Classification complete.")
           PYEOF
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

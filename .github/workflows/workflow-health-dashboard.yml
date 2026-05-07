@@ -1,17 +1,11 @@
 name: Workflow Health Dashboard
-
-# Generates a summary of the last run status for every workflow in the repo.
-# Posts results to the GitHub Actions run summary. Run weekly or on demand.
-
 on:
   schedule:
-    - cron: "0 10 * * 1"  # Every Monday at 10:00 UTC (after secrets check)
-  workflow_dispatch:
-
+    - cron: 0 10 * * 1
+  workflow_dispatch: null
 permissions:
   actions: read
   contents: read
-
 jobs:
   dashboard:
     name: Generate workflow health report
@@ -73,3 +67,6 @@ jobs:
             if (failed.length > 0) {
               core.warning(`${failed.length} workflow(s) had their last run fail. Check the summary for details.`);
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

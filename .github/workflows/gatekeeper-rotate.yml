@@ -1,33 +1,26 @@
 name: Gatekeeper — Secret Rotation Check
-
-# Runs weekly to check for overdue or upcoming secret rotations.
-# Creates issues for secrets that need manual rotation.
-
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Monday 06:00 UTC
+    - cron: 0 6 * * 1
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Run mode'
+        description: Run mode
         required: false
-        default: 'check'
+        default: check
         type: choice
         options:
           - check
           - execute
-
 permissions:
   issues: write
   contents: read
-
 jobs:
   rotate-check:
     name: Check rotation schedule
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Check for overdue rotations
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,3 +30,6 @@ jobs:
           # On manual dispatch INPUT_MODE is set by the user (check or execute).
           MODE="${INPUT_MODE:-execute}"
           bash scripts/gatekeeper-rotate.sh "--${MODE}" --warn-days 7
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

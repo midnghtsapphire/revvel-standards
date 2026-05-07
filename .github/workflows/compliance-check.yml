@@ -1,52 +1,45 @@
 name: Compliance Check
-
 on:
   schedule:
-    # Daily at 6 AM
-    - cron: '0 6 * * *'
-  # Manual trigger
-  workflow_dispatch:
-  # Trigger on changes to compliance-related files
+    - cron: 0 6 * * *
+  workflow_dispatch: null
   push:
     paths:
-      - 'docs/COMPLIANCE_TRACKER.md'
-      - 'docs/MEDICAID_WATCHDOG.md'
-      - 'docs/GRANT_READINESS.md'
-
+      - docs/COMPLIANCE_TRACKER.md
+      - docs/MEDICAID_WATCHDOG.md
+      - docs/GRANT_READINESS.md
 jobs:
   compliance-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Run Compliance Check
         run: |
           echo "=== Compliance Check Started ==="
           echo "Date: $(date)"
-          
+
           # Check compliance tracker
           echo "=== Checking Compliance Status ==="
           if [ -f docs/COMPLIANCE_TRACKER.md ]; then
             echo "Compliance tracker found"
           fi
-          
+
           # Check for urgent items
           echo "=== Checking Urgent Items ==="
           grep -i "URGENT\|May 2026\|CRITICAL" docs/*.md || echo "No urgent items found"
-          
+
           # Check Medicaid status
           echo "=== Medicaid Watchdog ==="
           if [ -f docs/MEDICAID_WATCHDOG.md ]; then
             echo "Medicaid tracker active"
           fi
-          
+
           # Check grant deadlines
           echo "=== Grant Deadlines ==="
           grep -i "due\|deadline\|expir" docs/GRANT_READINESS.md || echo "No upcoming deadlines"
-          
-          echo "=== Compliance Check Complete ==="
 
+          echo "=== Compliance Check Complete ==="
       - name: Create Issue on Failure
         if: failure()
         uses: actions/github-script@v7
@@ -58,7 +51,6 @@ jobs:
               title: "⚠️ Compliance Check Failed",
               body: "The daily compliance check has failed. Please review the workflow logs."
             })
-
       - name: Create Issue on Urgent
         uses: actions/github-script@v7
         with:
@@ -73,7 +65,7 @@ jobs:
                 body: "An urgent compliance item has been detected. Please review docs/COMPLIANCE_TRACKER.md"
               });
             }
-
+    timeout-minutes: 30
   monthly-audit:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
@@ -87,3 +79,6 @@ jobs:
           echo "- Medicaid eligibility"
           echo "- Business licenses"
           echo "=== Complete ==="
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

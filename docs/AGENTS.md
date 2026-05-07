@@ -1,8 +1,8 @@
-# AGENTS.md — Universal AI Agent Instructions
+# AGENTS.md - Universal AI Agent Instructions
 
 <!--
   MIDNGHTSAPPHIRE UNIVERSAL REPO INSTRUCTIONS
-  Owner: Audrey Evans (@midnghtsapphire)
+  CRITICAL: Before changing any file with 300+ lines, run `wc -l <file>`. If content drops from 300+ to <20, FLAG. Never delete - comment out or archive. (@midnghtsapphire)
   
   This file is read automatically by:
   - Claude Code (also reads CLAUDE.md symlink)

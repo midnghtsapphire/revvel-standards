@@ -1,51 +1,31 @@
-# PandaOps AI PR Review
-# Automatically reviews every pull request using OpenAI and posts inline
-# feedback and a summary comment directly to the PR.
-#
-# Required secret: OPENAI_API_KEY
-#   → GitHub → Settings → Secrets and variables → Actions → New repository secret
-
 name: PandaOps AI PR Review
-
-# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
-# PandaOps disabled to stop reviewer noise. Re-enable the `pull_request`
-# trigger only if BITO AI is unavailable for an extended period.
-
 on:
-  # # DISABLED — see header
-  # pull_request:
-  #   types: [opened, synchronize, reopened]
-  workflow_dispatch:
-
-# P1 - Important workflow: can cancel old runs for newer commits
+  workflow_dispatch: null
 concurrency:
   group: panda-ops-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
-
 jobs:
   review:
     name: PandaOps AI PR Review
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
-
     permissions:
       contents: read
       pull-requests: write
-
     steps:
       - uses: actions/checkout@v4
-
       - name: PandaOps AI PR Review
         uses: omnedia/panda-ops@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          # Focus on errors and warnings; skip grammar nits
           ai_focus_errors: true
           ai_focus_warn: true
           ai_focus_tips: true
           ai_focus_notes: false
           ai_focus_grammar: false
-          # Request changes on warnings; keep max comments reasonable
           fail_on_warnings: false
           max_comments: 25
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

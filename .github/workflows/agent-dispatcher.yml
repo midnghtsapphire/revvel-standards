@@ -1,0 +1,166 @@
+# Agent Dispatcher
+# Dispatches the correct agent based on issue labels
+# Reads prompts from .github/agent-prompts.yml
+
+name: Agent Dispatcher
+
+on:
+  issues:
+    types: [labeled, opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number
+        required: false
+        type: number
+      agent:
+        description: Agent to dispatch
+        required: false
+        type: choice
+        options:
+          - perplexity
+          - jules
+          - openrouter
+          - triage
+
+permissions:
+  issues: write
+  contents: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 30
+    steps:
+      - name: Determine agent to dispatch
+        id: determine
+        run: |
+          # Read agent-prompts.yml to get triggers
+          echo "Looking for label triggers..."
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
+            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check issue labels
+          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+          
+          case "$LABELS" in
+            *wr:research*)
+              echo "agent=perplexity" >> $GITHUB_OUTPUT
+              ;;
+            *wr:jules*)
+              echo "agent=jules" >> $GITHUB_OUTPUT
+              ;;
+            *wr:code*)
+              echo "agent=openrouter" >> $GITHUB_OUTPUT
+              ;;
+            *lifecycle:stuck*)
+              echo "agent=perplexity" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "agent=triage" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Load prompt for agent
+        id: prompt
+        run: |
+          # Load prompt from agent-prompts.yml
+          # This is simplified - real implementation would parse YAML
+          
+          case "${{ steps.determine.outputs.agent }}" in
+            perplexity)
+              echo "prompt<<EOF" >> $GITHUB_ENV
+              echo "You are the Revvel Standards research agent." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Research this GitHub issue and produce a WR handoff." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Output format:" >> $GITHUB_ENV
+              echo "## Diagnosis" >> $GITHUB_ENV
+              echo "## Files Likely Involved" >> $GITHUB_ENV
+              echo "## Implementation Plan" >> $GITHUB_ENV
+              echo "## Code Agent Handoff" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              ;;
+            jules)
+              echo "prompt<<EOF" >> $GITHUB_ENV
+              echo "You are the Revvel Standards Jules coding agent." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Create a branch, implement the fix, open a PR." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "PR title: [WR] summary" >> $GITHUB_ENV
+              echo "PR body: Issue link, files changed, tests run" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              ;;
+            openrouter)
+              echo "prompt<<EOF" >> $GITHUB_ENV
+              echo "You are the Revvel Standards coding agent." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Create a PR with the fix for this issue." >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              ;;
+            triage)
+              echo "prompt<<EOF" >> $GITHUB_ENV
+              echo "You are the Revvel Standards triage agent." >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Classify this issue: area, priority, type, labels" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              ;;
+          esac
+
+      - name: Dispatch to agent
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          AGENT: ${{ steps.determine.outputs.agent }}
+        run: |
+          echo "Dispatching $AGENT for issue #$ISSUE_NUMBER..."
+          
+          case "$AGENT" in
+            perplexity)
+              # Trigger Perplexity workflow
+              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+            jules)
+              # Trigger Jules - uses your JULES_TOKEN
+              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+            openrouter)
+              # Trigger OpenRouter coder
+              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER
+              ;;
+          esac
+
+      - name: Update labels
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          AGENT: ${{ steps.determine.outputs.agent }}
+        run: |
+          case "$AGENT" in
+            perplexity)
+              gh issue edit "$ISSUE_NUMBER" \
+                --remove-label "wr:new" \
+                --add-label "wr:research" 2>/dev/null || true
+              ;;
+            jules)
+              gh issue edit "$ISSUE_NUMBER" \
+                --add-label "wr:jules" 2>/dev/null || true
+              ;;
+            openrouter)
+              gh issue edit "$ISSUE_NUMBER" \
+                --add-label "wr:code" 2>/dev/null || true
+              ;;
+          esac
+
+      - name: Report
+        run: |
+          echo "## Agent Dispatch Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Agent: ${{ steps.determine.outputs.agent }}" >> $GITHUB_STEP_SUMMARY
+          echo "Issue: ${{ github.event.issue.number || inputs.issue_number }}" >> $GITHUB_STEP_SUMMARY

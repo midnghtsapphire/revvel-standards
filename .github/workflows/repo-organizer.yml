@@ -1,0 +1,84 @@
+# REPO ORGANIZER - Evaluates and organizes files/folders
+# - Evaluates every file and folder
+# - Decision tree on what to do with each
+# - Cleans up stale files
+# - Moves files to where they belong
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, don't actually move files"
+        default: "true"
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday
+
+jobs:
+  # PHASE 1: Organize docs - PUT FILES WHERE THEY BELONG
+  organize-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Categorize docs by type
+        run: |
+          echo "=== ORGANIZING DOCS ==="
+          
+          # Create category structure
+          CATEGORIES=(
+            "guides/: *_GUIDE.md,*_QUICKSTART.md,*_PROCESS.md"
+            "references/: *_REFERENCE.md,*_CATALOG.md"
+            "integrations/: *_INTEGRATION.md"
+            "evals/: *_EVAL_*.md"
+            "implementations/: *_IMPLEMENTATION.md,*_SUMMARY.md"
+            "agents/: AGENT_*.md,*_AGENT.md"
+            "workflows/: WORKFLOW_*.md,*_FLOW.md"
+          )
+          
+          # Move files to correct category
+          find docs -type f -name "*_GUIDE.md" -exec echo "Move to docs/guides: {}" \;
+          find docs -type f -name "*_INTEGRATION.md" -exec echo "Move to docs/integrations: {}" \;
+          find docs -type f -name "*_EVAL_*.md" -exec echo "Move to docs/evals: {}" \;
+          
+          echo "=== ORGANIZING ROOT FILES ==="
+          
+          # Files that should be in root vs docs
+          ROOT_FILES="AGENT-DEPLOY*.md|REVVEL*.md|STACK*.md"
+          for f in *.md; do
+            if echo "$f" | grep -qE "$ROOT_FILES"; then
+              echo "MOVE $f -> docs/ root reference: $f"
+            fi
+          done
+          
+          echo "=== ORGANIZING /SRC STRUCTURE ==="
+          # Check if /src exists, create if needed
+          if [[ ! -d "src" ]]; then
+            mkdir -p src/{components,styles,lib,utils}
+            echo "Created src/ structure"
+          fi
+          
+      - name: Identify mislocated files
+        run: |
+          # CSS in wrong places
+          find . -name "*.css" ! -path "./node_modules/*" ! -path "./dist/*" ! -path "./src/*" | head -5
+          
+          # JS in wrong places  
+          find . -name "*.js" ! -path "./node_modules/*" ! -path "./.github/*" | head -5
+
+  # PHASE 2: CSS ORGANIZATION
+  organize-css:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Evaluate CSS locations
+        run: |
+          # CSS should be in /src/styles or /assets
+          echo "=== CSS DECISION TREE ==="
+          find . -name "*.css" ! -path "./node_modules/*" ! -path "./dist/*" | while read -r f; do
+            if [[ "$f" == */src/styles/* ]]; then
+              echo "OK: $f"
+            elif [[ "$f" == */assets/css/* ]]; then
+              echo "OK: $f"  
+            else
+              echo "REVIEW: $f - where does it belong?"
+            fi
+          done

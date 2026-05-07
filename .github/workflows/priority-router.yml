@@ -1,47 +1,45 @@
 name: Priority Router — Issues & PRs
-
-# Routes every issue/PR through a priority classifier and re-evaluates the
-# backlog whenever new work arrives or completes.
-#
-# OpenHands-RESTRUCTURE 2026-05-04: live `issues` trigger disabled — was racing
-# with openrouter-coder, jules-invoke, wr-pr-creation, openrouter-assignee,
-# and needs-action-router on every newly-opened issue. The 6-hourly schedule
-# still runs the full priority sweep, and PR-side routing is unchanged.
-
 on:
-  # # DISABLED — see header
-  # issues:
-  #   types: [opened, reopened, edited, labeled, unlabeled, closed]
   pull_request_target:
-    types: [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
+    types:
+      - opened
+      - reopened
+      - edited
+      - labeled
+      - unlabeled
+      - ready_for_review
+      - closed
   schedule:
-    # Runs at fixed UTC times: 00:00, 06:00, 12:00, 18:00.
-    - cron: "0 */6 * * *"
+    - cron: 0 */6 * * *
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Log routing decisions without applying changes"
+        description: Log routing decisions without applying changes
         type: boolean
         default: false
       use_openrouter:
-        description: "Use OpenRouter when OPENROUTER_API_KEY is configured"
+        description: Use OpenRouter when OPENROUTER_API_KEY is configured
         type: boolean
         default: true
-
 permissions:
   issues: write
   pull-requests: write
   contents: read
-
 env:
-  PRIORITY_LABELS: "priority-p0,priority-p1,priority-p2,priority-p3"
-  PRIORITY_DEFINITIONS: >-
-    [{"name":"priority-p0","color":"b60205","description":"Critical priority — drop everything"},{"name":"priority-p1","color":"d93f0b","description":"High priority — next up"},{"name":"priority-p2","color":"fbca04","description":"Medium priority — normal queue"},{"name":"priority-p3","color":"0e8a16","description":"Low priority — backlog"}]
-
+  PRIORITY_LABELS: priority-p0,priority-p1,priority-p2,priority-p3
+  PRIORITY_DEFINITIONS: '[{"name":"priority-p0","color":"b60205","description":"Critical
+    priority — drop
+    everything"},{"name":"priority-p1","color":"d93f0b","description":"High
+    priority — next
+    up"},{"name":"priority-p2","color":"fbca04","description":"Medium priority —
+    normal queue"},{"name":"priority-p3","color":"0e8a16","description":"Low
+    priority — backlog"}]'
 jobs:
   route-priority:
     name: Route priority
     runs-on: ubuntu-latest
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Route priority for issues and PRs
         uses: actions/github-script@v8
@@ -50,8 +48,10 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
-          script: |
-            const DEFAULT_PRIORITY_LABELS = ['priority-p0', 'priority-p1', 'priority-p2', 'priority-p3'];
+          script: >
+            const DEFAULT_PRIORITY_LABELS = ['priority-p0', 'priority-p1',
+            'priority-p2', 'priority-p3'];
+
             const DEFAULT_PRIORITY_DEFINITIONS = [
               { name: 'priority-p0', color: 'b60205', description: 'Critical priority — drop everything' },
               { name: 'priority-p1', color: 'd93f0b', description: 'High priority — next up' },
@@ -59,12 +59,15 @@ jobs:
               { name: 'priority-p3', color: '0e8a16', description: 'Low priority — backlog' },
             ];
 
-            const PRIORITY_LABELS = (process.env.PRIORITY_LABELS || DEFAULT_PRIORITY_LABELS.join(','))
+
+            const PRIORITY_LABELS = (process.env.PRIORITY_LABELS ||
+            DEFAULT_PRIORITY_LABELS.join(','))
               .split(',')
               .map((label) => label.trim())
               .filter(Boolean);
 
             let PRIORITY_DEFINITIONS = DEFAULT_PRIORITY_DEFINITIONS;
+
             if (process.env.PRIORITY_DEFINITIONS) {
               try {
                 const parsed = JSON.parse(process.env.PRIORITY_DEFINITIONS);
@@ -77,8 +80,12 @@ jobs:
                 core.warning(`Failed to parse PRIORITY_DEFINITIONS. Using defaults. ${e.message}`);
               }
             }
+
             const dryRun = process.env.DRY_RUN === 'true';
-            const useOpenRouter = process.env.USE_OPENROUTER === 'true' && !!process.env.OPENROUTER_API_KEY;
+
+            const useOpenRouter = process.env.USE_OPENROUTER === 'true' &&
+            !!process.env.OPENROUTER_API_KEY;
+
 
             const normalizePriority = (value) => {
               if (!value) return null;
@@ -90,6 +97,7 @@ jobs:
               return null;
             };
 
+
             const fallbackPriority = (labels, text) => {
               const labelSet = new Set(labels);
               const lower = text.toLowerCase();
@@ -99,6 +107,7 @@ jobs:
               if (labelSet.has('enhancement') || /feature|enhancement|improve/.test(lower)) return 'priority-p2';
               return 'priority-p2';
             };
+
 
             const ensureLabelExists = async (name) => {
               try {
@@ -125,11 +134,13 @@ jobs:
               }
             };
 
+
             const ensurePriorityLabels = async () => {
               for (const name of PRIORITY_LABELS) {
                 await ensureLabelExists(name);
               }
             };
+
 
             const fetchOpenRouterPriority = async (item, labels) => {
               if (!useOpenRouter) return null;
@@ -188,6 +199,7 @@ jobs:
               }
             };
 
+
             const routeItem = async (item) => {
               if (!item) return false;
               if (item.state && item.state !== 'open') return false;
@@ -238,6 +250,7 @@ jobs:
               return true;
             };
 
+
             const runSingle = async () => {
               const item = context.payload.issue || context.payload.pull_request;
               if (!item) {
@@ -249,6 +262,7 @@ jobs:
                 core.info(`No priority change needed for #${item.number}.`);
               }
             };
+
 
             const runSweep = async () => {
               const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -282,6 +296,7 @@ jobs:
                 ])
                 .write();
             };
+
 
             const isForkPr =
               context.eventName === 'pull_request_target' &&
@@ -362,10 +377,16 @@ jobs:
               return;
             }
 
+
             const action = context.payload.action;
+
             const eventName = context.eventName;
+
             const sweepActions = new Set(['opened', 'reopened', 'closed']);
-            const singleActions = new Set(['edited', 'labeled', 'unlabeled', 'ready_for_review']);
+
+            const singleActions = new Set(['edited', 'labeled', 'unlabeled',
+            'ready_for_review']);
+
 
             const shouldSweep =
               eventName === 'schedule' ||
@@ -379,6 +400,7 @@ jobs:
 
             await ensurePriorityLabels();
 
+
             if (shouldSweep) {
               await runSweep();
             } else if (shouldSingle) {
@@ -386,3 +408,4 @@ jobs:
             } else {
               core.info('No priority routing action required.');
             }
+    timeout-minutes: 30

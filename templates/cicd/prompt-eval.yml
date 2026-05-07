@@ -14,10 +14,10 @@ on:
   pull_request:
     paths:
       - 'prompts/**'
-      - 'promptfooconfig*.yaml'
-      - 'promptfooconfig*.yml'
       - 'promptfooconfig.yaml'
       - 'promptfooconfig.yml'
+      - 'promptfooconfig*.yaml'
+      - 'promptfooconfig*.yml'
       - 'promptfoo.yml'
       - 'promptfoo.yaml'
       - 'skills/**/SKILL.md'
@@ -56,6 +56,10 @@ jobs:
 
       - name: Install PromptFoo
         run: npm install -g promptfoo
+
+      - name: Setup OpenRouter for Claude Sonnet 4
+        run: |
+          echo "Using Claude Sonnet 4 via OpenRouter as primary model"
 
       - name: Find promptfoo configs
         id: configs

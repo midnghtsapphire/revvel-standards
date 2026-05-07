@@ -1,0 +1,150 @@
+# AGENT MONITOR - Watches agent health and creates WR on failure
+# - Checks if agents are instantiating properly
+# - Creates WR when agents fail to start
+# - Tracks agent health over time
+
+on:
+  # Run every 15 minutes
+  schedule:
+    - cron: '*/15 * * * *'
+  # Can also be triggered manually
+  workflow_dispatch:
+
+env:
+  CHECK_INTERVAL_MINUTES: 15
+
+jobs:
+  # Check agent instantiation status
+  check-agent-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      agents_status: ${{ steps.health.outputs.status }}
+    steps:
+      - name: Check OpenRouter agent
+        id: openrouter
+        run: |
+          # Test if OpenRouter is accessible
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://openrouter.ai/api/v1/models" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" 2>&1 || echo "000")
+          
+          if [[ "$response" == "200" ]]; then
+            echo "openrouter=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "openrouter=unhealthy:$response" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Perplexity agent
+        id: perplexity
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/" \
+            -H "Authorization: Bearer $PERPLEXITY_API_KEY" 2>&1 || echo "000")
+          
+          if [[ "$response" == "200" ]]; then
+            echo "perplexity=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "perplexity=unhealthy:$response" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Jules agent
+        id: jules
+        run: |
+          # Test Jules API if available
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://jules.ai/api/health" \
+            2>&1 || echo "000")
+          
+          if [[ "$response" == "200" ]]; then
+            echo "jules=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "jules=unhealthy:$response" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compile health status
+        id: health
+        run: |
+          OPENROUTER="${{ steps.openrouter.outputs.openrouter }}"
+          PERPLEXITY="${{ steps.perplexity.outputs.perplexity }}"
+          JULES="${{ steps.jules.outputs.jules }}"
+          
+          UNHEALTHY=()
+          
+          # Check each agent
+          if echo "$OPENROUTER" | grep -q "unhealthy"; then
+            UNHEALTHY+=("OpenRouter: $OPENROUTER")
+          fi
+          if echo "$PERPLEXITY" | grep -q "unhealthy"; then
+            UNHEALTHY+=("Perplexity: $PERPLEXITY")
+          fi
+          if echo "$JULES" | grep -q "unhealthy"; then
+            UNHEALTHY+=("Jules: $JULES")
+          fi
+          
+          # Output overall status
+          if [[ ${#UNHEALTHY[@]} -eq 0 ]]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            echo "issues=$(printf '; %s' "${UNHEALTHY[@]}")" >> $GITHUB_OUTPUT
+          fi
+
+  # Create WR if agents unhealthy
+  create-failure-wr:
+    needs: check-agent-health
+    if: needs.check-agent-health.outputs.agents_status == 'unhealthy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check for existing WR
+        id: existing
+        run: |
+          # Search for recent unhandled agent failure WR
+          EXISTING=$(gh rep search issues --repo ${{ github.repository }} \
+            --state open --json number \
+            -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null | head -1 || echo "")
+          
+          if [[ -n "$EXISTING" ]]; then
+            echo "existing_wr=$EXISTING" >> $GITHUB_OUTPUT
+            echo "Found existing WR: #$EXISTING"
+          else
+            echo "existing_wr=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create WR if no existing
+        if: steps.existing.outputs.existing_wr == ''
+        run: |
+          ISSUES="${{ needs.check-agent-health.outputs.issues }}"
+          
+          gh issue create \
+            --title "[AGENT-FAILURE] Agent health check failed" \
+            --body "## Agent Health Check Failed
+
+**Time:** ${{ github.event.repository.updated_at }}
+**Issues:** $ISSUES
+
+### Required Action
+- [ ] Check agent API keys
+- [ ] Verify billing status
+- [ ] Enable fallback agents
+
+### Agent Chain Status
+| Agent | Status | Action |
+|-------|--------|--------|
+| OpenRouter | CHECK | Verify API key |
+| Perplexity | CHECK | Verify billing |
+| Jules | CHECK | Enable if disabled |
+
+This WR auto-closes when agents recover.
+" \
+            --label "needs-human,agent-failure,automation-failure"
+          
+          echo "✅ Created WR for agent failure"
+
+      - name: Update existing WR
+        if: steps.existing.outputs.existing_wr != ''
+        run: |
+          EXISTING="${{ steps.existing.outputs.existing_wr }}"
+          ISSUES="${{ needs.check-agent-health.outputs.issues }}"
+          
+          gh issue comment "$EXISTING" --body "⚠️ Agent health check still failing: $ISSUES"
+          
+          echo "✅ Updated existing WR #$EXISTING"

@@ -78,7 +78,7 @@ async function runTests() {
   const repoSurgeryModels = getProfileModels("repo_surgery");
   assertEqual(
     repoSurgeryModels,
-    ["anthropic/claude-3.7-sonnet", "deepseek/deepseek-v3.2", "openai/gpt-5.2-codex"],
+    ["anthropic/claude-sonnet-4", "deepseek/deepseek-v3.2", "openai/gpt-5.2-codex"],
     "repo_surgery should have correct model fallback chain"
   );
   assertTrue(
@@ -91,7 +91,7 @@ async function runTests() {
   const cheapBatchModels = getProfileModels("cheap_batch_edits");
   assertEqual(
     cheapBatchModels,
-    ["deepseek/deepseek-v3.2", "anthropic/claude-3.7-sonnet"],
+    ["deepseek/deepseek-v3.2", "anthropic/claude-sonnet-4"],
     "cheap_batch_edits should have correct model fallback chain"
   );
   assertTrue(
@@ -104,7 +104,7 @@ async function runTests() {
   const hardDebugModels = getProfileModels("hard_debug");
   assertEqual(
     hardDebugModels,
-    ["openai/gpt-5.2-codex", "anthropic/claude-3.7-sonnet", "deepseek/deepseek-v3.2"],
+    ["openai/gpt-5.2-codex", "anthropic/claude-sonnet-4", "deepseek/deepseek-v3.2"],
     "hard_debug should have correct model fallback chain"
   );
   assertTrue(

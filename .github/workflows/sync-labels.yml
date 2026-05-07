@@ -1,33 +1,17 @@
-# Sync Standard Labels
-#
-# Ensures every Revvel standard label exists in this repository with the
-# correct color and description. Safe to run repeatedly — creates missing
-# labels and updates changed ones, but NEVER deletes existing labels.
-#
-# Triggers:
-#   • Push to main when labels.yml changes (keeps labels in sync automatically)
-#   • workflow_dispatch — run manually from the Actions tab at any time
-#
-# The canonical label definitions live in .github/labels.yml (documentation).
-# The workflow maintains its own inline copy so it is fully self-contained.
-
 name: Sync Standard Labels
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - .github/labels.yml
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   issues: write
-
 jobs:
   sync-labels:
     name: Sync Labels from Canonical Definition
     runs-on: ubuntu-latest
-
     steps:
       - name: Sync labels
         uses: actions/github-script@v8
@@ -50,6 +34,17 @@ jobs:
               { name: 'in-review',         color: 'fbca04', description: 'Linked PR is open and ready for review' },
               { name: 'blocked',           color: 'e4e669', description: 'Blocked by external dependency' },
               { name: 'wontfix',           color: 'ffffff', description: 'This will not be worked on' },
+              // PR Lifecycle (managed by pr-lifecycle.yml)
+              { name: 'awaiting-review',   color: '0075ca', description: 'Waiting for reviewer feedback' },
+              { name: 'checks-failing',    color: 'd73a4a', description: 'CI checks are failing' },
+              { name: 'checks-passing',    color: 'a2eeef', description: 'All CI checks pass' },
+              { name: 'ready-to-merge',    color: '008672', description: 'Approved + checks pass — ready to merge' },
+              // Issue Lifecycle (managed by issue-lifecycle.yml)
+              { name: 'issue:in-progress', color: '0075ca', description: 'Issue has a linked PR in progress' },
+              { name: 'issue:done',        color: '0e8a16', description: 'Issue resolved — linked PR merged' },
+              { name: 'issue:stale',       color: 'e4e669', description: 'No activity for 7+ days — needs attention' },
+              // Watchdog
+              { name: 'lifecycle:stuck',    color: 'd93f0b', description: 'Label watchdog detected a stuck state' },
               // Third-Party / External Contributions
               { name: 'third-party',       color: 'bfdadc', description: 'PR from forked repository - external contributor' },
               { name: 'external-contributor', color: '7057ff', description: 'Contribution from outside the organization' },
@@ -168,3 +163,6 @@ jobs:
             core.notice(
               `Label sync complete — created: ${created}, updated: ${updated}, already correct: ${skipped}`
             );
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

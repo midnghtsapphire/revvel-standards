@@ -20,12 +20,15 @@ const OPENROUTER_PATH = "/api/v1/chat/completions";
 
 /**
  * Routing profiles with model fallback chains
+ * 
+ * Note: Model IDs updated May 6, 2026 to use valid OpenRouter model identifiers.
+ * Previous invalid "anthropic/claude-3.7-sonnet" replaced with "anthropic/claude-sonnet-4"
  */
 const ROUTING_PROFILES = {
   repo_surgery: {
     description: "Multi-file edits, bug fixing, refactors, and 'take initiative' tasks",
     models: [
-      "anthropic/claude-3.7-sonnet",
+      "anthropic/claude-sonnet-4",
       "deepseek/deepseek-v3.2",
       "openai/gpt-5.2-codex"
     ]
@@ -34,14 +37,14 @@ const ROUTING_PROFILES = {
     description: "Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes",
     models: [
       "deepseek/deepseek-v3.2",
-      "anthropic/claude-3.7-sonnet"
+      "anthropic/claude-sonnet-4"
     ]
   },
   hard_debug: {
     description: "Difficult failures, ambiguous root-cause analysis, and second-opinion patches",
     models: [
       "openai/gpt-5.2-codex",
-      "anthropic/claude-3.7-sonnet",
+      "anthropic/claude-sonnet-4",
       "deepseek/deepseek-v3.2"
     ]
   }
