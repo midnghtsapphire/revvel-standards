@@ -18,6 +18,9 @@ name: OpenRouter Auto-Route
 #   Output Type = invention-flow / desktop-tool
 #     → label `swe-fix` + `bito-ai`   (deeper review on novel architecture)
 #
+#   Output Type = test-dev
+#     → label `fix-me`       (OpenHands resolver — testing, validation, sandbox work)
+#
 # Always applies the `bito-ai` label so BITO reviews every WR's resulting PR.
 #
 # This workflow is read-only on the issue body — never modifies the WR text.
@@ -107,6 +110,7 @@ jobs:
               'project-management-doc':        ['noimosai', 'fix-me'],
               'client-code-task':              ['fix-me'],
               'internal-script-automation':    ['fix-me'],
+              'test-dev':                      ['fix-me'],
             };
 
             const agentLabels = routingTable[outputType] || [];

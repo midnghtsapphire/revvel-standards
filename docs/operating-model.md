@@ -30,6 +30,7 @@ The system does **not** auto-build every idea. It researches first, scores it, a
    - mcp-product
    - api-product
    - invention-flow
+   - test-dev
 
 ---
 
