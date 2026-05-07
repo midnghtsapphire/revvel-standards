@@ -29,6 +29,8 @@ jobs:
   assess-budget:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     outputs:
       budget_status: ${{ steps.budget.outputs.status }}
       selected_agent: ${{ steps.routing.outputs.agent }}
@@ -97,6 +99,8 @@ jobs:
     needs: assess-budget
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
       - name: Execute with budget-aware agent
         run: |
@@ -135,6 +139,9 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      issues: write
+      contents: read
     steps:
       - name: Try next cheapest agent
         run: |

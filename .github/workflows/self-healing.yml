@@ -16,6 +16,10 @@ jobs:
   research-state:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: read
+      issues: read
+      contents: read
     outputs:
       broken_areas: ${{ steps.scan.outputs.broken }}
       system_health: ${{ steps.health.outputs.status }}
@@ -112,6 +116,10 @@ jobs:
     if: needs.research-state.outputs.system_health == 'needs-healing'
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      actions: write
+      issues: write
+      contents: read
     steps:
       - name: Heal stuck issues
         run: |

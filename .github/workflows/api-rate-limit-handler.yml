@@ -18,6 +18,10 @@ jobs:
   handle-rate-limit:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      issues: write
+      actions: write
+      contents: read
     steps:
       - name: Check if rate limited
         id: check
