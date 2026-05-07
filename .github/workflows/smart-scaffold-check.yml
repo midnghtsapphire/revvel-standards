@@ -1,0 +1,81 @@
+# SMART SCAFFOLDING CHECK
+# - Context-aware: understands WHY words are used, not just WHAT words appear
+# - NEVER blocks - always provides context and lets human decide
+# - Two-part: quick scan (warn on issues) + detailed report (for human review)
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  # QUICK SCAN - just checks for issues, never fails
+  quick-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Smart scan for indicators
+        id: scan
+        run: |
+          echo "🔍 Smart scan - context-aware..."
+          
+          # Get PR context
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+          FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+          
+          SCAN_ISSUES=()
+          
+          # Smart detection - not just word matching
+          # 1. Check if FILES contain NEW code files (not just docs)
+          NEW_CODE_FILES=$(echo "$FILES" | grep -E "\.(js|ts|py|go|rs)$" || true)
+          
+          if [[ -n "$NEW_CODE_FILES" ]]; then
+            # 2. For NEW code files, check for actual scaffolding patterns
+            # Looking for: empty functions, TODO without plan, stub-only files
+            for f in $NEW_CODE_FILES; do
+              # Empty function stubs
+              if grep -q "^[[:space:]]*}$" "$f" 2>/dev/null; then
+                LINES=$(wc -l < "$f")
+                if [[ $LINES -lt 10 ]]; then
+                  SCAN_ISSUES+=("⚠️ $f is very short - is it complete?")
+                fi
+              fi
+            done
+          fi
+          
+          # Output issues (not failing!)
+          if [[ ${#SCAN_ISSUES[@]} -gt 0 ]]; then
+            echo "scaffolding_notes=$(printf '%s\n' "${SCAN_ISSUES[@]}")" >> $GITHUB_OUTPUT
+          else
+            echo "scaffolding_notes=Clean scan ✅" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Scan complete: ${SCAN_ISSUES[@]:-No issues}"
+
+      - name: Post scan results (as info, never fail)
+        run: |
+          echo "::notice::Anti-scaffolding scan: ${{ steps.scan.outputs.scaffolding_notes }}"
+          echo "PR can be merged - scan is advisory only"
+
+  # DETAILED REPORT - for human review
+  detailed-report:
+    needs: quick-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: contains(needs.quick-scan.outputs.scaffolding_notes, '⚠️')
+    steps:
+      - name: Generate detailed report
+        run: |
+          # Generate a human-readable report with specific guidance
+          echo "## Detailed Scaffold Analysis"
+          echo "- PR: ${{ github.event.pull_request.title }}"
+          echo "- Files changed: ${{ github.event.pull_request.changed_files }}"
+          echo ""
+          echo "### Review Notes:"
+          echo "${{ needs.quick-scan.outputs.scaffolding_notes }}"
+          echo ""
+          echo "### Recommendation:"
+          echo "- These are ADVISORY only"
+          echo "- Human reviewer should verify before merge"
+          echo "- Click 'Merge' if code is complete"

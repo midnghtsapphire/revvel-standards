@@ -1,0 +1,75 @@
+# ROBUST OPENROUTER ORCHESTRATOR
+# - Auto-selects best model (let OpenRouter decide)
+# - Has backup provider if OpenRouter completely fails
+# - Smart scaffolding/placeholder detection (context-aware)
+# - Never fails - always fallback
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        required: true
+        description: "Task prompt"
+      model_profile:
+        description: "Profile from agent-models.yml (default: orchestrator)"
+        default: "orchestrator"
+      fallback_provider:
+        description: "Fallback if OpenRouter fails"
+        default: "direct"
+
+jobs:
+  orchestrator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Try OpenRouter with auto-select
+        id: openrouter
+        run: |
+          # Let OpenRouter pick best model for task
+          # Using orchestrator profile - auto-selects best available
+          echo "Using OpenRouter orchestrator (auto-select)..."
+          
+          # Call OpenRouter API with auto model
+          response=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -H "HTTP-Referer: https://github.com" \
+            -d '{
+              "model": "auto",
+              "messages": [{"role": "user", "content": "${{ inputs.prompt }}"}],
+              "max_tokens": 15000
+            }' 2>&1)
+          
+          # Check for API failures
+          if echo "$response" | grep -q "error\|429\|503\|connection"; then
+            echo "openrouter_failed=true" >> $GITHUB_OUTPUT
+            echo "Error: $response"
+          else
+            echo "openrouter_failed=false" >> $GITHUB_OUTPUT
+            echo "$response"
+          fi
+      
+      - name: Fallback to direct provider if OpenRouter failed
+        if: steps.openrouter.outputs.openrouter_failed == 'true'
+        run: |
+          echo "OpenRouter failed - using direct provider fallback..."
+          
+          # Direct to Anthropic Claude or OpenAI
+          response=$(curl -s -X POST "https://api.anthropic.com/v1/messages" \
+            -H "Authorization: Bearer $ANTHROPIC_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "claude-sonnet-4-20250514",
+              "max_tokens": 15000,
+              "messages": [{"role": "user", "content": "${{ inputs.prompt }}"}]
+            }' 2>&1)
+          
+          echo "Fallback response: $response"
+          
+          # Even this can fail - create WR for manual triage
+          if echo "$response" | grep -q "error\|429"; then
+            gh issue create \
+              --title "[NEEDS-HUMAN] All LLM providers failed - manual triage needed" \
+              --body "OpenRouter failed and direct fallback failed." \
+              --label "needs-human,automation-failure"
+          fi
