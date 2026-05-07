@@ -62,6 +62,9 @@ jobs:
       PROJECT_ID: ${{ vars.PROJECT_ID }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # Recommended for organization-owned Project v2 boards.
       # Create a GitHub App with:
       # - Organization permissions: Projects = Read and write

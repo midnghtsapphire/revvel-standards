@@ -87,21 +87,27 @@ It expects these to be configured at the org or repo level before it will succee
 
 **Repository / organization variables** (Settings → Variables → Actions):
 
-| Variable                   | What it is                                       | Example format        |
-| -------------------------- | ------------------------------------------------ | --------------------- |
-| `PROJECT_ID`               | Project v2 node ID                               | `PVT_kwHOA...`        |
-| `PROJECTS_APP_ID`          | GitHub App ID used to authenticate to Project v2 | `123456`              |
+| Variable          | What it is                        | Example format |
+| ----------------- | --------------------------------- | -------------- |
+| `PROJECT_ID`      | Project v2 node ID                | `PVT_kwHOA...` |
+| `PROJECTS_APP_ID` | GitHub App ID (App workflow only) | `123456`       |
 
 **Repository / organization secret**:
 
-- `PROJECTS_APP_PRIVATE_KEY` — private key for the GitHub App referenced by `PROJECTS_APP_ID`.
+- `PROJECTS_APP_PRIVATE_KEY` — private key for the GitHub App referenced by `PROJECTS_APP_ID` (App workflow only).
+- `PROJECTS_PAT` — classic PAT secret used by `default-project-v2-fields-pat.yml` (PAT workflow only).
 
 **GitHub App permissions**:
 
 - Organization: Projects = Read & write
 - Repository: Issues = Read
 
-Until these are populated, the workflow will fail loudly on every new issue (intentional — silent failure would let the project board drift).
+Use exactly one auth path:
+
+- **GitHub App path:** `PROJECTS_APP_ID` + `PROJECTS_APP_PRIVATE_KEY`
+- **Classic PAT path:** `PROJECTS_PAT`
+
+Until `PROJECT_ID` and one auth path are populated, the default-field workflow cannot write project values.
 
 ---
 

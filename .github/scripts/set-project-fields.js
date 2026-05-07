@@ -95,7 +95,8 @@ module.exports = async ({ github, context, core }) => {
 
   const projectFields = projectData?.node?.fields?.nodes || [];
 
-  // Map and execute mutations
+  // Build updates from the schema lookup.
+  const updates = [];
   for (const { name, targetValue, source } of targetValues) {
     const fieldNode = projectFields.find(f => f.name && f.name.toLowerCase() === name.toLowerCase());
 
@@ -111,29 +112,56 @@ module.exports = async ({ github, context, core }) => {
       continue;
     }
 
-    const mutation = `
-      mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
-        updateProjectV2ItemFieldValue(input: {
-          projectId: $projectId
-          itemId: $itemId
-          fieldId: $fieldId
-          value: { singleSelectOptionId: $optionId }
-        }) {
-          projectV2Item { id }
-        }
-      }
-    `;
+    updates.push({
+      name,
+      targetValue,
+      source,
+      fieldId: fieldNode.id,
+      optionId: optionNode.id,
+    });
+  }
 
-    try {
-      await github.graphql(mutation, {
-        projectId,
-        itemId,
-        fieldId: fieldNode.id,
-        optionId: optionNode.id
-      });
-      core.info(`✅ Set "${name}" to "${targetValue}" (${source})`);
-    } catch (err) {
-      core.warning(`Failed to set "${name}": ${err.message}`);
+  if (!updates.length) {
+    core.warning('No valid Project field updates to apply.');
+    return;
+  }
+
+  const variableDefinitions = ['$projectId: ID!', '$itemId: ID!'];
+  const mutationParts = [];
+  const variables = { projectId, itemId };
+
+  updates.forEach((update, idx) => {
+    const fieldVar = `fieldId${idx}`;
+    const optionVar = `optionId${idx}`;
+
+    variableDefinitions.push(`$${fieldVar}: ID!`, `$${optionVar}: String!`);
+    mutationParts.push(`
+      u${idx}: updateProjectV2ItemFieldValue(input: {
+        projectId: $projectId
+        itemId: $itemId
+        fieldId: $${fieldVar}
+        value: { singleSelectOptionId: $${optionVar} }
+      }) {
+        projectV2Item { id }
+      }
+    `);
+
+    variables[fieldVar] = update.fieldId;
+    variables[optionVar] = update.optionId;
+  });
+
+  const mutation = `
+    mutation(${variableDefinitions.join(', ')}) {
+      ${mutationParts.join('\n')}
     }
+  `;
+
+  try {
+    await github.graphql(mutation, variables);
+    updates.forEach(({ name, targetValue, source }) => {
+      core.info(`✅ Set "${name}" to "${targetValue}" (${source})`);
+    });
+  } catch (err) {
+    core.warning(`Failed to apply batched field updates: ${err.message}`);
   }
 };

@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+'use strict';
+
 const assert = require('assert');
 const setProjectFields = require('../.github/scripts/set-project-fields.js');
 
 async function runTest() {
-  const mutations = [];
+  const mutationCalls = [];
   const logs = [];
 
   const mockGithub = {
@@ -37,7 +40,7 @@ refresh-existing
           }
         };
       } else if (query.includes('mutation')) {
-        mutations.push({ query, variables });
+        mutationCalls.push({ query, variables });
         return { projectV2Item: { id: variables.itemId } };
       }
     }
@@ -64,16 +67,20 @@ refresh-existing
   // Assertions
 
   // 1. Expected mutations
-  assert.strictEqual(mutations.length, 3, 'Should execute 3 mutations (Status, Lifecycle Mode, Delivery Mode)');
+  assert.strictEqual(mutationCalls.length, 1, 'Should execute one batched mutation');
+  const [{ query: mutationQuery, variables: mutationVariables }] = mutationCalls;
 
-  const statusMutation = mutations.find(m => m.variables.fieldId === 'F1');
-  assert.strictEqual(statusMutation.variables.optionId, 'O1', 'Status should fallback to default Inbox (O1)');
+  assert.ok(/u0:\s*updateProjectV2ItemFieldValue/.test(mutationQuery), 'Batched mutation should include alias u0');
+  assert.ok(/u1:\s*updateProjectV2ItemFieldValue/.test(mutationQuery), 'Batched mutation should include alias u1');
+  assert.ok(/u2:\s*updateProjectV2ItemFieldValue/.test(mutationQuery), 'Batched mutation should include alias u2');
+  const batchPairs = [];
+  for (let i = 0; Object.prototype.hasOwnProperty.call(mutationVariables, `fieldId${i}`); i += 1) {
+    batchPairs.push(`${mutationVariables[`fieldId${i}`]}:${mutationVariables[`optionId${i}`]}`);
+  }
 
-  const lifecycleMutation = mutations.find(m => m.variables.fieldId === 'F2');
-  assert.strictEqual(lifecycleMutation.variables.optionId, 'O3', 'Lifecycle Mode should use explicit choice refresh-existing (O3)');
-
-  const deliveryMutation = mutations.find(m => m.variables.fieldId === 'F3');
-  assert.strictEqual(deliveryMutation.variables.optionId, 'O4', 'Delivery Mode should fallback to default build-direct (O4)');
+  assert.ok(batchPairs.includes('F1:O1'), 'Status should fallback to default Inbox (O1)');
+  assert.ok(batchPairs.includes('F2:O3'), 'Lifecycle Mode should use explicit choice refresh-existing (O3)');
+  assert.ok(batchPairs.includes('F3:O4'), 'Delivery Mode should fallback to default build-direct (O4)');
 
   // 2. Expected warnings for missing fields (the mock schema only returned 3 of the 8 default fields)
   assert.ok(logs.some(l => l.includes('Field "Priority" not found')), 'Should warn about missing Priority field');

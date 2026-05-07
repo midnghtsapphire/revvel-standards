@@ -43,11 +43,11 @@ PROJECT_ID = PVT_kwHOAEa8uc4BU_1U
 
 ### Re-running the ID discovery workflow
 
-If you add new fields, change option IDs, or move the project, re-run the helper workflow to refresh the IDs:
+If you add new fields/options or move the project, re-run the helper workflow to inspect the latest schema and confirm `PROJECT_ID`:
 
 1. Go to **Actions** → **Print Project v2 IDs (PAT)** → **Run workflow**
 2. Inputs: `owner_type=user`, `owner=midnghtsapphire`, `project_number=5`
-3. Copy the printed values back into the seven repo variables on `midnghtsapphire/revvel-standards/settings/variables/actions`
+3. Update `PROJECT_ID` only if the project changed. Field/option IDs are informational because the workflow resolves those dynamically at runtime.
 
 ---
 
@@ -64,7 +64,7 @@ If you add new fields, change option IDs, or move the project, re-run the helper
    - Use `print-project-v2-ids.yml` if you want GitHub App authentication.
    - Use `print-project-v2-ids-pat.yml` if you want classic PAT authentication.
 2. Run the helper workflow manually from the GitHub Actions tab.
-3. Copy the printed Project, field, and option IDs into repository or organization variables.
+3. Set `PROJECT_ID` in repository or organization variables. Use printed field/option IDs as reference only.
 4. Copy one main workflow into `.github/workflows/`.
    - Use `set-default-project-v2-fields.yml` for GitHub App authentication.
    - Use `default-project-v2-fields-pat.yml` for classic PAT authentication.
