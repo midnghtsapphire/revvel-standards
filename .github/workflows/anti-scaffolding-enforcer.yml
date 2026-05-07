@@ -12,6 +12,7 @@ permissions:
 jobs:
   check-for-scaffolding:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout PR
         uses: actions/checkout@v4
