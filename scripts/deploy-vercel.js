@@ -8,6 +8,7 @@
  */
 
 const fs = require('fs');
+const crypto = require('crypto');
 const { execSync } = require('child_process');
 
 const WORKFLOW_TEMPLATE = `name: Deploy
@@ -86,13 +87,17 @@ if (!repo) {
 
 console.log(`Setting up Vercel deploy for ${repo}...`);
 
-const branch = `automation/vercel-deploy-${Date.now()}`;
+const branch = `automation/vercel-deploy-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 const tempDir = `/tmp/vercel-deploy-${repo.replace('/', '-')}-${Date.now()}`;
 const targetDir = `${tempDir}/target`;
 const prBodyFile = `${tempDir}/pr-body.md`;
 
 execSync(`mkdir -p "${tempDir}"`, { stdio: 'inherit' });
-execSync(`gh repo clone ${repo} "${targetDir}"`, { stdio: 'inherit' });
+try {
+  execSync(`gh repo clone ${repo} "${targetDir}"`, { stdio: 'inherit' });
+} catch (error) {
+  throw new Error(`Failed to clone ${repo}. Check repository name and permissions. (${error.message})`);
+}
 execSync('mkdir -p .github/workflows', { cwd: targetDir, stdio: 'inherit' });
 fs.writeFileSync(`${targetDir}/.github/workflows/deploy.yml`, WORKFLOW_TEMPLATE);
 fs.writeFileSync(prBodyFile, `Adds .github/workflows/deploy.yml for Vercel auto-deploy.\n\n${DEPLOY_SECRETS}\n`);
@@ -102,10 +107,11 @@ execSync('git add .github/workflows/deploy.yml', { cwd: targetDir, stdio: 'inher
 
 let hasChanges = true;
 try {
-  execSync('git diff --cached --quiet', { cwd: targetDir, stdio: 'inherit' });
+  execSync('git diff --cached --quiet', { cwd: targetDir, stdio: 'pipe' });
   hasChanges = false;
 } catch (error) {
-  if (error.status !== 1) {
+  // git diff --quiet exits 1 when differences are present.
+  if (error.status !== 1 && error.code !== 1) {
     throw error;
   }
 }
