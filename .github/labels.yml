@@ -150,9 +150,6 @@ labels:
     color: "fbca04"
     description: "PR is awaiting review and approval"
 
-  - name: "awaiting-review"
-    color: "0075ca"
-    description: "PR is ready and awaiting reviewer"
 
   - name: "changes-requested"
     color: "d93f0b"
