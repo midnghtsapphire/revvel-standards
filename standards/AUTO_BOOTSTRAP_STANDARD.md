@@ -13,8 +13,7 @@ This workflow automatically bootstraps every new repository in the org with:
 
 | Event | Description |
 |-------|-------------|
-| `repository.created` | When a new repo is created in the org |
-| `workflow_dispatch` | Manual Bootstrap (for repos created before this workflow) |
+| `workflow_dispatch` | Manual bootstrap for a target repository |
 | `schedule` | Weekly verification (`cron: 0 2 * * 0`) |
 
 ## What It Does
@@ -104,10 +103,15 @@ Every new project with a web frontend should have Vercel deployment automated:
 |--------|--------|------|------|
 | `amondnet/vercel-action@v25` | Production deploys | 1k+ | [vercel-action](https://github.com/marketplace/vercel-action) |
 | `zentered/vercel-preview-url@v7` | PR preview URLs | 2k+ | [vercel-preview-url](https://github.com/marketplace/vercel-preview-url) |
-| `Vercel Deploy Comment` | PR comments | 500+ | [Deploy Comment](https://github.com/marketplace/vercel-deploy-comment) |
-| `vercel-wait-action` | Wait for deploy | 400+ | [Wait](https://github.com/marketplace/vercel-wait) |
-| `cancel-workflow-action` | Cancel stale deploys | 500+ | [Cancel](https://github.com/marketplace/cancel-workflow-action) |
-| `vercel-env-push-action` | Sync env vars | 200+ | [Env Push](https://github.com/marketplace/vercel-env) |
+| `styfle/cancel-workflow-action@0.12.1` | Cancel stale deploys | 500+ | [cancel-workflow-action](https://github.com/marketplace/actions/cancel-workflow-action) |
+
+### Marketplace Search Terms (not `uses:` IDs)
+
+| Search Term | Use For | Marketplace Link |
+|------------|---------|------------------|
+| `vercel deploy comment` | PR comments | [Search](https://github.com/marketplace?query=vercel+deploy+comment) |
+| `vercel wait` | Wait for deploy | [Search](https://github.com/marketplace?query=vercel+wait) |
+| `vercel env` | Sync env vars | [Search](https://github.com/marketplace?query=vercel+env) |
 
 ### Popular Actions to Search First
 

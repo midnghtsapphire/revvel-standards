@@ -8,7 +8,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 const { execSync } = require('child_process');
 
 const WORKFLOW_TEMPLATE = `name: Deploy
@@ -87,30 +86,30 @@ if (!repo) {
 
 console.log(`Setting up Vercel deploy for ${repo}...`);
 
-// In a real implementation, this would:
-// 1. Clone the repo
-// 2. Create .github/workflows/deploy.yml
-// 3. Push to remote
+const branch = `automation/vercel-deploy-${Date.now()}`;
+const tempDir = `/tmp/vercel-deploy-${repo.replace('/', '-')}-${Date.now()}`;
+const targetDir = `${tempDir}/target`;
+const prBodyFile = `${tempDir}/pr-body.md`;
 
-console.log(`
-TODO: Clone ${repo} and add deploy workflow:
+execSync(`mkdir -p "${tempDir}"`, { stdio: 'inherit' });
+execSync(`gh repo clone ${repo} "${targetDir}"`, { stdio: 'inherit' });
+execSync('mkdir -p .github/workflows', { cwd: targetDir, stdio: 'inherit' });
+fs.writeFileSync(`${targetDir}/.github/workflows/deploy.yml`, WORKFLOW_TEMPLATE);
+fs.writeFileSync(prBodyFile, `Adds .github/workflows/deploy.yml for Vercel auto-deploy.\n\n${DEPLOY_SECRETS}\n`);
 
-1. Create .github/workflows/deploy.yml:
-${WORKFLOW_TEMPLATE}
-
-2. Add secrets via GitHub:
-   gh secret set VERCEL_TOKEN --repo=${repo}
-   gh secret set VERCEL_ORG_ID --repo=${repo}
-   gh secret set VERCEL_PROJECT_ID --repo=${repo}
-
-3. Connect repo in Vercel dashboard:
-   https://vercel.com/new?import=https://github.com/${repo}
-`);
-
-console.log(`
-For Soul2Bowl specifically:
-- Go to: https://vercel.com/new?import=https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl
-- Connect GitHub → Select Soul2Bowl repo
-- Deploy
-- Add secrets to GitHub: gh secret set VERCEL_* ...
-`);
+try {
+  execSync(`git checkout -b ${branch}`, { cwd: targetDir, stdio: 'inherit' });
+  execSync('git add .github/workflows/deploy.yml', { cwd: targetDir, stdio: 'inherit' });
+  execSync('git diff --cached --quiet', { cwd: targetDir, stdio: 'inherit' });
+  console.log('No changes detected. deploy.yml is already up to date.');
+} catch {
+  execSync('git config user.name "revvel-automation[bot]"', { cwd: targetDir, stdio: 'inherit' });
+  execSync('git config user.email "revvel-automation@users.noreply.github.com"', { cwd: targetDir, stdio: 'inherit' });
+  execSync('git commit -m "ci: add Vercel deploy workflow"', { cwd: targetDir, stdio: 'inherit' });
+  execSync(`git push -u origin ${branch}`, { cwd: targetDir, stdio: 'inherit' });
+  execSync(
+    `gh pr create --repo ${repo} --base main --head ${branch} --title "ci: add Vercel deploy workflow" --body-file "${prBodyFile}"`,
+    { cwd: targetDir, stdio: 'inherit' }
+  );
+  console.log(`Opened PR in ${repo} from branch ${branch}.`);
+}

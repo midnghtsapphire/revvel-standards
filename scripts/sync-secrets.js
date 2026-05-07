@@ -90,4 +90,4 @@ fs.writeFileSync(localFile, `# Synced from revvel-standards\n# ${new Date().toIS
 
 console.log(`Created: ${localFile}`);
 console.log('');
-console.log('TODO: Push to target repo via GitHub API or git clone + PR');
+console.log('Next step: open a PR in the target repo with this file as `.env.example`.');
