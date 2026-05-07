@@ -1,7 +1,7 @@
 # GOAL: $10M in 3 Years
 
 ## Prime Directive
-**$10,000/month → $10M/3yr**
+**Start at $10,000/month, scale to $10M total by year 3**
 
 ---
 
