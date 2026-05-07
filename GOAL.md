@@ -1,7 +1,7 @@
 # GOAL: $10M in 3 Years
 
 ## Prime Directive
-**$3,000/month → $10M/3yr**
+**$10,000/month → $10M/3yr**
 
 ---
 
@@ -9,7 +9,7 @@
 
 | Milestone | Target | Timeline |
 |----------|--------|----------|
-| Phase 1 | $3,000/month | Month 1-6 |
+| Phase 1 | $10,000/month | Month 1-6 |
 | Phase 2 | $30,000/month | Month 6-18 |
 | Phase 3 | $100,000/month | Month 18-30 |
 | Phase 4 | $10M total | Month 30-36 |

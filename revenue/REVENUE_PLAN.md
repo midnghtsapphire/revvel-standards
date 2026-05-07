@@ -1,4 +1,4 @@
-# $3,000/MONTH REVENUE PLAN — EXECUTE
+# $10,000/MONTH REVENUE PLAN — EXECUTE
 
 ## WEEK 1: $500
 
@@ -74,4 +74,4 @@
 | 2 | $500 | | |
 | 3 | $500 | | |
 | 4 | $1,500 | | |
-| **Total** | **$3,000** | | |
+| **Total** | **$10,000** | | |
