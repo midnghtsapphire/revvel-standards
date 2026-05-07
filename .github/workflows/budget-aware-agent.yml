@@ -56,7 +56,8 @@ jobs:
             echo "status=low" >> $GITHUB_OUTPUT
             echo "budget_remaining=low" >> $GITHUB_OUTPUT
           else
-            echo "status=critical" >> $GITHUB_OUTPUT            echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
+            echo "status=critical" >> $GITHUB_OUTPUT
+            echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
           fi
           
           echo "Budget: $PERCENT% used"
