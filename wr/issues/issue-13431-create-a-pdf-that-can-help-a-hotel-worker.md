@@ -27,11 +27,11 @@
 | Created | 2026-05-08 |
 | Last Updated | 2026-05-08 |
 | Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | {DESCRIPTION} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | 0 |
+| Open Issues | (retrieve from GitHub API) |
+| Description | Revvel automation standards and templates |
+| Private | No |
+| Archived | No |
 
 ### Current Status
 
