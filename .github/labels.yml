@@ -531,3 +531,56 @@ labels:
   - name: ready-to-merge
     color: "8b5cf6"
     description: "Approved + checks passing — ready to merge"
+
+  # ── WR Lifecycle Labels (for automation) ────────────────────────────
+  - name: "wr:new"
+    color: "6b7280"
+    description: "New issue — needs triage"
+
+  - name: "wr:research"
+    color: "f59e0b"
+    description: "Research in progress"
+
+  - name: "wr:research-complete"
+    color: "10b981"
+    description: "Research complete — ready for code"
+
+  - name: "wr:code"
+    color: "8b5cf6"
+    description: "Code in progress"
+
+  - name: "wr:jules"
+    color: "7c3aed"
+    description: "Jules AI coding agent"
+
+  - name: "wr:pr-open"
+    color: "ec4899"
+    description: "PR open — awaiting review"
+
+  - name: "wr:checking"
+    color: "06b6d4"
+    description: "Checks running"
+
+  - name: "wr:check-failed"
+    color: "ef4444"
+    description: "Checks failed — needs fix"
+
+  - name: "wr:review"
+    color: "f97316"
+    description: "PR under review"
+
+  - name: "wr:merge-ready"
+    color: "22c55e"
+    description: "Approved + passing — ready to merge"
+
+  - name: "wr:done"
+    color: "16a34a"
+    description: "Completed"
+
+  - name: "lifecycle:stuck"
+    color: "dc2626"
+    description: "Issue stuck — needs human help"
+
+  - name: "needs-human"
+    color: "dc2626"
+    description: "Requires human intervention"
