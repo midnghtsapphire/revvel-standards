@@ -25,3 +25,9 @@ batches:
     phase: 3
     revenue_lever: enterprise_reports
     description: "Enterprise and white-label batch reports for $100k/mo phase."
+
+  - id: autocreate-3
+    label: "Autocreate 3"
+    phase: 3
+    revenue_lever: enterprise_reports
+    description: "PDF pipeline batch: Autocreate 3."
