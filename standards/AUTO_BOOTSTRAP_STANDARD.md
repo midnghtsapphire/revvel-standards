@@ -13,7 +13,7 @@ This workflow automatically bootstraps every new repository in the org with:
 
 | Event | Description |
 |-------|-------------|
-| `repository.created` | When a new repo is created in the org |
+| `repository` + `types: [created]` | When a new repo is created in the org |
 | `workflow_dispatch` | Manual Bootstrap (for repos created before this workflow) |
 | `schedule` | Weekly verification (`cron: 0 2 * * 0`) |
 
