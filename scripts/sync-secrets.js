@@ -5,7 +5,7 @@
  * Reads from SSOT: docs/SECRETS_MATRIX.md
  * Syncs to ANY target repo.
  * 
- * Usage: node scripts/sync-secrets.js --repo owner/repo
+ * Usage: node scripts/sync-secrets.js --repo=owner/repo
  */
 
 const fs = require('fs');
@@ -89,12 +89,8 @@ if (!repo) {
 
 console.log(`Syncing to ${repo}...`);
 const docSecrets = parseSecretsMatrix();
-const envVars = parseEnvTemplate();
 
-// Combine both sources
-const allVars = [...new Set([...docSecrets.all, ...envVars])];
-
-console.log(`Found ${allVars.length} secrets/variables to sync`);
+console.log(`Found ${docSecrets.all.length} secrets/variables to sync`);
 
 // Create .env.example update with REQUIRED + OPTIONAL sections
 const requiredLines = docSecrets.required.map(v => `${v}=`).join('\n');

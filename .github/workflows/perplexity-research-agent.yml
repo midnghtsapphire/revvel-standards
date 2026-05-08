@@ -29,7 +29,7 @@ jobs:
   research:
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     timeout-minutes: 20
     if: >-
       (github.event_name == 'workflow_dispatch') ||
@@ -41,7 +41,7 @@ jobs:
 
       - name: Research issue with Perplexity Sonar
         id: research
-    env:
+        env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
@@ -50,7 +50,7 @@ jobs:
 
       - name: Comment research results
         if: always()
-    env:
+        env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
         run: |

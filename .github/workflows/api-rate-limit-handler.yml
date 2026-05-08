@@ -40,19 +40,13 @@ jobs:
             -q ".[] | select(.title | contains(\"${{ inputs.failed_workflow }}\") and contains(title, \"API rate limit\")) | .number" 2>/dev/null || echo "")
           
           if [[ -z "$EXISTING" ]]; then
+            BODY_FILE=$(mktemp)
+            printf '## Rate Limit Hit\n\n**Failed Workflow:** ${{ inputs.failed_workflow }}\n**Agent:** ${{ inputs.agent_used }}\n**Error:** ${{ inputs.error_message }}\n**When:** ${{ github.event.workflow_run.run_started_at }}\n\n## Required Action\n- [ ] Re-run with different agent (OpenRouter fallback)\n- [ ] Or wait and re-run later\n' > "$BODY_FILE"
             gh issue create \
               --title "[RATE LIMIT] ${{ inputs.failed_workflow }} - API rate limit hit" \
-              --body "## Rate Limit Hit
-
-**Failed Workflow:** ${{ inputs.failed_workflow }}
-**Agent:** ${{ inputs.agent_used }}
-**Error:** ${{ inputs.error_message }}
-**When:** ${{ github.event.workflow_run.run_started_at }}
-
-## Required Action
-- [ ] Re-run with different agent (OpenRouter fallback)
-- [ ] Or wait and re-run later" \
+              --body-file "$BODY_FILE" \
               --label "automation-failure,needs-human"
+            rm -f "$BODY_FILE"
           else
             echo "Duplicate WR #${EXISTING} already exists"
           fi

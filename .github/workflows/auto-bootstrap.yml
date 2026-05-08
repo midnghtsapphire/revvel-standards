@@ -15,7 +15,6 @@ on:
 permissions:
   contents: write
   issues: write
-  secrets: read
 jobs:
   bootstrap:
     name: Bootstrap ${{ github.event.inputs.repo || github.event.repository.full_name }}
@@ -29,6 +28,7 @@ jobs:
           sparse-checkout: |
             scripts/sync-secrets.js
             docs/SECRETS_MANAGEMENT.md
+            docs/SECRETS_MATRIX.md
             .env.example
 
       - name: Determine target repo
@@ -47,7 +47,8 @@ jobs:
           }
           
           # Copy to target repo if file exists
-          if [ -f "/tmp/MIDNGHTSAPPHIRE-Soul2Bowl.env.example" ]; then
+          SAFE_REPO=$(echo "${{ steps.target.outputs.target_repo }}" | tr '/' '-')
+          if [ -f "/tmp/${SAFE_REPO}.env.example" ]; then
             echo "Would copy secrets template to ${{ steps.target.outputs.target_repo }}"
           fi
 

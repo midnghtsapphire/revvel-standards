@@ -39,12 +39,11 @@ jobs:
     name: Route priority
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Route priority for issues and PRs
         uses: actions/github-script@v8
         env:
-
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}

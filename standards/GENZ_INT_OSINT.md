@@ -522,7 +522,7 @@ growlingeyes/
 ### OSINT Monetization
 - **Research to revenue in 24 hours**
 - **Sell intel, not reports** — actionable > pretty
-- **If not monetizeable, deprioritize**
+- **If not monetizable, deprioritize**
 
 ### Extreme Programming Ethic
 1. **Ship fast** — OSINT tools in hours

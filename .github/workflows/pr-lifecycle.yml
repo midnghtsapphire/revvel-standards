@@ -33,7 +33,7 @@ jobs:
     name: PR State — ${{ github.event.action }}
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'pull_request'
     steps:
       - name: Update lifecycle labels
@@ -146,7 +146,7 @@ jobs:
     name: Review State — ${{ github.event.review.state }}
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'pull_request_review'
     steps:
       - name: Update labels on review submission
@@ -237,7 +237,7 @@ jobs:
       github.event.workflow_run.conclusion }}
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
     steps:
       - name: Find open PRs for this SHA and update check labels

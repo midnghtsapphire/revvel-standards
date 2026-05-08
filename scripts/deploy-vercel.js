@@ -87,30 +87,45 @@ if (!repo) {
 
 console.log(`Setting up Vercel deploy for ${repo}...`);
 
-// In a real implementation, this would:
-// 1. Clone the repo
-// 2. Create .github/workflows/deploy.yml
-// 3. Push to remote
+const [owner, repoName] = repo.split('/');
 
-console.log(`
-TODO: Clone ${repo} and add deploy workflow:
+// Use GitHub API via gh to create/update the workflow file in the target repo
+try {
+  // Check if the workflow already exists
+  let existingSha = null;
+  try {
+    const existing = execSync(
+      `gh api repos/${repo}/contents/.github/workflows/deploy.yml`,
+      { encoding: 'utf-8' }
+    );
+    existingSha = JSON.parse(existing).sha;
+    console.log('Existing deploy.yml found — updating...');
+  } catch (_) {
+    console.log('No existing deploy.yml — creating...');
+  }
 
-1. Create .github/workflows/deploy.yml:
-${WORKFLOW_TEMPLATE}
+  const content = Buffer.from(WORKFLOW_TEMPLATE).toString('base64');
+  const body = JSON.stringify({
+    message: 'chore: add Vercel deploy workflow from revvel-standards',
+    content,
+    ...(existingSha ? { sha: existingSha } : {})
+  });
 
-2. Add secrets via GitHub:
-   gh secret set VERCEL_TOKEN --repo=${repo}
-   gh secret set VERCEL_ORG_ID --repo=${repo}
-   gh secret set VERCEL_PROJECT_ID --repo=${repo}
+  execSync(
+    `gh api repos/${repo}/contents/.github/workflows/deploy.yml -X PUT --input -`,
+    { input: body, encoding: 'utf-8', stdio: ['pipe', 'inherit', 'inherit'] }
+  );
 
-3. Connect repo in Vercel dashboard:
-   https://vercel.com/new?import=https://github.com/${repo}
-`);
-
-console.log(`
-For Soul2Bowl specifically:
-- Go to: https://vercel.com/new?import=https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl
-- Connect GitHub → Select Soul2Bowl repo
-- Deploy
-- Add secrets to GitHub: gh secret set VERCEL_* ...
-`);
+  console.log(`✅ Created/updated .github/workflows/deploy.yml in ${repo}`);
+  console.log('');
+  console.log('Next steps — add required secrets to the repo:');
+  console.log(`  gh secret set VERCEL_TOKEN --repo=${repo}`);
+  console.log(`  gh secret set VERCEL_ORG_ID --repo=${repo}`);
+  console.log(`  gh secret set VERCEL_PROJECT_ID --repo=${repo}`);
+  console.log('');
+  console.log('Then connect the repo in the Vercel dashboard:');
+  console.log(`  https://vercel.com/new?import=https://github.com/${repo}`);
+} catch (err) {
+  console.error(`❌ Failed to set up deploy workflow: ${err.message}`);
+  process.exit(1);
+}

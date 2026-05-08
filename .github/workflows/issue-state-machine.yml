@@ -118,7 +118,7 @@ jobs:
   transition-state:
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
     steps:
       - name: Transition state
@@ -200,7 +200,7 @@ jobs:
   close-completed:
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'issues' && github.event.action == 'closed' &&
       contains(github.event.issue.labels.*.name, 'wr:')
     steps:
