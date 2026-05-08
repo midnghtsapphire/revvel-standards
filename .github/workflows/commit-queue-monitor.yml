@@ -16,7 +16,7 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Evaluate commit queue backlog
         uses: actions/github-script@v8
