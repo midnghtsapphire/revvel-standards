@@ -46,10 +46,21 @@ Loop or branch inside that automation so the **autocreate N** step matches **PDF
 
 ---
 
-## 4. Why testers care
+## 4. GitHub Actions router (JSON for external tools)
+
+On **`sellable-pdf`** Work Requests, **[`.github/workflows/pdf-work-request-router.yml`](../.github/workflows/pdf-work-request-router.yml)** posts a single idempotent issue comment (marker `pdf-workflow-router:v1`) containing **JSON**: `pdf_pipeline_batch`, `autocreate_count`, and links to this playbook, `PDF_AUTOMATION_GUIDE.md`, and `standards/shapes/PDF.md`.
+
+**Runs when:** the issue is **opened** with `sellable-pdf` in the body, the label **`output-type:sellable-pdf`** is applied, the issue is **edited** after that label exists, or you **manually run** the workflow (**Actions** tab → **PDF work request router** → enter issue number).
+
+To **refresh** the JSON after editing the batch dropdown, delete the old router comment on the issue, then re-run the workflow with that issue number.
+
+---
+
+## 5. Why testers care
 
 Regression tests keep **Work Request dropdown options** aligned with **wr-auto-classify** allowed values so paid QA does not chase phantom mismatches. If you add a new output type or PDF batch option, update:
 
 - `.github/ISSUE_TEMPLATE/00-work-request.yml`
 - `.github/workflows/wr-auto-classify.yml` (`DROPDOWN_FIELDS` / playbook strings as needed)
 - `tests/work-request-form-sync.test.js`
+- `scripts/parse-pdf-work-request.js` + `tests/parse-pdf-work-request.test.js` (must stay aligned with the issue form)

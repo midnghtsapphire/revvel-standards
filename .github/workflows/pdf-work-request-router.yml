@@ -1,0 +1,170 @@
+name: PDF work request router
+on:
+  issues:
+    types: [opened, edited, labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to route (parses body + posts JSON comment if sellable-pdf)
+        required: true
+        type: string
+
+jobs:
+  route:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && (
+        github.event.action == 'opened' ||
+        (github.event.action == 'labeled' && github.event.label.name == 'output-type:sellable-pdf') ||
+        (github.event.action == 'edited' && contains(join(github.event.issue.labels.*.name, ','), 'output-type:sellable-pdf'))
+      ))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout (parser script)
+        uses: actions/checkout@v4
+
+      - name: Post router comment for sellable-pdf WRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { parsePdfWorkRequest } = require(process.env.GITHUB_WORKSPACE + '/scripts/parse-pdf-work-request.js');
+
+            const marker = '<!-- pdf-workflow-router:v1 -->';
+            const makeWebhook = process.env.MAKE_PDF_WR_WEBHOOK_URL || '';
+
+            let issue_number;
+            let body;
+            let labelNames;
+
+            if (context.eventName === 'workflow_dispatch') {
+              issue_number = parseInt(String('${{ github.event.inputs.issue_number }}').trim(), 10);
+              if (!Number.isFinite(issue_number)) {
+                core.setFailed('Invalid issue_number');
+                return;
+              }
+              const { data: issue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+              });
+              body = issue.body || '';
+              labelNames = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
+            } else {
+              issue_number = context.issue.number;
+              body = context.payload.issue.body || '';
+              labelNames = (context.payload.issue.labels || []).map((l) =>
+                typeof l === 'string' ? l : l.name
+              );
+            }
+
+            const forceSellablePdf = labelNames.includes('output-type:sellable-pdf');
+            const parsed = parsePdfWorkRequest(body, { forceSellablePdf });
+
+            if (!parsed.isSellablePdf) {
+              core.info('Not a sellable-pdf work request; skipping.');
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              per_page: 100,
+            });
+            if (comments.some((c) => c.body && c.body.includes(marker))) {
+              core.info('pdf-workflow-router comment already exists; skipping.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const base = `https://github.com/${owner}/${repo}/blob/main`;
+
+            const payload = {
+              event: 'pdf_work_request',
+              issue_number,
+              output_type: 'sellable-pdf',
+              pdf_pipeline_batch: parsed.pdfPipelineBatch,
+              autocreate_count: parsed.autocreateCount,
+              valid_batch: parsed.validBatch,
+              repository: `${owner}/${repo}`,
+              playbook_url: `${base}/workflows/PDF_WR_PLAYBOOK.md`,
+              automation_guide_url: `${base}/workflows/PDF_AUTOMATION_GUIDE.md`,
+              pdf_shape_url: `${base}/standards/shapes/PDF.md`,
+            };
+
+            const batchLine =
+              parsed.validBatch
+                ? `**Batch:** \`${parsed.pdfPipelineBatch}\` → **${parsed.autocreateCount}** candidate path(s) before you lock one.`
+                : `**Batch:** ⚠️ missing or invalid in issue body — set \`### PDF pipeline batch\` to Not applicable / Autocreate 3 / Autocreate 20.`;
+
+            const commentBody = [
+              marker,
+              '### PDF automation router',
+              '',
+              'This Work Request is treated as **sellable-pdf**. Pass the JSON below to Make.com / n8n / Zapier (HTTP) or your coding agent.',
+              '',
+              '```json',
+              JSON.stringify(payload, null, 2),
+              '```',
+              '',
+              batchLine,
+              '',
+              '- [ ] Run steps in [PDF_AUTOMATION_GUIDE.md](' + base + '/workflows/PDF_AUTOMATION_GUIDE.md)',
+              '- [ ] Match folder + gates in [PDF shape standard](' + base + '/standards/shapes/PDF.md)',
+              '',
+              '_Workflow: `pdf-work-request-router.yml`._',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: commentBody,
+            });
+
+            core.notice('Posted pdf-workflow-router comment on issue ' + issue_number);
+
+            // A) External trigger (Make.com) — optional
+            // Configure repo secret: MAKE_PDF_WR_WEBHOOK_URL
+            if (makeWebhook) {
+              try {
+                const res = await fetch(makeWebhook, {
+                  method: 'POST',
+                  headers: { 'content-type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+                if (!res.ok) {
+                  const t = await res.text().catch(() => '');
+                  core.warning(`Make webhook returned HTTP ${res.status}. Body: ${t.slice(0, 500)}`);
+                } else {
+                  core.notice('Sent payload to Make webhook.');
+                }
+              } catch (e) {
+                core.warning(`Make webhook POST failed: ${e && e.message ? e.message : String(e)}`);
+              }
+            } else {
+              core.info('MAKE_PDF_WR_WEBHOOK_URL not set; skipping Make webhook POST.');
+            }
+
+            // B) Internal trigger (GitHub-only) — repository_dispatch
+            // Consumers can listen for: on: repository_dispatch.types: [pdf_work_request]
+            try {
+              await github.rest.repos.createDispatchEvent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                event_type: 'pdf_work_request',
+                client_payload: payload,
+              });
+              core.notice('Dispatched repository_dispatch: pdf_work_request');
+            } catch (e) {
+              core.warning(
+                `repository_dispatch failed (may be blocked by token/rules): ${e && e.message ? e.message : String(e)}`
+              );
+            }
+        env:
+          MAKE_PDF_WR_WEBHOOK_URL: ${{ secrets.MAKE_PDF_WR_WEBHOOK_URL }}
