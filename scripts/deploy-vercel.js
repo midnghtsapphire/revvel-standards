@@ -100,7 +100,11 @@ try {
     );
     existingSha = JSON.parse(existing).sha;
     console.log('Existing deploy.yml found — updating...');
-  } catch (_) {
+  } catch (err) {
+    // 404 = file doesn't exist yet (expected on first run); other errors bubble up
+    if (!err.message.includes('404') && !err.message.includes('Not Found')) {
+      throw err;
+    }
     console.log('No existing deploy.yml — creating...');
   }
 
