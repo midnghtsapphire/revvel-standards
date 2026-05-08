@@ -22,7 +22,10 @@ This directory contains automation workflows for various Revvel products and pro
 ./setup-pdf-automation.sh [n8n|make|zapier|gumloop]
 ```
 
-**Documentation**: [PDF_AUTOMATION_GUIDE.md](./PDF_AUTOMATION_GUIDE.md)
+**Documentation**:
+
+- **[PDF_WR_PLAYBOOK.md](./PDF_WR_PLAYBOOK.md)** — WR (`sellable-pdf` + batch dropdown) → full automation path (form-driven, not label-driven).
+- **[PDF_AUTOMATION_GUIDE.md](./PDF_AUTOMATION_GUIDE.md)** — Make / n8n / Zapier / Gumloop setup.
 
 ---
 
