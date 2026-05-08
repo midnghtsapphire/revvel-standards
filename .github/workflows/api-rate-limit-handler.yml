@@ -51,10 +51,7 @@ jobs:
 
 ## Required Action
 - [ ] Re-run with different agent (OpenRouter fallback)
-- [ ] Or wait and re-run later
-
-## Label
-/label automation-failure,rate-limit-failure" \
+- [ ] Or wait and re-run later" \
               --label "automation-failure,needs-human"
           else
             echo "Duplicate WR #${EXISTING} already exists"

@@ -32,7 +32,7 @@ jobs:
   pr-state:
     name: PR State — ${{ github.event.action }}
     runs-on: ubuntu-latest
-        env:
+    env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'pull_request'
     steps:
@@ -145,7 +145,7 @@ jobs:
   review-state:
     name: Review State — ${{ github.event.review.state }}
     runs-on: ubuntu-latest
-        env:
+    env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'pull_request_review'
     steps:
@@ -236,7 +236,7 @@ jobs:
     name: Check State — ${{ github.event.check_suite.conclusion ||
       github.event.workflow_run.conclusion }}
     runs-on: ubuntu-latest
-        env:
+    env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
     steps:
