@@ -33,7 +33,7 @@ jobs:
   enforce-singular-lifecycle:
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'issues'
     steps:
       - name: Check current labels
