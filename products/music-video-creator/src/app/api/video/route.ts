@@ -101,8 +101,8 @@ Select the best provider from the available list. Return JSON with:
     body: JSON.stringify({
       models: [
         'anthropic/claude-sonnet-4',
-        'deepseek/deepseek-v3.2',
-        'openai/gpt-5.2-codex',
+        'deepseek/deepseek-chat',
+        'openai/gpt-4o',
       ],
       messages: [
         { role: 'system', content: systemPrompt },
