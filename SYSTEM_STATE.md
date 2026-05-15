@@ -39,6 +39,7 @@
 | BUG-004 | `[WR]` issue automation broken — workflow_run loops saturated runner queue, killing every WR run with `startup_failure` | high | resolved | 2026-05-04 |
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
 | BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
+| BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
 
 ---
 
@@ -142,6 +143,10 @@ Session summary: Added the Revvel operating model layer — OpenHands Work Reque
 Last updated: 2026-05-15 21:42 UTC
 Updated by: Cursor
 Session summary: Fixed Music Video Creator LLM JSON parsing by delegating orchestrator `safeParse` to the balanced-brace extractor, restored parser regression coverage after branch drift, and verified root `npm test` plus product typecheck/build pass.
+
+Last updated: 2026-05-15 21:58 UTC
+Updated by: Cursor
+Session summary: Fixed Music Video Creator provider polling so `artifact_created` is treated as a terminal success state, added regression coverage, and verified targeted tests, root `npm test`, product lint, and product build pass.
 
 Last updated: 2026-05-04 (post PR #10191 merge)
 Updated by: OpenHands

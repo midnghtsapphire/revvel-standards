@@ -127,3 +127,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Prefer the shared balanced JSON extractor over ad hoc regex parsing for LLM output. When a push is rejected because the branch advanced, inspect the remote delta before rebasing; if the rebase removes the task surface, restore only the needed affected files and avoid force-push. Root `npm test` can expose unrelated standards regressions; fix contained syntax/parser blockers when they prevent the requested regression from running.
 
 **Next Action:** None for this parser issue; continue monitoring PR validation.
+
+---
+
+**Date/Time:** 2026-05-15T21:58Z
+
+**Task Attempted:** Verify and fix Music Video Creator polling after provider completion.
+
+**Outcome:** Success - `artifact_created` is now a terminal success state in the frontend, the UI no longer shows a spinner for provider-completed videos, and regression coverage verifies the status contract.
+
+**Root Cause of Failure (If any):** `normalizeProviderStatus` maps successful provider completions to `artifact_created`, but the client terminal status set only contained later pipeline states (`verified`, `indexed`) that the current GET endpoint cannot produce. The same status was also categorized as processing, keeping the spinner active after the video was ready.
+
+**Self-Healing Fix / Learned Lesson:** When a provider-facing API normalizes third-party state into an internal status machine, verify the frontend terminal/success/processing buckets against the statuses the current endpoint can actually return. Add source-level regression coverage for status-machine contracts when the status sets are local to a client component.
+
+**Next Action:** None for this polling issue; continue monitoring PR validation.

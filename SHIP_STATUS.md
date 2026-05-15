@@ -48,6 +48,7 @@
 | T001 | Revvel-standards Housekeeping | done | @openhands | 2026-04-25 |
 | T002 | Private → Public: 74 repos with licenses | done | @openhands | 2026-04-25 |
 | T005 | Music Video Creator balanced JSON parser fix | done | @cursor | 2026-05-15 |
+| T006 | Music Video Creator provider polling terminal status fix | done | @cursor | 2026-05-15 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---
