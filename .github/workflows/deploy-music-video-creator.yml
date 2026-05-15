@@ -50,6 +50,7 @@ jobs:
           echo "::warning::Task failed - creating WR"
           gh issue create --title "[WR] Deployment failed for Music Video Creator" \
             --body "Vercel deployment failed for products/music-video-creator." \
-            --label "automation-failure" || echo "Failed to create issue"
+            --label "automation-failure" \
+            --repo midnghtsapphire/revvel-standards || echo "Failed to create issue"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

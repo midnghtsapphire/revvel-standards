@@ -24,14 +24,16 @@ export default function AccessibilityControls() {
     <div className="fixed top-4 right-4 z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Accessibility Settings"
+        aria-expanded={isOpen}
+        aria-controls="accessibility-panel"
         className="p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform"
-        title="Accessibility Settings"
       >
-        <Eye className="w-5 h-5" />
+        <Eye className="w-5 h-5" aria-hidden="true" />
       </button>
 
       {isOpen && (
-        <div className="absolute top-14 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 w-64">
+        <div id="accessibility-panel" className="absolute top-14 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 w-64">
           <h3 className="font-bold text-gray-900 dark:text-white mb-3">Accessibility Modes</h3>
           <div className="space-y-2 text-sm">
             <button

@@ -5,7 +5,7 @@ Music Video Creator is a production-ready application to generate automated musi
 ## 🚀 Live Product
 
 **Location:** `products/music-video-creator/`
-**Description:** Music video generator using AI apis for video
+**Description:** Music video generator using AI APIs for video
 **Revenue Model:** Premium video generations, subscriptions, affiliate links
 
 ## 🛠️ Tech Stack

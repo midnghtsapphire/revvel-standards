@@ -421,7 +421,6 @@ export async function POST(request: NextRequest) {
       publish_status: 'unpublished',
       verified_at_utc: null,
       failure_reason: null,
-      audit_log: audit,
       message: `Video generation job submitted to ${selectedProvider}. Poll GET /api/video?provider=${selectedProvider}&provider_job_id=${providerJobId} to track progress.`,
     });
 
