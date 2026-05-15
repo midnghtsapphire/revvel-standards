@@ -79,8 +79,15 @@ jobs:
             // accept their stable HTML marker if they ever change the bot
             // username.
             const augmentMarker = /<!--\s*augment-code:/i;
-            const augmentAuthorPattern = /(^augment-|augment.*\[bot\]$|^augmentcode$|^augment-ai$|^augmentcodeai$)/i;
-            const authoredByAugment = actor => augmentAuthorPattern.test((actor || '').trim());
+            const augmentAuthorPatterns = [
+              /^augment-/i,
+              /^augment(?:-code)?\[bot\]$/i,
+              /^augment(?:-code)?$/i,
+              /^augment-ai$/i,
+              /^augmentcodeai$/i,
+            ];
+            const authoredByAugment = actor =>
+              augmentAuthorPatterns.some(pattern => pattern.test((actor || '').trim()));
             const hasAugmentMarker = body => body && augmentMarker.test(body);
 
             const augmentInstalledFromIssueComments = comments.some(c => {
@@ -95,11 +102,16 @@ jobs:
               const author = (c.user?.login || '').toLowerCase();
               return authoredByAugment(author) || hasAugmentMarker(c.body);
             });
+            const augmentCheckRunPattern = /^augment(?:\s+code)?(?::|$)/i;
             const augmentInstalledFromChecks = (checks.check_runs || []).some(run => {
               const appSlug = (run.app?.slug || '').toLowerCase();
               const appName = (run.app?.name || '').toLowerCase();
-              const runName = (run.name || '').toLowerCase();
-              return appSlug.includes('augment') || appName.includes('augment') || runName.includes('augment');
+              const runName = (run.name || '').trim();
+              return appSlug === 'augment' ||
+                     appSlug === 'augment-code' ||
+                     appName === 'augment' ||
+                     appName === 'augment code' ||
+                     augmentCheckRunPattern.test(runName);
             });
             const augmentInstalled =
               augmentInstalledFromIssueComments ||
