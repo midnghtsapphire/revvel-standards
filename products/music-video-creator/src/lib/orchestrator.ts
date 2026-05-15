@@ -171,6 +171,16 @@ function safeParse(text: string): Record<string, unknown> | null {
   return extractJsonFromContent(text);
 }
 
+function isDiagnosisResult(value: Record<string, unknown>): value is DiagnosisResult {
+  return (
+    typeof value.failure_class === 'string' &&
+    typeof value.root_cause === 'string' &&
+    typeof value.is_retryable === 'boolean' &&
+    typeof value.recommended_action === 'string' &&
+    (typeof value.next_step_for_human === 'string' || value.next_step_for_human === null)
+  );
+}
+
 async function callOpenRouter(
   apiKey: string,
   modelId: string,
@@ -554,7 +564,7 @@ Provider: ${providerName}`;
       500
     );
     const parsed = safeParse(content);
-    if (parsed) return parsed as DiagnosisResult;
+    if (parsed && isDiagnosisResult(parsed)) return parsed;
   } catch {
     // fallback below
   }
