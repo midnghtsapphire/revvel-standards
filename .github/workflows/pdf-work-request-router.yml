@@ -85,6 +85,7 @@ jobs:
             const repo = context.repo.repo;
             const base = `https://github.com/${owner}/${repo}/blob/main`;
             const issueTitle = context.payload.issue?.title || '';
+            const MAX_ERROR_TEXT_LENGTH = 500;
 
             let openrouterOrchestration = null;
             if (!openRouterKey) {
@@ -113,12 +114,13 @@ jobs:
                   Authorization: `Bearer ${openRouterKey}`,
                   'Content-Type': 'application/json',
                   Referer: `https://github.com/${owner}/${repo}`,
+                  'HTTP-Referer': `https://github.com/${owner}/${repo}`,
                   'X-Title': 'Revvel PDF Orchestrator',
                 },
                 body: JSON.stringify({
                   model: 'anthropic/claude-sonnet-4.6',
                   temperature: 0.2,
-                  max_tokens: 700,
+                  max_tokens: 1000,
                   messages: [
                     { role: 'system', content: 'Produce actionable orchestration instructions for backend automation only.' },
                     { role: 'user', content: orchestrationPrompt },
@@ -128,8 +130,11 @@ jobs:
 
               if (!openRouterRes.ok) {
                 const errorText = await openRouterRes.text().catch(() => '');
-                const truncationSuffix = errorText.length > 500 ? '...[truncated]' : '';
-                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, 500)}${truncationSuffix}`);
+                const truncationSuffix = errorText.length > MAX_ERROR_TEXT_LENGTH ? '...[truncated]' : '';
+                core.setFailed(
+                  `OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, MAX_ERROR_TEXT_LENGTH)}${truncationSuffix}. ` +
+                  'Check OPENROUTER_API_KEY configuration and OpenRouter service status.'
+                );
                 return;
               }
 
