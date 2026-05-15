@@ -35,6 +35,8 @@ jobs:
 
             const marker = '<!-- pdf-workflow-router:v1 -->';
             const makeWebhook = process.env.MAKE_PDF_WR_WEBHOOK_URL || '';
+            const openRouterKey = process.env.OPENROUTER_API_KEY || '';
+            const makeStatusMarker = '<!-- pdf-workflow-make:v1 -->';
 
             let issue_number;
             let body;
@@ -83,18 +85,98 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const base = `https://github.com/${owner}/${repo}/blob/main`;
+            const issueTitle = context.payload.issue?.title || '';
+            const MAX_ERROR_TEXT_LENGTH = 500;
+            const MAKE_MAX_ATTEMPTS = 3;
+            const MAKE_TIMEOUT_MS = 20000;
+            const makeBackoffMs = (attempt) => 1000 * 2 ** (attempt - 1);
+
+            let openrouterOrchestration = null;
+            if (!openRouterKey) {
+              core.setFailed('OPENROUTER_API_KEY is required: OpenRouter must orchestrate sellable-pdf routing.');
+              return;
+            }
+
+            try {
+              const orchestrationPrompt = [
+                'You are the OpenRouter orchestrator for sellable-pdf fulfillment.',
+                'Return a concise execution brief for a backend automation worker.',
+                'Include: product angle, deliverables, and production checklist.',
+                '',
+                `Issue #${issue_number}: ${issueTitle}`,
+                `Output Type: sellable-pdf`,
+                `PDF Pipeline Batch: ${parsed.pdfPipelineBatch || 'missing'}`,
+                `Autocreate Count: ${parsed.autocreateCount ?? 'unknown'}`,
+                '',
+                'Issue body:',
+                body || '(empty)',
+              ].join('\n');
+
+              const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${openRouterKey}`,
+                  'Content-Type': 'application/json',
+                  Referer: `https://github.com/${owner}/${repo}`,
+                  'HTTP-Referer': `https://github.com/${owner}/${repo}`,
+                  'X-Title': 'Revvel PDF Orchestrator',
+                },
+                body: JSON.stringify({
+                  model: 'anthropic/claude-sonnet-4.6',
+                  temperature: 0.2,
+                  max_tokens: 1000,
+                  messages: [
+                    { role: 'system', content: 'Produce actionable orchestration instructions for backend automation only.' },
+                    { role: 'user', content: orchestrationPrompt },
+                  ],
+                }),
+              });
+
+              if (!openRouterRes.ok) {
+                const errorText = await openRouterRes.text().catch(() => '');
+                const truncationSuffix = errorText.length > MAX_ERROR_TEXT_LENGTH ? '...[truncated]' : '';
+                core.setFailed(
+                  `OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, MAX_ERROR_TEXT_LENGTH)}${truncationSuffix}. ` +
+                  'Check OPENROUTER_API_KEY configuration and OpenRouter service status.'
+                );
+                return;
+              }
+
+              const openRouterData = await openRouterRes.json();
+              const orchestrationBrief = openRouterData?.choices?.[0]?.message?.content?.trim();
+              if (!orchestrationBrief) {
+                core.setFailed('OpenRouter response did not include orchestration content.');
+                return;
+              }
+
+              openrouterOrchestration = {
+                orchestrator: 'openrouter',
+                model: openRouterData.model || null,
+                brief: orchestrationBrief,
+              };
+            } catch (e) {
+              core.setFailed(`OpenRouter orchestration failed: ${e?.message ?? String(e)}`);
+              return;
+            }
 
             const payload = {
               event: 'pdf_work_request',
+              orchestrator: 'openrouter',
               issue_number,
               output_type: 'sellable-pdf',
               pdf_pipeline_batch: parsed.pdfPipelineBatch,
               autocreate_count: parsed.autocreateCount,
               valid_batch: parsed.validBatch,
+              openrouter_orchestration: openrouterOrchestration,
               repository: `${owner}/${repo}`,
               playbook_url: `${base}/workflows/PDF_WR_PLAYBOOK.md`,
               automation_guide_url: `${base}/workflows/PDF_AUTOMATION_GUIDE.md`,
               pdf_shape_url: `${base}/standards/shapes/PDF.md`,
+            };
+            const makePayload = {
+              ...payload,
+              trigger_mode: 'auto_create_pdf',
+              idempotency_key: `pdf-wr-${issue_number}`,
             };
 
             const batchLine =
@@ -111,6 +193,14 @@ jobs:
               '```json',
               JSON.stringify(payload, null, 2),
               '```',
+              '',
+              `**Orchestrator:** \`openrouter\`${openrouterOrchestration?.model ? ` (${openrouterOrchestration.model})` : ''}`,
+              '',
+              '<details><summary>OpenRouter orchestration brief</summary>',
+              '',
+              openrouterOrchestration?.brief || '_No orchestration brief generated._',
+              '',
+              '</details>',
               '',
               batchLine,
               '',
@@ -129,27 +219,89 @@ jobs:
 
             core.notice('Posted pdf-workflow-router comment on issue ' + issue_number);
 
-            // A) External trigger (Make.com) — optional
-            // Configure repo secret: MAKE_PDF_WR_WEBHOOK_URL
-            if (makeWebhook) {
+            // A) External trigger (Make.com) — required for full auto-creation
+            if (!makeWebhook) {
+              core.setFailed('MAKE_PDF_WR_WEBHOOK_URL is required: set the secret to enable automatic PDF creation in Make.com.');
+              return;
+            }
+
+            let makeResponse = null;
+            for (let attempt = 1; attempt <= MAKE_MAX_ATTEMPTS; attempt += 1) {
+              // Per-attempt timeout is intentional; max webhook wait = attempts * MAKE_TIMEOUT_MS.
+              const controller = new AbortController();
+              const timeout = setTimeout(() => controller.abort(), MAKE_TIMEOUT_MS);
               try {
                 const res = await fetch(makeWebhook, {
                   method: 'POST',
-                  headers: { 'content-type': 'application/json' },
-                  body: JSON.stringify(payload),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Idempotency-Key': makePayload.idempotency_key,
+                  },
+                  body: JSON.stringify(makePayload),
+                  signal: controller.signal,
                 });
+                const responseText = await res.text().catch(() => '');
+                clearTimeout(timeout);
                 if (!res.ok) {
-                  const t = await res.text().catch(() => '');
-                  core.warning(`Make webhook returned HTTP ${res.status}. Body: ${t.slice(0, 500)}`);
-                } else {
-                  core.notice('Sent payload to Make webhook.');
+                  if (attempt === MAKE_MAX_ATTEMPTS) {
+                    core.setFailed(
+                      `Make webhook failed after ${MAKE_MAX_ATTEMPTS} attempts (HTTP ${res.status}): ${responseText.slice(0, 500)}`
+                    );
+                    return;
+                  }
+                  // Backoff applies only between retries (attempts 1→2 and 2→3), never after final attempt.
+                  core.warning(`Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (HTTP ${res.status}); retrying.`);
+                  await new Promise((resolve) => setTimeout(resolve, makeBackoffMs(attempt)));
+                  continue;
                 }
+
+                let responseJson = null;
+                try {
+                  responseJson = responseText ? JSON.parse(responseText) : null;
+                } catch {
+                  responseJson = null;
+                }
+                makeResponse = {
+                  status: res.status,
+                  body: responseJson || responseText || null,
+                };
+                core.notice(`Sent payload to Make webhook (attempt ${attempt}/${MAKE_MAX_ATTEMPTS}).`);
+                break;
               } catch (e) {
-                core.warning(`Make webhook POST failed: ${e && e.message ? e.message : String(e)}`);
+                if (attempt === MAKE_MAX_ATTEMPTS) {
+                  core.setFailed(
+                    `Make webhook POST failed after ${MAKE_MAX_ATTEMPTS} attempts: ${e?.message ?? String(e)}`
+                  );
+                  return;
+                }
+                // Backoff applies only between retries (attempts 1→2 and 2→3), never after final attempt.
+                core.warning(
+                  `Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (${e?.message ?? String(e)}); retrying.`
+                );
+                await new Promise((resolve) => setTimeout(resolve, makeBackoffMs(attempt)));
+              } finally {
+                clearTimeout(timeout);
               }
-            } else {
-              core.info('MAKE_PDF_WR_WEBHOOK_URL not set; skipping Make webhook POST.');
             }
+
+            const makeStatusComment = [
+              makeStatusMarker,
+              '### Make auto-creation triggered',
+              '',
+              `- Status: HTTP ${makeResponse?.status ?? 'unknown'}`,
+              `- Idempotency key: \`${makePayload.idempotency_key}\``,
+              '',
+              '```json',
+              JSON.stringify(makeResponse?.body ?? { message: 'No response body returned' }, null, 2),
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: makeStatusComment,
+            });
 
             // B) Internal trigger (GitHub-only) — repository_dispatch
             // Consumers can listen for: on: repository_dispatch.types: [pdf_work_request]
@@ -168,3 +320,4 @@ jobs:
             }
         env:
           MAKE_PDF_WR_WEBHOOK_URL: ${{ secrets.MAKE_PDF_WR_WEBHOOK_URL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
