@@ -144,6 +144,12 @@ test('agent-audit-logger.yml retries non-fast-forward push before summary fallba
   if (!script.includes('git pull --rebase origin main')) {
     throw new Error('Commit step must rebase before retrying push');
   }
+  if (!script.includes('Rebase failed; audit log push aborted.')) {
+    throw new Error('Commit step must log rebase failure details');
+  }
+  if (!script.includes('Push failed with non-rebaseable error; audit log push aborted.')) {
+    throw new Error('Commit step must log non-rebaseable push failures');
+  }
   if (!script.includes('exit 0')) {
     throw new Error('Commit step must exit cleanly when push remains blocked');
   }

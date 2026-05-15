@@ -136,9 +136,13 @@ jobs:
               echo "$push_output"
               if echo "$push_output" | grep -qiE "fetch first|non-fast-forward"; then
                 echo "::notice::Audit log push was out-of-date on attempt ${attempt}; rebasing and retrying."
-                git pull --rebase origin main || break
+                git pull --rebase origin main || {
+                  echo "::error::Rebase failed; audit log push aborted."
+                  break
+                }
                 continue
               fi
+              echo "::error::Push failed with non-rebaseable error; audit log push aborted."
               break
             done
             if [[ "$push_ok" == "true" ]]; then
