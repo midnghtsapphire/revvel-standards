@@ -113,3 +113,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 1. Deploy each repo to Vercel Dashboard or CLI
 2. Replace placeholder URLs with real Vercel URLs
 3. Set up PostgreSQL for thealttext-backend
+
+---
+
+**Date/Time:** 2026-05-15T21:42Z
+
+**Task Attempted:** Verify and fix Music Video Creator `safeParse` greedy JSON fallback.
+
+**Outcome:** Success - `safeParse` now delegates to the balanced-brace `extractJsonFromContent` helper, regression coverage was restored, root tests pass, and the product typecheck/build passes.
+
+**Root Cause of Failure (If any):** `safeParse` used the greedy fallback regex `(\{[\s\S]*\})`, which merged separate JSON blocks and prose into one invalid parse target. During validation, the remote branch also advanced with a commit that deleted the product tree/test, so the affected files had to be restored from the last good parser-fix commit before final validation.
+
+**Self-Healing Fix / Learned Lesson:** Prefer the shared balanced JSON extractor over ad hoc regex parsing for LLM output. When a push is rejected because the branch advanced, inspect the remote delta before rebasing; if the rebase removes the task surface, restore only the needed affected files and avoid force-push. Root `npm test` can expose unrelated standards regressions; fix contained syntax/parser blockers when they prevent the requested regression from running.
+
+**Next Action:** None for this parser issue; continue monitoring PR validation.

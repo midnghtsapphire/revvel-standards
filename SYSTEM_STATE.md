@@ -38,6 +38,7 @@
 | BUG-003 | Duplicate keys in secrets-health-check.yml causing YAML validation failure | low | resolved | 2026-05-02 |
 | BUG-004 | `[WR]` issue automation broken — workflow_run loops saturated runner queue, killing every WR run with `startup_failure` | high | resolved | 2026-05-04 |
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
+| BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
 
 ---
 
@@ -86,7 +87,7 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-05-02 | ✅ passing (214 tests) | — |
+| `npm test` | 2026-05-15 | ✅ passing | — |
 
 ---
 
@@ -137,6 +138,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands
 Session summary: Added the Revvel operating model layer — OpenHands Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
+
+Last updated: 2026-05-15 21:42 UTC
+Updated by: Cursor
+Session summary: Fixed Music Video Creator LLM JSON parsing by delegating orchestrator `safeParse` to the balanced-brace extractor, restored parser regression coverage after branch drift, and verified root `npm test` plus product typecheck/build pass.
 
 Last updated: 2026-05-04 (post PR #10191 merge)
 Updated by: OpenHands
