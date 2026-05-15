@@ -143,10 +143,7 @@ jobs:
                   if (justTriggered) {
                     statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
                   } else {
-                    statusNote = `\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:
-- Invalid workflow syntax
-- Missing permissions
-- GitHub Actions API issues`;
+                    statusNote = '\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:\n- Invalid workflow syntax\n- Missing permissions\n- GitHub Actions API issues';
                   }
                   
                   await github.rest.issues.createComment({
