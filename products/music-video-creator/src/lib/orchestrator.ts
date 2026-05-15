@@ -94,7 +94,18 @@ export interface VideoMetadata {
   canonical_url_path: string;
 }
 
+export interface DiagnosisResult {
+  failure_class: FailureClass;
+  root_cause: string;
+  is_retryable: boolean;
+  recommended_action: string;
+  next_step_for_human: string | null;
+}
+
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+/** Cost per token in USD used for rough run-cost estimates. */
+const TOKEN_COST_USD_PER_UNIT = 0.000003;
 
 // Scout configuration — one agent per research domain
 const SCOUTS = [
@@ -497,7 +508,7 @@ export async function runMusicVideoOrchestrator(
   }
 
   result.render_status = 'backend_wired';
-  result.total_token_cost_usd = (totalTokens * 0.000003).toFixed(6);
+  result.total_token_cost_usd = (totalTokens * TOKEN_COST_USD_PER_UNIT).toFixed(6);
 
   return result;
 }
@@ -511,13 +522,7 @@ export async function diagnoseFailure(
   errorMessage: string,
   httpStatus: number | null,
   providerName: string
-): Promise<{
-  failure_class: FailureClass;
-  root_cause: string;
-  is_retryable: boolean;
-  recommended_action: string;
-  next_step_for_human: string | null;
-}> {
+): Promise<DiagnosisResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return {
@@ -548,7 +553,7 @@ Provider: ${providerName}`;
       500
     );
     const parsed = safeParse(content);
-    if (parsed) return parsed as ReturnType<typeof diagnoseFailure> extends Promise<infer T> ? T : never;
+    if (parsed) return parsed as DiagnosisResult;
   } catch {
     // fallback below
   }
@@ -559,7 +564,7 @@ Provider: ${providerName}`;
     return { failure_class: 'auth_error', root_cause: errorMessage, is_retryable: false, recommended_action: 'Check API credentials', next_step_for_human: 'Verify API key is valid and has required permissions' };
   if (msg.includes('429') || msg.includes('rate'))
     return { failure_class: 'rate_limit', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry with exponential back-off', next_step_for_human: null };
-  if (msg.includes('5') && httpStatus && httpStatus >= 500)
+  if (httpStatus !== null && httpStatus >= 500)
     return { failure_class: 'provider_error', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry after delay', next_step_for_human: null };
 
   return { failure_class: 'unknown', root_cause: errorMessage, is_retryable: false, recommended_action: 'Investigate manually', next_step_for_human: 'Review error details and retry' };
