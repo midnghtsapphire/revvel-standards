@@ -212,16 +212,16 @@ jobs:
       ISSUE_TITLE: ${{ needs.detect-completion.outputs.issue_title }}
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Log workflow trigger
         run: |
           echo "::notice::WR PR Creation triggered for issue #${{ env.ISSUE_NUMBER }}"
           echo "::notice::Event: ${{ github.event_name }}"
           echo "::notice::Action: ${{ github.event.action }}"
           echo "::notice::Issue Title: ${{ env.ISSUE_TITLE }}"
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
