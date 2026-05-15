@@ -1,0 +1,48 @@
+{
+  "schema_version": "2.0",
+  "song_title": "Bulletproof Love",
+  "slug": "bulletproof-love",
+  "created_at_utc": "2026-05-15T15:19:36Z",
+  "folder": "docs/videos-music/bulletproof-love",
+  "version": 1,
+  "inputs": {
+    "audio": {
+      "type": "wav",
+      "source": "Bulletproof Love WAV"
+    },
+    "avatar": {
+      "type": "image_or_video",
+      "source": "Avatar source image/video"
+    }
+  },
+  "generation": {
+    "provider": "heygen",
+    "mode": "lip_sync_music_video",
+    "status": "draft",
+    "provider_job_id": "",
+    "requested_at_utc": "",
+    "completed_at_utc": ""
+  },
+  "outputs": {
+    "video_filename": "bulletproof-love-20260515T151936Z-v1.mp4",
+    "video_repo_path": "docs/videos-music/bulletproof-love/bulletproof-love-20260515T151936Z-v1.mp4",
+    "thumbnail": "",
+    "captions_vtt": "",
+    "transcript": ""
+  },
+  "publishing": {
+    "required_on_main_website": true,
+    "website_url": "",
+    "canonical_video_url": "",
+    "cdn_url": "",
+    "embed_url": "",
+    "publish_status": "draft",
+    "published_at_utc": ""
+  },
+  "seo": {
+    "title": "Bulletproof Love — Official Music Video",
+    "description": "",
+    "keywords": ["bulletproof love", "music video", "lip sync"],
+    "thumbnail_alt": "Bulletproof Love music video thumbnail"
+  }
+}

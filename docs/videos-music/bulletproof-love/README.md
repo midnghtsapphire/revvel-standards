@@ -1,8 +1,12 @@
-# Bulletproof Love — Music Video Project
+# Bulletproof Love
 
 **Artist:** Audrey Evans  
-**Project Status:** `draft` — MP4 does not yet exist  
 **Publication Target:** `meetaudreyevans.com`
+
+## Overview
+
+This folder is the source-of-truth for the music video for **Bulletproof Love**.
+It contains the manifest, input references, generation status, output metadata, and publication details.
 
 ---
 
@@ -10,30 +14,76 @@
 
 > A filename in a manifest is not proof that the MP4 exists.
 
-As of initial documentation (2026-05-15):
-
 | Item | Status |
 |---|---|
 | WAV audio file | ❌ Not confirmed present |
 | Avatar / lip-sync image | ❌ Not confirmed present |
-| Provider selected | ❌ Not selected |
+| Provider selected | ✅ HeyGen (draft plan) |
 | Backend wiring complete | ❌ Not started |
 | MP4 generated | ❌ Does not exist |
 | Stored at URI | ❌ No storage URI assigned |
 | Published to meetaudreyevans.com | ❌ Not published |
 | Live URL verified | ❌ No URL to verify |
 
-This project remains in `draft` status until all inputs are confirmed present and the orchestrator can proceed to planning.
+---
+
+## Inputs
+
+| Field | Value |
+|---|---|
+| WAV audio | `Bulletproof Love WAV` _(not yet uploaded)_ |
+| Avatar | `Avatar source image/video` _(not yet uploaded)_ |
 
 ---
 
-## Required Inputs
+## Generation
 
-Before the orchestrator can begin:
+| Field | Value |
+|---|---|
+| Provider | HeyGen |
+| Mode | `lip_sync_music_video` |
+| Status | `draft` |
+| Provider job ID | _(not yet submitted)_ |
+| Requested at | _(not yet submitted)_ |
+| Completed at | _(not yet completed)_ |
 
-1. `.wav` audio file for "Bulletproof Love" — upload to designated storage and record path in `manifest.yml`
-2. Avatar image (high-resolution portrait of Audrey Evans) — upload and record path in `manifest.yml`
-3. Confirm `HEYGEN_API_KEY` (or equivalent) exists in the runtime environment
+---
+
+## Outputs
+
+| Field | Value |
+|---|---|
+| MP4 filename | `bulletproof-love-20260515T151936Z-v1.mp4` _(not yet generated)_ |
+| Thumbnail | _(not yet generated)_ |
+| Captions (VTT) | _(not yet generated)_ |
+| Transcript | _(not yet generated)_ |
+
+---
+
+## Publishing
+
+| Field | Value |
+|---|---|
+| Required on main website | `yes` |
+| Main website URL | _(pending publication)_ |
+| Canonical video URL | _(pending publication)_ |
+| CDN URL | _(pending publication)_ |
+| Embed URL | _(pending publication)_ |
+| Publish status | `draft` |
+| Published at | _(not yet published)_ |
+
+> **The MP4 will be hosted externally.** Once published, `canonical_video_url` in the manifest is the authoritative link to the file.
+
+---
+
+## SEO
+
+| Field | Value |
+|---|---|
+| SEO title | `Bulletproof Love — Official Music Video` |
+| Meta description | _(to be filled before publishing)_ |
+| Keywords | `bulletproof love`, `music video`, `lip sync` |
+| Thumbnail alt text | `Bulletproof Love music video thumbnail` |
 
 ---
 
@@ -54,23 +104,26 @@ Sage aggregates Scout responses into a unified plan: selected provider, storage 
 Forge translates the Sage plan into a deterministic task list:
 1. Upload WAV to storage
 2. Upload avatar to storage
-3. Submit lip-sync job to selected provider
+3. Submit lip-sync job to HeyGen
 4. Capture `provider_job_id`
-5. Poll until `artifact_created`
+5. Poll until generation complete
 6. Download MP4 to storage
-7. Verify MP4 present (`video_exists: true`)
+7. Verify MP4 present
 8. Deploy to `meetaudreyevans.com/videos/bulletproof-love`
 9. Verify live URL returns 200
-10. Update manifest with `canonical_video_url` and `verified_at_utc`
+10. Update manifest with `canonical_video_url` and `published_at_utc`
 
 ---
 
-## Manifest
+## Manifests
 
-See [`manifest.yml`](./manifest.yml) for live status fields.
+- JSON manifest: [`video-manifest-20260515T151936Z-v1.json`](./video-manifest-20260515T151936Z-v1.json)
+- YAML manifest: [`manifest.yml`](./manifest.yml)
+
+See also: [`../video-publishing-standard.md`](../video-publishing-standard.md) for the full end-to-end workflow.
 
 ---
 
 ## Next Action
 
-**Human action required:** Provide WAV file and avatar image. Once inputs are confirmed, set `wav_exists: true` and `avatar_exists: true` in `manifest.yml` and trigger the orchestrator.
+**Human action required:** Provide WAV file and avatar image. Once inputs are confirmed, upload them to storage, update both manifests, and trigger the orchestrator.
