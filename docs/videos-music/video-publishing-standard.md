@@ -3,6 +3,8 @@
 > **Status:** Standard / Specification  
 > This document describes the required end-to-end workflow for music video generation and publishing under revvel-standards.
 > It is a **spec and contract** — not executable automation code.
+>
+> Cross-project orchestration gates are defined in [`../orchestration/project-orchestration-standard.md`](../orchestration/project-orchestration-standard.md).
 
 ---
 
@@ -57,7 +59,7 @@ Both inputs **must** be recorded in the manifest `inputs` block before generatio
 
 ### Step 4 — Website publication
 
-1. Create or update the product page on the main website, embedding the video or linking to `canonical_video_url`.
+1. Create or update the product page on the main website (`meetaudreyevans.com`), embedding the video or linking to `canonical_video_url`.
 2. Apply all SEO fields from the manifest `seo` block to the page metadata.
 3. Record the live page URL in `publishing.website_url`.
 4. Record the direct hosted MP4 URL in `publishing.canonical_video_url`.
