@@ -6,8 +6,7 @@ import NewsletterModule from '@/components/NewsletterModule';
 import AccessibilityControls from '@/components/AccessibilityControls';
 
 interface JobStatus {
-  jobId: string;
-  provider: string;
+  provider: string | null;
   provider_job_id: string | null;
   render_status: string;
   video_exists: boolean;
@@ -18,6 +17,13 @@ interface JobStatus {
   failure_reason: string | null;
   message?: string;
 }
+
+const TERMINAL_STATUSES = new Set([
+  'verified',
+  'indexed',
+  'failed',
+  'backend_wiring_pending',
+]);
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Draft',
@@ -76,9 +82,14 @@ export default function Home() {
     };
   }, []);
 
-  const pollStatus = useCallback(async (jobId: string): Promise<string | null> => {
+  const pollStatus = useCallback(async (provider: string, providerJobId: string): Promise<string | null> => {
     try {
-      const res = await fetch(`/api/video?jobId=${encodeURIComponent(jobId)}`);
+      const url = `/api/video?provider=${encodeURIComponent(provider)}&provider_job_id=${encodeURIComponent(providerJobId)}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.error('Poll returned non-2xx status:', res.status);
+        return null;
+      }
       const data = await res.json() as JobStatus;
       setJob(data);
       return data.render_status;
@@ -110,19 +121,45 @@ export default function Home() {
       formData.append('avatar', avatarFile);
 
       const response = await fetch('/api/video', { method: 'POST', body: formData });
+
+      if (!response.ok) {
+        // Build a normalized error job status so the UI always shows a consistent shape
+        let failureReason = `Server error (${response.status})`;
+        let renderStatus = 'failed';
+        try {
+          const errBody = await response.json() as { failure_reason?: string; render_status?: string; error?: string };
+          failureReason = errBody.failure_reason ?? errBody.error ?? failureReason;
+          renderStatus = errBody.render_status ?? renderStatus;
+        } catch { /* body not JSON */ }
+
+        setJob({
+          provider: null,
+          provider_job_id: null,
+          render_status: renderStatus,
+          video_exists: false,
+          artifact_storage_url: null,
+          canonical_video_url: null,
+          publish_status: 'unpublished',
+          verified_at_utc: null,
+          failure_reason: failureReason,
+          message: failureReason,
+        });
+        return;
+      }
+
       const data = await response.json() as JobStatus;
       setJob(data);
 
-      const TERMINAL_STATUSES = new Set(['verified', 'indexed', 'failed', 'backend_wiring_pending']);
-      const shouldPoll = Boolean(data.jobId) && !TERMINAL_STATUSES.has(data.render_status);
+      // Poll for any non-terminal status as long as we have provider credentials to poll with
+      const shouldPoll = Boolean(data.provider) && Boolean(data.provider_job_id) && !TERMINAL_STATUSES.has(data.render_status);
 
       if (shouldPoll) {
         setIsPolling(true);
         pollIntervalRef.current = setInterval(async () => {
-          const status = await pollStatus(data.jobId);
+          const status = await pollStatus(data.provider!, data.provider_job_id!);
           if (status === null) {
             // Poll error — stop polling and let user retry manually
-            console.error('Polling returned null; stopping poll for job', data.jobId);
+            console.error('Polling returned null; stopping poll');
             stopPolling();
             return;
           }
@@ -134,8 +171,7 @@ export default function Home() {
     } catch (error) {
       console.error('Error:', error);
       setJob({
-        jobId: '',
-        provider: '',
+        provider: null,
         provider_job_id: null,
         render_status: 'failed',
         video_exists: false,
@@ -151,9 +187,9 @@ export default function Home() {
   };
 
   const handleRefresh = async () => {
-    if (!job?.jobId) return;
+    if (!job?.provider || !job.provider_job_id) return;
     setIsPolling(true);
-    await pollStatus(job.jobId);
+    await pollStatus(job.provider, job.provider_job_id);
     setIsPolling(false);
   };
 
@@ -240,7 +276,7 @@ export default function Home() {
               }`}>
                 <div className="flex items-center justify-between mb-3">
                   <StatusBadge status={job.render_status} />
-                  {job.jobId && (
+                  {job.provider && job.provider_job_id && (
                     <button onClick={handleRefresh} disabled={isPolling}
                       className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 flex items-center gap-1">
                       <RefreshCw className={`w-3.5 h-3.5 ${isPolling ? 'animate-spin' : ''}`} />
@@ -250,9 +286,6 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
-                  {job.jobId && (
-                    <div><span className="font-medium">Job ID:</span> {job.jobId}</div>
-                  )}
                   {job.provider && (
                     <div><span className="font-medium">Provider:</span> {job.provider}</div>
                   )}

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { extractJsonFromContent } = require('../../../lib/video-job-helpers') as {
+  extractJsonFromContent: (content: string) => Record<string, unknown> | null;
+};
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OR_MODELS = [
+  'anthropic/claude-sonnet-4',
+  'deepseek/deepseek-chat',
+  'openai/gpt-4o',
+];
 
 const DEEP_RESEARCH_SYSTEM_PROMPT = `MISSION
 You are the deep research and project orchestration agent for the Music Video Creator.
@@ -26,41 +35,10 @@ COMPLETION RULES
 - Never use placeholder URLs — leave fields null until real values are confirmed
 - Never mark a stage complete without evidence (job ID, HTTP 200, file size, etc.)
 
-OUTPUT FORMAT
-Return structured JSON with:
-{
-  "research_summary": "...",
-  "artist_profile": { "name": "...", "genre": "...", "target_audience": "..." },
-  "provider_recommendation": {
-    "primary": "...",
-    "rationale": "...",
-    "fallback": "...",
-    "estimated_cost": "...",
-    "estimated_duration_minutes": 0
-  },
-  "required_secrets": ["ENV_VAR_NAME", ...],
-  "execution_plan": ["step 1", "step 2", ...],
-  "seo_metadata": {
-    "title": "...",
-    "description": "...",
-    "tags": ["...", "..."]
-  },
-  "publication_target": {
-    "website": "...",
-    "page_path": "...",
-    "verification_url": "..."
-  },
-  "verification_criteria": "...",
-  "estimated_completion_stages": {
-    "backend_wiring": "...",
-    "execution": "...",
-    "storage": "...",
-    "publication": "...",
-    "verification": "..."
-  },
-  "risks": ["...", "..."],
-  "next_steps": ["...", "..."]
-}`;
+Return ONLY a JSON object (no prose) with keys:
+research_summary, artist_profile, provider_recommendation, required_secrets,
+execution_plan, seo_metadata, publication_target, verification_criteria,
+estimated_completion_stages, risks, next_steps`;
 
 interface OrchestrateRequest {
   project_name: string;
@@ -71,7 +49,20 @@ interface OrchestrateRequest {
   additional_context?: string;
 }
 
+function requireApiKey(request: NextRequest): NextResponse | null {
+  const requiredKey = process.env.MUSIC_VIDEO_API_KEY;
+  if (!requiredKey) return null;
+  const provided = request.headers.get('x-api-key');
+  if (provided !== requiredKey) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return null;
+}
+
 export async function POST(request: NextRequest) {
+  const authError = requireApiKey(request);
+  if (authError) return authError;
+
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
@@ -82,7 +73,7 @@ export async function POST(request: NextRequest) {
           'See products/music-video-creator/.env.example for all required variables',
         ],
       },
-      { status: 503 },
+      { status: 500 },
     );
   }
 
@@ -128,11 +119,10 @@ SEO metadata package for the publication page.`;
         'X-Title': 'Music Video Creator — Deep Research Orchestrator',
       },
       body: JSON.stringify({
-        models: [
-          'anthropic/claude-sonnet-4',
-          'deepseek/deepseek-v3.2',
-          'openai/gpt-5.2-codex',
-        ],
+        // model field required for OpenAI-compatible clients; models array used for OR fallback routing
+        model: OR_MODELS[0],
+        models: OR_MODELS,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: DEEP_RESEARCH_SYSTEM_PROMPT },
           { role: 'user', content: userPrompt },
@@ -158,16 +148,9 @@ SEO metadata package for the publication page.`;
     const content = data.choices?.[0]?.message?.content ?? '';
     const modelUsed = data.model ?? 'unknown';
 
-    // Extract structured JSON from the response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    let plan: Record<string, unknown> = { raw: content };
-    if (jsonMatch) {
-      try {
-        plan = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
-      } catch {
-        plan = { raw: content };
-      }
-    }
+    // Use balanced-brace extractor instead of greedy regex to avoid
+    // merging multiple JSON objects when the model includes prose examples.
+    const plan = extractJsonFromContent(content) ?? { raw: content };
 
     return NextResponse.json({
       success: true,
