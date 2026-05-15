@@ -1,0 +1,256 @@
+# Stuck Check Watchdog
+# Monitors for issues stuck in checking/in-progress/failed states
+# Scheduled to run every hour
+
+name: Stuck Check Watchdog
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no changes)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: read
+  pull-requests: read
+  contents: read
+
+env:
+  STUCK_THRESHOLD_HOURS: 4
+  PENDING_THRESHOLD_HOURS: 2
+
+jobs:
+  find-stuck-issues:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 30
+    steps:
+      - name: Fetch stuck issues
+        id: fetch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
+            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
+            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            
+            // Find issues with wr:checking label
+            const { data: checkingIssues } = await github.rest.issues.listForRepo({
+              state: 'open',
+              labels: 'wr:checking',
+              per_page: 50
+            });
+            
+            // Find issues with issue:in-progress label
+            const { data: inProgressIssues } = await github.rest.issues.listForRepo({
+              state: 'open',
+              labels: 'issue:in-progress',
+              per_page: 50
+            });
+            
+            // Find issues with lifecycle:stuck label
+            const { data: lifecycleStuckIssues } = await github.rest.issues.listForRepo({
+              state: 'open',
+              labels: 'lifecycle:stuck',
+              per_page: 50
+            });
+            
+            // Combine and dedupe
+            const allIssues = [...checkingIssues, ...inProgressIssues, ...lifecycleStuckIssues];
+            const seen = new Set();
+            const uniqueIssues = allIssues.filter(issue => {
+              const dup = seen.has(issue.number);
+              seen.add(issue.number);
+              return !dup;
+            });
+            
+            // Check each issue for stuck status
+            const stuckIssues = [];
+            for (const issue of uniqueIssues) {
+              const createdAt = new Date(issue.created_at);
+              const now = new Date();
+              const hoursOld = (now - createdAt) / (1000 * 60 * 60);
+              
+              stuckIssues.push({
+                number: issue.number,
+                title: issue.title,
+                created_at: issue.created_at,
+                hours_old: hoursOld,
+                labels: issue.labels.map(l => l.name)
+              });
+            }
+            
+            core.setOutput('stuck_issues', JSON.stringify(stuckIssues));
+            core.setOutput('count', String(stuckIssues.length));
+            console.log('Found', stuckIssues.length, 'issues to check');
+
+      - name: Analyze and diagnose each issue
+        if: steps.fetch.outputs.count != '0'
+        id: analyze
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = JSON.parse('${{ steps.fetch.outputs.stuck_issues }}');
+            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
+            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
+            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            
+            const diagnoses = [];
+            
+            for (const issue of issues) {
+              const diagnosis = {
+                number: issue.number,
+                title: issue.title,
+                status: 'unknown',
+                action: 'none',
+                comment: ''
+              };
+              
+              // Check if PR exists linked to issue
+              const { data: relatedPRs } = await github.rest.issues.listForRepo({
+                state: 'all',
+                per_page: 50
+              });
+              
+              // Search for PRs that reference this issue
+              const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
+                q: `is:pr is:open repo:${context.repo.owner}/${context.repo.repo} ${issue.number}`
+              });
+              
+              const linkedPR = searchResults.items.find(pr => 
+                pr.body && (pr.body.includes('#' + issue.number) || pr.body.includes('closes #' + issue.number))
+              );
+              
+              if (!linkedPR) {
+                // No PR exists, move back to code
+                diagnosis.status = 'no-pr';
+                diagnosis.action = 'move-code';
+                diagnosis.comment = 'No linked PR found. Issue stuck in wr:checking but no PR was created. Moving back to wr:code for code generation.';
+              } else {
+                // PR exists, check status
+                const { data: checks } = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: linkedPR.head.sha,
+                  per_page: 100
+                });
+                
+                const latestRun = checks.check_runs.length > 0 ? checks.check_runs[0] : null;
+                
+                if (latestRun) {
+                  const conclusion = latestRun.conclusion;
+                  const status = latestRun.status;
+                  
+                  if (status === 'completed') {
+                    if (conclusion === 'failure' || conclusion === 'timed_out') {
+                      // Check failed
+                      diagnosis.status = 'checks-failed';
+                      diagnosis.action = 'label-failed';
+                      diagnosis.comment = 'PR checks failed. Labeling as wr:check-failed. Please review failures and push fixes.';
+                    } else if (conclusion === 'success') {
+                      // Checks passed, move to review
+                      diagnosis.status = 'checks-passed';
+                      diagnosis.action = 'move-review';
+                      diagnosis.comment = 'All checks passed. Ready for review.';
+                    } else {
+                      // Other conclusion (neutral, skipped, etc.)
+                      diagnosis.status = 'other-conclusion';
+                      diagnosis.action = 'move-review';
+                      diagnosis.comment = 'Checks completed with conclusion: ' + conclusion;
+                    }
+                  } else {
+                    // Still in progress
+                    const hoursOld = issue.hours_old;
+                    if (hoursOld > thresholdHours) {
+                      // Pending too long
+                      diagnosis.status = 'pending-too-long';
+                      diagnosis.action = 'label-stuck';
+                      diagnosis.comment = 'Checks pending for ' + hoursOld.toFixed(1) + ' hours. Labeling as lifecycle:stuck for investigation.';
+                    } else if (hoursOld > pendingHours) {
+                      diagnosis.status = 'pending';
+                      diagnosis.action = 'comment';
+                      diagnosis.comment = 'Checks still running after ' + hoursOld.toFixed(1) + ' hours. Waiting...';
+                    } else {
+                      diagnosis.status = 'in-progress';
+                      diagnosis.action = 'none';
+                      diagnosis.comment = 'Checks in progress, status: ' + status;
+                    }
+                  }
+                } else {
+                  // No checks found
+                  diagnosis.status = 'no-checks';
+                  diagnosis.action = 'none';
+                  diagnosis.comment = 'No status checks found on linked PR. Manual review needed.';
+                }
+              }
+              
+              diagnoses.push(diagnosis);
+              
+              // Apply fixes if not dry run
+              if (!dryRun && diagnosis.action !== 'none') {
+                if (diagnosis.action === 'label-failed') {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ['wr:check-failed', 'needs-fix']
+                  });
+                } else if (diagnosis.action === 'label-stuck') {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ['lifecycle:stuck']
+                  });
+                } else if (diagnosis.action === 'move-code') {
+                  // Remove wr:checking, add wr:code
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    name: 'wr:checking'
+                  });
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ['wr:code']
+                  });
+                } else if (diagnosis.action === 'move-review' || diagnosis.action === 'comment') {
+                  // Do nothing for now
+                }
+                
+                // Always comment with diagnosis
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: '**Stuck Issue Watchdog Diagnosis**\n\n' +
+                    '- Status: ' + diagnosis.status + '\n' +
+                    '- Action: ' + diagnosis.action + '\n\n' +
+                    diagnosis.comment + '\n\n' +
+                    '_This is an automated diagnostic from the stuck check watchdog._'
+                });
+              }
+            }
+            
+            core.setOutput('diagnoses', JSON.stringify(diagnoses));
+            console.log('Analyzed', diagnoses.length, 'issues');
+
+      - name: Generate report
+        if: steps.analyze.outputs.diagnoses
+        run: |
+          echo "## Stuck Check Watchdog Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Issues analyzed: ${{ steps.fetch.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Parse diagnoses and summarize
+          DIAGNOSES='${{ steps.analyze.outputs.diagnoses }}'
+          echo "Diagnoses: $DIAGNOSES" >> $GITHUB_STEP_SUMMARY

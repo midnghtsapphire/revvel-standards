@@ -1,0 +1,68 @@
+# Perplexity Research Agent
+# Uses Perplexity for research and web-grounded issue diagnosis
+
+name: Perplexity Research Agent
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to research
+        required: false
+        type: number
+      skip_labels:
+        description: Skip label check
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  contents: read
+
+env:
+  PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 20
+    if: >-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && github.event.action == 'labeled' &&
+       (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Research issue with Perplexity Sonar
+        id: research
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          REPO: ${{ github.repository }}
+        run: |
+          node scripts/perplexity-research-issue.js
+
+      - name: Comment research results
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+        run: |
+          # Move to next state
+          gh issue edit "$ISSUE_NUMBER" \
+            --remove-label "wr:research" \
+            --add-label "wr:research-complete" \
+            --add-label "wr:jules" 2>/dev/null || true
+
+      - name: Report success/failure
+        run: |
+          if [ -f /tmp/perplexity-research.md ]; then
+            echo "## Research Complete" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/perplexity-research.md >> $GITHUB_STEP_SUMMARY
+          fi

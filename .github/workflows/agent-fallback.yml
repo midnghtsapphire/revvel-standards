@@ -1,81 +1,58 @@
 name: Agent Fallback Handler
-
-# OpenHands-RESTRUCTURE 2026-05-04: Issue trigger disabled. Was racing with
-# openrouter-coder + needs-action-router on `wr:code` / `wr:auto` /
-# `agent-fallback` labels. Now the issue side of the fallback chain lives in
-# openrouter-coder.yml. This workflow remains available for PR review handling
-# and as a reusable workflow_call target if a future flow wants the
-# OpenHands → Cursor → OpenRouter chain explicitly.
-
 on:
-  # # Automatic triggers for issues with specific labels  -- DISABLED, racing
-  # issues:
-  #   types: [labeled]
-
-  # Automatic triggers for PRs ready for review
   pull_request_target:
-    types: [opened, reopened, ready_for_review]
-
-  # Reusable workflow (can be called from other workflows)
+    types:
+      - opened
+      - reopened
+      - ready_for_review
   workflow_call:
     inputs:
       task_description:
-        description: "Description of the task to execute"
+        description: Description of the task to execute
         required: false
         type: string
         default: ""
       issue_number:
-        description: "GitHub issue number"
+        description: GitHub issue number
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (openrouter, cursor, OpenHands, auto)"
+        description: Preferred agent (openrouter, cursor, OpenHands, auto)
         required: false
         type: string
-        default: "openrouter"
+        default: openrouter
     outputs:
       agent_used:
-        description: "Which agent completed the task"
+        description: Which agent completed the task
         value: ${{ jobs.execute.outputs.agent_used }}
       success:
-        description: "Whether the task completed successfully"
+        description: Whether the task completed successfully
         value: ${{ jobs.execute.outputs.success }}
       pr_url:
-        description: "Pull request URL if created"
+        description: Pull request URL if created
         value: ${{ jobs.execute.outputs.pr_url }}
-
-  # Manual trigger
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to process"
+        description: Issue number to process
         required: true
         type: number
       prefer_agent:
-        description: "Preferred agent (openrouter, cursor, OpenHands, auto)"
+        description: Preferred agent (openrouter, cursor, OpenHands, auto)
         required: false
         type: string
-        default: "openrouter"
-
+        default: openrouter
 concurrency:
-  # yamllint disable-line rule:line-length
   group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
   cancel-in-progress: false
-
 permissions:
   contents: write
   pull-requests: write
   issues: write
-
 jobs:
   health-check:
     name: Check agent availability
     runs-on: ubuntu-latest
-    # Only run if:
-    # 1. PR ready for review (opened/reopened/ready_for_review), OR
-    # 2. Manual workflow_dispatch, OR
-    # 3. Called as reusable workflow
-    # (OpenHands-RESTRUCTURE: issues path removed — see workflow header.)
     if: |
       github.event_name == 'workflow_dispatch' ||
       inputs.issue_number ||
@@ -95,7 +72,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Check agent availability
         id: check
         env:
@@ -149,7 +125,7 @@ jobs:
 
           echo ""
           echo "📊 Recommended agent: ${RECOMMENDED}"
-
+    timeout-minutes: 30
   execute:
     name: Execute task with fallback
     needs: health-check
@@ -163,12 +139,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v8
@@ -227,13 +201,8 @@ jobs:
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', issueTitle);
             core.setOutput('issue_body', issueBody);
-
       - name: Try OpenRouter (Primary)
-        if: >-
-          needs.health-check.outputs.openrouter_available == 'true' &&
-          (inputs.prefer_agent == 'auto' ||
-          inputs.prefer_agent == 'openrouter' ||
-          inputs.prefer_agent == '')
+        if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == '')
         id: openrouter
         continue-on-error: true
         env:
@@ -274,15 +243,8 @@ jobs:
               exit 1
             fi
           fi
-
       - name: Fallback to Cursor
-        if: >-
-          (steps.openrouter.outcome == 'failure' ||
-          steps.openrouter.outcome == 'skipped') &&
-          needs.health-check.outputs.cursor_available == 'true' &&
-          (inputs.prefer_agent == 'auto' ||
-          inputs.prefer_agent == 'cursor' ||
-          inputs.prefer_agent == '')
+        if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
         id: cursor
         continue-on-error: true
         env:
@@ -293,14 +255,8 @@ jobs:
         run: |
           echo "🔧 Attempting to use Cursor..."
           bash scripts/call-cursor-api.sh
-
       - name: Try OpenHands AI (Opt-in Only - Paid Service)
-        if: >-
-          steps.openrouter.outcome != 'success' &&
-          (steps.cursor.outcome == 'failure' ||
-          steps.cursor.outcome == 'skipped') &&
-          needs.health-check.outputs.OpenHands_available == 'true' &&
-          inputs.prefer_agent == 'OpenHands'
+        if: steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && inputs.prefer_agent == 'OpenHands'
         id: OpenHands
         continue-on-error: true
         env:
@@ -311,7 +267,6 @@ jobs:
         run: |
           echo "🤖 Using OpenHands AI (paid service - opt-in only)..."
           bash scripts/call-openhands-api.sh
-
       - name: Determine result
         if: always()
         id: result
@@ -333,22 +288,16 @@ jobs:
             echo "success=false" >> $GITHUB_OUTPUT
             echo "❌ All agents failed"
           fi
-
       - name: Create pull request (if changes were made)
         id: cpr
         if: steps.result.outputs.success == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: >-
-            agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
+          branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
-          title: >-
-            [${{ steps.result.outputs.agent }}]
-            ${{ steps.issue.outputs.issue_title }}
-          commit-message: >-
-            feat: apply ${{ steps.result.outputs.agent }}
-            changes for #${{ steps.issue.outputs.issue_number }}
+          title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"
+          commit-message: "feat: apply ${{ steps.result.outputs.agent }} changes for #${{ steps.issue.outputs.issue_number }}"
           body: |
             Automated code changes for
             issue #${{ steps.issue.outputs.issue_number }}.
@@ -360,13 +309,11 @@ jobs:
             ${{ steps.issue.outputs.issue_body }}
 
             Closes #${{ steps.issue.outputs.issue_number }}
-
       - name: Capture PR URL
         id: pr-url
         if: steps.cpr.outputs.pull-request-url != ''
         run: |
           echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
-
       - name: Comment on issue with success
         if: steps.result.outputs.success == 'true'
         uses: actions/github-script@v8
@@ -393,7 +340,6 @@ jobs:
               issue_number: Number(process.env.ISSUE_NUM),
               body: body
             });
-
       - name: Create fallback event issue
         if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
         uses: actions/github-script@v8
@@ -421,7 +367,6 @@ jobs:
 
               No action required — fallback is working as designed. This issue is for monitoring purposes only.`
             });
-
       - name: Comment on issue with failure
         if: steps.result.outputs.success == 'false'
         uses: actions/github-script@v8
@@ -459,3 +404,6 @@ jobs:
               issue_number: issueNum,
               labels: ['needs-human']
             });
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

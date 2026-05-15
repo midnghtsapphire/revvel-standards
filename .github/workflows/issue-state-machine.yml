@@ -1,0 +1,233 @@
+name: Issue State Machine
+on:
+  issues:
+    types:
+      - labeled
+      - opened
+      - closed
+      - reopened
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to process
+        required: false
+        type: number
+      target_state:
+        description: Target state
+        required: false
+        type: choice
+        options:
+          - new
+          - research
+          - code
+          - pr-open
+          - checking
+          - review
+          - merge-ready
+          - done
+permissions:
+  issues: write
+env:
+  LIFECYCLE_LABELS: wr:new,wr:research,wr:research-complete,wr:code,wr:pr-open,wr:checking,wr:check-failed,wr:review,wr:merge-ready,wr:done,lifecycle:stuck,needs-human
+jobs:
+  enforce-singular-lifecycle:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'issues'
+    steps:
+      - name: Check current labels
+        id: check_labels
+        uses: actions/github-script@v7
+        with:
+          script: >
+            const issue = context.payload.issue;
+
+            const labels = issue.labels.map(l => l.name);
+
+
+            // Define lifecycle label groups (only one allowed per group)
+
+            const labelGroups = [
+              ['wr:new', 'wr:research', 'wr:research-complete', 'wr:code', 'wr:pr-open', 'wr:checking', 'wr:check-failed', 'wr:review', 'wr:merge-ready', 'wr:done'],
+              ['lifecycle:stuck', 'needs-human']
+            ];
+
+
+            // Find conflicting labels
+
+            const conflicts = [];
+
+            for (const group of labelGroups) {
+              const found = labels.filter(l => group.includes(l));
+              if (found.length > 1) {
+                conflicts.push(...found.slice(1)); // Keep first, mark rest as conflicts
+              }
+            }
+
+
+            core.setOutput('conflicts', JSON.stringify(conflicts));
+
+            core.setOutput('all_labels', JSON.stringify(labels));
+
+
+            // Debug output
+
+            console.log('Current labels:', labels);
+
+            console.log('Conflicts found:', conflicts);
+      - name: Remove conflicting labels
+        if: steps.check_labels.outputs.conflicts != '[]'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conflicts = JSON.parse('${{ steps.check_labels.outputs.conflicts }}');
+            const issueNumber = context.payload.issue.number;
+            for (const label of conflicts) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: label
+                });
+                console.log('Removed label:', label);
+              } catch (e) {
+                console.log('Could not remove label:', label, e.message);
+              }
+            }
+    timeout-minutes: 15
+  set-initial-state:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Add wr:new label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = context.payload.issue.labels.map(l => l.name);
+            if (!labels.some(l => l.startsWith('wr:'))) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                labels: ['wr:new']
+              });
+              console.log('Added wr:new label');
+            } else {
+              console.log('Issue already has wr:* label:', labels.filter(l => l.startsWith('wr:')));
+            }
+    timeout-minutes: 15
+  transition-state:
+    runs-on: ubuntu-latest
+    env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
+    steps:
+      - name: Transition state
+        id: transition
+        uses: actions/github-script@v7
+        with:
+          script: >
+            const targetState = '${{ github.event.inputs.target_state }}';
+
+            const issueNumber = ${{ github.event.inputs.issue_number || 0 }};
+
+
+            // Map target state to label
+
+            const stateLabels = {
+              'new': 'wr:new',
+              'research': 'wr:research',
+              'code': 'wr:code',
+              'pr-open': 'wr:pr-open',
+              'checking': 'wr:checking',
+              'review': 'wr:review',
+              'merge-ready': 'wr:merge-ready',
+              'done': 'wr:done'
+            };
+
+
+            const newLabel = stateLabels[targetState];
+
+            if (!newLabel) {
+              core.setFailed('Invalid target state: ' + targetState);
+              return;
+            }
+
+
+            const issue = issueNumber > 0 ? issueNumber :
+            context.payload.issue?.number;
+
+            if (!issue) {
+              core.setFailed('No issue number provided');
+              return;
+            }
+
+
+            // Remove all lifecycle labels first
+
+            const allLifecycleLabels = Object.values(stateLabels);
+
+            const { data: issueData } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue
+            });
+
+
+            for (const label of issueData.labels) {
+              if (allLifecycleLabels.includes(label.name)) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue,
+                  name: label.name
+                });
+              }
+            }
+
+
+            // Add new label
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue,
+              labels: [newLabel]
+            });
+
+
+            console.log(' transitioned to:', newLabel);
+    timeout-minutes: 15
+  close-completed:
+    runs-on: ubuntu-latest
+    env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'issues' && github.event.action == 'closed' &&
+      contains(github.event.issue.labels.*.name, 'wr:')
+    steps:
+      - name: Mark as done if not PR
+        if: "!github.event.issue.pull_request"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+
+            // Check if already marked as done
+            if (labels.includes('wr:done')) {
+              console.log('Issue already marked as done');
+              return;
+            }
+
+            // Add wr:done label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: ['wr:done']
+            });
+    timeout-minutes: 30

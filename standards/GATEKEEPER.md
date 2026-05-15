@@ -2,7 +2,7 @@
 
 **Status:** Active  
 **Owner:** @midnghtsapphire  
-**Related standards:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md), [`SECURITY.md`](SECURITY.md), [`CREDENTIAL_AUDIT_SYSTEM.md`](CREDENTIAL_AUDIT_SYSTEM.md)  
+**Related standards:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md), [`SECURITY.md`](SECURITY.md), [`CREDENTIAL_AUDIT_SYSTEM.md (merged 2026-05-06)`](CREDENTIAL_AUDIT_SYSTEM.md)  
 **Related workflows:** [`.github/workflows/credential-gatekeeper.yml`](../.github/workflows/credential-gatekeeper.yml), [`templates/cicd/bom-self-heal.yml`](../templates/cicd/bom-self-heal.yml)  
 **Related scripts:** [`scripts/gatekeeper-sync.sh`](../scripts/gatekeeper-sync.sh), [`scripts/gatekeeper-rotate.sh`](../scripts/gatekeeper-rotate.sh)  
 **Related docs:** [`docs/_MASTER_BOM.md`](../docs/_MASTER_BOM.md), [`docs/_MASTER_INVENTORY.md`](../docs/_MASTER_INVENTORY.md)

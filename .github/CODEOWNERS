@@ -1,0 +1,19 @@
+# CODEOWNERS
+#
+# This file defines the default reviewers that are automatically
+# requested for review when someone opens a pull request that modifies
+# code they own. Order is important; the last matching pattern takes
+# the most precedence.
+#
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+*       @midnghtsapphire
+
+# GitHub Actions workflows and related automation
+/.github/                @midnghtsapphire
+/.github/workflows/      @midnghtsapphire
+
+# Documentation
+*.md                     @midnghtsapphire
+/docs/                   @midnghtsapphire

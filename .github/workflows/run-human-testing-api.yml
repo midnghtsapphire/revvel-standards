@@ -1,57 +1,36 @@
-# Revvel Human Testing API Workflow
-#
-# Triggers 5 parallel S.H.I.F.T. AI test agents against a target URL and
-# synthesizes their findings into a structured human behavioral test report.
-# The report is committed to the repository and optionally surfaced as a
-# GitHub Issue for team review.
-#
-# REQUIRED SECRETS:
-#   - OPENROUTER_API_KEY: OpenRouter API key for AI model calls (required)
-#
-# OPTIONAL SECRETS:
-#   - APP_ID, APP_PRIVATE_KEY: GitHub App credentials for enhanced permissions
-#
-# The workflow will fail immediately if OPENROUTER_API_KEY is not configured.
-# Add it via Settings → Secrets and variables → Actions → New repository secret
-#
-# See: TESTING_STANDARD.md §11
-
 name: Human Testing API
-
 on:
   workflow_dispatch:
     inputs:
       target_url:
-        description: "Target URL to test (e.g., https://yourapp.com)"
+        description: Target URL to test (e.g., https://yourapp.com)
         required: true
         type: string
       app_name:
-        description: "Human-readable application name (e.g., Soul2Bowl)"
+        description: Human-readable application name (e.g., Soul2Bowl)
         required: true
         type: string
       output_file:
-        description: "Output file path (e.g., docs/human-test-report.md)"
+        description: Output file path (e.g., docs/human-test-report.md)
         required: true
-        default: "docs/human-test-report.md"
+        default: docs/human-test-report.md
         type: string
       test_scenarios:
-        description: "Scenarios to test (comma-separated, or 'all')"
+        description: Scenarios to test (comma-separated, or 'all')
         required: false
-        default: "all"
+        default: all
         type: string
       create_issue:
-        description: "Create a GitHub Issue summarizing findings?"
+        description: Create a GitHub Issue summarizing findings?
         required: false
         default: "true"
         type: choice
         options:
           - "true"
           - "false"
-
 concurrency:
   group: human-testing-api-${{ github.run_id }}
   cancel-in-progress: false
-
 jobs:
   human-testing:
     name: Run Human Testing API
@@ -59,28 +38,20 @@ jobs:
     permissions:
       contents: write
       issues: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Generate GitHub App Token
         id: app-token
-        # Uses a GitHub App to authenticate — required for cross-repo access
-        # and to avoid rate limits of the built-in GITHUB_TOKEN.
-        # If no GitHub App is configured yet, remove this step and use
-        # secrets.GITHUB_TOKEN in subsequent steps instead.
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
         continue-on-error: true
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -91,7 +62,6 @@ jobs:
           else
             echo "OPENROUTER_API_KEY is configured."
           fi
-
       - name: Run Human Testing API
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -100,7 +70,6 @@ jobs:
           OUTPUT_FILE: ${{ inputs.output_file }}
           TEST_SCENARIOS: ${{ inputs.test_scenarios }}
         run: node scripts/run-human-testing-api.js
-
       - name: Commit test report
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
@@ -115,7 +84,6 @@ jobs:
             git push
             echo "Test report committed and pushed."
           fi
-
       - name: Create summary issue
         if: ${{ inputs.create_issue == 'true' }}
         env:
@@ -146,3 +114,6 @@ jobs:
           - **Performance Budget** — Lighthouse threshold compliance
 
           Create follow-up issues for each P0 blocker identified."
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

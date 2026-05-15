@@ -1,0 +1,97 @@
+name: Issue Lifecycle Automation
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+      - closed
+      - reopened
+permissions:
+  pull-requests: read
+  issues: write
+  contents: read
+jobs:
+  on-issue-opened:
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const issueNumber = issue.number;
+
+            // Skip if issue already has a type label (bug, enhancement, etc.)
+            const existingLabels = issue.labels.map(l => l.name);
+            const typeLabels = ['bug', 'enhancement', 'documentation', 'security', 'design', 'dependencies'];
+            const hasType = existingLabels.some(l => typeLabels.includes(l));
+
+            if (!hasType) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['triage'] });
+            }
+    timeout-minutes: 30
+  on-pr-issue-link:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const action = context.payload.action;
+            const body = pr.body || '';
+
+            // Extract linked issue numbers from PR body (Closes #N, Fixes #N, Resolves #N)
+            const closingPattern = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            const linkedIssues = [];
+            let match;
+            while ((match = closingPattern.exec(body)) !== null) {
+              linkedIssues.push(parseInt(match[1], 10));
+            }
+
+            if (linkedIssues.length === 0) return;
+
+            for (const issueNumber of linkedIssues) {
+              try {
+                const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber });
+                if (issue.pull_request) continue; // skip if it's actually a PR
+
+                if (action === 'opened' || action === 'reopened') {
+                  // PR opened/reopened → issue is in progress
+                  for (const label of ['triage', 'issue:stale', 'issue:done']) {
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }); } catch(e) {}
+                  }
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:in-progress'] });
+
+                } else if (action === 'closed' && pr.merged) {
+                  // PR merged → issue is done
+                  for (const label of ['triage', 'issue:in-progress', 'issue:stale', 'lifecycle:stuck']) {
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }); } catch(e) {}
+                  }
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:done'] });
+
+                } else if (action === 'closed' && !pr.merged) {
+                  // PR closed without merge → only revert if no other open PRs link to this issue
+                  const { data: openPRs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+                  const otherLinked = openPRs.some(p => {
+                    if (p.number === pr.number) return false;
+                    const b = p.body || '';
+                    const re = new RegExp(`(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\\s+#${issueNumber}\\b`, 'i');
+                    return re.test(b);
+                  });
+                  if (!otherLinked) {
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: 'issue:in-progress' }); } catch(e) {}
+                    await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['triage'] });
+                  }
+                }
+              } catch(e) {
+                core.warning(`Could not process issue #${issueNumber}: ${e.message}`);
+              }
+            }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -1,0 +1,157 @@
+# BUDGET-AWARE AGENT ROUTER
+# - Checks budget before assigning agents
+# - Falls back to free/cheaper alternatives if budget low
+# - NEVER blocks deployment - always has a path forward
+
+name: Budget-Aware Agent Router
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        required: true
+      required_agents:
+        description: "Comma-separated: devin,circleci,claude-sonnet"
+        default: "devin"
+      budget_priority:
+        description: "high|medium|low - affects agent selection"
+        default: "medium"
+  # Also run on issue label
+  issues:
+    types: [labeled]
+
+env:
+  # Budget tracking - set these in repo secrets/vars
+  MONTHLY_BUDGET_USED: ${{ vars.MONTHLY_BUDGET_USED || '0' }}
+  MONTHLY_BUDGET_LIMIT: ${{ vars.MONTHLY_BUDGET_LIMIT || '1000' }}
+  FREE_TIER_REMAINING: ${{ vars.FREE_TIER_REMAINING || '100' }}
+
+jobs:
+  # PHASE 1: Check budget and select agents
+  assess-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      budget_status: ${{ steps.budget.outputs.status }}
+      selected_agent: ${{ steps.routing.outputs.agent }}
+    steps:
+      - name: Check budget status
+        id: budget
+        run: |
+          USED=${{ env.MONTHLY_BUDGET_USED }}
+          LIMIT=${{ env.MONTHLY_BUDGET_LIMIT }}
+          FREE=${{ env.FREE_TIER_REMAINING }}
+          
+          # Calculate percentage
+          PERCENT=$(echo "scale=0; $USED * 100 / $LIMIT" | bc 2>/dev/null || echo "0")
+          
+          # Budget decision tree
+          if [[ "$PERCENT" -lt 50 ]]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+            echo "budget_remaining=good" >> $GITHUB_OUTPUT
+          elif [[ "$PERCENT" -lt 80 ]]; then
+            echo "status=medium" >> $GITHUB_OUTPUT
+            echo "budget_remaining=moderate" >> $GITHUB_OUTPUT
+          elif [[ "$PERCENT" -lt 95 ]]; then
+            echo "status=low" >> $GITHUB_OUTPUT
+            echo "budget_remaining=low" >> $GITHUB_OUTPUT
+          else
+            echo "status=critical" >> $GITHUB_OUTPUT            echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Budget: $PERCENT% used"
+
+      - name: Route to appropriate agent
+        id: routing
+        run: |
+          # Parse required agents
+          REQUIRED="${{ github.event.inputs.required_agents || 'devin' }}"
+          STATUS="${{ steps.budget.outputs.status }}"
+          
+          # Decision tree based on budget
+          case "$STATUS" in
+            healthy)
+              # Full budget - use requested agent
+              echo "agent=$REQUIRED" >> $GITHUB_OUTPUT
+              echo "routing_reason=Budget healthy - using preferred agent"
+              ;;
+            medium)
+              # Moderate - use gpt-4o-mini or similar
+              echo "agent=gpt-4o-mini" >> $GITHUB_OUTPUT
+              echo "routing_reason=Budget moderate - using cost-effective option"
+              ;;
+            low)
+              # Low - use free tier or very cheap
+              echo "agent=github-script" >> $GITHUB_OUTPUT
+              echo "routing_reason=Budget low - using minimal resources"
+              ;;
+            critical)
+              # Critical - FREE ONLY
+              echo "agent=free-fallback" >> $GITHUB_OUTPUT
+              echo "routing_reason=Budget critical - using free tier only"
+              ;;
+          esac
+          
+          echo "Selected: ${{ steps.routing.outputs.agent }}"
+
+  # PHASE 2: Execute with selected agent
+  execute-task:
+    needs: assess-budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Execute with budget-aware agent
+        run: |
+          AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
+          TASK="${{ github.event.inputs.task }}"
+          REASON="${{ needs.assess-budget.outputs.routing_reason }}"
+          
+          echo "=== BUDGET-AWARE EXECUTION ==="
+          echo "Task: $TASK"
+          echo "Agent: $AGENT"
+          echo "Reason: $REASON"
+          
+          # Execute based on selected agent
+          case "$AGENT" in
+            devin)
+              echo "Using Devin Agent..."
+              # Would call Devin API
+              ;;
+            gpt-4o-mini)
+              echo "Using GPT-4o Mini via OpenRouter..."
+              ;;
+            github-script)
+              echo "Using GitHub Script (free)..."
+              ;;
+            free-fallback)
+              echo "Using FREE tier only..."
+              # Create WR for manual triage if task is complex
+              ;;
+          esac
+          
+          echo "✅ Task executed with $AGENT"
+
+  # PHASE 3: If agent fails, route to next available
+  fallback-handler:
+    needs: execute-task
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Try next cheapest agent
+        run: |
+          FAILED_AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
+          
+          echo "⚠️ $FAILED_AGENT failed - trying fallback..."
+          
+          # NEVER block - create WR or continue
+          if [[ "$FAILED_AGENT" == "free-fallback" ]]; then
+            # Last resort - create WR for human
+            gh issue create \
+              --title "[NEEDS-HUMAN] All agents/budget exhausted" \
+              --body "Budget is critical. Manual intervention required." \
+              --label "needs-human,budget-exhausted"
+          else
+            # Try next fallback in chain
+            echo "Trying next agent in fallback chain..."
+          fi

@@ -1,54 +1,25 @@
 name: OpenRouter Instantiation Check
-
-# Verifies that OpenRouter is actually instantiated and reachable with the
-# configured OPENROUTER_API_KEY. Gives you an at-a-glance 👍 / ⚠️ signal
-# (via labels + a reaction on a single tracking issue) so you never have to
-# wonder "did OpenRouter come up, or is it silently broken?".
-#
-# Workflow:
-#   1. Ensure a tracking issue exists titled "OpenRouter Instantiation Status".
-#   2. Label the tracking issue `openrouter:instantiating` before the probe.
-#   3. Call OpenRouter's `/api/v1/models` endpoint with OPENROUTER_API_KEY.
-#      - HTTP 200 → swap labels to `openrouter:instantiated`, react 👍, comment.
-#      - Non-200 / missing key → swap labels to `openrouter:instantiation-failed`
-#        (or `openrouter:needs-key`), capture response body + status, comment.
-#   4. If the tracking issue has been in a failed state for > 24h, apply
-#      `openrouter:ralph-escalated` + `needs-human` and @-mention the owner —
-#      this is the Ralph loop's "call in the heavy hitters" step.
-#   5. Uses ADMIN_GITHUB_TOKEN for elevated label/comment rights; falls back
-#      to GITHUB_TOKEN transparently.
-#
-# Triggers: daily cron, on demand, and whenever OPENROUTER_API_KEY is rotated
-# (push to main touching .env.example or this workflow itself).
-#
-# Docs:    docs/OPENROUTER_INSTANTIATION_CHECK.md
-# Related: .github/workflows/openrouter-assignee.yml (routes work to OpenRouter)
-#          .github/workflows/ralph-loop.yml          (CI-failure self-healing)
-
 on:
   schedule:
-    # Once per day — low-cost, plenty for a health check.
-    - cron: "17 6 * * *"
+    - cron: 17 6 * * *
   workflow_dispatch:
     inputs:
       force_escalate:
-        description: "Force Ralph escalation even if < 24h old"
+        description: Force Ralph escalation even if < 24h old
         type: boolean
         default: false
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - ".env.example"
-      - ".github/workflows/openrouter-instantiation-check.yml"
-
+      - .env.example
+      - .github/workflows/openrouter-instantiation-check.yml
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: openrouter-instantiation-check
   cancel-in-progress: false
-
 jobs:
   probe:
     name: Probe OpenRouter and update tracking issue
@@ -61,7 +32,7 @@ jobs:
           ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           FORCE_ESCALATE: ${{ github.event.inputs.force_escalate || 'false' }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const TRACKING_TITLE = 'OpenRouter Instantiation Status';
             const ESCALATE_AFTER_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -321,3 +292,6 @@ jobs:
               // on `needs-key` since that's an operator action, not a bug.
               core.setFailed(`OpenRouter probe failed: ${detail.split('\n')[0]}`);
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

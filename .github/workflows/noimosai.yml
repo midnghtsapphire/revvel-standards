@@ -1,40 +1,18 @@
-# NoimosAI — Autonomous Marketing Agent
-#
-# Automatically invokes NoimosAI's autonomous marketing team when a marketing-
-# or content-related issue is opened in any Revvel project, and on a daily
-# schedule so standing campaigns stay up-to-date.
-#
-# Trigger points
-# ──────────────
-# 1. workflow_dispatch   — operator supplies an ad-hoc marketing prompt.
-# 2. issues [opened/reopened] — auto-route issues labelled `noimosai`,
-#    `marketing`, `seo`, `content`, or `affiliate` to NoimosAI immediately.
-# 3. schedule (daily 08:00 UTC) — routine refresh: SEO audit, content ideas,
-#    and affiliate-link health-check across all active projects.
-#
-# Secret required  : NOIMOSAI_API_KEY
-# Variable optional: NOIMOSAI_WORKSPACE_ID
-#
-# Standard : standards/NOIMOSAI_INTEGRATION_STANDARD.md
-# Skill    : skills/noimosai/SKILL.md
-# Env ref  : .env.example (NOIMOSAI_API_KEY, NOIMOSAI_WORKSPACE_ID)
-
 name: NoimosAI — Autonomous Marketing
-
 on:
   workflow_dispatch:
     inputs:
       prompt:
-        description: "Marketing task or content brief for NoimosAI"
+        description: Marketing task or content brief for NoimosAI
         required: true
         type: string
       project:
-        description: "Project name / domain (e.g. reesereviews.com)"
+        description: Project name / domain (e.g. reesereviews.com)
         required: false
         type: string
         default: ""
       task_type:
-        description: "Task type"
+        description: Task type
         required: false
         type: choice
         options:
@@ -45,20 +23,16 @@ on:
           - affiliate
           - email
         default: general
-
   issues:
-    types: [opened, reopened]
-
+    types:
+      - opened
+      - reopened
   schedule:
-    # 08:00 UTC every day — routine marketing refresh
-    - cron: "0 8 * * *"
-
+    - cron: 0 8 * * *
 concurrency:
   group: noimosai-${{ github.event_name }}-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
-  # ─── Ad-hoc invocation via workflow_dispatch ────────────────────────────────
   dispatch:
     name: NoimosAI (dispatch)
     if: github.event_name == 'workflow_dispatch'
@@ -79,7 +53,6 @@ jobs:
           else
             echo "✅ NOIMOSAI_API_KEY is configured."
           fi
-
       - name: Invoke NoimosAI
         if: env.NOIMOSAI_API_KEY != ''
         env:
@@ -118,14 +91,11 @@ jobs:
             echo "::warning::NoimosAI returned HTTP $HTTP_STATUS. Check NOIMOSAI_API_KEY and workspace configuration."
             cat /tmp/noimosai-response.json 2>/dev/null || true
           fi
-
-  # ─── Auto-invoke NoimosAI on marketing/content issues ───────────────────────
+    timeout-minutes: 30
   invoke-on-issue:
     name: NoimosAI on marketing issue
-    if: >-
-      github.event_name == 'issues' &&
-      (github.event.action == 'opened' || github.event.action == 'reopened') &&
-      (
+    if: |-
+      github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && (
         contains(github.event.issue.labels.*.name, 'noimosai')    ||
         contains(github.event.issue.labels.*.name, 'marketing')   ||
         contains(github.event.issue.labels.*.name, 'seo')         ||
@@ -147,7 +117,6 @@ jobs:
           else
             echo "✅ NOIMOSAI_API_KEY is configured."
           fi
-
       - name: Add noimosai label to issue
         if: env.NOIMOSAI_API_KEY != ''
         uses: actions/github-script@v7
@@ -163,7 +132,6 @@ jobs:
             } catch (e) {
               core.notice(`Could not add noimosai label: ${e.message}`);
             }
-
       - name: Submit marketing task to NoimosAI
         if: env.NOIMOSAI_API_KEY != ''
         env:
@@ -210,7 +178,6 @@ jobs:
             echo "::warning::NoimosAI returned HTTP $HTTP_STATUS for issue #${ISSUE_NUMBER}."
             cat /tmp/noimosai-response.json 2>/dev/null || true
           fi
-
       - name: Post NoimosAI acknowledgment comment
         if: env.NOIMOSAI_API_KEY != ''
         uses: actions/github-script@v7
@@ -230,8 +197,7 @@ jobs:
                 '> _Powered by [NoimosAI](https://noimosai.com) — Autonomous AI Marketing Team_',
               ].join('\n'),
             });
-
-  # ─── Daily scheduled marketing refresh ──────────────────────────────────────
+    timeout-minutes: 30
   daily-refresh:
     name: NoimosAI daily marketing refresh
     if: github.event_name == 'schedule'
@@ -249,7 +215,6 @@ jobs:
           else
             echo "✅ NOIMOSAI_API_KEY is configured. Running daily marketing refresh."
           fi
-
       - name: Submit daily SEO audit task
         if: env.NOIMOSAI_API_KEY != ''
         env:
@@ -282,3 +247,6 @@ jobs:
               echo "::warning::NoimosAI daily $TASK_TYPE task returned HTTP $HTTP_STATUS."
             fi
           done
+    timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

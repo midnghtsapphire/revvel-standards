@@ -1,0 +1,196 @@
+name: PR Check Status Automation
+on:
+  check_suite:
+    types:
+      - completed
+  workflow_run:
+    types:
+      - completed
+    branches:
+      - main
+concurrency:
+  group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number || github.event.workflow_run.pull_requests[0].number || 'unknown' }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+jobs:
+  check-suite-status:
+    name: Update Status from Check Suite
+    runs-on: ubuntu-latest
+    if: github.event_name == 'check_suite'
+    steps:
+      - name: Ensure check status labels exist
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = [
+              { name: 'checks-passing', color: '16a34a', description: 'All CI checks pass' },
+              { name: 'checks-failing', color: 'dc2626', description: 'One or more CI checks failed' },
+              { name: 'ready-to-merge', color: '8b5cf6', description: 'Approved + checks passing — ready to merge' },
+            ];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description,
+                  });
+                  core.info(`Created label: ${label.name}`);
+                }
+              }
+            }
+      - name: Update PR status based on check suite
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const suite = context.payload.check_suite;
+            const conclusion = suite.conclusion;
+            const prs = suite.pull_requests || [];
+
+            if (!prs || prs.length === 0) {
+              core.info('No PRs associated with this check suite');
+              return;
+            }
+
+            for (const pr of prs) {
+              const prNumber = pr.number;
+              core.info(`Processing PR #${prNumber}, conclusion: ${conclusion}`);
+
+              // Remove both status labels first
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  name: 'checks-passing',
+                });
+              } catch (e) { /* ignore */ }
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  name: 'checks-failing',
+                });
+              } catch (e) { /* ignore */ }
+
+              // Determine new state
+              if (conclusion === 'success' || conclusion === 'neutral') {
+                // Checks passed - add checks-passing
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: ['checks-passing'],
+                });
+
+                // Check if also has "approved" label - if so, mark ready-to-merge
+                const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                });
+                const labelNames = prLabels.map(l => l.name);
+
+                if (labelNames.includes('approved')) {
+                  // Remove ready-to-merge from any other PRs first
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    labels: ['ready-to-merge'],
+                  });
+                  core.info(`PR #${prNumber} is now ready to merge!`);
+                }
+
+                // Post success comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: `✅ **CI Checks Passing** — All checks have passed.${labelNames.includes('approved') ? ' This PR is now ready to merge!' : ''}`,
+                });
+
+              } else if (conclusion === 'failure') {
+                // Checks failed - add checks-failing, remove ready-to-merge
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: ['checks-failing'],
+                });
+
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    name: 'ready-to-merge',
+                  });
+                } catch (e) { /* ignore */ }
+
+                // Post failure comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: `❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](${suite.html_url}) and push a fix.`,
+                });
+              }
+            }
+    timeout-minutes: 30
+  workflow-run-status:
+    name: Update Status from Workflow Run
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run'
+    steps:
+      - name: Update PR status based on workflow run
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run = context.payload.workflow_run;
+            const conclusion = run.conclusion;
+            const prs = run.pull_requests || [];
+
+            if (!prs || prs.length === 0) {
+              core.info('No PRs associated with this workflow run');
+              return;
+            }
+
+            for (const pr of prs) {
+              const prNumber = pr.number;
+              core.info(`Processing PR #${prNumber} from workflow run, conclusion: ${conclusion}`);
+
+              if (conclusion === 'success') {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: ['checks-passing'],
+                });
+              } else if (conclusion === 'failure') {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: ['checks-failing'],
+                });
+              }
+            }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

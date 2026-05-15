@@ -1,42 +1,20 @@
-# Send Feedback to Jules
-#
-# Marketplace: https://github.com/marketplace/actions/send-feedback-to-jules
-# Action repo: https://github.com/BeksOmega/jules-comms
-#
-# Propagates PR review submissions (summary + line comments) from an
-# allow-listed set of GitHub users back to the originating Jules session,
-# so Jules can incorporate the feedback.
-#
-# Only review submissions are propagated — regular PR comments are
-# ignored. Reviews from the user who started the Jules task are skipped
-# (already handled automatically by the Jules GitHub app).
-#
-# Secret required: JULES_API_KEY
-# Copy this file to: .github/workflows/jules-feedback.yml
-
 name: Send Feedback to Jules
-
 on:
   pull_request_review:
-    types: [submitted]
-
+    types:
+      - submitted
 permissions:
   contents: read
   pull-requests: read
-
 concurrency:
   group: jules-feedback-${{ github.event.pull_request.number }}-${{ github.event.review.id }}
   cancel-in-progress: false
-
 jobs:
   send-feedback:
     name: Send review feedback to Jules
     runs-on: ubuntu-latest
     env:
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-      # Comma-separated list of GitHub usernames authorised to feed Jules.
-      # Override via the `JULES_FEEDBACK_USERS` repo variable to avoid
-      # editing this workflow for every team change.
       FEEDBACK_USERS: ${{ vars.JULES_FEEDBACK_USERS }}
     steps:
       - name: Verify JULES_API_KEY and feedback allow-list are configured
@@ -51,10 +29,12 @@ jobs:
           else
             echo "FEEDBACK_USERS is configured."
           fi
-
       - name: Send Feedback
         if: env.JULES_API_KEY != '' && env.FEEDBACK_USERS != ''
         uses: BeksOmega/jules-comms@v1.0.0
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           feedback_users: ${{ env.FEEDBACK_USERS }}
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
