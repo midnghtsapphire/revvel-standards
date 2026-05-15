@@ -200,6 +200,34 @@ test('normalizeProviderStatus unknown provider → processing, video_exists=fals
   assert.strictEqual(r.video_exists, false);
 });
 
+test('Music Video Creator polling treats provider completion as terminal success', () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, '../products/music-video-creator/src/app/page.tsx'),
+    'utf8',
+  );
+
+  const terminalStatusesBlock = source.match(/const TERMINAL_STATUSES = new Set\(\[\n([\s\S]*?)\n\]\);/);
+  assert.ok(terminalStatusesBlock, 'page.tsx must define TERMINAL_STATUSES');
+  assert.ok(
+    terminalStatusesBlock[1].includes("'artifact_created'"),
+    'artifact_created must stop polling because provider completed maps to artifact_created',
+  );
+
+  const successStatusesBlock = source.match(/const SUCCESS_STATUSES = new Set\(\[\n([\s\S]*?)\n\]\);/);
+  assert.ok(successStatusesBlock, 'page.tsx must define SUCCESS_STATUSES');
+  assert.ok(
+    successStatusesBlock[1].includes("'artifact_created'"),
+    'artifact_created must render as a settled success state',
+  );
+
+  const processingStatusesBlock = source.match(/const PROCESSING_STATUSES = new Set\(\[\n([\s\S]*?)\n\]\);/);
+  assert.ok(processingStatusesBlock, 'page.tsx must define PROCESSING_STATUSES');
+  assert.ok(
+    !processingStatusesBlock[1].includes("'artifact_created'"),
+    'artifact_created must not keep the spinner active after provider completion',
+  );
+});
+
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
 console.log('\n' + '='.repeat(60));

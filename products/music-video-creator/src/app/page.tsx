@@ -19,10 +19,24 @@ interface JobStatus {
 }
 
 const TERMINAL_STATUSES = new Set([
+  'artifact_created',
   'verified',
   'indexed',
   'failed',
   'backend_wiring_pending',
+]);
+
+const SUCCESS_STATUSES = new Set([
+  'artifact_created',
+  'published',
+  'verified',
+  'indexed',
+]);
+
+const PROCESSING_STATUSES = new Set([
+  'execution_requested',
+  'processing',
+  'stored',
 ]);
 
 const STATUS_LABELS: Record<string, string> = {
@@ -43,8 +57,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 function StatusBadge({ status }: { status: string }) {
   const isError = status === 'failed' || status === 'backend_wiring_pending';
-  const isSuccess = status === 'verified' || status === 'published' || status === 'indexed';
-  const isProcessing = ['execution_requested', 'processing', 'artifact_created', 'stored'].includes(status);
+  const isSuccess = SUCCESS_STATUSES.has(status);
+  const isProcessing = PROCESSING_STATUSES.has(status);
 
   const base = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium';
   const cls = isError
@@ -270,7 +284,7 @@ export default function Home() {
               <div className={`mt-8 p-4 rounded-lg border ${
                 job.render_status === 'failed' || job.render_status === 'backend_wiring_pending'
                   ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-                  : job.render_status === 'verified' || job.render_status === 'published'
+                  : SUCCESS_STATUSES.has(job.render_status)
                   ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
                   : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
               }`}>
