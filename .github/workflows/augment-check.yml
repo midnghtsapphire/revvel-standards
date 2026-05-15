@@ -85,9 +85,9 @@ jobs:
               /^augment(?:-code)?$/i,
               /^augmentcodeai$/i,
             ];
-            const authoredByAugment = actor =>
+            const authoredByAugment = (actor) =>
               augmentAuthorPatterns.some(pattern => pattern.test((actor || '').trim()));
-            const hasAugmentMarker = body => body && augmentMarker.test(body);
+            const hasAugmentMarker = (body) => body && augmentMarker.test(body);
 
             const augmentInstalledFromIssueComments = comments.some(c => {
               const author = (c.user?.login || '').toLowerCase();
@@ -102,7 +102,8 @@ jobs:
               return authoredByAugment(author) || hasAugmentMarker(c.body);
             });
             const augmentCheckRunPattern = /^augment(?:[-\s]?code)?(?::|$)/i;
-            const augmentInstalledFromChecks = (checks.check_runs || []).some(run => {
+            const checkRuns = Array.isArray(checks?.check_runs) ? checks.check_runs : [];
+            const augmentInstalledFromChecks = checkRuns.some(run => {
               const appSlug = (run.app?.slug || '').toLowerCase();
               const appName = (run.app?.name || '').toLowerCase();
               const runName = (run.name || '').trim();
