@@ -255,9 +255,10 @@ Required flow:
 2. Submit lip-sync render (e.g., HeyGen) and record `provider_job_id`.
 3. Optional helper roles: Leonardo (imagery/thumbnails), ElevenLabs (optional TTS/voice enhancement), Nano Banana (optional creative support).
 4. Produce final MP4 artifact.
-5. Publish to `meetaudreyevans.com`.
-6. Write verified `website_url` and `canonical_video_url` to manifest + README.
-7. Verify video truly exists and is publicly live.
+5. Store the MP4 in the configured website/CDN storage target and record canonical storage URL(s).
+6. Publish to `meetaudreyevans.com`.
+7. Write verified `website_url` and `canonical_video_url` to manifest + README.
+8. Verify video truly exists and is publicly live.
 
 ### Truthfulness rule for manifests
 
