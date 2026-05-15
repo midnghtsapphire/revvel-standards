@@ -1,0 +1,81 @@
+# Bulletproof Love — Live Manifest
+# Status: draft — honest state as of initial documentation
+
+project:
+  id: "bulletproof-love"
+  title: "Bulletproof Love"
+  artist: "Audrey Evans"
+  album: ""
+  catalog_number: ""
+
+# ── Inputs ──────────────────────────────────────────────────────────────────
+inputs:
+  wav_file: ""
+  wav_exists: false               # MP3/WAV not yet provided
+  avatar_file: ""
+  avatar_exists: false            # Avatar image not yet provided
+  additional_assets: []
+
+# ── Provider ─────────────────────────────────────────────────────────────────
+provider:
+  name: ""                        # Not selected — pending Scout phase
+  foss: false
+  cost_model: ""
+  est_cost_per_run: ""
+  api_key_secret: ""
+  endpoint: ""
+  job_submission_method: ""
+
+# ── Execution ─────────────────────────────────────────────────────────────────
+execution:
+  provider_job_id: ""             # No job submitted yet
+  submitted_at_utc: ""
+  polling_interval_seconds: 30
+  max_poll_attempts: 60
+  last_polled_at_utc: ""
+
+# ── Artifact ─────────────────────────────────────────────────────────────────
+artifact:
+  artifact_uri: ""                # No storage URI — MP4 does not exist
+  video_exists: false             # MP4 has NOT been generated
+  format: "mp4"
+  duration_seconds: null
+  file_size_bytes: null
+  verified_artifact_checksum: ""
+  created_at_utc: ""
+
+# ── Publication ───────────────────────────────────────────────────────────────
+publication:
+  website_url: "https://meetaudreyevans.com"
+  target_path: "/videos/bulletproof-love"
+  canonical_video_url: ""         # No URL — not published
+  publish_status: "unpublished"
+  published_at_utc: ""
+
+# ── Verification ──────────────────────────────────────────────────────────────
+verification:
+  verified_at_utc: ""             # Not verified — no artifact exists
+  http_status_at_verification: null
+  verified_by: ""
+
+# ── Status ────────────────────────────────────────────────────────────────────
+status:
+  render_status: "draft"
+  failed_at_stage: ""
+  failure_class: ""
+  failure_reason: ""
+
+# ── Orchestration ─────────────────────────────────────────────────────────────
+orchestration:
+  last_run_id: ""
+  last_run_at_utc: ""
+  total_runs: 0
+  models_used: []
+  total_token_cost_usd: ""
+
+# ── Source of Truth ───────────────────────────────────────────────────────────
+source_of_truth:
+  manifest_last_updated_utc: "2026-05-15T00:00:00Z"
+  readme_last_updated_utc: "2026-05-15T00:00:00Z"
+  changelog_entry: "2026-05-15 — Initial manifest created; project in draft state"
+  catalog_indexed: false
