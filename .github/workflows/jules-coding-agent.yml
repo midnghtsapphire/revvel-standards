@@ -57,7 +57,7 @@ jobs:
 
       - name: Invoke Jules agent
         id: jules
-    env:
+        env:
           ISSUE_TITLE: ${{ steps.context.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.context.outputs.issue_body }}
           RESEARCH: ${{ steps.context.outputs.research_context }}
@@ -81,7 +81,7 @@ jobs:
       - name: Create PR if changes exist
         id: pr
         if: steps.jules.outputs.jules_invoked == 'true'
-    env:
+        env:
           BRANCH: ${{ steps.jules.outputs.branch }}
         run: |
           # Check if there are changes
@@ -97,7 +97,7 @@ jobs:
 
       - name: Update issue labels
         if: always()
-    env:
+        env:
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
         run: |
           gh issue edit "$ISSUE_NUMBER" \
