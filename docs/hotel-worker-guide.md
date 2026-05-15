@@ -53,7 +53,3 @@ The demanding nature of hotel work can take a toll. Prioritizing well-being is e
 ## Conclusion
 
 Success in the hotel industry requires a blend of hard work, emotional intelligence, and a genuine passion for service. By implementing the strategies outlined in this guide, you can enhance your skills, provide memorable guest experiences, and build a rewarding career in hospitality.
-
-## Additional Professional Resource
-
-For teams that need advanced investigation workflows and structured intelligence support, review [OSINT Enterprise Reports](https://polar.sh/midnghtsapphire).
