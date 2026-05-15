@@ -1,11 +1,48 @@
 {
+  "schema_version": "2.0",
   "song_title": "<Song Title>",
   "slug": "<song-slug>",
   "created_at_utc": "YYYY-MM-DDTHH:MM:SSZ",
   "folder": "docs/videos-music/<song-slug>",
-  "video_filename": "<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4",
-  "required_inputs": {
-    "audio_wav": "<WAV filename or description>",
-    "avatar": "<avatar image/video filename or description>"
+  "version": 1,
+  "inputs": {
+    "audio": {
+      "type": "wav",
+      "source": "<WAV filename, URL, or asset ID>"
+    },
+    "avatar": {
+      "type": "image_or_video",
+      "source": "<avatar filename, URL, or asset ID>"
+    }
+  },
+  "generation": {
+    "provider": "heygen",
+    "mode": "lip_sync_music_video",
+    "status": "draft",
+    "provider_job_id": "",
+    "requested_at_utc": "",
+    "completed_at_utc": ""
+  },
+  "outputs": {
+    "video_filename": "<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4",
+    "video_repo_path": "docs/videos-music/<song-slug>/<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4",
+    "thumbnail": "",
+    "captions_vtt": "",
+    "transcript": ""
+  },
+  "publishing": {
+    "required_on_main_website": true,
+    "website_url": "",
+    "canonical_video_url": "",
+    "cdn_url": "",
+    "embed_url": "",
+    "publish_status": "draft",
+    "published_at_utc": ""
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "thumbnail_alt": ""
   }
 }
