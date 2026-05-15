@@ -1,0 +1,11 @@
+{
+  "song_title": "<Song Title>",
+  "slug": "<song-slug>",
+  "created_at_utc": "YYYY-MM-DDTHH:MM:SSZ",
+  "folder": "docs/videos-music/<song-slug>",
+  "video_filename": "<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4",
+  "required_inputs": {
+    "audio_wav": "<WAV filename or description>",
+    "avatar": "<avatar image/video filename or description>"
+  }
+}
