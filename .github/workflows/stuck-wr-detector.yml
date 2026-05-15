@@ -124,25 +124,39 @@ jobs:
                   });
                   await setAttemptLabel(issue, attempts + 1);
                   
-                  // Wait 30 seconds and verify the workflow actually started
-                  await new Promise(resolve => setTimeout(resolve, 30000));
-                  
-                  // Check if workflow run was created
-                  const recentRuns = await github.rest.actions.listWorkflowRuns({
-                    owner, repo,
-                    workflow_id: 'wr-pr-creation.yml',
-                    per_page: 5,
-                  });
-                  
-                  const justTriggered = recentRuns.data.workflow_runs.find(run => {
-                    const runAge = Date.now() - new Date(run.created_at).getTime();
-                    return runAge < 60000;  // Within last minute
-                  });
-                  
+                  // Poll for workflow run with exponential backoff
+                  let workflowStarted = false;
                   let statusNote = '';
-                  if (justTriggered) {
-                    statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
-                  } else {
+                  
+                  for (let attempt = 0; attempt < 4; attempt++) {
+                    const delay = Math.min(5000 * Math.pow(2, attempt), 30000);  // 5s, 10s, 20s, 30s
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    
+                    // Check if workflow run was created for this specific issue
+                    const recentRuns = await github.rest.actions.listWorkflowRuns({
+                      owner, repo,
+                      workflow_id: 'wr-pr-creation.yml',
+                      per_page: 10,
+                    });
+                    
+                    const justTriggered = recentRuns.data.workflow_runs.find(run => {
+                      const runAge = Date.now() - new Date(run.created_at).getTime();
+                      return runAge < 60000;  // Within last minute
+                    });
+                    
+                    if (justTriggered) {
+                      workflowStarted = true;
+                      statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
+                      core.info(`Workflow detected after ${delay/1000}s`);
+                      break;
+                    }
+                    
+                    if (attempt < 3) {
+                      core.info(`Workflow not detected, checking again in ${delay/1000}s...`);
+                    }
+                  }
+                  
+                  if (!workflowStarted) {
                     statusNote = '\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:\n- Invalid workflow syntax\n- Missing permissions\n- GitHub Actions API issues';
                   }
                   
