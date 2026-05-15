@@ -113,9 +113,11 @@ export default function Home() {
       const data = await response.json() as JobStatus;
       setJob(data);
 
-      if (data.jobId && data.render_status === 'processing') {
+      const TERMINAL_STATUSES = new Set(['verified', 'indexed', 'failed', 'backend_wiring_pending']);
+      const shouldPoll = Boolean(data.jobId) && !TERMINAL_STATUSES.has(data.render_status);
+
+      if (shouldPoll) {
         setIsPolling(true);
-        const TERMINAL_STATUSES = new Set(['verified', 'indexed', 'failed', 'backend_wiring_pending']);
         pollIntervalRef.current = setInterval(async () => {
           const status = await pollStatus(data.jobId);
           if (status === null) {
