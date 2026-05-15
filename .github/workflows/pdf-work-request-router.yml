@@ -35,6 +35,7 @@ jobs:
 
             const marker = '<!-- pdf-workflow-router:v1 -->';
             const makeWebhook = process.env.MAKE_PDF_WR_WEBHOOK_URL || '';
+            const openRouterKey = process.env.OPENROUTER_API_KEY || '';
 
             let issue_number;
             let body;
@@ -83,14 +84,84 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const base = `https://github.com/${owner}/${repo}/blob/main`;
+            const issueTitle = context.payload.issue?.title || '';
+
+            let openrouterOrchestration = null;
+            if (!openRouterKey) {
+              core.setFailed('OPENROUTER_API_KEY is required: OpenRouter must orchestrate sellable-pdf routing.');
+              return;
+            }
+
+            try {
+              const orchestrationPrompt = [
+                'You are the OpenRouter orchestrator for sellable-pdf fulfillment.',
+                'Return a concise execution brief for a backend automation worker.',
+                'Include: product angle, deliverables, and production checklist.',
+                '',
+                `Issue #${issue_number}: ${issueTitle}`,
+                `Output Type: sellable-pdf`,
+                `PDF Pipeline Batch: ${parsed.pdfPipelineBatch || 'missing'}`,
+                `Autocreate Count: ${parsed.autocreateCount ?? 'unknown'}`,
+                '',
+                'Issue body:',
+                body || '(empty)',
+              ].join('\n');
+
+              const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  authorization: `Bearer ${openRouterKey}`,
+                  'content-type': 'application/json',
+                  'HTTP-Referer': `https://github.com/${owner}/${repo}`,
+                  'X-Title': 'Revvel PDF Orchestrator',
+                },
+                body: JSON.stringify({
+                  models: [
+                    'anthropic/claude-sonnet-4.6',
+                    'anthropic/claude-sonnet-4',
+                    'openai/gpt-5.2-codex',
+                  ],
+                  temperature: 0.2,
+                  max_tokens: 700,
+                  messages: [
+                    { role: 'system', content: 'Produce actionable orchestration instructions for backend automation only.' },
+                    { role: 'user', content: orchestrationPrompt },
+                  ],
+                }),
+              });
+
+              if (!openRouterRes.ok) {
+                const t = await openRouterRes.text().catch(() => '');
+                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${t.slice(0, 500)}`);
+                return;
+              }
+
+              const openRouterData = await openRouterRes.json();
+              const orchestrationBrief = openRouterData?.choices?.[0]?.message?.content?.trim();
+              if (!orchestrationBrief) {
+                core.setFailed('OpenRouter response did not include orchestration content.');
+                return;
+              }
+
+              openrouterOrchestration = {
+                orchestrator: 'openrouter',
+                model: openRouterData.model || null,
+                brief: orchestrationBrief,
+              };
+            } catch (e) {
+              core.setFailed(`OpenRouter orchestration failed: ${e && e.message ? e.message : String(e)}`);
+              return;
+            }
 
             const payload = {
               event: 'pdf_work_request',
+              orchestrator: 'openrouter',
               issue_number,
               output_type: 'sellable-pdf',
               pdf_pipeline_batch: parsed.pdfPipelineBatch,
               autocreate_count: parsed.autocreateCount,
               valid_batch: parsed.validBatch,
+              openrouter_orchestration: openrouterOrchestration,
               repository: `${owner}/${repo}`,
               playbook_url: `${base}/workflows/PDF_WR_PLAYBOOK.md`,
               automation_guide_url: `${base}/workflows/PDF_AUTOMATION_GUIDE.md`,
@@ -111,6 +182,14 @@ jobs:
               '```json',
               JSON.stringify(payload, null, 2),
               '```',
+              '',
+              `**Orchestrator:** \`openrouter\`${openrouterOrchestration?.model ? ` (${openrouterOrchestration.model})` : ''}`,
+              '',
+              '<details><summary>OpenRouter orchestration brief</summary>',
+              '',
+              openrouterOrchestration?.brief || '_No orchestration brief generated._',
+              '',
+              '</details>',
               '',
               batchLine,
               '',
@@ -168,3 +247,4 @@ jobs:
             }
         env:
           MAKE_PDF_WR_WEBHOOK_URL: ${{ secrets.MAKE_PDF_WR_WEBHOOK_URL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
