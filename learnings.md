@@ -141,3 +141,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** When a provider-facing API normalizes third-party state into an internal status machine, verify the frontend terminal/success/processing buckets against the statuses the current endpoint can actually return. Add source-level regression coverage for status-machine contracts when the status sets are local to a client component.
 
 **Next Action:** None for this polling issue; continue monitoring PR validation.
+
+---
+
+**Date/Time:** 2026-05-15T22:08Z
+
+**Task Attempted:** Verify and fix ColdTrace backend `python-jose[cryptography]` downgrade.
+
+**Outcome:** Success - `coldtrace/backend/requirements.txt` now pins `python-jose[cryptography]==3.4.0`; no 3.3.0 pin remains in the workspace.
+
+**Root Cause of Failure (If any):** The requirements file carried the vulnerable 3.3.0 pin, exposing the backend to CVE-2024-29370/CVE-2024-33664 JWT bomb denial-of-service risk and CVE-2024-33663 ECDSA algorithm-confusion signature-bypass risk. During validation, the container also exposed Python as `python3` only, so the initial `python` command failed.
+
+**Self-Healing Fix / Learned Lesson:** For narrow Python dependency security fixes, verify both the absence of the vulnerable pin with search and package availability with `python3 -m pip install --dry-run --ignore-installed "<package>==<fixed-version>"`. Use `python3` in this cloud image unless `python` is known to exist. Root `npm test` may require `npm ci` first when `yaml` is missing from `node_modules`.
+
+**Next Action:** None for this dependency issue; continue monitoring PR validation.
