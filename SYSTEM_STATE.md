@@ -40,6 +40,7 @@
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
 | BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
 | BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
+| BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
 
 ---
@@ -141,6 +142,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 Last updated: 2026-05-15 22:08 UTC
 Updated by: Cursor
 Session summary: Fixed ColdTrace backend `python-jose[cryptography]` from vulnerable 3.3.0 to 3.4.0, verified no remaining 3.3.0 pin, confirmed package dry-run resolution, parsed 16 backend Python files, and reran root `npm test` successfully after `npm ci`.
+
+Last updated: 2026-05-15 22:15 UTC
+Updated by: Cursor
+Session summary: Centralized Music Video Creator API auth/OpenRouter helpers into shared modules, removed duplicate route definitions, and verified product lint/typecheck/build plus root `npm test` pass.
 
 Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands

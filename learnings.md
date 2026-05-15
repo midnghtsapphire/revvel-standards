@@ -155,3 +155,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For narrow Python dependency security fixes, verify both the absence of the vulnerable pin with search and package availability with `python3 -m pip install --dry-run --ignore-installed "<package>==<fixed-version>"`. Use `python3` in this cloud image unless `python` is known to exist. Root `npm test` may require `npm ci` first when `yaml` is missing from `node_modules`.
 
 **Next Action:** None for this dependency issue; continue monitoring PR validation.
+
+---
+
+**Date/Time:** 2026-05-15T22:15Z
+
+**Task Attempted:** Verify and fix duplicated Music Video Creator API helper definitions.
+
+**Outcome:** Success - `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` are centralized under `products/music-video-creator/src/lib/`, both affected API routes import the shared definitions, and the lower-level orchestrator reuses the shared OpenRouter URL.
+
+**Root Cause of Failure (If any):** Route-local copies of the same auth guard and OpenRouter defaults were added independently in `/api/video` and `/api/orchestrate`, creating a drift risk whenever auth or model routing changes.
+
+**Self-Healing Fix / Learned Lesson:** Keep cross-route API primitives in a shared server-side library module. For mixed route/library consumers, split pure transport config from Next.js response helpers so non-route code can reuse constants without taking a Next dependency. When push is rejected because the branch advanced, fetch and inspect the remote-only commit before rebasing; if the remote only touches docs/state logs, rebase cleanly and push normally.
+
+**Next Action:** None for this duplication issue; continue monitoring PR validation.
