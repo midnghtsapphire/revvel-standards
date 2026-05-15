@@ -40,18 +40,22 @@ jobs:
             -q ".[] | select(.title | contains(\"${{ inputs.failed_workflow }}\") and contains(title, \"API rate limit\")) | .number" 2>/dev/null || echo "")
           
           if [[ -z "$EXISTING" ]]; then
+            BODY=$(cat <<EOF
+          ## Rate Limit Hit
+
+          **Failed Workflow:** ${{ inputs.failed_workflow }}
+          **Agent:** ${{ inputs.agent_used }}
+          **Error:** ${{ inputs.error_message }}
+          **When:** ${{ github.event.workflow_run.run_started_at }}
+
+          ## Required Action
+          - [ ] Re-run with different agent (OpenRouter fallback)
+          - [ ] Or wait and re-run later
+          EOF
+          )
             gh issue create \
               --title "[RATE LIMIT] ${{ inputs.failed_workflow }} - API rate limit hit" \
-              --body "## Rate Limit Hit
-
-**Failed Workflow:** ${{ inputs.failed_workflow }}
-**Agent:** ${{ inputs.agent_used }}
-**Error:** ${{ inputs.error_message }}
-**When:** ${{ github.event.workflow_run.run_started_at }}
-
-## Required Action
-- [ ] Re-run with different agent (OpenRouter fallback)
-- [ ] Or wait and re-run later" \
+              --body "$BODY" \
               --label "automation-failure,needs-human"
           else
             echo "Duplicate WR #${EXISTING} already exists"

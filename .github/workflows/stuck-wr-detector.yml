@@ -36,6 +36,12 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run || false }}
         with:
           script: |
+            const path = require('path');
+            const {
+              findAssociatedPr,
+              getIssueBaseTitle,
+            } = require(path.join(process.env.GITHUB_WORKSPACE, 'scripts', 'stuck-wr-detector.js'));
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
@@ -61,16 +67,14 @@ jobs:
               if (ageMs < minStuckAgeMs) continue;     // give it time to run normally
               if (ageMs > maxAgeMs) continue;          // ignore ancient WRs
 
-              // Look for an associated PR by title prefix.
-              const baseTitle = (issue.title || '').replace(/^\[WR\]\s*/i, '').trim();
+              // Look for an associated PR using deterministic workflow signals:
+              // the issue-specific branch name, a body reference to this issue,
+              // or the PR number posted by wr-pr-creation.yml on the issue.
+              const baseTitle = getIssueBaseTitle(issue);
               if (!baseTitle) continue;
-              const search = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:pr "${baseTitle.slice(0, 80)}" in:title`,
-                per_page: 5,
-              });
-              const hasPr = search.data.items.some(item => item.pull_request);
-              if (hasPr) {
-                core.info(`#${issue.number}: PR exists for "${baseTitle.slice(0, 60)}"; not stuck.`);
+              const associatedPr = await findAssociatedPr({ github, owner, repo, issue, core });
+              if (associatedPr) {
+                core.info(`#${issue.number}: PR exists (${associatedPr.html_url || associatedPr.url}); not stuck.`);
                 continue;
               }
 
