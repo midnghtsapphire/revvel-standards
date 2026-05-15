@@ -71,7 +71,7 @@ It contains the manifest, input references, generation status, output metadata, 
 
 Manifest file: `video-manifest-YYYYMMDDTHHMMSSZ-v1.json`
 
-See also: [`../../video-publishing-standard.md`](../../video-publishing-standard.md) for the full end-to-end workflow.
+See also: [`../video-publishing-standard.md`](../video-publishing-standard.md) for the full end-to-end workflow.
 
 ---
 
