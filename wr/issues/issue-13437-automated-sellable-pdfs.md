@@ -1,4 +1,4 @@
-# WR: [WR] automated sellable .pdfs
+# WR: automated sellable PDFs
 
 **Issue:** #13437  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -23,7 +23,7 @@ This Work Request implements an automated, form-driven pipeline for "sellable-pd
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
 | Created | 2026-05-08 |
 | Last Updated | 2026-05-08 |
-| Primary Language | JavaScript, Shell, GitHub Actions |
+| Primary Language | JavaScript, Shell, YAML (GitHub Actions) |
 | Stars | 0 |
 | Open Issues | 15 |
 | Description | SSOT standards, templates, and automation |
@@ -108,8 +108,10 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 **Current Dependencies:**
 ```json
-"devDependencies": {
-  "jest": "^29.0.0"
+{
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
 }
 ```
 
@@ -230,7 +232,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 - [x] UI verified (Form Dropdowns)
 - [x] Documentation complete (Playbooks)
 - [x] TEST section in README
-- [x] Vercel URL available (Not Applicable)
+- [x] N/A (no Vercel deployment)
 
 ---
 
@@ -385,7 +387,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 ### TEST Section
 
-**Current README Status:** Needs update
+**Current README Status:** Pending README update (playbook docs added)
 
 **Required Format:**
 ```markdown
@@ -398,7 +400,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 | Form Sync | ✅ Working | tests/work-request-form-sync.test.js |
 ```
 
-**Action Required:** Added documentation for new tests in `workflows/PDF_WR_PLAYBOOK.md`.
+**Action Required:** Add or refresh the README `## Test` section; interim details are documented in `workflows/PDF_WR_PLAYBOOK.md`.
 
 ### Deployment Section
 
@@ -431,7 +433,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13437-automated-sellable-pdfs.md` (this file)
 - [x] Pushed to revvel-standards repository
 - [x] WR_TRACKER.md updated
 - [x] Issue created in revvel-standards: #13437
@@ -500,10 +502,10 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 - [PDF_WR_PLAYBOOK.md](/workflows/PDF_WR_PLAYBOOK.md)
 
 ### External Resources
-- Make.com Webhook Documentation
+- [Make.com Webhook Documentation](https://www.make.com/en/help/tools/webhooks)
 
 ### Research Sources
-- Internal Revvel Standards Architecture
+- [Internal Revvel Standards Architecture](https://github.com/midnghtsapphire/revvel-standards)
 
 ---
 
