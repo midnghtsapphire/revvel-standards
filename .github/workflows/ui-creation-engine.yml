@@ -61,46 +61,62 @@ jobs:
 
       - name: Parse issue or use workflow inputs
         id: parse
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "business=${{ inputs.business }}" >> $GITHUB_OUTPUT
-            echo "industry=${{ inputs.industry }}" >> $GITHUB_OUTPUT
-            echo "location=${{ inputs.location }}" >> $GITHUB_OUTPUT
-            echo "services=${{ inputs.services }}" >> $GITHUB_OUTPUT
-            echo "platform=${{ inputs.platform }}" >> $GITHUB_OUTPUT
-            echo "issue_number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
-          else
-            ISSUE_NUMBER="${{ github.event.issue.number }}"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
             
-            # Save issue body to file to avoid shell injection
-            cat > /tmp/issue_body.txt << 'ISSUE_BODY_EOF'
-          ${{ github.event.issue.body }}
-          ISSUE_BODY_EOF
+            let business, industry, location, services, platform, issueNumber;
             
-            # Parse fields from issue body (expecting structured format)
-            BUSINESS=$(grep -oP '(?<=Business:\s).*' /tmp/issue_body.txt || echo "")
-            INDUSTRY=$(grep -oP '(?<=Industry:\s).*' /tmp/issue_body.txt || echo "")
-            LOCATION=$(grep -oP '(?<=Location:\s).*' /tmp/issue_body.txt || echo "")
-            SERVICES=$(grep -oP '(?<=Services:\s).*' /tmp/issue_body.txt || echo "")
-            PLATFORM=$(grep -oP '(?<=Platform:\s).*' /tmp/issue_body.txt || echo "website")
+            if (context.eventName === 'workflow_dispatch') {
+              business = '${{ inputs.business }}';
+              industry = '${{ inputs.industry }}';
+              location = '${{ inputs.location }}';
+              services = '${{ inputs.services }}' || '';
+              platform = '${{ inputs.platform }}' || 'website';
+              issueNumber = '${{ inputs.issue_number }}' || '';
+            } else {
+              issueNumber = context.issue.number;
+              const issueBody = context.payload.issue?.body || '';
+              
+              // Parse fields from issue body (expecting structured format)
+              const businessMatch = issueBody.match(/Business:\s*(.+)/);
+              const industryMatch = issueBody.match(/Industry:\s*(.+)/);
+              const locationMatch = issueBody.match(/Location:\s*(.+)/);
+              const servicesMatch = issueBody.match(/Services:\s*(.+)/);
+              const platformMatch = issueBody.match(/Platform:\s*(.+)/);
+              
+              business = businessMatch ? businessMatch[1].trim() : '';
+              industry = industryMatch ? industryMatch[1].trim() : '';
+              location = locationMatch ? locationMatch[1].trim() : '';
+              services = servicesMatch ? servicesMatch[1].trim() : '';
+              platform = platformMatch ? platformMatch[1].trim() : 'website';
+            }
             
-            # Sanitize inputs (alphanumeric, spaces, dashes, commas only)
-            BUSINESS=$(echo "$BUSINESS" | sed 's/[^a-zA-Z0-9 ,.-]//g')
-            INDUSTRY=$(echo "$INDUSTRY" | sed 's/[^a-zA-Z0-9 ,.-]//g')
-            LOCATION=$(echo "$LOCATION" | sed 's/[^a-zA-Z0-9 ,.-]//g')
-            SERVICES=$(echo "$SERVICES" | sed 's/[^a-zA-Z0-9 ,.-]//g')
-            PLATFORM=$(echo "$PLATFORM" | sed 's/[^a-zA-Z0-9-]//g')
+            // Sanitize inputs (alphanumeric, spaces, dashes, commas, dots only)
+            const sanitize = (str) => str.replace(/[^a-zA-Z0-9 ,.-]/g, '');
             
-            echo "business=$BUSINESS" >> $GITHUB_OUTPUT
-            echo "industry=$INDUSTRY" >> $GITHUB_OUTPUT
-            echo "location=$LOCATION" >> $GITHUB_OUTPUT
-            echo "services=$SERVICES" >> $GITHUB_OUTPUT
-            echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
-            echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+            business = sanitize(business);
+            industry = sanitize(industry);
+            location = sanitize(location);
+            services = sanitize(services);
+            platform = sanitize(platform);
             
-            # Clean up temp file
-            rm /tmp/issue_body.txt
-          fi
+            // Set outputs
+            core.setOutput('business', business);
+            core.setOutput('industry', industry);
+            core.setOutput('location', location);
+            core.setOutput('services', services);
+            core.setOutput('platform', platform);
+            core.setOutput('issue_number', issueNumber);
+            
+            console.log('Parsed inputs:');
+            console.log(`  Business: ${business}`);
+            console.log(`  Industry: ${industry}`);
+            console.log(`  Location: ${location}`);
+            console.log(`  Services: ${services}`);
+            console.log(`  Platform: ${platform}`);
+            console.log(`  Issue: ${issueNumber}`);
 
       - name: Run UI Creation Engine
         env:
