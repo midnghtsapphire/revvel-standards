@@ -134,16 +134,20 @@ check_workflow_configuration() {
     return
   fi
   
-  if grep -q "bito-core/bito-github-action" "${workflow_file}"; then
+  if grep -q "gitbito/codereviewagent" "${workflow_file}"; then
+    check_pass "Uses gitbito/codereviewagent (current Bito CodeReviewAgent action; bito-core/bito-github-action legacy-compatible)"
+  elif grep -q "bito-core/bito-github-action" "${workflow_file}"; then
     check_pass "Uses bito-core/bito-github-action"
   else
-    check_fail "Does not use bito-core/bito-github-action"
+    check_fail "Does not use a recognized Bito GitHub Action (gitbito/codereviewagent or bito-core/bito-github-action)"
   fi
   
-  if grep -q "BITO_API_KEY" "${workflow_file}"; then
+  if grep -q "BITO_ACCESS_KEY" "${workflow_file}"; then
+    check_pass "References BITO_ACCESS_KEY secret (Bito CodeReviewAgent; BITO_API_KEY is the legacy docs alias)"
+  elif grep -q "BITO_API_KEY" "${workflow_file}"; then
     check_pass "References BITO_API_KEY secret"
   else
-    check_fail "Does not reference BITO_API_KEY secret"
+    check_fail "Does not reference a Bito API/access key secret"
   fi
   
   if grep -q "permissions:" "${workflow_file}"; then
