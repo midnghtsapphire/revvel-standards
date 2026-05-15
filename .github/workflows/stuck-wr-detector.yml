@@ -123,12 +123,39 @@ jobs:
                     inputs: { issue_number: String(issue.number) },
                   });
                   await setAttemptLabel(issue, attempts + 1);
+                  
+                  // Wait 30 seconds and verify the workflow actually started
+                  await new Promise(resolve => setTimeout(resolve, 30000));
+                  
+                  // Check if workflow run was created
+                  const recentRuns = await github.rest.actions.listWorkflowRuns({
+                    owner, repo,
+                    workflow_id: 'wr-pr-creation.yml',
+                    per_page: 5,
+                  });
+                  
+                  const justTriggered = recentRuns.data.workflow_runs.find(run => {
+                    const runAge = Date.now() - new Date(run.created_at).getTime();
+                    return runAge < 60000;  // Within last minute
+                  });
+                  
+                  let statusNote = '';
+                  if (justTriggered) {
+                    statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
+                  } else {
+                    statusNote = `\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:
+- Invalid workflow syntax
+- Missing permissions
+- GitHub Actions API issues`;
+                  }
+                  
                   await github.rest.issues.createComment({
                     owner, repo, issue_number: issue.number,
                     body: [
                       `🔁 **Stuck-WR auto-healer:** retriggering WR PR Creation (attempt ${attempts + 1}/${MAX_ATTEMPTS}).`,
                       ``,
                       `This issue has the \`work-request\` label but no associated PR was found. The detector dispatched \`.github/workflows/wr-pr-creation.yml\` against this issue.`,
+                      statusNote,
                       ``,
                       `If after ${MAX_ATTEMPTS} retriggers no PR appears, the detector will escalate by opening a tracking issue with diagnostic info.`,
                       ``,

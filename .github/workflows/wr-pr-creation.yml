@@ -158,6 +158,50 @@ jobs:
             core.setOutput('issue_title', title);
             core.setOutput('issue_body', body);
     timeout-minutes: 30
+  notify-skip:
+    name: Notify if PR creation was skipped
+    needs: detect-completion
+    if: needs.detect-completion.outputs.should_create_pr != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post skip notification
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            if (!issueNumber) {
+              core.notice('No issue number - cannot post skip notification');
+              return;
+            }
+
+            const comment = [
+              '⏭️ **WR PR Creation: Skipped**',
+              '',
+              'The WR PR creation workflow ran but determined that no PR should be created at this time.',
+              '',
+              '**Possible reasons:**',
+              '- Issue is not a WR (missing `[WR]` prefix and `weekly-research` label)',
+              '- A WR-skeleton PR already exists for this issue',
+              '- Issue is bot-created',
+              '- Trigger condition not met (not opened/reopened/complete/Jules-comment)',
+              '',
+              `**Workflow run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '',
+              '_See `.github/workflows/wr-pr-creation.yml` for PR creation logic._',
+            ].join('\n');
+
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment,
+              });
+              core.notice(`Posted skip notification on issue #${issueNumber}`);
+            } catch (error) {
+              core.warning(`Failed to post skip notification: ${error.message}`);
+            }
+    timeout-minutes: 5
   create-wr-pr:
     name: Create WR PR
     needs: detect-completion
@@ -168,6 +212,12 @@ jobs:
       ISSUE_TITLE: ${{ needs.detect-completion.outputs.issue_title }}
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
+      - name: Log workflow trigger
+        run: |
+          echo "::notice::WR PR Creation triggered for issue #${{ env.ISSUE_NUMBER }}"
+          echo "::notice::Event: ${{ github.event_name }}"
+          echo "::notice::Action: ${{ github.event.action }}"
+          echo "::notice::Issue Title: ${{ env.ISSUE_TITLE }}"
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -459,6 +509,48 @@ jobs:
               });
             } catch (error) {
               // Label might not exist, ignore
+            }
+            }
+      - name: Handle workflow failure
+        if: failure()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            
+            const comment = [
+              '❌ **WR PR Creation Failed**',
+              '',
+              `The WR PR creation workflow encountered an error while trying to create a PR for this issue.`,
+              '',
+              '**What happened:**',
+              '- Workflow started successfully',
+              '- One or more steps failed during PR creation',
+              '',
+              '**Next steps:**',
+              `1. Check the [workflow run logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details`,
+              '2. Common issues:',
+              '   - Branch name conflicts',
+              '   - Git push failures',
+              '   - API rate limits',
+              '   - Missing permissions',
+              '3. The stuck-WR detector will retry automatically',
+              '',
+              `**Workflow run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '',
+              '_This workflow will be retriggered by `.github/workflows/stuck-wr-detector.yml`._',
+            ].join('\n');
+
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment,
+              });
+              core.notice(`Posted failure notification on issue #${issueNumber}`);
+            } catch (error) {
+              core.warning(`Failed to post failure notification: ${error.message}`);
             }
     timeout-minutes: 30
 env:
