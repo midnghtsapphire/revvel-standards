@@ -84,5 +84,36 @@ gh workflow run sync-secrets-to-repos.yml -f target_repo=owner/repo
 
 ---
 
-*Updated: 2026-05-07*
+## Cursor Cloud specific instructions
+
+### Repository structure
+
+This is a monorepo containing standards/docs at root level plus multiple independent products under `products/`. The root `package.json` has only devDependencies for `markdownlint-cli2` and `yaml`.
+
+### Node.js products (Next.js apps under `products/`)
+
+| Product | Port | Notes |
+|---------|------|-------|
+| `products/music-video-creator` | 3000 | Next.js 14, has API routes (`/api/video`, `/api/orchestrate`) |
+| `products/affiliate-hub` | 3001 | Next.js 15, requires `npm install --legacy-peer-deps` due to eslint-config-next peer conflict |
+| `products/ai-video-toolkit` | 3002 | Next.js 15 |
+| `products/screen-recorder-finder` | 3003 | Next.js 15 |
+
+### Running and testing
+
+- **Root lint:** `npm run lint` (runs markdownlint on all `*.md` files; many pre-existing warnings exist)
+- **Root tests:** `npm test` (runs 18 test scripts sequentially; 6 known failures from malformed workflow YAML files `api-rate-limit-handler.yml` and `jules-coding-agent.yml`)
+- **Product dev servers:** `npm run dev` in each product directory
+- **Product builds:** `npm run build` in each product directory. Note: Music Video Creator has a pre-existing ESLint error (`@typescript-eslint/no-require-imports` in `src/app/api/video/route.ts`); use `npx next build --no-lint` to bypass if needed
+- **Product lint:** `npm run lint` in each product directory
+
+### Gotchas
+
+- The `affiliate-hub` product has a peer dependency conflict between `eslint@^8` and `eslint-config-next@16.2.6` (which requires `eslint>=9`). Always use `npm install --legacy-peer-deps` for that product.
+- Music Video Creator API routes require external API keys (`OPENROUTER_API_KEY`, `HEYGEN_API_KEY`, `LUMA_API_KEY`) to function fully. Without them, the app runs in "backend wiring pending" mode.
+- No Docker services are required for basic development of the Next.js products.
+
+---
+
+*Updated: 2026-05-15*
 *Location: Always check this file first*
