@@ -2,6 +2,14 @@
 
 This directory is the source-of-truth for all music video specifications, manifests, and publication metadata.
 
+## Orchestration contract
+
+Music video workflows must also follow the cross-project orchestration contract:
+
+- [`../orchestration/project-orchestration-standard.md`](../orchestration/project-orchestration-standard.md)
+
+That standard governs lifecycle gates, backend/API wiring completeness, verification, and the rule that docs/manifests alone are never completion.
+
 ## Requirements
 
 Every completed and published music video product **must**:
@@ -33,6 +41,12 @@ Example: `bulletproof-love-20260515T151936Z-v1.mp4`
 - The **manifest JSON** is the source of truth for all metadata (inputs, generation job, output filenames, SEO fields, publish status).
 - **Actual hosted media** (the MP4 and thumbnail) lives on the main website CDN or media host — not necessarily in this repository.
 - Once published, the manifest must contain the public `website_url` and `canonical_video_url` so any consumer can locate the asset.
+
+## Expected output vs. verified output
+
+- `outputs.video_filename` and `outputs.video_repo_path` can be **expected** values before render completion.
+- A listed filename is **not proof** the MP4 exists.
+- Use verification fields (for example `outputs.video_exists`, `verification.video_verified_at_utc`, and publish verification timestamps) to mark actual verified outputs.
 
 ## Required inputs per video
 
@@ -79,6 +93,8 @@ See [`_template/README.md`](./_template/README.md) for step-by-step instructions
 ## Workflow summary
 
 See [`video-publishing-standard.md`](./video-publishing-standard.md) for the full end-to-end workflow: avatar + WAV intake → video generation → storage → website publication → README update.
+
+See [`../orchestration/project-orchestration-standard.md`](../orchestration/project-orchestration-standard.md) for cross-project completion gates, backend wiring requirements, and LLM/OpenRouter orchestration governance.
 
 ## Example
 

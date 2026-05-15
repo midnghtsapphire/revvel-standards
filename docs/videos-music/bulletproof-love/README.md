@@ -34,9 +34,12 @@ It contains the manifest, input references, generation status, output metadata, 
 | Field | Value |
 |---|---|
 | MP4 filename | `bulletproof-love-20260515T151936Z-v1.mp4` |
+| MP4 exists (verified) | `no` |
 | Thumbnail | _(not yet generated)_ |
 | Captions (VTT) | _(not yet generated)_ |
 | Transcript | _(not yet generated)_ |
+
+> **Important:** A filename in the manifest is an expected output reference, not proof that the MP4 was rendered.
 
 ---
 
@@ -45,6 +48,7 @@ It contains the manifest, input references, generation status, output metadata, 
 | Field | Value |
 |---|---|
 | Required on main website | `yes` |
+| Main website domain | `meetaudreyevans.com` |
 | Main website URL | _(pending publication)_ |
 | Canonical video URL | _(pending publication)_ |
 | CDN URL | _(pending publication)_ |
@@ -72,3 +76,5 @@ It contains the manifest, input references, generation status, output metadata, 
 Manifest file: [`video-manifest-20260515T151936Z-v1.json`](./video-manifest-20260515T151936Z-v1.json)
 
 See also: [`../video-publishing-standard.md`](../video-publishing-standard.md) for the full end-to-end workflow.
+
+See also: [`../../orchestration/project-orchestration-standard.md`](../../orchestration/project-orchestration-standard.md) for cross-project completion gates and backend wiring requirements.

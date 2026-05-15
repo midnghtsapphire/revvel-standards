@@ -34,9 +34,12 @@ It contains the manifest, input references, generation status, output metadata, 
 | Field | Value |
 |---|---|
 | MP4 filename | `<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4` |
+| MP4 exists (verified) | `yes` / `no` |
 | Thumbnail | `<thumbnail path or URL>` |
 | Captions (VTT) | `<captions path or URL>` |
 | Transcript | `<transcript path or URL>` |
+
+> A filename alone is not proof of render completion. Mark `MP4 exists (verified)` only after existence checks pass.
 
 ---
 
@@ -71,7 +74,8 @@ It contains the manifest, input references, generation status, output metadata, 
 
 Manifest file: `video-manifest-YYYYMMDDTHHMMSSZ-v1.json`
 
-See also: [`../video-publishing-standard.md`](../video-publishing-standard.md) for the full end-to-end workflow.
+See also (music-video workflow): [`../video-publishing-standard.md`](../video-publishing-standard.md).
+See also (cross-project orchestration): [`../../orchestration/project-orchestration-standard.md`](../../orchestration/project-orchestration-standard.md).
 
 ---
 
