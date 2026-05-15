@@ -295,11 +295,19 @@ export async function POST(request: NextRequest) {
       addAuditEntry(job, 'planning', 'no_providers', job.failure_reason);
       return NextResponse.json({
         success: false,
-        jobId,
+        jobId: job.jobId,
+        provider: job.provider,
         render_status: job.render_status,
+        video_exists: job.video_exists,
+        provider_job_id: job.provider_job_id,
+        artifact_storage_url: job.artifact_storage_url,
+        canonical_video_url: job.canonical_video_url,
+        publish_status: job.publish_status,
+        verified_at_utc: job.verified_at_utc,
         failure_reason: job.failure_reason,
+        audit_log: job.audit_log,
         message: 'Backend wiring required: configure at least one video provider API key.',
-      }, { status: 503 });
+      }, { status: 500 });
     }
 
     job.render_status = 'dependencies_identified';
