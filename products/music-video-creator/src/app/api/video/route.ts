@@ -167,7 +167,7 @@ async function submitHeygenJob(audioFile: File, avatarFile: File): Promise<strin
     avatar_image: `data:${avatarFile.type};base64,${avatarBuffer.toString('base64')}`,
     aspect_ratio: '16:9',
     // test: true generates a watermarked preview video at no cost.
-    // Set HEYGEN_TEST_MODE=false (or unset) in production to generate final videos.
+    // Set HEYGEN_TEST_MODE=false in production to generate final videos (test mode is ON by default when unset).
     test: process.env.HEYGEN_TEST_MODE !== 'false',
   };
 
