@@ -111,7 +111,7 @@ jobs:
                 method: 'POST',
                 headers: {
                   Authorization: `Bearer ${openRouterKey}`,
-                  'content-type': 'application/json',
+                  'Content-Type': 'application/json',
                   Referer: `https://github.com/${owner}/${repo}`,
                   'X-Title': 'Revvel PDF Orchestrator',
                 },
@@ -128,7 +128,8 @@ jobs:
 
               if (!openRouterRes.ok) {
                 const errorText = await openRouterRes.text().catch(() => '');
-                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, 500)}`);
+                const truncationSuffix = errorText.length > 500 ? '...[truncated]' : '';
+                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, 500)}${truncationSuffix}`);
                 return;
               }
 
