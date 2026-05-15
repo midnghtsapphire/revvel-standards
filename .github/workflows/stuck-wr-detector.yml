@@ -124,12 +124,12 @@ jobs:
                   });
                   await setAttemptLabel(issue, attempts + 1);
                   
-                  // Poll for workflow run with exponential backoff (5s, 10s, 20s, up to 30s max)
+                  // Poll for workflow run with exponential backoff (5s, 10s, 20s, 30s - 40s capped at 30s)
                   let workflowStarted = false;
                   let statusNote = '';
                   
                   for (let attempt = 0; attempt < 4; attempt++) {
-                    const delay = Math.min(5000 * Math.pow(2, attempt), 30000);  // 5s, 10s, 20s, 30s (capped)
+                    const delay = Math.min(5000 * Math.pow(2, attempt), 30000);  // 5s, 10s, 20s, 30s (40s capped)
                     await new Promise(resolve => setTimeout(resolve, delay));
                     
                     // Check if workflow run was created for this specific issue
