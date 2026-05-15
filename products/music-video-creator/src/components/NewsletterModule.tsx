@@ -35,6 +35,7 @@ export default function NewsletterModule() {
           />
           <button
             type="submit"
+            aria-label="Subscribe"
             className="px-4 py-2 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition flex items-center justify-center"
           >
             <Send className="w-4 h-4" />
