@@ -50,7 +50,7 @@ Loop or branch inside that automation so the **autocreate N** step matches **PDF
 
 On **`sellable-pdf`** Work Requests, **[`.github/workflows/pdf-work-request-router.yml`](../.github/workflows/pdf-work-request-router.yml)** posts a single idempotent issue comment (marker `pdf-workflow-router:v1`) containing **JSON**: `pdf_pipeline_batch`, `autocreate_count`, and links to this playbook, `PDF_AUTOMATION_GUIDE.md`, and `standards/shapes/PDF.md`.
 
-The same router now triggers **Make.com auto-creation** directly (required for full automation). Configure repository secret **`MAKE_PDF_WR_WEBHOOK_URL`** and make sure your Make scenario accepts:
+The same router now triggers **Make.com auto-creation** directly (required for full automation). Configure repository secret **`MAKE_PDF_WR_WEBHOOK_URL`** and ensure your Make scenario accepts:
 
 - `trigger_mode: "auto_create_pdf"`
 - `idempotency_key` (for replay safety)

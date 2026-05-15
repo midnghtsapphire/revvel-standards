@@ -89,6 +89,7 @@ jobs:
             const MAX_ERROR_TEXT_LENGTH = 500;
             const MAKE_MAX_ATTEMPTS = 3;
             const MAKE_TIMEOUT_MS = 20000;
+            const makeBackoffMs = (attempt) => 1000 * 2 ** (attempt - 1);
 
             let openrouterOrchestration = null;
             if (!openRouterKey) {
@@ -226,7 +227,7 @@ jobs:
 
             let makeResponse = null;
             for (let attempt = 1; attempt <= MAKE_MAX_ATTEMPTS; attempt += 1) {
-              // Per-attempt timeout is intentional; max webhook wait = attempts × MAKE_TIMEOUT_MS.
+              // Per-attempt timeout is intentional; max webhook wait = attempts * MAKE_TIMEOUT_MS.
               const controller = new AbortController();
               const timeout = setTimeout(() => controller.abort(), MAKE_TIMEOUT_MS);
               try {
@@ -250,7 +251,7 @@ jobs:
                   }
                   // Backoff applies only between retries (attempts 1→2 and 2→3), never after final attempt.
                   core.warning(`Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (HTTP ${res.status}); retrying.`);
-                  await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
+                  await new Promise((resolve) => setTimeout(resolve, makeBackoffMs(attempt)));
                   continue;
                 }
 
@@ -277,7 +278,7 @@ jobs:
                 core.warning(
                   `Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (${e?.message ?? String(e)}); retrying.`
                 );
-                await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
+                await new Promise((resolve) => setTimeout(resolve, makeBackoffMs(attempt)));
               } finally {
                 clearTimeout(timeout);
               }
