@@ -167,9 +167,8 @@ function isoNow(): string {
   return new Date().toISOString();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function safeParse(text: string): Record<string, any> | null {
-  return extractJsonFromContent(text) as Record<string, any> | null;
+function safeParse(text: string): Record<string, unknown> | null {
+  return extractJsonFromContent(text);
 }
 
 async function callOpenRouter(

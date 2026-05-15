@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+/* eslint-disable @typescript-eslint/no-require-imports */
 const {
   VIDEO_PROVIDERS,
   selectBestProvider,
