@@ -104,7 +104,11 @@ export interface DiagnosisResult {
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-/** Cost per token in USD used for rough run-cost estimates. */
+/**
+ * Approximate cost per token in USD, averaged across the models used in this swarm.
+ * Actual costs vary by model and OpenRouter pricing may change over time.
+ * Update this constant when repricing OpenRouter models significantly.
+ */
 const TOKEN_COST_USD_PER_UNIT = 0.000003;
 
 // Scout configuration — one agent per research domain
@@ -346,7 +350,7 @@ export async function runMusicVideoOrchestrator(
         prompt_tokens: promptTokens,
         completion_tokens: completionTokens,
         total_tokens: tokensUsed,
-        est_cost_usd: '0.0000',
+        est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
         response_text: content,
         parsed_response: parsed,
         confidence: (parsed?.confidence as 'high' | 'medium' | 'low') ?? 'medium',
@@ -415,7 +419,7 @@ export async function runMusicVideoOrchestrator(
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
       total_tokens: tokensUsed,
-      est_cost_usd: '0.0000',
+      est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
       response_text: sageContent,
       parsed_response: sageOutput,
       confidence: 'high',
@@ -480,7 +484,7 @@ export async function runMusicVideoOrchestrator(
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
       total_tokens: tokensUsed,
-      est_cost_usd: '0.0000',
+      est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
       response_text: forgeContent,
       parsed_response: forgeOutput,
       confidence: 'high',
@@ -564,7 +568,7 @@ Provider: ${providerName}`;
     return { failure_class: 'auth_error', root_cause: errorMessage, is_retryable: false, recommended_action: 'Check API credentials', next_step_for_human: 'Verify API key is valid and has required permissions' };
   if (msg.includes('429') || msg.includes('rate'))
     return { failure_class: 'rate_limit', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry with exponential back-off', next_step_for_human: null };
-  if (httpStatus !== null && httpStatus >= 500)
+  if (httpStatus !== null && httpStatus >= 500 && httpStatus < 600)
     return { failure_class: 'provider_error', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry after delay', next_step_for_human: null };
 
   return { failure_class: 'unknown', root_cause: errorMessage, is_retryable: false, recommended_action: 'Investigate manually', next_step_for_human: 'Review error details and retry' };
