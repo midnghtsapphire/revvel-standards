@@ -51,6 +51,7 @@
 | T005 | Music Video Creator balanced JSON parser fix | done | @cursor | 2026-05-15 |
 | T006 | Music Video Creator provider polling terminal status fix | done | @cursor | 2026-05-15 |
 | T008 | Music Video Creator shared API helper refactor | done | @cursor | 2026-05-15 |
+| T009 | Music Video Creator Next/PostCSS security upgrade | done | @cursor | 2026-05-15 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

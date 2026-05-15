@@ -42,6 +42,7 @@
 | BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
 | BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
+| BUG-010 | Music Video Creator dependency tree carried Next.js/PostCSS npm audit findings after validation install | high | resolved | 2026-05-15 |
 
 ---
 
@@ -146,6 +147,10 @@ Session summary: Fixed ColdTrace backend `python-jose[cryptography]` from vulner
 Last updated: 2026-05-15 22:15 UTC
 Updated by: Cursor
 Session summary: Centralized Music Video Creator API auth/OpenRouter helpers into shared modules, removed duplicate route definitions, and verified product lint/typecheck/build plus root `npm test` pass.
+
+Last updated: 2026-05-15 22:21 UTC
+Updated by: Cursor
+Session summary: Upgraded Music Video Creator to patched Next.js 15.5.18/PostCSS 8.5.14 with a package override, set the product tracing root, and verified npm audit, product lint/typecheck/build, and root `npm test` pass.
 
 Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands

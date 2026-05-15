@@ -169,3 +169,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Keep cross-route API primitives in a shared server-side library module. For mixed route/library consumers, split pure transport config from Next.js response helpers so non-route code can reuse constants without taking a Next dependency. When push is rejected because the branch advanced, fetch and inspect the remote-only commit before rebasing; if the remote only touches docs/state logs, rebase cleanly and push normally.
 
 **Next Action:** None for this duplication issue; continue monitoring PR validation.
+
+---
+
+**Date/Time:** 2026-05-15T22:21Z
+
+**Task Attempted:** Remediate npm audit findings discovered while validating Music Video Creator.
+
+**Outcome:** Success - Next.js and `eslint-config-next` are upgraded to 15.5.18, PostCSS is pinned/overridden to 8.5.14, `npm audit --audit-level=moderate` reports zero vulnerabilities, and product lint/typecheck/build plus root `npm test` pass.
+
+**Root Cause of Failure (If any):** The product still used Next.js 14.2.35 and its transitive PostCSS/lint tooling, which npm audit flagged for multiple Next.js advisories and a PostCSS stringify XSS advisory. Next 15 removed the high-severity findings, but npm still resolved Next's nested PostCSS below the patched version until an override forced 8.5.14.
+
+**Self-Healing Fix / Learned Lesson:** For Next.js audit remediation, prefer the smallest patched major that satisfies advisories before jumping to the latest major. If npm audit still reports a vulnerable nested package under a framework dependency, use an npm `overrides` entry aligned with a direct devDependency pin and rerun audit/build. Next 15 in monorepos may infer the workspace root from the top-level lockfile; set `outputFileTracingRoot` in the product config to make builds deterministic.
+
+**Next Action:** None for this dependency issue; continue monitoring PR validation.
