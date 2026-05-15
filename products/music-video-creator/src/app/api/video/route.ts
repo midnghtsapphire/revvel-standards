@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { OPENROUTER_API_URL, OR_MODELS, requireApiKey } from '../../../lib/music-video-api';
 /* eslint-disable @typescript-eslint/no-require-imports */
 const {
   VIDEO_PROVIDERS,
@@ -12,32 +13,7 @@ const {
   normalizeProviderStatus: (provider: string, raw: string) => { render_status: string; video_exists: boolean };
 };
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-
-// OpenRouter model fallback chain (consistent with scripts/openrouter-routing.js)
-const OR_MODELS = [
-  'anthropic/claude-sonnet-4',
-  'deepseek/deepseek-chat',
-  'openai/gpt-4o',
-];
-
 type ProviderName = 'heygen' | 'luma' | 'runway';
-
-// ─── Auth guard ──────────────────────────────────────────────────────────────
-/**
- * Check the inbound x-api-key header against MUSIC_VIDEO_API_KEY.
- * If the env var is unset the endpoint runs in dev mode (no auth required).
- * Returns a 401 NextResponse on failure, or null if auth passes.
- */
-function requireApiKey(request: NextRequest): NextResponse | null {
-  const requiredKey = process.env.MUSIC_VIDEO_API_KEY;
-  if (!requiredKey) return null; // dev/unprotected mode
-  const provided = request.headers.get('x-api-key');
-  if (provided !== requiredKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  return null;
-}
 
 // ─── OpenRouter planning ─────────────────────────────────────────────────────
 

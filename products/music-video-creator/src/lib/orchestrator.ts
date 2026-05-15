@@ -13,6 +13,8 @@
  * handled by deterministic code, never by the LLM.
  */
 
+import { OPENROUTER_API_URL } from './openrouter-config';
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { extractJsonFromContent } = require('./video-job-helpers') as {
   extractJsonFromContent: (content: string) => Record<string, unknown> | null;
@@ -106,8 +108,6 @@ export interface DiagnosisResult {
   recommended_action: string;
   next_step_for_human: string | null;
 }
-
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 /**
  * Approximate cost per token in USD, averaged across the models used in this swarm.

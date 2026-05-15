@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { OPENROUTER_API_URL, OR_MODELS, requireApiKey } from '../../../lib/music-video-api';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { extractJsonFromContent } = require('../../../lib/video-job-helpers') as {
   extractJsonFromContent: (content: string) => Record<string, unknown> | null;
 };
-
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const OR_MODELS = [
-  'anthropic/claude-sonnet-4',
-  'deepseek/deepseek-chat',
-  'openai/gpt-4o',
-];
 
 const DEEP_RESEARCH_SYSTEM_PROMPT = `MISSION
 You are the deep research and project orchestration agent for the Music Video Creator.
@@ -47,16 +41,6 @@ interface OrchestrateRequest {
   destination_website: string;
   available_providers: string[];
   additional_context?: string;
-}
-
-function requireApiKey(request: NextRequest): NextResponse | null {
-  const requiredKey = process.env.MUSIC_VIDEO_API_KEY;
-  if (!requiredKey) return null;
-  const provided = request.headers.get('x-api-key');
-  if (provided !== requiredKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  return null;
 }
 
 export async function POST(request: NextRequest) {
