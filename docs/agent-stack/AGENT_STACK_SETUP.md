@@ -144,7 +144,7 @@ To disable the reminder entirely: delete `.github/workflows/augment-check.yml`.
 | Auto-router doesn't apply labels                     | Output Type field missing or label mismatch    | Check the issue body has `### Output Type` heading; use canonical form       |
 | Resolver workflow runs but no PR is created          | Model error or repo state issue                | Check the run logs; resolver runs `continue-on-error: true` so won't block   |
 | `credentials-missing` label appears on every issue   | Required secrets not configured                | Add at least `OPENROUTER_API_KEY` per Section 3                              |
-| Augment reminder fires even though Augment is installed | Marker pattern changed upstream             | Update the marker regex in `augment-check.yml:Check for Augment marker` step |
+| Augment reminder fires even though Augment is installed | Detection pattern changed upstream          | Update Augment detection patterns in `augment-check.yml:Check for Augment marker` step |
 | Two agents try to fix the same issue at once         | Both `fix-me` and `swe-fix` applied            | Pick one — the auto-router never applies both for the same Output Type      |
 
 ---
