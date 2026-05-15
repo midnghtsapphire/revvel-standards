@@ -226,6 +226,7 @@ jobs:
 
             let makeResponse = null;
             for (let attempt = 1; attempt <= MAKE_MAX_ATTEMPTS; attempt += 1) {
+              // Per-attempt timeout is intentional; max webhook wait = attempts × MAKE_TIMEOUT_MS.
               const controller = new AbortController();
               const timeout = setTimeout(() => controller.abort(), MAKE_TIMEOUT_MS);
               try {
@@ -247,6 +248,7 @@ jobs:
                     return;
                   }
                   core.warning(`Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (HTTP ${res.status}); retrying.`);
+                  await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
                   continue;
                 }
 
@@ -272,6 +274,7 @@ jobs:
                 core.warning(
                   `Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (${e?.message ?? String(e)}); retrying.`
                 );
+                await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
               } finally {
                 clearTimeout(timeout);
               }

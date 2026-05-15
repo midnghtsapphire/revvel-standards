@@ -56,6 +56,8 @@ The same router now triggers **Make.com auto-creation** directly (required for f
 - `idempotency_key` (for replay safety)
 - `openrouter_orchestration.brief` (execution brief from OpenRouter)
 
+The router also sends header `X-Idempotency-Key` (same value as `idempotency_key`) on each retry. Configure Make to dedupe by that key so retry attempts do not create duplicate products.
+
 When Make is triggered, the router posts a second status comment (marker `pdf-workflow-make:v1`) showing webhook HTTP status + response body.
 
 **Runs when:** the issue is **opened** with `sellable-pdf` in the body, the label **`output-type:sellable-pdf`** is applied, the issue is **edited** after that label exists, or you **manually run** the workflow (**Actions** tab → **PDF work request router** → enter issue number).
