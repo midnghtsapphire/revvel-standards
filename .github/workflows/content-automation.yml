@@ -56,9 +56,9 @@ jobs:
       github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
       - name: Install dependencies
@@ -68,7 +68,7 @@ jobs:
           fi
       - name: Acknowledge issue trigger
         if: github.event_name == 'issues'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -96,7 +96,7 @@ jobs:
             });
       - name: Extract content parameters
         id: params
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             let topic, format, urgency, audience, issueNumber;
@@ -189,7 +189,7 @@ jobs:
           git push origin "${GITHUB_REF_NAME}" || echo "Nothing to push"
       - name: Post results to issue
         if: github.event_name == 'issues' && steps.generate.outputs.output_path != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -246,7 +246,7 @@ jobs:
             });
       - name: Handle errors
         if: failure() && github.event_name == 'issues'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -293,7 +293,7 @@ jobs:
           exit 1  # Ensure this fails to trigger issue creation
       - name: Create auto-error issue
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

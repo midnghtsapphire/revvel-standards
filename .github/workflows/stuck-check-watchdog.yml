@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Fetch stuck issues
         id: fetch
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
@@ -93,7 +93,7 @@ jobs:
       - name: Analyze and diagnose each issue
         if: steps.fetch.outputs.count != '0'
         id: analyze
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issues = JSON.parse('${{ steps.fetch.outputs.stuck_issues }}');

@@ -34,11 +34,11 @@ jobs:
           fi
         env:
           DO_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
         if: steps.check-secret.outputs.skip != 'true'
       - name: Install doctl
         if: steps.check-secret.outputs.skip != 'true'
-        uses: digitalocean/action-doctl@v2
+        uses: digitalocean/action-doctl@v2.5.2
         with:
           token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
       - name: Validate app spec
@@ -97,7 +97,7 @@ jobs:
           echo "| Triggered by | ${{ github.actor }} |" >> "$GITHUB_STEP_SUMMARY"
       - name: Post failure issue
         if: failure() && steps.check-secret.outputs.skip != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             await github.rest.issues.create({
