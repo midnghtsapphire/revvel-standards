@@ -77,13 +77,13 @@ jobs:
           # Check for required workflow elements
           WORKFLOW=".github/workflows/bito-ai.yml"
 
-          if ! grep -q "bito-core/bito-github-action" "${WORKFLOW}"; then
-            echo "❌ Workflow does not use bito-core/bito-github-action"
+          if ! grep -Eq "bito-core/bito-github-action|gitbito/codereviewagent" "${WORKFLOW}"; then
+            echo "❌ Workflow does not use a recognized BITO action"
             exit 1
           fi
 
-          if ! grep -q "BITO_API_KEY" "${WORKFLOW}"; then
-            echo "❌ Workflow does not reference BITO_API_KEY"
+          if ! grep -Eq "BITO_API_KEY|BITO_ACCESS_KEY" "${WORKFLOW}"; then
+            echo "❌ Workflow does not reference BITO_API_KEY/BITO_ACCESS_KEY"
             exit 1
           fi
 
@@ -218,8 +218,8 @@ jobs:
           echo "All configuration checks passed!"
           echo ""
           echo "Next steps to enable BITO AI:"
-          echo "  1. Get API key from https://bito.ai → Settings → API Keys"
-          echo "  2. Add as GitHub secret: BITO_API_KEY"
+          echo "  1. Get access key from https://bito.ai → Settings → Access Keys"
+          echo "  2. Add as GitHub secrets: BITO_ACCESS_KEY and GIT_ACCESS_TOKEN"
           echo "  3. Open a test PR to trigger the workflow"
           echo "  4. Verify BITO posts a review comment"
           echo ""
