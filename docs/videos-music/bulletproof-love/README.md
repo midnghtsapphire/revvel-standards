@@ -35,6 +35,8 @@ It contains the manifest, input references, generation status, output metadata, 
 |---|---|
 | MP4 filename | `bulletproof-love-20260515T151936Z-v1.mp4` |
 | MP4 exists (verified) | `no` |
+| MP4 delivery status | `not delivered yet` |
+| Current MP4 location | `not available yet (render not started and no public URL)` |
 | Thumbnail | _(not yet generated)_ |
 | Captions (VTT) | _(not yet generated)_ |
 | Transcript | _(not yet generated)_ |
@@ -50,7 +52,7 @@ It contains the manifest, input references, generation status, output metadata, 
 | Required on main website | `yes` |
 | Main website domain | `meetaudreyevans.com` |
 | Main website URL | _(pending publication)_ |
-| Canonical video URL | _(pending publication)_ |
+| Canonical video URL | _(not available yet — this is where the MP4 link will appear once delivered)_ |
 | CDN URL | _(pending publication)_ |
 | Embed URL | _(pending publication)_ |
 | Publish status | `draft` |
