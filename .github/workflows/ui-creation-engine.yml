@@ -1,0 +1,178 @@
+name: UI Creation Engine
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      business:
+        description: 'Business name'
+        required: true
+        type: string
+      industry:
+        description: 'Industry type'
+        required: true
+        type: string
+      location:
+        description: 'Geographic location'
+        required: true
+        type: string
+      services:
+        description: 'Services offered'
+        required: false
+        type: string
+      platform:
+        description: 'Platform type (website, mobile-app, web-app)'
+        required: false
+        type: string
+        default: 'website'
+      issue_number:
+        description: 'Issue number to update with results'
+        required: false
+        type: number
+
+jobs:
+  ui-creation:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && github.event.label.name == 'ui-creation') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@copilot ui-engine')) ||
+      github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Parse issue or use workflow inputs
+        id: parse
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "business=${{ inputs.business }}" >> $GITHUB_OUTPUT
+            echo "industry=${{ inputs.industry }}" >> $GITHUB_OUTPUT
+            echo "location=${{ inputs.location }}" >> $GITHUB_OUTPUT
+            echo "services=${{ inputs.services }}" >> $GITHUB_OUTPUT
+            echo "platform=${{ inputs.platform }}" >> $GITHUB_OUTPUT
+            echo "issue_number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+            ISSUE_BODY="${{ github.event.issue.body }}"
+            
+            # Parse fields from issue body (expecting structured format)
+            BUSINESS=$(echo "$ISSUE_BODY" | grep -oP '(?<=Business:\s).*' || echo "")
+            INDUSTRY=$(echo "$ISSUE_BODY" | grep -oP '(?<=Industry:\s).*' || echo "")
+            LOCATION=$(echo "$ISSUE_BODY" | grep -oP '(?<=Location:\s).*' || echo "")
+            SERVICES=$(echo "$ISSUE_BODY" | grep -oP '(?<=Services:\s).*' || echo "")
+            PLATFORM=$(echo "$ISSUE_BODY" | grep -oP '(?<=Platform:\s).*' || echo "website")
+            
+            echo "business=$BUSINESS" >> $GITHUB_OUTPUT
+            echo "industry=$INDUSTRY" >> $GITHUB_OUTPUT
+            echo "location=$LOCATION" >> $GITHUB_OUTPUT
+            echo "services=$SERVICES" >> $GITHUB_OUTPUT
+            echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
+            echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run UI Creation Engine
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          mkdir -p ui-creation-output
+          
+          node scripts/ui-creation-engine.js \
+            --business="${{ steps.parse.outputs.business }}" \
+            --industry="${{ steps.parse.outputs.industry }}" \
+            --location="${{ steps.parse.outputs.location }}" \
+            --services="${{ steps.parse.outputs.services }}" \
+            --platform="${{ steps.parse.outputs.platform }}" \
+            --output="./ui-creation-output"
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-creation-output
+          path: ui-creation-output/
+          retention-days: 30
+
+      - name: Create summary comment
+        if: steps.parse.outputs.issue_number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const issueNumber = ${{ steps.parse.outputs.issue_number }};
+            
+            // Read the README from output
+            const readmePath = './ui-creation-output/README.md';
+            let summary = '';
+            
+            if (fs.existsSync(readmePath)) {
+              summary = fs.readFileSync(readmePath, 'utf8');
+            } else {
+              summary = '⚠️ UI Creation Engine completed but README not found.';
+            }
+            
+            // Read competitive analysis summary
+            const analysisPath = './ui-creation-output/research/competitive-analysis.md';
+            let analysisPreview = '';
+            
+            if (fs.existsSync(analysisPath)) {
+              const analysis = fs.readFileSync(analysisPath, 'utf8');
+              const lines = analysis.split('\n').slice(0, 30);
+              analysisPreview = lines.join('\n');
+              analysisPreview += '\n\n[See full analysis in artifacts]';
+            }
+            
+            const comment = `## 🎨 UI Creation Engine Complete
+            
+            The UI Creation Engine has finished analyzing the competitive landscape and generating recommendations.
+            
+            ### Output Summary
+            
+            ${summary}
+            
+            ### Competitive Analysis Preview
+            
+            ${analysisPreview}
+            
+            ---
+            
+            **📁 Download Full Output**: See the "ui-creation-output" artifact in the [Actions run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            
+            **Next Steps**:
+            1. Download and review the artifacts
+            2. Review competitive analysis in \`research/competitive-analysis.md\`
+            3. Implement UI recommendations from \`design/ui-recommendations.md\`
+            4. Apply SEO metadata from \`seo/metadata.md\`
+            5. Optimize images using \`images/optimization-plan.md\`
+            
+            🎨 **Pixel signing off**`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: comment
+            });
+
+      - name: Label issue as complete
+        if: steps.parse.outputs.issue_number != '' && github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.parse.outputs.issue_number }},
+              labels: ['ui-creation-complete']
+            });
