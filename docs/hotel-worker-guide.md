@@ -1,9 +1,3 @@
----
-phase: 3
-revenue_lever: enterprise_reports
-batch_id: autocreate-3
----
-
 # The Ultimate Guide for Hotel Professionals: Navigating the Industry
 
 ## Introduction
