@@ -158,6 +158,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-15T22:33Z
+
+**Task Attempted:** Verify and fix unrelated ColdTrace dependency downgrades in the Music Video Creator PR.
+
+**Outcome:** Success - `coldtrace/backend/requirements.txt` now matches `origin/main` for the reported unrelated pins: `geopandas==1.1.2`, `python-multipart==0.0.27`, and `python-dotenv==1.2.2`.
+
+**Root Cause of Failure (If any):** The feature branch contained a merge-conflict or stale-dependency artifact that lowered ColdTrace backend pins while the PR scope was Music Video Creator work. These downgrades were unrelated to the feature and could have changed backend geospatial and request-parsing behavior.
+
+**Self-Healing Fix / Learned Lesson:** For PRs that touch independent product areas, compare affected dependency files against `origin/main...HEAD` before accepting lock/requirements churn. For narrow requirements restores, validate both that the file no longer differs from base and that the restored pins resolve with `python3 -m pip install --dry-run --ignore-installed`. If root `npm test` fails with `Cannot find module 'yaml'`, run `npm ci` and rerun the suite.
+
+**Next Action:** None for this dependency downgrade issue; continue monitoring PR validation.
+
+---
+
 **Date/Time:** 2026-05-15T22:15Z
 
 **Task Attempted:** Verify and fix duplicated Music Video Creator API helper definitions.

@@ -43,6 +43,7 @@
 | BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
 | BUG-010 | Music Video Creator dependency tree carried Next.js/PostCSS npm audit findings after validation install | high | resolved | 2026-05-15 |
+| BUG-011 | Music Video Creator PR accidentally downgraded unrelated ColdTrace dependencies (`geopandas`, `python-multipart`, `python-dotenv`) from current backend pins | medium | resolved | 2026-05-15 |
 
 ---
 
@@ -93,6 +94,7 @@
 |---|---|---|---|
 | `npm test` | 2026-05-15 | ✅ passing | — |
 | ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
+| ColdTrace restored dependency pins check | 2026-05-15 | ✅ `git diff --exit-code origin/main...HEAD -- coldtrace/backend/requirements.txt` + `python3 -m pip install --dry-run --ignore-installed "geopandas==1.1.2" "python-multipart==0.0.27" "python-dotenv==1.2.2"` | — |
 
 ---
 
@@ -140,6 +142,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-15 22:33 UTC
+Updated by: Cursor
+Session summary: Restored unrelated ColdTrace dependency pins downgraded in the Music Video Creator branch, verified the requirements file no longer differs from main, confirmed restored package dry-run resolution, and reran root `npm test` successfully after `npm ci`.
+
 Last updated: 2026-05-15 22:08 UTC
 Updated by: Cursor
 Session summary: Fixed ColdTrace backend `python-jose[cryptography]` from vulnerable 3.3.0 to 3.4.0, verified no remaining 3.3.0 pin, confirmed package dry-run resolution, parsed 16 backend Python files, and reran root `npm test` successfully after `npm ci`.
