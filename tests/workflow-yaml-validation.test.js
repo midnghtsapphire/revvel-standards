@@ -125,5 +125,29 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   }
 });
 
+test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const commitStep = doc.jobs['log-agent-action'].steps.find(
+    (step) => step.name === 'Commit audit log'
+  );
+
+  if (!commitStep) throw new Error('Commit audit log step not found');
+
+  const script = commitStep.run || '';
+  if (!script.includes('for attempt in 1 2 3')) {
+    throw new Error('Commit step must retry git push attempts');
+  }
+  if (!script.includes('fetch first|non-fast-forward')) {
+    throw new Error('Commit step must detect non-fast-forward push errors');
+  }
+  if (!script.includes('git pull --rebase origin main')) {
+    throw new Error('Commit step must rebase before retrying push');
+  }
+  if (!script.includes('exit 0')) {
+    throw new Error('Commit step must exit cleanly when push remains blocked');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);

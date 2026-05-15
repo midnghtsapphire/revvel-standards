@@ -126,7 +126,22 @@ jobs:
           if [[ -n $(git status --porcelain logs/agent-audit/) ]]; then
             git add logs/agent-audit/
             git commit -m "chore: log agent action [skip ci]"
-            if git push 2>&1; then
+            push_ok=false
+            for attempt in 1 2 3; do
+              if push_output=$(git push 2>&1); then
+                echo "$push_output"
+                push_ok=true
+                break
+              fi
+              echo "$push_output"
+              if echo "$push_output" | grep -qiE "fetch first|non-fast-forward"; then
+                echo "::notice::Audit log push was out-of-date on attempt ${attempt}; rebasing and retrying."
+                git pull --rebase origin main || break
+                continue
+              fi
+              break
+            done
+            if [[ "$push_ok" == "true" ]]; then
               echo "✅ Audit log committed"
               {
                 echo "## Audit Log"
