@@ -9,7 +9,18 @@ export default function Home() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [result, setResult] = useState<{message: string, jobId: string, placeholder_video_url: string} | null>(null);
+  const [result, setResult] = useState<{
+    message: string;
+    run_id: string;
+    render_status: string;
+    provider_selected: string;
+    provider_job_id: string | null;
+    canonical_video_url: string | null;
+    publish_status: string;
+    models_used: string[];
+    swarm_query_count: number;
+    total_token_cost_usd: string;
+  } | null>(null);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,16 +138,25 @@ export default function Home() {
 
             {result && (
               <div className="mt-8 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <h3 className="text-green-800 dark:text-green-300 font-medium mb-2">Success!</h3>
+                <h3 className="text-green-800 dark:text-green-300 font-medium mb-2">Orchestration Complete</h3>
                 <p className="text-sm text-green-700 dark:text-green-400 mb-2">{result.message}</p>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  <strong>Job ID:</strong> {result.jobId}
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-1">
+                  <div><strong>Run ID:</strong> {result.run_id}</div>
+                  <div><strong>Status:</strong> {result.render_status}</div>
+                  <div><strong>Provider selected:</strong> {result.provider_selected || '—'}</div>
+                  <div><strong>Job ID:</strong> {result.provider_job_id ?? 'pending'}</div>
+                  <div><strong>Publish status:</strong> {result.publish_status}</div>
+                  <div><strong>Models used:</strong> {result.models_used?.join(', ') || '—'}</div>
+                  <div><strong>Swarm queries:</strong> {result.swarm_query_count}</div>
+                  <div><strong>Token cost:</strong> ${result.total_token_cost_usd}</div>
                 </div>
-                <div className="mt-4">
-                  <a href={result.placeholder_video_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium">
-                    View Output Video &rarr;
-                  </a>
-                </div>
+                {result.canonical_video_url && (
+                  <div className="mt-4">
+                    <a href={result.canonical_video_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium">
+                      View Published Video &rarr;
+                    </a>
+                  </div>
+                )}
               </div>
             )}
           </section>
