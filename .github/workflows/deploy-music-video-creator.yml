@@ -45,7 +45,7 @@ jobs:
         id: vercel
 
       - name: Handle Deployment Failure
-        if: steps.vercel.outcome == 'failure'
+        if: failure() || steps.vercel.outcome == 'failure'
         run: |
           echo "::warning::Task failed - creating WR"
           gh issue create --title "[WR] Deployment failed for Music Video Creator" \
