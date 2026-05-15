@@ -110,7 +110,7 @@ jobs:
               const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                  authorization: `Bearer ${openRouterKey}`,
+                  Authorization: `Bearer ${openRouterKey}`,
                   'content-type': 'application/json',
                   'HTTP-Referer': `https://github.com/${owner}/${repo}`,
                   'X-Title': 'Revvel PDF Orchestrator',
@@ -131,8 +131,8 @@ jobs:
               });
 
               if (!openRouterRes.ok) {
-                const t = await openRouterRes.text().catch(() => '');
-                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${t.slice(0, 500)}`);
+                const errorText = await openRouterRes.text().catch(() => '');
+                core.setFailed(`OpenRouter returned HTTP ${openRouterRes.status}: ${errorText.slice(0, 500)}`);
                 return;
               }
 
@@ -149,7 +149,7 @@ jobs:
                 brief: orchestrationBrief,
               };
             } catch (e) {
-              core.setFailed(`OpenRouter orchestration failed: ${e && e.message ? e.message : String(e)}`);
+              core.setFailed(`OpenRouter orchestration failed: ${e?.message ?? String(e)}`);
               return;
             }
 
