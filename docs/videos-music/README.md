@@ -17,3 +17,7 @@ Use UTC timestamp + versioning in the filename:
 Example:
 
 - `bulletproof-love-20260515T151936Z-v1.mp4`
+
+## Scaffolding for new videos
+
+Use `docs/videos-music/_template/` as the reusable scaffold for each new song folder.
