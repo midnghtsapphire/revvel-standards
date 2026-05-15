@@ -171,13 +171,16 @@ function safeParse(text: string): Record<string, unknown> | null {
   return extractJsonFromContent(text);
 }
 
-function isDiagnosisResult(value: Record<string, unknown>): value is DiagnosisResult {
+function isDiagnosisResult(value: unknown): value is DiagnosisResult {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<Record<keyof DiagnosisResult, unknown>>;
+
   return (
-    typeof value.failure_class === 'string' &&
-    typeof value.root_cause === 'string' &&
-    typeof value.is_retryable === 'boolean' &&
-    typeof value.recommended_action === 'string' &&
-    (typeof value.next_step_for_human === 'string' || value.next_step_for_human === null)
+    typeof candidate.failure_class === 'string' &&
+    typeof candidate.root_cause === 'string' &&
+    typeof candidate.is_retryable === 'boolean' &&
+    typeof candidate.recommended_action === 'string' &&
+    (typeof candidate.next_step_for_human === 'string' || candidate.next_step_for_human === null)
   );
 }
 
