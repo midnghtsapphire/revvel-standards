@@ -360,7 +360,7 @@ export async function POST(request: NextRequest) {
       video_exists: job.video_exists,
       publish_status: job.publish_status,
       verified_at_utc: job.verified_at_utc,
-      message: `Video generation job submitted to ${selectedProvider}. Poll /api/video/${jobId}/status to track progress.`,
+      message: `Video generation job submitted to ${selectedProvider}. Poll /api/video?jobId=${jobId} to track progress.`,
     });
 
   } catch (error) {
