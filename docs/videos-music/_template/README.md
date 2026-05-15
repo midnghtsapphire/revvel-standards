@@ -16,6 +16,11 @@ Copy `video-manifest-template.json` into the song folder and rename it to:
 video-manifest-YYYYMMDDTHHMMSSZ-v1.json
 ```
 
+Format note:
+
+- `created_at_utc` in JSON uses ISO 8601 UTC: `YYYY-MM-DDTHH:MM:SSZ`
+- Filenames use a filesystem-safe compact UTC timestamp: `YYYYMMDDTHHMMSSZ`
+
 ## 3) Canonical video filename
 
 ```text
