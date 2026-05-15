@@ -332,7 +332,7 @@ export async function POST(request: NextRequest) {
     const audioFile = formData.get('audio') as File | null;
     const avatarFile = formData.get('avatar') as File | null;
 
-    if (!audioFile || !avatarFile) {
+    if (!(audioFile instanceof File) || !(avatarFile instanceof File)) {
       return NextResponse.json(
         { error: 'Audio and avatar files are required', render_status: 'failed', video_exists: false },
         { status: 400 },
