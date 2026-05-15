@@ -13,6 +13,11 @@
  * handled by deterministic code, never by the LLM.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { extractJsonFromContent } = require('./video-job-helpers') as {
+  extractJsonFromContent: (content: string) => Record<string, unknown> | null;
+};
+
 export type FailureClass =
   | 'missing_secret'
   | 'connectivity'
@@ -164,14 +169,7 @@ function isoNow(): string {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function safeParse(text: string): Record<string, any> | null {
-  // Extract JSON from markdown code blocks if present
-  const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || text.match(/(\{[\s\S]*\})/);
-  if (!jsonMatch) return null;
-  try {
-    return JSON.parse(jsonMatch[1].trim());
-  } catch {
-    return null;
-  }
+  return extractJsonFromContent(text) as Record<string, any> | null;
 }
 
 async function callOpenRouter(

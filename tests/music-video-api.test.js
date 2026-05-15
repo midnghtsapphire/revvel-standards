@@ -8,6 +8,8 @@
  */
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const {
   VIDEO_PROVIDERS,
   selectBestProvider,
@@ -125,6 +127,22 @@ test('extractJsonFromContent handles strings containing escaped quotes', () => {
   const content = '{"message":"he said \\"hello\\""}';
   const result = extractJsonFromContent(content);
   assert.strictEqual(result.message, 'he said "hello"');
+});
+
+test('orchestrator safeParse delegates to balanced JSON extraction', () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, '../products/music-video-creator/src/lib/orchestrator.ts'),
+    'utf8',
+  );
+
+  assert.ok(
+    source.includes('extractJsonFromContent(text)'),
+    'orchestrator safeParse must use the balanced-brace extractor',
+  );
+  assert.ok(
+    !source.includes('text.match(/(\\{[\\s\\S]*\\})/)'),
+    'orchestrator safeParse must not use the greedy JSON fallback regex',
+  );
 });
 
 // ─── buildErrorJobStatus ──────────────────────────────────────────────────────
