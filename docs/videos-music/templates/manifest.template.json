@@ -27,7 +27,7 @@
     "completed_at_utc": null
   },
   "render_status": "draft",
-  "lifecycle_stage": "intake",
+  "lifecycle_stage": "draft",
   "video_exists": false,
   "artifact_storage_url": null,
   "canonical_video_url": null,
