@@ -91,10 +91,6 @@ jobs:
                   elif line.startswith('-') and not line.startswith('---'):
                       # removed line — does not advance new-file line counter
                       pass
-                  elif line.startswith(' '):
-                      flush()
-                      if current_hunk_line is not None:
-                          current_hunk_line += 1
           flush()
 
           if not violations:
