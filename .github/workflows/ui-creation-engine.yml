@@ -33,6 +33,11 @@ on:
         required: false
         type: number
 
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
 jobs:
   ui-creation:
     runs-on: ubuntu-latest
@@ -66,14 +71,25 @@ jobs:
             echo "issue_number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
           else
             ISSUE_NUMBER="${{ github.event.issue.number }}"
-            ISSUE_BODY="${{ github.event.issue.body }}"
+            
+            # Save issue body to file to avoid shell injection
+            cat > /tmp/issue_body.txt << 'ISSUE_BODY_EOF'
+          ${{ github.event.issue.body }}
+          ISSUE_BODY_EOF
             
             # Parse fields from issue body (expecting structured format)
-            BUSINESS=$(echo "$ISSUE_BODY" | grep -oP '(?<=Business:\s).*' || echo "")
-            INDUSTRY=$(echo "$ISSUE_BODY" | grep -oP '(?<=Industry:\s).*' || echo "")
-            LOCATION=$(echo "$ISSUE_BODY" | grep -oP '(?<=Location:\s).*' || echo "")
-            SERVICES=$(echo "$ISSUE_BODY" | grep -oP '(?<=Services:\s).*' || echo "")
-            PLATFORM=$(echo "$ISSUE_BODY" | grep -oP '(?<=Platform:\s).*' || echo "website")
+            BUSINESS=$(grep -oP '(?<=Business:\s).*' /tmp/issue_body.txt || echo "")
+            INDUSTRY=$(grep -oP '(?<=Industry:\s).*' /tmp/issue_body.txt || echo "")
+            LOCATION=$(grep -oP '(?<=Location:\s).*' /tmp/issue_body.txt || echo "")
+            SERVICES=$(grep -oP '(?<=Services:\s).*' /tmp/issue_body.txt || echo "")
+            PLATFORM=$(grep -oP '(?<=Platform:\s).*' /tmp/issue_body.txt || echo "website")
+            
+            # Sanitize inputs (alphanumeric, spaces, dashes, commas only)
+            BUSINESS=$(echo "$BUSINESS" | sed 's/[^a-zA-Z0-9 ,.-]//g')
+            INDUSTRY=$(echo "$INDUSTRY" | sed 's/[^a-zA-Z0-9 ,.-]//g')
+            LOCATION=$(echo "$LOCATION" | sed 's/[^a-zA-Z0-9 ,.-]//g')
+            SERVICES=$(echo "$SERVICES" | sed 's/[^a-zA-Z0-9 ,.-]//g')
+            PLATFORM=$(echo "$PLATFORM" | sed 's/[^a-zA-Z0-9-]//g')
             
             echo "business=$BUSINESS" >> $GITHUB_OUTPUT
             echo "industry=$INDUSTRY" >> $GITHUB_OUTPUT
@@ -81,6 +97,9 @@ jobs:
             echo "services=$SERVICES" >> $GITHUB_OUTPUT
             echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
             echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+            
+            # Clean up temp file
+            rm /tmp/issue_body.txt
           fi
 
       - name: Run UI Creation Engine
