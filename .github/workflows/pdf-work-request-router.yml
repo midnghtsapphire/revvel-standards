@@ -36,6 +36,7 @@ jobs:
             const marker = '<!-- pdf-workflow-router:v1 -->';
             const makeWebhook = process.env.MAKE_PDF_WR_WEBHOOK_URL || '';
             const openRouterKey = process.env.OPENROUTER_API_KEY || '';
+            const makeStatusMarker = '<!-- pdf-workflow-make:v1 -->';
 
             let issue_number;
             let body;
@@ -86,6 +87,8 @@ jobs:
             const base = `https://github.com/${owner}/${repo}/blob/main`;
             const issueTitle = context.payload.issue?.title || '';
             const MAX_ERROR_TEXT_LENGTH = 500;
+            const MAKE_MAX_ATTEMPTS = 3;
+            const MAKE_TIMEOUT_MS = 20000;
 
             let openrouterOrchestration = null;
             if (!openRouterKey) {
@@ -169,6 +172,11 @@ jobs:
               automation_guide_url: `${base}/workflows/PDF_AUTOMATION_GUIDE.md`,
               pdf_shape_url: `${base}/standards/shapes/PDF.md`,
             };
+            const makePayload = {
+              ...payload,
+              trigger_mode: 'auto_create_pdf',
+              idempotency_key: `pdf-wr-${issue_number}`,
+            };
 
             const batchLine =
               parsed.validBatch
@@ -210,27 +218,83 @@ jobs:
 
             core.notice('Posted pdf-workflow-router comment on issue ' + issue_number);
 
-            // A) External trigger (Make.com) — optional
-            // Configure repo secret: MAKE_PDF_WR_WEBHOOK_URL
-            if (makeWebhook) {
+            // A) External trigger (Make.com) — required for full auto-creation
+            if (!makeWebhook) {
+              core.setFailed('MAKE_PDF_WR_WEBHOOK_URL is required: set the secret to enable automatic PDF creation in Make.com.');
+              return;
+            }
+
+            let makeResponse = null;
+            for (let attempt = 1; attempt <= MAKE_MAX_ATTEMPTS; attempt += 1) {
+              const controller = new AbortController();
+              const timeout = setTimeout(() => controller.abort(), MAKE_TIMEOUT_MS);
               try {
                 const res = await fetch(makeWebhook, {
                   method: 'POST',
-                  headers: { 'content-type': 'application/json' },
-                  body: JSON.stringify(payload),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Idempotency-Key': makePayload.idempotency_key,
+                  },
+                  body: JSON.stringify(makePayload),
+                  signal: controller.signal,
                 });
+                const responseText = await res.text().catch(() => '');
                 if (!res.ok) {
-                  const t = await res.text().catch(() => '');
-                  core.warning(`Make webhook returned HTTP ${res.status}. Body: ${t.slice(0, 500)}`);
-                } else {
-                  core.notice('Sent payload to Make webhook.');
+                  if (attempt === MAKE_MAX_ATTEMPTS) {
+                    core.setFailed(
+                      `Make webhook failed after ${MAKE_MAX_ATTEMPTS} attempts (HTTP ${res.status}): ${responseText.slice(0, 500)}`
+                    );
+                    return;
+                  }
+                  core.warning(`Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (HTTP ${res.status}); retrying.`);
+                  continue;
                 }
+
+                let responseJson = null;
+                try {
+                  responseJson = responseText ? JSON.parse(responseText) : null;
+                } catch {
+                  responseJson = null;
+                }
+                makeResponse = {
+                  status: res.status,
+                  body: responseJson || responseText || null,
+                };
+                core.notice(`Sent payload to Make webhook (attempt ${attempt}/${MAKE_MAX_ATTEMPTS}).`);
+                break;
               } catch (e) {
-                core.warning(`Make webhook POST failed: ${e && e.message ? e.message : String(e)}`);
+                if (attempt === MAKE_MAX_ATTEMPTS) {
+                  core.setFailed(
+                    `Make webhook POST failed after ${MAKE_MAX_ATTEMPTS} attempts: ${e?.message ?? String(e)}`
+                  );
+                  return;
+                }
+                core.warning(
+                  `Make webhook attempt ${attempt}/${MAKE_MAX_ATTEMPTS} failed (${e?.message ?? String(e)}); retrying.`
+                );
+              } finally {
+                clearTimeout(timeout);
               }
-            } else {
-              core.info('MAKE_PDF_WR_WEBHOOK_URL not set; skipping Make webhook POST.');
             }
+
+            const makeStatusComment = [
+              makeStatusMarker,
+              '### Make auto-creation triggered',
+              '',
+              `- Status: HTTP ${makeResponse?.status ?? 'unknown'}`,
+              `- Idempotency key: \`${makePayload.idempotency_key}\``,
+              '',
+              '```json',
+              JSON.stringify(makeResponse?.body ?? { message: 'No response body returned' }, null, 2),
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: makeStatusComment,
+            });
 
             // B) Internal trigger (GitHub-only) — repository_dispatch
             // Consumers can listen for: on: repository_dispatch.types: [pdf_work_request]
