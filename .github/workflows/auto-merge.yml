@@ -19,7 +19,7 @@ jobs:
       github.event.label.name == 'auto-merge'
     steps:
       - name: Enable pull request auto-merge (squash)
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -73,7 +73,7 @@ jobs:
       (github.event.action == 'labeled'   && github.event.label.name == 'won''t-merge')
     steps:
       - name: Disable pull request auto-merge
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

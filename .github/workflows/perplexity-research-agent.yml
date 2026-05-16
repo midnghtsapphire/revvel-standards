@@ -37,7 +37,7 @@ jobs:
        (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Research issue with Perplexity Sonar
         id: research

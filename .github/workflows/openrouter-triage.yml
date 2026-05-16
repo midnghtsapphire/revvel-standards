@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Apply triage labels (best effort)
         id: labels
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
@@ -93,7 +93,7 @@ jobs:
     steps:
       - name: Collect open triage:new items missing openrouter label
         id: collect
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -144,7 +144,7 @@ jobs:
       matrix: ${{ fromJson(needs.sweep-discover.outputs.matrix) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Run OpenRouter triage for each queued item
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

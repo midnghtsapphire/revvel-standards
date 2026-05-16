@@ -49,9 +49,9 @@ jobs:
       ENABLE_AUTO_POSTING: "true"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           cache: npm
@@ -59,7 +59,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Restore inventory cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: reesereviews/vine-marketplace/data/inventory.json
           key: vine-inventory-${{ github.run_id }}
@@ -93,7 +93,7 @@ jobs:
             node index.js post
           fi
       - name: Save inventory artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: vine-inventory-${{ github.run_number }}
           path: reesereviews/vine-marketplace/data/inventory.json
@@ -117,9 +117,9 @@ jobs:
       REPOST_STALE_DAYS: "7"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           cache: npm
@@ -127,7 +127,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Restore inventory cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: reesereviews/vine-marketplace/data/inventory.json
           key: vine-inventory-${{ github.run_id }}
@@ -152,9 +152,9 @@ jobs:
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           cache: npm
@@ -162,7 +162,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Restore inventory cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: reesereviews/vine-marketplace/data/inventory.json
           key: vine-inventory-${{ github.run_id }}
