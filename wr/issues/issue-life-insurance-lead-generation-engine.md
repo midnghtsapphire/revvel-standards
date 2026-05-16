@@ -92,7 +92,7 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 
 ### Lead Source Strategy
 
-> **Compliance Note:** All sources used are limited to officially published public records and open government data portals. No commercial ToS-restricted APIs (e.g., Zillow, Redfin) are used. Obituary / final-expense outreach targets bereaved *family members* only when publicly listed as estate contacts in official notices, and must comply with all applicable state solicitation laws before any outreach.
+> **Compliance Note:** All sources used are limited to officially published public records, open government data portals, and licensed API programs. LinkedIn data is accessed exclusively via LinkedIn's paid API program (~$100/mo) — leads are **not scraped** from LinkedIn. Obituary / final-expense outreach targets bereaved *family members* only when publicly listed as estate contacts in official notices, and must comply with all applicable state solicitation laws before any outreach.
 
 | Source Type | Method | Data Points Extracted | Lead Tier |
 |-------------|--------|-----------------------|-----------|
@@ -101,7 +101,7 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 | Vital Records — Birth Notices | State/county public birth announcement feeds | Parent name(s), city, approximate birth date | Cold ($25–$40/PDF) |
 | Vital Records — Death / Estate Notices | Official county probate notices, newspaper legal notices | Surviving family member(s), estate contact, city | Cold ($25–$40/PDF) |
 | Marriage License Records | County clerk open-data portals | Couple names, city, license date | Warm ($40–$100/PDF) |
-| LinkedIn (public profiles only) | OpenRouter Scout agents on public pages | Job title, employer, location | Warm ($40–$100/PDF) |
+| LinkedIn | LinkedIn paid API program (~$100/mo) — **not scraped** | Job title, employer, location, recent activity | Warm ($40–$100/PDF) |
 
 ### Competitors & Market Positioning
 
@@ -173,26 +173,30 @@ The engine uses a three-role swarm:
 ```javascript
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
-  // 1. Scout Phase: query public sources for trigger signals
+  // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
   const rawSignals = await scoutAgent({ triggerType, state });
 
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Deduplicate: remove any leads already sold in previous batches
-  const newLeads = await deduplicateLeads(qualifiedLeads);
+  // 3. TCPA filter: only include leads flagged tcpa_compliant: true
+  const tcpaLeads = qualifiedLeads.filter(lead => lead.tcpa_compliant === true);
 
-  // 4. Compile Phase: take top batchSize leads and structure output
+  // 4. Deduplicate: remove any leads already sold in previous batches
+  const newLeads = await deduplicateLeads(tcpaLeads);
+
+  // 5. Compile Phase: take top batchSize leads and structure output
   const batch = newLeads.slice(0, batchSize);
   const output = await compilerAgent({ leads: batch });
 
-  // 5. Build PDF (10–20 leads per file) and mark leads as sold
+  // 6. Build PDF (10–20 leads per file) and mark leads as sold
   const pdfPath = await buildLeadPDF(output, { triggerType, state });
   await markLeadsAsSold(output);
 
-  console.log(`✅ ${output.length} qualified leads compiled → ${pdfPath}`);
+  console.log(`✅ ${output.length} TCPA-compliant leads compiled → ${pdfPath}`);
 }
 ```
 
@@ -246,6 +250,7 @@ jobs:
       - name: Run Life Insurance Lead Engine
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          LINKEDIN_API_KEY: ${{ secrets.LINKEDIN_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node scripts/life-insurance-lead-engine.js \
@@ -285,6 +290,7 @@ Each compiled lead record contains:
   "source": "county-deed-record",
   "source_url": "https://...",
   "verified": true,
+  "tcpa_compliant": true,
   "pdf_batch_id": "TX-new-homeowner-2026-05-16-batch-001",
   "sold": false,
   "exported_at": "ISO-8601 timestamp"
@@ -346,16 +352,17 @@ Each compiled lead record contains:
 
 | Concern | Mitigation |
 |---------|------------|
-| PII handling | Only surface officially published public records; no scraping of gated/private systems |
-| TCPA compliance | Include opt-in status field; filter verified opt-out lists before each PDF export |
+| PII handling | Only surface officially published public records and data returned by licensed API programs; no scraping of gated/private systems |
+| TCPA compliance | `tcpa_compliant: true/false` flag on every lead record; only leads with `tcpa_compliant: true` are included in exported PDFs; verified opt-out lists are filtered before each export |
 | CAN-SPAM | Do not include email addresses unless sourced from a confirmed opt-in channel |
 | FCRA | Lead PDFs are for sales/marketing outreach only; **not** for underwriting risk assessment, credit, employment, housing, or policy approval decisions |
+| LinkedIn ToS | LinkedIn data accessed **only** via LinkedIn's paid API program (~$100/mo) — no scraping of LinkedIn profiles |
 | Zillow / Redfin ToS | **Not used.** New homeowner data sourced only from official county recorder open-data portals |
 | Death / estate outreach | Only official county probate legal notices used; outreach must comply with applicable state solicitation laws |
 | Deduplication | Sold registry (`dist/leads/sold-registry.json`) ensures no contact is resold across PDF batches |
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
-> *"This lead list is compiled from publicly available government records and is intended for life insurance sales and marketing outreach only. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
+> *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
@@ -364,8 +371,9 @@ Each compiled lead record contains:
 ### Immediate Actions
 
 1. **Create `scripts/life-insurance-lead-engine.js`**  
-   - Scout → Qualify → Deduplicate → Compile pipeline  
-   - Sources: county deed records, marriage filings, SoS business filings, birth/death public notices  
+   - Scout → TCPA filter → Deduplicate → Compile pipeline  
+   - Sources: county deed records, marriage filings, SoS business filings, birth/death public notices, LinkedIn paid API  
+   - Requires: `OPENROUTER_API_KEY`, `LINKEDIN_API_KEY` (LinkedIn paid API program, ~$100/mo)  
    - Effort: 4–6 hours
 
 2. **Create `scripts/life-insurance-pdf-builder.js`**  
@@ -383,10 +391,12 @@ Each compiled lead record contains:
 4. **Create `.github/workflows/life-insurance-lead-engine.yml`**  
    - `workflow_dispatch` with `trigger_type`, `state`, `batch_size` inputs  
    - Includes `GH_TOKEN` + `issues: write` permission for self-healing error issues  
+   - Requires `OPENROUTER_API_KEY` and `LINKEDIN_API_KEY` secrets in repository settings  
    - Upload `dist/leads/*.pdf` as artifact  
    - Effort: 1–2 hours
 
-5. **Write tests for deduplication registry**  
+5. **Write tests for TCPA filter and deduplication registry**  
+   - Test: leads with `tcpa_compliant: false` are excluded from every PDF export  
    - Test: previously sold leads are filtered out from each new PDF batch  
    - Test: `sold-registry.json` is updated atomically after each export (handle concurrent writes if multiple batches run simultaneously)  
    - Test: no duplicates exist within a single PDF batch  
