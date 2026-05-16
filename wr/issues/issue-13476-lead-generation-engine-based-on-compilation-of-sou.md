@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This Work Request defines the architectural requirements and deployment plan for a multi-agent Lead Generation Engine. It leverages OpenRouter swarms and web scraping (Sources and Queries) to autonomously build high-intent lead lists. The resulting system serves as a scalable monetization asset aligned with the Prime Directive, targeting a Phase 2 ($30k/mo) revenue milestone through direct integration with the Polar.sh and CRM pipelines.
+This Work Request defines the architectural requirements and deployment plan for a multi-agent Lead Generation Engine focused on **life insurance**. It leverages OpenRouter swarms and web scraping (Sources and Queries) to autonomously build high-intent life insurance prospect lists. The resulting system serves as a scalable monetization asset aligned with the Prime Directive, targeting $30k/mo in revenue through direct integration with life insurance affiliate programs, Polar.sh, and CRM pipelines.
 
 ---
 
@@ -66,42 +66,44 @@ scripts/
 
 #### Current Market Trends
 
-High-quality B2B and B2C lead generation is shifting from static databases to dynamic, AI-driven compilation pipelines. Autonomous agents that can scrape custom queries, evaluate relevance, and compile enriched data files (CSV, JSON) command premium pricing in digital marketplaces.
+Life insurance lead generation is a high-value vertical where qualified, high-intent leads (aged 35–65, recent life events such as marriage, new child, or home purchase) command $20–$80 per lead in affiliate marketplaces. AI-driven compilation pipelines that can scrape public records, social signals, and licensed data sources are rapidly displacing static contact databases.
 
 **Sources:**
-- Internal Revenue Objectives: Phase 2 scaling requirements.
+- Internal Revenue Objectives: $30k/mo revenue target.
 - OpenRouter Ecosystem: Multi-model data synthesis capabilities.
+- LIMRA 2025 Market Data: ~$900B annual life insurance market in the US.
 
 #### Competitors & Alternatives
 
 | Competitor | Features | Pricing | Market Share |
 |------------|----------|---------|--------------|
-| Apollo.io | Static data, basic intent | $49-$99/mo | High |
-| Clay.com | Multi-source enrichment | $149+/mo | Medium |
-| Custom Python Scrapers | Brittle, high maintenance | High Dev Cost | Low |
+| EverQuote | Real-time life insurance leads | $20–$60/lead | High |
+| MediaAlpha | Programmatic insurance lead exchange | Custom | High |
+| All Web Leads | Life + auto lead aggregation | $15–$50/lead | Medium |
+| Custom Scrapers | Brittle, high maintenance | High Dev Cost | Low |
 
 #### Gaps in Existing Solutions
 
-1. **Gap 1:** High cost of entry and lack of native GitHub/Markdown integration.
-   - **Opportunity:** Build a cost-effective CLI and Action-driven engine that natively outputs markdown and structured CRM data.
+1. **Gap 1:** Existing platforms charge premium per-lead pricing with no customization of targeting criteria.
+   - **Opportunity:** Build a cost-effective engine that generates custom life insurance prospect lists based on configurable life-event queries (new homeowners, new parents, recent marriages, etc.).
    
-2. **Gap 2:** Lack of deep context and multi-agent synthesis.
-   - **Opportunity:** Use OpenRouter swarms (e.g., Scout agents) to refine queries and filter out false positives before list generation.
+2. **Gap 2:** No platforms offer GitHub-native, automation-first pipelines for small-agency or independent agent use cases.
+   - **Opportunity:** Use OpenRouter swarms (Scout agents) to refine life insurance queries and filter out unverified prospects before list generation.
 
 #### Monetization Opportunities
 
 1. **Direct Revenue:**
-   - Sellable Lead Lists: Generated via automated queries and packaged as digital downloads on Gumroad/Polar.sh.
-   - Lead Generation Engine Access: Charge for executing custom queries using the engine on a per-run basis.
+   - Sellable Life Insurance Lead Lists: Generated via automated queries targeting life event signals, packaged as digital downloads on Gumroad/Polar.sh.
+   - Engine Access: Charge independent life insurance agents for executing custom queries (e.g., new homeowners in ZIP code X) on a per-run basis.
 
 2. **Affiliate Partnerships:**
-   - Web Scraping APIs: BrightData, ScraperAPI.
-   - CRM Integrations: HubSpot, Salesforce.
+   - Life Insurance Carriers: Prudential, Pacific Life, Mutual of Omaha affiliate programs.
+   - Lead Aggregators: EverQuote, MediaAlpha partner API integrations.
 
 3. **Premium Features:**
-   - Enterprise Batch Generation: Scale up to 10k+ leads per batch for premium clients.
+   - Enterprise Batch Generation: Scale up to 10k+ prospects per batch for independent agency groups.
 
-**Revenue Potential:** Aggressive ($30k/mo - Phase 2 target)
+**Revenue Potential:** $30k/mo target through lead list sales and affiliate commissions.
 
 ### Technology Stack Research
 
@@ -148,31 +150,40 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 #### Relevant Keywords
 
 **Primary Keywords:**
-- AI lead generation engine: 1.5k - Medium
-- automated B2B lead scraping: 2k - High
+- life insurance leads: 18k/mo - High
+- life insurance lead generation: 5k/mo - High
 
 **Long-tail Keywords:**
-- multi-agent lead compilation workflow: 200 - Low
-- github actions lead generation: 150 - Low
+- buy life insurance leads online: 800/mo - Medium
+- aged life insurance leads: 400/mo - Medium
+- life insurance prospect list: 250/mo - Low
 
 #### Competitor Content Strategies
 
 | Competitor | Content Type | Frequency | Engagement | Takeaway |
 |------------|--------------|-----------|------------|----------|
-| Clay.com | Tutorials / Recipes | Weekly | High | Show, don't tell; provide actionable GitHub workflows |
+| EverQuote | Product pages + blog | Weekly | High | Emphasize lead quality guarantees and filtering options |
+| MediaAlpha | Case studies | Monthly | Medium | ROI-focused messaging for insurance agencies |
 
 #### Partnership Opportunities
 
-1. **Make.com:**
+1. **EverQuote Partner API:**
+   - **Type:** Technology / Lead Exchange
+   - **Benefit:** Sell generated life insurance leads directly through their platform.
+   - **Contact:** EverQuote Partner Program.
+
+2. **Make.com:**
    - **Type:** Technology
-   - **Benefit:** Lead routing and CRM ingestion.
+   - **Benefit:** Lead routing and CRM ingestion automation.
    - **Contact:** Partner Program.
 
 #### Affiliate Programs
 
 | Program | Commission | Cookie Duration | Fit Score |
 |---------|------------|-----------------|-----------|
-| Make.com | 20% | 30 Days | 5/5 |
+| Mutual of Omaha | $50–$80/policy referral | 30 Days | 5/5 |
+| Pacific Life | $40–$70/policy referral | 30 Days | 5/5 |
+| Make.com | 20% | 30 Days | 4/5 |
 
 ---
 
@@ -183,10 +194,10 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 **10M by 2030 Goal:**
 - Current contribution: $0/month (Pipeline establishment)
 - Potential contribution: $10k+ / month
-- Path to contribution: Autonomous product generation matching the "sellable-pdf" WR pipeline strategy.
+- Path to contribution: Autonomous life insurance prospect list generation sold directly to independent insurance agents and agencies.
 
 **$2000+/month Target (Start: May 1, 2026):**
-- Revenue streams identified: 1 (Direct lead list sales)
+- Revenue streams identified: 1 (Direct life insurance lead list sales + carrier affiliate commissions)
 - Estimated monthly revenue: $2k - $5k initial
 - Time to first revenue: Immediate post-deployment
 
@@ -260,13 +271,13 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 
 #### Missing Features from Research
 
-1. **Lead Synthesis Orchestrator:**
-   - **Why:** To transform raw queries into structured JSON lead lists.
-   - **How:** Create `scripts/lead-generation-engine.js` to interface with OpenRouter.
+1. **Life Insurance Lead Synthesis Orchestrator:**
+   - **Why:** To transform raw life-event queries (new homeowners, new parents, recent marriages) into structured JSON prospect lists with contact info and policy fit score.
+   - **How:** Create `scripts/lead-generation-engine.js` to interface with OpenRouter and compile life insurance prospects.
    - **Effort:** 4 hours
 
 2. **Automated Action Trigger:**
-   - **Why:** Enables hands-free execution.
+   - **Why:** Enables hands-free execution when new life-event data sources are available.
    - **How:** Add `.github/workflows/lead-generation-engine.yml` triggered by label.
    - **Effort:** 1 hour
 
@@ -305,6 +316,8 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 **Links to Add:**
 | Product/Service | Affiliate Program | Commission | Location |
 |----------------|-------------------|------------|----------|
+| Mutual of Omaha | Life Insurance Affiliate | $50–$80/referral | README / Workflows |
+| Pacific Life | Life Insurance Affiliate | $40–$70/referral | README / Workflows |
 | Make.com | Partner | 20% | README / Workflows |
 
 #### Payment Integration
@@ -315,7 +328,7 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 - [ ] Integration implemented
 - [ ] Checkout tested
 
-**Recommended Platform:** Polar.sh for developer-focused lists, Gumroad for B2B lists.
+**Recommended Platform:** Polar.sh for life insurance agent-focused lists, Gumroad for bulk prospect data sales.
 
 #### Tracking & Analytics
 
@@ -407,11 +420,11 @@ None.
 
 ## Recommendations
 
-### Immediate Actions (P0)
+### Immediate Actions
 
 1. **Develop `scripts/lead-generation-engine.js`**
-   - **Why:** Core requirement for the issue.
-   - **How:** Fork logic from `ui-creation-engine.js`, replacing design scouts with data synthesis scouts.
+   - **Why:** Core requirement for the issue; generates life insurance prospect lists from life-event signals.
+   - **How:** Fork logic from `ui-creation-engine.js`, replacing design scouts with data synthesis scouts that query for life insurance prospects (new homeowners, new parents, recent marriages).
    - **Effort:** 4 hours
    - **Revenue Impact:** $2k/month initial target.
 
@@ -421,13 +434,13 @@ None.
    - **Effort:** 1 hour
    - **Revenue Impact:** Scalability enabler.
 
-### Short-Term Actions (P1) - Within 1-2 Weeks
+### Short-Term Actions - Within 1-2 Weeks
 
-1. Implement CSV Exporter: Output JSON to CSV for direct Gumroad selling.
+1. Implement CSV Exporter: Output JSON prospect lists to CSV with fields (Name, Phone, Email, Life Event, ZIP, Policy Fit Score) for direct Gumroad/Polar.sh selling to life insurance agents.
 
-### Long-Term Actions (P2) - Within 1-2 Months
+### Long-Term Actions - Within 1-2 Months
 
-1. Integrate with OSINT Pipelines: Feed structured leads directly into existing OSINT analysis loops.
+1. Integrate with OSINT Pipelines: Feed structured life insurance prospects directly into existing OSINT analysis loops for deeper enrichment (income estimates, household composition).
 
 ---
 
@@ -471,8 +484,8 @@ None.
 ## Status Summary
 
 **Research Status:** ✅ Complete
-**Implementation Priority:** P0
-**Revenue Potential:** $30k/month (Phase 2 Target)
+**Implementation Priority:** Immediate
+**Revenue Potential:** $30k/month target
 **Effort Required:** 5 hours
 **Ship-to-Market Ready:** Yes
 **Approval Required:** @midnghtsapphire
