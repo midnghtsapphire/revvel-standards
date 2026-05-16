@@ -371,7 +371,7 @@ Each compiled lead record contains:
 ### Immediate Actions
 
 1. **Create `scripts/life-insurance-lead-engine.js`**  
-   - Scout → TCPA filter → Deduplicate → Compile pipeline  
+   - Scout → Qualify → TCPA filter → Deduplicate → Compile pipeline
    - Sources: county deed records, marriage filings, SoS business filings, birth/death public notices, LinkedIn paid API  
    - Requires: `OPENROUTER_API_KEY`, `LINKEDIN_API_KEY` (LinkedIn paid API program, ~$100/mo)  
    - Effort: 4–6 hours
