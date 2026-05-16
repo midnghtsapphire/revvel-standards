@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This Work Request defines the architecture and deployment plan for an AI-powered **Life Insurance Lead Generation Engine**. The engine autonomously sources, qualifies, and compiles high-intent prospective life insurance buyers by querying publicly available data, social signals, and life-event triggers. Leads are delivered as enriched CSV/JSON files, ready for direct outreach or CRM ingestion. The system targets agents, brokers, and independent marketing organizations (IMOs) looking for warm, pre-qualified prospects.
+This Work Request defines the architecture and deployment plan for an AI-powered **Life Insurance Lead Generation Engine**. The engine autonomously sources, qualifies, and compiles high-intent prospective life insurance buyers using publicly available life-event data (birth records, new homeowner filings, business formation records, etc.). Leads are packaged as small, curated **PDF batches of 10–20 exclusive leads** priced at **$40–$100 per PDF**, with a no-duplicates guarantee. The product is distributed via a landing page where buyers can request life insurance quotes, and through Polar.sh / Gumroad digital delivery. Birth and death record–sourced leads carry a lower per-lead price point due to higher cold-outreach effort required.
 
 ---
 
@@ -44,16 +44,20 @@ This Work Request defines the architecture and deployment plan for an AI-powered
 scripts/
   life-insurance-lead-engine.js       ← Orchestrator script
   life-insurance-lead-qualifiers.js   ← Scoring & filtering logic
+  life-insurance-pdf-builder.js       ← PDF batch builder (10–20 leads/PDF)
 .github/workflows/
   life-insurance-lead-engine.yml      ← GitHub Actions trigger
 docs/
   LIFE_INSURANCE_LEAD_ENGINE_GUIDE.md ← Usage documentation
+landing/
+  index.html                          ← Quote request landing page
 ```
 
 ### Key Technologies
 
-- **Frontend:** None (automated CLI + GitHub Actions)
+- **Frontend:** Landing page (static HTML + form) for inbound quote requests
 - **Backend:** Node.js (native `fetch`, no extra scraping libs needed)
+- **PDF Generation:** pandoc / wkhtmltopdf — 10–20 leads per PDF batch
 - **Database:** CSV / JSON output files, optional CRM webhook delivery
 - **AI Layer:** OpenRouter (multi-model swarm: Scout → Qualify → Compile)
 - **Deployment:** GitHub Actions
@@ -88,14 +92,16 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 
 ### Lead Source Strategy
 
-| Source Type | Method | Data Points Extracted |
-|-------------|--------|-----------------------|
-| County Deed Records | Public API / FOIA requests | Name, address, purchase date, mortgage amount |
-| State Business Filings | Secretary of State open data | Business owner name, registration date, address |
-| LinkedIn (public profiles) | OpenRouter Scout agents | Job title, employer, location, recent activity |
-| Social Media Life Events | Public posts (opt-in signals) | Marriage, baby, new home announcements |
-| Real Estate Listing Data | Zillow / Redfin public data | New homeowner name, address, price range |
-| Obituary / Final Expense Signals | Newspaper archives (public) | Family member contact, age of deceased |
+> **Compliance Note:** All sources used are limited to officially published public records and open government data portals. No commercial ToS-restricted APIs (e.g., Zillow, Redfin) are used. Obituary / final-expense outreach targets bereaved *family members* only when publicly listed as estate contacts in official notices, and must comply with all applicable state solicitation laws before any outreach.
+
+| Source Type | Method | Data Points Extracted | Lead Tier |
+|-------------|--------|-----------------------|-----------|
+| County Recorder / Deed Records | Official county open-data portals | Name, address, purchase date, mortgage amount | Warm ($40–$100/PDF) |
+| State Business Filings | Secretary of State open data | Business owner name, registration date, address | Warm ($40–$100/PDF) |
+| Vital Records — Birth Notices | State/county public birth announcement feeds | Parent name(s), city, approximate birth date | Cold ($25–$40/PDF) |
+| Vital Records — Death / Estate Notices | Official county probate notices, newspaper legal notices | Surviving family member(s), estate contact, city | Cold ($25–$40/PDF) |
+| Marriage License Records | County clerk open-data portals | Couple names, city, license date | Warm ($40–$100/PDF) |
+| LinkedIn (public profiles only) | OpenRouter Scout agents on public pages | Job title, employer, location | Warm ($40–$100/PDF) |
 
 ### Competitors & Market Positioning
 
@@ -109,20 +115,34 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 
 ### Revenue & Monetization
 
-1. **Direct Lead List Sales:**  
-   - Packaged CSV exports sold via Polar.sh / Gumroad  
-   - Price: $47–$297 per list (500–5,000 records)  
-   - Target: IMOs, captive agents, independent brokers
+#### Product: Curated PDF Lead Packs
 
-2. **Subscription Engine Access:**  
-   - Monthly recurring plan: $99/mo for weekly fresh lists  
-   - Niche by state and trigger type
+Each PDF contains **10–20 exclusive, de-duplicated leads** tied to a single life-event trigger and state. Leads are guaranteed unique across all previously sold PDFs (no duplicates).
 
-3. **White-Label API:**  
-   - Per-query API access for insurance agencies to embed lead sourcing  
-   - Tiered at $0.05–$0.15 per qualified lead returned
+| Product Tier | Source Type | Leads per PDF | Price per PDF | Price per Lead |
+|-------------|-------------|--------------|--------------|----------------|
+| Warm Leads Pack | New homeowner, marriage, new business | 10–20 | $40–$100 | $4–$10 |
+| Cold Leads Pack | Birth notices, death/estate notices | 10–20 | $25–$40 | $2–$4 |
 
-**Revenue Target:** $3k–$8k/month (Month 3), scaling to $15k+/month (Month 6+)
+**Why lower pricing for birth/death record leads:** These require higher outreach effort from the buyer (cold contact, longer conversion cycle), so the per-lead price reflects the added friction.
+
+**No-Duplicates Guarantee:** A central deduplication registry tracks all leads sold across all PDFs to ensure the same contact is never resold.
+
+#### Landing Page — Inbound Quote Requests
+
+A static landing page (`landing/index.html`) captures inbound prospects who are actively requesting a life insurance quote. These are the highest-intent leads.
+
+- **Flow:** Visitor fills out name, state, phone/email, coverage type → submission is recorded → compiled into the next available PDF batch
+- **Pricing for inbound leads:** Premium tier — these are self-identified, high-intent buyers. Price per PDF of 10 inbound leads: **$75–$150**
+- **Platform:** Deploy via Vercel / GitHub Pages. Form backed by a GitHub Actions webhook or Make.com automation.
+
+#### Sales Channels
+
+1. **Polar.sh / Gumroad digital storefront** — Browse and buy PDFs by state + trigger type
+2. **Landing page upsell** — Buyers landing on the quote page are offered related PDFs
+3. **Direct / repeat buyers** — Insurance agents subscribe to get weekly fresh PDF batches: **$99–$199/mo**
+
+**Revenue Target:** $1k–$3k/month (Month 1–2), scaling to $5k–$10k+/month (Month 4+) as PDF catalog and storefront grow
 
 ---
 
@@ -154,20 +174,25 @@ The engine uses a three-role swarm:
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-async function runLeadEngine({ triggerType, state, maxLeads = 500 }) {
+async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources for trigger signals
   const rawSignals = await scoutAgent({ triggerType, state });
 
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Compile Phase: structure and export
-  const output = await compilerAgent({ leads: qualifiedLeads });
+  // 3. Deduplicate: remove any leads already sold in previous batches
+  const newLeads = await deduplicateLeads(qualifiedLeads);
 
-  // 4. Export CSV and JSON to dist/leads/
-  await exportLeads(output, { triggerType, state, timestamp: Date.now() });
+  // 4. Compile Phase: take top batchSize leads and structure output
+  const batch = newLeads.slice(0, batchSize);
+  const output = await compilerAgent({ leads: batch });
 
-  console.log(`✅ ${output.length} qualified leads compiled for ${state} — trigger: ${triggerType}`);
+  // 5. Build PDF (10–20 leads per file) and mark leads as sold
+  const pdfPath = await buildLeadPDF(output, { triggerType, state });
+  await markLeadsAsSold(output);
+
+  console.log(`✅ ${output.length} qualified leads compiled → ${pdfPath}`);
 }
 ```
 
@@ -176,7 +201,7 @@ async function runLeadEngine({ triggerType, state, maxLeads = 500 }) {
 node scripts/life-insurance-lead-engine.js \
   --trigger=new-homeowner \
   --state=TX \
-  --max-leads=1000
+  --batch-size=20
 ```
 
 ### GitHub Actions Workflow — `.github/workflows/life-insurance-lead-engine.yml`
@@ -188,17 +213,21 @@ on:
   workflow_dispatch:
     inputs:
       trigger_type:
-        description: 'Life-event trigger type (new-homeowner, new-baby, new-business, pre-retiree)'
+        description: 'Life-event trigger (new-homeowner, marriage, new-business, birth-record, death-record)'
         required: true
         default: 'new-homeowner'
       state:
         description: 'US state abbreviation (e.g. TX, FL, CA)'
         required: true
         default: 'TX'
-      max_leads:
-        description: 'Maximum leads to compile'
+      batch_size:
+        description: 'Number of leads per PDF (10–20 recommended)'
         required: false
-        default: '500'
+        default: '20'
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   generate-leads:
@@ -217,11 +246,12 @@ jobs:
       - name: Run Life Insurance Lead Engine
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node scripts/life-insurance-lead-engine.js \
             --trigger=${{ github.event.inputs.trigger_type }} \
             --state=${{ github.event.inputs.state }} \
-            --max-leads=${{ github.event.inputs.max_leads }} || {
+            --batch-size=${{ github.event.inputs.batch_size }} || {
               echo "::warning::Lead engine run failed - review logs"
               gh issue create \
                 --title "[WR] Life Insurance Lead Engine run failed" \
@@ -229,7 +259,7 @@ jobs:
                 --body "Trigger: ${{ github.event.inputs.trigger_type }} | State: ${{ github.event.inputs.state }}"
             }
 
-      - name: Upload Lead Export
+      - name: Upload Lead PDF
         uses: actions/upload-artifact@v4
         with:
           name: life-insurance-leads-${{ github.event.inputs.state }}-${{ github.event.inputs.trigger_type }}
@@ -251,12 +281,17 @@ Each compiled lead record contains:
   "trigger_type": "new-homeowner",
   "trigger_date": "YYYY-MM-DD",
   "intent_score": 8,
+  "lead_tier": "warm",
   "source": "county-deed-record",
   "source_url": "https://...",
   "verified": true,
+  "pdf_batch_id": "TX-new-homeowner-2026-05-16-batch-001",
+  "sold": false,
   "exported_at": "ISO-8601 timestamp"
 }
 ```
+
+**PDF Batch:** Each generated PDF contains 10–20 records. The `pdf_batch_id` links all leads in a given PDF and is used by the deduplication registry to prevent reselling the same contact.
 
 ---
 
@@ -266,10 +301,10 @@ Each compiled lead record contains:
 
 | Metric | Value |
 |--------|-------|
-| 10M by 2030 contribution path | Lead list sales + white-label API |
-| $2,000+/month target (May 2026) | Achievable Month 2 via Polar.sh sales |
-| Autonomy level | High — fully triggered via GitHub Actions label |
-| Time to first revenue | ~2 weeks post-deployment |
+| 10M by 2030 contribution path | PDF lead pack sales + inbound landing page + subscription |
+| $2,000+/month target (May 2026) | Achievable Month 1–2: selling 30–50 PDFs/mo at $40–$100 each |
+| Autonomy level | High — GitHub Actions generates + exports PDF on demand |
+| Time to first revenue | ~1–2 weeks post-deployment |
 
 ### Obsessive Autonomy Assessment
 
@@ -277,9 +312,11 @@ Each compiled lead record contains:
 
 **Required for Full Autonomy:**
 1. `scripts/life-insurance-lead-engine.js` — Core orchestrator
-2. `.github/workflows/life-insurance-lead-engine.yml` — Trigger and export
-3. `dist/leads/` — Output directory for CSV / JSON artifacts
-4. Polar.sh product listing — Storefront for direct sales
+2. `scripts/life-insurance-pdf-builder.js` — PDF batch builder (10–20 leads/PDF)
+3. `.github/workflows/life-insurance-lead-engine.yml` — Trigger, build PDF, and upload artifact
+4. `landing/index.html` — Inbound quote request landing page
+5. Polar.sh / Gumroad product listing — Storefront for PDF sales
+6. Deduplication registry (`dist/leads/sold-registry.json`) — No-duplicates guarantee
 
 ### Self-Healing Capabilities
 
@@ -292,8 +329,11 @@ Each compiled lead record contains:
 
 **Readiness Checklist:**
 - [ ] Orchestrator script implemented
+- [ ] PDF builder script implemented (10–20 leads per PDF)
+- [ ] Deduplication registry implemented
 - [ ] GitHub Actions workflow created
-- [ ] Polar.sh product listing created
+- [ ] Landing page deployed (inbound quote requests)
+- [ ] Polar.sh / Gumroad product listings created
 - [ ] At least one test run with real output
 - [ ] Usage guide published
 - [ ] README updated with lead engine section
@@ -306,14 +346,16 @@ Each compiled lead record contains:
 
 | Concern | Mitigation |
 |---------|------------|
-| PII handling | Only surface publicly available data (no scraping gated/private systems) |
-| TCPA compliance | Include opt-in status field; filter verified opt-out lists |
-| CAN-SPAM | Ensure no harvested email used without consent signal |
-| FCRA | Do not use output for employment, credit, or housing decisions |
+| PII handling | Only surface officially published public records; no scraping of gated/private systems |
+| TCPA compliance | Include opt-in status field; filter verified opt-out lists before each PDF export |
+| CAN-SPAM | Do not include email addresses unless sourced from a confirmed opt-in channel |
+| FCRA | Lead PDFs must not be used for employment, credit, housing, or insurance underwriting decisions; add disclaimer to every PDF |
+| Zillow / Redfin ToS | **Not used.** New homeowner data sourced only from official county recorder open-data portals |
+| Death / estate outreach | Only official county probate legal notices used; outreach must comply with applicable state solicitation laws |
+| Deduplication | Sold registry (`dist/leads/sold-registry.json`) ensures no contact is resold across PDF batches |
 
-**Security Score:** 9/10 (pending legal review of state-specific data use laws)
-
-**Recommendation:** Add disclaimer to every export: *"This lead list is compiled from publicly available sources. Verify compliance with applicable state and federal regulations before outreach."*
+**Mandatory PDF Disclaimer (append to every exported PDF):**
+> *"This lead list is compiled from publicly available government records. Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. These leads may not be used for employment, credit, housing, or insurance underwriting decisions (FCRA). All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
@@ -322,29 +364,43 @@ Each compiled lead record contains:
 ### Immediate Actions
 
 1. **Create `scripts/life-insurance-lead-engine.js`**  
-   - Fork logic pattern from `scripts/ui-creation-engine.js`  
-   - Replace design scouts with life-event data scouts  
+   - Scout → Qualify → Deduplicate → Compile pipeline  
+   - Sources: county deed records, marriage filings, SoS business filings, birth/death public notices  
    - Effort: 4–6 hours
 
-2. **Create `.github/workflows/life-insurance-lead-engine.yml`**  
-   - `workflow_dispatch` trigger with `trigger_type`, `state`, `max_leads` inputs  
-   - Upload `dist/leads/` as artifact  
+2. **Create `scripts/life-insurance-pdf-builder.js`**  
+   - Accept array of 10–20 lead records → output a formatted PDF to `dist/leads/`  
+   - Append the mandatory compliance disclaimer to every PDF  
+   - Mark each lead as sold in `dist/leads/sold-registry.json`  
+   - Effort: 2–3 hours
+
+3. **Create `landing/index.html` — Quote Request Landing Page**  
+   - Form: name, state, phone, email, coverage type (term / whole / final expense)  
+   - Submission webhook → triggers GitHub Actions to compile inbound leads into a PDF batch  
+   - Premium tier: inbound self-identified leads → $75–$150 per PDF of 10  
+   - Effort: 2–3 hours
+
+4. **Create `.github/workflows/life-insurance-lead-engine.yml`**  
+   - `workflow_dispatch` with `trigger_type`, `state`, `batch_size` inputs  
+   - Includes `GH_TOKEN` + `issues: write` permission for self-healing error issues  
+   - Upload `dist/leads/*.pdf` as artifact  
    - Effort: 1–2 hours
 
-3. **Set up Polar.sh product listing**  
-   - Create "Life Insurance Lead List — [State] [Trigger]" product  
+5. **Set up Polar.sh / Gumroad product listings**  
+   - Separate listings by state + trigger type + tier (warm / cold)  
    - Connect to artifact download delivery  
-   - Effort: 30 minutes
+   - Effort: 1 hour
 
 ### Short-Term Actions (Within 1–2 Weeks)
 
-1. Add qualifier scoring using OpenRouter `gpt-4o-mini` with a system prompt tuned to life insurance intent signals
-2. Implement `--output-format=csv` flag for direct Gumroad / Polar.sh delivery
+1. Add qualifier scoring tuned specifically to life insurance intent signals (new homeowner → mortgage protection, new baby → term life, etc.)
+2. Implement batch pricing tiers: warm leads at $40–$100/PDF, cold (birth/death) leads at $25–$40/PDF
+3. Add automated deduplication check against sold registry before every export
 
 ### Long-Term Actions (Within 1–2 Months)
 
-1. Add OSINT pipeline integration for deeper enrichment (phone append, LinkedIn URL)
-2. Build a web-based dashboard for on-demand lead generation by paying subscribers
+1. Add OSINT pipeline integration for phone append and address verification
+2. Build subscriber dashboard for agents to request on-demand PDF batches by state/trigger
 
 ---
 
@@ -353,9 +409,11 @@ Each compiled lead record contains:
 | Risk | Severity | Probability | Mitigation |
 |------|----------|-------------|------------|
 | OpenRouter rate limits | Medium | Medium | Exponential backoff; batch requests |
-| Data quality / false positives | High | Medium | Qualifier agent scoring + human spot-check |
-| Legal compliance (state data laws) | High | Low | Add legal disclaimer; review TCPA/CAN-SPAM |
-| Source instability (public APIs) | Medium | Medium | Abstract source layer; support multiple fallback sources |
+| Data quality / false positives | High | Medium | Qualifier agent scoring + spot-check before PDF is finalized |
+| Legal compliance (state solicitation laws) | High | Low | Mandatory PDF disclaimer; legal review before launch in each state |
+| Duplicate resale | High | Low | Sold registry enforced before every export; deduplication step in pipeline |
+| Source instability (county open-data portals) | Medium | Medium | Abstract source layer; support fallback sources per state |
+| Birth/death record data freshness | Medium | Medium | Query frequently; timestamp each lead with trigger_date |
 
 ---
 
@@ -380,8 +438,10 @@ Each compiled lead record contains:
 |-------|-------|
 | Research Status | ✅ Complete |
 | Implementation Status | 🟡 In Progress |
-| Revenue Potential | $3k–$15k+/month |
-| Estimated Effort | 6–8 hours |
+| Product Format | PDF packs of 10–20 exclusive leads |
+| Pricing | $25–$40/PDF (cold: birth/death records) · $40–$100/PDF (warm: homeowner, marriage, business) |
+| Revenue Potential | $1k–$3k/month (Month 1–2), $5k–$10k+/month (Month 4+) |
+| Estimated Effort | 10–14 hours (scripts + landing page + workflow + storefronts) |
 | Ship-to-Market Ready | After implementation tasks |
 | Approval Required | @midnghtsapphire |
 

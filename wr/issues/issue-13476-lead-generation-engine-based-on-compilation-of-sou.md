@@ -220,7 +220,7 @@ High-quality B2B and B2C lead generation is shifting from static databases to dy
 - [x] No security vulnerabilities
 - [x] Deployment configured (Actions)
 - [x] Documentation complete (This WR)
-- [ ] TEST section in README to be updated
+- [ ] TEST section in README to be added (pending implementation)
 
 ---
 
