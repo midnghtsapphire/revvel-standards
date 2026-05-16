@@ -39,7 +39,7 @@ jobs:
        (github.event.label.name == 'wr:jules' || github.event.label.name == 'wr:code'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Prepare issue context
         id: context

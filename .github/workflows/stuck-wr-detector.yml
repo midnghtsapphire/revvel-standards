@@ -28,9 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Detect stuck WRs and heal
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
           DRY_RUN: ${{ inputs.dry_run || false }}

@@ -36,16 +36,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.11"
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests
       - name: Resolve issue context
         id: issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = context.eventName === 'workflow_dispatch'
@@ -102,7 +102,7 @@ jobs:
       - name: Create pull request
         id: cpr
         if: steps.coder.outputs.files_written != '0'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: openrouter/issue-${{ steps.issue.outputs.issue_number }}
@@ -118,7 +118,7 @@ jobs:
             Closes #${{ steps.issue.outputs.issue_number }}
       - name: Comment issue with PR link
         if: steps.cpr.outputs.pull-request-url != ''
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             await github.rest.issues.createComment({
@@ -129,7 +129,7 @@ jobs:
             });
       - name: Comment issue when no changes were generated
         if: steps.coder.outputs.files_written == '0'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             await github.rest.issues.createComment({
