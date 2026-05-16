@@ -59,30 +59,92 @@
 
 ## Step 2: Deep Web Research
 
+> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research (e.g., only listing competitors without pricing, keyword data, or community sentiment) is insufficient. Discovery means: what is being used now, what problem are we solving, how much do people pay, what do they hate about current solutions, and what does the data say about high-value positioning. An LLM agent should be able to answer every question in this template from live web research.
+
 ### Market Opportunity Analysis
 
 #### Current Market Trends
 
-[Research findings about market trends in this domain]
+[Research findings about market trends in this domain — include data points, stats, and growth signals]
 
 **Sources:**
 - [Link 1]: [Description]
 - [Link 2]: [Description]
 
+#### Target Audience & Trigger Events
+
+[Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
+
+| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
+|-----------------|---------------|--------------|-----------------|
+| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
+| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+
+#### SEO & Keyword Research
+
+**This section is REQUIRED for any product with a web/content component.**
+
+| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
+|---------|---------------------|---------|-------------|--------|
+| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+
+**Long-tail / trigger-specific keywords:**
+- [keyword]: [volume] — [why it matters]
+- [keyword]: [volume] — [why it matters]
+
+**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
+
+#### How the Industry Works — Mechanics
+
+[Explain exactly how the current market solves this problem. Include: how buyers find/purchase, how pricing works, what the conversion funnel looks like, and what makes a high-quality solution vs. a low-quality one.]
+
+**Shared vs. Exclusive / Tiered pricing:**
+
+| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
+|--------------|-------------|------|----------------|------------------------|
+| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+
+**Why some [units] are worth more than others:**
+[Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
+
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| [Name 1] | [Key features] | [Pricing model] | [Estimate] |
-| [Name 2] | [Key features] | [Pricing model] | [Estimate] |
+| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
+|------------|------|------|-------------------|--------------------------|
+| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
+| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
+| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
 
-#### Gaps in Existing Solutions
+#### Community Chatter — What Users Dislike About Current Solutions
 
-1. **Gap 1:** [Description]
-   - **Opportunity:** [How this repo can fill it]
-   
-2. **Gap 2:** [Description]
-   - **Opportunity:** [How this repo can fill it]
+**This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
+
+**Top complaints (cite sources where possible):**
+
+1. **[Complaint 1]:** [Quote or paraphrase from community research]
+2. **[Complaint 2]:** [Quote or paraphrase from community research]
+3. **[Complaint 3]:** [Quote or paraphrase from community research]
+
+**What users/buyers actually want (opportunity signals):**
+- [Want 1]: [Why this is an opening]
+- [Want 2]: [Why this is an opening]
+
+> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
+
+#### Domain Name Strategy
+
+**This section is REQUIRED for any product with a web presence.**
+
+**High-value domain patterns for this niche:**
+
+| Pattern | Examples | Rationale |
+|---------|---------|-----------|
+| [Pattern 1] | [Examples] | [Why it works] |
+| [Pattern 2] | [Examples] | [Why it works] |
+
+**Recommendation:** [Specific domain guidance — TLD preference, availability check strategy, priority]
 
 #### Monetization Opportunities
 
@@ -90,93 +152,29 @@
    - [Strategy 1]: [Description and potential]
    - [Strategy 2]: [Description and potential]
 
-2. **Affiliate Partnerships:**
+2. **Affiliate / Reseller Partnerships:**
    - [Partner 1]: [Commission structure]
    - [Partner 2]: [Commission structure]
 
-3. **Premium Features:**
+3. **Subscription / Recurring:**
    - [Feature 1]: [Pricing potential]
    - [Feature 2]: [Pricing potential]
 
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates]
+**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
 
-### Technology Stack Research
+#### Marketing Best Practices — What's Working Now & How This Improves It
 
-#### Dependency Audit
+**This section is REQUIRED. Research current marketing strategies in this niche.**
 
-**Current Dependencies:**
-```json
-[List key dependencies with versions]
-```
+| Strategy | What Works Now | How This WR Improves It |
+|----------|---------------|------------------------|
+| [Strategy 1] | [Current best practice + data] | [How our product is better] |
+| [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
-**Outdated Dependencies:**
-| Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| [name] | [version] | [version] | [CVE if any] | [High/Med/Low] |
-
-**Recommended Updates:**
-1. [Package]: [Current] → [Target] - [Reason]
-2. [Package]: [Current] → [Target] - [Reason]
-
-#### Security Vulnerabilities
-
-**Critical Issues:**
-- [CVE-XXXX]: [Description] - [Impact] - [Fix]
-
-**Medium Issues:**
-- [Description] - [Impact] - [Fix]
-
-**Low Issues:**
-- [Description] - [Impact] - [Fix]
-
-**Security Score:** [Rating/10]
-
-#### Performance Optimization Opportunities
-
-1. **[Area 1]:** [Current issue] → [Optimization] → [Expected improvement]
-2. **[Area 2]:** [Current issue] → [Optimization] → [Expected improvement]
-
-#### FOSS Alternatives to Paid Dependencies
-
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
-| [Package] | [Alternative] | [List] | [List] | [Replace/Keep/Evaluate] |
-
-### SEO & Content Research
-
-#### Relevant Keywords
-
-**Primary Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-**Long-tail Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-#### Competitor Content Strategies
-
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| [Name] | [Type] | [Frequency] | [Metrics] | [What to learn] |
-
-#### Partnership Opportunities
-
-1. **[Partner 1]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-2. **[Partner 2]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-#### Affiliate Programs
-
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| [Name] | [Rate] | [Days] | [Rating/5] |
+**Inbound vs. Outbound ROI comparison:**
+- Inbound ROI: [Data + timeframe]
+- Outbound ROI: [Data + timeframe]
+- Recommended approach for this WR: [Recommendation with rationale]
 
 ---
 
