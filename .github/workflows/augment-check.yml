@@ -29,7 +29,7 @@ jobs:
       - name: Wait briefly so Augment can post its marker
         run: sleep 60
       - name: Check for Augment marker, comment if missing
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const prNumber =
@@ -47,16 +47,77 @@ jobs:
               per_page: 100,
             });
 
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+
+            const { data: reviewComments } = await github.rest.pulls.listReviewComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pullRequest.head.sha,
+              per_page: 100,
+            });
+
             // Augment Code's app posts comments authored by users matching
             // /^augment-/i (per their public-marketplace docs). We also
             // accept their stable HTML marker if they ever change the bot
             // username.
             const augmentMarker = /<!--\s*augment-code:/i;
-            const augmentInstalled = comments.some(c => {
+            const augmentAuthorPatterns = [
+              /^augment-/i,
+              /^augment(?:-code)?\[bot\]$/i,
+              /^augment(?:-code)?$/i,
+              /^augmentcodeai$/i,
+            ];
+            const authoredByAugment = (actor) =>
+              augmentAuthorPatterns.some(pattern => pattern.test((actor || '').trim()));
+            const hasAugmentMarker = (body) => body && augmentMarker.test(body);
+
+            const augmentInstalledFromIssueComments = comments.some(c => {
               const author = (c.user?.login || '').toLowerCase();
-              return /^augment-/.test(author) ||
-                     (c.body && augmentMarker.test(c.body));
+              return authoredByAugment(author) || hasAugmentMarker(c.body);
             });
+            const augmentInstalledFromReviews = reviews.some(r => {
+              const author = (r.user?.login || '').toLowerCase();
+              return authoredByAugment(author) || hasAugmentMarker(r.body);
+            });
+            const augmentInstalledFromReviewComments = reviewComments.some(c => {
+              const author = (c.user?.login || '').toLowerCase();
+              return authoredByAugment(author) || hasAugmentMarker(c.body);
+            });
+            const augmentCheckRunPattern = /^augment(?:[-\s]?code)?(?::|$)/i;
+            const checkRuns = Array.isArray(checks?.check_runs) ? checks.check_runs : [];
+            const augmentInstalledFromChecks = checkRuns.some(run => {
+              const appSlug = (run.app?.slug || '').toLowerCase();
+              const appName = (run.app?.name || '').toLowerCase();
+              const runName = (run.name || '').trim();
+              return appSlug === 'augment' ||
+                     appSlug === 'augment-code' ||
+                     appName === 'augment' ||
+                     appName === 'augment code' ||
+                     augmentCheckRunPattern.test(runName);
+            });
+            const augmentInstalled =
+              augmentInstalledFromIssueComments ||
+              augmentInstalledFromReviews ||
+              augmentInstalledFromReviewComments ||
+              augmentInstalledFromChecks;
 
             if (augmentInstalled) {
               core.info('Augment Code App detected on this PR; nothing to do.');

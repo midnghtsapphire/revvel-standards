@@ -40,11 +40,14 @@
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
 | BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
 | BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
-| BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
+| BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
 | BUG-010 | Music Video Creator dependency tree carried Next.js/PostCSS npm audit findings after validation install | high | resolved | 2026-05-15 |
 | BUG-011 | Music Video Creator PR accidentally downgraded unrelated ColdTrace dependencies (`geopandas`, `python-multipart`, `python-dotenv`) from current backend pins | medium | resolved | 2026-05-15 |
-| BUG-012 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
+| BUG-012 | Stuck-WR detector falsely escalated WR #13460 even after PR creation because it only searched by title text | high | resolved | 2026-05-15 |
+| BUG-013 | Workflow YAML validation failed on `api-rate-limit-handler.yml` multiline body and `jules-coding-agent.yml` misindented step `env` blocks | medium | resolved | 2026-05-15 |
+| BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
+| BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 
 ---
 
@@ -172,6 +175,10 @@ Session summary: Added the Revvel operating model layer — OpenHands Work Reque
 Last updated: 2026-05-15 21:42 UTC
 Updated by: Cursor
 Session summary: Fixed Music Video Creator LLM JSON parsing by delegating orchestrator `safeParse` to the balanced-brace extractor, restored parser regression coverage after branch drift, and verified root `npm test` plus product typecheck/build pass.
+
+Last updated: 2026-05-15 21:43 UTC
+Updated by: Cursor
+Session summary: Fixed false stuck-WR escalation by recognizing existing WR PRs through branch/body/comment signals; repaired workflow YAML validation failures, aligned BITO verifier checks, restored dashboard project links, and verified `npm test` passes.
 
 Last updated: 2026-05-15 21:58 UTC
 Updated by: Cursor

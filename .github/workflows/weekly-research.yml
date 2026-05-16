@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Check if issue is WR
         id: check
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
@@ -62,7 +62,7 @@ jobs:
             core.setOutput('issue_number', String(issueNumber));
       - name: Apply WR labels
         if: steps.check.outputs.is_wr == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
@@ -89,7 +89,7 @@ jobs:
             }
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Run OpenRouter triage with research focus
         if: env.OPENROUTER_API_KEY != ''
         env:
@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add completion tracker comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ needs.detect-wr.outputs.issue_number }};

@@ -584,3 +584,12 @@ labels:
   - name: "needs-human"
     color: "dc2626"
     description: "Requires human intervention"
+
+  # ── UI Creation Engine ───────────────────────────────────────────────────────
+  - name: "ui-creation"
+    color: "ec4899"
+    description: "UI creation engine — competitive research + design"
+
+  - name: "ui-creation-complete"
+    color: "10b981"
+    description: "UI creation complete — artifacts ready"

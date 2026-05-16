@@ -119,7 +119,7 @@ jobs:
           fi
       - name: Add noimosai label to issue
         if: env.NOIMOSAI_API_KEY != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             try {
@@ -180,7 +180,7 @@ jobs:
           fi
       - name: Post NoimosAI acknowledgment comment
         if: env.NOIMOSAI_API_KEY != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const labels = context.payload.issue.labels.map(l => l.name);

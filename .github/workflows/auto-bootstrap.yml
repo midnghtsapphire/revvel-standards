@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout standards
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           repository: midnghtsapphire/revvel-standards
           path: standards
@@ -68,7 +68,7 @@ jobs:
           
       - name: Create WR on bootstrap failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             await github.rest.issues.create({

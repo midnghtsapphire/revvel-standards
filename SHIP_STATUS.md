@@ -26,12 +26,14 @@
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
 | #311 | ship-everything structure | open | @OpenHands | 2026-04-20 |
+| #13469 | fix stuck-WR detector false escalation | open | @Cursor | 2026-05-15 |
 
 ### Issues
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
 | #251 | add pytest-mock | open | — | 2026-04-01 |
+| #13467 | `[AUTO-ERROR] WR #13460 stuck after 3 retriggers — no PR created` | in-progress | @Cursor | 2026-05-15 |
 | — | oAudrey hub deploy (DO App Platform) | in-progress | @copilot | 2026-04-26 |
 | — | oAudrey retro 2026-04-28 (sites not live) | in-progress | @copilot | 2026-04-30 |
 | — | oAudrey retro 2026-04-30 (sites not live) | in-progress | @copilot | 2026-05-01 |

@@ -211,3 +211,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For Next.js audit remediation, prefer the smallest patched major that satisfies advisories before jumping to the latest major. If npm audit still reports a vulnerable nested package under a framework dependency, use an npm `overrides` entry aligned with a direct devDependency pin and rerun audit/build. Next 15 in monorepos may infer the workspace root from the top-level lockfile; set `outputFileTracingRoot` in the product config to make builds deterministic.
 
 **Next Action:** None for this dependency issue; continue monitoring PR validation.
+
+---
+
+**Date/Time:** 2026-05-15T21:43:00Z
+
+**Task Attempted:** Fix current revvel-standards automation/test failures after false stuck-WR escalation for WR #13460.
+
+**Outcome:** Success — stuck-WR detector now recognizes existing WR PRs by issue branch, issue references, and workflow-created PR comments; workflow YAML validation is clean; BITO verifier and dashboard parser failures are repaired; `npm test` passes.
+
+**Root Cause of Failure (If any):** The detector relied on title-only GitHub search, which missed already-created PRs and opened false P0 stuck issues. Full validation also exposed stale workflow/test contracts: malformed YAML in two workflows, BITO verifier drift from the live workflow action/secret names, and a dashboard parser that found markdown links without assigning them.
+
+**Self-Healing Fix / Learned Lesson:** Use deterministic workflow signals for dedupe/association instead of fuzzy title searches. When `npm test` fails past the original issue, keep walking the chain: syntax failures and stale contract tests are actionable code/config blockers, while missing repository secrets are warnings/infrastructure signals when the script cannot inspect them. Generated dashboards must exclude dependency folders and avoid checkout-path-derived names.
+
+**Next Action:** Merge PR #13469 after review/CI; the branch already includes unit coverage and passing full local validation.

@@ -100,6 +100,18 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
     throw new Error('route-new assignment is not wrapped as non-fatal');
   }
 
+  const commentIndex = routeNewSteps.findIndex((step) => step.name === 'Post first-line-of-sight comment');
+  if (commentIndex < 0 || assignIndex > commentIndex) {
+    throw new Error('route-new comment step not found or ordered before assignment');
+  }
+  const routeNewCommentScript = routeNewSteps[commentIndex].with?.script || '';
+  if (!routeNewCommentScript.includes('createComment') || !routeNewCommentScript.includes('try {') || !routeNewCommentScript.includes('catch (error)')) {
+    throw new Error('route-new comment posting is not wrapped in try/catch');
+  }
+  if (!routeNewCommentScript.includes('Could not post first-line-of-sight comment on #') || !routeNewCommentScript.includes('(non-fatal): ${error.message}')) {
+    throw new Error('route-new comment failure should log issue/PR number context and error.message as non-fatal notice');
+  }
+
   const routeDiscovered = doc.jobs['ralph-cron-sweep'].steps.find(
     (step) => step.name === 'Route discovered items'
   );
