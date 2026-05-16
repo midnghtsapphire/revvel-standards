@@ -205,14 +205,18 @@ jobs:
               '_Automated by `.github/workflows/openrouter-assignee.yml` — runs 24/7 on event triggers + hourly cron sweep_'
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              body: comment,
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment,
+              });
 
-            core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
+              core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
+            } catch (error) {
+              core.notice(`Could not post first-line-of-sight comment on #${issueNumber} (non-fatal): ${error.message}`);
+            }
 
   ralph-cron-sweep:
     name: Hourly cron sweep — catch missed items
