@@ -349,13 +349,13 @@ Each compiled lead record contains:
 | PII handling | Only surface officially published public records; no scraping of gated/private systems |
 | TCPA compliance | Include opt-in status field; filter verified opt-out lists before each PDF export |
 | CAN-SPAM | Do not include email addresses unless sourced from a confirmed opt-in channel |
-| FCRA | Lead PDFs must not be used for employment, credit, housing, or insurance underwriting decisions; add disclaimer to every PDF |
+| FCRA | Lead PDFs are for sales/marketing outreach only; **not** for underwriting risk assessment, credit, employment, housing, or policy approval decisions |
 | Zillow / Redfin ToS | **Not used.** New homeowner data sourced only from official county recorder open-data portals |
 | Death / estate outreach | Only official county probate legal notices used; outreach must comply with applicable state solicitation laws |
 | Deduplication | Sold registry (`dist/leads/sold-registry.json`) ensures no contact is resold across PDF batches |
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
-> *"This lead list is compiled from publicly available government records. Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. These leads may not be used for employment, credit, housing, or insurance underwriting decisions (FCRA). All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
+> *"This lead list is compiled from publicly available government records and is intended for life insurance sales and marketing outreach only. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
@@ -386,7 +386,13 @@ Each compiled lead record contains:
    - Upload `dist/leads/*.pdf` as artifact  
    - Effort: 1–2 hours
 
-5. **Set up Polar.sh / Gumroad product listings**  
+5. **Write tests for deduplication registry**  
+   - Test: previously sold leads are filtered out from each new PDF batch  
+   - Test: `sold-registry.json` is updated atomically after each export (handle concurrent writes if multiple batches run simultaneously)  
+   - Test: no duplicates exist within a single PDF batch  
+   - Effort: 1–2 hours
+
+6. **Set up Polar.sh / Gumroad product listings**  
    - Separate listings by state + trigger type + tier (warm / cold)  
    - Connect to artifact download delivery  
    - Effort: 1 hour
