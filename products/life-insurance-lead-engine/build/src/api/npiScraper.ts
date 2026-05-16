@@ -1,79 +1,79 @@
-// This simulates the actual NPI scraping logic.
-// Due to browser CORS, a real version would run in a Next.js API route or backend process.
+// Life-event-based lead profile builder for individual and family life insurance prospects.
+// Priority tiers are based on the urgency and coverage needs each life event implies.
 
 export interface ScrapedLead {
   id: string;
   first_name: string;
   last_name: string;
-  credential: string;
-  specialty: string;
-  practice_name: string;
+  age_range: string;
+  life_event: string;
+  family_status: string;
   phone: string;
   address: string;
   zip: string;
   priority_tier: 'A' | 'B' | 'C';
 }
 
-const SPECIALTIES = [
-  { term: 'Plastic Surgery', tier: 'A' },
-  { term: 'Oral and Maxillofacial Surgery', tier: 'A' },
-  { term: 'Cardiovascular Disease', tier: 'A' },
-  { term: 'Orthopedic Surgery', tier: 'A' },
-  { term: 'Anesthesiology', tier: 'A' },
-  { term: 'Radiology', tier: 'A' },
-  { term: 'Dermatology', tier: 'A' },
-  { term: 'Orthodontics', tier: 'B' },
-  { term: 'Prosthodontics', tier: 'B' },
-  { term: 'Periodontics', tier: 'B' },
-  { term: 'Ophthalmology', tier: 'B' },
-  { term: 'Otolaryngology', tier: 'B' },
-  { term: 'Dentist', tier: 'C' },
-  { term: 'Internal Medicine', tier: 'C' },
-  { term: 'Family Medicine', tier: 'C' }
+export const LIFE_EVENTS: { term: string; tier: 'A' | 'B' | 'C'; family_status: string }[] = [
+  { term: 'New Homeowner',              tier: 'A', family_status: 'Homeowner' },
+  { term: 'New Parent',                 tier: 'A', family_status: 'Family with infant' },
+  { term: 'Recently Married',           tier: 'A', family_status: 'Married couple' },
+  { term: 'Single Parent',              tier: 'A', family_status: 'Single parent household' },
+  { term: 'Growing Family (2+ kids)',   tier: 'A', family_status: 'Family with children' },
+  { term: 'New Job / Income Increase',  tier: 'B', family_status: 'Dual-income household' },
+  { term: 'College Graduate',           tier: 'B', family_status: 'Young adult, single' },
+  { term: 'Divorce / Life Transition',  tier: 'B', family_status: 'Transitioning household' },
+  { term: 'Empty Nester',               tier: 'B', family_status: 'Couple, children grown' },
+  { term: 'Self-Employed / Freelancer', tier: 'B', family_status: 'Small business / gig worker' },
+  { term: 'Pre-Retirement (55–64)',      tier: 'C', family_status: 'Established household' },
+  { term: 'Young Adult (18–25)',         tier: 'C', family_status: 'Single, no dependents' },
 ];
 
-export async function scrapeNpi(zipCodes: string[]): Promise<ScrapedLead[]> {
-  const allLeads: ScrapedLead[] = [];
+const AGE_RANGES: Record<string, string> = {
+  'New Homeowner':              '28–45',
+  'New Parent':                 '25–40',
+  'Recently Married':           '24–38',
+  'Single Parent':              '25–45',
+  'Growing Family (2+ kids)':   '28–42',
+  'New Job / Income Increase':  '22–35',
+  'College Graduate':           '21–26',
+  'Divorce / Life Transition':  '30–55',
+  'Empty Nester':               '48–62',
+  'Self-Employed / Freelancer': '27–50',
+  'Pre-Retirement (55–64)':     '55–64',
+  'Young Adult (18–25)':        '18–25',
+};
+
+// Generates structured prospect profile templates for the selected life event categories
+// and the given zip codes.  Agents use these as outreach worksheets and fill in real
+// contact details from their own referral / public-records sources.
+export async function scrapeNpi(
+  zipCodes: string[],
+  selectedEvents?: string[]
+): Promise<ScrapedLead[]> {
+  const events = selectedEvents && selectedEvents.length > 0
+    ? LIFE_EVENTS.filter(e => selectedEvents.includes(e.term))
+    : LIFE_EVENTS;
+
+  const profiles: ScrapedLead[] = [];
+  let counter = 1;
 
   for (const zip of zipCodes) {
-    for (const spec of SPECIALTIES) {
-      try {
-        // Build the URL for the NPPES API
-        const url = `https://npiregistry.cms.hhs.gov/api/?version=2.1&postal_code=${zip}&taxonomy_description=${encodeURIComponent(spec.term)}&limit=50`;
-        const response = await fetch(url);
-        if (!response.ok) continue;
-
-        const data = await response.json();
-
-        if (data.results && data.results.length > 0) {
-          data.results.forEach((result: Record<string, unknown>) => {
-            const basicInfo = result.basic as Record<string, string> | undefined;
-            const addresses = result.addresses as Array<Record<string, string>> | undefined;
-            const address = addresses?.find((a) => a.address_purpose === 'LOCATION');
-
-            if (basicInfo && basicInfo.first_name && basicInfo.last_name && address && address.telephone_number) {
-              allLeads.push({
-                id: String(result.number),
-                first_name: basicInfo.first_name,
-                last_name: basicInfo.last_name,
-                credential: basicInfo.credential || '',
-                specialty: spec.term,
-                practice_name: basicInfo.organization_name || '',
-                phone: address.telephone_number,
-                address: `${address.address_1} ${address.city}, ${address.state}`,
-                zip: zip,
-                priority_tier: spec.tier as 'A' | 'B' | 'C'
-              });
-            }
-          });
-        }
-      } catch (error) {
-        console.error(`Error scraping ${spec.term} for zip ${zip}:`, error);
-      }
+    for (const event of events) {
+      profiles.push({
+        id: `prospect-${zip}-${counter++}`,
+        first_name: '[First Name]',
+        last_name: '[Last Name]',
+        age_range: AGE_RANGES[event.term] ?? '25–55',
+        life_event: event.term,
+        family_status: event.family_status,
+        phone: '[Phone]',
+        address: `[Street], [City], [State]`,
+        zip,
+        priority_tier: event.tier,
+      });
     }
   }
 
-  // Basic deduplication on NPI number
-  const uniqueLeads = Array.from(new Map(allLeads.map(lead => [lead.id, lead])).values());
-  return uniqueLeads;
+  return profiles;
 }

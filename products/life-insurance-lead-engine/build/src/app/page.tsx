@@ -86,7 +86,7 @@ export default function Home() {
             Life Insurance Lead Engine
           </h1>
           <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
-            Generate high-value medical leads from government APIs with tailored pitch scripts, or upload your own lists to automatically remove duplicates.
+            Build targeted prospect worksheets for individuals and families by zip code and life event, with tailored pitch scripts — or upload existing lists to automatically remove duplicates.
           </p>
         </div>
 
