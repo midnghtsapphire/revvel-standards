@@ -12,7 +12,8 @@ It contains the manifest, input references, generation status, output metadata, 
 | Field | Value |
 |---|---|
 | WAV audio | `https://github.com/user-attachments/files/27806173/1-bulletproof-love.3.2026-05-15.08_49.wav` |
-| Avatar | `https://github.com/midnghtsapphire/revvel-standards/issues/13451#issuecomment-4460922906 (one-piece red-green unitard image attachments)` |
+| Avatar | `https://github.com/midnghtsapphire/revvel-standards/issues/13451#issuecomment-4460922906` |
+| Avatar selection note | one-piece red-green unitard image attachments |
 
 ---
 
