@@ -44,6 +44,7 @@
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
 | BUG-010 | Music Video Creator dependency tree carried Next.js/PostCSS npm audit findings after validation install | high | resolved | 2026-05-15 |
 | BUG-011 | Music Video Creator PR accidentally downgraded unrelated ColdTrace dependencies (`geopandas`, `python-multipart`, `python-dotenv`) from current backend pins | medium | resolved | 2026-05-15 |
+| BUG-012 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 
 ---
 
@@ -92,7 +93,9 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-05-15 | ✅ passing | — |
+| `npm test` | 2026-05-16 | ✅ passing after `npm ci` | — |
+| Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
+| Affiliate Hub build/lint | 2026-05-16 | ✅ `npm run lint && npm run build` | — |
 | ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
 | ColdTrace restored dependency pins check | 2026-05-15 | ✅ `git diff --exit-code origin/main...HEAD -- coldtrace/backend/requirements.txt` + `python3 -m pip install --dry-run --ignore-installed "geopandas==1.1.2" "python-multipart==0.0.27" "python-dotenv==1.2.2"` | — |
 
@@ -142,6 +145,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-16 23:23 UTC
+Updated by: Cursor
+Session summary: Restored Affiliate Hub to patched Next.js/PostCSS dependency versions, upgraded lint tooling to the required ESLint 9-compatible flat config, and verified audit, lint, build, dependency tree, and root tests pass.
+
 Last updated: 2026-05-15 22:33 UTC
 Updated by: Cursor
 Session summary: Restored unrelated ColdTrace dependency pins downgraded in the Music Video Creator branch, verified the requirements file no longer differs from main, confirmed restored package dry-run resolution, and reran root `npm test` successfully after `npm ci`.

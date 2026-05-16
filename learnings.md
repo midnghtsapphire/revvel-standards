@@ -158,6 +158,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-16T23:23Z
+
+**Task Attempted:** Verify and fix Affiliate Hub dependency regression below the patched Next.js/PostCSS security floor.
+
+**Outcome:** Success - `products/affiliate-hub` now resolves `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14`; affiliate audit/lint/build and root `npm test` pass.
+
+**Root Cause of Failure (If any):** The affiliate-hub manifest and lockfile had been downgraded to `next@^15.5.15`, `eslint-config-next@14.2.3`, and `postcss@^8.4.38`, reintroducing the dependency floor that BUG-010 had already resolved elsewhere. Restoring `eslint-config-next@16.2.6` also revealed its `eslint >=9` peer requirement, and the old `.eslintrc.json` triggered a circular-config serialization error under the restored tooling.
+
+**Self-Healing Fix / Learned Lesson:** When restoring Next/PostCSS security patches across products, verify the installed dependency tree with `npm ls postcss` in addition to lockfile strings because framework package metadata can still mention its original dependency range while npm overrides dedupe to the patched version. Pair `eslint-config-next@16.x` with ESLint 9 and migrate from `.eslintrc` to `eslint.config.mjs` using `eslint-config-next/core-web-vitals` directly.
+
+**Next Action:** None for this affiliate-hub regression; continue monitoring PR validation.
+
+---
+
 **Date/Time:** 2026-05-15T22:33Z
 
 **Task Attempted:** Verify and fix unrelated ColdTrace dependency downgrades in the Music Video Creator PR.

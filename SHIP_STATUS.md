@@ -53,6 +53,7 @@
 | T008 | Music Video Creator shared API helper refactor | done | @cursor | 2026-05-15 |
 | T009 | Music Video Creator Next/PostCSS security upgrade | done | @cursor | 2026-05-15 |
 | T010 | ColdTrace dependency downgrade restoration | done | @cursor | 2026-05-15 |
+| T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---
