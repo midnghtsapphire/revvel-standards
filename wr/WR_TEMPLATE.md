@@ -59,7 +59,14 @@
 
 ## Step 2: Deep Web Research
 
-> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research (e.g., only listing competitors without pricing, keyword data, or community sentiment) is insufficient. Discovery means: what is being used now, what problem are we solving, how much do people pay, what do they hate about current solutions, and what does the data say about high-value positioning. An LLM agent should be able to answer every question in this template from live web research.
+> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
+> - **(1) What is being used now** — existing solutions, pricing, mechanics
+> - **(2) What problem are we solving** — specific pain points from community research
+> - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
+> - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
+> - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
+>
+> An LLM agent must be able to answer every question in this template from live web research before implementation begins.
 
 ### Market Opportunity Analysis
 
