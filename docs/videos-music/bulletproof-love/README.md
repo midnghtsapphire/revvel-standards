@@ -11,8 +11,8 @@ It contains the manifest, input references, generation status, output metadata, 
 
 | Field | Value |
 |---|---|
-| WAV audio | `Bulletproof Love WAV` |
-| Avatar | `Avatar source image/video` |
+| WAV audio | `https://github.com/user-attachments/files/27806173/1-bulletproof-love.3.2026-05-15.08_49.wav` |
+| Avatar | `Issue #13451 image attachments (one-piece red-green unitard set)` |
 
 ---
 

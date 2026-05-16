@@ -8,11 +8,11 @@
   "inputs": {
     "audio": {
       "type": "wav",
-      "source": "Bulletproof Love WAV"
+      "source": "https://github.com/user-attachments/files/27806173/1-bulletproof-love.3.2026-05-15.08_49.wav"
     },
     "avatar": {
       "type": "image_or_video",
-      "source": "Avatar source image/video"
+      "source": "Issue #13451 image attachments (one-piece red-green unitard set)"
     }
   },
   "generation": {
