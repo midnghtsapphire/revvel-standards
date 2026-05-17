@@ -540,7 +540,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 | GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
 | Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
 
-**Implementation requirement:** expose this ledger in Audrey UI with semantic text statuses as canonical values (`Active`, `Degraded`, `Blocked`), optionally paired with emoji for quick scan (`✅`, `⚠️`, `⛔`), plus last-checked timestamp and owner action needed.
+**Implementation requirement:** expose this ledger in Audrey UI with semantic text statuses as canonical values (`Active`, `Degraded`, `Blocked`) and treat emoji (`✅`, `⚠️`, `⛔`) as optional decorative cues only (hidden from assistive tech where possible), plus last-checked timestamp and owner action needed.
 
 **Owner action logic (required):**
 - `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days
