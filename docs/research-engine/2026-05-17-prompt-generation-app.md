@@ -29,7 +29,7 @@ We ship **due-diligence packets**, not prompt catalogs:
 - 345 packets/mo @ $29 = $10,005
 - OR 101 workspace seats @ $99 = $9,999
 - OR 20 setup engagements @ $499 = $9,980
-- Blended target: 100 packets + 50 seats + 4 setups = **$12,896/mo**
+- Blended target: 100 packets + 50 seats + 4 setups = **$9,846/mo**
 
 ## Distribution
 
