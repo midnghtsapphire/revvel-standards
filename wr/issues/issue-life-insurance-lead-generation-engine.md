@@ -136,8 +136,8 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
 - Model contactability with normalized lookup-backed statuses, not a single blanket positive flag
-  - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
-  - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
+    - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
+    - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
 - Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) at two checkpoints: pre-export batch validation and pre-contact validation immediately before each outbound attempt
 - Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
 - Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
@@ -356,7 +356,7 @@ For this engine, add dedicated operational fleets instead of overloading the res
 Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status model derived from the lead source and evidence:
 
 | Lookup Table | Purpose |
-|---|---|
+| --- | --- |
 | `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports |
 | `consent_bases` | Why contact is allowed |
 | `lead_source_types` | Source/channel normalization for routing and reporting |
@@ -388,8 +388,9 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Contactability filter: `isContactEligible` is the policy gate that checks the
-  // normalized status, consent metadata, and latest suppression/DNC result for export.
+  // 3. Contactability filter: `isContactEligible(lead, { checkpoint })` returns a
+  // boolean after checking the lead's normalized status, consent metadata, and latest
+  // suppression/DNC result. Valid checkpoints include `pre_export` and `pre_contact`.
   const contactableLeads = qualifiedLeads.filter((lead) =>
     isContactEligible(lead, { checkpoint: 'pre_export' })
   );
