@@ -127,3 +127,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Use deterministic workflow signals for dedupe/association instead of fuzzy title searches. When `npm test` fails past the original issue, keep walking the chain: syntax failures and stale contract tests are actionable code/config blockers, while missing repository secrets are warnings/infrastructure signals when the script cannot inspect them. Generated dashboards must exclude dependency folders and avoid checkout-path-derived names.
 
 **Next Action:** Merge PR #13469 after review/CI; the branch already includes unit coverage and passing full local validation.
+
+---
+
+**Date/Time:** 2026-05-17T02:45:00Z
+
+**Task Attempted:** Fix PR #13482 merge readiness for the Life Insurance Lead Engine after cubic identified the newsletter opt-out compliance mismatch.
+
+**Outcome:** Success — added a real local newsletter opt-out path, corrected the product README compliance claim, removed incomplete-work language, upgraded the product dependency/tooling stack, and verified `npm run typecheck`, `npm run lint`, `npm run build`, and `npm audit` all pass in `products/life-insurance-lead-engine/build`.
+
+**Root Cause of Failure (If any):** The original newsletter component only set a submitted flag and contained an unwired integration TODO while product docs claimed GDPR/CCPA opt-out support. Validation also exposed stale package choices: an old vulnerable Next.js version, vulnerable `xlsx`, no lockfile for auditability, and a lint script tied to the removed `next lint` command.
+
+**Self-Healing Fix / Learned Lesson:** PR review fixes should validate the changed app, not only the reviewed line. For Next 16 apps, use `eslint .` with the flat `eslint-config-next` exports, run `next typegen` before direct `tsc --noEmit`, set `turbopack.root` for nested product apps, and replace abandoned vulnerable packages (`xlsx`) with maintained patched forks (`@e965/xlsx`) when API-compatible.
+
+**Next Action:** Merge PR #13482 after CI confirms the pushed branch.

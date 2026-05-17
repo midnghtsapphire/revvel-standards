@@ -137,6 +137,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 02:45 UTC
+Updated by: Cursor
+Session summary: Fixed PR #13482 newsletter opt-out mismatch, upgraded the life-insurance lead engine dependency/tooling stack, and verified product typecheck, lint, build, and npm audit pass.
+
 Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands
 Session summary: Added the Revvel operating model layer — OpenHands Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.

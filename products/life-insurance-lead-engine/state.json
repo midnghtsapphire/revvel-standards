@@ -5,7 +5,7 @@
   "target_mrr": 10000,
   "current_mrr": 0,
   "created": "2025-01-01",
-  "stack": ["nextjs", "typescript", "tailwind", "fuse.js", "papaparse", "xlsx"],
+  "stack": ["nextjs", "typescript", "tailwind", "fuse.js", "papaparse", "@e965/xlsx"],
   "monetization": {
     "saas_monthly": 97,
     "lifetime": 497,

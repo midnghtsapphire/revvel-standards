@@ -31,7 +31,7 @@ This product is part of the **$10M in 3 Years** prime directive pipeline.
 - Tailwind CSS
 - Fuse.js (fuzzy matching)
 - PapaParse (CSV)
-- SheetJS (Excel)
+- @e965/xlsx (Excel parsing)
 
 ## Quick Start
 

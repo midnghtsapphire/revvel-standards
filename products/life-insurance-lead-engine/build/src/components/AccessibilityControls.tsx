@@ -3,15 +3,12 @@
 import { useEffect, useState } from 'react';
 
 export default function AccessibilityControls() {
-  const [highContrast, setHighContrast] = useState(false);
-  const [largeText, setLargeText] = useState(false);
-
-  useEffect(() => {
-    const hc = localStorage.getItem('a11y-hc') === '1';
-    const lt = localStorage.getItem('a11y-lt') === '1';
-    setHighContrast(hc);
-    setLargeText(lt);
-  }, []);
+  const [highContrast, setHighContrast] = useState(() =>
+    typeof window !== 'undefined' ? window.localStorage.getItem('a11y-hc') === '1' : false,
+  );
+  const [largeText, setLargeText] = useState(() =>
+    typeof window !== 'undefined' ? window.localStorage.getItem('a11y-lt') === '1' : false,
+  );
 
   useEffect(() => {
     document.body.classList.toggle('high-contrast', highContrast);

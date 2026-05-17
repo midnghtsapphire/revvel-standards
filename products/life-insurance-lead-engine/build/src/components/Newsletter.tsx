@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const NEWSLETTER_SUBSCRIBERS_KEY = 'life-insurance-lead-engine:newsletter-subscribers';
 const NEWSLETTER_OPT_OUTS_KEY = 'life-insurance-lead-engine:newsletter-opt-outs';
@@ -12,6 +12,8 @@ function normalizeEmail(value: string): string {
 }
 
 function readStoredEmails(key: string): string[] {
+  if (typeof window === 'undefined') return [];
+
   try {
     const stored = window.localStorage.getItem(key);
     const parsed: unknown = stored ? JSON.parse(stored) : [];
@@ -33,12 +35,8 @@ function writeStoredEmails(key: string, emails: string[]): boolean {
 export default function Newsletter() {
   const [email, setEmail] = useState('');
   const [mode, setMode] = useState<FormMode>('subscribe');
-  const [optOuts, setOptOuts] = useState<string[]>([]);
+  const [optOuts, setOptOuts] = useState<string[]>(() => readStoredEmails(NEWSLETTER_OPT_OUTS_KEY));
   const [message, setMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    setOptOuts(readStoredEmails(NEWSLETTER_OPT_OUTS_KEY));
-  }, []);
 
   const normalizedEmail = useMemo(() => normalizeEmail(email), [email]);
   const isSuppressed = normalizedEmail.length > 0 && optOuts.includes(normalizedEmail);

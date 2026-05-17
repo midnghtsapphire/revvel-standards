@@ -20,8 +20,8 @@ export default function Dedupe() {
       const { cleaned, stats } = dedupe(rows);
       setCleaned(cleaned);
       setStats(stats);
-    } catch (err: any) {
-      setError(err.message || 'Parse error');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Parse error');
     } finally {
       setLoading(false);
     }

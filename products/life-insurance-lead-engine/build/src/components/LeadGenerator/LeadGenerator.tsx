@@ -21,8 +21,8 @@ export default function LeadGenerator() {
       }
       all.sort((a, b) => a.tier.localeCompare(b.tier));
       setLeads(all);
-    } catch (e: any) {
-      setError(e.message || 'Failed to fetch');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
       setLoading(false);
     }

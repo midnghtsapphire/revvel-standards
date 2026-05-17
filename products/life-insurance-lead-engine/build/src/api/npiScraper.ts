@@ -16,6 +16,38 @@ export interface NPIProvider {
   pitchAngle: string;
 }
 
+interface NPIBasic {
+  first_name?: string;
+  last_name?: string;
+  credential?: string;
+}
+
+interface NPIAddress {
+  address_purpose?: string;
+  telephone_number?: string;
+  address_1?: string;
+  address_2?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+}
+
+interface NPITaxonomy {
+  primary?: boolean;
+  desc?: string;
+}
+
+interface NPIResult {
+  number?: number | string;
+  basic?: NPIBasic;
+  addresses?: NPIAddress[];
+  taxonomies?: NPITaxonomy[];
+}
+
+interface NPIResponse {
+  results?: NPIResult[];
+}
+
 const HIGH_VALUE_SPECIALTIES: Record<string, { tier: 'A' | 'B' | 'C'; angle: string }> = {
   Surgery: { tier: 'A', angle: 'disability income protection + IUL for tax-advantaged growth' },
   'Orthopaedic Surgery': { tier: 'A', angle: 'high disability risk — own-occupation DI + whole life' },
@@ -48,26 +80,26 @@ export async function fetchNPIByZip(zip: string, limit = 50): Promise<NPIProvide
 
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`NPI API error: ${res.status}`);
-  const data = await res.json();
+  const data = (await res.json()) as NPIResponse;
 
-  const results: NPIProvider[] = (data.results || []).map((r: any) => {
+  const results: NPIProvider[] = (data.results ?? []).map((r) => {
     const basic = r.basic || {};
-    const addr = (r.addresses || []).find((a: any) => a.address_purpose === 'LOCATION') || (r.addresses || [])[0] || {};
-    const taxonomy = (r.taxonomies || []).find((t: any) => t.primary) || (r.taxonomies || [])[0] || {};
-    const specialty = taxonomy.desc || 'Unknown';
+    const addr = (r.addresses ?? []).find((a) => a.address_purpose === 'LOCATION') || (r.addresses ?? [])[0] || {};
+    const taxonomy = (r.taxonomies ?? []).find((t) => t.primary) || (r.taxonomies ?? [])[0] || {};
+    const specialty = taxonomy.desc ?? 'Unknown';
     const score = scoreProvider(specialty);
 
     return {
-      npi: String(r.number || ''),
-      firstName: basic.first_name || '',
-      lastName: basic.last_name || '',
-      credential: basic.credential || '',
+      npi: String(r.number ?? ''),
+      firstName: basic.first_name ?? '',
+      lastName: basic.last_name ?? '',
+      credential: basic.credential ?? '',
       specialty,
-      phone: addr.telephone_number || '',
+      phone: addr.telephone_number ?? '',
       address: [addr.address_1, addr.address_2].filter(Boolean).join(' '),
-      city: addr.city || '',
-      state: addr.state || '',
-      zip: addr.postal_code || zip,
+      city: addr.city ?? '',
+      state: addr.state ?? '',
+      zip: addr.postal_code ?? zip,
       tier: score.tier,
       pitchAngle: score.angle,
     };

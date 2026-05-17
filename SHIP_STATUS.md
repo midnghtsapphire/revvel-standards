@@ -27,6 +27,7 @@
 |-----|-------|--------|------|------------|
 | #311 | ship-everything structure | open | @OpenHands | 2026-04-20 |
 | #13469 | fix stuck-WR detector false escalation | open | @Cursor | 2026-05-15 |
+| #13482 | life insurance lead engine | open | @Cursor | 2026-05-17 |
 
 ### Issues
 
