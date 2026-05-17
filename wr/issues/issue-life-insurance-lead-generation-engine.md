@@ -373,6 +373,40 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 
 **Policy gate helper:** `isContactEligible(lead, checkpoint)` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) using the rules in this section. It must fail closed to `false`, emit an audit log entry, and route the record to manual review when status data is missing, invalid, or the suppression/DNC check errors.
 
+### Scoring Engine Pattern (Recommended)
+
+This WR should evolve from binary flags into a reusable scoring model. For TCPA/contactability, the system should calculate a **contactability confidence score** instead of relying on a yes/no field alone.
+
+**Recommended scoring dimensions:**
+- **Source quality:** official government record, first-party form fill, licensed vendor, or weak/unclear source
+- **Consent evidence:** signed/explicit opt-in, implied inquiry, public-record only, or missing consent proof
+- **Suppression risk:** DNC hit, internal opt-out, complaint history, or missing suppression check
+- **Freshness / recency:** how recent the event, inquiry, or verification is
+- **Data completeness:** required fields present, channel available, and identity sufficiently matched
+
+**Recommended output shape:**
+```json
+{
+  "contactability_score": 82,
+  "score_band": "high",
+  "decision": "allow_pre_export",
+  "top_factors": [
+    "first_party_quote_request",
+    "recent_consent_capture",
+    "suppression_checks_passed"
+  ],
+  "manual_review_required": false
+}
+```
+
+**Recommended governance:**
+- Use weighted factors with transparent scoring rules so operators can explain why a lead passed or failed
+- Keep score + status together: the score informs confidence, the status controls workflow gating
+- Require manual review below threshold bands or when critical evidence is missing
+- Persist factor-level reasons for auditability and future tuning
+
+**Generalization path:** the same scoring-engine pattern can be reused for SEO opportunity scoring, product viability scoring, research confidence scoring, lead intent scoring, and search/probability models in other domains. The pattern should stay consistent even when the weighted factors change by project.
+
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
 ```javascript
@@ -647,6 +681,11 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
    - Persist status for each API/CLI/MCP/GitHub App (active/degraded/blocked, last checked, billing state)  
    - Surface in Audrey UI for at-a-glance operations visibility  
    - Effort: 3–5 hours
+
+9. **Create reusable scoring-engine spec / WR**
+   - Define shared score primitives: factor, weight, threshold band, blocking condition, explanation trail
+   - Apply first to contactability/TCPA, then extend to SEO, product opportunity, and research confidence use cases
+   - Effort: 2–4 hours
 
 ### Short-Term Actions (Within 1–2 Weeks)
 

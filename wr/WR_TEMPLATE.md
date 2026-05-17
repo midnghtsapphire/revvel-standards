@@ -226,6 +226,8 @@ Define a layered research engine using two AI fleets:
 
 **If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
 
+**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
+
 #### Instruction Normalization (REQUIRED)
 
 User prompts and brainstorms are inputs, not immutable specs. Record:
