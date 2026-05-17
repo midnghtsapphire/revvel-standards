@@ -133,6 +133,13 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 - **Cold tier:** Vital/probate triggers + stronger validation + stricter TCPA/legal gating  
 - **Premium inbound tier:** Landing-page opt-in + enrichment + immediate speed-to-lead dispatch
 
+**BOM compliance controls (required before activation):**
+- Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
+- Enforce TCPA/DNC scrub before every export and before every outbound sequence
+- Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
+- Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
+- If landing page collects EU/UK traffic, require GDPR lawful-basis + DSAR deletion workflow
+
 ### Deep Market Research
 
 #### Top Life Insurance Search Keywords (U.S., 2024–2025)
@@ -526,13 +533,18 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 
 | Dependency | Type | Credential Source | Current Status | Renewal/Billing Risk | Fallback |
 |---|---|---|---|---|---|
-| OpenRouter | API | GitHub Secret / Doppler | Active | Monitor quota/credits | Multi-model failover |
-| LinkedIn paid API | API | GitHub Secret / Doppler | Active (when key valid) | Program limits + billing | Run without LinkedIn enrichment |
-| Doppler | Credential manager | Doppler project/token | **Needs payment / potential outage state** | Trial/plan expiration | GitHub Secrets emergency mode |
-| GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | Active in Actions | Permission scope drift | Fail-fast + create issue |
-| Required MCP servers | MCP | MCP config + API keys | Track per-server | Missing/unrotated key risk | Disable feature with clear warnings |
+| OpenRouter | API | GitHub Secret / Doppler | `active` | Monitor quota/credits | Multi-model failover |
+| LinkedIn paid API | API | GitHub Secret / Doppler | `active` / `degraded` | Program limits + billing | Run without LinkedIn enrichment |
+| Doppler | Credential manager | Doppler project/token | `payment_required` / `trial_expiring` / `active` | Trial/plan expiration | GitHub Secrets emergency mode |
+| GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
+| Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
 
 **Implementation requirement:** expose this ledger in Oaudry UI with color states (Active / Degraded / Blocked), last-checked timestamp, and owner action needed.
+
+**Owner action logic (required):**
+- `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days
+- Include `action_type` (`pay_invoice`, `rotate_key`, `upgrade_plan`, `restore_scope`) and `action_due_at`
+- Surface warning badges in Oaudry UI and create a `Wr` issue automatically when due date is breached
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
 > *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*

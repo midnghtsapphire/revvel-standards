@@ -65,7 +65,7 @@
 > - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
 > - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
 > - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
-> - **(6) API/Data BOM** — best providers, what each is best at, costs, limits, compliance
+> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
 >
 > An LLM agent must be able to answer every question in this template from live web research before implementation begins.
 
@@ -206,6 +206,12 @@ Define a layered research engine using two AI fleets:
 2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
 
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
+
+**Minimum pass criteria (required):**
+- All required sections present (keywords, mechanics, competitor table, community chatter, BOM, monetization, citations)
+- Zero unsupported factual claims in sampled checks
+- Citation coverage for factual claims ≥ 90%
+- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
 
 #### Instruction Normalization (REQUIRED)
 
