@@ -43,7 +43,9 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- **matched_labels_count:** ${{ steps.match.outputs.matched_labels_count }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **matched_labels:** \`${{ steps.match.outputs.matched_labels }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **matched_labels_array:** \`${{ steps.match.outputs.matched_labels_array }}\`" >> "$GITHUB_STEP_SUMMARY"
+          cat << 'END_OF_SUMMARY' >> "$GITHUB_STEP_SUMMARY"
+          - **matched_labels_array:** `${{ steps.match.outputs.matched_labels_array }}`
+          END_OF_SUMMARY
     timeout-minutes: 15
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

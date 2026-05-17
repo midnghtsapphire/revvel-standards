@@ -4,7 +4,7 @@
   "private": true,
   "description": "SSOT standards, templates, and automation for MIDNGHTSAPPHIRE projects",
   "scripts": {
-    "test": "node tests/openrouter-triage.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/work-request-form-sync.test.js && node tests/parse-pdf-work-request.test.js && node tests/gatekeeper-sync.test.js && node tests/sync-dns-records.test.js && node tests/schema-rich-results-checker.test.js && node tests/revvel-rosette-automation-harness.test.js && node tests/generate-daily-summary.test.js && node tests/scripts/check-compliance.test.js && node tests/scripts/sync-flow-charts.test.js && node tests/verify-bito-installation.test.js && node tests/wr-control-plane.test.js && node tests/aggregate-project-dashboard.test.js && node tests/openrouter-routing.test.js",
+    "test": "node tests/openrouter-triage.test.js && node tests/research-engine.test.js && node tests/perplexity-research-issue.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/work-request-form-sync.test.js && node tests/parse-pdf-work-request.test.js && node tests/gatekeeper-sync.test.js && node tests/sync-dns-records.test.js && node tests/schema-rich-results-checker.test.js && node tests/revvel-rosette-automation-harness.test.js && node tests/generate-daily-summary.test.js && node tests/scripts/check-compliance.test.js && node tests/scripts/sync-flow-charts.test.js && node tests/verify-bito-installation.test.js && node tests/wr-control-plane.test.js && node tests/aggregate-project-dashboard.test.js && node tests/openrouter-routing.test.js && node tests/music-video-api.test.js && node tests/ui-creation-engine.test.js && node tests/prompt-generation-app.test.js && node tests/stuck-wr-detector.test.js",
     "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\"",
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
     "dashboard": "node scripts/dashboard-cli.js",
@@ -13,7 +13,9 @@
     "workflows:validate": "node scripts/automation-doctor.js --validate",
     "labels:check": "node scripts/automation-doctor.js --labels",
     "deploy:vercel": "node scripts/deploy-vercel.js",
-    "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project"
+    "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
+    "ui-engine": "node scripts/ui-creation-engine.js",
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"

@@ -96,9 +96,9 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           cache: npm
@@ -136,7 +136,7 @@ jobs:
           [[ "$STATUS" =~ ^[23] ]] || exit 1
       - name: Comment result on PR
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const url = '${{ steps.deploy.outputs.url }}';
@@ -157,8 +157,8 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           cache: npm
@@ -193,7 +193,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const url = '${{ steps.vercel.outputs.url ||
@@ -215,7 +215,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Install pandoc + LaTeX
         run: sudo apt-get update -qq && sudo apt-get install -y pandoc texlive-xetex
           texlive-fonts-recommended
@@ -233,14 +233,14 @@ jobs:
           done
 
           echo "count=$FOUND" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: pdfs-${{ github.run_id }}
           path: dist/pdf/*.pdf
           retention-days: 30
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const count = '${{ steps.build_pdf.outputs.count }}';
@@ -263,8 +263,8 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
           registry-url: https://registry.npmjs.org
@@ -283,7 +283,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const result = '${{ steps.publish.outputs.result }}';
@@ -304,13 +304,13 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+      - uses: actions/checkout@v6.0.2
+      - uses: docker/login-action@v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v7.1.0
         with:
           context: .
           push: true
@@ -319,7 +319,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.sha }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             github.rest.issues.createComment({
@@ -336,8 +336,8 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
       - run: npm ci --if-present && (npm run build:mcp --if-present || npm run build
@@ -378,7 +378,7 @@ jobs:
           fi
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const url = '${{ steps.deploy_mcp.outputs.url }}';
@@ -402,7 +402,7 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Detect framework and build
         id: build_docs
         run: >
@@ -421,13 +421,13 @@ jobs:
             echo "dir=site" >> $GITHUB_OUTPUT
           fi
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./${{ steps.build_docs.outputs.dir }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const repo = '${{ github.repository }}'.split('/');
@@ -446,8 +446,8 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version: "20"
       - run: npm ci --if-present && npx playwright install --with-deps chromium
@@ -461,7 +461,7 @@ jobs:
           else
             echo "recorded=false" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         if: steps.record.outputs.recorded == 'true'
         with:
           name: video-${{ github.run_id }}
@@ -471,7 +471,7 @@ jobs:
           retention-days: 14
       - name: Comment result
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const recorded = '${{ steps.record.outputs.recorded }}';
@@ -514,7 +514,7 @@ jobs:
           fi
       - name: Label needs-human on failure
         if: steps.check.outputs.status == 'failed' && needs.gate.outputs.issue_num != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const issue = parseInt('${{ needs.gate.outputs.issue_num }}');
@@ -536,7 +536,7 @@ jobs:
             });
       - name: Post success summary
         if: steps.check.outputs.status == 'ok'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const pr = context.payload.pull_request?.number;

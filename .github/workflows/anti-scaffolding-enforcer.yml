@@ -29,11 +29,16 @@ env:
 
 jobs:
   check-for-scaffolding:
+    # Owner (@midnghtsapphire) writes WRs quickly off the top of their head — never block or scan them.
+    # Scaffolding checks apply only to non-owner contributors and automated PRs.
+    # Note: this checks the PR author (the account that opened the PR). Commits pushed by the owner
+    # to someone else's PR are still governed by that PR's author check — which is the intended behavior.
+    if: github.event.pull_request.user.login != 'midnghtsapphire'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
@@ -132,7 +137,7 @@ jobs:
       - name: Check PR title and description
         id: check_pr
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const title = context.payload.pull_request.title;
@@ -177,7 +182,7 @@ jobs:
 
       - name: Post review comment if violations found
         if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const violations = process.env.VIOLATIONS || '';
@@ -265,7 +270,7 @@ jobs:
 
       - name: Request changes if violations found
         if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             // Add label to PR
@@ -281,7 +286,7 @@ jobs:
 
       - name: Remove label if no violations
         if: steps.scan.outputs.violations == 'false' && steps.check_pr.outputs.pr_violations == 'false'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         continue-on-error: true
         with:
           script: |
