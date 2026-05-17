@@ -61,7 +61,7 @@ jobs:
           fi
       - name: Generate Weekly Changelog
         if: env.OPENROUTER_API_KEY != ''
-        uses: fridzema/ai-weekly-changelog-action@v1
+        uses: fridzema/ai-weekly-changelog-action@0.1.2
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           days_back: ${{ inputs.days_back || '7' }}

@@ -28,7 +28,7 @@ jobs:
           echo "prosecution=$ISSUE_TITLE" >> $GITHUB_OUTPUT
       - name: Post findings
         if: env.prosecution != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const body = `## 🔍 Prosecution Findings

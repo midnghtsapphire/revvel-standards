@@ -20,10 +20,10 @@ jobs:
       stuck_issues: ${{ steps.scan.outputs.stuck_issues }}
       stuck_prs: ${{ steps.scan.outputs.stuck_prs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Scan for stuck labels
         id: scan
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const MS_PER_HOUR = 1000 * 60 * 60;
@@ -173,9 +173,9 @@ jobs:
             items: ${{ needs.detect-stuck.outputs.stuck_prs }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - name: Process stuck items
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
@@ -363,7 +363,7 @@ jobs:
     if: always()
     steps:
       - name: Generate summary
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           STUCK_ISSUES: ${{ needs.detect-stuck.outputs.stuck_issues }}
           STUCK_PRS: ${{ needs.detect-stuck.outputs.stuck_prs }}

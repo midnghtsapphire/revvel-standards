@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Check current labels
         id: check_labels
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const issue = context.payload.issue;
@@ -78,15 +78,11 @@ jobs:
             console.log('Conflicts found:', conflicts);
       - name: Remove conflicting labels
         if: steps.check_labels.outputs.conflicts != '[]'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
-          script: >
-            const conflicts = JSON.parse('${{
-            steps.check_labels.outputs.conflicts }}');
-
+          script: |
+            const conflicts = JSON.parse('${{ steps.check_labels.outputs.conflicts }}');
             const issueNumber = context.payload.issue.number;
-
-
             for (const label of conflicts) {
               try {
                 await github.rest.issues.removeLabel({
@@ -105,29 +101,34 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'issues' && github.event.action == 'opened' &&
-      !contains(github.event.issue.labels.*.name, 'wr:')
+    if: github.event_name == 'issues' && github.event.action == 'opened'
     steps:
-      - name: Add initial label
-        uses: actions/github-script@v7
+      - name: Add wr:new label
+        uses: actions/github-script@v9.0.0
         with:
           script: |
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.issue.number,
-              labels: ['wr:new']
-            });
+            const labels = context.payload.issue.labels.map(l => l.name);
+            if (!labels.some(l => l.startsWith('wr:'))) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                labels: ['wr:new']
+              });
+              console.log('Added wr:new label');
+            } else {
+              console.log('Issue already has wr:* label:', labels.filter(l => l.startsWith('wr:')));
+            }
     timeout-minutes: 15
   transition-state:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
     steps:
       - name: Transition state
         id: transition
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const targetState = '${{ github.event.inputs.target_state }}';
@@ -204,13 +205,13 @@ jobs:
   close-completed:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'issues' && github.event.action == 'closed' &&
       contains(github.event.issue.labels.*.name, 'wr:')
     steps:
       - name: Mark as done if not PR
         if: "!github.event.issue.pull_request"
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issue = context.payload.issue;

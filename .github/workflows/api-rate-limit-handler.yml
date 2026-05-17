@@ -38,8 +38,9 @@ jobs:
           EXISTING=$(gh search issues --repo ${{ github.repository }} \
             --state open --json number \
             -q ".[] | select(.title | contains(\"${{ inputs.failed_workflow }}\") and contains(title, \"API rate limit\")) | .number" 2>/dev/null || echo "")
-
-          BODY=$(cat <<EOF
+          
+          if [[ -z "$EXISTING" ]]; then
+            cat > rate_limit_body.md <<'EOF'
           ## Rate Limit Hit
 
           **Failed Workflow:** ${{ inputs.failed_workflow }}
@@ -50,16 +51,11 @@ jobs:
           ## Required Action
           - [ ] Re-run with different agent (OpenRouter fallback)
           - [ ] Or wait and re-run later
-
-          ## Label
-          /label automation-failure,rate-limit-failure
           EOF
-          )
-          
-          if [[ -z "$EXISTING" ]]; then
+
             gh issue create \
               --title "[RATE LIMIT] ${{ inputs.failed_workflow }} - API rate limit hit" \
-              --body "$BODY" \
+              --body-file rate_limit_body.md \
               --label "automation-failure,needs-human"
           else
             echo "Duplicate WR #${EXISTING} already exists"

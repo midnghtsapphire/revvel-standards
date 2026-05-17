@@ -39,15 +39,13 @@ jobs:
        (github.event.label.name == 'wr:jules' || github.event.label.name == 'wr:code'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Prepare issue context
         id: context
-        env:
-          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
-          REPO: ${{ github.repository }}
         run: |
-          # Get issue details
+          ISSUE_NUMBER="${{ github.event.issue.number || inputs.issue_number }}"
+          REPO="${{ github.repository }}"
           ISSUE=$(gh issue view $ISSUE_NUMBER --repo $REPO --json title,body,labels,comments)
           echo "issue_title=$(echo $ISSUE | jq -r '.title')" >> $GITHUB_OUTPUT
           echo "issue_body=$(echo $ISSUE | jq -r '.body // ""')" >> $GITHUB_OUTPUT

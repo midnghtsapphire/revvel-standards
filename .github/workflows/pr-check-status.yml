@@ -22,7 +22,7 @@ jobs:
     if: github.event_name == 'check_suite'
     steps:
       - name: Ensure check status labels exist
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -52,7 +52,7 @@ jobs:
               }
             }
       - name: Update PR status based on check suite
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -158,7 +158,7 @@ jobs:
     if: github.event_name == 'workflow_run'
     steps:
       - name: Update PR status based on workflow run
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

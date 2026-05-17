@@ -1,5 +1,5 @@
 # Perplexity Research Agent
-# Uses Perplexity for research and web-grounded issue diagnosis
+# Uses the no-key helallao/perplexity-ai fork for web-grounded issue diagnosis.
 
 name: Perplexity Research Agent
 
@@ -22,9 +22,6 @@ permissions:
   issues: write
   contents: read
 
-env:
-  PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
-
 jobs:
   research:
     runs-on: ubuntu-latest
@@ -37,14 +34,27 @@ jobs:
        (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
-      - name: Research issue with Perplexity Sonar
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install no-key Perplexity provider
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
+
+      - name: Research issue with no-key Perplexity fork
         id: research
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
+          PERPLEXITY_PROVIDER: helallao/perplexity-ai
+          PERPLEXITY_MODEL: sonar
+          PERPLEXITY_TIMEOUT_MS: 120000
         run: |
           node scripts/perplexity-research-issue.js
 

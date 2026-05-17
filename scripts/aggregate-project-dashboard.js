@@ -19,6 +19,15 @@ const DOCS_DIR = path.join(REPO_ROOT, 'docs');
 const OUTPUT_FILE = path.join(REPO_ROOT, 'dashboard.html');
 const DATA_FILE = path.join(REPO_ROOT, 'dashboard-data.json');
 
+function getRootProjectName() {
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf-8'));
+    return packageJson.name || path.basename(REPO_ROOT);
+  } catch (err) {
+    return path.basename(REPO_ROOT);
+  }
+}
+
 /**
  * Extract project information from markdown files
  */
@@ -233,6 +242,7 @@ function parseProjectCatalog(content) {
         const lastCell = cells[cells.length - 1];
         const linkMatch = lastCell ? lastCell.match(/\[.*?\]\((.*?)\)/) : null;
         if (linkMatch) {
+          link = linkMatch[1];
         }
         
         projects.push({
@@ -263,14 +273,23 @@ function extractTestURLs() {
   
   try {
     // Find all README files
-    const findCmd = `find ${REPO_ROOT} -type f \\( -name "README.md" -o -name "readme.md" \\) 2>/dev/null`;
+    const findCmd = [
+      `find ${REPO_ROOT} -type f \\( -name "README.md" -o -name "readme.md" \\)`,
+      `-not -path "*/.git/*"`,
+      `-not -path "*/node_modules/*"`,
+      `-not -path "*/.next/*"`,
+      `-not -path "*/dist/*"`,
+      `-not -path "*/.venv/*"`,
+      `2>/dev/null`,
+    ].join(' ');
     const readmes = execSync(findCmd, { encoding: 'utf-8' }).trim().split('\n').filter(f => f);
     
     for (const readme of readmes) {
       if (!readme) continue;
       
       const content = fs.readFileSync(readme, 'utf-8');
-      const projectName = path.basename(path.dirname(readme));
+      const relativeDir = path.relative(REPO_ROOT, path.dirname(readme));
+      const projectName = relativeDir ? path.basename(path.dirname(readme)) : getRootProjectName();
       
       // Extract Vercel URLs
       const vercelMatches = content.match(vercelPattern) || [];
