@@ -359,13 +359,11 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 | `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports |
 | `consent_basis_types` | Why contact is allowed |
 | `lead_source_types` | Source/channel normalization for routing and reporting |
-| `service_statuses` | Shared lookup for API/MCP/CLI dependency ledgers |
 
 **Suggested values by lookup:**
 - `contact_eligibility_statuses`: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
 - `consent_basis_types`: `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none`
 - `lead_source_types`: `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor`
-- `service_statuses`: `active`, `degraded`, `blocked`, `payment_required`, `trial_expiring`
 
 **Recommended behavior:**
 - Landing-page quote requests start as `inbound_express_consent` **only after** storing consent text/version, timestamp, source URL/form ID, and suppression-check outcome
@@ -373,7 +371,7 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 - Any complaint, revocation, or ambiguous source moves the lead to `manual_review_required` or `revoked_or_opted_out`
 - Reports for non-technical operators should display friendly labels from lookup tables, not raw booleans or magic numbers
 
-**Policy gate helper:** `isContactEligible(lead, { checkpoint })` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) and must fail closed to `false` when status data is missing, invalid, or the suppression/DNC check errors.
+**Policy gate helper:** `isContactEligible(lead, checkpoint)` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) and must fail closed to `false` when status data is missing, invalid, or the suppression/DNC check errors.
 
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
@@ -392,7 +390,7 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
 
   // 3. Contactability filter: see compliance-utils docs for checkpoint validation rules.
   const contactableLeads = qualifiedLeads.filter((lead) =>
-    isContactEligible(lead, { checkpoint: 'pre_export' })
+    isContactEligible(lead, 'pre_export')
   );
 
   // 4. Deduplicate: remove any leads already sold in previous batches
@@ -595,7 +593,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 - Surface warning badges in Audrey UI and create a `Wr` issue automatically when due date is breached
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
-> *"This lead list is compiled from publicly available government records, first-party inquiries, and licensed data sources, and is intended for life insurance sales and marketing outreach only. Each lead in this batch includes recorded contactability, consent/source, and suppression-screening metadata that must be verified at the point of use. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
+> *"This lead list is compiled from publicly available government records, first-party inquiries, and licensed data sources, and is intended for life insurance sales and marketing outreach only. Each lead in this batch includes recorded contactability, consent/source, and suppression-screening metadata that must be revalidated at the point of use using the documented `pre_contact` checkpoint rules. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
