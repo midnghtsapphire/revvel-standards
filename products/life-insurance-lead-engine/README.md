@@ -61,4 +61,4 @@ npm run dev
 
 - NPPES data is public domain (HHS).
 - TCPA-compliant: leads are for licensed agents only; no auto-dialing without consent.
-- GDPR/CCPA: opt-out mechanism in newsletter.
+- Newsletter preferences include a visible opt-out form that suppresses local newsletter capture for the submitted email.

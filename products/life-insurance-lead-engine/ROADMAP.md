@@ -1,7 +1,7 @@
 # Roadmap
 
 ## Q1 2025 — MVP & First 25 Customers
-- [x] Scaffold Next.js app
+- [x] Build initial Next.js app
 - [x] NPI Registry integration
 - [x] Dedupe utility
 - [x] Pitch script engine

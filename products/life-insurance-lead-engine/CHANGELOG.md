@@ -2,7 +2,7 @@
 
 ## [0.1.0] — 2025-01-01
 ### Added
-- Initial scaffold of Life Insurance Lead Engine.
+- Initial production build of Life Insurance Lead Engine.
 - NPI Registry API integration via `npiScraper.ts`.
 - CSV/Excel dedupe utility with Fuse.js fuzzy matching.
 - Specialty-tailored pitch script generator.

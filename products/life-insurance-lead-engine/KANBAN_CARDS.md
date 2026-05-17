@@ -13,7 +13,7 @@
 - [ ] Vercel deployment
 
 ## Done
-- [x] Scaffold Next.js app
+- [x] Build initial Next.js app
 - [x] NPI Registry integration
 - [x] Dedupe utility (Fuse.js)
 - [x] Specialty pitch scripts

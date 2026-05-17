@@ -1,6 +1,6 @@
 {
   "product": "life-insurance-lead-engine",
-  "status": "scaffolded",
+  "status": "ready-for-validation",
   "phase": 1,
   "target_mrr": 10000,
   "current_mrr": 0,
