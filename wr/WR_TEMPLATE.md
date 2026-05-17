@@ -213,6 +213,8 @@ Define a layered research engine using two AI fleets:
 - Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
 - Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
 
+**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this is a mandatory manual checkpoint.
+
 #### Instruction Normalization (REQUIRED)
 
 User prompts and brainstorms are inputs, not immutable specs. Record:
