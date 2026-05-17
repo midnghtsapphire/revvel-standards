@@ -14,6 +14,23 @@ const OPENROUTER_BASE = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
 const TITLE_MAX_LENGTH = 80;
 
+function getRequiredEnvVar(name) {
+  const value = process.env[name];
+
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(
+      `Missing required environment variable: ${name}. ` +
+      `Set ${name} before running scripts/research-module.js.`
+    );
+  }
+
+  return value.trim();
+}
+
+const OPENROUTER_API_KEY = getRequiredEnvVar('OPENROUTER_API_KEY');
+const QUESTION = getRequiredEnvVar('QUESTION');
+const OUTPUT_FILE = getRequiredEnvVar('OUTPUT_FILE');
+
 const AGENTS = {
   competitive: {
     model: MODEL,
