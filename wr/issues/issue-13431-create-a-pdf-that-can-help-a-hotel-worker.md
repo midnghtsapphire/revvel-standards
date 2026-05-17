@@ -458,7 +458,7 @@
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13431-create-a-pdf-that-can-help-a-hotel-worker.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]
