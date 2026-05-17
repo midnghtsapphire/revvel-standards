@@ -40,7 +40,8 @@
 | **Together AI** | Together.ai | 🆓 Free $5 credits | $0.20+/M tokens | P1 | 🔵 Recommended | Skills, agent experiments | Run FOSS models (Llama 3, Mixtral, etc.) via API; good for non-OpenAI fallback |
 | **Fireworks AI** | Fireworks | 🆓 Free credits | $0.20+/M tokens | P2 | 🟡 Evaluate | Skills | Fast FOSS model hosting |
 | **Mistral API** | Mistral AI | ❌ No free tier | $0.20+/M tokens | P2 | 🟡 Evaluate | Agent Factory | European LLM; strong coding; good GDPR story |
-| **Perplexity API** | Perplexity AI | ❌ No free tier | $5/1000 searches | P2 | 🟡 Evaluate | Research agents | LLM with real-time web search built in |
+| **Perplexity API** | Perplexity AI | ❌ No free tier | $5/1000 searches | P2 | 🟡 Evaluate | Server-side research agents | LLM with real-time web search built in; use only when unattended backend/GitHub Actions research must run under Revvel-owned credentials |
+| **Puter.js Perplexity** | Puter + Perplexity AI | ✅ User-pays, no Revvel key | $0 Revvel-owned model spend | P1 | 🔵 Recommended | Browser research widgets, demos, public pages | Keyless frontend path via `puter.ai.chat()` and Perplexity Sonar models. See `standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md` and `templates/puter/perplexity-research-widget.html` |
 
 ### 1.3. Local / Self-Hosted LLMs
 
