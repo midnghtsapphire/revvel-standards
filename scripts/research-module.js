@@ -311,7 +311,7 @@ async function runResearch(topic, apiKey, options = {}) {
   });
 
   const synthesisInput = buildSynthesizerPrompt(topic, results);
-  const synthesisSystemPrompt = SYNTHESIZER.prompt.replace("{topic}", topic);
+  const synthesisSystemPrompt = SYNTHESIZER.prompt.replaceAll("{topic}", topic);
   let report;
   try {
     report = await callOpenRouter(
