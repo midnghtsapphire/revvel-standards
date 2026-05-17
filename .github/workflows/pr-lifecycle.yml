@@ -38,6 +38,7 @@ jobs:
     steps:
       - name: Update lifecycle labels
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
@@ -151,6 +152,7 @@ jobs:
     steps:
       - name: Update labels on review submission
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
@@ -242,6 +244,7 @@ jobs:
     steps:
       - name: Find open PRs for this SHA and update check labels
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >

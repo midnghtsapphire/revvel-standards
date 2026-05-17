@@ -43,6 +43,7 @@ jobs:
     steps:
       - name: Route priority for issues and PRs
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}

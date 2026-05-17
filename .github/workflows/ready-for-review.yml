@@ -27,6 +27,7 @@ jobs:
       - name: Check all CI status checks for this commit
         id: check-status
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           script: |
@@ -95,6 +96,7 @@ jobs:
       - name: Convert draft PR to Ready for Review
         if: steps.check-status.outputs.all_passed == 'true'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
@@ -123,6 +125,7 @@ jobs:
     steps:
       - name: Ensure `in-review` label exists
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           script: |
@@ -147,6 +150,7 @@ jobs:
       - name: Find linked issues and apply `in-review` label
         id: find-issues
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           script: |
@@ -206,6 +210,7 @@ jobs:
           persist-credentials: false
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           script: |
@@ -304,6 +309,7 @@ jobs:
     steps:
       - name: Remove `in-review` label from linked issues
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           script: |

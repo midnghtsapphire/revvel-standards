@@ -48,6 +48,7 @@
 | BUG-013 | Workflow YAML validation failed on `api-rate-limit-handler.yml` multiline body and `jules-coding-agent.yml` misindented step `env` blocks | medium | resolved | 2026-05-15 |
 | BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
 | BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
+| BUG-016 | PR label/comment/status-helper workflows failed on transient GitHub installation API rate limits and blocked squash merge despite passing product checks | high | resolved | 2026-05-17 |
 
 ---
 
@@ -97,6 +98,7 @@
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
 | `npm test` | 2026-05-17 | ✅ passing after `npm ci`; includes Puter Perplexity template coverage | — |
+| PR automation fail-soft test | 2026-05-17 | ✅ `node tests/pr-automation-fail-soft.test.js` verifies merge-helper GitHub API scripts use `continue-on-error` so transient rate limits do not block squash merge | — |
 | Puter Perplexity template test | 2026-05-17 | ✅ `node tests/puter-perplexity-template.test.js` verified canonical model list, template drift, CSP/no-secret constraints, safe text rendering, and standard coverage | — |
 | Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
 | Workflow YAML validation | 2026-05-17 | ✅ `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
@@ -153,6 +155,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 02:03 UTC
+Updated by: Cursor
+Session summary: Made PR label/comment/status-helper workflows fail-soft for transient GitHub API rate limits, added regression coverage, and verified focused test, full npm test, and workflow validation.
+
 Last updated: 2026-05-17 01:41 UTC
 Updated by: Cursor
 Session summary: Added the keyless Puter.js + Perplexity browser research integration standard, generator, HTML widget template, API BOM entry, and focused regression coverage; verified focused test, full npm test, and workflow validation after `npm ci`.

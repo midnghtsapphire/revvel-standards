@@ -53,6 +53,7 @@ jobs:
       - name: Resolve issue/PR number
         id: resolve
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.pull_request?.number;
@@ -76,6 +77,7 @@ jobs:
         id: check
         if: steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -114,6 +116,7 @@ jobs:
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -138,6 +141,7 @@ jobs:
         id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -160,6 +164,7 @@ jobs:
       - name: Post first-line-of-sight comment
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
@@ -236,6 +241,7 @@ jobs:
       - name: Discover unrouted open issues and PRs
         id: discover
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
@@ -306,6 +312,7 @@ jobs:
       - name: Route discovered items
         if: steps.discover.outputs.count != '0'
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:

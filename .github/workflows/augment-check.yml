@@ -30,6 +30,7 @@ jobs:
         run: sleep 60
       - name: Check for Augment marker, comment if missing
         uses: actions/github-script@v9.0.0
+        continue-on-error: true
         with:
           script: |
             const prNumber =
