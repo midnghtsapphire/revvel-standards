@@ -12,6 +12,7 @@ const OUTPUT_FILE = process.env.OUTPUT_FILE;
 
 const OPENROUTER_BASE = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
+const TITLE_MAX_LENGTH = 80;
 
 const AGENTS = {
   competitive: {
@@ -132,7 +133,16 @@ Produce a final report in this EXACT format:
 Be specific, quantitative, and actionable. Cite sources inline.`,
 };
 
-function callOpenRouter(model, systemPrompt, userPrompt, apiKey = OPENROUTER_API_KEY) {
+function resolveApiKey(apiKey) {
+  const key = apiKey || process.env.OPENROUTER_API_KEY;
+  if (!key) {
+    throw new Error("OPENROUTER_API_KEY environment variable is required.");
+  }
+  return key;
+}
+
+function callOpenRouter(model, systemPrompt, userPrompt, apiKey) {
+  const resolvedApiKey = resolveApiKey(apiKey);
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
       model,
@@ -149,7 +159,7 @@ function callOpenRouter(model, systemPrompt, userPrompt, apiKey = OPENROUTER_API
       headers: {
         "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(body),
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${resolvedApiKey}`,
         "HTTP-Referer": "https://github.com/midnghtsapphire",
         "X-Title": "Revvel Research Module",
       },
@@ -185,20 +195,27 @@ function buildSubAgents(question) {
     name: agent.name,
     model: agent.model,
     systemPrompt: agent.prompt,
-    userPrompt: `Research topic: ${question}`,
+    userPrompt: buildTopicPrompt(question),
   }));
 }
 
+function buildTopicPrompt(topic) {
+  return `Research topic: ${topic}`;
+}
+
 function buildSynthesizerPrompt(question, reports) {
-  const reportsText = reports
+  const reportsText = formatAgentReports(reports);
+  return `Topic: ${question}\n\nAgent outputs:\n\n${reportsText}`;
+}
+
+function formatAgentReports(reports) {
+  return reports
     .map((r) => `=== ${r.name.toUpperCase()} AGENT REPORT ===\n${r.content}`)
     .join("\n\n");
-
-  return `${SYNTHESIZER.prompt}\n\nTopic: ${question}\n\nAgent outputs:\n\n${reportsText}`;
 }
 
 function formatDocument(question, synthesis, date) {
-  return `# Research: ${question.slice(0, 80)}${question.length > 80 ? "..." : ""}
+  return `# Research: ${question.slice(0, TITLE_MAX_LENGTH)}${question.length > TITLE_MAX_LENGTH ? "..." : ""}
 
 **Version:** 1.0.0
 **Date:** ${date}
@@ -218,21 +235,41 @@ ${synthesis}
 `;
 }
 
-async function runAgent(agent, topic, apiKey = OPENROUTER_API_KEY) {
-  const output = await callOpenRouter(agent.model, agent.prompt, `Research topic: ${topic}`, apiKey);
-  return { agent: agent.name, output };
+async function runAgent(agent, topic, apiKey) {
+  const output = await callOpenRouter(agent.model, agent.prompt, buildTopicPrompt(topic), apiKey);
+  return { name: agent.name, content: output };
 }
 
-async function runResearch(topic, apiKey = OPENROUTER_API_KEY) {
-  const results = await Promise.all(Object.values(AGENTS).map((agent) => runAgent(agent, topic, apiKey)));
-  const synthesisInput = results.map((r) => `## ${r.agent}\n\n${r.output}`).join("\n\n---\n\n");
-  const synthesis = await callOpenRouter(
-    SYNTHESIZER.model,
-    SYNTHESIZER.prompt,
-    `Topic: ${topic}\n\nAgent outputs:\n\n${synthesisInput}`,
-    apiKey
+async function runResearch(topic, apiKey, options = {}) {
+  const { tolerateAgentFailures = false, onAgentFailure, onSynthesisFailure } = options;
+  const results = await Promise.all(
+    Object.values(AGENTS).map(async (agent) => {
+      try {
+        return await runAgent(agent, topic, apiKey);
+      } catch (err) {
+        if (!tolerateAgentFailures) {
+          throw err;
+        }
+        if (onAgentFailure) {
+          onAgentFailure(agent, err);
+        }
+        return { name: agent.name, content: `Agent failed: ${err.message}` };
+      }
+    })
   );
-  return { topic, agents: results, report: synthesis };
+
+  const synthesisInput = buildSynthesizerPrompt(topic, results);
+  let report;
+  try {
+    report = await callOpenRouter(SYNTHESIZER.model, SYNTHESIZER.prompt, synthesisInput, apiKey);
+  } catch (err) {
+    if (onSynthesisFailure) {
+      onSynthesisFailure(err);
+    }
+    report = formatAgentReports(results);
+  }
+
+  return { topic, agents: results, report };
 }
 
 async function main() {
@@ -250,30 +287,17 @@ async function main() {
   }
 
   const date = new Date().toISOString().split("T")[0];
-  const subAgents = buildSubAgents(QUESTION);
+  const research = await runResearch(QUESTION, OPENROUTER_API_KEY, {
+    tolerateAgentFailures: true,
+    onAgentFailure: (agent, err) => {
+      console.warn(`  ⚠️  [${agent.name}] Failed: ${err.message}`);
+    },
+    onSynthesisFailure: (err) => {
+      console.error(`❌ Synthesis failed: ${err.message}`);
+    },
+  });
 
-  const reports = await Promise.all(
-    subAgents.map(async (agent) => {
-      try {
-        const content = await callOpenRouter(agent.model, agent.systemPrompt, agent.userPrompt);
-        return { name: agent.name, content };
-      } catch (err) {
-        console.warn(`  ⚠️  [${agent.name}] Failed: ${err.message}`);
-        return { name: agent.name, content: `Agent failed: ${err.message}` };
-      }
-    })
-  );
-
-  const synthPrompt = buildSynthesizerPrompt(QUESTION, reports);
-  let synthesis;
-  try {
-    synthesis = await callOpenRouter(SYNTHESIZER.model, SYNTHESIZER.prompt, synthPrompt);
-  } catch (err) {
-    console.error(`❌ Synthesis failed: ${err.message}`);
-    synthesis = reports.map((r) => `## ${r.name}\n\n${r.content}`).join("\n\n---\n\n");
-  }
-
-  const document = formatDocument(QUESTION, synthesis, date);
+  const document = formatDocument(QUESTION, research.report, date);
   const outputPath = path.resolve(process.cwd(), OUTPUT_FILE);
   const outputDir = path.dirname(outputPath);
   if (!fs.existsSync(outputDir)) {
@@ -297,6 +321,7 @@ module.exports = {
   buildSubAgents,
   buildSynthesizerPrompt,
   formatDocument,
+  formatAgentReports,
   runAgent,
   runResearch,
   main,
