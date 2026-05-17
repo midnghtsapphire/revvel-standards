@@ -28,9 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Detect stuck WRs and heal
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
           DRY_RUN: ${{ inputs.dry_run || false }}
@@ -127,12 +127,50 @@ jobs:
                     inputs: { issue_number: String(issue.number) },
                   });
                   await setAttemptLabel(issue, attempts + 1);
+                  
+                  // Poll for workflow run with exponential backoff (5s, 10s, 20s, 30s - 40s capped at 30s)
+                  let workflowStarted = false;
+                  let statusNote = '';
+                  
+                  for (let attempt = 0; attempt < 4; attempt++) {
+                    const delay = Math.min(5000 * Math.pow(2, attempt), 30000);  // 5s, 10s, 20s, 30s (40s capped)
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    
+                    // Check if workflow run was created for this specific issue
+                    const recentRuns = await github.rest.actions.listWorkflowRuns({
+                      owner, repo,
+                      workflow_id: 'wr-pr-creation.yml',
+                      per_page: 10,
+                    });
+                    
+                    const justTriggered = recentRuns.data.workflow_runs.find(run => {
+                      const runAge = Date.now() - new Date(run.created_at).getTime();
+                      return runAge < 60000;  // Within last minute
+                    });
+                    
+                    if (justTriggered) {
+                      workflowStarted = true;
+                      statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
+                      core.info(`Workflow detected after ${delay/1000}s`);
+                      break;
+                    }
+                    
+                    if (attempt < 3) {
+                      core.info(`Workflow not detected, checking again in ${delay/1000}s...`);
+                    }
+                  }
+                  
+                  if (!workflowStarted) {
+                    statusNote = '\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:\n- Invalid workflow syntax\n- Missing permissions\n- GitHub Actions API issues';
+                  }
+                  
                   await github.rest.issues.createComment({
                     owner, repo, issue_number: issue.number,
                     body: [
                       `🔁 **Stuck-WR auto-healer:** retriggering WR PR Creation (attempt ${attempts + 1}/${MAX_ATTEMPTS}).`,
                       ``,
                       `This issue has the \`work-request\` label but no associated PR was found. The detector dispatched \`.github/workflows/wr-pr-creation.yml\` against this issue.`,
+                      statusNote,
                       ``,
                       `If after ${MAX_ATTEMPTS} retriggers no PR appears, the detector will escalate by opening a tracking issue with diagnostic info.`,
                       ``,

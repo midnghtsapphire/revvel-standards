@@ -102,7 +102,7 @@ function buildSubAgents(question) {
   return [
     {
       name: "spec",
-      model: "anthropic/claude-sonnet-4",
+      model: "google/gemini-2.5-pro",
       systemPrompt:
         "You are a technical specification researcher. Your job is to research official documentation, " +
         "GitHub repos, and API references. Be precise, cite sources where possible, and focus on what " +
@@ -113,17 +113,17 @@ function buildSubAgents(question) {
     },
     {
       name: "competitive",
-      model: "openai/gpt-4.1",
+      model: "google/gemini-2.5-pro",
       systemPrompt:
         "You are a competitive analysis expert. Your job is to identify alternatives, compare trade-offs, " +
-        "and provide an objective assessment of the pros and cons of different approaches. Be balanced.",
+        "and provide an objective assessment of the pros and cons of different approaches. Be balanced. Discovery involves what is being used now and what problem we are solving.",
       userPrompt:
         `Compare the main options and alternatives for:\n\n${question}\n\n` +
-        "Provide: Options Available, Pros of Each, Cons of Each, Best Use Case for Each.",
+        "Provide: Options Available, Pros of Each, Cons of Each, Best Use Case for Each, What is being used now, What problem we are solving.",
     },
     {
       name: "security",
-      model: "anthropic/claude-opus-4",
+      model: "google/gemini-2.5-pro",
       systemPrompt:
         "You are a security and compliance expert. Your job is to identify security risks, compliance " +
         "implications, and best practices. Flag anything that could expose credentials, data, or systems.",
@@ -133,13 +133,13 @@ function buildSubAgents(question) {
     },
     {
       name: "cost",
-      model: "openai/gpt-4o-mini",
+      model: "google/gemini-2.5-pro",
       systemPrompt:
         "You are a cost and operations analyst. Your job is to estimate costs, operational burden, " +
-        "and scaling characteristics of different approaches. Be specific with numbers where possible.",
+        "and scaling characteristics of different approaches. Be specific with numbers where possible. Consider lead economics where applicable.",
       userPrompt:
         `Analyze the cost and operational factors for:\n\n${question}\n\n` +
-        "Provide: Cost Estimates, Operational Complexity, Scaling Considerations, Hidden Costs.",
+        "Provide: Cost Estimates, Operational Complexity, Scaling Considerations, Hidden Costs, How much per lead and why some are worth more.",
     },
     {
       name: "community",
@@ -147,10 +147,19 @@ function buildSubAgents(question) {
       systemPrompt:
         "You are a community knowledge aggregator. Your job is to summarize what practitioners, " +
         "developers, and the broader community say about this topic based on your training knowledge. " +
-        "Focus on real-world experience, not marketing copy.",
+        "Focus on real-world experience, chatter for life insurance leads and what's not liked, not marketing copy.",
       userPrompt:
-        `Summarize real-world community experience and practitioner knowledge about:\n\n${question}\n\n` +
-        "Provide: Common Pain Points, What Works Well, Common Pitfalls, Practitioner Tips.",
+        `Summarize real-world community experience, practitioner knowledge, and chatter about:\n\n${question}\n\n` +
+        "Provide: Common Pain Points, What Works Well, Common Pitfalls, Practitioner Tips, Chatter about leads and what's not liked.",
+    },
+    {
+      name: "marketing_seo",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a marketing and SEO expert. Your job is to provide better search to our research. Check most searched life insurance words and terms, best marketing being used now and how this would improve in our app, and facts and stats to determine a high value domain name.",
+      userPrompt:
+        `Analyze the marketing and SEO factors for:\n\n${question}\n\n` +
+        "Provide: Most searched words and terms, Best marketing being used now, How it improves the app, Facts and stats to determine a high value domain name.",
     },
   ];
 }
@@ -165,7 +174,7 @@ function buildSynthesizerPrompt(question, reports) {
     .join("\n\n");
 
   return (
-    `You are a research synthesizer. You have received reports from 5 specialized research agents on the following question:\n\n` +
+    `You are a research synthesizer. You have received reports from 6 specialized research agents on the following question:\n\n` +
     `QUESTION: ${question}\n\n` +
     `${reportsText}\n\n` +
     `Your job is to synthesize all reports into a single comprehensive research document.\n\n` +
@@ -174,10 +183,12 @@ function buildSynthesizerPrompt(question, reports) {
     `2. Recommendation (clear, actionable recommendation with reasoning)\n` +
     `3. Options Compared (table or list comparing main options)\n` +
     `4. Security Considerations\n` +
-    `5. Cost Analysis\n` +
+    `5. Cost Analysis & Lead Economics\n` +
     `6. Implementation Roadmap (phases with action items)\n` +
-    `7. Open Questions (things that need human decision)\n` +
-    `8. Sources and References\n\n` +
+    `7. Marketing, SEO & High Value Domains\n` +
+    `8. Community Chatter & User Sentiment\n` +
+    `9. Open Questions (things that need human decision)\n` +
+    `10. Sources and References\n\n` +
     `Be specific. Include concrete steps, commands, or code snippets where helpful. Flag any contradictions between agents.`
   );
 }
@@ -202,7 +213,7 @@ ${synthesis}
 
 ---
 
-*This document was generated by the Revvel AI Research Module using 5 specialized sub-agents via OpenRouter.*
+*This document was generated by the Revvel AI Research Module using 6 specialized sub-agents via OpenRouter.*
 *Review and validate findings before acting on recommendations.*
 `;
 }
@@ -241,12 +252,12 @@ async function main() {
   console.log(`\n✅ All sub-agents complete in ${elapsed}s`);
 
   // Synthesize
-  console.log(`\n🧠 Synthesizing with claude-opus-4...`);
+  console.log(`\n🧠 Synthesizing with google/gemini-2.5-pro...`);
   const synthPrompt = buildSynthesizerPrompt(QUESTION, reports);
   let synthesis;
   try {
     synthesis = await callOpenRouter(
-      "anthropic/claude-opus-4",
+      "google/gemini-2.5-pro",
       "You are an expert research synthesizer. Produce clear, structured, actionable documentation.",
       synthPrompt
     );

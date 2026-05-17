@@ -1,0 +1,118 @@
+name: Research Engine Orchestrator
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+      - labeled
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to research
+        required: false
+        type: string
+      pr_number:
+        description: PR number to request code-review agents on
+        required: false
+        type: string
+      research_query:
+        description: Direct research query when no issue is supplied
+        required: false
+        type: string
+      research_depth:
+        description: Research depth
+        required: false
+        default: triangulated
+        type: choice
+        options:
+          - standard
+          - triangulated
+          - swarm
+permissions:
+  actions: write
+  contents: write
+  issues: write
+  pull-requests: write
+concurrency:
+  group: research-engine-${{ github.event.issue.number || github.event.inputs.issue_number || github.event.inputs.research_query || github.run_id }}
+  cancel-in-progress: false
+jobs:
+  route:
+    name: Decide whether research engine should run
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+      issue_number: ${{ steps.decide.outputs.issue_number }}
+      pr_number: ${{ steps.decide.outputs.pr_number }}
+      research_query: ${{ steps.decide.outputs.research_query }}
+      research_depth: ${{ steps.decide.outputs.research_depth }}
+    steps:
+      - name: Decide route
+        id: decide
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const dispatch = context.eventName === 'workflow_dispatch';
+            const issue = context.payload.issue;
+            const inputs = context.payload.inputs || {};
+            const issueNumber = inputs.issue_number || issue?.number || '';
+            const prNumber = inputs.pr_number || '';
+            const title = issue?.title || inputs.research_query || '';
+            const labels = (issue?.labels || []).map(label => typeof label === 'string' ? label : label.name);
+            const triggerLabels = new Set([
+              'research-engine',
+              'weekly-research',
+              'deep-research',
+              'marketing',
+              'seo',
+              'competitor-research',
+              'audience-research',
+              'chatter-research',
+              'wr:research',
+            ]);
+            const labelTriggered = labels.some(label => triggerLabels.has(label));
+            const titleTriggered = /^\[WR\]/i.test(title) || /research|marketing|seo|competitor|audience|chatter/i.test(title);
+            const shouldRun = dispatch || labelTriggered || titleTriggered;
+            core.setOutput('should_run', shouldRun ? 'true' : 'false');
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('research_query', inputs.research_query || title || '');
+            core.setOutput('research_depth', inputs.research_depth || 'triangulated');
+    timeout-minutes: 15
+  research:
+    name: Run layered research engine
+    needs: route
+    if: needs.route.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "22"
+      - name: Run research engine
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ needs.route.outputs.issue_number }}
+          PR_NUMBER: ${{ needs.route.outputs.pr_number }}
+          RESEARCH_QUERY: ${{ needs.route.outputs.research_query }}
+          RESEARCH_DEPTH: ${{ needs.route.outputs.research_depth }}
+          OUTPUT_FILE: docs/research-engine/run-${{ github.run_id }}.md
+        run: node scripts/research-engine.js
+      - name: Commit research packet
+        run: |
+          git config user.name "revvel-automation[bot]"
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+          git add docs/research-engine
+          if git diff --staged --quiet; then
+            echo "No research packet changes to commit."
+          else
+            git commit -m "research: add research engine packet"
+            git push
+          fi
+    timeout-minutes: 45
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
