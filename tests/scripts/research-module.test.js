@@ -46,6 +46,7 @@ async function runTests() {
     mockHttpsRequest((req, callback) => {
       process.nextTick(() => {
         const res = {
+          statusCode: 200,
           on: (event, cb) => {
             if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Success response" } }] })));
             if (event === "end") cb();
@@ -63,6 +64,7 @@ async function runTests() {
     mockHttpsRequest((req, callback) => {
       process.nextTick(() => {
         const res = {
+          statusCode: 200,
           on: (event, cb) => {
             if (event === "data") cb(Buffer.from(JSON.stringify({ error: { message: "API Error" } })));
             if (event === "end") cb();
@@ -83,6 +85,7 @@ async function runTests() {
     mockHttpsRequest((req, callback) => {
       process.nextTick(() => {
         const res = {
+          statusCode: 200,
           on: (event, cb) => {
             if (event === "data") cb(Buffer.from(invalidJson));
             if (event === "end") cb();
@@ -127,6 +130,7 @@ async function runTests() {
         } else {
           // Others succeed
           const res = {
+            statusCode: 200,
             on: (event, cb) => {
               if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Agent/Synthesis content" } }] })));
               if (event === "end") cb();

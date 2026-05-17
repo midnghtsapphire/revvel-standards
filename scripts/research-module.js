@@ -185,7 +185,15 @@ function callOpenRouter(model, systemPrompt, userPrompt, apiKey) {
         data += chunk;
       });
       res.on("end", () => {
-        const statusCode = typeof res.statusCode === "number" ? res.statusCode : 200;
+        const statusCode = typeof res.statusCode === "number" ? res.statusCode : null;
+        if (statusCode === null) {
+          reject(
+            new Error(
+              "OpenRouter response missing HTTP status code. This may indicate an invalid response object or mock configuration."
+            )
+          );
+          return;
+        }
         const isSuccess = statusCode >= 200 && statusCode < 300;
 
         let parsed;
@@ -241,6 +249,16 @@ function formatAgentReports(reports) {
     .join("\n\n");
 }
 
+function normalizeRejectionReason(reason) {
+  if (reason instanceof Error) {
+    return reason;
+  }
+  if (reason && typeof reason === "object") {
+    return new Error(JSON.stringify(reason));
+  }
+  return new Error(String(reason));
+}
+
 function formatDocument(question, synthesis, date) {
   return `# Research: ${question.slice(0, TITLE_MAX_LENGTH)}${question.length > TITLE_MAX_LENGTH ? "..." : ""}
 
@@ -276,7 +294,7 @@ async function runResearch(topic, apiKey, options = {}) {
 
   const firstFailure = settledResults.find((result) => result.status === "rejected");
   if (firstFailure && !tolerateAgentFailures) {
-    throw firstFailure.reason;
+    throw normalizeRejectionReason(firstFailure.reason);
   }
 
   const results = settledResults.map((result, index) => {
@@ -285,7 +303,7 @@ async function runResearch(topic, apiKey, options = {}) {
     }
 
     const agent = agents[index];
-    const error = result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+    const error = normalizeRejectionReason(result.reason);
     if (onAgentFailure) {
       onAgentFailure(agent, error);
     }
