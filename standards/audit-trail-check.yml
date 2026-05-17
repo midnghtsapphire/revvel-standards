@@ -94,7 +94,6 @@ jobs:
           flush()
 
           if not violations:
-              print('')
               sys.exit(0)
 
           print('## ⚠️ RVS-AGENT-001 violations detected\n')
