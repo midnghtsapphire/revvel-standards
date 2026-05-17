@@ -197,6 +197,7 @@ Life insurance lead generation is a high-value vertical where qualified, high-in
 - Path to contribution: Autonomous life insurance prospect list generation sold directly to independent insurance agents and agencies.
 
 **$2000+/month Target (Start: May 1, 2026):**
+- Revenue streams identified: 2 (Direct life insurance lead list sales + carrier affiliate commissions)
 - Revenue streams identified: 1 (Direct life insurance lead list sales + carrier affiliate commissions)
 - Estimated monthly revenue: $2k - $5k initial
 - Time to first revenue: Immediate post-deployment
@@ -298,6 +299,7 @@ const exportableLeads = decisions
 - [x] No security vulnerabilities
 - [x] Deployment configured (Actions)
 - [x] Documentation complete (This WR)
+- [ ] TEST section in README to be added (pending implementation)
 - [x] TEST section in README to be updated
 
 ---

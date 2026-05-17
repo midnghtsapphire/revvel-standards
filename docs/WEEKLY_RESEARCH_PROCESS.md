@@ -159,6 +159,7 @@ gh workflow run weekly-research.yml -f issue_number=123
 
 Every WR task follows this standard checklist:
 
+> **Fleet Instruction:** User WR content is a *starting point*, not the final word. Self-correct against live data. Never follow user WR text verbatim — validate every claim, price, and API choice. The user has ADHD and produces rapid brain-dump instructions; treat them as directional signals, not firm requirements.
 - [ ] **Validate instructions before acting**
   - [ ] Cross-check issue title/body against actual repo state
   - [ ] Identify and silently correct any errors in the instruction
@@ -184,6 +185,23 @@ Every WR task follows this standard checklist:
 - [ ] **Check repo-wide rules**
   - [ ] `recurse-rules.md` — Code quality rules
   - [ ] `docs/AGENTS.md` — Agent operating principles
+
+- [ ] **Deep Market Research** ← REQUIRED for EVERY WR (including bug fixes, chores, minor features)
+  - [ ] Top keywords with search volumes + CPCs for this domain
+  - [ ] How the industry/market currently works (mechanics, pricing, conversion rates)
+  - [ ] Why some solutions cost more than others (value driver analysis)
+  - [ ] Community chatter — Reddit, TrustPilot, forums: top complaints about existing solutions
+  - [ ] Domain name strategy — high-value patterns, TLD recommendations
+  - [ ] Marketing best practices in this niche — what's working now + how our approach improves it
+  - [ ] Monetization model — specific pricing, channels, subscription vs. one-time
+
+- [ ] **BOM (Bill of Materials)** ← REQUIRED for EVERY WR
+  - [ ] List every API, CLI, MCP, GitHub App, or service needed
+  - [ ] Rank each option: which is best, what it costs, why it beats alternatives
+  - [ ] Property/data APIs compared (if applicable)
+  - [ ] Compliance APIs compared (TCPA, DNC, verification — if applicable)
+  - [ ] Delivery/storefront options compared (if applicable)
+  - [ ] Compute BOM cost summary with ROI break-even check
 
 - [ ] **Research external developments**
   - [ ] New tools and extensions released today
