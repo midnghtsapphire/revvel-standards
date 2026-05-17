@@ -2,13 +2,14 @@
 
 ## Overview
 
-This guide covers deployment of three production-ready Next.js applications to Vercel and other platforms.
+This guide covers deployment of production-ready Next.js applications to Vercel and other platforms.
 
 ## Products
 
 1. **High-Ticket Affiliate Hub** (`affiliate-hub/`)
 2. **AI Video Toolkit** (`ai-video-toolkit/`)
 3. **Mac Screen Recorder Finder** (`screen-recorder-finder/`)
+4. **Revvel PromptForge** (`prompt-generation-app/`)
 
 ## Quick Deploy to Vercel
 
@@ -22,6 +23,7 @@ Each product can be deployed individually:
    - `products/affiliate-hub` (for Product 1)
    - `products/ai-video-toolkit` (for Product 2)
    - `products/screen-recorder-finder` (for Product 3)
+   - `products/prompt-generation-app` (for Product 4)
 4. Click **Deploy**
 
 ### Option 2: Vercel CLI
@@ -38,6 +40,9 @@ cd ../ai-video-toolkit
 vercel --prod
 
 cd ../screen-recorder-finder
+vercel --prod
+
+cd ../prompt-generation-app
 vercel --prod
 ```
 
@@ -56,12 +61,14 @@ Configure custom domains in Vercel Dashboard:
 - `affiliate-hub.revvel.co` → affiliate-hub
 - `ai-video.revvel.co` → ai-video-toolkit
 - `screen-recorder.revvel.co` → screen-recorder-finder
+- `promptforge.revvel.co` → prompt-generation-app
 
 ### DNS Configuration
 ```
 CNAME affiliate-hub    cname.vercel-dns.com
 CNAME ai-video         cname.vercel-dns.com
 CNAME screen-recorder  cname.vercel-dns.com
+CNAME promptforge      cname.vercel-dns.com
 ```
 
 ## Environment Variables
@@ -77,6 +84,7 @@ Replace placeholder `#` links with actual affiliate URLs in:
 - `affiliate-hub/app/page.tsx`
 - `ai-video-toolkit/app/page.tsx`
 - `screen-recorder-finder/app/page.tsx`
+- `prompt-generation-app/app/page.tsx`
 
 ## Manual Deployment (Static Export)
 
