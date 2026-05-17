@@ -96,17 +96,17 @@ Scoring model used below:
 - **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
 - **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
-- **Weighted Score** (normalized) = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
-- **Weighted Score output:** shown on a 0.20-1.00 scale; 0.20 means all dimensions scored 1/5, and 1.00 means all dimensions scored 5/5.
+- **Weighted Score** = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
+- **Weighted Score output:** a weighted-average range from 0.20 to 1.00; 0.20 means all dimensions scored 1/5, and 1.00 means all dimensions scored 5/5.
 
 | Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
 |---|---|---|---|---:|---:|---:|---:|---|
-| OpenRouter + Swarm Orchestrator | Core generation engine | Native model routing + multi-agent workflows | Usage-based | 5 | 5 | 5 | 5.00 | Primary |
-| Lovable | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff | Mid | 4 | 4 | 3 | 3.75 | Strong secondary |
-| Vercel v0 | UI component/page generation | AI generation + React-first output | Mid | 4 | 4 | 4 | 4.00 | Strong secondary |
-| Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 4.15 | Required for PDF lane |
-| Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 3.15 | Optional |
-| Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 3.15 | Optional |
+| OpenRouter + Swarm Orchestrator | Core generation engine | Native model routing + multi-agent workflows | Usage-based | 5 | 5 | 5 | 1.00 | Primary |
+| Lovable | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff | Mid | 4 | 4 | 3 | 0.75 | Strong secondary |
+| Vercel v0 | UI component/page generation | AI generation + React-first output | Mid | 4 | 4 | 4 | 0.80 | Strong secondary |
+| Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 0.83 | Required for PDF lane |
+| Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 0.62 | Optional |
+| Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 0.62 | Optional |
 
 OpenRouter is scored 5/5 for Fit, Revenue, and Automation because it is the only option in this table that directly enables multi-model routing plus swarm orchestration in the same execution path, which shortens template iteration time and improves output quality consistency.
 
