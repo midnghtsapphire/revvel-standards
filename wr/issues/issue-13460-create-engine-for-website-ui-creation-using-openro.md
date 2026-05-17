@@ -75,13 +75,13 @@ This WR explicitly includes the requested UI style:
 - **Core palette direction:** electric blue + teal/aqua gradient families.
 - **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA for body text by using opaque/sufficiently solid text backing layers or solid fallback cards while glass remains decorative.
 - **Validation rule:** every template must include automated contrast checks for light, dark, and gradient-heavy backgrounds before publish.
-- **Contrast thresholds:** AA >= 4.5:1 and AAA >= 7:1 must pass regardless of chosen opacity.
+- **Contrast thresholds:** AA >= 4.5:1 normal text and >= 3:1 large text; AAA >= 7:1 normal text and >= 4.5:1 large text, regardless of chosen opacity.
 
 Implementation token baseline for template generator output:
 
 ```css
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.18); /* 18% opacity (decorative container only, not text background) */
+  --glass-container-bg: rgba(255, 255, 255, 0.18); /* 18% opacity (decorative container only, not text background) */
   --glass-border: rgba(255, 255, 255, 0.24); /* 24% opacity */
   --glass-blur: 14px;
   --hero-grad-a: #00a3ff;
@@ -96,8 +96,10 @@ Scoring model used below:
 - **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
 - **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
-- **Weighted Score** = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
-- **Weighted Score output:** a weighted-average range from 0.20 to 1.00; 0.20 means all dimensions scored 1/5, and 1.00 means all dimensions scored 5/5.
+- **Weighted Score** = `((Fit/5) * 0.40) + ((Revenue/5) * 0.35) + ((Automation/5) * 0.25)`.
+- **Weighted Score output:** a weighted-average range from 0.20 to 1.00:
+  - `0.20 = ((1/5) * 0.40) + ((1/5) * 0.35) + ((1/5) * 0.25)`.
+  - `1.00 = ((5/5) * 0.40) + ((5/5) * 0.35) + ((5/5) * 0.25)`.
 
 | Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
 |---|---|---|---|---:|---:|---:|---:|---|
