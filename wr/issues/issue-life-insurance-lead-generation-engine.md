@@ -115,6 +115,24 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 | SmartFinancial | Lead marketplace | $20–$80/lead | Shared leads; agents report high complaint rate (TrustPilot) |
 | **This Engine** | Autonomous, exclusive | Infrastructure cost only + LinkedIn API ~$100/mo | 100% exclusive (never shared), life-event-triggered, open-source, customizable |
 
+### API & Data BOM (Bill of Materials) — Lead Sourcing Stack
+
+To support ship-to-market execution, this WR includes a BOM-style comparison of the highest-value APIs/data providers by job-to-be-done.
+
+| Provider / API | Best At | Key Output | Typical Cost Model | Strengths | Limits / Risks |
+|---|---|---|---|---|---|
+| County open-data APIs (Socrata/ArcGIS portals) | New homeowner, marriage, probate legal notices | Official trigger events + dates | Free / low-cost | Primary-source public records, strong audit trail | Coverage and schema vary by county/state |
+| Secretary of State filing APIs/feeds | New business formation signals | Owner/entity + filing date | Free / low-cost | Strong trigger relevance for key-person coverage | State-by-state integration required |
+| LinkedIn paid API program | Employment/job-change enrichment | Role, employer, location | Program fee (~$100/mo noted) | Licensed access, no scraping, good warm-intent context | Program eligibility and rate limits |
+| ATTOM / Estated property APIs | National property ownership enrichment | Parcel/homeowner context | Paid tiers | Broad property coverage vs. per-county stitching | Licensing cost; usage caps |
+| People Data Labs / FullContact enrichment | Contact verification & profile enrichment | Validated person/contact attributes | Paid by credits/records | Improves dialability and targeting precision | Requires strict privacy/compliance controls |
+| Phone/email validation APIs (e.g., Twilio Lookup, ZeroBounce) | Contact quality filtering | Line type/validity/disposable checks | Usage-based | Reduces fake/bad leads and agent refund risk | Additional per-record cost |
+
+**Recommended BOM by lead tier:**
+- **Warm tier:** County/SoS trigger source + LinkedIn paid API + phone/email validation  
+- **Cold tier:** Vital/probate triggers + stronger validation + stricter TCPA/legal gating  
+- **Premium inbound tier:** Landing-page opt-in + enrichment + immediate speed-to-lead dispatch
+
 ### Deep Market Research
 
 #### Top Life Insurance Search Keywords (U.S., 2024–2025)
@@ -292,6 +310,22 @@ The engine uses a three-role swarm:
 | Scout | `mistralai/mistral-7b-instruct` | "Find public signals of this life-event trigger type" |
 | Qualifier | `openai/gpt-4o-mini` | "Score this lead 1–10 for life insurance intent based on..." |
 | Compiler | `anthropic/claude-haiku` | "Format these qualified leads into a clean JSON array with fields: name, location, trigger, score, source_url" |
+
+### Layered Research Engine — Two AI Fleets
+
+To avoid shallow research quality, the research system is split into two independent fleets:
+
+1. **Fleet A — Research Swarm (Discovery Engine)**
+   - Scout agents gather market data, API options, pricing, keywords, and community pain points
+   - Specialist agents produce BOM tables, source-quality scoring, and monetization evidence
+   - Output: structured research JSON + WR draft sections with citations
+
+2. **Fleet B — Research QA/Code-Review Swarm (Verification Engine)**
+   - Reviews Fleet A outputs for unsupported claims, stale pricing, missing competitors, and compliance gaps
+   - Enforces required WR sections (keywords, BOM, competitor mechanics, complaints, monetization, citations)
+   - Output: pass/fail report with required fixes before WR is marked "research complete"
+
+**Gate rule:** No WR is considered complete until Fleet B approves Fleet A outputs.
 
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
@@ -486,6 +520,20 @@ Each compiled lead record contains:
 | Death / estate outreach | Only official county probate legal notices used; outreach must comply with applicable state solicitation laws |
 | Deduplication | Sold registry (`dist/leads/sold-registry.json`) ensures no contact is resold across PDF batches |
 
+### Credential Gateway & Service Status Ledger
+
+Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger consumable by Oaudry UI:
+
+| Dependency | Type | Credential Source | Current Status | Renewal/Billing Risk | Fallback |
+|---|---|---|---|---|---|
+| OpenRouter | API | GitHub Secret / Doppler | Active | Monitor quota/credits | Multi-model failover |
+| LinkedIn paid API | API | GitHub Secret / Doppler | Active (when key valid) | Program limits + billing | Run without LinkedIn enrichment |
+| Doppler | Credential manager | Doppler project/token | **Needs payment / potential outage state** | Trial/plan expiration | GitHub Secrets emergency mode |
+| GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | Active in Actions | Permission scope drift | Fail-fast + create issue |
+| Required MCP servers | MCP | MCP config + API keys | Track per-server | Missing/unrotated key risk | Disable feature with clear warnings |
+
+**Implementation requirement:** expose this ledger in Oaudry UI with color states (Active / Degraded / Blocked), last-checked timestamp, and owner action needed.
+
 **Mandatory PDF Disclaimer (append to every exported PDF):**
 > *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
@@ -531,6 +579,16 @@ Each compiled lead record contains:
    - Separate listings by state + trigger type + tier (warm / cold)  
    - Connect to artifact download delivery  
    - Effort: 1 hour
+
+7. **Implement research BOM generator + scorer**  
+   - Produce API/source BOM for each WR (`best_for`, cost model, limits, compliance notes)  
+   - Require per-source ranking and rationale before WR completion  
+   - Effort: 2–4 hours
+
+8. **Implement credential gateway status tracker**  
+   - Persist status for each API/CLI/MCP/GitHub App (active/degraded/blocked, last checked, billing state)  
+   - Surface in Oaudry UI for at-a-glance operations visibility  
+   - Effort: 3–5 hours
 
 ### Short-Term Actions (Within 1–2 Weeks)
 

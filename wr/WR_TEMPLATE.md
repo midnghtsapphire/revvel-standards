@@ -65,6 +65,7 @@
 > - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
 > - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
 > - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
+> - **(6) API/Data BOM** — best providers, what each is best at, costs, limits, compliance
 >
 > An LLM agent must be able to answer every question in this template from live web research before implementation begins.
 
@@ -124,6 +125,20 @@
 | [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
 | **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
 
+#### API / Data Source BOM (REQUIRED)
+
+**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
+
+| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
+|--------------|----------|-----------------|------------|-----------|------------------|------------------|
+| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+
+**BOM Decision:**
+- Primary provider stack: [choice + reason]
+- Secondary/fallback stack: [choice + reason]
+- Why this BOM is superior for this WR: [evidence]
+
 #### Community Chatter — What Users Dislike About Current Solutions
 
 **This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
@@ -182,6 +197,24 @@
 - Inbound ROI: [Data + timeframe]
 - Outbound ROI: [Data + timeframe]
 - Recommended approach for this WR: [Recommendation with rationale]
+
+#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
+
+Define a layered research engine using two AI fleets:
+
+1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
+2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
+
+**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
+
+#### Instruction Normalization (REQUIRED)
+
+User prompts and brainstorms are inputs, not immutable specs. Record:
+- What was accepted as-is
+- What was corrected/pivoted based on standards or evidence
+- What was rejected and why
+
+This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
 
 ---
 
