@@ -96,7 +96,9 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-05-16 | ✅ passing after `npm ci` | — |
+| `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
+| Workflow YAML validation | 2026-05-17 | ✅ `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
 | Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
 | Affiliate Hub build/lint | 2026-05-16 | ✅ `npm run lint && npm run build` | — |
 | ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
@@ -120,6 +122,7 @@
 | Project v2 default-field automation | ✅ live | [`.github/workflows/set-default-project-v2-fields.yml`](.github/workflows/set-default-project-v2-fields.yml) (+ PAT variant `default-project-v2-fields-pat.yml`) |
 | Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
+| Research Engine Orchestrator | ✅ documented + implemented | [`scripts/research-engine.js`](scripts/research-engine.js), [`.github/workflows/research-engine.yml`](.github/workflows/research-engine.yml), and [`docs/RESEARCH_ENGINE_STANDARD.md`](docs/RESEARCH_ENGINE_STANDARD.md) provide layered WR research across marketing, SEO, competitors, audience/chatter, facts, technical delivery, revenue, and code-review auto-fix lanes |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 
@@ -148,6 +151,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 01:20 UTC
+Updated by: Cursor
+Session summary: Added the layered Research Engine Orchestrator with OpenRouter triangulation, lane checklists, research lifecycle labels, code-review auto-fix handoff, dynamic label sync, workflow timeout fixes, and verified focused tests, workflow validation, and root npm test.
+
 Last updated: 2026-05-16 23:23 UTC
 Updated by: Cursor
 Session summary: Restored Affiliate Hub to patched Next.js/PostCSS dependency versions, upgraded lint tooling to the required ESLint 9-compatible flat config, and verified audit, lint, build, dependency tree, and root tests pass.

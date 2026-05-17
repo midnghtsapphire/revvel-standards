@@ -27,6 +27,7 @@
 |-----|-------|--------|------|------------|
 | #311 | ship-everything structure | open | @OpenHands | 2026-04-20 |
 | #13469 | fix stuck-WR detector false escalation | open | @Cursor | 2026-05-15 |
+| #13499 | add layered research engine orchestrator | open | @Cursor | 2026-05-17 |
 
 ### Issues
 
@@ -56,6 +57,7 @@
 | T009 | Music Video Creator Next/PostCSS security upgrade | done | @cursor | 2026-05-15 |
 | T010 | ColdTrace dependency downgrade restoration | done | @cursor | 2026-05-15 |
 | T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
+| T012 | Layered Research Engine Orchestrator | done | @cursor | 2026-05-17 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---
