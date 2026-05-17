@@ -29,6 +29,7 @@
 | #13469 | fix stuck-WR detector false escalation | open | @Cursor | 2026-05-15 |
 | #13499 | add layered research engine orchestrator | open | @Cursor | 2026-05-17 |
 | #13503 | add prompt generation app | open | @Cursor | 2026-05-17 |
+| #13507 | add no-key Perplexity research integration | open | @Cursor | 2026-05-17 |
 
 ### Issues
 
@@ -60,6 +61,7 @@
 | T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
 | T012 | Layered Research Engine Orchestrator | done | @cursor | 2026-05-17 |
 | T013 | Revvel PromptForge prompt generation app | done | @cursor | 2026-05-17 |
+| T014 | Perplexity no-key research integration | done | @cursor | 2026-05-17 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

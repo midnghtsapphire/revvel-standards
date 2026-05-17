@@ -253,3 +253,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For research WRs, implement the orchestrator as executable automation plus a standard, not only prompt text. Make label sync consume `.github/labels.yml` directly so new engine labels do not drift from the hard-coded sync workflow. When `npm run workflows:validate` fails on missing timeouts, add the job timeouts immediately because that is a code/config blocker, not a research blocker. If `OPENROUTER_API_KEY` is missing, the engine should write a visible infrastructure-blocker packet and label the item instead of silently failing.
 
 **Next Action:** Monitor PR #13499 review/CI and merge after reviewer approval.
+
+---
+
+**Date/Time:** 2026-05-17T02:04Z
+
+**Task Attempted:** Complete Perplexity integration without requiring `PERPLEXITY_API_KEY`.
+
+**Outcome:** Success - The Perplexity research workflow now installs `helallao/perplexity-ai` from GitHub, calls the fork through a no-key Python bridge, registers a disabled no-key MCP entry, removes the Credential Gatekeeper Perplexity secret blocker, and passes focused integration tests, workflow validation, and the root test suite.
+
+**Root Cause of Failure (If any):** The first validation attempt failed before workflow parsing because root dependencies were not installed (`Cannot find module 'yaml'` from `scripts/automation-doctor.js`). Due diligence also found the fork contains Emailnator/account-generation paths and an upstream issue reporting empty anonymous `Client.search()` responses, so a direct unfiltered integration would have been unreliable and unsafe.
+
+**Self-Healing Fix / Learned Lesson:** For no-key Perplexity work, use only the anonymous Labs/Web query paths from `helallao/perplexity-ai`; do not wire Emailnator or generated-account logic into Revvel automation. Prefer `LabsClient(..., model="sonar")` first and fall back to `Client.search(..., mode="auto")` because upstream issue #70 documents `Client.search()` instability. If workflow/root tests fail on missing `yaml`, run `npm ci` at `/workspace` and rerun validation.
+
+**Next Action:** None for the no-key Perplexity integration; monitor PR #13507 validation.
