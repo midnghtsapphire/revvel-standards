@@ -73,13 +73,14 @@ This WR explicitly includes the requested UI style:
 - **Subtle borders:** 1px low-opacity edge highlight for glass depth.
 - **Vibrant backgrounds:** bright gradient systems to make blur/readability pop.
 - **Core palette direction:** electric blue + teal/aqua gradient families.
-- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA on all glass text surfaces, validated across light/dark and gradient-heavy backgrounds before template publish.
+- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA for body text by requiring either (a) minimum 72% opaque text backing layers or (b) solid fallback cards beneath text while glass remains decorative.
+- **Validation rule:** every template must include automated contrast checks for light, dark, and gradient-heavy backgrounds before publish.
 
 Implementation token baseline for template generator output:
 
 ```css
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.18); /* 18% opacity */
+  --glass-bg: rgba(255, 255, 255, 0.18); /* 18% opacity (decorative container only, not text background) */
   --glass-border: rgba(255, 255, 255, 0.24); /* 24% opacity */
   --glass-blur: 14px;
   --hero-grad-a: #00a3ff;
@@ -95,7 +96,7 @@ Scoring model used below:
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
 - **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
 - **Weighted Score** (normalized) = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
-- **Weighted Score output:** shown on a 0-1 scale.
+- **Weighted Score output:** shown on a 0.20-1.00 scale (because scoring starts at 1, not 0).
 
 | Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
 |---|---|---|---|---:|---:|---:|---:|---|
@@ -105,6 +106,8 @@ Scoring model used below:
 | Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 4.15 | Required for PDF lane |
 | Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 3.15 | Optional |
 | Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 3.15 | Optional |
+
+OpenRouter is scored 5/5 for Fit, Revenue, and Automation because it is the only option in this table that directly enables multi-model routing plus swarm orchestration in the same execution path, which shortens template iteration time and improves output quality consistency.
 
 #### Figma for PDF and Deliverables
 
@@ -131,6 +134,12 @@ Each vertical below becomes a reusable feature pack listed on the website:
 3. Keep **Figma in-loop** for PDF/doc packaging and premium handoff kits.
 4. Evaluate **Lovable** and **v0** as accelerators for rapid template seeding.
 5. Use this BOM scorecard as a living table, updated whenever pricing/capabilities change.
+
+#### Privacy Implementation Standard for Sensitive Verticals
+
+- Ship privacy controls as **required template toggles**, not optional documentation notes.
+- Required defaults: encrypted storage, explicit consent capture, data-minimization mode, and third-party sharing disabled.
+- Add compliance checklist gates (GDPR baseline; HIPAA review where applicable) before a wellness template is marked "publishable."
 
 ### Market Opportunity Analysis
 
