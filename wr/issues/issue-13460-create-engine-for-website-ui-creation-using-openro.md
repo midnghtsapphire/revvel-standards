@@ -73,14 +73,14 @@ This WR explicitly includes the requested UI style:
 - **Subtle borders:** 1px low-opacity edge highlight for glass depth.
 - **Vibrant backgrounds:** bright gradient systems to make blur/readability pop.
 - **Core palette direction:** electric blue + teal/aqua gradient families.
-- **Accessibility guardrail:** enforce WCAG AA contrast before template publish.
+- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA on all glass text surfaces, validated across light/dark and gradient-heavy backgrounds before template publish.
 
 Implementation token baseline for template generator output:
 
 ```css
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.18);
-  --glass-border: rgba(255, 255, 255, 0.24);
+  --glass-bg: rgba(255, 255, 255, 0.18); /* 18% opacity */
+  --glass-border: rgba(255, 255, 255, 0.24); /* 24% opacity */
   --glass-blur: 14px;
   --hero-grad-a: #00a3ff;
   --hero-grad-b: #00d1b2;
@@ -93,7 +93,9 @@ Scoring model used below:
 - **Build Fit (40%)**: how directly it supports this repo's automation goals.
 - **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
-- **Weighted Score** = `(Fit x 0.40) + (Revenue x 0.35) + (Automation x 0.25)`.
+- **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
+- **Weighted Score** (normalized) = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
+- **Weighted Score output:** shown on a 0-1 scale.
 
 | Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
 |---|---|---|---|---:|---:|---:|---:|---|
@@ -119,7 +121,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 |---|---|---|---|
 | Green / Sustainability | carbon calculators, impact badges, eco CTAs | affiliate tools + premium templates | High |
 | Neurodivergent-friendly | low-stim mode, focus mode, reading simplifier, sensory-safe themes | premium accessibility packs + services | High |
-| Menstrual / Wellness | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding | niche template bundles + partnerships | Medium-High |
+| Menstrual / Wellness | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding (encryption at rest/in transit, consent gating, GDPR/HIPAA review, no third-party sharing by default) | niche template bundles + partnerships | Medium-High |
 | Accessibility-first baseline | keyboard nav, aria patterns, contrast-safe palettes, focus rings | conversion uplift across all packs | High |
 
 #### Initial Recommendation
