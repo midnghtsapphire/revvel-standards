@@ -13,7 +13,9 @@
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+This WR now includes a concrete "website-for-anybody" direction: a reusable UI engine that generates glassmorphic realism templates (Apple Liquid Glass style) and can be customized per audience and mission vertical.  
+The recommended implementation path is OpenRouter-powered orchestration plus a template BOM/scoring model so each tool choice has a measurable automation score, cost, and expected revenue impact.  
+Priority is to ship template variants that are both high-conversion and inclusive (green/sustainability, neurodivergent-friendly, menstrual/wellness, accessibility-first), then monetize via template sales, affiliate offers, and implementation services.
 
 ---
 
@@ -59,6 +61,74 @@
 ---
 
 ## Step 2: Deep Web Research
+
+### Website-for-Anybody Requirements (Comment Integration)
+
+#### Visual Direction: Glassmorphic Realism
+
+This WR explicitly includes the requested UI style:
+
+- **Background blur:** `backdrop-filter: blur(...)` as the base depth layer.
+- **Semi-transparency:** low-opacity fills (target 10%-30% opacity range).
+- **Subtle borders:** 1px low-opacity edge highlight for glass depth.
+- **Vibrant backgrounds:** bright gradient systems to make blur/readability pop.
+- **Core palette direction:** electric blue + teal/aqua gradient families.
+- **Accessibility guardrail:** enforce WCAG AA contrast before template publish.
+
+Implementation token baseline for template generator output:
+
+```css
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.24);
+  --glass-blur: 14px;
+  --hero-grad-a: #00a3ff;
+  --hero-grad-b: #00d1b2;
+}
+```
+
+#### BOM: Template APIs, Builders, and Orchestration Options
+
+Scoring model used below:
+- **Build Fit (40%)**: how directly it supports this repo's automation goals.
+- **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
+- **Automation Depth (25%)**: API/agent suitability for autonomous generation.
+- **Weighted Score** = `(Fit x 0.40) + (Revenue x 0.35) + (Automation x 0.25)`.
+
+| Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
+|---|---|---|---|---:|---:|---:|---:|---|
+| OpenRouter + Swarm Orchestrator | Core generation engine | Native model routing + multi-agent workflows | Usage-based | 5 | 5 | 5 | 5.00 | Primary |
+| Lovable | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff | Mid | 4 | 4 | 3 | 3.75 | Strong secondary |
+| Vercel v0 | UI component/page generation | AI generation + React-first output | Mid | 4 | 4 | 4 | 4.00 | Strong secondary |
+| Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 4.15 | Required for PDF lane |
+| Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 3.15 | Optional |
+| Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 3.15 | Optional |
+
+#### Figma for PDF and Deliverables
+
+- Keep Figma as the canonical visual source for premium template packs.
+- Generate production UI via OpenRouter pipeline, then mirror final layouts in Figma.
+- Export PDF deliverables (style guides, design handoff docs, lead magnets) from Figma for sales and onboarding.
+- Pair this with existing repo PDF pipeline standards for consistency.
+
+#### Functionality Catalog to Expand Website Coverage
+
+Each vertical below becomes a reusable feature pack listed on the website:
+
+| Vertical Pack | Core Features to Generate | Monetization Path | Score Impact |
+|---|---|---|---|
+| Green / Sustainability | carbon calculators, impact badges, eco CTAs | affiliate tools + premium templates | High |
+| Neurodivergent-friendly | low-stim mode, focus mode, reading simplifier, sensory-safe themes | premium accessibility packs + services | High |
+| Menstrual / Wellness | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding | niche template bundles + partnerships | Medium-High |
+| Accessibility-first baseline | keyboard nav, aria patterns, contrast-safe palettes, focus rings | conversion uplift across all packs | High |
+
+#### Initial Recommendation
+
+1. Build the engine around **OpenRouter + swarm orchestration**.
+2. Use **glassmorphism token presets** as the default style family.
+3. Keep **Figma in-loop** for PDF/doc packaging and premium handoff kits.
+4. Evaluate **Lovable** and **v0** as accelerators for rapid template seeding.
+5. Use this BOM scorecard as a living table, updated whenever pricing/capabilities change.
 
 ### Market Opportunity Analysis
 
@@ -574,5 +644,5 @@
 
 ---
 
-**Last Updated:** 2026-05-15  
+**Last Updated:** 2026-05-17  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
