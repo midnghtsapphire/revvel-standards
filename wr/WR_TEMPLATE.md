@@ -10,6 +10,59 @@
 
 ---
 
+## ⚡ Pre-flight: Autonomous Research Defaults
+
+> **These are the default research requirements for EVERY WR — including bug fixes, chores, and minor features. Do not skip any checked item. If a section is genuinely N/A, document why.**
+
+### Research Checklist (pre-checked = required by default)
+
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
+- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
+
+### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
+
+When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
+
+```yaml
+# Paste into any workflow_dispatch trigger to enforce research standards
+on:
+  workflow_dispatch:
+    inputs:
+      deep_research:
+        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_bom:
+        description: 'Generate Bill of Materials (API/tool comparison table)'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_community_chatter:
+        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_competitor_teardown:
+        description: 'Full competitor pricing + gap analysis'
+        type: boolean
+        default: true          # ← ALWAYS true
+      research_depth:
+        description: 'Research depth level'
+        type: choice
+        options: [standard, deep, exhaustive]
+        default: deep           # ← default to deep, not standard
+```
+
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+
+---
+
 ## Executive Summary
 
 [2-3 sentence summary of repository purpose, current state, and key recommendations]
@@ -101,6 +154,39 @@
 - [keyword]: [volume] — [why it matters]
 
 **Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
+
+#### Bill of Materials (BOM) — APIs & Tools
+
+> **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
+
+**Category: [Primary Data Source]**
+
+| API / Tool | Cost | Coverage | Best For | Verdict |
+|------------|------|----------|----------|---------|
+| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$] | [Coverage] | [Use case] | |
+
+**Category: [Compliance / Validation]**
+
+| API / Tool | Cost | Features | Best For | Verdict |
+|------------|------|----------|----------|---------|
+| [Option 1] | [$] | [Features] | [Use case] | |
+
+**Category: [Delivery / Storefront]**
+
+| Platform | Rev Share | Best For | Verdict |
+|----------|-----------|----------|---------|
+| [Option 1] | [%] | [Use case] | |
+
+**BOM Cost Summary:**
+
+| Category | Recommended Tool | Est. Monthly Cost |
+|----------|-----------------|-------------------|
+| [Category 1] | [Tool] | $[X] |
+| [Category 2] | [Tool] | $[X] |
+| **Total Infrastructure** | | **$[Total]/mo** |
+
+> **ROI Check:** [How many units/sales cover infrastructure cost?]
 
 #### How the Industry Works — Mechanics
 

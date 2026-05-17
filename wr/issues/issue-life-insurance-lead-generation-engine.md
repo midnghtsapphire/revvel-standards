@@ -103,6 +103,116 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 | Marriage License Records | County clerk open-data portals | Couple names, city, license date | Warm ($40–$100/lead) |
 | LinkedIn | LinkedIn paid API program (~$100/mo) — **not scraped** | Job title, employer, location, recent activity | Warm ($40–$100/lead) |
 
+### Bill of Materials (BOM) — APIs & Tools
+
+> **BOM Purpose:** Ranked evaluation of every external API, CLI, and service required to build this engine. Review before implementation. Pick the tier that fits current budget and volume.
+
+#### Category 1: Property & Deed Data (New Homeowner Trigger)
+
+| API | Coverage | Cost | Best For | Our Verdict |
+|-----|----------|------|----------|-------------|
+| **ATTOM** | 158M parcels, 99% US population | ~$0.10/call; custom subscription | Enterprise-grade deed + tax + mortgage data | ⭐ **Top pick for warm leads** — 9,000+ data fields, >95% accuracy, monthly updates |
+| **ICE Mortgage Technology (Black Knight)** | 160M parcels, daily refresh | Enterprise (contact for quote) | Capital markets + mortgage professionals | Strong alternative; better daily refresh |
+| **Realie** | All 50 states, 3,100+ counties | Volume-based (contact) | Fast (<10ms), AI-sourced, bulk API | Good for high-volume bulk pulls |
+| **PropertyRadar** | Strongest in Western U.S. | ~$0.08/record | Skip tracing + ownership, daily updates | Use if heavy on CA/AZ/WA/OR markets |
+| **Melissa Data — Property API** | Nationwide | Freemium to ~$30/10k credits | Address validation + property enrichment + CASS/DPV | ⭐ **Best for contact cleaning + address hygiene** — USPS CASS-certified, phone + email enrichment |
+| **BatchData** | Nationwide | ~$0.05–$0.10/record | Budget-friendly enrichment | Good for cost-sensitive MVP phase |
+| **USPS Address API** | US only | Free | Delivery-point address validation | Use as final sanity check — no enrichment |
+
+**Recommendation:** Start with **ATTOM** for deed/ownership sourcing ($0.10/call) + **Melissa Data** for contact hygiene (CASS/DPV address + phone/email verify). Expected cost at 1,000 leads/mo: ~$130/mo in API costs vs. $400–$100,000+ in lead revenue.
+
+---
+
+#### Category 2: Vital Records & Marriage/Birth/Death Data (Cold & Warm Triggers)
+
+| Source | Access Method | Cost | Coverage | Notes |
+|--------|---------------|------|----------|-------|
+| **County Open Data Portals (Socrata/OpenGov/ArcGIS)** | REST API (Socrata SODA, ArcGIS REST) | Free | Varies by county; strong in CA, TX, FL, NY | Best cost-free option; consistency varies. Use `data.gov` discovery. |
+| **GovOS / OpenGov** | API | Freemium / contract | 3,100+ county governments | Growing network; standardized county clerk records |
+| **VitalChek API** | Partner program | Negotiated | Nationwide vital records processing | Requires formal partnership agreement with NIC/Tyler Technologies |
+| **State SOS Bulk Filings** | CSV/bulk download or API (varies by state) | Free–$50/mo | Business formation records | FL, TX, CA, NY have strong bulk download programs |
+| **Newspaper Legal Notices** | RSS / targeted scraping of public legal notice websites | $0–$50/mo (aggregator) | Probate, estate, foreclosure notices | LegalNotice.com, PublicNoticeAds.com aggregate many states |
+
+**Recommendation:** County open data via Socrata SODA API is the cheapest and most defensible approach. Budget $0–$50/mo for access to most major-state portals.
+
+---
+
+#### Category 3: TCPA / DNC Compliance Scrubbing
+
+> **Required:** Every phone number collected must be scrubbed before any outreach. This is non-negotiable for TCPA compliance.
+
+| API | DNC | Litigator Scrub | Pricing | Best For |
+|-----|-----|-----------------|---------|----------|
+| **EchoSafe** | ✅ | ✅ AI-powered | **$47/mo unlimited** | ⭐ **Top pick for this engine** — best price/lead for SMB volume, privacy-first (no data resale), SOC 2 |
+| **TCPA Litigator List** | ❌ | ✅ | $199–$799/mo by volume; $0.001/scrub overage | Mid-to-high volume; focused purely on litigator names |
+| **DNCScrub (Contact Center Compliance)** | ✅ | ✅ | Enterprise (quote required) | High-assurance enterprise environments |
+| **IPQS** | ✅ | ✅ | Quote required | Good secondary check; also validates VOIP/burner numbers |
+| **Tracerfy** | ✅ | ✅ | Per-credit (1 credit/phone) | Pay-as-you-go; no subscription commitment |
+
+**Recommendation:** **EchoSafe at $47/mo** is the clear winner for this engine — unlimited scrubs, AI litigator scoring, daily FTC DNC updates. Add to every PDF export pipeline as the last step before lead delivery.
+
+---
+
+#### Category 4: LinkedIn Access Options
+
+> **Note:** The $100/mo figure in the WR refers to a LinkedIn paid account (e.g., Sales Navigator Core at ~$99/mo or LinkedIn Premium Business at ~$59/mo). This provides **manual** access to professional data but is **not a formal API program**. The LinkedIn official API program starts at $599/mo for the Professional tier. Choose based on automation needs:
+
+| Option | Cost | API Access | Automation | Best For |
+|--------|------|------------|------------|----------|
+| **LinkedIn Premium Business** | ~$59/mo | ❌ No | Manual only | Profile lookups; human-curated lead research |
+| **LinkedIn Sales Navigator Core** | ~$99/mo | ❌ No (CRM sync only) | Limited | Advanced search + CRM export to HubSpot/Salesforce |
+| **LinkedIn Marketing API — Dev Tier** | Free (apply) | ✅ Limited | Lead Gen Form sync | Sync ad-driven leads to CRM; requires approval |
+| **LinkedIn API Professional** | **$599/mo** | ✅ Full | Yes | Production-scale programmatic access |
+| **LinkedIn API Business** | **$2,999/mo** | ✅ Unlimited | Yes | Enterprise, unlimited requests |
+| **Sales Navigator API (SNAP)** | Negotiated (closed to new applicants as of mid-2025) | ✅ Partner only | Yes | Enterprise CRM integrations only |
+
+**Recommendation for MVP:** Use **Sales Navigator Core (~$99/mo)** for manual prospecting + CRM export. Upgrade to LinkedIn Marketing API (Professional tier) if automation becomes necessary. Set `LINKEDIN_TIER` environment variable to reflect current tier so the pipeline knows whether to invoke automated scrape-free enrichment or flag for human review.
+
+---
+
+#### Category 5: PDF Generation
+
+| Tool | Cost | Format Control | GitHub Actions Compatible | Notes |
+|------|------|----------------|--------------------------|-------|
+| **pandoc + wkhtmltopdf** | Free (OSS) | Good (HTML/CSS → PDF) | ✅ | Already used in this repo's ship-to-market pipeline |
+| **Puppeteer (headless Chrome)** | Free (OSS) | Excellent | ✅ | Best for pixel-perfect branded PDFs; ~50MB Docker layer |
+| **PDFKit (Node.js)** | Free (OSS) | Programmatic | ✅ | Pure JS, no headless browser; simpler CI setup |
+| **pdf-lib (Node.js)** | Free (OSS) | Merge/annotate | ✅ | Good for modifying existing PDF templates |
+| **WeasyPrint (Python)** | Free (OSS) | HTML/CSS → PDF | ✅ | Excellent CSS support; requires Python runtime |
+
+**Recommendation:** **Puppeteer** for branded, visually-rich PDFs. **pandoc + wkhtmltopdf** as fallback (already in CI). Use `pdf-lib` if starting from a designed PDF template.
+
+---
+
+#### Category 6: Lead Delivery / Storefront
+
+| Platform | Revenue Cut | Payout | File Delivery | Best For |
+|----------|-------------|--------|---------------|----------|
+| **Gumroad** | 10% + $0.50/txn | Daily | ✅ Automatic | ⭐ **MVP launch** — zero upfront cost, instant setup |
+| **Polar.sh** | ~4% | Instant | ✅ Automatic | Open-source product selling; supports subscriptions |
+| **LemonSqueezy** | 5% + $0.50/txn | Weekly | ✅ Automatic | Better tax handling (Merchant of Record) |
+| **Ko-fi** | 0% (free tier) | Direct to PayPal/Stripe | ✅ | Best margin; less discovery |
+| **Custom Stripe** | 2.9% + $0.30 | Custom | Custom | Full control; requires dev setup |
+
+**Recommendation:** **Gumroad for launch** (zero friction) + **Polar.sh for subscriptions** ($99–$199/mo repeat buyer tier). Add custom Stripe integration in Phase 2 once volume justifies it.
+
+---
+
+#### BOM Cost Summary
+
+| Category | Recommended Tool | Est. Monthly Cost |
+|----------|-----------------|-------------------|
+| Property Data | ATTOM (1K calls) | ~$100 |
+| Contact Hygiene | Melissa Data (10K credits) | ~$30 |
+| TCPA Scrubbing | EchoSafe | $47 |
+| Vital Records | County open data (Socrata) | $0–$50 |
+| LinkedIn | Sales Navigator Core | $99 |
+| PDF Generation | Puppeteer (OSS) | $0 |
+| Storefront | Gumroad + Polar.sh | $0 (rev share) |
+| **Total Infrastructure** | | **~$276–$326/mo** |
+
+> **ROI Check:** At $400–$1,000 per warm 10-lead PDF, selling just **1 PDF/month** covers infrastructure. The engine becomes cash-positive immediately on first sale.
+
 ### Competitors & Market Positioning
 
 | Competitor | Type | Cost | Gap |
