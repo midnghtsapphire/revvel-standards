@@ -73,8 +73,9 @@ This WR explicitly includes the requested UI style:
 - **Subtle borders:** 1px low-opacity edge highlight for glass depth.
 - **Vibrant backgrounds:** bright gradient systems to make blur/readability pop.
 - **Core palette direction:** electric blue + teal/aqua gradient families.
-- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA for body text by requiring either (a) minimum 72% opaque text backing layers or (b) solid fallback cards beneath text while glass remains decorative.
+- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA for body text by using opaque/sufficiently solid text backing layers or solid fallback cards while glass remains decorative.
 - **Validation rule:** every template must include automated contrast checks for light, dark, and gradient-heavy backgrounds before publish.
+- **Contrast thresholds:** AA >= 4.5:1 and AAA >= 7:1 must pass regardless of chosen opacity.
 
 Implementation token baseline for template generator output:
 
@@ -96,7 +97,7 @@ Scoring model used below:
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
 - **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
 - **Weighted Score** (normalized) = `((Fit/5) x 0.40) + ((Revenue/5) x 0.35) + ((Automation/5) x 0.25)`.
-- **Weighted Score output:** shown on a 0.20-1.00 scale (because scoring starts at 1, not 0).
+- **Weighted Score output:** shown on a 0.20-1.00 scale; 0.20 means all dimensions scored 1/5, and 1.00 means all dimensions scored 5/5.
 
 | Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
 |---|---|---|---|---:|---:|---:|---:|---|
