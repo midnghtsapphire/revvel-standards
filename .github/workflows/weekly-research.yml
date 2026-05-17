@@ -13,7 +13,7 @@ on:
         type: number
 permissions:
   issues: write
-  contents: read
+  contents: write
 concurrency:
   group: weekly-research-${{ github.event.issue.number || github.event.inputs.issue_number }}
   cancel-in-progress: false
@@ -71,7 +71,15 @@ jobs:
               'wr:in-progress',
               'deep-research',
               'openrouter',
-              'role:orchestrator'
+              'role:orchestrator',
+              'search-research-engine',
+              'research:orchestrating',
+              'research:source-map',
+              'research:competitors',
+              'research:marketing-seo',
+              'research:audience',
+              'research:chatter',
+              'research:review'
             ];
 
             for (const label of labelsToAdd) {
@@ -100,14 +108,15 @@ jobs:
 
             **Automation applied:**
             - ✅ Labeled as \`weekly-research\` + \`deep-research\`
-            - ✅ Routed to OpenRouter orchestrator
+            - ✅ Routed to the layered search-research engine
             - ✅ Progress tracking enabled (\`wr:in-progress\` → \`wr:complete\`)
 
             **What happens next:**
             1. OpenRouter triage will analyze the research scope
-            2. Research agents will be assigned based on the task requirements
-            3. Findings will be documented in this issue
-            4. When complete, the \`wr:complete\` label will be applied
+            2. Source-map, competitor, marketing/SEO, audience, chatter, security, cost, and implementation agents will run
+            3. Code-review-style research reviewers will comment on gaps and automatic fixes
+            4. A reviewed research document will be committed under \`docs/wr/\`
+            5. When complete, \`wr:research-complete\`, \`research:reviewed\`, and \`wr:complete\` labels will be applied
 
             **Research checklist** (from issue description):
             - [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/)
@@ -117,6 +126,8 @@ jobs:
             - [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
             - [x] Consider non-US sources for cross-validation
             - [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
+            - [x] Include marketing, SEO, competitors, audience, why this audience, and chatter
+            - [x] Run review agents and apply automatic research fixes before commit
 
 
             _Automated by \`.github/workflows/weekly-research.yml\`_`;
@@ -133,6 +144,13 @@ jobs:
     needs: detect-wr
     if: needs.detect-wr.outputs.is_wr == 'true'
     runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+      PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+      AGENT_HQ_TOKEN: ${{ secrets.AGENT_HQ_TOKEN }}
+      AGENT_HQ_URL: ${{ secrets.AGENT_HQ_URL || 'https://agent-hq.revvel.co' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.2
@@ -160,6 +178,60 @@ jobs:
             gh issue comment ${{ needs.detect-wr.outputs.issue_number }} \
               --body "⚠️ OpenRouter triage encountered an error. Manual research coordination may be needed."
           }
+      - name: Run layered search-research engine
+        if: env.OPENROUTER_API_KEY != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ needs.detect-wr.outputs.issue_number }}
+          RESEARCH_MAX_MODELS_PER_AGENT: "3"
+        run: |
+          ISSUE_DATA=$(gh api repos/${{ github.repository }}/issues/${ISSUE_NUMBER})
+          ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
+          ISSUE_BODY=$(echo "$ISSUE_DATA" | jq -r '.body // ""')
+          OUTPUT_FILE="docs/wr/issue-${ISSUE_NUMBER}-research.md"
+          QUESTION="[WR #${ISSUE_NUMBER}] ${ISSUE_TITLE}
+
+          ${ISSUE_BODY}"
+          export QUESTION OUTPUT_FILE
+
+          node scripts/research-engine.js
+
+          git config user.name "revvel-automation[bot]"
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+          git add "$OUTPUT_FILE"
+          if git diff --staged --quiet; then
+            COMMIT_STATUS="No research document changes to commit."
+          else
+            git commit -m "research: add WR #${ISSUE_NUMBER} engine report"
+            git push
+            COMMIT_STATUS="Research document committed and pushed."
+          fi
+
+          gh issue comment "${ISSUE_NUMBER}" \
+            --body "✅ **Layered search-research engine complete**
+
+          **Output document:** [\`${OUTPUT_FILE}\`](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/${OUTPUT_FILE})
+
+          **Completed layers:**
+          - Source-map, competitor, marketing/SEO, audience, chatter, security, cost, and implementation agents
+          - OpenRouter model consensus and synthesis
+          - Code-review-style research review agents
+          - Automatic research-fix rewrite before commit
+
+          ${COMMIT_STATUS}"
+
+          gh issue edit "${ISSUE_NUMBER}" \
+            --add-label "wr:research-complete,research:reviewed,research:fix-committed,wr:complete" \
+            --remove-label "wr:in-progress" || true
+      - name: Mark OpenRouter credential blocker
+        if: env.OPENROUTER_API_KEY == ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ needs.detect-wr.outputs.issue_number }}
+        run: |
+          gh issue comment "${ISSUE_NUMBER}" \
+            --body "⚠️ **Layered search-research engine did not run** because \`OPENROUTER_API_KEY\` is not configured for this repository. This is an infrastructure blocker for automated deep research; Tavily, Firecrawl, and Perplexity are optional retrieval accelerators."
+          gh issue edit "${ISSUE_NUMBER}" --add-label "credentials-missing,openrouter:needs-key" || true
       - name: Trigger 49Agents research (if configured)
         if: env.AGENT_HQ_TOKEN != ''
         env:

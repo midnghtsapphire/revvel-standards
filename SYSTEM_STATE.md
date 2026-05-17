@@ -86,6 +86,12 @@
 | `COMPOSIO_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — tool router |
 | `FIRECRAWL_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — deterministic crawl/scrape/PDF research (optional) |
 | `TAVILY_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — LLM-optimized live web search (optional, pairs with Firecrawl) |
+| `PERPLEXITY_API_KEY` | ❌ not set | ❌ not set | Search-research engine — optional cited-answer retrieval layer |
+| `RESEARCH_MAX_MODELS_PER_AGENT` | `3` | `3` | Search-research engine — OpenRouter consensus fan-out control |
+| `RESEARCH_CONSENSUS_MODELS` | ✅ documented | ✅ documented | Search-research engine — model list for domain-agent consensus |
+| `RESEARCH_SYNTHESIS_MODEL` | ✅ documented | ✅ documented | Search-research engine — final synthesis model override |
+| `RESEARCH_REVIEW_MODEL` | ✅ documented | ✅ documented | Search-research engine — review-agent model override |
+| `RESEARCH_FIX_MODEL` | ✅ documented | ✅ documented | Search-research engine — automatic research-fix rewrite model override |
 | `OBOT_BASE_URL` | ❌ not set | ❌ not set | WR/PR control-plane — governance gateway |
 | `OBOT_IDP_CONFIG` | ❌ not set | ❌ not set | WR/PR control-plane — IdP for per-user OAuth |
 | `WR_DEFAULT_REPO` | `midnghtsapphire/revvel-standards` | `midnghtsapphire/revvel-standards` | Default repo target for WR/PR control-plane |
@@ -96,7 +102,10 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-05-16 | ✅ passing after `npm ci` | — |
+| `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| Search-research engine targeted test | 2026-05-17 | ✅ `node tests/scripts/research-module.test.js` | Verifies OpenRouter error handling, JSON parse failures, network failures, full engine output, checklists, and review layer |
+| Workflow YAML validation | 2026-05-17 | ✅ `node tests/workflow-yaml-validation.test.js` | Confirms updated WR/research workflows parse cleanly |
+| Search-research engine docs lint | 2026-05-17 | ✅ `npx markdownlint-cli2 "docs/SEARCH_RESEARCH_ENGINE.md"` | New engine doc is markdownlint-clean |
 | Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
 | Affiliate Hub build/lint | 2026-05-16 | ✅ `npm run lint && npm run build` | — |
 | ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
@@ -117,6 +126,7 @@
 | Notion knowledge layer | ✅ documented | [`docs/notion-structure.md`](docs/notion-structure.md) — provisioned per-org |
 | Step 0 router | ✅ live | [`promptforproject.md`](promptforproject.md) |
 | Operating model doc | ✅ live | [`docs/operating-model.md`](docs/operating-model.md) |
+| Search-research engine | ✅ live | [`scripts/research-engine.js`](scripts/research-engine.js), [`docs/SEARCH_RESEARCH_ENGINE.md`](docs/SEARCH_RESEARCH_ENGINE.md), and WR workflow wiring in [`.github/workflows/weekly-research.yml`](.github/workflows/weekly-research.yml) |
 | Project v2 default-field automation | ✅ live | [`.github/workflows/set-default-project-v2-fields.yml`](.github/workflows/set-default-project-v2-fields.yml) (+ PAT variant `default-project-v2-fields-pat.yml`) |
 | Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
@@ -148,6 +158,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 01:14 UTC
+Updated by: Cursor
+Session summary: Implemented the layered search-research engine for WRs with optional Tavily/Firecrawl/Perplexity retrieval, OpenRouter multi-model research agents, marketing/SEO/competitor/audience/chatter coverage, review-agent auto-fix synthesis, workflow wiring, labels, docs, env references, and passing full test validation.
+
 Last updated: 2026-05-16 23:23 UTC
 Updated by: Cursor
 Session summary: Restored Affiliate Hub to patched Next.js/PostCSS dependency versions, upgraded lint tooling to the required ESLint 9-compatible flat config, and verified audit, lint, build, dependency tree, and root tests pass.

@@ -7,6 +7,7 @@ const testOutputPath = path.join(__dirname, "research-test-output.md");
 process.env.OPENROUTER_API_KEY = "test-key";
 process.env.QUESTION = "What is the meaning of life?";
 process.env.OUTPUT_FILE = testOutputPath;
+process.env.RESEARCH_MAX_MODELS_PER_AGENT = "1";
 
 const script = require("../../scripts/research-module.js");
 
@@ -77,7 +78,33 @@ async function runTests() {
     );
     console.log("  ✅ API error test passed.");
 
-    // 3. Invalid JSON response test (THE FIX WE ADDED)
+    // 3. Structured output fallback test
+    console.log("  Testing structured output fallback...");
+    let structuredRequestCount = 0;
+    mockHttpsRequest((req, callback) => {
+      structuredRequestCount++;
+      process.nextTick(() => {
+        const res = {
+          statusCode: structuredRequestCount === 1 ? 400 : 200,
+          on: (event, cb) => {
+            if (event === "data") {
+              const payload = structuredRequestCount === 1
+                ? { message: "unsupported response_format parameter" }
+                : { choices: [{ message: { content: "Fallback response" } }] };
+              cb(Buffer.from(JSON.stringify(payload)));
+            }
+            if (event === "end") cb();
+          },
+        };
+        callback(res);
+      });
+    });
+    const fallbackResult = await script.callOpenRouter("model", "sys", "user", { structuredOutput: true });
+    assert.strictEqual(fallbackResult, "Fallback response");
+    assert.strictEqual(structuredRequestCount, 2);
+    console.log("  ✅ Structured output fallback test passed.");
+
+    // 4. Invalid JSON response test
     console.log("  Testing invalid JSON response...");
     const invalidJson = "Not a JSON";
     mockHttpsRequest((req, callback) => {
@@ -94,14 +121,14 @@ async function runTests() {
     await assert.rejects(
       script.callOpenRouter("model", "sys", "user"),
       (err) => {
-        assert(err.message.includes("Failed to parse OpenRouter response"));
+        assert(err.message.includes("Failed to parse JSON response"));
         assert(err.message.includes("Raw: " + invalidJson));
         return true;
       }
     );
     console.log("  ✅ Invalid JSON test passed.");
 
-    // 4. Network error test
+    // 5. Network error test
     console.log("  Testing network error...");
     mockHttpsRequest((req, callback) => {
       process.nextTick(() => {
@@ -114,7 +141,7 @@ async function runTests() {
     );
     console.log("  ✅ Network error test passed.");
 
-    // 5. Full main() flow test
+    // 6. Full main() flow test
     console.log("  Testing full main() flow...");
     let requestCount = 0;
     mockHttpsRequest((req, callback) => {
@@ -149,10 +176,13 @@ async function runTests() {
     console.warn = originalWarn;
     console.error = originalError;
 
-    assert(warnings.some(w => w.includes("Failed: First agent failure")), "Should log warning about agent failure. Warnings: " + JSON.stringify(warnings));
+    assert(warnings.some(w => w.includes("failed: First agent failure")), "Should log warning about agent failure. Warnings: " + JSON.stringify(warnings));
     assert(fs.existsSync(testOutputPath), "Output file should be created");
     const output = fs.readFileSync(testOutputPath, "utf8");
     assert(output.includes("Agent/Synthesis content"), "Output should contain content");
+    assert(output.includes("Research Agent Roster"), "Output should include the research agent roster");
+    assert(output.includes("Master Checklist"), "Output should include the master checklist");
+    assert(output.includes("Code-Review-Style Research Reviews"), "Output should include the review layer");
     console.log("  ✅ Full main() flow test passed.");
 
   } catch (err) {

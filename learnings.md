@@ -225,3 +225,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Use deterministic workflow signals for dedupe/association instead of fuzzy title searches. When `npm test` fails past the original issue, keep walking the chain: syntax failures and stale contract tests are actionable code/config blockers, while missing repository secrets are warnings/infrastructure signals when the script cannot inspect them. Generated dashboards must exclude dependency folders and avoid checkout-path-derived names.
 
 **Next Action:** Merge PR #13469 after review/CI; the branch already includes unit coverage and passing full local validation.
+
+---
+
+**Date/Time:** 2026-05-17T01:14Z
+
+**Task Attempted:** Implement the WR layered search-research engine requested from PR context.
+
+**Outcome:** Success — added `scripts/research-engine.js`, kept `scripts/research-module.js` as a compatibility entrypoint, wired manual and WR workflows, added canonical research labels, documented the engine and standard, updated env references, and verified `npm test` passes.
+
+**Root Cause of Failure (If any):** Initial targeted validation showed that model-level agent failures were captured in the report but not emitted as operator-visible warnings. Markdownlint also revealed the repository still has many pre-existing markdown violations outside this change.
+
+**Self-Healing Fix / Learned Lesson:** Log failed model calls at the agent/model boundary even when the engine degrades gracefully into a low-confidence report. For broad markdownlint runs in this repo, isolate new-file lint validation from the known pre-existing markdown debt and report the global lint state honestly.
+
+**Next Action:** Monitor WR workflow runs after merge for credential readiness (`OPENROUTER_API_KEY` required; Tavily/Firecrawl/Perplexity optional) and refine provider-specific extraction if API response shapes drift.

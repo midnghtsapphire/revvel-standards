@@ -280,6 +280,50 @@ labels:
     color: "0e8a16"
     description: "Requires deep research before execution"
 
+  - name: search-research-engine
+    color: "0b7285"
+    description: "Layered WR search and research engine"
+
+  - name: "research:orchestrating"
+    color: "6f42c1"
+    description: "Research orchestrator assigning agents"
+
+  - name: "research:source-map"
+    color: "1d76db"
+    description: "Official sources and citations"
+
+  - name: "research:competitors"
+    color: "f97316"
+    description: "Competitors and alternatives research"
+
+  - name: "research:marketing-seo"
+    color: "3DDCFF"
+    description: "Marketing and SEO research"
+
+  - name: "research:audience"
+    color: "8b5cf6"
+    description: "Target audience and buyer intent"
+
+  - name: "research:chatter"
+    color: "f59e0b"
+    description: "Community chatter and complaints"
+
+  - name: "research:review"
+    color: "fbca04"
+    description: "Research under review by agents"
+
+  - name: "research:reviewed"
+    color: "10b981"
+    description: "Research reviewed by agent reviewers"
+
+  - name: "research:autofix"
+    color: "0075ca"
+    description: "Research review fixes available"
+
+  - name: "research:fix-committed"
+    color: "0e8a16"
+    description: "Research review fixes committed"
+
   - name: proof-of-life
     color: "2ea44f"
     description: "Proof-of-life run — app-review revvel-standards-run"

@@ -19,6 +19,15 @@ on:
         options:
           - "true"
           - "false"
+      max_models_per_agent:
+        description: OpenRouter consensus models per research agent
+        required: false
+        default: "3"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
 concurrency:
   group: research-module-${{ github.run_id }}
   cancel-in-progress: false
@@ -56,9 +65,13 @@ jobs:
       - name: Run Research Module
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           QUESTION: ${{ inputs.question }}
           OUTPUT_FILE: ${{ inputs.output_file }}
-        run: node scripts/research-module.js
+          RESEARCH_MAX_MODELS_PER_AGENT: ${{ inputs.max_models_per_agent }}
+        run: node scripts/research-engine.js
       - name: Commit research document
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
@@ -81,7 +94,7 @@ jobs:
           gh issue create \
             --repo "${{ github.repository }}" \
             --title "Research Complete: ${{ inputs.question }}" \
-            --label "New Project" \
+            --label "New Project,deep-research,research:reviewed,research:fix-committed" \
             --body "## Research Findings
 
           The AI Research Module has completed research on:
@@ -91,6 +104,13 @@ jobs:
           **Output document:** [\`${{ inputs.output_file }}\`](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/${{ inputs.output_file }})
 
           **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          **Engine layers completed:**
+          - Retrieval readiness check (Tavily / Firecrawl / Perplexity when configured)
+          - OpenRouter multi-model consensus agents
+          - Marketing, SEO, competitors, audience, and chatter agents
+          - Code-review-style research review agents
+          - Automatic review-fix rewrite committed to the research document
 
           ---
 

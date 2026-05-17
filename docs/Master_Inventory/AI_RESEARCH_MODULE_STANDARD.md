@@ -1,7 +1,7 @@
 # AI Research Module Standard
 
-**Version:** 1.0.0
-**Date:** April 14, 2026
+**Version:** 2.0.0
+**Date:** May 17, 2026
 **Status:** Mandatory Policy
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 
@@ -17,6 +17,14 @@ A research request is not satisfied by a single LLM response. Deep research — 
 4. **Documentation**: converting the synthesis into structured Revvel Standard documents
 
 This standard defines the **AI Research Module** — the repeatable process, agent roles, tooling stack, and output templates that every Revvel research task must follow.
+
+As of v2.0.0, the module is a layered **search-research engine** for every WR:
+
+1. **Retrieval readiness** checks Tavily, Firecrawl, and Perplexity credentials when present.
+2. **OpenRouter model consensus** runs each research agent through up to three LLMs.
+3. **Domain agents** cover source mapping, competitors, marketing/SEO, audience, chatter, security, cost/revenue, and implementation.
+4. **Code-review-style research reviewers** inspect the synthesis and provide automatic fix recommendations.
+5. **Automatic research-fix rewrite** applies reviewer feedback before the workflow commits the report.
 
 ---
 
@@ -71,11 +79,15 @@ Each sub-agent:
 |---|---|---|
 | **Orchestrator** | Decomposes the question, assigns tasks, drives synthesis | High-reasoning (GPT-5, Claude Opus) |
 | **Spec Agent** | Official docs, GitHub repos, API references | Fast + accurate (Claude Sonnet, GPT-4.1) |
-| **Community Agent** | Forums, Reddit, GitHub Issues, Hacker News | Fast + broad (Gemini Flash, GPT-4o-mini) |
+| **Community / Chatter Agent** | Forums, Reddit, GitHub Issues, reviews, social complaints | Fast + broad (Gemini Flash, GPT-4o-mini) |
 | **Competitive Agent** | Alternatives, comparisons, market positioning | Balanced (Claude Sonnet, GPT-4.1) |
+| **Marketing / SEO Agent** | Keyword demand, offer framing, domain signals, ad hooks | Broad + current (Gemini Pro, GPT-4.1) |
+| **Audience Agent** | Target users, buyer intent, objections, why this market matters | Balanced (Claude Sonnet, GPT-4.1) |
 | **Security Agent** | CVEs, compliance, threat model, best practices | High-reasoning (Claude Opus, GPT-5) |
 | **Cost/Ops Agent** | Pricing, operational burden, scaling limits | Fast + precise (GPT-4o-mini, Gemini Pro) |
+| **Implementation Agent** | Labels, workflows, scripts, tests, acceptance gates | Code model (Claude Sonnet, Codex) |
 | **Synthesizer** | Merge findings, resolve conflicts, produce final doc | High-reasoning (Claude Opus, GPT-5) |
+| **Research Reviewers** | Evidence, code-readiness, security, and growth review | Claude Sonnet via OpenRouter |
 
 ---
 
@@ -108,6 +120,9 @@ These five models cover the full spectrum of research tasks:
 # .env (stored in Vault at revvel/apps/openrouter/prod)
 OPENROUTER_API_KEY=sk-or-v1-...
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+TAVILY_API_KEY=tvly-...        # Optional live web search
+FIRECRAWL_API_KEY=fc-...       # Optional crawl/search extraction
+PERPLEXITY_API_KEY=pplx-...    # Optional cited answer layer
 ```
 
 ### 4.4 API Call Pattern (Node.js)
@@ -233,6 +248,34 @@ Every sub-agent must return structured JSON. The synthesizer must produce the fi
 }
 ```
 
+### 5.3 Required WR Research Areas
+
+Every WR-grade run must include these areas in the final report:
+
+| Area | Label | Required output |
+| --- | --- | --- |
+| Source map | `research:source-map` | Official docs, repos, APIs, standards, and citations |
+| Competitors | `research:competitors` | Direct and adjacent alternatives, gaps, positioning |
+| Marketing / SEO | `research:marketing-seo` | Keywords, search intent, ad hooks, domain/name signals |
+| Audience | `research:audience` | Target user, buyer intent, why this audience matters |
+| Chatter | `research:chatter` | Complaints, forum/review language, repeated pain points |
+| Security / compliance | `security` plus `research:review` | Credential, privacy, abuse, and compliance risks |
+| Cost / revenue | `research:review` | Cost, payability, lead economics, revenue path |
+| Implementation | `research:review` | Scripts, workflows, labels, tests, acceptance gates |
+
+### 5.4 Research Review and Auto-Fix Contract
+
+The research engine must run review agents after synthesis:
+
+| Reviewer | Scope | Required behavior |
+| --- | --- | --- |
+| Mirror | Evidence quality and contradictions | Flags unsupported claims and missing sources |
+| Aria | Code-review readiness | Checks whether a coding agent can act on the report |
+| Cipher | Security and credentials | Flags unsafe auth, secrets, data, or abuse assumptions |
+| Quill | Growth completeness | Checks marketing, SEO, competitors, audience, and chatter |
+
+Reviewer output is not the final artifact. The engine must run a fix pass that rewrites the research report with valid review feedback applied, then commit the reviewed output. If the fix pass fails, the report must still include the review comments and mark the automatic fix pass as failed in the workflow output.
+
 ---
 
 ## 6. Research Workflow
@@ -258,7 +301,7 @@ Sub-questions:
 
 ### Step 3: Run Sub-Agents in Parallel
 
-Use the `runResearchModule` function. All sub-agents run concurrently. Total time ≈ time for the slowest single agent (typically 15–30 seconds).
+Use `scripts/research-engine.js` or the compatibility entrypoint `scripts/research-module.js`. All domain agents run concurrently, and each domain agent can run up to three OpenRouter models for consensus.
 
 ### Step 4: Synthesize
 
@@ -272,6 +315,7 @@ Feed all sub-agent reports to the Synthesizer. The Synthesizer:
 Convert the synthesis output into a Revvel Standard document following this repo's conventions. Store in:
 - Root level as `<TOPIC>_RESEARCH.md` for cross-cutting topics
 - `docs/<TOPIC>_RESEARCH.md` for project-specific research
+- `docs/wr/issue-<number>-research.md` for WR-triggered issue research
 - Update `docs/PROJECT_CATALOG.md` to reference the new document
 
 ### Step 6: Create GitHub Issues
@@ -333,7 +377,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           QUESTION: ${{ inputs.question }}
           OUTPUT_FILE: ${{ inputs.output_file }}
-        run: node scripts/research-module.js
+        run: node scripts/research-engine.js
 
       - name: Commit research output
         env:
@@ -352,12 +396,36 @@ jobs:
 
 Research output must pass these checks before being committed as a Revvel Standard:
 
-- [ ] At least 3 sub-agents ran (minimum viable research set: spec + competitive + security)
+- [ ] At least 8 domain agents ran (source-map, competitors, marketing/SEO, audience, chatter, security, cost/revenue, implementation)
+- [ ] OpenRouter model consensus ran for each domain agent, unless `RESEARCH_MAX_MODELS_PER_AGENT=1` was intentionally set for a low-cost run
+- [ ] Optional Tavily / Firecrawl / Perplexity provider readiness is documented
 - [ ] Each finding has a source URL or document reference
 - [ ] The synthesis explicitly states confidence level (high/medium/low)
 - [ ] Contradictions between agents are flagged as "open questions"
+- [ ] Research reviewers ran and comments are included
+- [ ] Automatic research-fix rewrite was attempted before commit
 - [ ] Actionable recommendations are linked to GitHub Issues
 - [ ] The document follows Revvel Standard formatting (see `AGENT_FACTORY_STANDARD.md` for style)
+
+## 8.1 Labels
+
+The canonical labels for this engine are:
+
+```text
+search-research-engine
+research:orchestrating
+research:source-map
+research:competitors
+research:marketing-seo
+research:audience
+research:chatter
+research:review
+research:reviewed
+research:autofix
+research:fix-committed
+```
+
+WR automation applies these labels alongside existing `weekly-research`, `deep-research`, `openrouter`, and `wr:*` lifecycle labels.
 
 ---
 
@@ -380,6 +448,9 @@ See `AGENT_FACTORY_STANDARD.md` for the full trigger matrix.
 | Secret | Vault Path | GitHub Secret Name |
 |---|---|---|
 | OpenRouter API key | `revvel/apps/openrouter/prod/api_key` | `OPENROUTER_API_KEY` |
+| Tavily API key | `revvel/apps/research/tavily/api_key` | `TAVILY_API_KEY` |
+| Firecrawl API key | `revvel/apps/research/firecrawl/api_key` | `FIRECRAWL_API_KEY` |
+| Perplexity API key | `revvel/apps/research/perplexity/api_key` | `PERPLEXITY_API_KEY` |
 | GitHub App ID | `revvel/apps/github-app/prod/app_id` | `APP_ID` |
 | GitHub App Private Key | `revvel/apps/github-app/prod/private_key_pem` | `APP_PRIVATE_KEY` |
 

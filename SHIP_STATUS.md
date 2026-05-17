@@ -56,6 +56,7 @@
 | T009 | Music Video Creator Next/PostCSS security upgrade | done | @cursor | 2026-05-15 |
 | T010 | ColdTrace dependency downgrade restoration | done | @cursor | 2026-05-15 |
 | T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
+| T012 | WR layered search-research engine | done | @cursor | 2026-05-17 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---
