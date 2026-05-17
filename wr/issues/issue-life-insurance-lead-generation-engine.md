@@ -135,6 +135,7 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
+- Model contactability with normalized lookup-backed statuses, not a single blanket positive flag; distinguish at minimum `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, and `dnc_blocked`
 - Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) at two checkpoints: pre-export batch validation and pre-contact validation immediately before each outbound attempt
 - Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
 - Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
@@ -286,6 +287,8 @@ A static landing page (`landing/index.html`) captures inbound prospects who are 
 - **Premium tier:** inbound self-identified leads → $75–$150 per PDF of 10 (i.e., $7.50–$15/lead)
 - **Platform:** Deploy via Vercel / GitHub Pages. Form backed by a GitHub Actions webhook or Make.com automation.
 
+**Important compliance modeling note:** inbound landing-page leads should not bypass compliance tracking. They are usually the strongest consent source, but the system still needs a stored status proving why contact is allowed, when consent was captured, and what policy version the user accepted.
+
 #### Sales Channels
 
 1. **Polar.sh / Gumroad digital storefront** — Browse and buy PDFs by state + trigger type
@@ -335,6 +338,34 @@ To avoid shallow research quality, the research system is split into two indepen
 **Gate rule:** No WR is considered complete until Fleet B approves Fleet A outputs.
 **Approval mechanism:** automated pass/fail checks write `research_quality_status=pass|fail` into a WR metadata block in the document (or companion `wr/metadata/<wr-slug>.json`) and post a PR summary comment; human override is restricted to repository maintainers and must be documented in both the PR comment and metadata record.
 
+### Data Architecture / DBA / Compliance Fleet Split
+
+For this engine, add dedicated operational fleets instead of overloading the research swarm:
+
+1. **Database Architecture Fleet** — owns lead schema, lookup tables, indexing/locking strategy, deduplication model, and reporting views
+2. **Database Admin / Reliability Fleet** — owns migrations, backups, retention jobs, concurrency safety, and audit logging
+3. **Compliance Operations Fleet** — owns consent artifacts, TCPA/DNC checkpoints, suppression lists, and jurisdiction-specific policy changes
+4. **Revenue Delivery Fleet** — owns storefront delivery, PDF packaging, CRM/webhook dispatch, and subscription/reporting surfaces
+
+**Priority rule:** if community chatter shows TCPA/DNC complaints are a top buyer risk, the Compliance Operations Fleet ships before scale optimizations because legal/contactability failures destroy the product faster than slow throughput.
+
+### Recommended Lead Compliance Status Model
+
+Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status model derived from the lead source and evidence:
+
+| Lookup Table | Purpose | Suggested Values |
+|---|---|---|
+| `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports | `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked` |
+| `consent_bases` | Why contact is allowed | `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none` |
+| `lead_source_types` | Source/channel normalization for routing and reporting | `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor` |
+| `service_statuses` | Shared lookup for API/MCP/CLI dependency ledgers | `active`, `degraded`, `blocked`, `payment_required`, `trial_expiring` |
+
+**Recommended behavior:**
+- Landing-page quote requests start as `inbound_express_consent` **only after** storing consent text/version, timestamp, source URL/form ID, and suppression-check outcome
+- Public-record leads start as `outbound_public_record_requires_scrub`, not contact-ready, and move to `outbound_scrubbed_contact_ready` only after DNC/internal suppression checks pass for the intended channel
+- Any complaint, revocation, or ambiguous source moves the lead to `manual_review_required` or `revoked_or_opted_out`
+- Reports for non-technical operators should display friendly labels from lookup tables, not raw booleans or magic numbers
+
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
 ```javascript
@@ -349,11 +380,13 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. TCPA filter: only include leads flagged tcpa_compliant: true
-  const tcpaLeads = qualifiedLeads.filter(lead => lead.tcpa_compliant === true);
+  // 3. Contactability filter: only include leads whose normalized status passes export rules
+  const contactableLeads = qualifiedLeads.filter((lead) =>
+    isContactEligible(lead, { checkpoint: 'pre_export' })
+  );
 
   // 4. Deduplicate: remove any leads already sold in previous batches
-  const newLeads = await deduplicateLeads(tcpaLeads);
+  const newLeads = await deduplicateLeads(contactableLeads);
 
   // 5. Compile Phase: take top batchSize leads and structure output
   const batch = newLeads.slice(0, batchSize);
@@ -363,7 +396,7 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   const pdfPath = await buildLeadPDF(output, { triggerType, state });
   await markLeadsAsSold(output);
 
-  console.log(`✅ ${output.length} TCPA-compliant leads compiled → ${pdfPath}`);
+  console.log(`✅ ${output.length} contact-eligible leads compiled → ${pdfPath}`);
 }
 ```
 
@@ -457,7 +490,11 @@ Each compiled lead record contains:
   "source": "county-deed-record",
   "source_url": "https://...",
   "verified": true,
-  "tcpa_compliant": true,
+  "contact_eligibility_status": "outbound_scrubbed_contact_ready",
+  "consent_basis": "public_record_with_manual_review",
+  "consent_timestamp": null,
+  "consent_proof_url": null,
+  "dnc_scrub_result": "pass",
   "pdf_batch_id": "TX-new-homeowner-2026-05-16-batch-001",
   "sold": false,
   "exported_at": "ISO-8601 timestamp"
@@ -520,7 +557,7 @@ Each compiled lead record contains:
 | Concern | Mitigation |
 |---------|------------|
 | PII handling | Only surface officially published public records and data returned by licensed API programs; no scraping of gated/private systems |
-| TCPA compliance | `tcpa_compliant: true/false` flag on every lead record; only leads with `tcpa_compliant: true` are included in exported PDFs; verified opt-out lists are filtered before each export |
+| TCPA compliance | Replace one-bit `tcpa_compliant` with lookup-backed `contact_eligibility_status`, `consent_basis`, and scrub metadata; only export leads whose status is approved at the current checkpoint, and rerun suppression/DNC checks before each outreach attempt |
 | CAN-SPAM | Do not include email addresses unless sourced from a confirmed opt-in channel |
 | FCRA | Lead PDFs are for sales/marketing outreach only; **not** for underwriting risk assessment, credit, employment, housing, or policy approval decisions |
 | LinkedIn ToS | LinkedIn data accessed **only** via LinkedIn's paid API program (~$100/mo) — no scraping of LinkedIn profiles |
@@ -548,7 +585,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 - Surface warning badges in Audrey UI and create a `Wr` issue automatically when due date is breached
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
-> *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
+> *"This lead list is compiled from publicly available government records, first-party inquiries, and licensed data sources, and is intended for life insurance sales and marketing outreach only. Each lead in this batch includes recorded contactability, consent/source, and suppression-screening metadata that must be verified at the point of use. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
