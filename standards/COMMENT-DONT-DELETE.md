@@ -187,7 +187,24 @@ Add to `.pre-commit-config.yaml` or equivalent:
   hooks:
     - id: revvel-agent-audit-trail
       name: RVS-AGENT-001 audit trail
-      entry: bash -c 'git diff --cached -U0 | grep -E "^\+\s*(//|#|/\*)" | grep -v REVVEL-DISABLED | awk "NR>=3" && echo "ERROR: 3+ commented lines without REVVEL-DISABLED header" && exit 1 || exit 0'
+      entry: >-
+        bash -c 'git diff --cached -U0 | awk '"'"'
+        /^\+\+\+|^@@/ { next }
+        /^\+\s*(\/\/|#|\/\*)/ {
+          if ($0 ~ /REVVEL-DISABLED/) {
+            count = 0
+            next
+          }
+          count++
+          if (count >= 3) {
+            print "ERROR: 3+ commented lines without REVVEL-DISABLED header"
+            exit 1
+          }
+          next
+        }
+        { count = 0 }
+        END { exit 0 }
+        '"'"''
       language: system
       pass_filenames: false
 ```
