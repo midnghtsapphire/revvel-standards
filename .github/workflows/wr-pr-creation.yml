@@ -57,13 +57,19 @@ jobs:
             const title = issue.title || '';
             const body = issue.body || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            const labelSet = new Set(labels);
+            const rawIssueType = issue.type || context.payload.issue?.type;
+            const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
+            const normalizedIssueType = issueType.trim().toLowerCase();
 
-            // Check if this is a WR issue (title prefix [WR] or label `weekly-research`).
-            // OpenHands-RESTRUCTURE 2026-05-04: also accept the title prefix on its own,
-            // because the [WR] issue template's `labels:` array is dropped when issues
-            // are opened via the API/Copilot UI rather than the GitHub form. The
-            // title prefix is the most reliable signal.
-            const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
+            // Check if this is a WR issue. GitHub issue templates, GitHub issue
+            // types, and API-created issues do not always arrive with the same
+            // labels, so accept every canonical WR signal before normalizing labels.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              labelSet.has('weekly-research') ||
+              labelSet.has('work-request') ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
             if (!isWR) {
               core.info(`Issue #${issueNumber} is not a WR issue`);
               core.setOutput('should_create_pr', 'false');
@@ -76,6 +82,25 @@ jobs:
               core.info(`Issue #${issueNumber} is bot-created; skipping.`);
               core.setOutput('should_create_pr', 'false');
               return;
+            }
+
+            // Normalize labels immediately so BASIC WR / issue-type intake cannot
+            // get stuck waiting for another workflow to add the routing labels.
+            const requiredWrLabels = ['work-request', 'weekly-research', 'wr:in-progress'];
+            for (const label of requiredWrLabels) {
+              if (labelSet.has(label)) continue;
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  labels: [label],
+                });
+                labelSet.add(label);
+                core.info(`Normalized missing WR label: ${label}`);
+              } catch (error) {
+                core.notice(`Could not normalize WR label "${label}": ${error.message}`);
+              }
             }
 
             // Check if a WR-skeleton PR already exists for this issue.
@@ -132,7 +157,7 @@ jobs:
             // not gated on Jules being done.
             const isOpenEvent = context.eventName === 'issues' &&
               (context.payload.action === 'opened' || context.payload.action === 'reopened');
-            const isComplete = labels.includes('wr:complete') || context.eventName === 'workflow_dispatch';
+            const isComplete = labelSet.has('wr:complete') || context.eventName === 'workflow_dispatch';
 
             // Check if Jules has posted research findings (comment contains "Research Findings:")
             let julesCompleted = false;
@@ -151,7 +176,8 @@ jobs:
             core.info(`Is Complete: ${isComplete}`);
             core.info(`Jules Completed: ${julesCompleted}`);
             core.info(`Should Create PR: ${shouldCreate}`);
-            core.info(`Current labels: ${labels.join(', ')}`);
+            core.info(`Issue type: ${issueType || '(none)'}`);
+            core.info(`Current labels: ${Array.from(labelSet).join(', ')}`);
 
             core.setOutput('should_create_pr', shouldCreate ? 'true' : 'false');
             core.setOutput('issue_number', String(issueNumber));
@@ -180,7 +206,7 @@ jobs:
               'The WR PR creation workflow ran but determined that no PR should be created at this time.',
               '',
               '**Possible reasons:**',
-              '- Issue is not a WR (missing `[WR]` prefix and `weekly-research` label)',
+              '- Issue is not a WR (missing `[WR]` prefix, `work-request` / `weekly-research` label, or BASIC WR issue type)',
               '- A WR-skeleton PR already exists for this issue',
               '- Issue is bot-created',
               '- Trigger condition not met (not opened/reopened/complete/Jules-comment)',
@@ -509,7 +535,6 @@ jobs:
               });
             } catch (error) {
               // Label might not exist, ignore
-            }
             }
       - name: Handle workflow failure
         if: failure()

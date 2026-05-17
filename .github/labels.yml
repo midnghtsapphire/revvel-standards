@@ -380,9 +380,21 @@ labels:
     description: "Visible on 49Agents monitoring dashboard"
 
   # ── Weekly Research (WR) workflow ──────────────────────────────────────────
+  - name: work-request
+    color: "1d76db"
+    description: "Work Request intake issue"
+
   - name: weekly-research
     color: "fbca04"
     description: "Weekly research task requiring deep investigation"
+
+  - name: quick
+    color: "c2e0c6"
+    description: "Lightweight quick/internal WR"
+
+  - name: OpenHands
+    color: "5319e7"
+    description: "Route to OpenHands-capable automation"
 
   - name: "wr:in-progress"
     color: "f9d71c"
