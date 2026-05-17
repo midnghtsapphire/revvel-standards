@@ -187,7 +187,7 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 - **Replit Ghostwriter** - AI pair programmer for collaborative coding
 
 **Research & Knowledge Tools:**
-- **Perplexity AI** (https://perplexity.ai) - Research assistant with citations
+- **Perplexity no-key research** (https://github.com/helallao/perplexity-ai) - Perplexity-backed issue research without a required official API key
 - **Elicit** (https://elicit.org) - AI research assistant for academic papers
 - **Consensus** (https://consensus.app) - Evidence-based answers from research papers
 - **Scite** (https://scite.ai) - Smart citations showing supporting/contrasting evidence
