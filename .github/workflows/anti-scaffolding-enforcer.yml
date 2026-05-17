@@ -11,6 +11,8 @@
 # Prevents PRs with scaffolding language from being merged
 # Enforces the Prime Directive: Ship working code, not plans
 
+name: Anti-Scaffolding Enforcer
+
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
