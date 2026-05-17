@@ -188,22 +188,18 @@ Add to `.pre-commit-config.yaml` or equivalent:
     - id: revvel-agent-audit-trail
       name: RVS-AGENT-001 audit trail
       entry: >-
-        bash -c 'git diff --cached -U0 | awk '"'"'
-        /^\+\+\+|^@@/ { next }
+        bash -c 'set -o pipefail; git diff --cached -U0 | awk '"'"'
+        /^\+\+\+|^@@/ { count = 0; found_header = 0; next }
         /^\+\s*(\/\/|#|\/\*)/ {
-          if ($0 ~ /REVVEL-DISABLED/) {
-            count = 0
-            next
-          }
+          if ($0 ~ /REVVEL-DISABLED/) found_header = 1
           count++
-          if (count >= 3) {
-            print "ERROR: 3+ commented lines without REVVEL-DISABLED header"
+          if (count >= 3 && !found_header) {
+            print "ERROR: 3+ commented lines without REVVEL-DISABLED header" > "/dev/stderr"
             exit 1
           }
           next
         }
-        { count = 0 }
-        END { exit 0 }
+        { count = 0; found_header = 0 }
         '"'"''
       language: system
       pass_filenames: false
