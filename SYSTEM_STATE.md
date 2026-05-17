@@ -66,6 +66,7 @@
 | `rvvel-affiliate-links` | ✅ live | Production, npm: `rvvel-affiliate-links-mcp` |
 | `code-review` | ✅ live | Production, mandatory in every project |
 | `wr-pr-control-plane` | ✅ live | In-tree at `mcp-servers/wr-control-plane/`. Implements the 2026 WR-PR Automation Blueprint contract for Composio + Firecrawl + Tavily + Obot + FastMCP. Ships `"disabled": true` in `.mcp.json` so downstream clones opt in after installing the local Python deps (`uv pip install -e .`) and provisioning the credentials listed in `.env.example`. |
+| `perplexity-no-key` | ✅ documented | `.mcp.json` entry for the `helallao/perplexity-ai` no-key MCP server. Ships `"disabled": true` until a clone installs `python -m pip install "perplexity-api[mcp] @ git+https://github.com/helallao/perplexity-ai.git@main"`. No `PERPLEXITY_API_KEY` is required. |
 
 ---
 
@@ -97,6 +98,7 @@
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
 | `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
 | Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
 | Workflow YAML validation | 2026-05-17 | ✅ `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
@@ -125,6 +127,7 @@
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
 | Research Engine Orchestrator | ✅ documented + implemented | [`scripts/research-engine.js`](scripts/research-engine.js), [`.github/workflows/research-engine.yml`](.github/workflows/research-engine.yml), and [`docs/RESEARCH_ENGINE_STANDARD.md`](docs/RESEARCH_ENGINE_STANDARD.md) provide layered WR research across marketing, SEO, competitors, audience/chatter, facts, technical delivery, revenue, and code-review auto-fix lanes |
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
+| Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 
@@ -156,6 +159,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 Last updated: 2026-05-17 01:39 UTC
 Updated by: Cursor
 Session summary: Added Revvel PromptForge prompt-generation app, research packet, docs, dashboard refresh, and verified focused app tests/build, root npm test, and workflow validation.
+
+Last updated: 2026-05-17 02:04 UTC
+Updated by: Cursor
+Session summary: Replaced the Perplexity API-key workflow dependency with a no-key `helallao/perplexity-ai` fork integration, added MCP/docs/tests, removed the gatekeeper secret blocker, and verified focused tests, workflow validation, and root npm test after `npm ci`.
 
 Last updated: 2026-05-17 01:20 UTC
 Updated by: Cursor
