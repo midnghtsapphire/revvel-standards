@@ -29,6 +29,11 @@ env:
 
 jobs:
   check-for-scaffolding:
+    # Owner (@midnghtsapphire) writes WRs quickly off the top of their head — never block or scan them.
+    # Scaffolding checks apply only to non-owner contributors and automated PRs.
+    # Note: this checks the PR author (the account that opened the PR). Commits pushed by the owner
+    # to someone else's PR are still governed by that PR's author check — which is the intended behavior.
+    if: github.event.pull_request.user.login != 'midnghtsapphire'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

@@ -50,12 +50,23 @@ jobs:
 
             const title = issue.title || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            const labelSet = new Set(labels);
+            const rawIssueType = issue.type || context.payload.issue?.type;
+            const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
+            const normalizedIssueType = issueType.trim().toLowerCase();
 
-            // Check if title starts with [WR] or if weekly-research label is already applied
-            const isWR = title.match(/^\[WR\]/i) || labels.includes('weekly-research');
+            // Recognize all canonical WR intake signals. BASIC WR issue types may
+            // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              labelSet.has('weekly-research') ||
+              labelSet.has('work-request') ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
+            core.info(`Issue type: ${issueType || '(none)'}`);
             core.info(`Current labels: ${labels.join(', ')}`);
 
             core.setOutput('is_wr', isWR ? 'true' : 'false');
@@ -67,6 +78,7 @@ jobs:
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
             const labelsToAdd = [
+              'work-request',
               'weekly-research',
               'wr:in-progress',
               'deep-research',

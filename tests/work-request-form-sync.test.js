@@ -73,6 +73,90 @@ function dropdownOptionsFromTemplate(content, id) {
   return opts;
 }
 
+function labelsFromTemplate(content) {
+  const start = content.indexOf('\nlabels:\n');
+  if (start < 0) {
+    throw new Error('labels block not found in template');
+  }
+
+  const lines = content.slice(start + '\nlabels:\n'.length).split(/\r?\n/);
+  const labels = [];
+  for (const line of lines) {
+    const match = line.match(/^\s{2}-\s+(.+)$/);
+    if (match) {
+      labels.push(match[1].trim().replace(/^['"]|['"]$/g, ''));
+      continue;
+    }
+    if (line.trim()) break;
+  }
+  return labels;
+}
+
+function assertLabelDefinition(labelsYaml, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`- name: (?:"${escaped}"|'${escaped}'|${escaped})\\n`);
+  assert(pattern.test(labelsYaml), `.github/labels.yml missing canonical label definition for "${label}"`);
+}
+
+test('active Work Request templates stay in sync with portable template copies', () => {
+  const pairs = [
+    ['00-work-request.yml', '00-work-request.yml'],
+    ['10-openhands-system-wr.yml', '10-openhands-system-wr.yml'],
+  ];
+
+  for (const [activeName, portableName] of pairs) {
+    const active = fs.readFileSync(
+      path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', activeName),
+      'utf8'
+    );
+    const portable = fs.readFileSync(
+      path.join(REPO_ROOT, 'templates', 'issue-template', portableName),
+      'utf8'
+    );
+    assert(active === portable, `${activeName} must match templates/issue-template/${portableName}`);
+  }
+});
+
+test('Work Request templates apply canonical WR routing labels', () => {
+  const primary = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml'),
+    'utf8'
+  );
+  const quick = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '10-openhands-system-wr.yml'),
+    'utf8'
+  );
+  const labelsYaml = fs.readFileSync(path.join(REPO_ROOT, '.github', 'labels.yml'), 'utf8');
+
+  for (const label of ['work-request', 'weekly-research']) {
+    assert(labelsFromTemplate(primary).includes(label), `primary WR template missing ${label}`);
+    assert(labelsFromTemplate(quick).includes(label), `quick WR template missing ${label}`);
+    assertLabelDefinition(labelsYaml, label);
+  }
+
+  for (const label of ['quick', 'OpenHands']) {
+    assert(labelsFromTemplate(quick).includes(label), `quick WR template missing ${label}`);
+    assertLabelDefinition(labelsYaml, label);
+  }
+});
+
+test('WR workflows accept BASIC WR issue type and work-request label', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+  const weeklyResearch = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
+    'utf8'
+  );
+
+  for (const workflow of [wrPrCreation, weeklyResearch]) {
+    assert(workflow.includes("labelSet.has('work-request')"), 'WR workflow must accept work-request label');
+    assert(workflow.includes("'basic wr'"), 'WR workflow must accept BASIC WR issue type');
+    assert(workflow.includes("'weekly-research'"), 'WR workflow must apply weekly-research label');
+  }
+});
+
 test('Work Request Output Type options match wr-auto-classify DROPDOWN_FIELDS', () => {
   const tmplPath = path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml');
   const tmpl = fs.readFileSync(tmplPath, 'utf8');
