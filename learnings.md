@@ -158,6 +158,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T01:40Z
+
+**Task Attempted:** Build and validate Revvel PromptForge prompt-generation app.
+
+**Outcome:** Success - Added a static Next.js prompt-generation product with source-backed packet generation, market research docs, root tests, dashboard refresh, and passing product lint/build, root `npm test`, and workflow validation.
+
+**Root Cause of Failure (If any):** Two validation mistakes recurred during the session: a root test was launched from the product directory, causing `MODULE_NOT_FOUND`, and root `npm test` initially failed because root `node_modules` was not installed (`Cannot find module 'yaml'`). Product lint also caught a React 19 compiler rule violation from setting state in an effect and a JSX apostrophe escaping issue.
+
+**Self-Healing Fix / Learned Lesson:** Run root tests from `/workspace` and product checks from the product root as separate commands. If root tests fail on `yaml`, run `npm ci` at `/workspace` before retrying. For accessibility preferences in client components, initialize state lazily from `localStorage` with a `typeof window` guard instead of setting state synchronously inside `useEffect`. Set `outputFileTracingRoot` in product-level Next apps with their own lockfile to avoid workspace-root inference warnings.
+
+**Next Action:** None for PromptForge; continue monitoring PR #13503 validation.
+
+---
+
 **Date/Time:** 2026-05-16T23:23Z
 
 **Task Attempted:** Verify and fix Affiliate Hub dependency regression below the patched Next.js/PostCSS security floor.
@@ -253,3 +267,14 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For GitHub issue-form automation, define every template label in `.github/labels.yml`, include the downstream trigger label directly on the template when possible, and make workflows accept multiple stable WR signals (`[WR]`, `work-request`, `weekly-research`, BASIC WR issue type). Add github-script compile guards for critical workflow blocks because YAML parsing alone cannot detect JavaScript syntax errors embedded in actions/github-script steps.
 
 **Next Action:** Monitor PR #13501 CI/review and merge after approval.
+**Date/Time:** 2026-05-17T02:04Z
+
+**Task Attempted:** Complete Perplexity integration without requiring `PERPLEXITY_API_KEY`.
+
+**Outcome:** Success - The Perplexity research workflow now installs `helallao/perplexity-ai` from GitHub, calls the fork through a no-key Python bridge, registers a disabled no-key MCP entry, removes the Credential Gatekeeper Perplexity secret blocker, and passes focused integration tests, workflow validation, and the root test suite.
+
+**Root Cause of Failure (If any):** The first validation attempt failed before workflow parsing because root dependencies were not installed (`Cannot find module 'yaml'` from `scripts/automation-doctor.js`). Due diligence also found the fork contains Emailnator/account-generation paths and an upstream issue reporting empty anonymous `Client.search()` responses, so a direct unfiltered integration would have been unreliable and unsafe.
+
+**Self-Healing Fix / Learned Lesson:** For no-key Perplexity work, use only the anonymous Labs/Web query paths from `helallao/perplexity-ai`; do not wire Emailnator or generated-account logic into Revvel automation. Prefer `LabsClient(..., model="sonar")` first and fall back to `Client.search(..., mode="auto")` because upstream issue #70 documents `Client.search()` instability. If workflow/root tests fail on missing `yaml`, run `npm ci` at `/workspace` and rerun validation.
+
+**Next Action:** None for the no-key Perplexity integration; monitor PR #13507 validation.

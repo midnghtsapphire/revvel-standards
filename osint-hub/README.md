@@ -122,7 +122,7 @@ CENSYS_API_SECRET=your_censys_secret
 OPENAI_API_KEY=your_openai_key
 ANTHROPIC_API_KEY=your_anthropic_key
 GOOGLE_AI_API_KEY=your_google_key
-PERPLEXITY_API_KEY=your_perplexity_key
+# Perplexity research uses the no-key helallao/perplexity-ai fork.
 ```
 
 ## 📊 OSINT Data Sources
@@ -153,7 +153,7 @@ PERPLEXITY_API_KEY=your_perplexity_key
 | **GPT-4o** | General synthesis, structured reports | 128K tokens |
 | **Claude 3.5 Sonnet** | Long-document analysis, code review | 200K tokens |
 | **Gemini 1.5 Pro** | Massive context, multi-source synthesis | 1M tokens |
-| **Perplexity API** | Real-time web search + citations | Live web |
+| **Perplexity no-key fork** | Real-time web search synthesis without an official API key | Live web |
 | **DeepSeek R1** | Cutting-edge reasoning, code generation | 64K tokens |
 
 ## 🎨 Design Philosophy
