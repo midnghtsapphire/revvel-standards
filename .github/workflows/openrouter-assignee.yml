@@ -212,6 +212,9 @@ jobs:
                 issue_number: issueNumber,
                 body: comment,
               });
+              core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
+            } catch (error) {
+              core.notice(`Could not post first-line-of-sight comment (ok if missing): ${error.message}`);
 
               core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
             } catch (error) {
@@ -413,13 +416,17 @@ jobs:
                   '_Automated by `.github/workflows/openrouter-assignee.yml` — 24/7 cron sweep (picked up by hourly run)_'
                 ].join('\n');
 
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  body: comment,
-                });
-                core.info(`  ✅ Posted first-line-of-sight comment`);
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    body: comment,
+                  });
+                  core.info(`  ✅ Posted first-line-of-sight comment`);
+                } catch (error) {
+                  core.notice(`Could not post first-line-of-sight comment (ok if missing): ${error.message}`);
+                }
 
               } catch (error) {
                 core.error(`  ❌ Error routing ${item.kind} #${item.number}: ${error.message}`);
