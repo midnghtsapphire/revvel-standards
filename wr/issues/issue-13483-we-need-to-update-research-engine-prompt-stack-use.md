@@ -199,6 +199,7 @@ In the current AI automation ecosystem, development speed is high, but distribut
 **Blockers Identified:**
 
 1. Lack of explicit marketing constraints in system prompts. → Update `scripts/openrouter-triage.js` and `docs/WEEKLY_RESEARCH_PROCESS.md`.
+2. Agents treating user instructions as firm rules instead of research seeds → leads to failures when instructions are imprecise. → Embed instruction-resilience directive into all system prompts.
 
 **Autonomous Capabilities:**
 
@@ -215,6 +216,7 @@ In the current AI automation ecosystem, development speed is high, but distribut
 **Missing:**
 
 - Validation of marketing and SEO fields in generated research documents.
+- Instruction-resilience logic: agents must self-correct bad instructions rather than failing.
 
 ### Ship to Market Status
 
@@ -418,7 +420,13 @@ None.
 
 ### Immediate Actions
 
-1. **Update `scripts/openrouter-triage.js`**
+1. **Embed Instruction Resilience in all agent prompts**
+   - **Why:** User-provided instructions are starting points for research, not firm rules. Agents must never fail because an instruction contains an error — they must research the correct path and proceed.
+   - **How:** Update `scripts/openrouter-triage.js` `buildSystemPrompt` and all OpenRouter swarm system prompts to include explicit instruction-resilience and self-correction directives.
+   - **Effort:** 1 hour
+   - **Revenue Impact:** Prevents automation failures from cascading; keeps pipelines shipping continuously.
+
+2. **Update `scripts/openrouter-triage.js`**
    - **Why:** Central to the issue request. Ensure triage prompts demand marketing, SEO, and competitive (stars) analysis.
    - **How:** Modify the `buildSystemPrompt` function.
    - **Effort:** 1 hour
@@ -444,6 +452,7 @@ None.
 
 | Risk | Severity | Probability | Mitigation |
 |------|----------|-------------|------------|
+| Instructions contain errors | High | High | Agents must research and self-correct; never halt on bad instructions. Treat all instructions as research seeds. |
 | Prompt Bloat | Medium | High | Keep prompts concise and focused strictly on required outputs. |
 | Hallucinated Facts | High | Medium | Explicitly instruct the model to ground facts in provided search context (via Tavily/Firecrawl). |
 

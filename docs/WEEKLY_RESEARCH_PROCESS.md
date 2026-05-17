@@ -1,9 +1,24 @@
 # Weekly Research (WR) Process
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Status:** Active  
 **Owner:** @midnghtsapphire  
-**Last Updated:** April 30, 2026
+**Last Updated:** May 17, 2026
+
+---
+
+## Core Principle: Instruction Resilience
+
+> **User instructions are research starting points, NOT firm rules.**
+
+Instructions, issue titles, and descriptions may contain errors, imprecise language, or incomplete context. The research engine and all agents MUST:
+
+1. **Never fail because an instruction is wrong.** Research the intent behind the instruction and pursue it.
+2. **Validate before acting.** Cross-reference instructions against current facts, documentation, and external sources.
+3. **Self-correct silently.** If an instruction is incorrect or contradictory, find the correct interpretation and proceed — document the correction in the findings.
+4. **Assume good intent.** When language is imprecise, infer the most productive interpretation and execute it.
+
+Agents that halt or error-out because of a bad instruction violate the Obsessive Autonomy mandate. Research your way through it.
 
 ---
 
@@ -144,6 +159,11 @@ gh workflow run weekly-research.yml -f issue_number=123
 
 Every WR task follows this standard checklist:
 
+- [ ] **Validate instructions before acting**
+  - [ ] Cross-check issue title/body against actual repo state
+  - [ ] Identify and silently correct any errors in the instruction
+  - [ ] Document assumed corrections in findings
+
 - [ ] **Review repository documentation**
   - [ ] `AGENTS.md` — Agent rules and protocols
   - [ ] `skills/` — Relevant skills in the vault
@@ -180,6 +200,14 @@ Every WR task follows this standard checklist:
   - [ ] Ensure recommendations result in working, tested code
   - [ ] Not just plans or proposals
   - [ ] Actionable implementation steps
+
+- [ ] **Marketing, SEO & competitive signals** *(required for every WR)*
+  - [ ] Identify 3–5 primary SEO keywords relevant to the topic
+  - [ ] Identify 3–5 long-tail keywords
+  - [ ] Check GitHub stars for any tools/repos referenced (competitive traction)
+  - [ ] Document at least one monetization path (Gumroad, Polar.sh, affiliate, SaaS)
+  - [ ] Assess distribution channel (organic search, social, community, API)
+  - [ ] Verify all market claims with factual citations — no hallucinated stats
 
 ---
 
@@ -476,6 +504,13 @@ A WR task is successful if:
 ---
 
 ## Changelog
+
+### 2026-05-17 — v1.1.0
+- Added **Instruction Resilience** core principle (instructions are research seeds, not firm rules)
+- Added instruction-validation step to Research Checklist
+- Added mandatory Marketing, SEO & competitive signals to Research Checklist (keywords, stars, monetization, citations)
+- Updated `buildSystemPrompt` in `scripts/openrouter-triage.js` to enforce instruction resilience and marketing/SEO mandate
+- Version bump 1.0.0 → 1.1.0
 
 ### 2026-04-30 — v1.0.0
 - Initial WR process documentation
