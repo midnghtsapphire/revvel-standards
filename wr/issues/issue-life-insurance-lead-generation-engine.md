@@ -135,7 +135,7 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
-- Enforce TCPA/DNC scrub before every export and before every outbound sequence
+- Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) before every export and before every outbound sequence
 - Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
 - Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
 - If landing page collects EU/UK traffic, require GDPR lawful-basis + DSAR deletion workflow
@@ -539,7 +539,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 | GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
 | Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
 
-**Implementation requirement:** expose this ledger in Oaudry UI with color states (Active / Degraded / Blocked), last-checked timestamp, and owner action needed.
+**Implementation requirement:** expose this ledger in Oaudry UI with accessible status tokens (`✅ Active`, `⚠️ Degraded`, `⛔ Blocked`), last-checked timestamp, and owner action needed.
 
 **Owner action logic (required):**
 - `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days

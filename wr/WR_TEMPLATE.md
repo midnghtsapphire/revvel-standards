@@ -208,9 +208,9 @@ Define a layered research engine using two AI fleets:
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
 
 **Minimum pass criteria (required):**
-- All required sections present (keywords, mechanics, competitor table, community chatter, BOM, monetization, citations)
+- All REQUIRED sections in Step 2 are present and non-empty
 - Zero unsupported factual claims in sampled checks
-- Citation coverage for factual claims ≥ 90%
+- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
 - Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
 
 #### Instruction Normalization (REQUIRED)
