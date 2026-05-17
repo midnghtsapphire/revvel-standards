@@ -379,7 +379,7 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
-const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific contact eligibility rules from this WR section
+const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific rules from the Recommended Lead Compliance Status Model section
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
@@ -388,7 +388,7 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Contactability filter: see compliance-utils docs for checkpoint validation rules.
+  // 3. Contactability filter: see Recommended Lead Compliance Status Model above.
   const contactableLeads = qualifiedLeads.filter((lead) =>
     isContactEligible(lead, 'pre_export')
   );
