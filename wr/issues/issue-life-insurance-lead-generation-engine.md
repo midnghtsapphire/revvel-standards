@@ -333,7 +333,7 @@ To avoid shallow research quality, the research system is split into two indepen
    - Output: pass/fail report with required fixes before WR is marked "research complete"
 
 **Gate rule:** No WR is considered complete until Fleet B approves Fleet A outputs.
-**Approval mechanism:** automated pass/fail checks write `research_quality_status=pass|fail` to WR metadata and post a PR summary comment; human override is allowed only with documented rationale.
+**Approval mechanism:** automated pass/fail checks write `research_quality_status=pass|fail` into a WR metadata block in the document (or companion `wr/metadata/<wr-slug>.json`) and post a PR summary comment; human override is allowed only with documented rationale.
 
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
@@ -540,7 +540,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 | GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
 | Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
 
-**Implementation requirement:** expose this ledger in Audrey UI with accessible status tokens (`Active ✅`, `Degraded ⚠️`, `Blocked ⛔`), last-checked timestamp, and owner action needed.
+**Implementation requirement:** expose this ledger in Audrey UI with semantic text statuses as canonical values (`Active`, `Degraded`, `Blocked`), optionally paired with emoji for quick scan (`✅`, `⚠️`, `⛔`), plus last-checked timestamp and owner action needed.
 
 **Owner action logic (required):**
 - `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days
