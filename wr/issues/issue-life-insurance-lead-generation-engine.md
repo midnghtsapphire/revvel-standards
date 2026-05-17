@@ -135,7 +135,9 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
-- Model contactability with normalized lookup-backed statuses, not a single blanket positive flag; distinguish at minimum `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, and `dnc_blocked`
+- Model contactability with normalized lookup-backed statuses, not a single blanket positive flag
+  - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
+  - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
 - Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) at two checkpoints: pre-export batch validation and pre-contact validation immediately before each outbound attempt
 - Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
 - Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
@@ -353,12 +355,18 @@ For this engine, add dedicated operational fleets instead of overloading the res
 
 Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status model derived from the lead source and evidence:
 
-| Lookup Table | Purpose | Suggested Values |
-|---|---|---|
-| `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports | `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked` |
-| `consent_bases` | Why contact is allowed | `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none` |
-| `lead_source_types` | Source/channel normalization for routing and reporting | `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor` |
-| `service_statuses` | Shared lookup for API/MCP/CLI dependency ledgers | `active`, `degraded`, `blocked`, `payment_required`, `trial_expiring` |
+| Lookup Table | Purpose |
+|---|---|
+| `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports |
+| `consent_bases` | Why contact is allowed |
+| `lead_source_types` | Source/channel normalization for routing and reporting |
+| `service_statuses` | Shared lookup for API/MCP/CLI dependency ledgers |
+
+**Suggested values by lookup:**
+- `contact_eligibility_statuses`: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
+- `consent_bases`: `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none`
+- `lead_source_types`: `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor`
+- `service_statuses`: `active`, `degraded`, `blocked`, `payment_required`, `trial_expiring`
 
 **Recommended behavior:**
 - Landing-page quote requests start as `inbound_express_consent` **only after** storing consent text/version, timestamp, source URL/form ID, and suppression-check outcome
@@ -380,7 +388,8 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Contactability filter: only include leads whose normalized status passes export rules
+  // 3. Contactability filter: `isContactEligible` is the policy gate that checks the
+  // normalized status, consent metadata, and latest suppression/DNC result for export.
   const contactableLeads = qualifiedLeads.filter((lead) =>
     isContactEligible(lead, { checkpoint: 'pre_export' })
   );
