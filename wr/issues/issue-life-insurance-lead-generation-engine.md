@@ -225,6 +225,35 @@ Life insurance leads are highest-intent when tied to specific life events. The e
 | SmartFinancial | Lead marketplace | $20–$80/lead | Shared leads; agents report high complaint rate (TrustPilot) |
 | **This Engine** | Autonomous, exclusive | Infrastructure cost only + LinkedIn API ~$100/mo | 100% exclusive (never shared), life-event-triggered, open-source, customizable |
 
+### API & Data BOM (Bill of Materials) — Lead Sourcing Stack
+
+To support ship-to-market execution, this WR includes a BOM-style comparison of the highest-value APIs/data providers by job-to-be-done.
+
+| Provider / API | Best At | Key Output | Typical Cost Model | Strengths | Limits / Risks |
+|---|---|---|---|---|---|
+| County open-data APIs (Socrata/ArcGIS portals) | New homeowner, marriage, probate legal notices | Official trigger events + dates | Free / low-cost | Primary-source public records, strong audit trail | Coverage and schema vary by county/state |
+| Secretary of State filing APIs/feeds | New business formation signals | Owner/entity + filing date | Free / low-cost | Strong trigger relevance for key-person coverage | State-by-state integration required |
+| LinkedIn paid API program | Employment/job-change enrichment | Role, employer, location | Program fee (~$100/mo noted) | Licensed access, no scraping, good warm-intent context | Program eligibility and rate limits |
+| ATTOM / Estated property APIs | National property ownership enrichment | Parcel/homeowner context | Paid tiers | Broad property coverage vs. per-county stitching | Licensing cost; usage caps |
+| People Data Labs / FullContact enrichment | Contact verification & profile enrichment | Validated person/contact attributes | Paid by credits/records | Improves dialability and targeting precision | Requires strict privacy/compliance controls |
+| Phone/email validation APIs (e.g., Twilio Lookup, ZeroBounce) | Contact quality filtering | Line type/validity/disposable checks | Usage-based | Reduces fake/bad leads and agent refund risk | Additional per-record cost |
+
+**Recommended BOM by lead tier:**
+- **Warm tier:** County/SoS trigger source + LinkedIn paid API + phone/email validation  
+- **Cold tier:** Vital/probate triggers + stronger validation + stricter TCPA/legal gating  
+- **Premium inbound tier:** Landing-page opt-in + enrichment + immediate speed-to-lead dispatch
+
+**BOM compliance controls (required before activation):**
+- Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
+  - Landing-page quote requests do not bypass compliance tracking; store the rendered consent language (or immutable template ID + version), source URL/form ID, and acceptance timestamp
+- Model contactability with normalized lookup-backed statuses, not a single blanket positive flag
+  - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
+  - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
+- Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) at two checkpoints: pre-export batch validation and pre-contact validation immediately before each outbound attempt
+- Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
+- Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
+- If landing page collects EU/UK traffic, require GDPR lawful-basis + DSAR deletion workflow
+
 ### Deep Market Research
 
 #### Top Life Insurance Search Keywords (U.S., 2024–2025)
@@ -403,12 +432,98 @@ The engine uses a three-role swarm:
 | Qualifier | `openai/gpt-4o-mini` | "Score this lead 1–10 for life insurance intent based on..." |
 | Compiler | `anthropic/claude-haiku` | "Format these qualified leads into a clean JSON array with fields: name, location, trigger, score, source_url" |
 
+### Layered Research Engine — Two AI Fleets
+
+To avoid shallow research quality, the research system is split into two independent fleets:
+
+1. **Fleet A — Research Swarm (Discovery Engine)**
+   - Scout agents gather market data, API options, pricing, keywords, and community pain points
+   - Specialist agents produce BOM tables, source-quality scoring, and monetization evidence
+   - Output: structured research JSON + WR draft sections with citations
+
+2. **Fleet B — Research QA/Code-Review Swarm (Verification Engine)**
+   - Reviews Fleet A outputs for unsupported claims, stale pricing, missing competitors, and compliance gaps
+   - Enforces required WR sections (keywords, BOM, competitor mechanics, complaints, monetization, citations)
+   - Output: pass/fail report with required fixes before WR is marked "research complete"
+
+**Gate rule:** No WR is considered complete until Fleet B approves Fleet A outputs.
+**Approval mechanism:** automated pass/fail checks write `research_quality_status=pass|fail` into a WR metadata block in the document (or companion `wr/metadata/<wr-slug>.json`) and post a PR summary comment; human override is restricted to repository maintainers and must be documented in both the PR comment and metadata record.
+
+### Data Architecture / DBA / Compliance Fleet Split
+
+For this engine, add dedicated operational fleets instead of overloading the research swarm:
+
+1. **Database Architecture Fleet** — defines lead schema, lookup tables, indexing/locking strategy, deduplication model, and reporting views
+2. **Database Admin / Reliability Fleet** — manages migrations, backups, retention jobs, concurrency safety, and audit logging
+3. **Compliance Operations Fleet** — maintains consent artifacts, TCPA/DNC checkpoints, suppression lists, and jurisdiction-specific policy changes
+4. **Revenue Delivery Fleet** — implements storefront delivery, PDF packaging, CRM/webhook dispatch, and subscription/reporting surfaces
+
+**Priority rule:** if community chatter shows TCPA/DNC complaints are a top buyer risk, the Compliance Operations Fleet ships before scale optimizations because legal/contactability failures destroy the product faster than slow throughput.
+
+### Recommended Lead Compliance Status Model
+
+Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status model derived from the lead source and evidence:
+
+| Lookup Table | Purpose |
+| --- | --- |
+| `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports |
+| `consent_basis_types` | Why contact is allowed |
+| `lead_source_types` | Source/channel normalization for routing and reporting |
+
+**Suggested values by lookup:**
+- `contact_eligibility_statuses`: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
+- `consent_basis_types`: `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none`
+- `lead_source_types`: `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor`
+
+**Recommended behavior:**
+- Landing-page quote requests start as `inbound_express_consent` **only after** storing consent text/version, timestamp, source URL/form ID, and suppression-check outcome
+- Public-record leads start as `outbound_public_record_requires_scrub`, not contact-ready, and move to `outbound_scrubbed_contact_ready` only after the relevant phone/SMS/email suppression and DNC checks pass for the intended outreach channel
+- Any complaint, revocation, or ambiguous source moves the lead to `manual_review_required` or `revoked_or_opted_out`
+- Reports for non-technical operators should display friendly labels from lookup tables, not raw booleans or magic numbers
+
+**Policy gate helper:** `isContactEligible(lead, checkpoint)` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) using the rules in this section. It must fail closed to `false`, emit an audit log entry, and route the record to manual review when status data is missing, invalid, or the suppression/DNC check errors.
+
+### Scoring Engine Pattern (Recommended)
+
+This WR should evolve from binary flags into a reusable scoring model. For TCPA/contactability, the system should calculate a **contactability confidence score** instead of relying on a yes/no field alone.
+
+**Recommended scoring dimensions:**
+- **Source quality:** official government record, first-party form fill, licensed vendor, or weak/unclear source
+- **Consent evidence:** signed/explicit opt-in, implied inquiry, public-record only, or missing consent proof
+- **Suppression risk:** DNC hit, internal opt-out, complaint history, or missing suppression check
+- **Freshness / recency:** how recent the event, inquiry, or verification is
+- **Data completeness:** required fields present, channel available, and identity sufficiently matched
+
+**Recommended output shape:**
+```json
+{
+  "contactability_score": 82,
+  "score_band": "high",
+  "decision": "allow_pre_export",
+  "top_factors": [
+    "first_party_quote_request",
+    "recent_consent_capture",
+    "suppression_checks_passed"
+  ],
+  "manual_review_required": false
+}
+```
+
+**Recommended governance:**
+- Use weighted factors with transparent scoring rules so operators can explain why a lead passed or failed
+- Keep score + status together: the score informs confidence, the status controls workflow gating
+- Require manual review below threshold bands or when critical evidence is missing
+- Persist factor-level reasons for auditability and future tuning
+
+**Generalization path:** the same scoring-engine pattern can be reused for SEO opportunity scoring, product viability scoring, research confidence scoring, lead intent scoring, and search/probability models in other domains. The pattern should stay consistent even when the weighted factors change by project.
+
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
 ```javascript
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
+const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific rules from the Recommended Lead Compliance Status Model section
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
@@ -417,11 +532,13 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. TCPA filter: only include leads flagged tcpa_compliant: true
-  const tcpaLeads = qualifiedLeads.filter(lead => lead.tcpa_compliant === true);
+  // 3. Contactability filter: see Recommended Lead Compliance Status Model above.
+  const contactableLeads = qualifiedLeads.filter((lead) =>
+    isContactEligible(lead, 'pre_export')
+  );
 
   // 4. Deduplicate: remove any leads already sold in previous batches
-  const newLeads = await deduplicateLeads(tcpaLeads);
+  const newLeads = await deduplicateLeads(contactableLeads);
 
   // 5. Compile Phase: take top batchSize leads and structure output
   const batch = newLeads.slice(0, batchSize);
@@ -431,7 +548,7 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   const pdfPath = await buildLeadPDF(output, { triggerType, state });
   await markLeadsAsSold(output);
 
-  console.log(`✅ ${output.length} TCPA-compliant leads compiled → ${pdfPath}`);
+  console.log(`✅ ${output.length} contact-eligible leads compiled → ${pdfPath}`);
 }
 ```
 
@@ -525,7 +642,11 @@ Each compiled lead record contains:
   "source": "county-deed-record",
   "source_url": "https://...",
   "verified": true,
-  "tcpa_compliant": true,
+  "contact_eligibility_status": "outbound_scrubbed_contact_ready",
+  "consent_basis": "public_record_with_manual_review",
+  "consent_timestamp": null,
+  "consent_proof_url": null,
+  "dnc_scrub_result": "pass",
   "pdf_batch_id": "TX-new-homeowner-2026-05-16-batch-001",
   "sold": false,
   "exported_at": "ISO-8601 timestamp"
@@ -588,7 +709,7 @@ Each compiled lead record contains:
 | Concern | Mitigation |
 |---------|------------|
 | PII handling | Only surface officially published public records and data returned by licensed API programs; no scraping of gated/private systems |
-| TCPA compliance | `tcpa_compliant: true/false` flag on every lead record; only leads with `tcpa_compliant: true` are included in exported PDFs; verified opt-out lists are filtered before each export |
+| TCPA compliance | Replace one-bit `tcpa_compliant` with lookup-backed `contact_eligibility_status`, `consent_basis`, and scrub metadata; only export leads whose status is approved at the current checkpoint, and rerun suppression/DNC checks before each outreach attempt |
 | CAN-SPAM | Do not include email addresses unless sourced from a confirmed opt-in channel |
 | FCRA | Lead PDFs are for sales/marketing outreach only; **not** for underwriting risk assessment, credit, employment, housing, or policy approval decisions |
 | LinkedIn ToS | LinkedIn data accessed **only** via LinkedIn's paid API program (~$100/mo) — no scraping of LinkedIn profiles |
@@ -596,8 +717,27 @@ Each compiled lead record contains:
 | Death / estate outreach | Only official county probate legal notices used; outreach must comply with applicable state solicitation laws |
 | Deduplication | Sold registry (`dist/leads/sold-registry.json`) ensures no contact is resold across PDF batches |
 
+### Credential Gateway & Service Status Ledger
+
+Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger consumable by Audrey UI:
+
+| Dependency | Type | Credential Source | Current Status | Renewal/Billing Risk | Fallback |
+|---|---|---|---|---|---|
+| OpenRouter | API | GitHub Secret / Doppler | `active` | Monitor quota/credits | Multi-model failover |
+| LinkedIn paid API | API | GitHub Secret / Doppler | `active` / `degraded` | Program limits + billing | Run without LinkedIn enrichment |
+| Doppler | Credential manager | Doppler project/token | `payment_required` / `trial_expiring` / `active` | Trial/plan expiration | GitHub Secrets emergency mode |
+| GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
+| Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
+
+**Implementation requirement:** expose this ledger in Audrey UI with semantic text statuses as canonical values (`Active`, `Degraded`, `Blocked`) and treat emoji (`✅`, `⚠️`, `⛔`) as optional decorative cues only (e.g., `aria-hidden="true"` on web UI), plus last-checked timestamp and owner action needed.
+
+**Owner action logic (required):**
+- `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days
+- Include `action_type` (`pay_invoice`, `rotate_key`, `upgrade_plan`, `restore_scope`) and `action_due_at`
+- Surface warning badges in Audrey UI and create a `Wr` issue automatically when due date is breached
+
 **Mandatory PDF Disclaimer (append to every exported PDF):**
-> *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
+> *"This lead list is compiled from publicly available government records, first-party inquiries, and licensed data sources, and is intended for life insurance sales and marketing outreach only. Each lead in this batch includes recorded contactability, consent/source, and suppression-screening metadata that must be revalidated at the point of use using the documented `pre_contact` checkpoint rules. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
 
 ---
 
@@ -641,6 +781,21 @@ Each compiled lead record contains:
    - Separate listings by state + trigger type + tier (warm / cold)  
    - Connect to artifact download delivery  
    - Effort: 1 hour
+
+7. **Implement research BOM generator + scorer**  
+   - Produce API/source BOM for each WR (`best_for`, cost model, limits, compliance notes)  
+   - Require per-source ranking and rationale before WR completion  
+   - Effort: 2–4 hours
+
+8. **Implement credential gateway status tracker**  
+   - Persist status for each API/CLI/MCP/GitHub App (active/degraded/blocked, last checked, billing state)  
+   - Surface in Audrey UI for at-a-glance operations visibility  
+   - Effort: 3–5 hours
+
+9. **Create reusable scoring-engine spec / WR**
+   - Define shared score primitives: factor, weight, threshold band, blocking condition, explanation trail
+   - Apply first to contactability/TCPA, then extend to SEO, product opportunity, and research confidence use cases
+   - Effort: 2–4 hours
 
 ### Short-Term Actions (Within 1–2 Weeks)
 

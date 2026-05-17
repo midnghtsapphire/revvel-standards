@@ -118,6 +118,7 @@ on:
 > - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
 > - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
 > - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
+> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
 >
 > An LLM agent must be able to answer every question in this template from live web research before implementation begins.
 
@@ -210,6 +211,22 @@ on:
 | [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
 | **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
 
+#### API / Data Source BOM (REQUIRED)
+
+**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
+
+If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
+
+| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
+|--------------|----------|-----------------|------------|-----------|------------------|------------------|
+| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+
+**BOM Decision:**
+- Primary provider stack: [choice + reason]
+- Secondary/fallback stack: [choice + reason]
+- Why this BOM is superior for this WR: [evidence]
+
 #### Community Chatter — What Users Dislike About Current Solutions
 
 **This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
@@ -268,6 +285,43 @@ on:
 - Inbound ROI: [Data + timeframe]
 - Outbound ROI: [Data + timeframe]
 - Recommended approach for this WR: [Recommendation with rationale]
+
+#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
+
+Define a layered research engine using two AI fleets:
+
+1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
+2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
+
+**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
+
+**Minimum pass criteria (required):**
+- All REQUIRED sections in Step 2 are present and non-empty
+- Zero unsupported factual claims in sampled checks
+- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
+- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
+
+**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions. Any threshold change must be approved by repository maintainers/standards owners per `docs/WEEKLY_RESEARCH_PROCESS.md` and documented in the PR.
+
+**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
+
+**Counting example:**
+- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
+- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
+- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
+
+**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
+
+**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
+
+#### Instruction Normalization (REQUIRED)
+
+User prompts and brainstorms are inputs, not immutable specs. Record:
+- What was accepted as-is
+- What was corrected/pivoted based on standards or evidence
+- What was rejected and why
+
+This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
 
 ---
 
