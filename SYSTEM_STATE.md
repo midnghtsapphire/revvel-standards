@@ -159,9 +159,9 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
-Last updated: 2026-05-17 21:15 UTC
+Last updated: 2026-05-17 21:20 UTC
 Updated by: Cursor
-Session summary: Resolved PR #13482 merge conflicts with main, categorized the life-insurance scoring concerns, added the Decision Scoring Engine standard, and corrected async eligibility pseudocode guidance.
+Session summary: Resolved PR #13482 merge conflicts with main, categorized the life-insurance scoring concerns, added the Decision Scoring Engine standard, corrected async eligibility pseudocode guidance, and made the advanced CodeQL workflow manual-only because default code scanning is enabled.
 
 Last updated: 2026-05-17 02:45 UTC
 Updated by: Cursor

@@ -1,12 +1,9 @@
 name: CodeQL
 
+# GitHub code scanning default setup is enabled for this repository. Keep this
+# advanced configuration manual-only so PRs do not upload duplicate SARIF.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: "20 3 * * 1"
+  workflow_dispatch:
 
 permissions:
   actions: read

@@ -299,10 +299,10 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Task Attempted:** Resolve PR #13482 merge-state conflicts and categorize the user's status/score/database architecture concerns from the review thread.
 
-**Outcome:** Success — merged current `main` into the branch, resolved add/add conflicts by keeping the hardened lead-engine implementation, added a Decision Scoring Engine standard, updated the WR template to require explicit scoring models, and corrected the lead-generation WR with async-safe eligibility pseudocode.
+**Outcome:** Success — merged current `main` into the branch, resolved add/add conflicts by keeping the hardened lead-engine implementation, added a Decision Scoring Engine standard, updated the WR template to require explicit scoring models, corrected the lead-generation WR with async-safe eligibility pseudocode, and made the advanced CodeQL workflow manual-only because default code scanning is already enabled.
 
 **Root Cause of Failure (If any):** GitHub reported `mergeStateStatus: DIRTY` because `main` had gained overlapping product/doc files after the branch was created. The WR also lacked a reusable decision-scoring contract, making it easy to discuss booleans, status, score, contactability, manual review, and tenant separation as separate concerns.
 
-**Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
+**Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. If CodeQL fails with "advanced configurations cannot be processed when the default setup is enabled," keep the advanced workflow manual-only or disable default setup; do not run both automatically. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
 
 **Next Action:** Confirm PR #13482 checks pass after the merge-resolution push.
