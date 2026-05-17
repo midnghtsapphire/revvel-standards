@@ -1,13 +1,22 @@
-// AI Research Engine - Multi-Agent Swarm
-// Standardized on google/gemini-2.5-pro across all sub-agents
-// Handles WR 13476: life insurance lead economics, current usage, community chatter
+#!/usr/bin/env node
+"use strict";
 
-const MODEL = 'google/gemini-2.5-pro';
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
+
+const MODEL = "google/gemini-2.5-pro";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const QUESTION = process.env.QUESTION;
+const OUTPUT_FILE = process.env.OUTPUT_FILE;
+
+const OPENROUTER_BASE = "openrouter.ai";
+const OPENROUTER_PATH = "/api/v1/chat/completions";
 
 const AGENTS = {
   competitive: {
     model: MODEL,
-    name: 'Competitive Intelligence Agent',
+    name: "Competitive Intelligence Agent",
     prompt: `You are a competitive intelligence analyst. For the given topic/domain:
 1. Identify top 5-10 direct competitors and incumbents
 2. Analyze current usage patterns - who is using these solutions today and how?
@@ -15,11 +24,11 @@ const AGENTS = {
 4. Identify gaps, weaknesses, and unmet needs in the market
 5. For life insurance lead vertical specifically: map carrier partnerships, lead aggregators, and distribution channels
 
-Return structured analysis with sources.`
+Return structured analysis with sources.`,
   },
   cost: {
     model: MODEL,
-    name: 'Cost & Lead Economics Agent',
+    name: "Cost & Lead Economics Agent",
     prompt: `You are a unit economics analyst specializing in lead generation markets, especially life insurance.
 Analyze:
 1. CPL (cost per lead) ranges across tiers: shared, semi-exclusive, exclusive, real-time, aged
@@ -29,11 +38,11 @@ Analyze:
 5. Infrastructure costs: traffic acquisition (Google/Meta/SEO), telephony, compliance (TCPA/Jornaya/Trusted Form), CRM
 6. Lead economics waterfall: from $X ad spend -> Y leads -> Z bound policies -> $W revenue
 
-Return quantified ranges with citations.`
+Return quantified ranges with citations.`,
   },
   community: {
     model: MODEL,
-    name: 'Community Chatter & Sentiment Agent',
+    name: "Community Chatter & Sentiment Agent",
     prompt: `You are a community/sentiment researcher. Mine Reddit, X/Twitter, HackerNews, niche forums, YouTube comments, Trustpilot, BBB, and industry slack/discord communities for:
 1. User sentiment about existing solutions - complaints, praise, switching triggers
 2. Recurring pain points and feature requests
@@ -41,11 +50,11 @@ Return quantified ranges with citations.`
 4. Consumer-side sentiment about life insurance shopping experience
 5. Notable threads, quotes (verbatim), and engagement signals
 
-Return organized by source with direct quotes and links.`
+Return organized by source with direct quotes and links.`,
   },
   technical: {
     model: MODEL,
-    name: 'Technical Feasibility Agent',
+    name: "Technical Feasibility Agent",
     prompt: `You are a technical architect. Assess:
 1. Required tech stack and build complexity
 2. Compliance requirements (TCPA, state insurance regulations, data privacy)
@@ -53,11 +62,11 @@ Return organized by source with direct quotes and links.`
 4. Defensible technical moats (data, models, distribution)
 5. Time-to-MVP and time-to-scale estimates
 
-Return pragmatic build plan.`
+Return pragmatic build plan.`,
   },
   market_size: {
     model: MODEL,
-    name: 'Market Sizing Agent',
+    name: "Market Sizing Agent",
     prompt: `You are a market sizing analyst. Provide:
 1. TAM/SAM/SOM with explicit methodology
 2. Growth rates and key tailwinds/headwinds
@@ -65,11 +74,11 @@ Return pragmatic build plan.`
 4. Geographic and demographic distribution
 5. Capture timeline and realistic 3-year revenue scenarios
 
-Return with citations.`
+Return with citations.`,
   },
   marketing_seo: {
     model: MODEL,
-    name: 'Marketing, SEO & Domain Value Agent',
+    name: "Marketing, SEO & Domain Value Agent",
     prompt: `You are a marketing and SEO strategist. Analyze:
 1. Top organic and paid search terms in the vertical (volume, CPC, intent, difficulty)
 2. Current marketing playbooks competitors use (SEO content, PPC, social, affiliate, influencer, direct mail, TV)
@@ -78,13 +87,13 @@ Return with citations.`
 5. Acquisition channel economics: estimated CAC by channel and scalability
 6. SERP composition and dominant publishers to displace or partner with
 
-Return keyword tables, domain shortlist, and channel plan.`
-  }
+Return keyword tables, domain shortlist, and channel plan.`,
+  },
 };
 
 const SYNTHESIZER = {
   model: MODEL,
-  name: 'Research Synthesizer',
+  name: "Research Synthesizer",
   prompt: `You are the lead research synthesizer. You will receive outputs from 6 specialist agents:
 - Competitive Intelligence
 - Cost & Lead Economics
@@ -120,61 +129,175 @@ Produce a final report in this EXACT format:
 ## 9. Risks & Open Questions
 ## 10. Sources
 
-Be specific, quantitative, and actionable. Cite sources inline.`
+Be specific, quantitative, and actionable. Cite sources inline.`,
 };
 
-async function runAgent(agent, topic, apiKey) {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: agent.model,
+function callOpenRouter(model, systemPrompt, userPrompt, apiKey = OPENROUTER_API_KEY) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      model,
       messages: [
-        { role: 'system', content: agent.prompt },
-        { role: 'user', content: `Research topic: ${topic}` }
-      ]
-    })
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+    });
+
+    const options = {
+      hostname: OPENROUTER_BASE,
+      path: OPENROUTER_PATH,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://github.com/midnghtsapphire",
+        "X-Title": "Revvel Research Module",
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.error) {
+            reject(new Error(`OpenRouter error: ${parsed.error.message || "Unknown error"}`));
+            return;
+          }
+          resolve(parsed.choices?.[0]?.message?.content ?? "");
+        } catch (err) {
+          reject(new Error(`Failed to parse OpenRouter response: ${err.message}\nRaw: ${data}`));
+        }
+      });
+    });
+
+    req.on("error", reject);
+    req.write(body);
+    req.end();
   });
-  const data = await res.json();
-  return {
-    agent: agent.name,
-    output: data.choices?.[0]?.message?.content || ''
-  };
 }
 
-async function runResearch(topic, apiKey) {
-  const agentKeys = Object.keys(AGENTS);
-  const results = await Promise.all(
-    agentKeys.map(k => runAgent(AGENTS[k], topic, apiKey))
+function buildSubAgents(question) {
+  return Object.values(AGENTS).map((agent) => ({
+    name: agent.name,
+    model: agent.model,
+    systemPrompt: agent.prompt,
+    userPrompt: `Research topic: ${question}`,
+  }));
+}
+
+function buildSynthesizerPrompt(question, reports) {
+  const reportsText = reports
+    .map((r) => `=== ${r.name.toUpperCase()} AGENT REPORT ===\n${r.content}`)
+    .join("\n\n");
+
+  return `${SYNTHESIZER.prompt}\n\nTopic: ${question}\n\nAgent outputs:\n\n${reportsText}`;
+}
+
+function formatDocument(question, synthesis, date) {
+  return `# Research: ${question.slice(0, 80)}${question.length > 80 ? "..." : ""}
+
+**Version:** 1.0.0
+**Date:** ${date}
+**Status:** Research Document
+**Author:** Revvel AI Research Module (multi-agent synthesis)
+**Generated by:** \`scripts/research-module.js\`
+**Related Standard:** \`AI_RESEARCH_MODULE_STANDARD.md\`
+
+---
+
+${synthesis}
+
+---
+
+*This document was generated by the Revvel AI Research Module using 6 specialized sub-agents via OpenRouter.*
+*Review and validate findings before acting on recommendations.*
+`;
+}
+
+async function runAgent(agent, topic, apiKey = OPENROUTER_API_KEY) {
+  const output = await callOpenRouter(agent.model, agent.prompt, `Research topic: ${topic}`, apiKey);
+  return { agent: agent.name, output };
+}
+
+async function runResearch(topic, apiKey = OPENROUTER_API_KEY) {
+  const results = await Promise.all(Object.values(AGENTS).map((agent) => runAgent(agent, topic, apiKey)));
+  const synthesisInput = results.map((r) => `## ${r.agent}\n\n${r.output}`).join("\n\n---\n\n");
+  const synthesis = await callOpenRouter(
+    SYNTHESIZER.model,
+    SYNTHESIZER.prompt,
+    `Topic: ${topic}\n\nAgent outputs:\n\n${synthesisInput}`,
+    apiKey
+  );
+  return { topic, agents: results, report: synthesis };
+}
+
+async function main() {
+  if (!OPENROUTER_API_KEY) {
+    console.error("ERROR: OPENROUTER_API_KEY environment variable is required.");
+    process.exit(1);
+  }
+  if (!QUESTION) {
+    console.error("ERROR: QUESTION environment variable is required.");
+    process.exit(1);
+  }
+  if (!OUTPUT_FILE) {
+    console.error("ERROR: OUTPUT_FILE environment variable is required.");
+    process.exit(1);
+  }
+
+  const date = new Date().toISOString().split("T")[0];
+  const subAgents = buildSubAgents(QUESTION);
+
+  const reports = await Promise.all(
+    subAgents.map(async (agent) => {
+      try {
+        const content = await callOpenRouter(agent.model, agent.systemPrompt, agent.userPrompt);
+        return { name: agent.name, content };
+      } catch (err) {
+        console.warn(`  ⚠️  [${agent.name}] Failed: ${err.message}`);
+        return { name: agent.name, content: `Agent failed: ${err.message}` };
+      }
+    })
   );
 
-  const synthesisInput = results
-    .map(r => `## ${r.agent}\n\n${r.output}`)
-    .join('\n\n---\n\n');
+  const synthPrompt = buildSynthesizerPrompt(QUESTION, reports);
+  let synthesis;
+  try {
+    synthesis = await callOpenRouter(SYNTHESIZER.model, SYNTHESIZER.prompt, synthPrompt);
+  } catch (err) {
+    console.error(`❌ Synthesis failed: ${err.message}`);
+    synthesis = reports.map((r) => `## ${r.name}\n\n${r.content}`).join("\n\n---\n\n");
+  }
 
-  const synthRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: SYNTHESIZER.model,
-      messages: [
-        { role: 'system', content: SYNTHESIZER.prompt },
-        { role: 'user', content: `Topic: ${topic}\n\nAgent outputs:\n\n${synthesisInput}` }
-      ]
-    })
-  });
-  const synthData = await synthRes.json();
-  return {
-    topic,
-    agents: results,
-    report: synthData.choices?.[0]?.message?.content || ''
-  };
+  const document = formatDocument(QUESTION, synthesis, date);
+  const outputPath = path.resolve(process.cwd(), OUTPUT_FILE);
+  const outputDir = path.dirname(outputPath);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  fs.writeFileSync(outputPath, document, "utf8");
 }
 
-module.exports = { AGENTS, SYNTHESIZER, MODEL, runAgent, runResearch };
+if (require.main === module) {
+  main().catch((err) => {
+    console.error("Fatal error:", err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  AGENTS,
+  SYNTHESIZER,
+  MODEL,
+  callOpenRouter,
+  buildSubAgents,
+  buildSynthesizerPrompt,
+  formatDocument,
+  runAgent,
+  runResearch,
+  main,
+};
