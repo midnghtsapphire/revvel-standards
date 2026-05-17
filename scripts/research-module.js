@@ -366,28 +366,27 @@ async function runAgent(agent, topic, apiKey) {
   const output = await callOpenRouter(agent.model, agent.prompt, buildTopicPrompt(topic), apiKey);
   return { name: agent.name, content: output };
 }
+  let results;
+  if (!tolerateAgentFailures) {
+    results = await Promise.all(agents.map((agent) => runAgent(agent, topic, apiKey)));
+  } else {
+    const settledResults = await Promise.allSettled(
+      agents.map((agent) => runAgent(agent, topic, apiKey))
+    );
 
-async function runResearch(topic, apiKey, options = {}) {
-  const { tolerateAgentFailures = false, onAgentFailure, onSynthesisFailure } = options;
-  const agents = Object.values(AGENTS);
-  const settledResults = await Promise.allSettled(
-    agents.map((agent) => runAgent(agent, topic, apiKey))
-  );
+    results = settledResults.map((result, index) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      }
 
-  const firstFailure = settledResults.find((result) => result.status === "rejected");
-  if (firstFailure && !tolerateAgentFailures) {
-    throw normalizeRejectionReason(firstFailure.reason);
+      const agent = agents[index];
+      const error = result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+      if (onAgentFailure) {
+        onAgentFailure(agent, error);
+      }
+      return { name: agent.name, content: `Agent failed: ${error.message}` };
+    });
   }
-
-  const results = settledResults.map((result, index) => {
-    if (result.status === "fulfilled") {
-      return result.value;
-    }
-
-    const agent = agents[index];
-    const error = normalizeRejectionReason(result.reason);
-    if (onAgentFailure) {
-      onAgentFailure(agent, error);
     }
     return { name: agent.name, content: `Agent failed: ${error.message}` };
   });
