@@ -27,10 +27,17 @@ This directory contains production-ready web applications created from research 
 **Revenue Model:** Affiliate commissions, sponsored placements, comparison reports  
 **Status:** ✅ Production Ready
 
+### 4. Revvel PromptForge
+**Location:** `prompt-generation-app/`  
+**Port:** 3006  
+**Description:** Research-backed prompt packet generator with source logs, competitor gaps, blue/red-ocean scoring, and code-review prompts  
+**Revenue Model:** $29 prompt packets, $99/month workspace, $499 setup service  
+**Status:** ✅ Production Ready
+
 ## 🛠️ Tech Stack
 
 All products use:
-- **Framework:** Next.js 14 with App Router
+- **Framework:** Next.js with App Router
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **Deployment:** Vercel (static export)
@@ -45,11 +52,13 @@ Run all products locally:
 cd affiliate-hub && npm install && cd ..
 cd ai-video-toolkit && npm install && cd ..
 cd screen-recorder-finder && npm install && cd ..
+cd prompt-generation-app && npm install && cd ..
 
 # Run development servers (in separate terminals)
 cd affiliate-hub && npm run dev &       # Port 3001
 cd ai-video-toolkit && npm run dev &    # Port 3002
 cd screen-recorder-finder && npm run dev &  # Port 3003
+cd prompt-generation-app && npm run dev &   # Port 3006
 ```
 
 ## 📦 Deployment

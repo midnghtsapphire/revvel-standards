@@ -232,6 +232,69 @@ function buildSubAgents(question) {
     systemPrompt: agent.prompt,
     userPrompt: buildTopicPrompt(question),
   }));
+  return [
+    {
+      name: "spec",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a technical specification researcher. Your job is to research official documentation, " +
+        "GitHub repos, and API references. Be precise, cite sources where possible, and focus on what " +
+        "the official documentation actually says — not community opinions.",
+      userPrompt:
+        `Research official documentation and specifications for the following question:\n\n${question}\n\n` +
+        "Provide your findings in plain text with clear sections: Key Facts, Limitations, Official Recommendations, Sources.",
+    },
+    {
+      name: "competitive",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a competitive analysis expert. Your job is to identify alternatives, compare trade-offs, " +
+        "and provide an objective assessment of the pros and cons of different approaches. Be balanced. Discovery involves what is being used now and what problem we are solving.",
+      userPrompt:
+        `Compare the main options and alternatives for:\n\n${question}\n\n` +
+        "Provide: Options Available, Pros of Each, Cons of Each, Best Use Case for Each, What is being used now, What problem we are solving.",
+    },
+    {
+      name: "security",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a security and compliance expert. Your job is to identify security risks, compliance " +
+        "implications, and best practices. Flag anything that could expose credentials, data, or systems.",
+      userPrompt:
+        `Analyze the security and compliance implications of:\n\n${question}\n\n` +
+        "Provide: Key Risks, Mitigations, Compliance Considerations, Security Best Practices.",
+    },
+    {
+      name: "cost",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a cost and operations analyst. Your job is to estimate costs, operational burden, " +
+        "and scaling characteristics of different approaches. Be specific with numbers where possible. Consider lead economics where applicable.",
+      userPrompt:
+        `Analyze the cost and operational factors for:\n\n${question}\n\n` +
+        "Provide: Cost Estimates, Operational Complexity, Scaling Considerations, Hidden Costs, How much per lead and why some are worth more.",
+    },
+    {
+      name: "community",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a community knowledge aggregator. Your job is to summarize what practitioners, " +
+        "developers, and the broader community say about this topic based on your training knowledge. " +
+        "Focus on real-world experience, chatter for life insurance leads and what's not liked, not marketing copy.",
+      userPrompt:
+        `Summarize real-world community experience, practitioner knowledge, and chatter about:\n\n${question}\n\n` +
+        "Provide: Common Pain Points, What Works Well, Common Pitfalls, Practitioner Tips, Chatter about leads and what's not liked.",
+    },
+    {
+      name: "marketing_seo",
+      model: "google/gemini-2.5-pro",
+      systemPrompt:
+        "You are a marketing and SEO expert. Your job is to provide better search to our research. Check most searched life insurance words and terms, best marketing being used now and how this would improve in our app, and facts and stats to determine a high value domain name.",
+      userPrompt:
+        `Analyze the marketing and SEO factors for:\n\n${question}\n\n` +
+        "Provide: Most searched words and terms, Best marketing being used now, How it improves the app, Facts and stats to determine a high value domain name.",
+    },
+  ];
 }
 
 function buildTopicPrompt(topic) {
@@ -247,6 +310,25 @@ function formatAgentReports(reports) {
   return reports
     .map((r) => `=== ${r.name.toUpperCase()} AGENT REPORT ===\n${r.content}`)
     .join("\n\n");
+
+  return (
+    `You are a research synthesizer. You have received reports from 6 specialized research agents on the following question:\n\n` +
+    `QUESTION: ${question}\n\n` +
+    `${reportsText}\n\n` +
+    `Your job is to synthesize all reports into a single comprehensive research document.\n\n` +
+    `Format the output as a Markdown document with these sections:\n` +
+    `1. Executive Summary (2-3 sentences answering the question directly)\n` +
+    `2. Recommendation (clear, actionable recommendation with reasoning)\n` +
+    `3. Options Compared (table or list comparing main options)\n` +
+    `4. Security Considerations\n` +
+    `5. Cost Analysis & Lead Economics\n` +
+    `6. Implementation Roadmap (phases with action items)\n` +
+    `7. Marketing, SEO & High Value Domains\n` +
+    `8. Community Chatter & User Sentiment\n` +
+    `9. Open Questions (things that need human decision)\n` +
+    `10. Sources and References\n\n` +
+    `Be specific. Include concrete steps, commands, or code snippets where helpful. Flag any contradictions between agents.`
+  );
 }
 
 function normalizeRejectionReason(reason) {
@@ -319,6 +401,15 @@ async function runResearch(topic, apiKey, options = {}) {
       synthesisSystemPrompt,
       synthesisInput,
       apiKey
+  // Synthesize
+  console.log(`\n🧠 Synthesizing with google/gemini-2.5-pro...`);
+  const synthPrompt = buildSynthesizerPrompt(QUESTION, reports);
+  let synthesis;
+  try {
+    synthesis = await callOpenRouter(
+      "google/gemini-2.5-pro",
+      "You are an expert research synthesizer. Produce clear, structured, actionable documentation.",
+      synthPrompt
     );
   } catch (err) {
     if (onSynthesisFailure) {

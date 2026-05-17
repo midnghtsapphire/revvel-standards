@@ -380,9 +380,21 @@ labels:
     description: "Visible on 49Agents monitoring dashboard"
 
   # ── Weekly Research (WR) workflow ──────────────────────────────────────────
+  - name: work-request
+    color: "1d76db"
+    description: "Work Request intake issue"
+
   - name: weekly-research
     color: "fbca04"
     description: "Weekly research task requiring deep investigation"
+
+  - name: quick
+    color: "c2e0c6"
+    description: "Lightweight quick/internal WR"
+
+  - name: OpenHands
+    color: "5319e7"
+    description: "Route to OpenHands-capable automation"
 
   - name: "wr:in-progress"
     color: "f9d71c"
@@ -391,6 +403,75 @@ labels:
   - name: "wr:complete"
     color: "0e8a16"
     description: "WR task completed with findings documented"
+
+  # -- Research Engine Orchestrator --------------------------------------------
+  - name: research-engine
+    color: "6f42c1"
+    description: "Route to layered research engine"
+
+  - name: "research:orchestrating"
+    color: "fbca04"
+    description: "Research engine is coordinating lanes"
+
+  - name: "research:blocked"
+    color: "b60205"
+    description: "Research engine blocked by missing input"
+
+  - name: "research:complete"
+    color: "0e8a16"
+    description: "Research packet generated"
+
+  - name: "research:review-needed"
+    color: "0075ca"
+    description: "Research needs code-review agents"
+
+  - name: "research:marketing"
+    color: "ff6b6b"
+    description: "Marketing lane assigned"
+
+  - name: "research:seo"
+    color: "3ddcff"
+    description: "SEO demand lane assigned"
+
+  - name: "research:competitors"
+    color: "1a73e8"
+    description: "Competitor intelligence lane"
+
+  - name: "research:chatter"
+    color: "f7c948"
+    description: "Audience chatter lane"
+
+  - name: "research:facts"
+    color: "5319e7"
+    description: "Factual validation lane"
+
+  - name: "research:technical"
+    color: "8b5cf6"
+    description: "Technical delivery lane"
+
+  - name: "research:revenue"
+    color: "22c55e"
+    description: "Revenue mechanics lane"
+
+  - name: "research:reviewer"
+    color: "d93f0b"
+    description: "Research review and auto-fix lane"
+
+  - name: competitor-research
+    color: "1a73e8"
+    description: "Trigger competitor research lane"
+
+  - name: audience-research
+    color: "f7c948"
+    description: "Trigger audience research lane"
+
+  - name: chatter-research
+    color: "f59e0b"
+    description: "Trigger social chatter research lane"
+
+  - name: code-review
+    color: "0b6fff"
+    description: "Route to code-review agents"
 
   # ── Agent HQ / Desktop Agent ───────────────────────────────────────────────
   - name: agent-hq

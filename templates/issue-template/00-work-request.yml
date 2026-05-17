@@ -3,6 +3,7 @@ description: Request scoped work with explicit bundled expectations, output type
 title: "[WR] "
 labels:
   - work-request
+  - weekly-research
 body:
   - type: markdown
     attributes:
@@ -13,6 +14,8 @@ body:
 
         Important:
         - **Output Type** below controls what you are asking for (app, CLI, API, PDF, docs, invention, etc.).
+        - When Output Type is **sellable-pdf**, use **PDF pipeline batch** (Not applicable / Autocreate 3 / Autocreate 20).
+          The full playbook is **form-driven** from those fields (`workflows/PDF_WR_PLAYBOOK.md`); do not rely on hand-picked labels for routing.
         - This form should describe the complete operational unit, not the smallest acceptable patch.
         - If documentation, discoverability, reminders, and a bug fix belong together, list them together here.
         - The PR should mirror this request and must not silently omit explicitly requested items.
@@ -34,6 +37,21 @@ body:
         - mcp-product
         - api-product
         - invention-flow
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pdf_pipeline_batch
+    attributes:
+      label: PDF pipeline batch
+      description: >
+        Only applies when Output Type is sellable-pdf: how many AI-generated product concepts or outline
+        variants to produce before you pick one to ship (your external Make/n8n/Zapier/Gumloop flow should read this
+        count from the issue body — see workflows/PDF_WR_PLAYBOOK.md). For every other output type, choose Not applicable.
+      options:
+        - Not applicable
+        - Autocreate 3
+        - Autocreate 20
     validations:
       required: true
 
