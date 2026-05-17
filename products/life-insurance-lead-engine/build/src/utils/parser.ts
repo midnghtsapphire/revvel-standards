@@ -1,85 +1,35 @@
 import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
+import * as XLSX from '@e965/xlsx';
 
-export interface Lead {
-  id?: string;
-  name?: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  [key: string]: string | number | undefined;
+export interface ParsedRow {
+  [key: string]: string;
 }
 
-export const parseFile = async (file: File): Promise<Lead[]> => {
+export async function parseFile(file: File): Promise<ParsedRow[]> {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  if (ext === 'csv') return parseCSV(file);
+  if (ext === 'xls' || ext === 'xlsx') return parseExcel(file);
+  throw new Error('Unsupported file type. Use CSV or Excel.');
+}
+
+function parseCSV(file: File): Promise<ParsedRow[]> {
   return new Promise((resolve, reject) => {
-    const isCsv = file.name.endsWith('.csv');
-
-    if (isCsv) {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          resolve(normalizeData(results.data as Record<string, string | number | undefined>[]));
-        },
-        error: (error) => {
-          reject(error);
-        }
-      });
-    } else {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = e.target?.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          const json = XLSX.utils.sheet_to_json(worksheet);
-          resolve(normalizeData(json as Record<string, string | number | undefined>[]));
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = (error) => reject(error);
-      reader.readAsBinaryString(file);
-    }
+    Papa.parse<ParsedRow>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => resolve(results.data),
+      error: (err) => reject(err),
+    });
   });
-};
+}
 
-const normalizeData = (data: Record<string, string | number | undefined>[]): Lead[] => {
-  return data.map((row, index) => {
-    const normalized: Lead = { ...row, id: index.toString() };
+async function parseExcel(file: File): Promise<ParsedRow[]> {
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, { type: 'array' });
+  const sheet = wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json<ParsedRow>(sheet, { defval: '' });
+}
 
-    // Find name fields (case insensitive)
-    const keys = Object.keys(row);
-    const findKey = (search: string[]) => keys.find(k => search.some(s => k.toLowerCase().includes(s)));
-
-    const nameKey = findKey(['name', 'full name']);
-    const firstNameKey = findKey(['first name', 'fname', 'first_name']);
-    const lastNameKey = findKey(['last name', 'lname', 'last_name']);
-    const emailKey = findKey(['email', 'e-mail']);
-    const phoneKey = findKey(['phone', 'mobile', 'cell']);
-
-    if (nameKey) normalized.name = String(row[nameKey]);
-    if (firstNameKey) normalized.first_name = String(row[firstNameKey]);
-    if (lastNameKey) normalized.last_name = String(row[lastNameKey]);
-    if (emailKey) normalized.email = String(row[emailKey]).toLowerCase().trim();
-
-    // Clean phone number
-    if (phoneKey) {
-      const phone = String(row[phoneKey]).replace(/\D/g, '');
-      normalized.phone = phone;
-    }
-
-    // Combine first/last if name is missing
-    if (!normalized.name && normalized.first_name && normalized.last_name) {
-      normalized.name = `${normalized.first_name} ${normalized.last_name}`;
-    }
-
-    return normalized;
-  });
-};
+export function rowsToCSV(rows: ParsedRow[]): string {
+  return Papa.unparse(rows);
+}

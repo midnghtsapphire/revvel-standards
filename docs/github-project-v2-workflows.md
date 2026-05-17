@@ -189,9 +189,10 @@ behavior differs by which credential is missing:
 ## Issue template structure
 
 The `New Issue` chooser shows two cards, both of which apply the
-`work-request` label so the auto-classifier and downstream automation
-(`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat
-them identically. Numeric prefixes force the sort order per
+`work-request` and `weekly-research` labels so the auto-classifier and
+downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project
+v2 board sync) treat them identically. WR workflows also accept the BASIC WR
+issue type and normalize missing labels. Numeric prefixes force the sort order per
 [GitHub's documented ordering rules][gh-template-order].
 
 - `.github/ISSUE_TEMPLATE/00-work-request.yml` — primary, anti-under-scoping

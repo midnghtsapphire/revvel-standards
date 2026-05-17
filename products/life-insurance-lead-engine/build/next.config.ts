@@ -1,7 +1,14 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const appDir = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  turbopack: {
+    root: appDir,
+  },
 };
 
 export default nextConfig;

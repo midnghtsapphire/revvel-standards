@@ -1,180 +1,120 @@
-import React, { useState } from 'react';
-import Papa from 'papaparse';
-import { Download, Loader2, Search } from 'lucide-react';
-import { scrapeNpi, ScrapedLead } from '@/api/npiScraper';
+'use client';
+
+import { useState } from 'react';
+import { fetchNPIByZip, leadsToCSV, generatePitchScript, type NPIProvider } from '@/api/npiScraper';
 
 export default function LeadGenerator() {
-  const [zipCodes, setZipCodes] = useState('92624, 92629, 92675, 92672, 92673');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedLeads, setGeneratedLeads] = useState<ScrapedLead[]>([]);
+  const [zips, setZips] = useState('90210, 10001, 33139');
+  const [leads, setLeads] = useState<NPIProvider[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = async () => {
-    setIsGenerating(true);
+  async function run() {
+    setLoading(true);
     setError(null);
-    setGeneratedLeads([]);
-
-    const zips = zipCodes.split(',').map(z => z.trim()).filter(z => z.length > 0);
-
     try {
-      const leads = await scrapeNpi(zips);
-      // Sort by priority tier A -> B -> C
-      leads.sort((a, b) => a.priority_tier.localeCompare(b.priority_tier));
-      setGeneratedLeads(leads);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate leads');
+      const zipList = zips.split(',').map(z => z.trim()).filter(Boolean);
+      const all: NPIProvider[] = [];
+      for (const z of zipList) {
+        const r = await fetchNPIByZip(z, 50);
+        all.push(...r);
+      }
+      all.sort((a, b) => a.tier.localeCompare(b.tier));
+      setLeads(all);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
-      setIsGenerating(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const getPitchScript = (specialty: string, tier: string) => {
-    if (tier === 'A') {
-      if (specialty.includes('Surgery') || specialty.includes('Orthopedic')) {
-        return "Disability income + key person life ('their hands are the business')";
-      }
-      if (specialty.includes('Cardio') || specialty.includes('Medicine')) {
-        return "Estate planning + buy-sell agreements";
-      }
-      if (specialty.includes('Anesthesiology')) {
-        return "1099 contractors often need their own life + disability stack";
-      }
-      if (specialty.includes('Dermatology')) {
-        return "Cash-flow heavy, great IUL/whole life candidates for tax-advantaged cash value";
-      }
-    }
-    if (tier === 'B' && specialty.includes('odont')) {
-      return "Practice loan collateral life + family protection IUL";
-    }
-    return "Tax-advantaged retirement via IUL or whole life cash value (practice owners)";
-  };
-
-  const downloadGeneratedCsv = () => {
-    if (generatedLeads.length === 0) return;
-
-    const csvData = generatedLeads.map(lead => ({
-      'Tier': lead.priority_tier,
-      'First Name': lead.first_name,
-      'Last Name': lead.last_name,
-      'Credential': lead.credential,
-      'Specialty': lead.specialty,
-      'Practice Name': lead.practice_name,
-      'Phone': lead.phone,
-      'Address': lead.address,
-      'Zip': lead.zip,
-      'Pitch Angle': getPitchScript(lead.specialty, lead.priority_tier),
-      'Call Status': '',
-      'Notes': ''
-    }));
-
-    const csv = Papa.unparse(csvData);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  function download() {
+    const csv = leadsToCSV(leads);
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'high_value_medical_leads.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'high_value_medical_leads.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const tierCount = (t: 'A' | 'B' | 'C') => leads.filter(l => l.tier === t).length;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Generate High-Value Medical Leads</h2>
-      <p className="text-sm text-gray-600 mb-6">
-        Pulls top-tier prospects directly from the NPPES NPI Registry for specified zip codes. Automatically scores and provides tailored pitch scripts.
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-2xl font-semibold mb-4">🎯 NPI Lead Generator</h2>
+      <p className="text-sm text-slate-600 mb-4">
+        Enter ZIP codes (comma-separated) to pull medical professionals from the public NPPES Registry.
+        Leads are auto-scored: <strong>Tier A</strong> (surgeons, specialists) → <strong>Tier C</strong> (general practice).
       </p>
-
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="zipcodes" className="block text-sm font-medium text-gray-700">Target Zip Codes (comma separated)</label>
-          <div className="mt-1 flex rounded-md shadow-sm">
-            <input
-              type="text"
-              name="zipcodes"
-              id="zipcodes"
-              className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md sm:text-sm border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-              value={zipCodes}
-              onChange={(e) => setZipCodes(e.target.value)}
-              placeholder="e.g. 92624, 92629"
-            />
-          </div>
-        </div>
-
+      <div className="flex gap-2 mb-4">
+        <input
+          className="flex-1 border rounded px-3 py-2"
+          value={zips}
+          onChange={(e) => setZips(e.target.value)}
+          placeholder="90210, 10001, 33139"
+        />
         <button
-          onClick={handleGenerate}
-          disabled={isGenerating}
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
+          onClick={run}
+          disabled={loading}
+          className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark disabled:opacity-50"
         >
-          {isGenerating ? (
-            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gathering Leads...</>
-          ) : (
-            <><Search className="w-4 h-4 mr-2" /> Generate Leads</>
-          )}
+          {loading ? 'Searching…' : 'Generate Leads'}
         </button>
+      </div>
 
-        {error && (
-          <div className="text-sm text-red-600 mt-2">{error}</div>
-        )}
+      {error && <div className="text-red-600 mb-4">{error}</div>}
 
-        {generatedLeads.length > 0 && (
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between items-center bg-gray-50 p-4 rounded-md border border-gray-200">
-              <div>
-                <span className="text-2xl font-bold text-gray-900">{generatedLeads.length}</span>
-                <span className="text-sm text-gray-500 ml-2">High-Value Prospects Found</span>
-              </div>
-              <button
-                onClick={downloadGeneratedCsv}
-                className="flex items-center text-sm font-medium text-green-600 hover:text-green-700 bg-green-50 px-3 py-1.5 rounded-md border border-green-200"
-              >
-                <Download className="w-4 h-4 mr-1" /> Export CSV with Scripts
-              </button>
-            </div>
+      {leads.length > 0 && (
+        <div>
+          <div className="flex gap-4 mb-4 text-sm">
+            <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded">Tier A: {tierCount('A')}</span>
+            <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded">Tier B: {tierCount('B')}</span>
+            <span className="bg-slate-100 text-slate-800 px-3 py-1 rounded">Tier C: {tierCount('C')}</span>
+            <button onClick={download} className="ml-auto bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700">
+              ⬇ Download CSV ({leads.length})
+            </button>
+          </div>
 
-            <div className="text-sm text-gray-700 border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
-              <p className="font-semibold mb-1">Cold Call Strategy:</p>
-              <p>These are practice phones. Ask for &quot;Dr. [Last Name]&quot;. The front desk will gatekeep. Mention you&apos;re a &quot;licensed life insurance specialist calling about high-net-worth physician planning&quot;.</p>
-            </div>
-
-            <div className="overflow-x-auto border border-gray-200 rounded-md">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialty</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pitch Angle</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-100">
+                <tr>
+                  <th className="p-2 text-left">Tier</th>
+                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Specialty</th>
+                  <th className="p-2 text-left">Phone</th>
+                  <th className="p-2 text-left">City</th>
+                  <th className="p-2 text-left">Pitch</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leads.slice(0, 10).map(l => (
+                  <tr key={l.npi} className="border-t">
+                    <td className="p-2 font-bold">{l.tier}</td>
+                    <td className="p-2">{l.firstName} {l.lastName} {l.credential}</td>
+                    <td className="p-2">{l.specialty}</td>
+                    <td className="p-2">{l.phone}</td>
+                    <td className="p-2">{l.city}, {l.state}</td>
+                    <td className="p-2 text-xs text-slate-600">{l.pitchAngle}</td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {generatedLeads.slice(0, 10).map((lead) => (
-                    <tr key={lead.id}>
-                      <td className="px-4 py-3 text-sm">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          lead.priority_tier === 'A' ? 'bg-red-100 text-red-800' :
-                          lead.priority_tier === 'B' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
-                          Tier {lead.priority_tier}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">Dr. {lead.last_name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500">{lead.specialty}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500 truncate max-w-xs" title={getPitchScript(lead.specialty, lead.priority_tier)}>
-                        {getPitchScript(lead.specialty, lead.priority_tier)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {generatedLeads.length > 10 && (
-              <p className="text-center text-xs text-gray-500 mt-2">Showing top 10 results. Export CSV to see all {generatedLeads.length} leads.</p>
+                ))}
+              </tbody>
+            </table>
+            {leads.length > 10 && (
+              <p className="text-xs text-slate-500 mt-2">Showing top 10 of {leads.length}. Download CSV for all leads + full pitch scripts.</p>
             )}
           </div>
-        )}
-      </div>
+
+          {leads[0] && (
+            <details className="mt-4 bg-slate-50 p-4 rounded">
+              <summary className="cursor-pointer font-semibold">Sample Pitch Script (Tier {leads[0].tier})</summary>
+              <p className="mt-2 text-sm italic">{generatePitchScript(leads[0])}</p>
+            </details>
+          )}
+        </div>
+      )}
     </div>
   );
 }

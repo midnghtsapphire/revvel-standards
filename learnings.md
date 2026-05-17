@@ -158,6 +158,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T01:40Z
+
+**Task Attempted:** Build and validate Revvel PromptForge prompt-generation app.
+
+**Outcome:** Success - Added a static Next.js prompt-generation product with source-backed packet generation, market research docs, root tests, dashboard refresh, and passing product lint/build, root `npm test`, and workflow validation.
+
+**Root Cause of Failure (If any):** Two validation mistakes recurred during the session: a root test was launched from the product directory, causing `MODULE_NOT_FOUND`, and root `npm test` initially failed because root `node_modules` was not installed (`Cannot find module 'yaml'`). Product lint also caught a React 19 compiler rule violation from setting state in an effect and a JSX apostrophe escaping issue.
+
+**Self-Healing Fix / Learned Lesson:** Run root tests from `/workspace` and product checks from the product root as separate commands. If root tests fail on `yaml`, run `npm ci` at `/workspace` before retrying. For accessibility preferences in client components, initialize state lazily from `localStorage` with a `typeof window` guard instead of setting state synchronously inside `useEffect`. Set `outputFileTracingRoot` in product-level Next apps with their own lockfile to avoid workspace-root inference warnings.
+
+**Next Action:** None for PromptForge; continue monitoring PR #13503 validation.
+
+---
+
 **Date/Time:** 2026-05-16T23:23Z
 
 **Task Attempted:** Verify and fix Affiliate Hub dependency regression below the patched Next.js/PostCSS security floor.
@@ -228,6 +242,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T02:45:00Z
+
+**Task Attempted:** Fix PR #13482 merge readiness for the Life Insurance Lead Engine after cubic identified the newsletter opt-out compliance mismatch.
+
+**Outcome:** Success — added a real local newsletter opt-out path, corrected the product README compliance claim, removed incomplete-work language, upgraded the product dependency/tooling stack, and verified `npm run typecheck`, `npm run lint`, `npm run build`, and `npm audit` all pass in `products/life-insurance-lead-engine/build`.
+
+**Root Cause of Failure (If any):** The original newsletter component only set a submitted flag and contained an unwired integration TODO while product docs claimed GDPR/CCPA opt-out support. Validation also exposed stale package choices: an old vulnerable Next.js version, vulnerable `xlsx`, no lockfile for auditability, and a lint script tied to the removed `next lint` command.
+
+**Self-Healing Fix / Learned Lesson:** PR review fixes should validate the changed app, not only the reviewed line. For Next 16 apps, use `eslint .` with the flat `eslint-config-next` exports, run `next typegen` before direct `tsc --noEmit`, set `turbopack.root` for nested product apps, and replace abandoned vulnerable packages (`xlsx`) with maintained patched forks (`@e965/xlsx`) when API-compatible.
+
+**Next Action:** Merge PR #13482 after CI confirms the pushed branch.
+
+---
+
 **Date/Time:** 2026-05-17T01:20Z
 
 **Task Attempted:** Implement the whole WR research/search engine requested from GitHub context.
@@ -239,3 +267,42 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For research WRs, implement the orchestrator as executable automation plus a standard, not only prompt text. Make label sync consume `.github/labels.yml` directly so new engine labels do not drift from the hard-coded sync workflow. When `npm run workflows:validate` fails on missing timeouts, add the job timeouts immediately because that is a code/config blocker, not a research blocker. If `OPENROUTER_API_KEY` is missing, the engine should write a visible infrastructure-blocker packet and label the item instead of silently failing.
 
 **Next Action:** Monitor PR #13499 review/CI and merge after reviewer approval.
+
+---
+
+**Date/Time:** 2026-05-17T01:37Z
+
+**Task Attempted:** Fix BASIC WR intake labels after WR PR Creation skipped issues selected from GitHub.
+
+**Outcome:** Success - BASIC WR/work-request intake is now label-resilient: active and portable templates apply `work-request` + `weekly-research`, canonical labels include the template labels, WR workflows accept BASIC WR issue types and normalize missing labels, and tests/workflow validation pass.
+
+**Root Cause of Failure (If any):** The issue templates referenced labels (`work-request`, `quick`, `OpenHands`) that were missing from the canonical label sync file, and `wr-pr-creation.yml` only treated `[WR]`/`weekly-research` as WR signals. If GitHub issue-type/template selection arrived without the expected label set, the workflow could post a skip notice instead of creating the WR PR. The workflow also had a stray closing brace in a github-script block that YAML validation did not catch.
+
+**Self-Healing Fix / Learned Lesson:** For GitHub issue-form automation, define every template label in `.github/labels.yml`, include the downstream trigger label directly on the template when possible, and make workflows accept multiple stable WR signals (`[WR]`, `work-request`, `weekly-research`, BASIC WR issue type). Add github-script compile guards for critical workflow blocks because YAML parsing alone cannot detect JavaScript syntax errors embedded in actions/github-script steps.
+
+**Next Action:** Monitor PR #13501 CI/review and merge after approval.
+**Date/Time:** 2026-05-17T02:04Z
+
+**Task Attempted:** Complete Perplexity integration without requiring `PERPLEXITY_API_KEY`.
+
+**Outcome:** Success - The Perplexity research workflow now installs `helallao/perplexity-ai` from GitHub, calls the fork through a no-key Python bridge, registers a disabled no-key MCP entry, removes the Credential Gatekeeper Perplexity secret blocker, and passes focused integration tests, workflow validation, and the root test suite.
+
+**Root Cause of Failure (If any):** The first validation attempt failed before workflow parsing because root dependencies were not installed (`Cannot find module 'yaml'` from `scripts/automation-doctor.js`). Due diligence also found the fork contains Emailnator/account-generation paths and an upstream issue reporting empty anonymous `Client.search()` responses, so a direct unfiltered integration would have been unreliable and unsafe.
+
+**Self-Healing Fix / Learned Lesson:** For no-key Perplexity work, use only the anonymous Labs/Web query paths from `helallao/perplexity-ai`; do not wire Emailnator or generated-account logic into Revvel automation. Prefer `LabsClient(..., model="sonar")` first and fall back to `Client.search(..., mode="auto")` because upstream issue #70 documents `Client.search()` instability. If workflow/root tests fail on missing `yaml`, run `npm ci` at `/workspace` and rerun validation.
+
+**Next Action:** None for the no-key Perplexity integration; monitor PR #13507 validation.
+
+---
+
+**Date/Time:** 2026-05-17T21:15:00Z
+
+**Task Attempted:** Resolve PR #13482 merge-state conflicts and categorize the user's status/score/database architecture concerns from the review thread.
+
+**Outcome:** Success — merged current `main` into the branch, resolved add/add conflicts by keeping the hardened lead-engine implementation, added a Decision Scoring Engine standard, updated the WR template to require explicit scoring models, corrected the lead-generation WR with async-safe eligibility pseudocode, and made the advanced CodeQL workflow manual-only because default code scanning is already enabled.
+
+**Root Cause of Failure (If any):** GitHub reported `mergeStateStatus: DIRTY` because `main` had gained overlapping product/doc files after the branch was created. The WR also lacked a reusable decision-scoring contract, making it easy to discuss booleans, status, score, contactability, manual review, and tenant separation as separate concerns.
+
+**Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. If CodeQL fails with "advanced configurations cannot be processed when the default setup is enabled," keep the advanced workflow manual-only or disable default setup; do not run both automatically. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
+
+**Next Action:** Confirm PR #13482 checks pass after the merge-resolution push.

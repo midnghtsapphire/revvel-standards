@@ -3,6 +3,7 @@ description: Lightweight WR for low-risk, internal, or agent-driven work. The au
 title: "[WR] "
 labels:
   - work-request
+  - weekly-research
   - quick
   - OpenHands
 body:

@@ -39,8 +39,10 @@ jobs:
       - name: Check Perplexity agent
         id: perplexity
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/" \
-            -H "Authorization: Bearer $PERPLEXITY_API_KEY" 2>&1 || echo "000")
+          # Perplexity research now uses the no-key helallao/perplexity-ai fork.
+          # Health here tracks upstream availability instead of a paid API secret.
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/helallao/perplexity-ai" \
+            2>&1 || echo "000")
           
           if [[ "$response" == "200" ]]; then
             echo "perplexity=healthy" >> $GITHUB_OUTPUT
@@ -131,7 +133,7 @@ jobs:
           | Agent | Status | Action |
           |-------|--------|--------|
           | OpenRouter | CHECK | Verify API key |
-          | Perplexity | CHECK | Verify billing |
+          | Perplexity | CHECK | Verify no-key fork install/upstream availability |
           | Jules | CHECK | Enable if disabled |
 
           This WR auto-closes when agents recover.

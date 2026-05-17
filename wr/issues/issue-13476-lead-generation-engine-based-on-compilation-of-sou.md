@@ -221,6 +221,73 @@ Life insurance lead generation is a high-value vertical where qualified, high-in
 **Missing:**
 - Automated retry on web scraping or OpenRouter API limits.
 
+### Decision Scoring Model Gate
+
+**Categorization of the merge-thread concerns:**
+
+| Concern | Category | Resolution |
+|---|---|---|
+| Newsletter README claimed opt-out without a matching implementation | Product compliance | Fixed in PR #13482 by adding a visible local opt-out flow and narrowing README language. |
+| Three close-together flags for contact decisions | Decision correctness | Use status plus score together: status gates the workflow, score captures confidence and tuning data. |
+| `isContactEligible` used inside synchronous `.filter()` while also auditing/routing review | Async workflow safety | Eligibility must be evaluated asynchronously before filtering. |
+| Need client/company separation and rate/confidence lookup tables | Enterprise governance | Route future database design through the decision-scoring standard with tenant boundaries and approval gates. |
+
+**Scoring Standard:** [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../../standards/DECISION_SCORING_ENGINE_STANDARD.md)
+
+**Model Name:** `life_insurance_contactability_v1`
+
+**Status Values:**
+- `eligible` — safe to export to licensed agents.
+- `manual_review` — ambiguous or regulated contactability signal; do not export until reviewed.
+- `blocked` — not contactable or insufficient lawful basis.
+- `suppressed` — opted out, deleted, or do-not-contact.
+
+**Score Range:** 0-100
+
+**Weighted Factors:**
+| Factor | Weight | Source | Why it matters |
+|---|---:|---|---|
+| Public professional listing quality | 0.25 | NPPES/public directories | Confirms identity and profession. |
+| Contact channel confidence | 0.25 | Public phone/email/address fields | Reduces bad exports. |
+| TCPA/contactability risk | 0.25 | Consent, do-not-contact, source restrictions | Prevents unsafe outreach. |
+| Policy fit / revenue fit | 0.15 | Specialty, location, practice type | Prioritizes high-value licensed-agent follow-up. |
+| Freshness | 0.10 | Source timestamp / fetch date | Avoids stale lead lists. |
+
+**Threshold Bands:**
+| Score Range | Status | Action |
+|---|---|---|
+| 80-100 | `eligible` | Export with explanation trail. |
+| 50-79 | `manual_review` | Write audit event and route for review. |
+| 1-49 | `blocked` | Suppress from export and preserve reason. |
+| 0 | `suppressed` | Respect opt-out/delete/do-not-contact. |
+
+**Async-safe eligibility pseudocode:**
+
+```ts
+type ContactDecision = {
+  lead: Lead;
+  status: 'eligible' | 'manual_review' | 'blocked' | 'suppressed';
+  score: number;
+  reasons: string[];
+};
+
+async function evaluateContactEligibility(lead: Lead): Promise<ContactDecision> {
+  const decision = await scoreContactability(lead);
+  await emitAuditLog(decision);
+
+  if (decision.status === 'manual_review') {
+    await routeRecordToManualReview(decision);
+  }
+
+  return decision;
+}
+
+const decisions = await Promise.all(leads.map(evaluateContactEligibility));
+const exportableLeads = decisions
+  .filter((decision) => decision.status === 'eligible')
+  .map((decision) => decision.lead);
+```
+
 ### Ship to Market Status
 
 **Current Status:** Ready for Implementation

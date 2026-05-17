@@ -218,6 +218,51 @@
 - [Feature 1]: [Description and priority]
 - [Feature 2]: [Description and priority]
 
+### Decision Scoring Model Gate
+
+> Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
+> Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
+
+**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
+
+**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
+
+**Status Values:**
+- [ ] `eligible`
+- [ ] `manual_review`
+- [ ] `blocked`
+- [ ] `suppressed`
+- [ ] Other: [define]
+
+**Score Range:** 0-100
+
+**Weighted Factors:**
+| Factor | Weight | Source | Why it matters |
+|---|---:|---|---|
+| [factor] | [0.00] | [input/source] | [reason] |
+
+**Threshold Bands:**
+| Score Range | Status | Action |
+|---|---|---|
+| 80-100 | eligible | [export/route/approve] |
+| 50-79 | manual_review | [review queue] |
+| 0-49 | blocked | [suppress/reject] |
+
+**Audit Trail Required:**
+- [ ] Model version recorded
+- [ ] Factor values recorded
+- [ ] Explanation trail recorded
+- [ ] Actor and timestamp recorded
+- [ ] Manual-review route recorded when status is `manual_review`
+
+**Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
+
+**Tenant / Client Separation:**
+- **Organization boundary:** [Audrey-owned / client / partner]
+- **Project boundary:** [project/workstream ID]
+- **Data domain:** [enterprise / client / product / research]
+- **Rate-card or confidence lookup table required:** [Yes/No]
+
 ### Ship to Market Status
 
 **Current Status:** [Not Ready / Needs Work / Ready / Deployed]
