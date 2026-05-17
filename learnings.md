@@ -239,3 +239,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For research WRs, implement the orchestrator as executable automation plus a standard, not only prompt text. Make label sync consume `.github/labels.yml` directly so new engine labels do not drift from the hard-coded sync workflow. When `npm run workflows:validate` fails on missing timeouts, add the job timeouts immediately because that is a code/config blocker, not a research blocker. If `OPENROUTER_API_KEY` is missing, the engine should write a visible infrastructure-blocker packet and label the item instead of silently failing.
 
 **Next Action:** Monitor PR #13499 review/CI and merge after reviewer approval.
+
+---
+
+**Date/Time:** 2026-05-17T01:41Z
+
+**Task Attempted:** Add the Puter.js + Perplexity keyless browser research integration requested from GitHub PR context.
+
+**Outcome:** Success - added `standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md`, `scripts/puter-perplexity-template.js`, `templates/puter/perplexity-research-widget.html`, `tests/puter-perplexity-template.test.js`, and the API BOM entry distinguishing keyless browser research from server-side Perplexity API usage. Focused test, full `npm test`, and workflow validation pass after installing dependencies with `npm ci`.
+
+**Root Cause of Failure (If any):** Full validation initially failed because this clean cloud clone did not have `node_modules`, causing `Cannot find module 'yaml'` in workflow validation. This is the existing BUG-001 environment setup issue, not a Puter integration defect.
+
+**Self-Healing Fix / Learned Lesson:** For keyless AI-provider integrations, ship a tested browser template plus a standard that defines the security boundary: no Revvel-owned API keys in frontend code, explicit user-pays disclosure, text-only output rendering, and a locked model allowlist. When root tests fail with `Cannot find module 'yaml'`, run `npm ci` from the lockfile before rerunning `npm test` and `npm run workflows:validate`.
+
+**Next Action:** Monitor PR #13504 review/CI and merge after reviewer approval.
