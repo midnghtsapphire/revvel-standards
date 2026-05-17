@@ -129,6 +129,8 @@
 
 **Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
 
+If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
+
 | Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
 |--------------|----------|-----------------|------------|-----------|------------------|------------------|
 | [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
@@ -221,6 +223,10 @@ Define a layered research engine using two AI fleets:
 - Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
 - Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
 - Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
+
+**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
+
+**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
 
 #### Instruction Normalization (REQUIRED)
 
