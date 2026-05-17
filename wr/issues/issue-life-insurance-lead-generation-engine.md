@@ -357,13 +357,13 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 | Lookup Table | Purpose |
 | --- | --- |
 | `contact_eligibility_statuses` | Canonical contactability state used by exports, dialers, and reports |
-| `consent_bases` | Why contact is allowed |
+| `consent_basis_types` | Why contact is allowed |
 | `lead_source_types` | Source/channel normalization for routing and reporting |
 | `service_statuses` | Shared lookup for API/MCP/CLI dependency ledgers |
 
 **Suggested values by lookup:**
 - `contact_eligibility_statuses`: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`, `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
-- `consent_bases`: `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none`
+- `consent_basis_types`: `webform_opt_in`, `quote_request`, `existing_customer`, `public_record_with_manual_review`, `none`
 - `lead_source_types`: `landing_page`, `county_record`, `probate_notice`, `linkedin_api`, `licensed_data_vendor`
 - `service_statuses`: `active`, `degraded`, `blocked`, `payment_required`, `trial_expiring`
 
@@ -373,13 +373,15 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 - Any complaint, revocation, or ambiguous source moves the lead to `manual_review_required` or `revoked_or_opted_out`
 - Reports for non-technical operators should display friendly labels from lookup tables, not raw booleans or magic numbers
 
+**Policy gate helper:** `isContactEligible(lead, { checkpoint })` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) and must fail closed to `false` when status data is missing, invalid, or the suppression/DNC check errors.
+
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
 ```javascript
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
-const { isContactEligible } = require('./compliance-utils'); // policy gate helper
+const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific contact eligibility rules
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
@@ -388,11 +390,7 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 2. Qualify Phase: score each signal for life insurance intent
   const qualifiedLeads = await qualifierAgent({ signals: rawSignals });
 
-  // 3. Contactability filter: `isContactEligible(lead, { checkpoint })` returns a
-  // boolean after checking the lead's normalized status, consent metadata, and latest
-  // suppression/DNC result. Valid checkpoints include `pre_export` and `pre_contact`.
-  // Missing fields, unknown statuses, or DNC lookup errors should fail closed by
-  // returning false and logging/escalating the record for manual review.
+  // 3. Contactability filter: see compliance-utils docs for checkpoint validation rules.
   const contactableLeads = qualifiedLeads.filter((lead) =>
     isContactEligible(lead, { checkpoint: 'pre_export' })
   );
