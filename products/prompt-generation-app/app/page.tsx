@@ -133,17 +133,14 @@ function SelectField({
 
 export default function Home() {
   const [form, setForm] = useState<FormState>(defaultFormState);
-  const [mode, setMode] = useState<AccessibilityMode>('standard');
+  const [mode, setMode] = useState<AccessibilityMode>(() => {
+    if (typeof window === 'undefined') return 'standard';
+    const stored = window.localStorage.getItem('promptforge-accessibility-mode') as AccessibilityMode | null;
+    return stored && accessibilityModes.some((item) => item.id === stored) ? stored : 'standard';
+  });
   const [copied, setCopied] = useState(false);
 
   const packet: PromptPacket = useMemo(() => generatePromptPacket(form), [form]);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem('promptforge-accessibility-mode') as AccessibilityMode | null;
-    if (stored && accessibilityModes.some((item) => item.id === stored)) {
-      setMode(stored);
-    }
-  }, []);
 
   useEffect(() => {
     document.body.dataset.accessibilityMode = mode;
@@ -176,7 +173,7 @@ export default function Home() {
               Generate prompts with market facts, source logs, and review gates already attached.
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-200">
-              The app turns Audrey's rough issue notes, snippets, and LLM output into a build-ready packet:
+              The app turns Audrey&apos;s rough issue notes, snippets, and LLM output into a build-ready packet:
               problem, audience, competitors, public chatter, legal research boundaries, implementation prompt,
               and code-review checklist.
             </p>
