@@ -11,6 +11,7 @@ const path = require('path');
 const yaml = require('yaml');
 
 const WORKFLOWS_DIR = path.resolve(__dirname, '..', '.github', 'workflows');
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
 let passed = 0;
 let failed = 0;
@@ -164,6 +165,31 @@ test('agent-audit-logger.yml retries non-fast-forward push before summary fallba
   }
   if (!script.includes('exit 0')) {
     throw new Error('Commit step must exit cleanly when push remains blocked');
+  }
+});
+
+test('wr-pr-creation.yml github-script blocks compile after workflow expression substitution', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs['detect-completion'].steps.concat(doc.jobs['create-wr-pr'].steps);
+  const namesToCompile = new Set([
+    'Check if PR should be created',
+    'Update issue labels',
+  ]);
+
+  for (const step of steps) {
+    if (!namesToCompile.has(step.name)) continue;
+    const script = String(step.with?.script || '')
+      .replace(/\$\{\{\s*env\.ISSUE_NUMBER\s*\}\}/g, '123')
+      .replace(/\$\{\{\s*steps\.create_pr\.outputs\.pr_number\s*\}\}/g, '456')
+      .replace(/\$\{\{\s*steps\.create_pr\.outputs\.pr_url\s*\}\}/g, 'https://example.com/pr/456')
+      .replace(/\$\{\{\s*steps\.create_branch\.outputs\.BRANCH_NAME\s*\}\}/g, 'wr/test-123');
+
+    try {
+      new AsyncFunction('github', 'context', 'core', script);
+    } catch (error) {
+      throw new Error(`${step.name} github-script block does not compile: ${error.message}`);
+    }
   }
 });
 
