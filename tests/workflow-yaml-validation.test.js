@@ -174,7 +174,7 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   const steps = doc.jobs['detect-completion'].steps.concat(doc.jobs['create-wr-pr'].steps);
   const namesToCompile = new Set([
     'Check if PR should be created',
-    'Update issue labels',
+    'Apply labels to PR',
   ]);
 
   for (const step of steps) {
