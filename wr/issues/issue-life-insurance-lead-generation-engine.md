@@ -530,7 +530,7 @@ Each compiled lead record contains:
 
 ### Credential Gateway & Service Status Ledger
 
-Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger consumable by Oaudry UI:
+Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger consumable by Audrey UI:
 
 | Dependency | Type | Credential Source | Current Status | Renewal/Billing Risk | Fallback |
 |---|---|---|---|---|---|
@@ -540,12 +540,12 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 | GitHub CLI + GITHUB_TOKEN | CLI/App auth | `${{ secrets.GITHUB_TOKEN }}` | `active` / `blocked` | Permission scope drift | Fail-fast + create issue |
 | Required MCP servers | MCP | MCP config + API keys | `active` / `degraded` / `blocked` | Missing/unrotated key risk | Disable feature with clear warnings |
 
-**Implementation requirement:** expose this ledger in Oaudry UI with accessible status tokens (`Active ✅`, `Degraded ⚠️`, `Blocked ⛔`), last-checked timestamp, and owner action needed.
+**Implementation requirement:** expose this ledger in Audrey UI with accessible status tokens (`Active ✅`, `Degraded ⚠️`, `Blocked ⛔`), last-checked timestamp, and owner action needed.
 
 **Owner action logic (required):**
 - `owner_action_needed=true` when status is `payment_required`, `blocked`, or `trial_expiring` within 7 days
 - Include `action_type` (`pay_invoice`, `rotate_key`, `upgrade_plan`, `restore_scope`) and `action_due_at`
-- Surface warning badges in Oaudry UI and create a `Wr` issue automatically when due date is breached
+- Surface warning badges in Audrey UI and create a `Wr` issue automatically when due date is breached
 
 **Mandatory PDF Disclaimer (append to every exported PDF):**
 > *"This lead list is compiled from publicly available government records and licensed data sources, and is intended for life insurance sales and marketing outreach only. All leads in this batch are flagged `tcpa_compliant: true`. It may not be used for underwriting risk assessment, policy approval, credit, employment, or housing decisions (FCRA). Verify compliance with applicable state and federal regulations (TCPA, CAN-SPAM, state solicitation laws) before contacting any individual. All contacts are exclusive to this PDF batch — no duplicates are knowingly resold."*
@@ -600,7 +600,7 @@ Track external dependency health (APIs/CLI/MCP/GitHub Apps) in a single ledger c
 
 8. **Implement credential gateway status tracker**  
    - Persist status for each API/CLI/MCP/GitHub App (active/degraded/blocked, last checked, billing state)  
-   - Surface in Oaudry UI for at-a-glance operations visibility  
+   - Surface in Audrey UI for at-a-glance operations visibility  
    - Effort: 3–5 hours
 
 ### Short-Term Actions (Within 1–2 Weeks)

@@ -213,7 +213,14 @@ Define a layered research engine using two AI fleets:
 - Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
 - Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
 
+**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions; teams may raise this per domain risk.
+
 **How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this is a mandatory manual checkpoint.
+
+**Counting example:**
+- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
+- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
+- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
 
 #### Instruction Normalization (REQUIRED)
 
