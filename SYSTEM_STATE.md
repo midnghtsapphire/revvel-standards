@@ -48,6 +48,7 @@
 | BUG-013 | Workflow YAML validation failed on `api-rate-limit-handler.yml` multiline body and `jules-coding-agent.yml` misindented step `env` blocks | medium | resolved | 2026-05-15 |
 | BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
 | BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
+| BUG-016 | BASIC WR / issue-type intake could miss required WR labels, causing `wr-pr-creation.yml` to skip instead of creating a PR | high | resolved | 2026-05-17 |
 
 ---
 
@@ -98,10 +99,11 @@
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
 | `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
 | Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
-| Workflow YAML validation | 2026-05-17 | ✅ `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
+| Workflow YAML validation | 2026-05-17 | ✅ `node tests/workflow-yaml-validation.test.js` compiles key WR github-script blocks; `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
 | Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
 | Affiliate Hub build/lint | 2026-05-16 | ✅ `npm run lint && npm run build` | — |
 | ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
@@ -126,6 +128,7 @@
 | Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
 | Research Engine Orchestrator | ✅ documented + implemented | [`scripts/research-engine.js`](scripts/research-engine.js), [`.github/workflows/research-engine.yml`](.github/workflows/research-engine.yml), and [`docs/RESEARCH_ENGINE_STANDARD.md`](docs/RESEARCH_ENGINE_STANDARD.md) provide layered WR research across marketing, SEO, competitors, audience/chatter, facts, technical delivery, revenue, and code-review auto-fix lanes |
+| BASIC WR label normalization | ✅ live | WR templates apply `work-request` + `weekly-research`; `wr-pr-creation.yml` and `weekly-research.yml` also accept BASIC WR issue type and normalize missing WR labels before routing |
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 | Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
 
@@ -156,6 +159,9 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 01:37 UTC
+Updated by: Cursor
+Session summary: Fixed BASIC WR intake label drift by defining missing labels, adding `weekly-research` to both WR templates, recognizing BASIC WR issue types in WR workflows, normalizing missing labels, and verifying targeted tests, workflow validation, label checks, and root npm test.
 Last updated: 2026-05-17 01:39 UTC
 Updated by: Cursor
 Session summary: Added Revvel PromptForge prompt-generation app, research packet, docs, dashboard refresh, and verified focused app tests/build, root npm test, and workflow validation.

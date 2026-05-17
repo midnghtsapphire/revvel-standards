@@ -256,6 +256,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T01:37Z
+
+**Task Attempted:** Fix BASIC WR intake labels after WR PR Creation skipped issues selected from GitHub.
+
+**Outcome:** Success - BASIC WR/work-request intake is now label-resilient: active and portable templates apply `work-request` + `weekly-research`, canonical labels include the template labels, WR workflows accept BASIC WR issue types and normalize missing labels, and tests/workflow validation pass.
+
+**Root Cause of Failure (If any):** The issue templates referenced labels (`work-request`, `quick`, `OpenHands`) that were missing from the canonical label sync file, and `wr-pr-creation.yml` only treated `[WR]`/`weekly-research` as WR signals. If GitHub issue-type/template selection arrived without the expected label set, the workflow could post a skip notice instead of creating the WR PR. The workflow also had a stray closing brace in a github-script block that YAML validation did not catch.
+
+**Self-Healing Fix / Learned Lesson:** For GitHub issue-form automation, define every template label in `.github/labels.yml`, include the downstream trigger label directly on the template when possible, and make workflows accept multiple stable WR signals (`[WR]`, `work-request`, `weekly-research`, BASIC WR issue type). Add github-script compile guards for critical workflow blocks because YAML parsing alone cannot detect JavaScript syntax errors embedded in actions/github-script steps.
+
+**Next Action:** Monitor PR #13501 CI/review and merge after approval.
 **Date/Time:** 2026-05-17T02:04Z
 
 **Task Attempted:** Complete Perplexity integration without requiring `PERPLEXITY_API_KEY`.

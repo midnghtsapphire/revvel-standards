@@ -60,6 +60,7 @@
 | T010 | ColdTrace dependency downgrade restoration | done | @cursor | 2026-05-15 |
 | T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
 | T012 | Layered Research Engine Orchestrator | done | @cursor | 2026-05-17 |
+| T013 | BASIC WR label normalization | done | @cursor | 2026-05-17 |
 | T013 | Revvel PromptForge prompt generation app | done | @cursor | 2026-05-17 |
 | T014 | Perplexity no-key research integration | done | @cursor | 2026-05-17 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
