@@ -44,11 +44,18 @@
 |-----|-------|--------|------|------------|
 | T003 | Tax AI Integration (OpenRouter) | done | @openhands | 2026-04-25 |
 | T004 | Automated Product Pipeline standard + skill + scaffold | in-progress | @copilot | 2026-04-27 |
+| T007 | ColdTrace python-jose security upgrade | done | @cursor | 2026-05-15 |
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
 | T001 | Revvel-standards Housekeeping | done | @openhands | 2026-04-25 |
 | T002 | Private → Public: 74 repos with licenses | done | @openhands | 2026-04-25 |
+| T005 | Music Video Creator balanced JSON parser fix | done | @cursor | 2026-05-15 |
+| T006 | Music Video Creator provider polling terminal status fix | done | @cursor | 2026-05-15 |
+| T008 | Music Video Creator shared API helper refactor | done | @cursor | 2026-05-15 |
+| T009 | Music Video Creator Next/PostCSS security upgrade | done | @cursor | 2026-05-15 |
+| T010 | ColdTrace dependency downgrade restoration | done | @cursor | 2026-05-15 |
+| T011 | Affiliate Hub patched dependency restoration | done | @cursor | 2026-05-16 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

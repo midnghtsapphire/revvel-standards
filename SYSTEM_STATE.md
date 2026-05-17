@@ -38,9 +38,16 @@
 | BUG-003 | Duplicate keys in secrets-health-check.yml causing YAML validation failure | low | resolved | 2026-05-02 |
 | BUG-004 | `[WR]` issue automation broken — workflow_run loops saturated runner queue, killing every WR run with `startup_failure` | high | resolved | 2026-05-04 |
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
-| BUG-006 | Stuck-WR detector falsely escalated WR #13460 even after PR creation because it only searched by title text | high | resolved | 2026-05-15 |
-| BUG-007 | Workflow YAML validation failed on `api-rate-limit-handler.yml` multiline body and `jules-coding-agent.yml` misindented step `env` blocks | medium | resolved | 2026-05-15 |
-| BUG-008 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
+| BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
+| BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
+| BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
+| BUG-009 | Music Video Creator duplicated `requireApiKey`, `OR_MODELS`, and `OPENROUTER_API_URL` across API routes, risking drift between endpoints | low | resolved | 2026-05-15 |
+| BUG-010 | Music Video Creator dependency tree carried Next.js/PostCSS npm audit findings after validation install | high | resolved | 2026-05-15 |
+| BUG-011 | Music Video Creator PR accidentally downgraded unrelated ColdTrace dependencies (`geopandas`, `python-multipart`, `python-dotenv`) from current backend pins | medium | resolved | 2026-05-15 |
+| BUG-012 | Stuck-WR detector falsely escalated WR #13460 even after PR creation because it only searched by title text | high | resolved | 2026-05-15 |
+| BUG-013 | Workflow YAML validation failed on `api-rate-limit-handler.yml` multiline body and `jules-coding-agent.yml` misindented step `env` blocks | medium | resolved | 2026-05-15 |
+| BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
+| BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 
 ---
 
@@ -89,7 +96,11 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `npm test` | 2026-05-15 | ✅ passing | — |
+| `npm test` | 2026-05-16 | ✅ passing after `npm ci` | — |
+| Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
+| Affiliate Hub build/lint | 2026-05-16 | ✅ `npm run lint && npm run build` | — |
+| ColdTrace backend dependency check | 2026-05-15 | ✅ `python3 -m pip install --dry-run --ignore-installed "python-jose[cryptography]==3.4.0"` | — |
+| ColdTrace restored dependency pins check | 2026-05-15 | ✅ `git diff --exit-code origin/main...HEAD -- coldtrace/backend/requirements.txt` + `python3 -m pip install --dry-run --ignore-installed "geopandas==1.1.2" "python-multipart==0.0.27" "python-dotenv==1.2.2"` | — |
 
 ---
 
@@ -137,13 +148,41 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-16 23:23 UTC
+Updated by: Cursor
+Session summary: Restored Affiliate Hub to patched Next.js/PostCSS dependency versions, upgraded lint tooling to the required ESLint 9-compatible flat config, and verified audit, lint, build, dependency tree, and root tests pass.
+
+Last updated: 2026-05-15 22:33 UTC
+Updated by: Cursor
+Session summary: Restored unrelated ColdTrace dependency pins downgraded in the Music Video Creator branch, verified the requirements file no longer differs from main, confirmed restored package dry-run resolution, and reran root `npm test` successfully after `npm ci`.
+
+Last updated: 2026-05-15 22:08 UTC
+Updated by: Cursor
+Session summary: Fixed ColdTrace backend `python-jose[cryptography]` from vulnerable 3.3.0 to 3.4.0, verified no remaining 3.3.0 pin, confirmed package dry-run resolution, parsed 16 backend Python files, and reran root `npm test` successfully after `npm ci`.
+
+Last updated: 2026-05-15 22:15 UTC
+Updated by: Cursor
+Session summary: Centralized Music Video Creator API auth/OpenRouter helpers into shared modules, removed duplicate route definitions, and verified product lint/typecheck/build plus root `npm test` pass.
+
+Last updated: 2026-05-15 22:21 UTC
+Updated by: Cursor
+Session summary: Upgraded Music Video Creator to patched Next.js 15.5.18/PostCSS 8.5.14 with a package override, set the product tracing root, and verified npm audit, product lint/typecheck/build, and root `npm test` pass.
+
 Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands
 Session summary: Added the Revvel operating model layer — OpenHands Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
 
+Last updated: 2026-05-15 21:42 UTC
+Updated by: Cursor
+Session summary: Fixed Music Video Creator LLM JSON parsing by delegating orchestrator `safeParse` to the balanced-brace extractor, restored parser regression coverage after branch drift, and verified root `npm test` plus product typecheck/build pass.
+
 Last updated: 2026-05-15 21:43 UTC
 Updated by: Cursor
 Session summary: Fixed false stuck-WR escalation by recognizing existing WR PRs through branch/body/comment signals; repaired workflow YAML validation failures, aligned BITO verifier checks, restored dashboard project links, and verified `npm test` passes.
+
+Last updated: 2026-05-15 21:58 UTC
+Updated by: Cursor
+Session summary: Fixed Music Video Creator provider polling so `artifact_created` is treated as a terminal success state, added regression coverage, and verified targeted tests, root `npm test`, product lint, and product build pass.
 
 Last updated: 2026-05-04 (post PR #10191 merge)
 Updated by: OpenHands

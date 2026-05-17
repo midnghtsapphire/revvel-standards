@@ -109,7 +109,7 @@ jobs:
     name: CI Fixer
     runs-on: ubuntu-latest
     env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     timeout-minutes: 30
     if: >-
       github.event_name == 'pull_request' &&
