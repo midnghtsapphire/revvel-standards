@@ -8,7 +8,8 @@ const WORKFLOWS = [
   '.github/workflows/augment-check.yml',
   '.github/workflows/priority-router.yml',
   '.github/workflows/pr-state-orchestrator.yml',
-  '.github/workflows/pr-lifecycle.yml'
+  '.github/workflows/pr-lifecycle.yml',
+  '.github/workflows/jules-pr-reviewer.yml'
 ];
 
 function assert(condition, message) {
@@ -43,6 +44,16 @@ function run() {
       );
     }
   }
+
+  const julesWorkflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github/workflows/jules-pr-reviewer.yml'),
+    'utf8'
+  );
+  assert(julesWorkflow.includes('context: jules/review'), 'Jules workflow must own jules/review context');
+  assert(
+    /createCommitStatus[\s\S]+context:\s*'jules\/review'/.test(julesWorkflow),
+    'Jules workflow must finalize jules/review status'
+  );
 
   console.log('pr-automation-fail-soft tests passed');
 }
