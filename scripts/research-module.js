@@ -6,9 +6,6 @@ const fs = require("fs");
 const path = require("path");
 
 const MODEL = "google/gemini-2.5-pro";
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const QUESTION = process.env.QUESTION;
-const OUTPUT_FILE = process.env.OUTPUT_FILE;
 
 const OPENROUTER_BASE = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -188,16 +185,29 @@ function callOpenRouter(model, systemPrompt, userPrompt, apiKey) {
         data += chunk;
       });
       res.on("end", () => {
+        const statusCode = typeof res.statusCode === "number" ? res.statusCode : 200;
+        const isSuccess = statusCode >= 200 && statusCode < 300;
+
+        let parsed;
         try {
-          const parsed = JSON.parse(data);
-          if (parsed.error) {
-            reject(new Error(`OpenRouter error: ${parsed.error.message || "Unknown error"}`));
-            return;
-          }
-          resolve(parsed.choices?.[0]?.message?.content ?? "");
+          parsed = JSON.parse(data);
         } catch (err) {
           reject(new Error(`Failed to parse OpenRouter response: ${err.message}\nRaw: ${data}`));
+          return;
         }
+
+        if (!isSuccess) {
+          const errorMessage = parsed?.error?.message || `HTTP ${statusCode}`;
+          reject(new Error(`OpenRouter request failed (${statusCode}): ${errorMessage}`));
+          return;
+        }
+
+        if (parsed.error) {
+          reject(new Error(`OpenRouter error: ${parsed.error.message || "Unknown error"}`));
+          return;
+        }
+
+        resolve(parsed.choices?.[0]?.message?.content ?? "");
       });
     });
 
@@ -259,21 +269,28 @@ async function runAgent(agent, topic, apiKey) {
 
 async function runResearch(topic, apiKey, options = {}) {
   const { tolerateAgentFailures = false, onAgentFailure, onSynthesisFailure } = options;
-  const results = await Promise.all(
-    Object.values(AGENTS).map(async (agent) => {
-      try {
-        return await runAgent(agent, topic, apiKey);
-      } catch (err) {
-        if (!tolerateAgentFailures) {
-          throw err;
-        }
-        if (onAgentFailure) {
-          onAgentFailure(agent, err);
-        }
-        return { name: agent.name, content: `Agent failed: ${err.message}` };
-      }
-    })
+  const agents = Object.values(AGENTS);
+  const settledResults = await Promise.allSettled(
+    agents.map((agent) => runAgent(agent, topic, apiKey))
   );
+
+  const firstFailure = settledResults.find((result) => result.status === "rejected");
+  if (firstFailure && !tolerateAgentFailures) {
+    throw firstFailure.reason;
+  }
+
+  const results = settledResults.map((result, index) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    }
+
+    const agent = agents[index];
+    const error = result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+    if (onAgentFailure) {
+      onAgentFailure(agent, error);
+    }
+    return { name: agent.name, content: `Agent failed: ${error.message}` };
+  });
 
   const synthesisInput = buildSynthesizerPrompt(topic, results);
   let report;
