@@ -100,6 +100,7 @@
 | `npm test` | 2026-05-17 | ✅ passing after `npm ci`; includes Puter Perplexity template coverage | — |
 | PR automation fail-soft test | 2026-05-17 | ✅ `node tests/pr-automation-fail-soft.test.js` verifies merge-helper GitHub API scripts use `continue-on-error` so transient rate limits do not block squash merge | — |
 | Puter Perplexity template test | 2026-05-17 | ✅ `node tests/puter-perplexity-template.test.js` verified canonical model list, template drift, CSP/no-secret constraints, safe text rendering, and standard coverage | — |
+| PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
 | Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
 | Workflow YAML validation | 2026-05-17 | ✅ `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
 | Affiliate Hub dependency/security check | 2026-05-16 | ✅ `npm audit --audit-level=high`, `npm ls next eslint eslint-config-next postcss --depth=0`, and `npm ls postcss` verified `next@15.5.18`, `eslint-config-next@16.2.6`, `eslint@9.39.4`, and PostCSS deduped/overridden to `8.5.14` | — |
@@ -127,6 +128,7 @@
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
 | Research Engine Orchestrator | ✅ documented + implemented | [`scripts/research-engine.js`](scripts/research-engine.js), [`.github/workflows/research-engine.yml`](.github/workflows/research-engine.yml), and [`docs/RESEARCH_ENGINE_STANDARD.md`](docs/RESEARCH_ENGINE_STANDARD.md) provide layered WR research across marketing, SEO, competitors, audience/chatter, facts, technical delivery, revenue, and code-review auto-fix lanes |
 | Puter Perplexity browser integration | ✅ documented + implemented | [`standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md`](standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md), [`scripts/puter-perplexity-template.js`](scripts/puter-perplexity-template.js), [`templates/puter/perplexity-research-widget.html`](templates/puter/perplexity-research-widget.html), and [`tests/puter-perplexity-template.test.js`](tests/puter-perplexity-template.test.js) provide a keyless user-pays Perplexity Sonar research widget path for browser apps |
+| Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 
@@ -162,6 +164,10 @@ Session summary: Made PR label/comment/status-helper workflows fail-soft for tra
 Last updated: 2026-05-17 01:41 UTC
 Updated by: Cursor
 Session summary: Added the keyless Puter.js + Perplexity browser research integration standard, generator, HTML widget template, API BOM entry, and focused regression coverage; verified focused test, full npm test, and workflow validation after `npm ci`.
+
+Last updated: 2026-05-17 01:39 UTC
+Updated by: Cursor
+Session summary: Added Revvel PromptForge prompt-generation app, research packet, docs, dashboard refresh, and verified focused app tests/build, root npm test, and workflow validation.
 
 Last updated: 2026-05-17 01:20 UTC
 Updated by: Cursor

@@ -158,6 +158,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T01:40Z
+
+**Task Attempted:** Build and validate Revvel PromptForge prompt-generation app.
+
+**Outcome:** Success - Added a static Next.js prompt-generation product with source-backed packet generation, market research docs, root tests, dashboard refresh, and passing product lint/build, root `npm test`, and workflow validation.
+
+**Root Cause of Failure (If any):** Two validation mistakes recurred during the session: a root test was launched from the product directory, causing `MODULE_NOT_FOUND`, and root `npm test` initially failed because root `node_modules` was not installed (`Cannot find module 'yaml'`). Product lint also caught a React 19 compiler rule violation from setting state in an effect and a JSX apostrophe escaping issue.
+
+**Self-Healing Fix / Learned Lesson:** Run root tests from `/workspace` and product checks from the product root as separate commands. If root tests fail on `yaml`, run `npm ci` at `/workspace` before retrying. For accessibility preferences in client components, initialize state lazily from `localStorage` with a `typeof window` guard instead of setting state synchronously inside `useEffect`. Set `outputFileTracingRoot` in product-level Next apps with their own lockfile to avoid workspace-root inference warnings.
+
+**Next Action:** None for PromptForge; continue monitoring PR #13503 validation.
+
+---
+
 **Date/Time:** 2026-05-16T23:23Z
 
 **Task Attempted:** Verify and fix Affiliate Hub dependency regression below the patched Next.js/PostCSS security floor.

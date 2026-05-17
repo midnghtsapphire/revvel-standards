@@ -1352,6 +1352,18 @@
       "project": "revvel-standards",
       "type": "test",
       "source": "/README.md"
+    },
+    {
+      "url": "http://localhost:3006",
+      "project": "prompt-generation-app",
+      "type": "test",
+      "source": "/products/prompt-generation-app/README.md"
+    },
+    {
+      "url": "https://promptforge.revvel.co",
+      "project": "prompt-generation-app",
+      "type": "test",
+      "source": "/products/prompt-generation-app/README.md"
     }
   ],
   "domains": [
@@ -1435,5 +1447,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-15T21:52:04.933Z"
+  "lastUpdated": "2026-05-17T01:38:41.748Z"
 }
