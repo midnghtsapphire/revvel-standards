@@ -28,6 +28,7 @@ Curated reading list — sorted by *when you'll need it*, not by topic. Open the
 | Filing a new Work Request (intake → score → route) | [`docs/operating-model.md`](docs/operating-model.md) + [`templates/viability-gate-template.md`](templates/viability-gate-template.md) | Spec + rubric |
 | Evaluating an invention idea before committing to a build | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) | Template |
 | Refreshing or rebuilding an existing legacy project | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) | Checklist |
+| Designing project delivery orchestration and completion gates | [`docs/orchestration/project-orchestration-standard.md`](docs/orchestration/project-orchestration-standard.md) | Standard |
 | Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
 | Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
 
@@ -186,7 +187,7 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 - **Replit Ghostwriter** - AI pair programmer for collaborative coding
 
 **Research & Knowledge Tools:**
-- **Perplexity AI** (https://perplexity.ai) - Research assistant with citations
+- **Perplexity no-key research** (https://github.com/helallao/perplexity-ai) - Perplexity-backed issue research without a required official API key
 - **Elicit** (https://elicit.org) - AI research assistant for academic papers
 - **Consensus** (https://consensus.app) - Evidence-based answers from research papers
 - **Scite** (https://scite.ai) - Smart citations showing supporting/contrasting evidence
@@ -882,4 +883,3 @@ This file includes:
 | Feature | Status |
 |---------|--------|
 | Feature | ✅ Ready |
-

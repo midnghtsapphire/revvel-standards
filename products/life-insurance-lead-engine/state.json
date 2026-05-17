@@ -1,0 +1,15 @@
+{
+  "product_slug": "TEMPLATE",
+  "shape": "TEMPLATE",
+  "step": 0,
+  "step_name": "scaffolded",
+  "bom_ready": false,
+  "build_green": false,
+  "certified": false,
+  "monetized": false,
+  "deployed": false,
+  "marketed": false,
+  "created_at": null,
+  "last_updated_at": null,
+  "notes": []
+}

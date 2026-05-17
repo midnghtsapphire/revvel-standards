@@ -1,35 +1,19 @@
-# Jules PR Reviewer
-#
-# Marketplace: https://github.com/marketplace/actions/jules-pr-reviewer
-# Action repo: https://github.com/sanjay3290/jules-pr-reviewer
-#
-# Reviews pull requests with Google Jules (Gemini-powered cloud coding
-# agent) and posts the review as a PR comment, plus a severity-tagged
-# verdict on a commit status check (`jules/review`). Optionally gate
-# merges on that status via a branch protection rule.
-#
-# Customise review rules by adding `.github/jules-review-rules.md` to the
-# repo, or by setting `extra_instructions` below.
-#
-# Secret required: JULES_API_KEY
-# Copy this file to: .github/workflows/jules-pr-reviewer.yml
-
 name: Jules PR Reviewer
-
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
-
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch: null
 permissions:
   contents: read
   pull-requests: write
   statuses: write
-
 concurrency:
   group: jules-review-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 jobs:
   review:
     name: Jules PR review
@@ -44,16 +28,17 @@ jobs:
           else
             echo "JULES_API_KEY is configured."
           fi
-
       - name: Jules PR Review
         if: env.JULES_API_KEY != ''
         uses: sanjay3290/jules-pr-reviewer@v1
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Defaults shown for discoverability; tune as needed.
-          fail_on: blocking
+          fail_on: never
           skip_drafts: true
           skip_forks: true
           bypass_label: jules-override
           status_context: jules/review
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

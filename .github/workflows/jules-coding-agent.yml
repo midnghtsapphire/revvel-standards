@@ -1,0 +1,126 @@
+# Jules Coding Agent
+# Uses Google's Jules with CI Fixer for PR creation and self-repair
+
+name: Jules Coding Agent
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number for Jules
+        required: false
+        type: number
+      skip_labels:
+        description: Skip label check
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  jules-code:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 45
+    if: >-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && github.event.action == 'labeled' &&
+       (github.event.label.name == 'wr:jules' || github.event.label.name == 'wr:code'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Prepare issue context
+        id: context
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number || inputs.issue_number }}"
+          REPO="${{ github.repository }}"
+          ISSUE=$(gh issue view $ISSUE_NUMBER --repo $REPO --json title,body,labels,comments)
+          echo "issue_title=$(echo $ISSUE | jq -r '.title')" >> $GITHUB_OUTPUT
+          echo "issue_body=$(echo $ISSUE | jq -r '.body // ""')" >> $GITHUB_OUTPUT
+          
+          # Find the most recent research comment (from Perplexity)
+          RESEARCH=$(gh issue view $ISSUE_NUMBER --repo $REPO --comments | \
+            jq -r '.[] | select(.body | contains("Perplexity Research Handoff")) | .body' | head -c 5000)
+          echo "research_context=$RESEARCH" >> $GITHUB_OUTPUT
+
+      - name: Invoke Jules agent
+        id: jules
+        env:
+          ISSUE_TITLE: ${{ steps.context.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.context.outputs.issue_body }}
+          RESEARCH: ${{ steps.context.outputs.research_context }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Use Jules to process the issue
+          # This would integrate with Jules API when available
+          # For now, use gh CLI to create branch and PR
+          
+          BRANCH_NAME="jules/issue-${{ github.event.issue.number || inputs.issue_number }}"
+          
+          # Create branch
+          git checkout -b "$BRANCH_NAME" 2>/dev/null || git checkout -b "$BRANCH_NAME"
+          
+          # This is where Jules would run its coding
+          # For now, delegate to OpenRouter coders
+          
+          echo "jules_invoked=true" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create PR if changes exist
+        id: pr
+        if: steps.jules.outputs.jules_invoked == 'true'
+        env:
+          BRANCH: ${{ steps.jules.outputs.branch }}
+        run: |
+          # Check if there are changes
+          if git diff --stat | grep -v "^$" > /dev/null 2>&1; then
+            gh pr create \
+              --title "[WR] ${{ steps.context.outputs.issue_title }}" \
+              --body "Created by Jules Coding Agent from issue #${{ github.event.issue.number || inputs.issue_number }}" \
+              --base main
+            echo "pr_created=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Update issue labels
+        if: always()
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" \
+            --remove-label "wr:jules" \
+            --remove-label "wr:code" \
+            --add-label "wr:pr-open" 2>/dev/null || true
+
+  ci-fix:
+    name: CI Fixer
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == false
+    # Triggered when a PR closes without merging
+    steps:
+      - name: Get failed checks
+        run: |
+          # Get failed check runs for the closed PR
+          echo "## CI Fixer Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "PR was closed without merging." >> $GITHUB_STEP_SUMMARY
+          echo "Jules CI Fixer would be triggered here to analyze failures" >> $GITHUB_STEP_SUMMARY

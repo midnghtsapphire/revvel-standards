@@ -1,0 +1,78 @@
+# Perplexity Research Agent
+# Uses the no-key helallao/perplexity-ai fork for web-grounded issue diagnosis.
+
+name: Perplexity Research Agent
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to research
+        required: false
+        type: number
+      skip_labels:
+        description: Skip label check
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    timeout-minutes: 20
+    if: >-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && github.event.action == 'labeled' &&
+       (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install no-key Perplexity provider
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
+
+      - name: Research issue with no-key Perplexity fork
+        id: research
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          REPO: ${{ github.repository }}
+          PERPLEXITY_PROVIDER: helallao/perplexity-ai
+          PERPLEXITY_MODEL: sonar
+          PERPLEXITY_TIMEOUT_MS: 120000
+        run: |
+          node scripts/perplexity-research-issue.js
+
+      - name: Comment research results
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+        run: |
+          # Move to next state
+          gh issue edit "$ISSUE_NUMBER" \
+            --remove-label "wr:research" \
+            --add-label "wr:research-complete" \
+            --add-label "wr:jules" 2>/dev/null || true
+
+      - name: Report success/failure
+        run: |
+          if [ -f /tmp/perplexity-research.md ]; then
+            echo "## Research Complete" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/perplexity-research.md >> $GITHUB_STEP_SUMMARY
+          fi

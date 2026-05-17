@@ -1,44 +1,31 @@
 name: Print Project v2 field and option IDs using PAT
-
 on:
   workflow_dispatch:
     inputs:
       owner_type:
-        description: "Project owner type"
+        description: Project owner type
         required: true
-        default: "organization"
+        default: organization
         type: choice
         options:
           - organization
           - user
       owner:
-        description: "GitHub organization or username that owns the project"
+        description: GitHub organization or username that owns the project
         required: true
         type: string
       project_number:
-        description: "Project number from the Project URL, e.g. /projects/5"
+        description: Project number from the Project URL, e.g. /projects/5
         required: true
         type: string
-
 permissions:
   contents: read
-
 jobs:
   print-project-ids:
     name: Print Project v2 IDs
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
-      # Classic PAT setup:
-      # 1. Create a classic personal access token.
-      # 2. For private repos, grant: repo
-      # 3. For public repos only, public_repo may be enough.
-      # 4. Grant: project
-      # 5. Save it as a repository or organization secret named PROJECTS_PAT.
-      #
-      # Note: GITHUB_TOKEN usually cannot access GitHub Projects v2 outside
-      # the repository permissions boundary, so use PROJECTS_PAT here.
       - name: Query Project v2 data
         env:
           GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
@@ -145,7 +132,6 @@ jobs:
             echo "owner_type must be either organization or user."
             exit 1
           fi
-
       - name: Print copy/paste variables
         env:
           OWNER_TYPE: ${{ inputs.owner_type }}
@@ -198,11 +184,12 @@ jobs:
 
           echo
           echo "Saved readable output to project-v2-ids.txt"
-
       - name: Upload Project v2 ID report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: project-v2-ids-pat
           path: |
             project-v2-ids.txt
             project_data.json
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

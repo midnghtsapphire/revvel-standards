@@ -1,25 +1,18 @@
 name: Stale Docs Check
-
-# Flags docs that haven't been updated in 30+ days.
-# Posts findings to the run summary. Runs weekly or on demand.
-
 on:
   schedule:
-    - cron: "0 11 * * 1"  # Every Monday at 11:00 UTC
-  workflow_dispatch:
-
+    - cron: 0 11 * * 1
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   check:
     name: Check for stale documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
-
       - name: Find stale docs
         run: |
           STALE_DAYS=30
@@ -62,3 +55,6 @@ jobs:
           if [ "$STALE_COUNT" -gt 0 ]; then
             echo "::warning::${STALE_COUNT} tracked doc(s) are stale (not updated in ${STALE_DAYS}+ days)."
           fi
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -1,48 +1,48 @@
-# $3,000/MONTH REVENUE PLAN — EXECUTE
+# $10,000/MONTH REVENUE PLAN — EXECUTE
 
-## WEEK 1: $500
+## WEEK 1: $2,201
 
 ### Product 1: AI Agent Starter Kit
 - **Price:** $97
 - **Where:** Gumroad
 - **Action:** Create listing now. Include skills from revvel-standards/skills/
-- **Target:** 5 sales = $485
+- **Target:** 13 sales = $1,261
 
 ### Product 2: Claude Code Setup Guide  
 - **Price:** $47
 - **Where:** Gumroad
 - **Action:** Create PDF guide now.
-- **Target:** 1 sale = $47
+- **Target:** 20 sales = $940
 
 ---
 
-## WEEK 2: $500
+## WEEK 2: $1,970
 
 ### Product 3: Agent Swarm Blueprint
 - **Price:** $197
 - **Where:** Gumroad
 - **Action:** Document swarm architecture from wr/agents/
-- **Target:** 3 sales = $591
+- **Target:** 10 sales = $1,970
 
 ---
 
-## WEEK 3: $500
+## WEEK 3: $2,079
 
 ### Product 4: Zero-Human Company Template
 - **Price:** $297
 - **Where:** Gumroad
 - **Action:** Bundle all templates + skills + docs
-- **Target:** 2 sales = $594
+- **Target:** 7 sales = $2,079
 
 ---
 
-## WEEK 4: $1,500
+## WEEK 4: $3,750
 
 ### Service: Custom Agent Setup
 - **Price:** $750/setup
 - **Where:** Direct outreach
 - **Action:** Message 5 past clients
-- **Target:** 2 sales = $1,500
+- **Target:** 5 sales = $3,750
 
 ---
 
@@ -70,8 +70,8 @@
 
 | Week | Target | Actual | Delta |
 |------|--------|--------|-------|
-| 1 | $500 | | |
-| 2 | $500 | | |
-| 3 | $500 | | |
-| 4 | $1,500 | | |
-| **Total** | **$3,000** | | |
+| 1 | $2,201 | | |
+| 2 | $1,970 | | |
+| 3 | $2,079 | | |
+| 4 | $3,750 | | |
+| **Total** | **$10,000** | | |

@@ -1,89 +1,58 @@
-# Revvel mabl Automated Testing Workflow
-#
-# Installs the mabl CLI and runs mabl tests on every push to main,
-# every pull request, and on demand via workflow_dispatch.
-#
-# Uses the shared GitHub App (APP_ID + APP_PRIVATE_KEY) for authentication,
-# consistent with all other Revvel automation workflows.
-#
-# REQUIRED SECRETS (Settings → Secrets and variables → Actions):
-#   APP_ID          — GitHub App ID (shared across all Revvel workflows)
-#   APP_PRIVATE_KEY — GitHub App private key (shared across all Revvel workflows)
-#   MABL_API_KEY    — mabl API key for CLI authentication
-#                     https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis
-#
-# REQUIRED VARIABLES (Settings → Secrets and variables → Actions → Variables):
-#   MABL_APPLICATION_ID  — mabl application ID
-#   MABL_ENVIRONMENT_ID  — mabl environment ID
-#
-# Workspace: BsQPWJHcAYbKHlKpH1TWtA-w
-# Dashboard: https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks
-#
-# See: TESTING_STANDARD.md §12
-
 name: mabl Automated Tests
-
 on:
   push:
     branches:
       - main
-      - "release/**"
+      - release/**
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
+      - opened
+      - synchronize
+      - reopened
   workflow_dispatch:
     inputs:
       app-url:
-        description: "Override app URL for this run (optional)"
+        description: Override app URL for this run (optional)
         required: false
         type: string
       plan-labels:
-        description: "Comma-separated mabl plan labels to run (optional, e.g. smoke-test)"
+        description: Comma-separated mabl plan labels to run (optional, e.g. smoke-test)
         required: false
         type: string
       continue-on-failure:
-        description: "Continue workflow even if mabl tests fail?"
+        description: Continue workflow even if mabl tests fail?
         required: false
         default: "false"
         type: choice
         options:
           - "true"
           - "false"
-
 concurrency:
   group: mabl-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   mabl-tests:
     name: mabl Automated Tests
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       pull-requests: write
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Generate GitHub App Token
         id: app-token
-        # Uses the shared Revvel GitHub App for authentication.
-        # Required for elevated access and to avoid built-in GITHUB_TOKEN rate limits.
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3.1.1
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
         continue-on-error: true
-
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: "22"
-
       - name: Install mabl CLI
         run: npm install -g @mablhq/mabl-cli
-
       - name: Verify MABL_API_KEY is configured
         run: |
           if [ -z "${{ secrets.MABL_API_KEY }}" ]; then
@@ -96,7 +65,6 @@ jobs:
             exit 0
           fi
           echo "✅ MABL_API_KEY is set — proceeding with mabl test run."
-
       - name: Run mabl tests
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
@@ -122,7 +90,6 @@ jobs:
 
           echo "Running: mabl deployments create $FLAGS"
           mabl deployments create $FLAGS 2>&1 | tee /tmp/mabl-output.txt
-
       - name: Post mabl summary
         if: always()
         run: |
@@ -143,4 +110,6 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_Full results: [mabl Dashboard](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks)_" >> $GITHUB_STEP_SUMMARY
-
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

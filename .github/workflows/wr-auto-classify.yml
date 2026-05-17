@@ -1,39 +1,14 @@
 name: WR Auto-Classify Project v2 Fields
-
-# Reads issue body for new OpenHands Work Requests, asks OpenRouter to classify any
-# routing dropdowns the user left on 'auto-classify', and writes the chosen
-# values to the matching Project v2 single-select fields.
-#
-# Respects explicit user choices: only fills in fields whose body section is
-# 'auto-classify' or empty.
-#
-# Falls back to opinionated defaults if OpenRouter is unavailable or replies
-# with malformed output:
-#   Output Type        = internal-script-automation
-#   Research Mode      = standard
-#   Delivery Mode      = build-direct
-#   Iteration Mode     = single-pass
-#   Lifecycle Mode     = new-build
-#   Commercial Mode    = internal-only
-#   Deployment Target  = none
-#   Launch Priority    = medium
-#
-# When a fallback is used (OpenRouter unreachable, parse error, or value not in
-# the option list) the issue is labeled 'auto:default-fallback' so an operator
-# can spot-check.
-
 on:
   issues:
-    types: [opened]
-
+    types:
+      - opened
 permissions:
   issues: write
   contents: read
-
 concurrency:
   group: wr-auto-classify-${{ github.event.issue.number }}
   cancel-in-progress: false
-
 jobs:
   preflight:
     name: Preflight credential check
@@ -62,7 +37,7 @@ jobs:
             echo "has_openrouter=false" >> "$GITHUB_OUTPUT"
             echo "::notice::OPENROUTER_API_KEY not configured; classifier will use opinionated defaults."
           fi
-
+    timeout-minutes: 30
   classify:
     name: Classify routing fields and write to Project v2
     needs: preflight
@@ -455,10 +430,26 @@ jobs:
           if used_fallback:
               add_label("auto:default-fallback")
 
+          # Apply the output-type label so other automation can easily read the routing decision
+          if final.get("Output Type"):
+              add_label(f"output-type:{final['Output Type']}")
+
+          pdf_batch_allowed = {"Not applicable", "Autocreate 3", "Autocreate 20"}
+          pdf_batch_raw = parse_form_section(ISSUE_BODY, "PDF pipeline batch")
+          extra_summary = []
+          if pdf_batch_raw:
+              if pdf_batch_raw in pdf_batch_allowed:
+                  extra_summary.append(f"- `PDF pipeline batch` = `{pdf_batch_raw}` _(explicit)_")
+              else:
+                  extra_summary.append(
+                      f"- `PDF pipeline batch` = ⚠️ unrecognized (`{pdf_batch_raw}`); expected one of {sorted(pdf_batch_allowed)}"
+                  )
+
           comment_lines = [
               "**WR Auto-Classify ran on this issue.**",
               "",
               *summary_lines,
+              *extra_summary,
               "",
               f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
           ]
@@ -466,6 +457,39 @@ jobs:
               comment_lines.append("")
               comment_lines.append("Label `auto:default-fallback` was added so this can be spot-checked.")
 
+          if final.get("Output Type") == "sellable-pdf":
+              batch_note = "PDF pipeline batch not parsed — treat like **Not applicable** / single-concept unless you fix the form."
+              if pdf_batch_raw == "Autocreate 3":
+                  batch_note = "Produce **3** candidate concepts/outlines (then narrow to one ship candidate)."
+              elif pdf_batch_raw == "Autocreate 20":
+                  batch_note = "Produce **20** candidate concepts/outlines (then narrow to one ship candidate)."
+              elif pdf_batch_raw == "Not applicable":
+                  batch_note = "**Not applicable** selected — single-concept PDF pipeline unless you change this dropdown."
+
+              repo_html = f"https://github.com/{OWNER}/{REPO}"
+              comment_lines.extend(
+                  [
+                      "",
+                      "### PDF product playbook (form-driven)",
+                      "",
+                      f"**Routing:** `sellable-pdf` + `{pdf_batch_raw or 'PDF pipeline batch missing'}` — {batch_note}",
+                      "",
+                      "Execute in order (authoritative docs — **not** label gymnastics):",
+                      "",
+                      f"1. [`workflows/PDF_WR_PLAYBOOK.md`]({repo_html}/blob/main/workflows/PDF_WR_PLAYBOOK.md) — WR → automation hand-off.",
+                      f"2. [`standards/shapes/PDF.md`]({repo_html}/blob/main/standards/shapes/PDF.md) — folder layout, quality gates, tooling.",
+                      f"3. [`workflows/PDF_AUTOMATION_GUIDE.md`]({repo_html}/blob/main/workflows/PDF_AUTOMATION_GUIDE.md) — Make / n8n / Zapier / Gumloop wiring.",
+                      f"4. [`standards/AUTOMATED_PRODUCT_PIPELINE.md`]({repo_html}/blob/main/standards/AUTOMATED_PRODUCT_PIPELINE.md) — where PDF sits in Listen→Ship.",
+                      "",
+                      "External runners should read **`### PDF pipeline batch`** from this issue body for autocreate count (3 vs 20).",
+                      "",
+                      "_Note: the `output-type:sellable-pdf` label mirrors this dropdown for legacy integrations only._",
+                  ]
+              )
+
           post_comment("\n".join(comment_lines))
           print("Classification complete.")
           PYEOF
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

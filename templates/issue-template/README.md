@@ -13,9 +13,11 @@ same Work Request pipeline:
    `auto-classify` and is filled in by the [auto-classifier workflow](../../.github/workflows/wr-auto-classify.yml).
    Use this for low-risk, internal, or agent-driven work.
 
-Both templates apply the `work-request` label so the auto-classifier and
-downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project
-v2 board sync) treat them identically. Both use the `[WR] ` title prefix.
+Both templates apply the `work-request` and `weekly-research` labels so the
+auto-classifier and downstream automation (`wr-pr-creation.yml`,
+`jules-invoke.yml`, the Project v2 board sync) treat them identically. Both
+use the `[WR] ` title prefix, and WR workflows also accept the BASIC WR issue
+type if GitHub issue-type selection arrives before labels are present.
 
 This directory is the **canonical, portable copy** of both templates. Drop
 them into any new (or existing) MIDNGHTSAPPHIRE repo to bring it onto the

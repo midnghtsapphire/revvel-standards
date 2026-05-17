@@ -1,51 +1,26 @@
-# PR Review Status Automation
-#
-# Automatically manages PR labels based on review status and provides
-# visual status badges for the review state of pull requests.
-#
-# What this workflow does:
-#   1. AUTO-LABEL ON REVIEW: When a review is submitted, automatically
-#      applies the appropriate label based on review state:
-#      - "awaiting-approval" when PR is opened and needs review
-#      - "review-started" when first review is submitted
-#      - "changes-requested" when reviewer requests changes
-#      - "approved" when reviewer approves
-#   2. REMOVE CONFLICTING LABELS: Ensures only the current status label
-#      is present (e.g., removes "awaiting-approval" when "approved" is added)
-#   3. STATUS COMMENT: Posts/updates a comment showing current review status
-#      with badges and reviewer information
-#   4. APPROVAL NOTIFICATIONS: Notifies PR author when reviews are submitted
-#
-# Triggers:
-#   • pull_request_review — when a review is submitted, edited, or dismissed
-#   • pull_request — when a PR is opened or reopened
-#   • pull_request_review_comment — when review comments are added
-
 name: PR Review Status Automation
-
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review]
+    types:
+      - opened
+      - reopened
+      - ready_for_review
   pull_request_review:
-    types: [submitted, edited, dismissed]
-
-# P0 - Critical workflow: must complete before PR merge
+    types:
+      - submitted
+      - edited
+      - dismissed
 concurrency:
   group: pr-review-status-${{ github.event.pull_request.number || github.event.review.pull_request_number }}
-  cancel-in-progress: false  # Let runs complete (critical status updates)
+  cancel-in-progress: false
   pull_request_review_comment:
-    types: [created]
-
+    types:
+      - created
 permissions:
   contents: read
   pull-requests: write
   issues: write
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Apply initial "awaiting-approval" label when PR is opened
-  # ────────────────────────────────────────────────────────────────────────────
   initial-review-label:
     name: Apply Awaiting Approval Label
     runs-on: ubuntu-latest
@@ -53,10 +28,9 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.pull_request.draft == false &&
       (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review')
-
     steps:
       - name: Ensure review status labels exist
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -87,9 +61,8 @@ jobs:
                 }
               }
             }
-
       - name: Apply awaiting-approval label
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -112,14 +85,13 @@ jobs:
               });
               core.info('Applied awaiting-approval label to PR');
             }
-
       - name: Post initial status comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const marker = '<!-- pr-review-status-badge -->';
-            
+
             // Check if status comment already exists
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -129,7 +101,7 @@ jobs:
             });
 
             const existingComment = comments.find(c => c.body && c.body.includes(marker));
-            
+
             if (!existingComment) {
               const body = [
                 marker,
@@ -150,25 +122,21 @@ jobs:
                 body,
               });
             }
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Update labels and status based on review state
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   update-review-status:
     name: Update Review Status Labels
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'pull_request_review' ||
       github.event_name == 'pull_request_review_comment'
-
     steps:
       - name: Determine review state and update labels
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
-            
+
             // Fetch all reviews for this PR
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
@@ -178,7 +146,7 @@ jobs:
 
             // Determine the current state based on the latest review from each reviewer
             const reviewerStates = new Map();
-            
+
             for (const review of reviews) {
               const reviewer = review.user.login;
               const state = review.state;
@@ -321,13 +289,15 @@ jobs:
 
             // Store the label for the next job
             core.setOutput('review_status', targetLabel);
-
       - name: Notify on approval
         if: steps.determine-review-state.outputs.review_status == 'approved'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             core.notice(
               `✅ PR #${context.payload.pull_request.number} has been approved and is ready to merge!`
             );
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

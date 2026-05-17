@@ -1,35 +1,18 @@
-# Close Linked Issue on PR Merge
-#
-# Automatically closes any issues linked to a merged PR — even when the PR
-# body doesn't contain a "Closes #N" keyword.
-#
-# Detection order (both run together; results are de-duplicated):
-#   1. PR body / title keywords:  Closes #N, Fixes #N, Resolves #N (+ variants)
-#   2. Branch name pattern:       issue/<N>-... created by create-issue-branch
-#
-# This ensures that issues auto-close whether the PR was opened by a human,
-# Copilot, or any other automated tool, without requiring manual editing of
-# the PR description.
-
 name: Close Linked Issue on PR Merge
-
 on:
   pull_request:
-    types: [closed]
-
+    types:
+      - closed
 permissions:
   issues: write
-
 jobs:
   close-linked-issue:
     name: Close Linked Issue
     runs-on: ubuntu-latest
-    # Only act when the PR was actually merged, not just closed/abandoned
     if: github.event.pull_request.merged == true
-
     steps:
       - name: Detect and close linked issues
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -107,4 +90,6 @@ jobs:
                 }
               }
             }
-
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

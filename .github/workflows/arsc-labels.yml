@@ -1,31 +1,13 @@
-# ARSC Labels — Add / Remove / Set / Clear labels on issues and pull requests.
-#
-# Uses: wagner-cotta/arsc-label@v1.0
-# Docs: https://github.com/wagner-cotta/arsc-label
-#
-# What this workflow does:
-#   1. MANUAL (workflow_dispatch): Operator can add, remove, set, or clear
-#      labels on any open issue or PR by supplying the object number,
-#      operation, and optional label list.
-#   2. AUTO-LABEL NEW ISSUES: When an issue is opened without labels it
-#      receives the `triage` label so it appears in the project Backlog.
-#   3. AUTO-LABEL DRAFT PRs: Draft pull requests receive the `draft` label
-#      automatically so the project board can filter them.
-#   4. AUTO-CLEAR DRAFT LABEL: When a draft PR is marked Ready for Review
-#      the `draft` label is removed.
-
 name: ARSC Labels
-
 on:
-  # ── Manual trigger ─────────────────────────────────────────────────────────
   workflow_dispatch:
     inputs:
       object-id:
-        description: "Issue or Pull Request number"
+        description: Issue or Pull Request number
         required: true
         type: string
       operation:
-        description: "Label operation to perform"
+        description: Label operation to perform
         required: true
         type: choice
         options:
@@ -34,30 +16,20 @@ on:
           - set
           - clear
       labels:
-        description: "Comma-separated label names (not required for 'clear')"
+        description: Comma-separated label names (not required for 'clear')
         required: false
         type: string
-
-  # ── Event-driven triggers ───────────────────────────────────────────────────
   issues:
-    types: [opened]
-  pull_request:
-    types: [opened, ready_for_review]
-
+    types:
+      - opened
 permissions:
   issues: write
   pull-requests: write
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Manual label management via workflow_dispatch
-  # ────────────────────────────────────────────────────────────────────────────
   manual-label:
     name: Manual Label Operation
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
-
     steps:
       - name: Manage Labels (ARSC)
         uses: wagner-cotta/arsc-label@v1.0
@@ -66,18 +38,14 @@ jobs:
           object-id: ${{ github.event.inputs['object-id'] }}
           operation: ${{ github.event.inputs.operation }}
           labels: ${{ github.event.inputs.labels }}
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Auto-label new issues with `triage`
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   triage-new-issue:
     name: Apply Triage Label to New Issues
     runs-on: ubuntu-latest
     if: github.event_name == 'issues' && github.event.action == 'opened'
-
     steps:
       - name: Ensure `triage` label exists
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -99,7 +67,6 @@ jobs:
                 core.info('Created label: triage');
               }
             }
-
       - name: Add `triage` label to new issue
         if: toJSON(github.event.issue.labels) == '[]'
         uses: wagner-cotta/arsc-label@v1.0
@@ -108,54 +75,6 @@ jobs:
           object-id: ${{ github.event.issue.number }}
           operation: add
           labels: triage
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 3 — Auto-label draft PRs and remove `draft` on promotion
-  # ────────────────────────────────────────────────────────────────────────────
-  draft-pr-label:
-    name: Manage Draft Label on Pull Requests
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Ensure `draft` label exists
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              await github.rest.issues.getLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'draft',
-              });
-            } catch (e) {
-              if (e.status === 404) {
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'draft',
-                  color: 'cccccc',
-                  description: 'Pull request is still a draft',
-                });
-                core.info('Created label: draft');
-              }
-            }
-
-      - name: Add `draft` label when PR is opened as draft
-        if: github.event.action == 'opened' && github.event.pull_request.draft == true
-        uses: wagner-cotta/arsc-label@v1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: add
-          labels: draft
-
-      - name: Remove `draft` label when PR is marked Ready for Review
-        if: github.event.action == 'ready_for_review'
-        uses: wagner-cotta/arsc-label@v1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: remove
-          labels: draft
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

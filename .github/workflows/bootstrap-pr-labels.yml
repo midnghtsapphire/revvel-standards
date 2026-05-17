@@ -1,0 +1,39 @@
+name: Bootstrap PR Labels
+on:
+  workflow_dispatch: null
+permissions:
+  issues: write
+jobs:
+  create-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const labels = [
+              { name: 'awaiting-review', color: '0075ca', description: '👀 Waiting for reviewer feedback' },
+              { name: 'needs-action',    color: 'e4e669', description: '🔄 Author must address review feedback' },
+              { name: 'approved',        color: '0e8a16', description: '✅ Approved by reviewer' },
+              { name: 'checks-failing',  color: 'd73a4a', description: '❌ CI checks are failing' },
+              { name: 'checks-passing',  color: 'a2eeef', description: '✔️ All CI checks pass' },
+              { name: 'ready-to-merge',  color: '008672', description: '🚀 Approved + checks pass — ready to merge' },
+              { name: 'issue:in-progress', color: '0075ca', description: '🔧 Issue has a linked PR in progress' },
+              { name: 'issue:done',      color: '0e8a16', description: '✅ Issue resolved — linked PR merged' },
+              { name: 'issue:stale',     color: 'e4e669', description: '⏰ No activity for 7+ days' },
+              { name: 'lifecycle:stuck', color: 'd93f0b', description: '🚨 Label watchdog detected a stuck state' },
+            ];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.createLabel({ owner, repo, ...label });
+                console.log(`Created: ${label.name}`);
+              } catch(e) {
+                if (e.status === 422) {
+                  await github.rest.issues.updateLabel({ owner, repo, ...label });
+                  console.log(`Updated: ${label.name}`);
+                }
+              }
+            }
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

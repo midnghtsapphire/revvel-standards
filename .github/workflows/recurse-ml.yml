@@ -1,53 +1,31 @@
-# RecurseML Autonomous Code Quality Workflow
-# Triggers on every PR and push to main.
-# RecurseML analyzes code for bugs, enforces recurse-rules.md, and posts review comments on PRs.
-#
-# SETUP:
-#   1. Install the RecurseML GitHub App: https://app.recurse.ml/integrations/github
-#   2. Add your RecurseML API key as a repository secret: RECURSE_ML_API_KEY
-#      (Settings → Secrets and variables → Actions → New repository secret)
-#   3. The `recurse-rules.md` file at the repo root defines custom code standards.
-
 name: RecurseML — Autonomous Code Review
-
-# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is now the sole assigned PR reviewer.
-# RecurseML is kept as a manual fallback / push-to-main scanner only.
-# Re-enable the `pull_request` trigger if you want a 2nd opinion alongside BITO.
-
 on:
-  # # DISABLED — see header. BITO AI is the assigned reviewer.
-  # pull_request:
-  #   types: [opened, synchronize, reopened]
   push:
     branches:
       - main
-      - "release/**"
-      - "hotfix/**"
+      - release/**
+      - hotfix/**
   workflow_dispatch:
     inputs:
       target_branch:
-        description: "Branch or SHA to scan"
+        description: Branch or SHA to scan
         required: false
-        default: "main"
-
+        default: main
 concurrency:
   group: recurse-ml-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   recurse-ml-review:
     name: RecurseML Code Review
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write  # Required to post inline PR review comments
-
+      pull-requests: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
-
       - name: Run RecurseML Analysis
         env:
           RECURSE_ML_API_KEY: ${{ secrets.RECURSE_ML_API_KEY }}
@@ -126,7 +104,6 @@ jobs:
             echo "   Check your RECURSE_ML_API_KEY and RecurseML dashboard."
             exit 1
           fi
-
       - name: Post RecurseML Summary to Step Summary
         if: always()
         run: |
@@ -148,3 +125,6 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_For full findings, visit the [RecurseML Dashboard](https://app.recurse.ml)._" >> $GITHUB_STEP_SUMMARY
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

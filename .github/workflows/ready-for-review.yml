@@ -1,56 +1,32 @@
-# Copy to .github/workflows/ready-for-review.yml in your app repo.
-# No configuration required — works out of the box with GITHUB_TOKEN.
-# 04/18/2026 modified GITHUB_TOKEN to READY_FOR_REVIEW_TOKEN Fine Grain PAT required. Queue I am the Champion-Audrey
-# What this workflow does:
-#   1. AUTO-PROMOTE: When all CI checks pass on a draft PR, it is automatically
-#      converted to "Ready for Review" so reviewers are notified without manual action.
-#   2. LABEL LINKED ISSUES: When a PR is opened (non-draft) or promoted to Ready
-#      for Review, any issues referenced with "Closes #N / Fixes #N / Resolves #N"
-#      in the PR title or body are labeled `in-review` so the project board
-#      moves them to the In Review column automatically.
-#   3. CHECKLIST COMMENT + AI REVIEWER HANDOFF: A review-readiness checklist
-#      comment is posted to the PR when it first becomes ready for review. The
-#      comment @-mentions the AI reviewer fleet (CodeRabbit, Copilot, Roo,
-#      Antigravity, …) and assigns each checklist section to a specific bot so
-#      the bots "take over" verification instead of the checklist sitting idle.
-#   4. CLEANUP: When a PR is merged or closed, the `in-review` label is removed
-#      from all linked issues (GitHub closes them automatically on merge).
-
 name: Ready for Review Automation
-
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review, closed]
-
-# P1 - Important workflow: can cancel old runs for newer events
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - closed
 concurrency:
   group: ready-for-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 permissions:
   contents: read
   pull-requests: write
   issues: write
   checks: read
-
 jobs:
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 1 — Auto-promote a draft PR once all CI checks turn green
-  # ────────────────────────────────────────────────────────────────────────────
   promote-draft:
     name: Promote Draft PR When CI Passes
     runs-on: ubuntu-latest
-    # Only run on push-to-draft-PR events (not when it is already ready)
     if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.draft == true &&
       (github.event.action == 'synchronize' || github.event.action == 'reopened')
-
     steps:
       - name: Check all CI status checks for this commit
         id: check-status
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -116,10 +92,9 @@ jobs:
               await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
               elapsed += POLL_INTERVAL_MS;
             }
-
       - name: Convert draft PR to Ready for Review
         if: steps.check-status.outputs.all_passed == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
@@ -135,10 +110,7 @@ jobs:
               `✅ PR #${context.payload.pull_request.number} — all CI checks passed. ` +
               `Promoted from Draft to Ready for Review.`
             );
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 2 — Label linked issues as `in-review` and post checklist comment
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 30
   label-linked-issues:
     name: Label Linked Issues as In-Review
     runs-on: ubuntu-latest
@@ -148,10 +120,9 @@ jobs:
         github.event.action == 'ready_for_review' ||
         (github.event.action == 'opened' && github.event.pull_request.draft == false)
       )
-
     steps:
       - name: Ensure `in-review` label exists
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -173,10 +144,9 @@ jobs:
                 core.info('Created label: in-review');
               }
             }
-
       - name: Find linked issues and apply `in-review` label
         id: find-issues
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -229,18 +199,13 @@ jobs:
                 core.warning(`  • Could not label issue #${num}: ${e.message}`);
               }
             }
-
       - name: Check out repository (base ref, for scanner script)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
-          # Use the PR's base ref (target branch) rather than the PR head,
-          # so the scanner we execute is trusted code from the repository
-          # default branch, never code introduced by the PR being scanned.
           ref: ${{ github.event.pull_request.base.ref }}
           persist-credentials: false
-
       - name: Post review-readiness checklist comment on PR
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -331,18 +296,14 @@ jobs:
               issue_number: context.payload.pull_request.number,
               body,
             });
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Job 3 — Remove `in-review` label from linked issues when PR is closed
-  # ────────────────────────────────────────────────────────────────────────────
+    timeout-minutes: 15
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
     runs-on: ubuntu-latest
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.action == 'closed'
-
     steps:
       - name: Remove `in-review` label from linked issues
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ github.token }}
           script: |
@@ -385,3 +346,6 @@ jobs:
                 }
               }
             }
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

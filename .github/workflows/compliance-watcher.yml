@@ -1,23 +1,19 @@
 name: compliance-watcher
-
 on:
   schedule:
-    - cron: '0 14 * * *'
-  workflow_dispatch:
-
+    - cron: 0 14 * * *
+  workflow_dispatch: null
 permissions:
   contents: read
   issues: write
-
 jobs:
   watch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Evaluate deadlines and alert
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const fs = require('fs');
@@ -87,3 +83,6 @@ jobs:
               await github.rest.issues.create({ owner, repo, title, body, labels: ['urgent-compliance'], assignees: [assignee] });
               core.info(`Opened issue: ${title}`);
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

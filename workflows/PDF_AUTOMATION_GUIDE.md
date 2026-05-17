@@ -706,6 +706,10 @@ This automation can be triggered by:
 - Manual webhook call - For ad-hoc product creation
 - Scheduled cron - For batch processing
 
+### Work Requests (GitHub)
+
+When intake starts from a **Work Request** issue with **Output Type = sellable-pdf**, use **[PDF_WR_PLAYBOOK.md](./PDF_WR_PLAYBOOK.md)** as the routing spine. Parse **`### PDF pipeline batch`** from the issue (`Not applicable`, `Autocreate 3`, `Autocreate 20`) to drive how many candidate concepts your workflow generates — prefer reading the issue body over inventing custom GitHub labels for that count.
+
 ---
 
 ## Next Steps

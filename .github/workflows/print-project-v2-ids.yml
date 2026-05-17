@@ -1,50 +1,37 @@
 name: Print Project v2 field and option IDs
-
 on:
   workflow_dispatch:
     inputs:
       owner_type:
-        description: "Project owner type"
+        description: Project owner type
         required: true
-        default: "organization"
+        default: organization
         type: choice
         options:
           - organization
           - user
       owner:
-        description: "GitHub organization or username that owns the project"
+        description: GitHub organization or username that owns the project
         required: true
         type: string
       project_number:
-        description: "Project number from the Project URL, e.g. /projects/5"
+        description: Project number from the Project URL, e.g. /projects/5
         required: true
         type: string
-
 permissions:
   contents: read
-
 jobs:
   print-project-ids:
     name: Print Project v2 IDs
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
-      # Recommended for organization-owned Project v2 boards.
-      # Create a GitHub App with:
-      # - Organization permissions: Projects = Read-only or Read and write
-      # Store the App ID in vars.PROJECTS_APP_ID and the private key in secrets.PROJECTS_APP_PRIVATE_KEY.
-      #
-      # If you prefer a classic PAT instead, remove this step and set:
-      #   GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
-      # in the "Query Project v2 data" step.
       - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3.1.1
         with:
           app-id: ${{ vars.PROJECTS_APP_ID }}
           private-key: ${{ secrets.PROJECTS_APP_PRIVATE_KEY }}
-
       - name: Query Project v2 data
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -146,7 +133,6 @@ jobs:
             echo "owner_type must be either organization or user."
             exit 1
           fi
-
       - name: Print copy/paste variables
         env:
           OWNER_TYPE: ${{ inputs.owner_type }}
@@ -199,11 +185,12 @@ jobs:
 
           echo
           echo "Saved readable output to project-v2-ids.txt"
-
       - name: Upload Project v2 ID report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: project-v2-ids
           path: |
             project-v2-ids.txt
             project_data.json
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

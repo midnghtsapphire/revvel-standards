@@ -1,26 +1,19 @@
 name: Set default Project v2 fields for new issues
-
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Optional issue number to backfill or re-run defaults for"
+        description: Optional issue number to backfill or re-run defaults for
         required: false
         type: string
-
 permissions:
   contents: read
   issues: read
-
 jobs:
   preflight:
-    # Probe whether BOTH GitHub App credentials are configured. We must use a
-    # job step (not the job-level if:) because GitHub Actions does not permit
-    # the secrets context in job-level if conditions; only step-level if and
-    # env: / with: contexts can read secrets. The downstream job consumes the
-    # boolean output via needs.preflight.outputs.has_creds.
     name: Check Project v2 App credentials
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -43,47 +36,27 @@ jobs:
             echo "has_creds=false" >> "$GITHUB_OUTPUT"
             echo "::notice::PROJECTS_APP_ID and PROJECTS_APP_PRIVATE_KEY not configured; skipping App default-field setter."
           fi
-
   set-project-defaults:
     name: Add issue to Project v2 and set default fields
-    # Skip silently when the GitHub App credentials are not configured. This
-    # lets the App and PAT default-setter workflows coexist in the same repo
-    # without one always failing on every issue when only one auth path is
-    # provisioned. Manual workflow_dispatch always runs so operators can see
-    # the actual configuration error if they invoke it intentionally.
     needs: preflight
     if: ${{ github.event_name == 'workflow_dispatch' || needs.preflight.outputs.has_creds == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     env:
-      # Required Project v2 node ID. Example format: PVT_kwHOA...
-      # Store this as a repository/org/environment variable named PROJECT_ID.
       PROJECT_ID: ${{ vars.PROJECT_ID }}
-
-      # Required Project v2 field node IDs. Example format: PVTSSF_lAHO...
       PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
       STATUS_FIELD_ID: ${{ vars.STATUS_FIELD_ID }}
       RESEARCH_MODE_FIELD_ID: ${{ vars.RESEARCH_MODE_FIELD_ID }}
-
-      # Required single-select option IDs. Example format: 47fc9ee4.
       PRIORITY_MEDIUM_OPTION_ID: ${{ vars.PRIORITY_MEDIUM_OPTION_ID }}
       STATUS_INBOX_OPTION_ID: ${{ vars.STATUS_INBOX_OPTION_ID }}
       RESEARCH_MODE_STANDARD_OPTION_ID: ${{ vars.RESEARCH_MODE_STANDARD_OPTION_ID }}
-
     steps:
-      # Recommended for organization-owned Project v2 boards.
-      # Create a GitHub App with:
-      # - Organization permissions: Projects = Read and write
-      # - Repository permissions: Issues = Read-only
-      # Store the App ID in vars.PROJECTS_APP_ID and the private key in secrets.PROJECTS_APP_PRIVATE_KEY.
       - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3.1.1
         with:
           app-id: ${{ vars.PROJECTS_APP_ID }}
           private-key: ${{ secrets.PROJECTS_APP_PRIVATE_KEY }}
-
       - name: Resolve issue node ID
         id: issue
         env:
@@ -122,7 +95,6 @@ jobs:
           fi
 
           echo "issue_id=${ISSUE_ID}" >> "${GITHUB_OUTPUT}"
-
       - name: Add issue to project or get existing project item
         id: project-item
         env:
@@ -186,7 +158,6 @@ jobs:
           fi
 
           echo "item_id=${ITEM_ID}" >> "${GITHUB_OUTPUT}"
-
       - name: Set default Project v2 fields
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -243,3 +214,5 @@ jobs:
               }
             ' \
             --silent
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
