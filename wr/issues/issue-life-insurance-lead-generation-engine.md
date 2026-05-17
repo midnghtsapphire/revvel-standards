@@ -135,9 +135,10 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
+  - Landing-page quote requests do not bypass compliance tracking; store consent text/version, source URL/form ID, and acceptance timestamp
 - Model contactability with normalized lookup-backed statuses, not a single blanket positive flag
-    - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
-    - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
+  - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
+  - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
 - Enforce TCPA/DNC scrub (National DNC, applicable state DNC, and internal suppression list) at two checkpoints: pre-export batch validation and pre-contact validation immediately before each outbound attempt
 - Apply data-retention policy (default 180 days for unsold raw records; configurable by jurisdiction)
 - Capture source-level licensing metadata (`source_license`, `license_expires_at`) for auditability
@@ -289,8 +290,6 @@ A static landing page (`landing/index.html`) captures inbound prospects who are 
 - **Premium tier:** inbound self-identified leads → $75–$150 per PDF of 10 (i.e., $7.50–$15/lead)
 - **Platform:** Deploy via Vercel / GitHub Pages. Form backed by a GitHub Actions webhook or Make.com automation.
 
-**Important compliance modeling note:** inbound landing-page leads should not bypass compliance tracking. They are usually the strongest consent source, but the system still needs a stored status proving why contact is allowed, when consent was captured, and what policy version the user accepted.
-
 #### Sales Channels
 
 1. **Polar.sh / Gumroad digital storefront** — Browse and buy PDFs by state + trigger type
@@ -380,6 +379,7 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
+const { isContactEligible } = require('./compliance-utils'); // policy gate helper
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
