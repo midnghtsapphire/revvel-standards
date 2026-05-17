@@ -242,6 +242,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-05-17T02:45:00Z
+
+**Task Attempted:** Fix PR #13482 merge readiness for the Life Insurance Lead Engine after cubic identified the newsletter opt-out compliance mismatch.
+
+**Outcome:** Success — added a real local newsletter opt-out path, corrected the product README compliance claim, removed incomplete-work language, upgraded the product dependency/tooling stack, and verified `npm run typecheck`, `npm run lint`, `npm run build`, and `npm audit` all pass in `products/life-insurance-lead-engine/build`.
+
+**Root Cause of Failure (If any):** The original newsletter component only set a submitted flag and contained an unwired integration TODO while product docs claimed GDPR/CCPA opt-out support. Validation also exposed stale package choices: an old vulnerable Next.js version, vulnerable `xlsx`, no lockfile for auditability, and a lint script tied to the removed `next lint` command.
+
+**Self-Healing Fix / Learned Lesson:** PR review fixes should validate the changed app, not only the reviewed line. For Next 16 apps, use `eslint .` with the flat `eslint-config-next` exports, run `next typegen` before direct `tsc --noEmit`, set `turbopack.root` for nested product apps, and replace abandoned vulnerable packages (`xlsx`) with maintained patched forks (`@e965/xlsx`) when API-compatible.
+
+**Next Action:** Merge PR #13482 after CI confirms the pushed branch.
+
+---
+
 **Date/Time:** 2026-05-17T01:20Z
 
 **Task Attempted:** Implement the whole WR research/search engine requested from GitHub context.
@@ -278,3 +292,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** For no-key Perplexity work, use only the anonymous Labs/Web query paths from `helallao/perplexity-ai`; do not wire Emailnator or generated-account logic into Revvel automation. Prefer `LabsClient(..., model="sonar")` first and fall back to `Client.search(..., mode="auto")` because upstream issue #70 documents `Client.search()` instability. If workflow/root tests fail on missing `yaml`, run `npm ci` at `/workspace` and rerun validation.
 
 **Next Action:** None for the no-key Perplexity integration; monitor PR #13507 validation.
+
+---
+
+**Date/Time:** 2026-05-17T21:15:00Z
+
+**Task Attempted:** Resolve PR #13482 merge-state conflicts and categorize the user's status/score/database architecture concerns from the review thread.
+
+**Outcome:** Success — merged current `main` into the branch, resolved add/add conflicts by keeping the hardened lead-engine implementation, added a Decision Scoring Engine standard, updated the WR template to require explicit scoring models, corrected the lead-generation WR with async-safe eligibility pseudocode, and made the advanced CodeQL workflow manual-only because default code scanning is already enabled.
+
+**Root Cause of Failure (If any):** GitHub reported `mergeStateStatus: DIRTY` because `main` had gained overlapping product/doc files after the branch was created. The WR also lacked a reusable decision-scoring contract, making it easy to discuss booleans, status, score, contactability, manual review, and tenant separation as separate concerns.
+
+**Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. If CodeQL fails with "advanced configurations cannot be processed when the default setup is enabled," keep the advanced workflow manual-only or disable default setup; do not run both automatically. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
+
+**Next Action:** Confirm PR #13482 checks pass after the merge-resolution push.

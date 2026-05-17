@@ -1,79 +1,129 @@
-// This simulates the actual NPI scraping logic.
-// Due to browser CORS, a real version would run in a Next.js API route or backend process.
+// NPPES NPI Registry API client
+// Docs: https://npiregistry.cms.hhs.gov/api-page
 
-export interface ScrapedLead {
-  id: string;
-  first_name: string;
-  last_name: string;
+export interface NPIProvider {
+  npi: string;
+  firstName: string;
+  lastName: string;
   credential: string;
   specialty: string;
-  practice_name: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
   zip: string;
-  priority_tier: 'A' | 'B' | 'C';
+  tier: 'A' | 'B' | 'C';
+  pitchAngle: string;
 }
 
-const SPECIALTIES = [
-  { term: 'Plastic Surgery', tier: 'A' },
-  { term: 'Oral and Maxillofacial Surgery', tier: 'A' },
-  { term: 'Cardiovascular Disease', tier: 'A' },
-  { term: 'Orthopedic Surgery', tier: 'A' },
-  { term: 'Anesthesiology', tier: 'A' },
-  { term: 'Radiology', tier: 'A' },
-  { term: 'Dermatology', tier: 'A' },
-  { term: 'Orthodontics', tier: 'B' },
-  { term: 'Prosthodontics', tier: 'B' },
-  { term: 'Periodontics', tier: 'B' },
-  { term: 'Ophthalmology', tier: 'B' },
-  { term: 'Otolaryngology', tier: 'B' },
-  { term: 'Dentist', tier: 'C' },
-  { term: 'Internal Medicine', tier: 'C' },
-  { term: 'Family Medicine', tier: 'C' }
-];
+interface NPIBasic {
+  first_name?: string;
+  last_name?: string;
+  credential?: string;
+}
 
-export async function scrapeNpi(zipCodes: string[]): Promise<ScrapedLead[]> {
-  const allLeads: ScrapedLead[] = [];
+interface NPIAddress {
+  address_purpose?: string;
+  telephone_number?: string;
+  address_1?: string;
+  address_2?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+}
 
-  for (const zip of zipCodes) {
-    for (const spec of SPECIALTIES) {
-      try {
-        // Build the URL for the NPPES API
-        const url = `https://npiregistry.cms.hhs.gov/api/?version=2.1&postal_code=${zip}&taxonomy_description=${encodeURIComponent(spec.term)}&limit=50`;
-        const response = await fetch(url);
-        if (!response.ok) continue;
+interface NPITaxonomy {
+  primary?: boolean;
+  desc?: string;
+}
 
-        const data = await response.json();
+interface NPIResult {
+  number?: number | string;
+  basic?: NPIBasic;
+  addresses?: NPIAddress[];
+  taxonomies?: NPITaxonomy[];
+}
 
-        if (data.results && data.results.length > 0) {
-          data.results.forEach((result: Record<string, unknown>) => {
-            const basicInfo = result.basic as Record<string, string> | undefined;
-            const addresses = result.addresses as Array<Record<string, string>> | undefined;
-            const address = addresses?.find((a) => a.address_purpose === 'LOCATION');
+interface NPIResponse {
+  results?: NPIResult[];
+}
 
-            if (basicInfo && basicInfo.first_name && basicInfo.last_name && address && address.telephone_number) {
-              allLeads.push({
-                id: String(result.number),
-                first_name: basicInfo.first_name,
-                last_name: basicInfo.last_name,
-                credential: basicInfo.credential || '',
-                specialty: spec.term,
-                practice_name: basicInfo.organization_name || '',
-                phone: address.telephone_number,
-                address: `${address.address_1} ${address.city}, ${address.state}`,
-                zip: zip,
-                priority_tier: spec.tier as 'A' | 'B' | 'C'
-              });
-            }
-          });
-        }
-      } catch (error) {
-        console.error(`Error scraping ${spec.term} for zip ${zip}:`, error);
-      }
+const HIGH_VALUE_SPECIALTIES: Record<string, { tier: 'A' | 'B' | 'C'; angle: string }> = {
+  Surgery: { tier: 'A', angle: 'disability income protection + IUL for tax-advantaged growth' },
+  'Orthopaedic Surgery': { tier: 'A', angle: 'high disability risk — own-occupation DI + whole life' },
+  'Plastic Surgery': { tier: 'A', angle: 'business succession + estate planning life insurance' },
+  Anesthesiology: { tier: 'A', angle: 'disability income + IUL retirement supplement' },
+  Cardiology: { tier: 'A', angle: 'estate planning + permanent life insurance' },
+  Radiology: { tier: 'A', angle: 'asset protection + IUL' },
+  Dermatology: { tier: 'A', angle: 'practice continuation + buy-sell life insurance' },
+  Dentist: { tier: 'B', angle: 'practice owner buy-sell + key-person life insurance' },
+  'Internal Medicine': { tier: 'B', angle: 'term + DI bundle' },
+  'Family Medicine': { tier: 'C', angle: 'mortgage protection + term life' },
+  Pediatrics: { tier: 'C', angle: 'family income protection + term life' },
+};
+
+function scoreProvider(taxonomyDesc: string): { tier: 'A' | 'B' | 'C'; angle: string } {
+  for (const key of Object.keys(HIGH_VALUE_SPECIALTIES)) {
+    if (taxonomyDesc.toLowerCase().includes(key.toLowerCase())) {
+      return HIGH_VALUE_SPECIALTIES[key];
     }
   }
+  return { tier: 'C', angle: 'general term life + disability income' };
+}
 
-  // Basic deduplication on NPI number
-  const uniqueLeads = Array.from(new Map(allLeads.map(lead => [lead.id, lead])).values());
-  return uniqueLeads;
+export async function fetchNPIByZip(zip: string, limit = 50): Promise<NPIProvider[]> {
+  const url = new URL('https://npiregistry.cms.hhs.gov/api/');
+  url.searchParams.set('version', '2.1');
+  url.searchParams.set('postal_code', zip);
+  url.searchParams.set('enumeration_type', 'NPI-1');
+  url.searchParams.set('limit', String(limit));
+
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`NPI API error: ${res.status}`);
+  const data = (await res.json()) as NPIResponse;
+
+  const results: NPIProvider[] = (data.results ?? []).map((r) => {
+    const basic = r.basic || {};
+    const addr = (r.addresses ?? []).find((a) => a.address_purpose === 'LOCATION') || (r.addresses ?? [])[0] || {};
+    const taxonomy = (r.taxonomies ?? []).find((t) => t.primary) || (r.taxonomies ?? [])[0] || {};
+    const specialty = taxonomy.desc ?? 'Unknown';
+    const score = scoreProvider(specialty);
+
+    return {
+      npi: String(r.number ?? ''),
+      firstName: basic.first_name ?? '',
+      lastName: basic.last_name ?? '',
+      credential: basic.credential ?? '',
+      specialty,
+      phone: addr.telephone_number ?? '',
+      address: [addr.address_1, addr.address_2].filter(Boolean).join(' '),
+      city: addr.city ?? '',
+      state: addr.state ?? '',
+      zip: addr.postal_code ?? zip,
+      tier: score.tier,
+      pitchAngle: score.angle,
+    };
+  });
+
+  return results;
+}
+
+export function generatePitchScript(p: NPIProvider): string {
+  return `Hi Dr. ${p.lastName}, this is [AGENT NAME] from [AGENCY]. ` +
+    `I work specifically with ${p.specialty} professionals on ${p.pitchAngle}. ` +
+    `Most ${p.specialty.toLowerCase()} specialists I speak with are surprised to learn ` +
+    `they're either over-paying for inadequate coverage or missing out on tax-advantaged ` +
+    `wealth strategies their group plan doesn't offer. ` +
+    `I'd love to share a 15-minute case study from a colleague in your specialty. ` +
+    `When's a good time this week — Tuesday at 4 or Thursday at noon?`;
+}
+
+export function leadsToCSV(leads: NPIProvider[]): string {
+  const headers = ['NPI', 'First Name', 'Last Name', 'Credential', 'Specialty', 'Phone', 'Address', 'City', 'State', 'Zip', 'Tier', 'Pitch Angle', 'Script'];
+  const rows = leads.map(l => [
+    l.npi, l.firstName, l.lastName, l.credential, l.specialty,
+    l.phone, l.address, l.city, l.state, l.zip, l.tier, l.pitchAngle,
+    generatePitchScript(l),
+  ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+  return [headers.join(','), ...rows].join('\n');
 }

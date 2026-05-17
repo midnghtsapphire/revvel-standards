@@ -159,6 +159,14 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-17 21:20 UTC
+Updated by: Cursor
+Session summary: Resolved PR #13482 merge conflicts with main, categorized the life-insurance scoring concerns, added the Decision Scoring Engine standard, corrected async eligibility pseudocode guidance, and made the advanced CodeQL workflow manual-only because default code scanning is enabled.
+
+Last updated: 2026-05-17 02:45 UTC
+Updated by: Cursor
+Session summary: Fixed PR #13482 newsletter opt-out mismatch, upgraded the life-insurance lead engine dependency/tooling stack, and verified product typecheck, lint, build, and npm audit pass.
+
 Last updated: 2026-05-17 01:37 UTC
 Updated by: Cursor
 Session summary: Fixed BASIC WR intake label drift by defining missing labels, adding `weekly-research` to both WR templates, recognizing BASIC WR issue types in WR workflows, normalizing missing labels, and verifying targeted tests, workflow validation, label checks, and root npm test.

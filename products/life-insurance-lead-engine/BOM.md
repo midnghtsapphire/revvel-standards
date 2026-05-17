@@ -1,25 +1,16 @@
-# BOM — `<product_slug>`
+# Bill of Materials
 
-> Bill of materials for this agent-generated product. Each row must be resolved
-> to `✅ on hand` before the build step runs. The BOM gatekeeper
-> ([`.github/workflows/credential-gatekeeper.yml`](../../../.github/workflows/credential-gatekeeper.yml))
-> reads this file and either auto-provisions (cheap/free items) or opens a
-> `bom-block` issue for human action.
+| Component | Provider | Cost/mo | Purpose |
+|-----------|----------|---------|---------|
+| Hosting | Vercel | $0 (hobby) / $20 (pro) | Next.js deployment |
+| Domain | Namecheap | $1 | Custom domain |
+| Payments | Polar.sh | 4% + $0.40 | Checkout & subscriptions |
+| Email | Resend | $0 (3k/mo free) | Newsletter & transactional |
+| Analytics | Plausible | $9 | Privacy-friendly analytics |
+| NPI API | HHS NPPES | $0 | Public registry data |
+| Total Fixed | | **$30/mo** | |
 
-## Required (build cannot start until all rows are ✅)
-
-| Item | Type | Provider | Est. Cost | Status | Notes |
-|---|---|---|---|---|---|
-| _example: Stripe account_ | account | Stripe | free | ✅ on hand | shared org account |
-| _example: domain_ | infra | DigitalOcean | $12/yr | ⬜ needed | needs purchase |
-
-## Optional (improves product but not blocking)
-
-| Item | Type | Provider | Est. Cost | Status | Notes |
-|---|---|---|---|---|---|
-
-## Already-on-hand (informational)
-
-See [`docs/_MASTER_BOM.md`](../../../docs/_MASTER_BOM.md) and
-[`docs/_MASTER_INVENTORY.md`](../../../docs/_MASTER_INVENTORY.md) for org-wide
-inventory. Do not duplicate; reference instead.
+## Revenue at 110 customers
+- Gross: $10,670/mo
+- Costs: $30 + payment fees (~$450) = $480
+- Net: $10,190/mo (95.5% margin)
