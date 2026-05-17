@@ -135,7 +135,7 @@ To support ship-to-market execution, this WR includes a BOM-style comparison of 
 
 **BOM compliance controls (required before activation):**
 - Verify and store lawful contact basis per record (`opt_in_source`, `consent_timestamp`, `consent_proof_url`)
-  - Landing-page quote requests do not bypass compliance tracking; store consent text/version, source URL/form ID, and acceptance timestamp
+  - Landing-page quote requests do not bypass compliance tracking; store the rendered consent language (or immutable template ID + version), source URL/form ID, and acceptance timestamp
 - Model contactability with normalized lookup-backed statuses, not a single blanket positive flag
   - Minimum statuses: `inbound_express_consent`, `outbound_public_record_requires_scrub`, `outbound_scrubbed_contact_ready`
   - Manual-stop statuses: `manual_review_required`, `revoked_or_opted_out`, `dnc_blocked`
@@ -367,11 +367,11 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 
 **Recommended behavior:**
 - Landing-page quote requests start as `inbound_express_consent` **only after** storing consent text/version, timestamp, source URL/form ID, and suppression-check outcome
-- Public-record leads start as `outbound_public_record_requires_scrub`, not contact-ready, and move to `outbound_scrubbed_contact_ready` only after DNC/internal suppression checks pass for the intended channel
+- Public-record leads start as `outbound_public_record_requires_scrub`, not contact-ready, and move to `outbound_scrubbed_contact_ready` only after the relevant phone/SMS/email suppression and DNC checks pass for the intended outreach channel
 - Any complaint, revocation, or ambiguous source moves the lead to `manual_review_required` or `revoked_or_opted_out`
 - Reports for non-technical operators should display friendly labels from lookup tables, not raw booleans or magic numbers
 
-**Policy gate helper:** `isContactEligible(lead, checkpoint)` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) and must fail closed to `false` when status data is missing, invalid, or the suppression/DNC check errors.
+**Policy gate helper:** `isContactEligible(lead, checkpoint)` returns a boolean for checkpoint-specific validation (`pre_export`, `pre_contact`) using the rules in this section. It must fail closed to `false`, emit an audit log entry, and route the record to manual review when status data is missing, invalid, or the suppression/DNC check errors.
 
 ### Orchestrator Script — `scripts/life-insurance-lead-engine.js`
 
@@ -379,7 +379,7 @@ Do **not** default every record to `tcpa_positive=1`. Use a lookup-backed status
 // Pseudocode outline — implement per revvel-standards Node.js patterns
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const LINKEDIN_API_KEY = process.env.LINKEDIN_API_KEY; // LinkedIn paid API program (~$100/mo)
-const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific contact eligibility rules
+const { isContactEligible } = require('./compliance-utils'); // validates checkpoint-specific contact eligibility rules from this WR section
 
 async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 1. Scout Phase: query public sources and LinkedIn API for trigger signals
