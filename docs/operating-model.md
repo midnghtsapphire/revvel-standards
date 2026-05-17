@@ -35,7 +35,7 @@ The system does **not** auto-build every idea. It researches first, scores it, a
 
 ## 1. Intake
 
-Work requests are filed through one of two issue templates. Both apply the `work-request` label so the auto-classifier and downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat them identically. Downstream automation keys off the `[WR]` title prefix; both templates use it.
+Work requests are filed through one of two issue templates. Both apply the `work-request` and `weekly-research` labels so the auto-classifier and downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat them identically. Downstream automation also accepts the `[WR]` title prefix and the BASIC WR issue type as WR signals so GitHub UI label drift cannot strand the request.
 
 ### Two templates: when to use which
 
@@ -158,7 +158,7 @@ Inbox → Researching → Scored → { Hold | Archived | Approved → In Build �
 
 The expected end-to-end flow once the operating model is wired:
 
-1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`OpenHands System WR`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` label so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) fires on either; the lightweight form additionally applies `quick` + `OpenHands`.
+1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`OpenHands System WR`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` and `weekly-research` labels so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) and WR PR creation fire on either; the lightweight form additionally applies `quick` + `OpenHands`.
 2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
 3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
 4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).

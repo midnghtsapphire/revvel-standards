@@ -7,4 +7,4 @@
 - CSV/Excel dedupe utility with Fuse.js fuzzy matching.
 - Specialty-tailored pitch script generator.
 - Mandatory EXRUP UI components: Affiliate Marketing, Newsletter, Accessibility Controls.
-- Next.js 14 App Router with Tailwind CSS.
+- Next.js 16 App Router with Tailwind CSS.

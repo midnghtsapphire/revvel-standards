@@ -26,7 +26,7 @@ This product is part of the **$10M in 3 Years** prime directive pipeline.
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
 - Fuse.js (fuzzy matching)
