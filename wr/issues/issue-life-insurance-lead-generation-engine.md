@@ -343,10 +343,10 @@ To avoid shallow research quality, the research system is split into two indepen
 
 For this engine, add dedicated operational fleets instead of overloading the research swarm:
 
-1. **Database Architecture Fleet** — owns lead schema, lookup tables, indexing/locking strategy, deduplication model, and reporting views
-2. **Database Admin / Reliability Fleet** — owns migrations, backups, retention jobs, concurrency safety, and audit logging
-3. **Compliance Operations Fleet** — owns consent artifacts, TCPA/DNC checkpoints, suppression lists, and jurisdiction-specific policy changes
-4. **Revenue Delivery Fleet** — owns storefront delivery, PDF packaging, CRM/webhook dispatch, and subscription/reporting surfaces
+1. **Database Architecture Fleet** — defines lead schema, lookup tables, indexing/locking strategy, deduplication model, and reporting views
+2. **Database Admin / Reliability Fleet** — manages migrations, backups, retention jobs, concurrency safety, and audit logging
+3. **Compliance Operations Fleet** — maintains consent artifacts, TCPA/DNC checkpoints, suppression lists, and jurisdiction-specific policy changes
+4. **Revenue Delivery Fleet** — implements storefront delivery, PDF packaging, CRM/webhook dispatch, and subscription/reporting surfaces
 
 **Priority rule:** if community chatter shows TCPA/DNC complaints are a top buyer risk, the Compliance Operations Fleet ships before scale optimizations because legal/contactability failures destroy the product faster than slow throughput.
 
@@ -391,6 +391,8 @@ async function runLeadEngine({ triggerType, state, batchSize = 20 }) {
   // 3. Contactability filter: `isContactEligible(lead, { checkpoint })` returns a
   // boolean after checking the lead's normalized status, consent metadata, and latest
   // suppression/DNC result. Valid checkpoints include `pre_export` and `pre_contact`.
+  // Missing fields, unknown statuses, or DNC lookup errors should fail closed by
+  // returning false and logging/escalating the record for manual review.
   const contactableLeads = qualifiedLeads.filter((lead) =>
     isContactEligible(lead, { checkpoint: 'pre_export' })
   );
