@@ -53,6 +53,10 @@ This app's evidence packet uses legal public OSINT only: public web pages, publi
 - Seven accessibility display modes
 - Static export for Vercel
 
+## Accessibility Posture
+
+PromptForge includes keyboard-reachable controls, visible focus states, contrast-focused themes, dyslexia-friendly spacing, large text, and monospace rendering. These align with core WCAG 2.2 Level A/AA-oriented interaction and readability goals, but the app does **not** claim full WCAG AAA conformance.
+
 ## Tech Stack
 
 - Next.js 15 static export
@@ -103,7 +107,7 @@ npm test
   - Implementation prompts (builder-ready)
   - Reviewer prompts (audit-ready)
 - `app/page.tsx` — input form + packet renderer with markdown export.
-- Accessibility: 7 display modes (WCAG AAA, dyslexia-friendly, focus mode, high-contrast, etc.) persisted to localStorage.
+- Accessibility: 7 display modes (enhanced contrast, dyslexia-friendly, focus mode, high-contrast, large text, monospace, and default) persisted to localStorage.
 
 ## Deployment
 
