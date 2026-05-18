@@ -52,7 +52,8 @@ export default function Page() {
       setCopyError('');
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
-    } catch {
+    } catch (error) {
+      console.error('Clipboard write failed:', error);
       setCopied(false);
       setCopyError('Clipboard access is unavailable. Copy the markdown manually below.');
     }
