@@ -164,6 +164,10 @@ test('WR PR creation waits for research completion and ignores PR comments', () 
   );
 
   assert(
+    wrPrCreation.includes("!(github.event_name == 'issue_comment' &&"),
+    'WR PR creation must negate pull-request issue_comment events at the workflow gate'
+  );
+  assert(
     wrPrCreation.includes("github.event.issue.pull_request"),
     'WR PR creation must ignore pull-request issue_comment events'
   );

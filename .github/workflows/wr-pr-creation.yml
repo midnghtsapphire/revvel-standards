@@ -270,8 +270,17 @@ jobs:
               issue_number: issueNumber,
             });
 
+            function findLatestComment(predicate) {
+              for (let index = comments.length - 1; index >= 0; index -= 1) {
+                if (predicate(comments[index])) {
+                  return comments[index];
+                }
+              }
+              return null;
+            }
+
             // Prefer the newest direct findings comment when available.
-            const findingsComment = [...comments].reverse().find(c => 
+            const findingsComment = findLatestComment(c => 
               c.body && (
                 c.body.includes('Research Findings:') ||
                 c.body.includes('## Research Findings') ||
@@ -283,7 +292,7 @@ jobs:
             let resolvedFindings = findings;
 
             if (!resolvedFindings) {
-              const packetComment = [...comments].reverse().find(c =>
+              const packetComment = findLatestComment(c =>
                 c.body &&
                 c.body.includes('## Research Engine Review Request') &&
                 c.body.includes('Research packet:')
@@ -303,6 +312,9 @@ jobs:
                     ref: repoData.default_branch,
                   });
                   const packetText = Buffer.from(packetFile.content || '', 'base64').toString('utf8');
+                  // Keep only the packet synthesis block so the WR gets the
+                  // decision-ready research summary without duplicating the
+                  // handoff checklist footer.
                   const synthesis = packetText.match(/## Synthesis[\s\S]*?(?=\n## Code Review Handoff\b|$)/)?.[0]?.trim();
                   resolvedFindings = [
                     '## Research Findings',
