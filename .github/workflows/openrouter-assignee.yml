@@ -214,10 +214,6 @@ jobs:
               });
               core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
             } catch (error) {
-              core.notice(`Could not post first-line-of-sight comment (ok if missing): ${error.message}`);
-
-              core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
-            } catch (error) {
               core.notice(`Could not post first-line-of-sight comment on #${issueNumber} (non-fatal): ${error.message}`);
             }
 
