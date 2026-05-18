@@ -349,8 +349,9 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Status Values:**
 
-- [x] `eligible` (Score > 50)
-- [x] `manual_review` (Score <= 50)
+- [x] `eligible` (Score >= 80)
+- [x] `manual_review` (Score 50-79)
+- [x] `blocked` (Score < 50)
 
 **Score Range:** 0-100
 
