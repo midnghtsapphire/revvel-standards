@@ -40,10 +40,10 @@ When a workflow, extension, CLI, or MCP-adjacent tool is needed:
 - **Accessibility claim threshold:**
   - Do not claim full WCAG AAA conformance unless the shipped artifact has automated accessibility checks (e.g., axe-core or Pa11y).
   - It must also have a documented manual WCAG 2.2 AAA review for the relevant success criteria.
-  - That manual review should be performed by a qualified accessibility reviewer, such as an IAAP-certified specialist, a professional accessibility auditor with comparable certification or documented WCAG audit experience, or a documented third-party audit with comparable experience.
+  - That manual review should be performed by a qualified accessibility reviewer, such as an IAAP-certified specialist, a professional accessibility auditor with industry-recognized certification, or someone with documented WCAG audit experience verified through third-party audits.
   - Record that evidence in the repo README, WR, or a dedicated accessibility statement/checklist so auditors can verify the claim later.
   - If that evidence does not exist, use wording like `A/AA-oriented`, `enhanced contrast`, or `high-contrast mode`.
-- **Marketplace pricing:** Verify pricing at adoption time because Marketplace plans and free tiers can change.
+- **Marketplace pricing:** Verify pricing at adoption time because Marketplace plans and free tiers can change. Record the selected tier when adopting the tool and review pricing again during regular maintenance or before renewal.
 - **MCP policy:** Because GitHub Marketplace has limited MCP coverage, a GitHub-hosted OSS repo is an acceptable first-choice equivalent for MCP servers.
 
 ---

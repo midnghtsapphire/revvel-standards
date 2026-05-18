@@ -233,7 +233,7 @@ A prompt packet is worth 10x more when it includes market facts, competitor gaps
 
 Prefer a maintained GitHub-hosted FOSS equivalent when the Marketplace option is:
 
-- stale (e.g., no meaningful feature work, security fixes, or compatibility maintenance in 180 days)
+- stale when security fixes, compatibility maintenance, or breaking-change responses have gone unaddressed for 180 days
 - thinly documented
 - paid-only without a usable trial
 - unresponsive to issues
