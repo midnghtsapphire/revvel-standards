@@ -88,7 +88,14 @@ jobs:
 
             // Normalize labels immediately so BASIC WR / issue-type intake cannot
             // get stuck waiting for another workflow to add the routing labels.
-            const requiredWrLabels = ['work-request', 'weekly-research', 'wr:in-progress'];
+            const requiredWrLabels = [
+              'work-request',
+              'weekly-research',
+              'wr:in-progress',
+              'deep-research',
+              'openrouter',
+              'role:orchestrator',
+            ];
             for (const label of requiredWrLabels) {
               if (labelSet.has(label)) continue;
               try {
