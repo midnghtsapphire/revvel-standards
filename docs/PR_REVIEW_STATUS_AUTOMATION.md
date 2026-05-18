@@ -11,6 +11,36 @@ The PR Review Status Automation system automatically tracks and visualizes the r
 3. **Review Tracking** — Aggregates reviews from multiple reviewers to determine overall state
 4. **Notifications** — Alerts team members when review states change
 
+## Watchdog Agent Repair Routing
+
+The `stuck-label-watchdog.yml` workflow no longer only removes conflicting
+labels. When it detects a broken or stale PR state, it now:
+
+1. Applies the immediate safe repair on the PR, such as removing
+   `awaiting-review` when `approved` is already present.
+2. Adds `lifecycle:stuck` to make the PR visible in queues.
+3. Creates or reuses a deduped repair issue with a hidden
+   `watchdog-agent-repair` marker.
+4. Labels that issue with `agent-fallback`, `auto-fix`, `openrouter`,
+   `role:orchestrator`, and `bug`.
+5. Comments back on the PR with the routed repair issue number.
+
+Those labels wake the `agent-fallback.yml` workflow, which routes the repair
+through OpenRouter first, then Cursor, then OpenHands when explicitly opted in.
+This gives every watchdog finding an assignable agent task with target PR,
+head SHA, applied fix, and acceptance criteria.
+
+Current watchdog-routed states:
+
+| Watchdog finding | Immediate repair | Agent follow-up |
+|---|---|---|
+| `awaiting-review` + `approved` | Remove `awaiting-review` | Inspect review/synchronize paths that may re-add review state after approval |
+| `approved` + `needs-action` | Remove `needs-action` | Verify no stale changes-requested path reintroduced action-needed state |
+| `checks-passing` + `checks-failing` | Query live CI and remove the stale check label | Patch check-suite/check-run race or stale-label path |
+| `ready-to-merge` without `approved` | Remove `ready-to-merge` | Ensure merge-ready promotion always requires approval |
+| `awaiting-review` for 24+ hours | Add `lifecycle:stuck` | Assign an agent to review/request reviewer action or fix missing review automation |
+| `checks-failing` for 12+ hours | Add `lifecycle:stuck` | Assign an agent to read logs and patch the PR/workflow |
+
 ## Review Status Labels
 
 The system uses four primary labels to track PR review state:

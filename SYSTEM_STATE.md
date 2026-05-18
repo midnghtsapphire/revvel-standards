@@ -38,6 +38,7 @@
 | BUG-003 | Duplicate keys in secrets-health-check.yml causing YAML validation failure | low | resolved | 2026-05-02 |
 | BUG-004 | `[WR]` issue automation broken — workflow_run loops saturated runner queue, killing every WR run with `startup_failure` | high | resolved | 2026-05-04 |
 | BUG-005 | Bot-spam `[FAILURE]` / `[ALERT]` issues opened by failing workflows (~999) | medium | resolved | 2026-05-04 |
+| BUG-006 | Workflow YAML validation still fails on pre-existing malformed `api-rate-limit-handler.yml` and duplicate-key `jules-coding-agent.yml` fixtures | low | open | 2026-05-18 |
 | BUG-006 | Music Video Creator `safeParse` greedy fallback merged multiple LLM JSON blocks and dropped valid responses | medium | resolved | 2026-05-15 |
 | BUG-007 | Music Video Creator kept polling provider status indefinitely after provider completion because `artifact_created` was not terminal in the client | medium | resolved | 2026-05-15 |
 | BUG-008 | ColdTrace backend pinned `python-jose[cryptography]` to vulnerable 3.3.0 instead of fixed 3.4.0 | high | resolved | 2026-05-15 |
@@ -98,6 +99,7 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
+| `node tests/workflow-yaml-validation.test.js` | 2026-05-18 | ⚠️ changed workflows pass; suite still reports 6 pre-existing failures from BUG-006 | — |
 | `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
@@ -206,6 +208,9 @@ Last updated: 2026-05-05 14:55 UTC
 Updated by: OpenHands
 Session summary: Added the Revvel operating model layer — OpenHands Work Request intake form, simplified ISSUE_TEMPLATE/config.yml (blank issues disabled, single contact link), viability-gate / invention-flow / legacy-refresh templates, GitHub Project field schema, Notion knowledge-layer spec, the operating-model.md master document, and the Project v2 default-setter + ID-printer workflows (GitHub App and classic-PAT variants). Step 0 router in promptforproject.md already matches the spec. README and SYSTEM_STATE now surface the operating model alongside the existing WR/PR control-plane MCP server.
 
+Last updated: 2026-05-18 21:55 UTC
+Updated by: Cursor
+Session summary: Routed Stuck Label Watchdog conflicts and stale PR states into deduped `agent-fallback` repair issues; restored issue-label triggers for the Agent Fallback Handler; changed workflow YAML parses cleanly, while full workflow validation still reports BUG-006 pre-existing failures.
 Last updated: 2026-05-15 21:42 UTC
 Updated by: Cursor
 Session summary: Fixed Music Video Creator LLM JSON parsing by delegating orchestrator `safeParse` to the balanced-brace extractor, restored parser regression coverage after branch drift, and verified root `npm test` plus product typecheck/build pass.

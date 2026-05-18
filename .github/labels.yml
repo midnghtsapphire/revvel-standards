@@ -214,6 +214,10 @@ labels:
     color: "6f42c1"
     description: "Routed to the OpenRouter orchestrator (first line of sight)"
 
+  - name: agent-fallback
+    color: "6f42c1"
+    description: "Route issue or PR to the OpenHands → Cursor → OpenRouter fallback chain"
+
   # ── OpenRouter instantiation lifecycle (visibility into the instantiate dance)
   - name: "openrouter:instantiating"
     color: "fbca04"
