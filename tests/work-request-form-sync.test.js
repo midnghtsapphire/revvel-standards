@@ -157,6 +157,42 @@ test('WR workflows accept BASIC WR issue type and work-request label', () => {
   }
 });
 
+test('WR PR creation waits for research completion and ignores PR comments', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+
+  assert(
+    wrPrCreation.includes("github.event.issue.pull_request"),
+    'WR PR creation must ignore pull-request issue_comment events'
+  );
+  assert(
+    wrPrCreation.includes("labelSet.has('research:complete')"),
+    'WR PR creation must treat research:complete as a creation signal'
+  );
+  assert(
+    wrPrCreation.includes("commentBody.includes('Research packet:')"),
+    'WR PR creation must treat research packet comments as research-ready signals'
+  );
+});
+
+test('WR PR creation mirrors deep research labels onto the generated PR', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+
+  assert(
+    wrPrCreation.includes("label === 'deep-research'"),
+    'Generated WR PRs must inherit the deep-research label'
+  );
+  assert(
+    wrPrCreation.includes("label.startsWith('research:')"),
+    'Generated WR PRs must inherit research lane labels'
+  );
+});
+
 test('Work Request Output Type options match wr-auto-classify DROPDOWN_FIELDS', () => {
   const tmplPath = path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml');
   const tmpl = fs.readFileSync(tmplPath, 'utf8');

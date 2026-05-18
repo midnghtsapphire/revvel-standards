@@ -3,70 +3,24 @@
 **Issue:** #13555  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-18  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-
----
-
-## ⚡ Pre-flight: Autonomous Research Defaults
-
-> **These are the default research requirements for EVERY WR — including bug fixes, chores, and minor features. Do not skip any checked item. If a section is genuinely N/A, document why.**
-
-### Research Checklist (pre-checked = required by default)
-
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
-
-### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
-
-When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
-
-```yaml
-# Paste into any workflow_dispatch trigger to enforce research standards
-on:
-  workflow_dispatch:
-    inputs:
-      deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
-        type: boolean
-        default: true          # ← ALWAYS true
-      research_depth:
-        description: 'Research depth level'
-        type: choice
-        options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
-```
-
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+**Researcher:** GitHub Copilot + existing repo automation findings  
+**WR Status:** ✅ Complete
 
 ---
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+The merge-blocking pain around the state engine is not just the `🎛️ PR State Orchestrator`; the immediate WR automation path was also creating a blank WR PR before deep research had finished, then skipping reprocessing once research labels and packets arrived. That produced a placeholder-only PR for issue #13555 and created extra workflow noise when PR comments retriggered `.github/workflows/wr-pr-creation.yml` as if the PR number were an issue number.
+
+The safest fix is to treat deep research as the default gate for WR PR creation: only create the WR PR after `wr:complete` or `research:complete` (or a research-ready comment), import the research packet when no direct findings comment exists, and mirror the deep-research/research-lane labels onto the generated PR so the blank-template path and the "wordy WR" path share the same automation state.
+
+**Sources:**
+
+- Issue #13555 labels and comments, including the owner's PR feedback and research-engine review request.
+- `.github/workflows/wr-pr-creation.yml`
+- `.github/workflows/weekly-research.yml`
+- `docs/WEEKLY_RESEARCH_PROCESS.md`
+- Workflow run `26061851461` failure log (GitHub API rate-limit failure on a PR comment)
 
 ---
 
@@ -75,254 +29,147 @@ on:
 ### Repository Metadata
 
 | Property | Value |
-|----------|-------|
+| ---------- | ------- |
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-18 |
+| Created | 2026-02-20 |
 | Last Updated | 2026-05-18 |
 | Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | {DESCRIPTION} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | 1 |
+| Open Issues | 6,339 |
+| Description | Single source of truth for all Revvel and MIDNGHTSAPPHIRE standards, processes, and specifications. |
+| Private | False |
+| Archived | False |
 
 ### Current Status
 
-- **Active Development:** [Yes/No - based on recent commits]
-- **Last Commit:** [Date and summary]
-- **Open PRs:** [Count and notable ones]
-- **Open Issues:** [Count and critical ones]
-- **Deployment Status:** [Deployed/Not Deployed - Vercel URL if exists]
-- **CI/CD Status:** [Passing/Failing/Not configured]
+- **Active Development:** Yes — workflows, docs, and automation are being updated continuously.
+- **Current WR Issue:** #13555 is open and already carries `weekly-research`, `deep-research`, `research-engine`, and `research:*` labels.
+- **Current PR:** #13556 was generated too early and contains a template-heavy WR instead of a research-backed one.
+- **Relevant Failure:** `WR PR Creation` run `26061851461` failed after a PR comment retriggered the workflow and exhausted the GitHub App installation core quota while fetching `issues/13556`.
+- **Deployment Status:** Repository homepage is `https://revvel-standards.vercel.app`; this WR itself is internal automation work, not a new deployable product.
 
-### Repository Structure
+### Repository Structure Relevant to This WR
 
-```
-[Tree structure of key directories and files]
+```text
+.github/workflows/pr-state-orchestrator.yml
+.github/workflows/weekly-research.yml
+.github/workflows/wr-pr-creation.yml
+docs/WEEKLY_RESEARCH_PROCESS.md
+docs/RESEARCH_ENGINE_STANDARD.md
+scripts/research-engine.js
+tests/work-request-form-sync.test.js
 ```
 
 ### Key Technologies
 
-- **Frontend:** [Framework/libraries]
-- **Backend:** [Framework/libraries]
-- **Database:** [Type and provider]
-- **Deployment:** [Platform]
-- **CI/CD:** [Tooling]
+- **Workflow runtime:** GitHub Actions
+- **API integration:** `actions/github-script` (GitHub REST + GraphQL)
+- **Repository mutation:** `actions/checkout`
+- **Research synthesis:** `scripts/research-engine.js` + OpenRouter-backed lane orchestration
+- **Validation:** repository Node.js test harness plus workflow validation checks
+
+**Sources:**
+
+- Repository metadata from GitHub repository search for `midnghtsapphire/revvel-standards`
+- `.github/workflows/pr-state-orchestrator.yml`
+- `.github/workflows/wr-pr-creation.yml`
+- `.github/workflows/research-engine.yml`
 
 ---
 
-## Step 2: Deep Web Research
-
-> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
-> - **(1) What is being used now** — existing solutions, pricing, mechanics
-> - **(2) What problem are we solving** — specific pain points from community research
-> - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
-> - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
-> - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
-> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
->
-> An LLM agent must be able to answer every question in this template from live web research before implementation begins.
+## Step 2: Deep Research
 
 ### Market Opportunity Analysis
 
-#### Current Market Trends
+This is an internal DevOps/workflow reliability WR, so the market lens is operational leverage rather than direct paid acquisition. The sellable angle is reusable PR-state orchestration and WR-research automation that prevents merge stalls, label drift, and manual triage.
 
-[Research findings about market trends in this domain — include data points, stats, and growth signals]
+GitHub documents a **5,000 requests/hour** REST core limit per installation for standard GitHub App traffic, with rate-limit headers and backoff handling expected for integrations. That matters here because workflow noise and duplicate API calls can turn a labeling/research convenience into a merge blocker or review bottleneck when multiple automations are firing at once.
 
 **Sources:**
-- [Link 1]: [Description]
-- [Link 2]: [Description]
 
-#### Target Audience & Trigger Events
+- GitHub Docs: REST API rate limits and GitHub App rate limits
+- Workflow run `26061851461` log showing `x-ratelimit-remaining: 0`
 
-[Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
+### Target Audience & Trigger Events
 
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| Audience Segment | Trigger Event | Intent Level | Value of Fix |
+| ----------------- | --------------- | -------------- | -------------- |
+| Repo owner / operators | Merge blocked, labels drift, blank WR created | High | Immediate unblock and less manual cleanup |
+| Review agents / coding agents | Research packet exists but PR lacks findings/labels | High | Cleaner downstream review routing |
+| Future repos adopting standards | Need a reusable WR pipeline | Medium | Turns this repo into a workflow-hardening reference |
 
-#### SEO & Keyword Research
+### SEO & Keyword Research
 
-**This section is REQUIRED for any product with a web/content component.**
+This WR is for internal automation, so public SEO volumes are not the decision driver. The right high-intent keywords to anchor documentation, searchability, and future productization are:
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword | Intent | Why It Matters |
+| --------- | -------- | ---------------- |
+| GitHub Actions rate limit | Transactional / debugging | Directly matches the failure mode seen in run `26061851461` |
+| PR state orchestrator | Navigational / implementation | Matches the user-reported failing engine |
+| GitHub merge automation | Commercial / comparative | Useful if Revvel turns this hardening work into reusable automation |
+| research packet workflow | Informational | Matches the repository's research-engine handoff model |
+| GitHub workflow reprocessing | Informational / debugging | Exactly describes the blank-template rerun problem |
 
-**Long-tail / trigger-specific keywords:**
-- [keyword]: [volume] — [why it matters]
-- [keyword]: [volume] — [why it matters]
+### Bill of Materials (BOM) — APIs & Tools
 
-**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
-
-#### Bill of Materials (BOM) — APIs & Tools
-
-> **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
-
-**Category: [Primary Data Source]**
-
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
-
-**Category: [Compliance / Validation]**
-
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
-
-**Category: [Delivery / Storefront]**
-
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
-
-**BOM Cost Summary:**
-
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
-
-> **ROI Check:** [How many units/sales cover infrastructure cost?]
-
-#### How the Industry Works — Mechanics
-
-[Explain exactly how the current market solves this problem. Include: how buyers find/purchase, how pricing works, what the conversion funnel looks like, and what makes a high-quality solution vs. a low-quality one.]
-
-**Shared vs. Exclusive / Tiered pricing:**
-
-| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-
-**Why some [units] are worth more than others:**
-[Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
-
-#### Competitors & Alternatives
-
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
-
-#### API / Data Source BOM (REQUIRED)
-
-**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
-
-If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
-
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Category | Tool / Option | Cost | Signal | Best For | Verdict |
+| ---------- | --------------- | ------ | -------- | ---------- | --------- |
+| GitHub workflow scripting | `actions/github-script` | $0 incremental | 4,953 GitHub stars | Labeling, comments, repo-content fetches, GraphQL helpers | ⭐ Recommended |
+| Repository checkout | `actions/checkout` | $0 incremental | 7,903 GitHub stars | Branch/file mutation inside Actions jobs | ⭐ Recommended |
+| Native merge orchestration | GitHub PR events + checks + auto-merge | Included in GitHub plan | First-party platform capability | Lowest-friction state machine inside the repo | ⭐ Recommended |
+| General automation benchmark | `renovatebot/renovate` | OSS / self-hostable | 21,549 GitHub stars | Reference point for resilient PR automation patterns | ✅ Useful reference |
 
 **BOM Decision:**
-- Primary provider stack: [choice + reason]
-- Secondary/fallback stack: [choice + reason]
-- Why this BOM is superior for this WR: [evidence]
 
-#### Community Chatter — What Users Dislike About Current Solutions
+- Keep the stack GitHub-native.
+- Use the existing research-engine packet as the handoff artifact instead of inventing a second research output format.
+- Reduce wasteful API calls by filtering PR comments and only creating WR PRs after research completion signals exist.
 
-**This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
+**ROI Check:**
+A single prevented blank-WR or merge-block incident pays back the infrastructure cost immediately because the incremental runtime cost is effectively zero; the real cost is lost operator time and queue delay.
 
-**Top complaints (cite sources where possible):**
+### How the Industry Works — Mechanics
 
-1. **[Complaint 1]:** [Quote or paraphrase from community research]
-2. **[Complaint 2]:** [Quote or paraphrase from community research]
-3. **[Complaint 3]:** [Quote or paraphrase from community research]
+Reliable PR-state automation generally uses three rules:
 
-**What users/buyers actually want (opportunity signals):**
-- [Want 1]: [Why this is an opening]
-- [Want 2]: [Why this is an opening]
+1. **Use event filters aggressively.** Workflows should ignore events they cannot safely process, especially `issue_comment` events attached to pull requests.
+2. **Prefer completion signals over optimistic early creation.** If a downstream document requires research, the creation workflow should wait for research-ready labels/comments instead of generating a placeholder and hoping another agent fixes it later.
+3. **Mirror routing state onto the artifact that reviewers actually inspect.** If the issue is `deep-research` and `research:complete`, the generated PR must inherit those labels so reviewers and automation can find it without re-deriving state.
 
-> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
+### Competitors & Alternatives
 
-#### Domain Name Strategy
+| Option | Type | Strengths | Weaknesses | Gap vs. Needed Fix |
+| ------- | ------ | ----------- | ------------ | -------------------- |
+| Current repo-native WR flow | First-party automation | No extra vendor cost, fully editable | Created blank PR before research was ready | Needs stricter creation gate + packet import |
+| GitHub merge queue / native gating | Platform capability | Excellent for merge serialization | Does not solve WR research handoff by itself | Complement, not replacement |
+| External merge bots (e.g. Mergify class tools) | SaaS automation | Rich policy controls | Extra dependency and pricing layer | Overkill for this specific WR bug |
+| Renovate-style resilient automation patterns | OSS reference | Battle-tested rate-limit/backoff patterns | Not a direct WR engine | Good reference for hardening behavior |
 
-**This section is REQUIRED for any product with a web presence.**
+### Community Chatter / Operator Signals
 
-**High-value domain patterns for this niche:**
+For this WR, the most important chatter is from the operator and the automation itself:
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
-| [Pattern 1] | [Examples] | [Why it works] |
-| [Pattern 2] | [Examples] | [Why it works] |
+1. **"state engine failing cannot merge"** — the user-facing symptom on issue #13555.
+2. **"the blank template WR needs to get deepresearched"** — direct feedback on PR #13556 showing the placeholder path is unacceptable.
+3. Repeated issue comments advertised deep research and research review readiness, but the generated PR did not carry that state into the document or labels.
+4. The failed workflow log shows the automation tried to process a PR comment as an issue and ran into a hard API quota wall instead of exiting early.
 
-**Recommendation:** [Specific domain guidance — TLD preference, availability check strategy, priority]
+### Domain Name Strategy
 
-#### Monetization Opportunities
+Not applicable. This WR fixes internal workflow behavior in `revvel-standards`; no new product/domain is needed.
 
-1. **Direct Revenue:**
-   - [Strategy 1]: [Description and potential]
-   - [Strategy 2]: [Description and potential]
+### Monetization Opportunities
 
-2. **Affiliate / Reseller Partnerships:**
-   - [Partner 1]: [Commission structure]
-   - [Partner 2]: [Commission structure]
+- **Internal value:** faster merges, less manual cleanup, and fewer stuck automation states.
+- **Externalizable value:** this can become a reusable "GitHub workflow hardening" pattern, template, or consulting playbook for repos that rely on research-gated PR automation.
+- **Documentation value:** the resulting fix improves the credibility of `revvel-standards` as a source of battle-tested automation standards.
 
-3. **Subscription / Recurring:**
-   - [Feature 1]: [Pricing potential]
-   - [Feature 2]: [Pricing potential]
+**Sources for Step 2:**
 
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
-
-#### Marketing Best Practices — What's Working Now & How This Improves It
-
-**This section is REQUIRED. Research current marketing strategies in this niche.**
-
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
-| [Strategy 1] | [Current best practice + data] | [How our product is better] |
-| [Strategy 2] | [Current best practice + data] | [How our product is better] |
-
-**Inbound vs. Outbound ROI comparison:**
-- Inbound ROI: [Data + timeframe]
-- Outbound ROI: [Data + timeframe]
-- Recommended approach for this WR: [Recommendation with rationale]
-
-#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
-
-Define a layered research engine using two AI fleets:
-
-1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
-2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
-
-**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
-
-**Minimum pass criteria (required):**
-- All REQUIRED sections in Step 2 are present and non-empty
-- Zero unsupported factual claims in sampled checks
-- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
-- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
-
-**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions. Any threshold change must be approved by repository maintainers/standards owners per `docs/WEEKLY_RESEARCH_PROCESS.md` and documented in the PR.
-
-**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
-
-**Counting example:**
-- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
-- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
-- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
-
-**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
-
-**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
-
-#### Instruction Normalization (REQUIRED)
-
-User prompts and brainstorms are inputs, not immutable specs. Record:
-- What was accepted as-is
-- What was corrected/pivoted based on standards or evidence
-- What was rejected and why
-
-This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
+- Owner issue text and PR review comment
+- GitHub Docs on REST API and GitHub App rate limits
+- `docs/WEEKLY_RESEARCH_PROCESS.md`
+- Search results for `actions/github-script`, `actions/checkout`, and `renovatebot/renovate`
 
 ---
 
@@ -330,439 +177,120 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Prime Directive Alignment
 
-**10M by 2030 Goal:**
-- Current contribution: [$amount/month or $0]
-- Potential contribution: [$amount/month]
-- Path to contribution: [Strategy]
+This WR should end in working, tested workflow code, not another placeholder document. A WR PR that claims deep research is complete while shipping a blank template violates the repository's anti-scaffolding and instruction-resilience rules.
 
-**$2000+/month Target (Start: May 1, 2026):**
-- Revenue streams identified: [Count]
-- Estimated monthly revenue: [$amount]
-- Time to first revenue: [Weeks/months]
+### Research Process Alignment
 
-### Obsessive Autonomy Assessment
+`docs/WEEKLY_RESEARCH_PROCESS.md` already says WR tasks receive automated deep-research treatment, and the repository memories confirm that every WR requires BOM, SEO/marketing signals, community chatter, monetization, and citations. That means the workflow behavior must match the documented standard: deep research is the default, not an optional second pass.
 
-**Current Autonomy Level:** [Low/Medium/High]
+### Security / Compliance Surface
 
-**Blockers Identified:**
-1. [Blocker 1]: [Impact] → [Solution]
-2. [Blocker 2]: [Impact] → [Solution]
+- No new third-party dependencies are required.
+- The change stays within GitHub-native APIs and existing official actions.
+- Ignoring PR comments in `wr-pr-creation.yml` reduces unnecessary API calls and lowers exposure to rate-limit exhaustion.
+- Loading an existing research packet from the repository is safer than scraping arbitrary comment blobs because the packet is versioned content under repo control.
 
-**Autonomous Capabilities:**
-- [Capability 1]: [Status]
-- [Capability 2]: [Status]
+### Acceptance Gates
 
-### Self-Healing Capabilities
-
-**Current Self-Healing:** [None/Partial/Full]
-
-**Implemented:**
-- [Feature 1]: [Description]
-- [Feature 2]: [Description]
-
-**Missing:**
-- [Feature 1]: [Description and priority]
-- [Feature 2]: [Description and priority]
-
-### Decision Scoring Model Gate
-
-> Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
-> Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
-
-**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
-
-**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
-
-**Status Values:**
-- [ ] `eligible`
-- [ ] `manual_review`
-- [ ] `blocked`
-- [ ] `suppressed`
-- [ ] Other: [define]
-
-**Score Range:** 0-100
-
-**Weighted Factors:**
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
-
-**Threshold Bands:**
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
-
-**Audit Trail Required:**
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
-
-**Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
-
-**Tenant / Client Separation:**
-- **Organization boundary:** [Audrey-owned / client / partner]
-- **Project boundary:** [project/workstream ID]
-- **Data domain:** [enterprise / client / product / research]
-- **Rate-card or confidence lookup table required:** [Yes/No]
-
-### Ship to Market Status
-
-**Current Status:** [Not Ready / Needs Work / Ready / Deployed]
-
-**Readiness Checklist:**
-- [ ] All tests passing
-- [ ] No linting errors
-- [ ] No security vulnerabilities
-- [ ] Deployment configured
-- [ ] UI verified
-- [ ] Documentation complete
-- [ ] TEST section in README
-- [ ] Vercel URL available
+1. `wr-pr-creation.yml` ignores PR comment events.
+2. WR PR creation waits for `wr:complete`, `research:complete`, manual dispatch, or a research-ready comment.
+3. The workflow can import a research-engine packet when no direct findings comment exists.
+4. Generated WR PRs inherit deep-research and `research:*` labels.
+5. Tests covering WR workflow text/behavior expectations pass.
 
 ---
 
-## Step 4: Redevelopment & Redesign
+## Step 4: Technical Findings
 
-### Fix All Errors
+### Finding 1 — The workflow created the PR before research was ready
 
-#### Test Failures
+The previous `detect-completion` logic set `should_create_pr` to true on issue open/reopen, so a WR PR could be created before the research engine finished. That is why PR #13556 contained a template with placeholders instead of research-backed content.
 
-**Current Status:** [Pass/Fail/No tests]
+### Finding 2 — The workflow only recognized direct findings comments
 
-**Failures Identified:**
-1. [Test 1]: [Issue] → [Fix]
-2. [Test 2]: [Issue] → [Fix]
+The issue already had research-engine completion signals:
 
-#### Linting Errors
+- `research:complete`
+- `research:review-needed`
+- `research:*` lane labels
+- comments with `## Research Engine Review Request`
 
-**Current Status:** [Pass/Fail/No linter]
+But the workflow only looked for comments containing `Research Findings:` / `## Research Findings` / `Executive Summary`, so it missed the research packet handoff that actually existed.
 
-**Errors Identified:**
-1. [Error 1]: [Location] → [Fix]
-2. [Error 2]: [Location] → [Fix]
+### Finding 3 — PR comments retriggered WR issue logic
 
-#### Security Vulnerabilities
+`issue_comment` also fires for pull requests. Because the workflow did not guard against `github.event.issue.pull_request`, the comment on PR #13556 retriggered WR issue logic. The failed run then called `GET /repos/midnghtsapphire/revvel-standards/issues/13556` and exhausted the installation's core quota instead of exiting immediately.
 
-**Critical:** [Count]
-1. [Vulnerability]: [Impact] → [Fix]
+### Finding 4 — The generated PR lost the issue's research state
 
-**High:** [Count]
-**Medium:** [Count]
-**Low:** [Count]
+Issue #13555 carried `deep-research`, `research-engine`, and multiple `research:*` labels, but PR #13556 only received a smaller label subset. That broke the parity between the blank-template path and the wordy, fully researched WR path.
 
-#### Deployment Issues
+### Recommended Fix
 
-**Current Status:** [Working/Broken/Not configured]
-
-**Issues Identified:**
-1. [Issue 1]: [Impact] → [Fix]
-2. [Issue 2]: [Impact] → [Fix]
-
-### Enhance Features
-
-#### Missing Features from Research
-
-1. **[Feature 1]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-2. **[Feature 2]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-#### UX/UI Improvements
-
-**Current UX Score:** [Rating/10]
-
-**Improvements:**
-1. [Improvement 1]: [Issue] → [Solution] → [Impact]
-2. [Improvement 2]: [Issue] → [Solution] → [Impact]
-
-#### Accessibility Features
-
-**Current Accessibility:** [WCAG level]
-
-**Required:**
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
-
-#### Performance Optimization
-
-**Current Performance:**
-- Lighthouse Score: [Rating/100]
-- Load Time: [Seconds]
-- Bundle Size: [KB]
-
-**Optimizations:**
-1. [Optimization 1]: [Improvement] → [Expected gain]
-2. [Optimization 2]: [Improvement] → [Expected gain]
-
-### Add Monetization
-
-#### Affiliate Links Integration
-
-**revvel-affiliate-links MCP:**
-- [ ] MCP server configured
-- [ ] Affiliate links identified
-- [ ] Links integrated in content
-- [ ] Tracking configured
-
-**Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
-
-#### Payment Integration
-
-**Gumroad:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**LemonSqueezy:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**Recommended Platform:** [Gumroad/LemonSqueezy/Both] - [Reason]
-
-#### Tracking & Analytics
-
-**Current Analytics:** [None/Partial/Full]
-
-**To Implement:**
-- [ ] Google Analytics 4
-- [ ] Plausible Analytics (privacy-friendly alternative)
-- [ ] Revenue tracking
-- [ ] Conversion tracking
-- [ ] User behavior tracking
-- [ ] A/B testing setup
+- Gate WR PR creation on research completion, not issue open.
+- Treat research packet review comments as valid readiness signals.
+- Import the research packet from the repository's default branch when direct findings comments are absent.
+- Mirror deep-research and research-lane labels from the issue onto the generated PR.
+- Keep the fix surgical: update the workflow and the targeted workflow tests only.
 
 ---
 
-## Step 5: Deployment Verification
+## Step 5: Implementation Plan
 
-### Vercel Deployment
+### Code Changes to Ship
 
-**Current Status:** [Deployed/Not deployed/Needs fix]
+1. **`wr-pr-creation.yml`**
+   - Ignore PR comment events.
+   - Require `wr:complete`, `research:complete`, workflow dispatch, or a research-ready comment.
+   - Pull research packet content into `research-findings.md` when needed.
+   - Copy research/deep-research labels from the issue onto the generated PR.
 
-**Configuration:**
-- [ ] `vercel.json` configured
-- [ ] Environment variables set
-- [ ] Build command correct
-- [ ] Output directory correct
-- [ ] Deployment protection configured
+2. **`tests/work-request-form-sync.test.js`**
+   - Assert that the workflow ignores PR comments.
+   - Assert that `research:complete` and research packet comments are accepted signals.
+   - Assert that generated PRs inherit deep-research and `research:*` labels.
 
-**URLs:**
-- **Production:** [URL or "Not deployed"]
-- **Preview:** [URL or "Not configured"]
+### Non-Goals
 
-**Deployment Issues:**
-[List any issues and fixes]
-
-### UI Verification
-
-**Verification Checklist:**
-- [ ] Homepage renders correctly
-- [ ] All pages render correctly
-- [ ] All forms work
-- [ ] Authentication works (if applicable)
-- [ ] API endpoints respond correctly
-- [ ] Mobile responsive (tested on [devices])
-- [ ] Tablet responsive
-- [ ] Desktop responsive
-- [ ] No console errors
-- [ ] No 404 errors
-- [ ] Images load correctly
-- [ ] Links work correctly
-
-**Issues Found:**
-1. [Issue 1]: [Description] → [Fix]
-2. [Issue 2]: [Description] → [Fix]
-
-**Screenshots:**
-[Link to screenshots or indicate if captured]
+- This WR does **not** redesign `pr-state-orchestrator.yml` itself.
+- This WR does **not** introduce a new vendor service.
+- This WR does **not** relax the deep-research requirement; it enforces it earlier in the pipeline.
 
 ---
 
-## Step 6: Documentation Requirements
+## Step 6: Validation
 
-### TEST Section
+### Targeted Validation to Run
 
-**Current README Status:** [Has TEST section / Missing / Needs update]
+- `node tests/workflow-yaml-validation.test.js`
+- `node tests/work-request-form-sync.test.js`
+- `npm run workflows:validate`
 
-**Required Format:**
-```markdown
-## Test
+### Expected Outcome
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
-```
-
-**Action Required:** [None / Add section / Update URLs]
-
-### Deployment Section
-
-**Current README Status:** [Has deployment section / Missing / Needs update]
-
-**Required Format:**
-```markdown
-## Deployment
-
-**Production:** https://{repo-name}.vercel.app
-**Preview:** https://{repo-name}-preview.vercel.app
-**Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
-```
-
-**Action Required:** [None / Add section / Update URLs]
-
-### Additional Documentation
-
-**Existing Documentation:**
-- [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LICENSE
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
-- [ ] API documentation
-- [ ] User guide
-
-**Missing Documentation:**
-[List what needs to be created]
+- The YAML remains valid.
+- The workflow script blocks still compile after expression substitution.
+- The WR pipeline no longer creates placeholder PRs before research is ready.
+- Future WR PRs inherit the same research/deep-research labeling that the issue already earned.
 
 ---
 
-## Step 7: Save This Prompt & Findings
+## Sources & Citations
 
-### Saved Locations
-
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #[number]
-
-### Implementation Tasks Created
-
-**Issues Created:**
-1. [Issue #X]: [Title] - [Priority]
-2. [Issue #Y]: [Title] - [Priority]
-
-### Next Steps
-
-1. [ ] [Action 1] - [Owner] - [Deadline]
-2. [ ] [Action 2] - [Owner] - [Deadline]
-3. [ ] [Action 3] - [Owner] - [Deadline]
+1. Issue #13555 — title, labels, and comments (owner report plus research-engine review request).
+2. PR #13556 comment from @midnghtsapphire: the blank-template WR must be reprocessed with deep research by default.
+3. `.github/workflows/wr-pr-creation.yml` — previous early-create logic and PR labeling behavior.
+4. `.github/workflows/weekly-research.yml` — deep-research labeling defaults for WR issues.
+5. `docs/WEEKLY_RESEARCH_PROCESS.md` — WR flow, research requirements, and deep research expectations.
+6. Workflow run `26061851461` failed job log — GitHub API rate-limit exhaustion after a PR comment retrigger.
+7. GitHub Docs — REST API rate limits and GitHub App rate limits.
+8. GitHub repository metadata/search results for:
+   - `midnghtsapphire/revvel-standards`
+   - `actions/github-script`
+   - `actions/checkout`
+   - `renovatebot/renovate`
 
 ---
 
-## Recommendations
-
-### Immediate Actions (P0)
-
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-### Short-Term Actions (P1) - Within 1-2 Weeks
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
-### Long-Term Actions (P2) - Within 1-2 Months
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
----
-
-## Risks & Considerations
-
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
-
----
-
-## Alternatives Considered
-
-### Alternative 1: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
-### Alternative 2: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
----
-
-## References
-
-### Documentation
-- [AGENTS.md](/docs/AGENTS.md)
-- [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
-- [promptforproject.md](/promptforproject.md)
-
-### External Resources
-- [Resource 1]: [Description]
-- [Resource 2]: [Description]
-- [Resource 3]: [Description]
-
-### Research Sources
-- [Source 1]: [Description]
-- [Source 2]: [Description]
-
----
-
-## Status Summary
-
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
-**Approval Required:** @midnghtsapphire
-
----
-
-**Last Updated:** 2026-05-18  
-**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+**WR Status:** ✅ Complete  
+**Recommended Next Action:** Merge the workflow hardening fix, then let future WR PRs generate only after deep-research completion signals exist.

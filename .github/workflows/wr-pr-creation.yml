@@ -26,6 +26,8 @@ jobs:
     name: Detect WR issue / Jules research completion
     runs-on: ubuntu-latest
     if: |-
+      !(github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request) &&
       !(github.event_name == 'issues' &&
         github.event.issue.user.login == 'github-actions[bot]' &&
         (startsWith(github.event.issue.title, '[FAILURE]') ||
@@ -152,29 +154,33 @@ jobs:
               return;
             }
 
-            // OpenHands-RESTRUCTURE 2026-05-04: WR PR is now created on issue OPEN
-            // (or reopen / `wr:complete` / manual dispatch / Jules findings comment),
-            // not gated on Jules being done.
-            const isOpenEvent = context.eventName === 'issues' &&
-              (context.payload.action === 'opened' || context.payload.action === 'reopened');
-            const isComplete = labelSet.has('wr:complete') || context.eventName === 'workflow_dispatch';
+            const isComplete =
+              labelSet.has('wr:complete') ||
+              labelSet.has('research:complete') ||
+              context.eventName === 'workflow_dispatch';
 
-            // Check if Jules has posted research findings (comment contains "Research Findings:")
-            let julesCompleted = false;
+            // Treat both direct research findings and the research-engine handoff
+            // packet comment as valid completion signals for WR generation.
+            let researchReadyComment = false;
             if (context.eventName === 'issue_comment') {
               const comment = context.payload.comment;
-              if (comment && comment.body && comment.body.includes('Research Findings:')) {
-                julesCompleted = true;
+              const commentBody = comment?.body || '';
+              if (
+                commentBody.includes('Research Findings:') ||
+                commentBody.includes('## Research Findings') ||
+                commentBody.includes('## Research Engine Review Request') ||
+                commentBody.includes('Research packet:')
+              ) {
+                researchReadyComment = true;
               }
             }
 
-            const shouldCreate = isOpenEvent || isComplete || julesCompleted;
+            const shouldCreate = isComplete || researchReadyComment;
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
-            core.info(`Is Open Event: ${isOpenEvent}`);
             core.info(`Is Complete: ${isComplete}`);
-            core.info(`Jules Completed: ${julesCompleted}`);
+            core.info(`Research-ready comment: ${researchReadyComment}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
             core.info(`Current labels: ${Array.from(labelSet).join(', ')}`);
@@ -209,7 +215,7 @@ jobs:
               '- Issue is not a WR (missing `[WR]` prefix, `work-request` / `weekly-research` label, or BASIC WR issue type)',
               '- A WR-skeleton PR already exists for this issue',
               '- Issue is bot-created',
-              '- Trigger condition not met (not opened/reopened/complete/Jules-comment)',
+              '- Trigger condition not met (no `wr:complete` / `research:complete` label, manual dispatch, or research-ready comment)',
               '',
               `**Workflow run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
               '',
@@ -264,8 +270,8 @@ jobs:
               issue_number: issueNumber,
             });
 
-            // Find Jules' research findings comment
-            const findingsComment = comments.find(c => 
+            // Prefer the newest direct findings comment when available.
+            const findingsComment = [...comments].reverse().find(c => 
               c.body && (
                 c.body.includes('Research Findings:') ||
                 c.body.includes('## Research Findings') ||
@@ -274,13 +280,51 @@ jobs:
             );
 
             const findings = findingsComment ? findingsComment.body : '';
-            core.info(`Found research findings: ${findings.length} characters`);
+            let resolvedFindings = findings;
+
+            if (!resolvedFindings) {
+              const packetComment = [...comments].reverse().find(c =>
+                c.body &&
+                c.body.includes('## Research Engine Review Request') &&
+                c.body.includes('Research packet:')
+              );
+              const packetPath = packetComment?.body?.match(/Research packet:\s*`([^`]+)`/)?.[1];
+
+              if (packetPath) {
+                try {
+                  const { data: repoData } = await github.rest.repos.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                  });
+                  const { data: packetFile } = await github.rest.repos.getContent({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    path: packetPath,
+                    ref: repoData.default_branch,
+                  });
+                  const packetText = Buffer.from(packetFile.content || '', 'base64').toString('utf8');
+                  const synthesis = packetText.match(/## Synthesis[\s\S]*?(?=\n## Code Review Handoff\b|$)/)?.[0]?.trim();
+                  resolvedFindings = [
+                    '## Research Findings',
+                    '',
+                    `_Imported from research packet \`${packetPath}\`._`,
+                    '',
+                    synthesis || packetText.trim(),
+                  ].join('\n');
+                  core.info(`Loaded research packet: ${packetPath}`);
+                } catch (error) {
+                  core.notice(`Could not load research packet "${packetPath}": ${error.message}`);
+                }
+              }
+            }
+
+            core.info(`Found research findings: ${resolvedFindings.length} characters`);
 
             // Save to file for next step
             const fs = require('fs');
-            fs.writeFileSync('research-findings.md', findings, 'utf8');
+            fs.writeFileSync('research-findings.md', resolvedFindings, 'utf8');
 
-            return findings.substring(0, 1000); // Return preview
+            return resolvedFindings.substring(0, 1000); // Return preview
       - name: Create WR branch
         id: create_branch
         run: |
@@ -437,14 +481,31 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
+            const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
             const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
-
-            const labels = [
-              'weekly-research',
-              'jules',
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+            const labels = Array.from(new Set([
               'documentation',
-              'wr:in-progress'
-            ];
+              ...((issue.labels || [])
+                .map(label => typeof label === 'string' ? label : label.name)
+                .filter(label =>
+                  label === 'weekly-research' ||
+                  label === 'work-request' ||
+                  label === 'deep-research' ||
+                  label === 'openrouter' ||
+                  label === 'role:orchestrator' ||
+                  label === 'jules' ||
+                  label === 'bito-ai' ||
+                  label === 'awaiting-review' ||
+                  label === 'wr:in-progress' ||
+                  label === 'research-engine' ||
+                  label.startsWith('research:')
+                ))
+            ]));
 
             for (const label of labels) {
               try {
