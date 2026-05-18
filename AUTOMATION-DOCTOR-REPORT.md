@@ -1,14 +1,18 @@
 # Automation Doctor Report
 
-Generated: 2026-05-17T01:38:49.242Z
+Generated: 2026-05-18T21:34:06.578Z
 
 ## Workflow Validation
 
-- Valid workflows: 120
+- Valid workflows: 121
 - Invalid workflows: 0
-- Jobs missing timeout: 0
+- Jobs missing timeout: 1
+
+### Jobs Missing timeout-minutes
+
+- `codeql.yml`: analyze
 
 ## Labels Check
 
-- Present: 0
+- Present: 12
 - Missing: 0
