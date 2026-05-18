@@ -1,8 +1,17 @@
 name: CodeQL
 
-# GitHub code scanning default setup is enabled for this repository. Keep this
-# advanced configuration manual-only so PRs do not upload duplicate SARIF.
+# NOTE: GitHub's default code scanning setup must be DISABLED in
+# repository Settings → Security → Code scanning before this advanced
+# workflow can upload SARIF successfully. Running both simultaneously
+# causes: "CodeQL analyses from advanced configurations cannot be
+# processed when the default setup is enabled."
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '20 3 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -11,13 +20,15 @@ permissions:
   security-events: write
   pull-requests: read
 
+# Security scan workflows must not cancel in-progress runs to avoid
+# leaving the repository in an unscanned state.
 concurrency:
   group: codeql-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   analyze:
-    name: Analyze
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -29,16 +40,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ["actions"]
+        language: ['actions']
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: github/codeql-action/init@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: none
 
-      - uses: github/codeql-action/analyze@v4
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
         with:
           category: /language:${{ matrix.language }}
