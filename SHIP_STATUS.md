@@ -65,6 +65,7 @@
 | T013 | BASIC WR label normalization | done | @cursor | 2026-05-17 |
 | T013 | Revvel PromptForge prompt generation app | done | @cursor | 2026-05-17 |
 | T014 | Perplexity no-key research integration | done | @cursor | 2026-05-17 |
+| T015 | Doppler-optional credential backup harness compatibility | done | @cursor | 2026-05-18 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

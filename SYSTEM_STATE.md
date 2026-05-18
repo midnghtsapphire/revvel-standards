@@ -50,6 +50,7 @@
 | BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
 | BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 | BUG-016 | BASIC WR / issue-type intake could miss required WR labels, causing `wr-pr-creation.yml` to skip instead of creating a PR | high | resolved | 2026-05-17 |
+| BUG-017 | Credential Gatekeeper backup harness broke legacy `gatekeeper-sync.sh --secrets/--repo/--json` sync compatibility and still had Doppler-only workflow gates | high | resolved | 2026-05-18 |
 
 ---
 
@@ -99,8 +100,9 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `node tests/workflow-yaml-validation.test.js` | 2026-05-18 | ⚠️ changed workflows pass; suite still reports 6 pre-existing failures from BUG-006 | — |
-| `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| `node tests/workflow-yaml-validation.test.js` | 2026-05-18 | ✅ passing; restored missing test closure and CodeQL timeout hygiene | — |
+| `npm test` | 2026-05-18 | ✅ passing after `npm ci` | — |
+| Credential backup harness / gatekeeper sync | 2026-05-18 | ✅ `node tests/credential-backup-harness.test.js` and `node tests/gatekeeper-sync.test.js` pass | Verifies legacy `--secrets/--repo/--json` summary compatibility, safe GITHUB_ENV heredocs, CLI timeouts, and Doppler-optional dry-runs |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
@@ -133,6 +135,7 @@
 | BASIC WR label normalization | ✅ live | WR templates apply `work-request` + `weekly-research`; `wr-pr-creation.yml` and `weekly-research.yml` also accept BASIC WR issue type and normalize missing WR labels before routing |
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 | Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
+| Credential backup harness | ✅ implemented + tested | [`scripts/credential-backup-harness.js`](scripts/credential-backup-harness.js), [`scripts/gatekeeper-sync.sh`](scripts/gatekeeper-sync.sh), `credential-gatekeeper.yml`, and `secrets-sentinel.yml` resolve/sync credentials from GitHub secrets, env, JSON/SOPS, pass, Bitwarden, 1Password, Infisical, Vault, or Doppler without requiring Doppler |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 
@@ -161,6 +164,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-18 23:40 UTC
+Updated by: Cursor
+Session summary: Restored Doppler-optional credential backup sync compatibility, fixed safe GITHUB_ENV output and provider timeouts, updated credential recovery workflows, and verified targeted tests, workflow validation, labels check, and `npm test`.
+
 Last updated: 2026-05-17 21:20 UTC
 Updated by: Cursor
 Session summary: Resolved PR #13482 merge conflicts with main, categorized the life-insurance scoring concerns, added the Decision Scoring Engine standard, corrected async eligibility pseudocode guidance, and made the advanced CodeQL workflow manual-only because default code scanning is enabled.

@@ -14,7 +14,9 @@ working.
 5. **Bitwarden CLI** — `CREDENTIAL_BACKUP_BW_PREFIX` + `BW_SESSION`.
 6. **1Password CLI** — `CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE` (e.g. `op://vault/{KEY}/credential`).
 7. **Infisical** — `INFISICAL_TOKEN` (requires `infisical`).
-8. **Vault** — `VAULT_ADDR` + optional `CREDENTIAL_BACKUP_VAULT_PATH`.
+8. **Vault** — `VAULT_ADDR` plus authentication (`VAULT_TOKEN`, a
+   pre-authenticated Vault CLI session, or another Vault-supported auth method)
+   and optional `CREDENTIAL_BACKUP_VAULT_PATH`.
 9. **Doppler** — optional fallback when `doppler` is available.
 
 The first source returning a non-empty value wins. Missing keys are reported as
@@ -29,9 +31,12 @@ node scripts/credential-backup-harness.js --report
 # Resolve specific keys, output redacted JSON
 node scripts/credential-backup-harness.js --keys OPENROUTER_API_KEY,POLAR_ACCESS_TOKEN
 
-# Emit to GITHUB_ENV-style lines
-node scripts/credential-backup-harness.js --keys OPENROUTER_API_KEY --format env
+# Emit multiline-safe GITHUB_ENV entries
+node scripts/credential-backup-harness.js --keys OPENROUTER_API_KEY --format github-actions
 ```
+
+External CLI providers are bounded by `CREDENTIAL_BACKUP_CLI_TIMEOUT_MS`
+(default `15000`) so one hung provider cannot block credential sync forever.
 
 ## Migration
 

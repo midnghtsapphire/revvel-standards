@@ -79,10 +79,60 @@ function testDopplerOptional() {
   console.log('ok doppler optional');
 }
 
+function testGithubActionsOutputUsesEnvHeredoc() {
+  const output = harness.formatOutput({
+    MULTILINE_SECRET: { value: 'line-one\nline-two', source: 'env' },
+  }, 'github-actions');
+  assert.ok(!output.includes('::add-mask::'), 'must not write workflow commands to GITHUB_ENV');
+  assert.ok(output.startsWith('MULTILINE_SECRET<<__CBH_MULTILINE_SECRET_'));
+  assert.ok(output.includes('\nline-one\nline-two\n'));
+  console.log('ok github-actions env output');
+}
+
+function testSafeSpawnTimeout() {
+  const result = harness._internal.safeSpawn(
+    process.execPath,
+    ['-e', 'setTimeout(() => {}, 1000)'],
+    { timeout: 10 }
+  );
+  assert.strictEqual(result.ok, false);
+  assert.strictEqual(result.timedOut, true);
+  console.log('ok cli timeout');
+}
+
+function testLegacySyncSummary() {
+  harness._internal.resetCaches();
+  withEnv({
+    CREDENTIAL_BACKUP_JSON: JSON.stringify({ LEGACY_SYNC_KEY: 'value-from-json' }),
+    MOCK_GITHUB_SECRETS: 'ALREADY_SET_KEY',
+    DRY_RUN: '1',
+  }, () => {
+    const summary = harness.syncSecrets({
+      secretsCsv: 'LEGACY_SYNC_KEY, ALREADY_SET_KEY, LEGACY_SYNC_KEY',
+      repo: 'midnghtsapphire/revvel-standards',
+      project: 'revvel-standards',
+      config: 'prd',
+      dryRun: true,
+    });
+    assert.deepStrictEqual(summary.requested, ['LEGACY_SYNC_KEY', 'ALREADY_SET_KEY']);
+    assert.deepStrictEqual(summary.synced, ['LEGACY_SYNC_KEY']);
+    assert.deepStrictEqual(summary.already_present, ['ALREADY_SET_KEY']);
+    assert.strictEqual(summary.sources.LEGACY_SYNC_KEY, 'json-backup');
+    assert.strictEqual(summary.sources.ALREADY_SET_KEY, 'github-secrets');
+    assert.deepStrictEqual(summary.failed, []);
+    assert.deepStrictEqual(summary.missing_in_doppler, []);
+  });
+  harness._internal.resetCaches();
+  console.log('ok legacy sync summary');
+}
+
 testEnvResolution();
 testJsonBackup();
 testMissingKey();
 testSourcesAvailable();
 testDopplerOptional();
+testGithubActionsOutputUsesEnvHeredoc();
+testSafeSpawnTimeout();
+testLegacySyncSummary();
 
 console.log('credential-backup-harness: all tests passed');

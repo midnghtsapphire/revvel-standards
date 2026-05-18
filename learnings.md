@@ -317,3 +317,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. If CodeQL fails with "advanced configurations cannot be processed when the default setup is enabled," keep the advanced workflow manual-only or disable default setup; do not run both automatically. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
 
 **Next Action:** Confirm PR #13482 checks pass after the merge-resolution push.
+
+---
+
+**Date/Time:** 2026-05-18T23:40Z
+
+**Task Attempted:** Resolve PR #13564 credential backup / Doppler-optional review findings from cubic.
+
+**Outcome:** Success — restored `gatekeeper-sync.sh --secrets/--repo/--json` compatibility, kept Doppler optional, added bounded external CLI calls, changed `github-actions` output to multiline-safe `$GITHUB_ENV` heredocs, documented Vault authentication requirements, removed Doppler-only gates from credential recovery workflows, and verified targeted tests, workflow validation, label checks, and root `npm test`.
+
+**Root Cause of Failure (If any):** The first harness implementation replaced the legacy sync script with a direct `--keys` resolver invocation. Existing workflows still called `--secrets/--repo/--json` and expected a summary containing `synced`, `missing_in_doppler`, and `failed`, so auto-provision comments and self-heal flows could silently lose sync behavior. The harness also emitted workflow commands into env-file output and allowed provider CLIs to run without a timeout.
+
+**Self-Healing Fix / Learned Lesson:** When replacing a credential backend, preserve the caller contract first and then swap the resolver behind it. GitHub env files must contain only env-file syntax; masking commands belong in logs, not `$GITHUB_ENV`. Every external secret-provider CLI should have a timeout so one hung provider cannot stall all credential recovery. If Doppler is optional in the harness, every workflow caller must also avoid Doppler-only skip gates.
+
+**Next Action:** Monitor PR #13564 review/CI for any remaining credential-source edge cases.
