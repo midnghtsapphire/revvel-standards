@@ -55,7 +55,7 @@ This app's evidence packet uses legal public OSINT only: public web pages, publi
 
 ## Accessibility Posture
 
-PromptForge includes keyboard-reachable controls plus display modes for high contrast, enhanced contrast, dyslexia-friendly spacing, focus mode, large text, and monospace rendering. These features support an **A/AA-oriented accessibility posture**, but the app does **not** claim full WCAG AAA conformance.
+PromptForge includes keyboard-reachable controls, visible focus states, contrast-focused themes, dyslexia-friendly spacing, large text, and monospace rendering. These align with core WCAG 2.2 Level A/AA-oriented interaction and readability goals, but the app does **not** claim full WCAG AAA conformance.
 
 ## Tech Stack
 
