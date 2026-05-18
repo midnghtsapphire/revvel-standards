@@ -229,7 +229,7 @@ A prompt packet is worth 10x more when it includes market facts, competitor gaps
 | Prompt / LLM evaluation | Promptfoo Action | Free CLI / paid cloud optional | local promptfoo, OpenRouter prompt tests | Useful when PromptForge moves beyond deterministic output |
 | MCP / agent automation | No clear Marketplace leader | N/A | GitHub MCP servers, Cline, OpenCode, custom MCP | MCP coverage is stronger in GitHub-hosted OSS than Marketplace today |
 
-**Selection rule:** GitHub Marketplace choices are evaluated first for installation speed and discoverability. If a Marketplace option is stale (for example, no meaningful updates in ~6 months), thinly documented, paid-only without a usable trial, unresponsive to issues, or missing MCP support, prefer a maintained GitHub-hosted FOSS equivalent.
+**Selection rule:** GitHub Marketplace choices are evaluated first for installation speed and discoverability. If a Marketplace option is stale (e.g., no meaningful updates in ~6 months), thinly documented, paid-only without a usable trial, unresponsive to issues, or missing MCP support, prefer a maintained GitHub-hosted FOSS equivalent.
 
 #### Community Chatter — What Users Dislike About Current Solutions
 
