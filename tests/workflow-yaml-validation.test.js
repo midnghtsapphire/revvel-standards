@@ -125,5 +125,44 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   }
 });
 
+test('agent-fallback.yml is triggered by routed repair issues', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'agent-fallback.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+  const on = doc.on || doc.true;
+  const healthCheckIf = doc.jobs['health-check'].if || '';
+
+  if (!on.issues || !on.issues.types.includes('opened') || !on.issues.types.includes('labeled')) {
+    throw new Error('agent-fallback.yml must listen for opened/labeled issues');
+  }
+  for (const label of ['agent-fallback', 'wr:code', 'wr:auto']) {
+    if (!healthCheckIf.includes(label)) {
+      throw new Error(`agent-fallback health-check is missing ${label} issue routing`);
+    }
+  }
+});
+
+test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  if (!script.includes('openAgentRepairIssue')) {
+    throw new Error('watchdog must create/dedupe agent repair issues');
+  }
+  if (!script.includes('watchdog-agent-repair:pr-')) {
+    throw new Error('watchdog repair issues must include a dedupe marker');
+  }
+  for (const label of ['agent-fallback', 'auto-fix', 'openrouter']) {
+    if (!script.includes(label)) {
+      throw new Error(`watchdog repair issue is missing ${label} routing label`);
+    }
+  }
+  if (!script.includes('Routed follow-up to agent repair issue')) {
+    throw new Error('watchdog PR comments must point to the routed repair issue');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);

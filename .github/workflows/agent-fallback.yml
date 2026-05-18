@@ -1,10 +1,15 @@
 name: Agent Fallback Handler
 on:
+  issues:
+    types:
+      - opened
+      - labeled
   pull_request_target:
     types:
       - opened
       - reopened
       - ready_for_review
+      - labeled
   workflow_call:
     inputs:
       task_description:
@@ -56,6 +61,16 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       inputs.issue_number ||
+      (github.event_name == 'issues' &&
+       github.event.issue.pull_request == null &&
+       ((github.event.action == 'opened' &&
+         (contains(github.event.issue.labels.*.name, 'agent-fallback') ||
+          contains(github.event.issue.labels.*.name, 'wr:code') ||
+          contains(github.event.issue.labels.*.name, 'wr:auto'))) ||
+        (github.event.action == 'labeled' &&
+         (github.event.label.name == 'agent-fallback' ||
+          github.event.label.name == 'wr:code' ||
+          github.event.label.name == 'wr:auto')))) ||
       (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
        (github.event.pull_request.author_association == 'MEMBER' ||
@@ -63,7 +78,8 @@ jobs:
         github.event.pull_request.author_association == 'COLLABORATOR') &&
        (github.event.action == 'opened' ||
         github.event.action == 'reopened' ||
-        github.event.action == 'ready_for_review'))
+        github.event.action == 'ready_for_review' ||
+        (github.event.action == 'labeled' && github.event.label.name == 'agent-fallback')))
     outputs:
       OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
       cursor_available: ${{ steps.check.outputs.cursor_available }}

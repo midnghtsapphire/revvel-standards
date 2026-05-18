@@ -18,6 +18,97 @@ jobs:
             const now = new Date();
             const HOUR = 3600000;
             const DAY = 86400000;
+            const AGENT_REPAIR_LABELS = ['agent-fallback', 'auto-fix', 'openrouter', 'role:orchestrator', 'bug'];
+            let routingLabelSet;
+
+            async function ensureRoutingLabelsExist(labels) {
+              const palette = {
+                'agent-fallback': { color: '6f42c1', description: 'Route issue to the agent fallback chain' },
+                'auto-fix': { color: '0075ca', description: 'Created by auto-fix / Ralph Loop workflow' },
+                'openrouter': { color: '6f42c1', description: 'Routed to the OpenRouter orchestrator (first line of sight)' },
+                'role:orchestrator': { color: '6f42c1', description: 'OpenRouter agent is acting as orchestrator on this item' },
+                'bug': { color: 'd73a4a', description: 'Something is broken' },
+              };
+              if (!routingLabelSet) {
+                const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+                routingLabelSet = new Set(repoLabels.map(l => l.name));
+              }
+              for (const label of labels) {
+                if (routingLabelSet.has(label) || !palette[label]) continue;
+                try {
+                  await github.rest.issues.createLabel({ owner, repo, name: label, ...palette[label] });
+                  routingLabelSet.add(label);
+                  core.info(`Created routing label: ${label}`);
+                } catch (e) {
+                  if ((e.message || '').toLowerCase().includes('already_exists') || (e.message || '').toLowerCase().includes('already exists')) {
+                    routingLabelSet.add(label);
+                    continue;
+                  }
+                  core.warning(`Could not create routing label ${label}: ${e.message}`);
+                }
+              }
+              return labels.filter(label => routingLabelSet.has(label));
+            }
+
+            async function openAgentRepairIssue(pr, conflictKey, summary, appliedFix, agentTask) {
+              const repairLabels = await ensureRoutingLabelsExist(AGENT_REPAIR_LABELS);
+              const marker = `<!-- watchdog-agent-repair:pr-${pr.number}:${conflictKey} -->`;
+              const { data: openIssues } = await github.rest.issues.listForRepo({
+                owner,
+                repo,
+                state: 'open',
+                labels: 'agent-fallback',
+                per_page: 100,
+              });
+              const existing = openIssues.find(issue => !issue.pull_request && issue.body && issue.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: existing.number,
+                  body: `🔁 **Watchdog repeat:** ${summary} was detected again on PR #${pr.number} at ${now.toISOString()}.\n\nLatest applied fix: ${appliedFix}`,
+                });
+                return existing;
+              }
+
+              const body = [
+                marker,
+                '## Problem',
+                `The Stuck Label Watchdog detected an automation inconsistency on PR #${pr.number}: ${summary}.`,
+                '',
+                '## Automated repair already applied',
+                appliedFix,
+                '',
+                '## Agent assignment',
+                'This issue is labeled `agent-fallback`, `auto-fix`, and `openrouter`, which routes it to the Agent Fallback Handler. The assigned agent should inspect the PR lifecycle/watchdog workflows and patch the root cause if this state can recur.',
+                '',
+                '## Target PR',
+                `- PR: #${pr.number}`,
+                `- URL: ${pr.html_url}`,
+                `- Head SHA: \`${pr.head.sha}\``,
+                `- Author: @${pr.user.login}`,
+                '',
+                '## Agent task',
+                agentTask,
+                '',
+                '## Acceptance criteria',
+                `- The conflicting/stuck label state is corrected on PR #${pr.number}.`,
+                '- Any recurring workflow/config cause is patched or documented as already handled.',
+                '- The repair is validated with workflow YAML parsing/tests.',
+              ].join('\n');
+
+              const { data: issue } = await github.rest.issues.create({
+                owner,
+                repo,
+                title: `[AUTO-FIX] PR #${pr.number} watchdog repair — ${summary}`,
+                body,
+              });
+              if (repairLabels.length > 0) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: repairLabels });
+              }
+              core.info(`Created agent repair issue #${issue.number} for PR #${pr.number}`);
+              return issue;
+            }
 
             // ─── SWEEP OPEN PRs ──────────────────────────────────────
             const { data: pulls } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
@@ -37,8 +128,15 @@ jobs:
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
                   labelNames.push('lifecycle:stuck');
                 }
+                const repairIssue = await openAgentRepairIssue(
+                  pr,
+                  'approved-needs-action',
+                  '`approved` + `needs-action` conflict',
+                  'Removed `needs-action`; `approved` takes precedence unless a fresh changes-requested review exists.',
+                  'Re-read the latest PR reviews and lifecycle workflow events. If `needs-action` can be reintroduced after approval without a changes-requested review, patch that workflow path.'
+                );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: '🔍 **Watchdog:** Detected conflicting labels (`approved` + `needs-action`). Removed `needs-action`. Please verify the PR state.' });
+                  body: `🔍 **Watchdog:** Detected conflicting labels (\`approved\` + \`needs-action\`). Removed \`needs-action\`. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
@@ -60,8 +158,15 @@ jobs:
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
                   labelNames.push('lifecycle:stuck');
                 }
+                const repairIssue = await openAgentRepairIssue(
+                  pr,
+                  'checks-passing-checks-failing',
+                  '`checks-passing` + `checks-failing` conflict',
+                  `Checked actual CI, removed \`${removeLabel}\`, and kept \`${keepLabel}\`.`,
+                  'Inspect check-suite/check-run label handlers for stale or racing CI label updates. Patch the handler if it can leave both check labels on one PR.'
+                );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: `🔍 **Watchdog:** Detected conflicting labels (\`checks-passing\` + \`checks-failing\`). Checked actual CI — removed \`${removeLabel}\`, kept \`${keepLabel}\`.` });
+                  body: `🔍 **Watchdog:** Detected conflicting labels (\`checks-passing\` + \`checks-failing\`). Checked actual CI — removed \`${removeLabel}\`, kept \`${keepLabel}\`. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
@@ -73,8 +178,15 @@ jobs:
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
                   labelNames.push('lifecycle:stuck');
                 }
+                const repairIssue = await openAgentRepairIssue(
+                  pr,
+                  'awaiting-review-approved',
+                  '`awaiting-review` + `approved` conflict',
+                  'Removed `awaiting-review`; approval takes precedence until new commits invalidate it.',
+                  'Inspect review and synchronize event paths. If `awaiting-review` can be added after approval without a new commit/reopened event, patch that workflow path.'
+                );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: '🔍 **Watchdog:** Detected conflicting labels (`awaiting-review` + `approved`). Removed `awaiting-review` — approval takes precedence.' });
+                  body: `🔍 **Watchdog:** Detected conflicting labels (\`awaiting-review\` + \`approved\`). Removed \`awaiting-review\` — approval takes precedence. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
@@ -86,8 +198,15 @@ jobs:
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
                   labelNames.push('lifecycle:stuck');
                 }
+                const repairIssue = await openAgentRepairIssue(
+                  pr,
+                  'ready-to-merge-without-approved',
+                  '`ready-to-merge` without `approved`',
+                  'Removed `ready-to-merge`; a PR cannot be merge-ready without approval.',
+                  'Inspect ready-to-merge promotion paths and ensure they require both approval and passing checks before adding the label.'
+                );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: '🔍 **Watchdog:** PR has `ready-to-merge` but is missing `approved`. Removed `ready-to-merge` — re-request review.' });
+                  body: `🔍 **Watchdog:** PR has \`ready-to-merge\` but is missing \`approved\`. Removed \`ready-to-merge\`. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
@@ -95,8 +214,15 @@ jobs:
               if (labelNames.includes('awaiting-review') && age > 24 * HOUR) {
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  const repairIssue = await openAgentRepairIssue(
+                    pr,
+                    'awaiting-review-over-24h',
+                    '`awaiting-review` for 24+ hours',
+                    'Added `lifecycle:stuck` to make the stale review state visible.',
+                    'Review the PR, request the missing reviewer action, or patch automation if a review should already have been requested/submitted.'
+                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. @${pr.user.login} — consider pinging reviewers or re-requesting review.` });
+                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 }
               }
 
@@ -104,8 +230,15 @@ jobs:
               if (labelNames.includes('checks-failing') && age > 12 * HOUR) {
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  const repairIssue = await openAgentRepairIssue(
+                    pr,
+                    'checks-failing-over-12h',
+                    '`checks-failing` for 12+ hours',
+                    'Added `lifecycle:stuck` to make the stale CI failure visible.',
+                    'Read the failing check logs, identify the root cause, and patch the PR or workflow so the PR can merge.'
+                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. @${pr.user.login} — please review the failures and push a fix.` });
+                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 }
               }
 
