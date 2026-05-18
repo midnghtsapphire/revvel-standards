@@ -113,3 +113,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 1. Deploy each repo to Vercel Dashboard or CLI
 2. Replace placeholder URLs with real Vercel URLs
 3. Set up PostgreSQL for thealttext-backend
+
+---
+
+**Date/Time:** 2026-05-18T21:55:00Z
+
+**Task Attempted:** Make Stuck Label Watchdog findings assign agents automatically instead of only removing conflicting labels
+
+**Outcome:** Success — watchdog conflicts/stale PR states now create deduped `agent-fallback` repair issues, and `agent-fallback.yml` now listens to routed issue labels.
+
+**Root Cause of Failure (If any):** The watchdog was doing the immediate label cleanup but stopped there. It commented on the PR without creating an assignable work item, and the fallback workflow documentation said issue labels could trigger it even though the live workflow did not listen for `issues` events.
+
+**Self-Healing Fix / Learned Lesson:** When a watchdog fixes a symptom, also create a deduped repair issue with a hidden marker, concrete target PR context, routing labels, and acceptance criteria. Keep the routing workflow and documentation in sync; label-based agent assignment must have an actual `issues:labeled` trigger.
+
+**Next Action:** Monitor future watchdog comments for linked repair issue numbers. Separately fix the pre-existing workflow YAML validation failures in `api-rate-limit-handler.yml` and `jules-coding-agent.yml` (BUG-006).
