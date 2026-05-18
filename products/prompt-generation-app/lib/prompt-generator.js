@@ -57,7 +57,7 @@ function marketFacts(idea) {
 function competitorGaps(idea) {
   return [
     { competitor: 'Generic incumbent A', gap: 'No source-citation layer; outputs feel ungrounded.' },
-    { competitor: 'Generic incumbent B', gap: 'No accessibility modes; fails WCAG AAA.' },
+    { competitor: 'Generic incumbent B', gap: 'No accessibility mode toggles; weak contrast and focus support.' },
     { competitor: 'Open-source alt C', gap: 'No reviewer prompts; ships builder prompts only.' },
   ];
 }
@@ -82,7 +82,7 @@ function implementationPrompts(idea, audience) {
 
 function reviewerPrompts(idea) {
   return [
-    `Audit the implementation of "${idea}" for: security (OWASP top 10), accessibility (WCAG AAA), performance (LCP <2.5s), and source-citation integrity. Report findings as a checklist.`,
+    `Audit the implementation of "${idea}" for: security (OWASP top 10), accessibility (WCAG 2.2 A/AA plus any enhanced-contrast claims), performance (LCP <2.5s), and source-citation integrity. Report findings as a checklist.`,
     `Red-team the monetization model for "${idea}". Identify churn risks, pricing objections, and 3 competitor counter-moves.`,
     `Legal review: confirm every external claim has a citation and every data flow respects GDPR/CCPA + the OSINT boundaries listed.`,
   ];

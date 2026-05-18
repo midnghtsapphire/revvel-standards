@@ -5,7 +5,7 @@ import { generatePromptPacket, packetToMarkdown } from '../lib/prompt-generator'
 
 const MODES = [
   { id: 'default', label: 'Default' },
-  { id: 'aaa', label: 'WCAG AAA' },
+  { id: 'aaa', label: 'Enhanced contrast' },
   { id: 'dyslexia', label: 'Dyslexia-friendly' },
   { id: 'focus', label: 'Focus mode' },
   { id: 'contrast', label: 'High contrast' },

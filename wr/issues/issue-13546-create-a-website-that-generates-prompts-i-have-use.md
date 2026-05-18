@@ -219,6 +219,18 @@ A prompt packet is worth 10x more when it includes market facts, competitor gaps
 - Secondary/fallback stack: LLM-augmented source retrieval (planned for v2).
 - Why this BOM is superior for this WR: Maximizes margin ($0 COGS) while proving the concept.
 
+#### Marketplace / CLI / MCP BOM (GitHub-first)
+
+| Category | Marketplace-first choice | Cost | Free / FOSS fallback | Why it belongs in this stack |
+| -------- | ------------------------ | ---- | -------------------- | ---------------------------- |
+| Accessibility PR checks | AccessLint | Free | axe-core, Pa11y | Fast PR feedback for basic accessibility regressions |
+| AI PR review | CodeRabbit or Bito AI | Free tier / paid | OpenRouter review workflow, OpenCode | Speeds review loops on prompt packet and UI changes |
+| Workflow linting | Super Linter | Free | actionlint, yamllint, act | Catches YAML and repo hygiene issues early |
+| Prompt / LLM evaluation | Promptfoo Action | Free CLI / paid cloud optional | local promptfoo, OpenRouter prompt tests | Useful when PromptForge moves beyond deterministic output |
+| MCP / agent automation | No clear Marketplace leader | N/A | GitHub MCP servers, Cline, OpenCode, custom MCP | MCP coverage is stronger in GitHub-hosted OSS than Marketplace today |
+
+**Selection rule:** GitHub Marketplace choices are evaluated first for installation speed and discoverability. If Marketplace is weak, paid-only, or missing MCP support, prefer a maintained GitHub-hosted FOSS equivalent.
+
 #### Community Chatter — What Users Dislike About Current Solutions
 
 **Top complaints (sourced from Reddit/AI builder forums):**
@@ -453,13 +465,13 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 #### Accessibility Features
 
-**Current Accessibility:** WCAG AA (targeting AAA for contrast via theme toggle)
+**Current Accessibility:** WCAG A/AA-oriented controls only; enhanced contrast mode is available, but full WCAG AAA conformance is not claimed.
 
 **Required:**
 
 - [x] Keyboard navigation
 - [x] Screen reader support
-- [x] Color contrast (WCAG AA/AAA via themes)
+- [x] Color contrast improvements via high-contrast and enhanced-contrast themes
 - [x] Alt text for images
 - [x] ARIA labels
 - [x] Focus indicators
