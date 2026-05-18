@@ -1,8 +1,8 @@
-# WR: [WR] run cleanup scripts revvel-standards
+# WR: [WR] REBRAND SOUP2BOWL ITS ALL WRONG
 
-**Issue:** #13433  
+**Issue:** #13459  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-05-08  
+**Research Date:** 2026-05-15  
 **Researcher:** Jules (Google) + OpenRouter  
 **WR Status:** 🟡 In Progress
 
@@ -24,8 +24,8 @@
 | Property | Value |
 |----------|-------|
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-08 |
-| Last Updated | 2026-05-08 |
+| Created | 2026-05-15 |
+| Last Updated | 2026-05-15 |
 | Primary Language | JavaScript |
 | Stars | {STARS} |
 | Open Issues | {OPEN_ISSUES} |
@@ -574,5 +574,5 @@
 
 ---
 
-**Last Updated:** 2026-05-08  
+**Last Updated:** 2026-05-15  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]

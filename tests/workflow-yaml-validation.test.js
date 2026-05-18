@@ -11,6 +11,7 @@ const path = require('path');
 const yaml = require('yaml');
 
 const WORKFLOWS_DIR = path.resolve(__dirname, '..', '.github', 'workflows');
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
 let passed = 0;
 let failed = 0;
@@ -100,6 +101,18 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
     throw new Error('route-new assignment is not wrapped as non-fatal');
   }
 
+  const commentIndex = routeNewSteps.findIndex((step) => step.name === 'Post first-line-of-sight comment');
+  if (commentIndex < 0 || assignIndex > commentIndex) {
+    throw new Error('route-new comment step not found or ordered before assignment');
+  }
+  const routeNewCommentScript = routeNewSteps[commentIndex].with?.script || '';
+  if (!routeNewCommentScript.includes('createComment') || !routeNewCommentScript.includes('try {') || !routeNewCommentScript.includes('catch (error)')) {
+    throw new Error('route-new comment posting is not wrapped in try/catch');
+  }
+  if (!routeNewCommentScript.includes('Could not post first-line-of-sight comment on #') || !routeNewCommentScript.includes('(non-fatal): ${error.message}')) {
+    throw new Error('route-new comment failure should log issue/PR number context and error.message as non-fatal notice');
+  }
+
   const routeDiscovered = doc.jobs['ralph-cron-sweep'].steps.find(
     (step) => step.name === 'Route discovered items'
   );
@@ -161,6 +174,59 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   }
   if (!script.includes('Routed follow-up to agent repair issue')) {
     throw new Error('watchdog PR comments must point to the routed repair issue');
+  }
+test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const commitStep = doc.jobs['log-agent-action'].steps.find(
+    (step) => step.name === 'Commit audit log'
+  );
+
+  if (!commitStep) throw new Error('Commit audit log step not found');
+
+  const script = commitStep.run || '';
+  if (!script.includes('for attempt in 1 2 3')) {
+    throw new Error('Commit step must retry git push attempts');
+  }
+  if (!script.includes('fetch first|non-fast-forward')) {
+    throw new Error('Commit step must detect non-fast-forward push errors');
+  }
+  if (!script.includes('git pull --rebase origin main')) {
+    throw new Error('Commit step must rebase before retrying push');
+  }
+  if (!script.includes('Rebase failed; audit log push aborted.')) {
+    throw new Error('Commit step must log rebase failure details');
+  }
+  if (!script.includes('Push failed with non-rebaseable error; audit log push aborted.')) {
+    throw new Error('Commit step must log non-rebaseable push failures');
+  }
+  if (!script.includes('exit 0')) {
+    throw new Error('Commit step must exit cleanly when push remains blocked');
+  }
+});
+
+test('wr-pr-creation.yml github-script blocks compile after workflow expression substitution', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs['detect-completion'].steps.concat(doc.jobs['create-wr-pr'].steps);
+  const namesToCompile = new Set([
+    'Check if PR should be created',
+    'Apply labels to PR',
+  ]);
+
+  for (const step of steps) {
+    if (!namesToCompile.has(step.name)) continue;
+    const script = String(step.with?.script || '')
+      .replace(/\$\{\{\s*env\.ISSUE_NUMBER\s*\}\}/g, '123')
+      .replace(/\$\{\{\s*steps\.create_pr\.outputs\.pr_number\s*\}\}/g, '456')
+      .replace(/\$\{\{\s*steps\.create_pr\.outputs\.pr_url\s*\}\}/g, 'https://example.com/pr/456')
+      .replace(/\$\{\{\s*steps\.create_branch\.outputs\.BRANCH_NAME\s*\}\}/g, 'wr/test-123');
+
+    try {
+      new AsyncFunction('github', 'context', 'core', script);
+    } catch (error) {
+      throw new Error(`${step.name} github-script block does not compile: ${error.message}`);
+    }
   }
 });
 

@@ -3,6 +3,7 @@ description: Request scoped work with explicit bundled expectations, output type
 title: "[WR] "
 labels:
   - work-request
+  - weekly-research
 body:
   - type: markdown
     attributes:

@@ -50,6 +50,16 @@ Loop or branch inside that automation so the **autocreate N** step matches **PDF
 
 On **`sellable-pdf`** Work Requests, **[`.github/workflows/pdf-work-request-router.yml`](../.github/workflows/pdf-work-request-router.yml)** posts a single idempotent issue comment (marker `pdf-workflow-router:v1`) containing **JSON**: `pdf_pipeline_batch`, `autocreate_count`, and links to this playbook, `PDF_AUTOMATION_GUIDE.md`, and `standards/shapes/PDF.md`.
 
+The same router now triggers **Make.com auto-creation** directly (required for full automation). Configure repository secret **`MAKE_PDF_WR_WEBHOOK_URL`** and ensure your Make scenario accepts:
+
+- `trigger_mode: "auto_create_pdf"`
+- `idempotency_key` (for replay safety)
+- `openrouter_orchestration.brief` (execution brief from OpenRouter)
+
+The router also sends header `X-Idempotency-Key` (same value as `idempotency_key`) on each retry. Configure Make to dedupe by that key so retry attempts do not create duplicate products.
+
+When Make is triggered, the router posts a second status comment (marker `pdf-workflow-make:v1`) showing webhook HTTP status + response body.
+
 **Runs when:** the issue is **opened** with `sellable-pdf` in the body, the label **`output-type:sellable-pdf`** is applied, the issue is **edited** after that label exists, or you **manually run** the workflow (**Actions** tab → **PDF work request router** → enter issue number).
 
 To **refresh** the JSON after editing the batch dropdown, delete the old router comment on the issue, then re-run the workflow with that issue number.

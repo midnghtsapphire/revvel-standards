@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Resolve issue/PR number
         id: resolve
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.pull_request?.number;
@@ -75,7 +75,7 @@ jobs:
       - name: Check if already routed
         id: check
         if: steps.resolve.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -113,7 +113,7 @@ jobs:
 
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -137,7 +137,7 @@ jobs:
       - name: Assign to Copilot orchestrator
         id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -159,7 +159,7 @@ jobs:
 
       - name: Post first-line-of-sight comment
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
@@ -205,14 +205,18 @@ jobs:
               '_Automated by `.github/workflows/openrouter-assignee.yml` — runs 24/7 on event triggers + hourly cron sweep_'
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              body: comment,
-            });
-
-            core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment,
+              });
+              core.info(`✅ Posted first-line-of-sight comment on #${issueNumber}`);
+            } catch (error) {
+              core.notice(`Could not post first-line-of-sight comment (ok if missing): ${error.message}`);
+              core.notice(`Could not post first-line-of-sight comment on #${issueNumber} (non-fatal): ${error.message}`);
+            }
 
   ralph-cron-sweep:
     name: Hourly cron sweep — catch missed items
@@ -231,7 +235,7 @@ jobs:
 
       - name: Discover unrouted open issues and PRs
         id: discover
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
@@ -301,7 +305,7 @@ jobs:
 
       - name: Route discovered items
         if: steps.discover.outputs.count != '0'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
@@ -409,13 +413,17 @@ jobs:
                   '_Automated by `.github/workflows/openrouter-assignee.yml` — 24/7 cron sweep (picked up by hourly run)_'
                 ].join('\n');
 
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: item.number,
-                  body: comment,
-                });
-                core.info(`  ✅ Posted first-line-of-sight comment`);
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    body: comment,
+                  });
+                  core.info(`  ✅ Posted first-line-of-sight comment`);
+                } catch (error) {
+                  core.notice(`Could not post first-line-of-sight comment (ok if missing): ${error.message}`);
+                }
 
               } catch (error) {
                 core.error(`  ❌ Error routing ${item.kind} #${item.number}: ${error.message}`);

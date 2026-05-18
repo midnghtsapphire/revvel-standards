@@ -10,6 +10,59 @@
 
 ---
 
+## ⚡ Pre-flight: Autonomous Research Defaults
+
+> **These are the default research requirements for EVERY WR — including bug fixes, chores, and minor features. Do not skip any checked item. If a section is genuinely N/A, document why.**
+
+### Research Checklist (pre-checked = required by default)
+
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
+- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
+
+### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
+
+When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
+
+```yaml
+# Paste into any workflow_dispatch trigger to enforce research standards
+on:
+  workflow_dispatch:
+    inputs:
+      deep_research:
+        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_bom:
+        description: 'Generate Bill of Materials (API/tool comparison table)'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_community_chatter:
+        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        type: boolean
+        default: true          # ← ALWAYS true
+      include_competitor_teardown:
+        description: 'Full competitor pricing + gap analysis'
+        type: boolean
+        default: true          # ← ALWAYS true
+      research_depth:
+        description: 'Research depth level'
+        type: choice
+        options: [standard, deep, exhaustive]
+        default: deep           # ← default to deep, not standard
+```
+
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+
+---
+
 ## Executive Summary
 
 [2-3 sentence summary of repository purpose, current state, and key recommendations]
@@ -59,30 +112,149 @@
 
 ## Step 2: Deep Web Research
 
+> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
+> - **(1) What is being used now** — existing solutions, pricing, mechanics
+> - **(2) What problem are we solving** — specific pain points from community research
+> - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
+> - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
+> - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
+> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
+>
+> An LLM agent must be able to answer every question in this template from live web research before implementation begins.
+
 ### Market Opportunity Analysis
 
 #### Current Market Trends
 
-[Research findings about market trends in this domain]
+[Research findings about market trends in this domain — include data points, stats, and growth signals]
 
 **Sources:**
 - [Link 1]: [Description]
 - [Link 2]: [Description]
 
+#### Target Audience & Trigger Events
+
+[Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
+
+| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
+|-----------------|---------------|--------------|-----------------|
+| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
+| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+
+#### SEO & Keyword Research
+
+**This section is REQUIRED for any product with a web/content component.**
+
+| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
+|---------|---------------------|---------|-------------|--------|
+| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+
+**Long-tail / trigger-specific keywords:**
+- [keyword]: [volume] — [why it matters]
+- [keyword]: [volume] — [why it matters]
+
+**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
+
+#### Bill of Materials (BOM) — APIs & Tools
+
+> **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
+
+**Category: [Primary Data Source]**
+
+| API / Tool | Cost | Coverage | Best For | Verdict |
+|------------|------|----------|----------|---------|
+| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$] | [Coverage] | [Use case] | |
+
+**Category: [Compliance / Validation]**
+
+| API / Tool | Cost | Features | Best For | Verdict |
+|------------|------|----------|----------|---------|
+| [Option 1] | [$] | [Features] | [Use case] | |
+
+**Category: [Delivery / Storefront]**
+
+| Platform | Rev Share | Best For | Verdict |
+|----------|-----------|----------|---------|
+| [Option 1] | [%] | [Use case] | |
+
+**BOM Cost Summary:**
+
+| Category | Recommended Tool | Est. Monthly Cost |
+|----------|-----------------|-------------------|
+| [Category 1] | [Tool] | $[X] |
+| [Category 2] | [Tool] | $[X] |
+| **Total Infrastructure** | | **$[Total]/mo** |
+
+> **ROI Check:** [How many units/sales cover infrastructure cost?]
+
+#### How the Industry Works — Mechanics
+
+[Explain exactly how the current market solves this problem. Include: how buyers find/purchase, how pricing works, what the conversion funnel looks like, and what makes a high-quality solution vs. a low-quality one.]
+
+**Shared vs. Exclusive / Tiered pricing:**
+
+| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
+|--------------|-------------|------|----------------|------------------------|
+| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+
+**Why some [units] are worth more than others:**
+[Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
+
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| [Name 1] | [Key features] | [Pricing model] | [Estimate] |
-| [Name 2] | [Key features] | [Pricing model] | [Estimate] |
+| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
+|------------|------|------|-------------------|--------------------------|
+| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
+| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
+| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
 
-#### Gaps in Existing Solutions
+#### API / Data Source BOM (REQUIRED)
 
-1. **Gap 1:** [Description]
-   - **Opportunity:** [How this repo can fill it]
-   
-2. **Gap 2:** [Description]
-   - **Opportunity:** [How this repo can fill it]
+**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
+
+If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
+
+| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
+|--------------|----------|-----------------|------------|-----------|------------------|------------------|
+| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+
+**BOM Decision:**
+- Primary provider stack: [choice + reason]
+- Secondary/fallback stack: [choice + reason]
+- Why this BOM is superior for this WR: [evidence]
+
+#### Community Chatter — What Users Dislike About Current Solutions
+
+**This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
+
+**Top complaints (cite sources where possible):**
+
+1. **[Complaint 1]:** [Quote or paraphrase from community research]
+2. **[Complaint 2]:** [Quote or paraphrase from community research]
+3. **[Complaint 3]:** [Quote or paraphrase from community research]
+
+**What users/buyers actually want (opportunity signals):**
+- [Want 1]: [Why this is an opening]
+- [Want 2]: [Why this is an opening]
+
+> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
+
+#### Domain Name Strategy
+
+**This section is REQUIRED for any product with a web presence.**
+
+**High-value domain patterns for this niche:**
+
+| Pattern | Examples | Rationale |
+|---------|---------|-----------|
+| [Pattern 1] | [Examples] | [Why it works] |
+| [Pattern 2] | [Examples] | [Why it works] |
+
+**Recommendation:** [Specific domain guidance — TLD preference, availability check strategy, priority]
 
 #### Monetization Opportunities
 
@@ -90,93 +262,66 @@
    - [Strategy 1]: [Description and potential]
    - [Strategy 2]: [Description and potential]
 
-2. **Affiliate Partnerships:**
+2. **Affiliate / Reseller Partnerships:**
    - [Partner 1]: [Commission structure]
    - [Partner 2]: [Commission structure]
 
-3. **Premium Features:**
+3. **Subscription / Recurring:**
    - [Feature 1]: [Pricing potential]
    - [Feature 2]: [Pricing potential]
 
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates]
+**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
 
-### Technology Stack Research
+#### Marketing Best Practices — What's Working Now & How This Improves It
 
-#### Dependency Audit
+**This section is REQUIRED. Research current marketing strategies in this niche.**
 
-**Current Dependencies:**
-```json
-[List key dependencies with versions]
-```
+| Strategy | What Works Now | How This WR Improves It |
+|----------|---------------|------------------------|
+| [Strategy 1] | [Current best practice + data] | [How our product is better] |
+| [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
-**Outdated Dependencies:**
-| Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| [name] | [version] | [version] | [CVE if any] | [High/Med/Low] |
+**Inbound vs. Outbound ROI comparison:**
+- Inbound ROI: [Data + timeframe]
+- Outbound ROI: [Data + timeframe]
+- Recommended approach for this WR: [Recommendation with rationale]
 
-**Recommended Updates:**
-1. [Package]: [Current] → [Target] - [Reason]
-2. [Package]: [Current] → [Target] - [Reason]
+#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
 
-#### Security Vulnerabilities
+Define a layered research engine using two AI fleets:
 
-**Critical Issues:**
-- [CVE-XXXX]: [Description] - [Impact] - [Fix]
+1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
+2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
 
-**Medium Issues:**
-- [Description] - [Impact] - [Fix]
+**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
 
-**Low Issues:**
-- [Description] - [Impact] - [Fix]
+**Minimum pass criteria (required):**
+- All REQUIRED sections in Step 2 are present and non-empty
+- Zero unsupported factual claims in sampled checks
+- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
+- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
 
-**Security Score:** [Rating/10]
+**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions. Any threshold change must be approved by repository maintainers/standards owners per `docs/WEEKLY_RESEARCH_PROCESS.md` and documented in the PR.
 
-#### Performance Optimization Opportunities
+**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
 
-1. **[Area 1]:** [Current issue] → [Optimization] → [Expected improvement]
-2. **[Area 2]:** [Current issue] → [Optimization] → [Expected improvement]
+**Counting example:**
+- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
+- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
+- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
 
-#### FOSS Alternatives to Paid Dependencies
+**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
 
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
-| [Package] | [Alternative] | [List] | [List] | [Replace/Keep/Evaluate] |
+**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
 
-### SEO & Content Research
+#### Instruction Normalization (REQUIRED)
 
-#### Relevant Keywords
+User prompts and brainstorms are inputs, not immutable specs. Record:
+- What was accepted as-is
+- What was corrected/pivoted based on standards or evidence
+- What was rejected and why
 
-**Primary Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-**Long-tail Keywords:**
-- [keyword 1]: [Monthly search volume] - [Competition]
-- [keyword 2]: [Monthly search volume] - [Competition]
-
-#### Competitor Content Strategies
-
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| [Name] | [Type] | [Frequency] | [Metrics] | [What to learn] |
-
-#### Partnership Opportunities
-
-1. **[Partner 1]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-2. **[Partner 2]:**
-   - **Type:** [Technology/Marketing/Distribution]
-   - **Benefit:** [Description]
-   - **Contact:** [How to initiate]
-
-#### Affiliate Programs
-
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| [Name] | [Rate] | [Days] | [Rating/5] |
+This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
 
 ---
 
@@ -217,6 +362,51 @@
 **Missing:**
 - [Feature 1]: [Description and priority]
 - [Feature 2]: [Description and priority]
+
+### Decision Scoring Model Gate
+
+> Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
+> Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
+
+**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
+
+**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
+
+**Status Values:**
+- [ ] `eligible`
+- [ ] `manual_review`
+- [ ] `blocked`
+- [ ] `suppressed`
+- [ ] Other: [define]
+
+**Score Range:** 0-100
+
+**Weighted Factors:**
+| Factor | Weight | Source | Why it matters |
+|---|---:|---|---|
+| [factor] | [0.00] | [input/source] | [reason] |
+
+**Threshold Bands:**
+| Score Range | Status | Action |
+|---|---|---|
+| 80-100 | eligible | [export/route/approve] |
+| 50-79 | manual_review | [review queue] |
+| 0-49 | blocked | [suppress/reject] |
+
+**Audit Trail Required:**
+- [ ] Model version recorded
+- [ ] Factor values recorded
+- [ ] Explanation trail recorded
+- [ ] Actor and timestamp recorded
+- [ ] Manual-review route recorded when status is `manual_review`
+
+**Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
+
+**Tenant / Client Separation:**
+- **Organization boundary:** [Audrey-owned / client / partner]
+- **Project boundary:** [project/workstream ID]
+- **Data domain:** [enterprise / client / product / research]
+- **Rate-card or confidence lookup table required:** [Yes/No]
 
 ### Ship to Market Status
 

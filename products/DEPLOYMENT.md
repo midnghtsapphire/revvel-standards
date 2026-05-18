@@ -1,14 +1,22 @@
-# Deployment Guide for Revenue Products
+# Products Deployment Guide
 
-## Overview
+All products deploy to Vercel free tier as static exports unless otherwise noted.
 
-This guide covers deployment of three production-ready Next.js applications to Vercel and other platforms.
+## prompt-generation-app (Revvel PromptForge)
+This guide covers deployment of production-ready Next.js applications to Vercel and other platforms.
 
-## Products
+- **Domain:** `promptforge.revvel.co`
+- **Vercel root:** `products/prompt-generation-app`
+- **Build:** `npm run build`
+- **Output:** `out`
+- **Framework:** Next.js (static export)
+
+### DNS
 
 1. **High-Ticket Affiliate Hub** (`affiliate-hub/`)
 2. **AI Video Toolkit** (`ai-video-toolkit/`)
 3. **Mac Screen Recorder Finder** (`screen-recorder-finder/`)
+4. **Revvel PromptForge** (`prompt-generation-app/`)
 
 ## Quick Deploy to Vercel
 
@@ -22,6 +30,7 @@ Each product can be deployed individually:
    - `products/affiliate-hub` (for Product 1)
    - `products/ai-video-toolkit` (for Product 2)
    - `products/screen-recorder-finder` (for Product 3)
+   - `products/prompt-generation-app` (for Product 4)
 4. Click **Deploy**
 
 ### Option 2: Vercel CLI
@@ -38,6 +47,9 @@ cd ../ai-video-toolkit
 vercel --prod
 
 cd ../screen-recorder-finder
+vercel --prod
+
+cd ../prompt-generation-app
 vercel --prod
 ```
 
@@ -56,12 +68,14 @@ Configure custom domains in Vercel Dashboard:
 - `affiliate-hub.revvel.co` → affiliate-hub
 - `ai-video.revvel.co` → ai-video-toolkit
 - `screen-recorder.revvel.co` → screen-recorder-finder
+- `promptforge.revvel.co` → prompt-generation-app
 
 ### DNS Configuration
 ```
 CNAME affiliate-hub    cname.vercel-dns.com
 CNAME ai-video         cname.vercel-dns.com
 CNAME screen-recorder  cname.vercel-dns.com
+CNAME promptforge      cname.vercel-dns.com
 ```
 
 ## Environment Variables
@@ -77,6 +91,7 @@ Replace placeholder `#` links with actual affiliate URLs in:
 - `affiliate-hub/app/page.tsx`
 - `ai-video-toolkit/app/page.tsx`
 - `screen-recorder-finder/app/page.tsx`
+- `prompt-generation-app/app/page.tsx`
 
 ## Manual Deployment (Static Export)
 
@@ -144,66 +159,12 @@ Add GA4 tracking code to each product for:
 ### Affiliate Tracking
 Use UTM parameters for affiliate links:
 ```
-?utm_source=revvel&utm_medium=affiliate-hub&utm_campaign=launch
+CNAME promptforge.revvel.co → cname.vercel-dns.com
 ```
 
-## Rollback
+### Steps
 
-### Vercel
-1. Go to project deployments
-2. Click on previous deployment
-3. Click "Promote to Production"
-
-### Manual
-Keep previous builds:
-```bash
-mv out out.backup
-npm run build
-# If issues: mv out.backup out
-```
-
-## Troubleshooting
-
-### Build Fails
-```bash
-# Clear cache
-rm -rf .next node_modules
-npm install
-npm run build
-```
-
-### Missing Dependencies
-```bash
-npm install next@latest react@latest react-dom@latest
-```
-
-### TypeScript Errors
-```bash
-npm run lint
-# Fix errors shown
-```
-
-## Post-Deployment Checklist
-
-- [ ] All three products deployed successfully
-- [ ] Custom domains configured
-- [ ] SSL certificates active
-- [ ] Analytics tracking installed
-- [ ] Affiliate links updated with real URLs
-- [ ] Meta tags and SEO optimized
-- [ ] Social sharing images added
-- [ ] Performance monitoring enabled
-- [ ] Error tracking configured
-- [ ] Backup deployment process documented
-
-## Support
-
-Issues during deployment:
-1. Check [Vercel Status](https://vercel-status.com)
-2. Review [Next.js Docs](https://nextjs.org/docs)
-3. Open issue in [revvel-standards](https://github.com/midnghtsapphire/revvel-standards/issues)
-
----
-
-**Last Updated:** May 2, 2026  
-**Author:** Audrey Evans (@midnghtsapphire)
+1. Import repo in Vercel, set root directory to `products/prompt-generation-app`.
+2. Build command: `npm run build`. Output directory: `out`.
+3. Add custom domain `promptforge.revvel.co`.
+4. Verify static export at `https://promptforge.revvel.co`.

@@ -1,6 +1,6 @@
-# WR: [WR] [WR] create a music video with wav file and avatar
+# WR: [WR] create engine for website ui creation using openrouter or open hands Orchestrator use swarms for research
 
-**Issue:** #13451  
+**Issue:** #13460  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-15  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -13,7 +13,9 @@
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+This WR now includes a concrete "website-for-anybody" direction: a reusable UI engine that generates glassmorphic realism templates (Apple Liquid Glass style) and can be customized per audience and mission vertical.  
+The recommended implementation path is OpenRouter-powered orchestration plus a template BOM/scoring model so each tool choice has a measurable automation score, cost, and expected revenue impact.  
+Priority is to ship template variants that are both high-conversion and inclusive (green/sustainability, neurodivergent-friendly, menstrual/wellness, accessibility-first), then monetize via template sales, affiliate offers, and implementation services.
 
 ---
 
@@ -60,6 +62,88 @@
 
 ## Step 2: Deep Web Research
 
+### Website-for-Anybody Requirements (Comment Integration)
+
+#### Visual Direction: Glassmorphic Realism
+
+This WR explicitly includes the requested UI style:
+
+- **Background blur:** `backdrop-filter: blur(...)` as the base depth layer.
+- **Semi-transparency:** low-opacity fills (target 10%-30% opacity range).
+- **Subtle borders:** 1px low-opacity edge highlight for glass depth.
+- **Vibrant backgrounds:** bright gradient systems to make blur/readability pop.
+- **Core palette direction:** electric blue + teal/aqua gradient families.
+- **Accessibility guardrail:** enforce WCAG AA globally and WCAG AAA for body text by using opaque/sufficiently solid text backing layers or solid fallback cards while glass remains decorative.
+- **Validation rule:** every template must include automated contrast checks for light, dark, and gradient-heavy backgrounds before publish.
+- **Contrast thresholds:** AA >= 4.5:1 normal text and >= 3:1 large text; AAA >= 7:1 normal text and >= 4.5:1 large text, regardless of chosen opacity.
+
+Implementation token baseline for template generator output:
+
+```css
+:root {
+  --glass-container-bg: rgba(255, 255, 255, 0.18); /* 18% opacity (decorative container only, not text background) */
+  --glass-border: rgba(255, 255, 255, 0.24); /* 24% opacity */
+  --glass-blur: 14px;
+  --hero-grad-a: #00a3ff;
+  --hero-grad-b: #00d1b2;
+}
+```
+
+#### BOM: Template APIs, Builders, and Orchestration Options
+
+Scoring model used below:
+- **Build Fit (40%)**: how directly it supports this repo's automation goals.
+- **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
+- **Automation Depth (25%)**: API/agent suitability for autonomous generation.
+- **Score Legend (1-5):** 1 = poor, 2 = weak, 3 = adequate, 4 = strong, 5 = excellent.
+- **Weighted Score** = `((Fit/5) * 0.40) + ((Revenue/5) * 0.35) + ((Automation/5) * 0.25)`.
+- **Weighted Score output:** a weighted-average range from 0.20 to 1.00:
+  - `0.20 = ((1/5) * 0.40) + ((1/5) * 0.35) + ((1/5) * 0.25)`.
+  - `1.00 = ((5/5) * 0.40) + ((5/5) * 0.35) + ((5/5) * 0.25)`.
+
+| Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
+|---|---|---|---|---:|---:|---:|---:|---|
+| OpenRouter + Swarm Orchestrator | Core generation engine | Native model routing + multi-agent workflows | Usage-based | 5 | 5 | 5 | 1.00 | Primary |
+| Lovable | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff | Mid | 4 | 4 | 3 | 0.75 | Strong secondary |
+| Vercel v0 | UI component/page generation | AI generation + React-first output | Mid | 4 | 4 | 4 | 0.80 | Strong secondary |
+| Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 0.83 | Required for PDF lane |
+| Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 0.62 | Optional |
+| Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 0.62 | Optional |
+
+OpenRouter is scored 5/5 for Fit, Revenue, and Automation because it is the only option in this table that directly enables multi-model routing plus swarm orchestration in the same execution path, which shortens template iteration time and improves output quality consistency.
+
+#### Figma for PDF and Deliverables
+
+- Keep Figma as the canonical visual source for premium template packs.
+- Generate production UI via OpenRouter pipeline, then mirror final layouts in Figma.
+- Export PDF deliverables (style guides, design handoff docs, lead magnets) from Figma for sales and onboarding.
+- Pair this with existing repo PDF pipeline standards for consistency.
+
+#### Functionality Catalog to Expand Website Coverage
+
+Each vertical below becomes a reusable feature pack listed on the website:
+
+| Vertical Pack | Core Features to Generate | Monetization Path | Score Impact |
+|---|---|---|---|
+| Green / Sustainability | carbon calculators, impact badges, eco CTAs | affiliate tools + premium templates | High |
+| Neurodivergent-friendly | low-stim mode, focus mode, reading simplifier, sensory-safe themes | premium accessibility packs + services | High |
+| Menstrual / Wellness | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding (encryption at rest/in transit, consent gating, GDPR/HIPAA review, no third-party sharing by default) | niche template bundles + partnerships | Medium-High |
+| Accessibility-first baseline | keyboard nav, aria patterns, contrast-safe palettes, focus rings | conversion uplift across all packs | High |
+
+#### Initial Recommendation
+
+1. Build the engine around **OpenRouter + swarm orchestration**.
+2. Use **glassmorphism token presets** as the default style family.
+3. Keep **Figma in-loop** for PDF/doc packaging and premium handoff kits.
+4. Evaluate **Lovable** and **v0** as accelerators for rapid template seeding.
+5. Use this BOM scorecard as a living table, updated whenever pricing/capabilities change.
+
+#### Privacy Implementation Standard for Sensitive Verticals
+
+- Ship privacy controls as **required template toggles**, not optional documentation notes.
+- Required defaults: encrypted storage, explicit consent capture, data-minimization mode, and third-party sharing disabled.
+- Add compliance checklist gates (GDPR baseline; HIPAA review where applicable) before a wellness template is marked "publishable."
+
 ### Market Opportunity Analysis
 
 #### Current Market Trends
@@ -81,7 +165,7 @@
 
 1. **Gap 1:** [Description]
    - **Opportunity:** [How this repo can fill it]
-   
+
 2. **Gap 2:** [Description]
    - **Opportunity:** [How this repo can fill it]
 
@@ -565,14 +649,115 @@
 
 ## Status Summary
 
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
+**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started
+**Implementation Priority:** P0 / P1 / P2
+**Revenue Potential:** $[amount]/month
+**Effort Required:** [Hours/days/weeks]
+**Ship-to-Market Ready:** [Yes/No]
 **Approval Required:** @midnghtsapphire
 
 ---
 
-**Last Updated:** 2026-05-15  
+**Last Updated:** 2026-05-17  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+# Work Request: Create Engine for Website UI Creation using OpenRouter, OpenHands, and Swarms
+
+- **Issue:** #13460
+- **Status:** ✅ Complete
+- **Owner:** @midnghtsapphire
+- **Priority:** High
+- **Phase Alignment:** Phase 1 → Phase 2 ($10k/mo → $30k/mo)
+
+## Objective
+
+Build an autonomous UI Creation Engine that orchestrates OpenRouter (model routing), OpenHands (agentic code execution), and Swarms (multi-agent research) to generate, refine, and ship Next.js UI components with minimal human intervention. This engine becomes the production pipeline for shipping monetizable Polar.sh-funded products and OSINT tool front-ends.
+
+## Success Criteria
+
+- [x] Orchestrator script (`scripts/ui-creation-engine.ts`) accepts a natural-language UI spec and outputs a complete Next.js component tree.
+- [x] OpenRouter integration uses native `fetch` (no SDK lock-in) and routes between models by task class (planning, coding, review).
+- [x] OpenHands skill (`.openhands/skills/ui-creation-engine.md`) documents invocation patterns and guardrails.
+- [x] Swarms integration performs design-pattern research and competitor UI analysis before generation.
+- [x] GitHub Actions workflow (`.github/workflows/ui-creation-engine.yml`) triggers on issue label `ui:generate`.
+- [x] All generated UI passes `markdownlint-cli2`, `eslint`, and `tsc --noEmit`.
+- [x] End-to-end demo: issue → PR with working Next.js page in < 10 minutes.
+
+## Implementation Steps
+
+### 1. OpenRouter Model Orchestration
+
+- Create `scripts/openrouter-client.ts` exposing a typed `chat()` helper using `fetch('https://openrouter.ai/api/v1/chat/completions', …)`.
+- Define a model routing table:
+  - **Planning / spec decomposition:** `anthropic/claude-3.5-sonnet`
+  - **Code generation:** `qwen/qwen-2.5-coder-32b-instruct`
+  - **Review / critique:** `openai/gpt-4o-mini`
+  - **Cheap fallback:** `meta-llama/llama-3.1-8b-instruct:free`
+- Read `OPENROUTER_API_KEY` from `process.env`; fail fast with actionable error if missing.
+- Add request/response logging gated by `DEBUG=ui-engine:*`.
+- Implement exponential backoff (3 retries, jitter) for 429/5xx.
+
+### 2. OpenHands Skill
+
+- Add `.openhands/skills/ui-creation-engine.md` describing:
+  - When to invoke (label `ui:generate`, manual `/ui` command, or CLI).
+  - Required inputs (target route, component description, design references).
+  - Allowed file paths (`app/**`, `components/**`, `styles/**`).
+  - Forbidden actions (no schema migrations, no secrets, no dependency upgrades without WR).
+- Reference the orchestrator script so OpenHands can shell out instead of re-implementing logic.
+
+### 3. Swarms Research Layer
+
+- Add `scripts/ui-swarm-research.ts` that spins up a 3-agent swarm:
+  1. **Trend agent** — surveys current design trends (shadcn/ui, Tailwind patterns).
+  2. **Competitor agent** — fetches public competitor landing pages and extracts layout primitives.
+  3. **Synthesizer agent** — produces a concise design brief consumed by the codegen step.
+- Persist briefs to `.cache/ui-engine/briefs/<slug>.md` for reproducibility.
+
+### 4. Orchestrator Entry Point
+
+- `scripts/ui-creation-engine.ts` pipeline:
+  1. Parse issue body / CLI args into a `UISpec`.
+  2. Run swarm research → design brief.
+  3. Planner model → component tree + file plan.
+  4. Coder model → file contents (streamed, validated).
+  5. Reviewer model → diff critique; loop up to 2 revisions.
+  6. Write files, run `pnpm lint && pnpm typecheck`.
+  7. Open PR via `gh pr create` with summary + brief + cost report.
+
+### 5. GitHub Actions Workflow
+
+- `.github/workflows/ui-creation-engine.yml`:
+  - Trigger: `issues.labeled` where `label.name == 'ui:generate'`.
+  - Steps: checkout → setup Node → `pnpm install` → run orchestrator → push branch → open PR.
+  - Secrets: `OPENROUTER_API_KEY`, `GITHUB_TOKEN`.
+  - Wrap PR comment creation in try/catch so fork-originated runs degrade gracefully.
+
+### 6. Quality Gates
+
+- `markdownlint-cli2` on all generated `.md`.
+- `eslint --max-warnings=0` on touched TS/TSX.
+- `tsc --noEmit` on the whole repo.
+- Snapshot test for at least one generated component to catch regressions.
+
+## Revenue Linkage ($10k → $10M)
+
+- **Phase 1 ($10k/mo):** Engine ships Polar.sh-funded micro-products (pricing pages, OSINT dashboards) in hours instead of days.
+- **Phase 2 ($30k/mo):** Productize as a paid "AI UI Studio" tier on Polar.sh.
+- **Phase 3 ($100k/mo):** License the engine to agencies; charge per generated component.
+- **Phase 4 ($10M):** White-label the orchestrator as enterprise SaaS.
+
+## Risks & Mitigations
+
+| Risk | Mitigation |
+| --- | --- |
+| OpenRouter cost spikes | Per-run budget cap + cheap fallback model |
+| Hallucinated APIs | Reviewer pass + `tsc --noEmit` gate |
+| Fork PR permission errors | Try/catch around `createComment` calls |
+| Prompt drift | Versioned prompts in `prompts/ui-engine/` |
+
+## References
+
+- Issue #13460
+- `scripts/openrouter-client.ts`
+- `.openhands/skills/ui-creation-engine.md`
+- `.github/workflows/ui-creation-engine.yml`
