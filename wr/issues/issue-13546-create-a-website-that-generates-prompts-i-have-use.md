@@ -219,7 +219,7 @@ A prompt packet is worth 10x more when it includes market facts, competitor gaps
 - Secondary/fallback stack: LLM-augmented source retrieval (planned for v2).
 - Why this BOM is superior for this WR: Maximizes margin ($0 COGS) while proving the concept.
 
-#### Marketplace / CLI / MCP BOM (GitHub-first)
+#### Marketplace-First BOM for Automation Tooling
 
 | Category | Marketplace-first choice | Cost | Free / FOSS fallback | Why it belongs in this stack |
 | -------- | ------------------------ | ---- | -------------------- | ---------------------------- |
