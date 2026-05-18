@@ -175,6 +175,8 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   if (!script.includes('Routed follow-up to agent repair issue')) {
     throw new Error('watchdog PR comments must point to the routed repair issue');
   }
+});
+
 test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
