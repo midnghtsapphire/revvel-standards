@@ -10,6 +10,11 @@ This document describes the automated workflow for routing issues that require c
 
 **Problem Solved:** Issues labeled `credentials-missing` no longer get stuck waiting for manual human intervention. The system automatically routes them to agents capable of desktop/file system access for credential retrieval.
 
+**Doppler is optional:** `scripts/credential-backup-harness.js` checks GitHub
+Actions secrets, direct env, JSON backup, SOPS/age, pass, Bitwarden CLI,
+1Password CLI, and Doppler. See
+[`docs/CREDENTIAL_BACKUP_HARNESS.md`](CREDENTIAL_BACKUP_HARNESS.md).
+
 ---
 
 ## How It Works

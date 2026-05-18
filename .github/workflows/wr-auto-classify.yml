@@ -41,7 +41,11 @@ jobs:
   classify:
     name: Classify routing fields and write to Project v2
     needs: preflight
-    if: needs.preflight.outputs.has_pat == 'true' && contains(github.event.issue.labels.*.name, 'work-request')
+    if: |
+      needs.preflight.outputs.has_pat == 'true' &&
+      (contains(github.event.issue.labels.*.name, 'work-request') ||
+       contains(github.event.issue.labels.*.name, 'weekly-research') ||
+       startsWith(github.event.issue.title, '[WR]'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}

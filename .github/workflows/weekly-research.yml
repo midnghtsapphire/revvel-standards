@@ -167,11 +167,15 @@ jobs:
           export ISSUE_BODY
           export EVENT_KIND="issue"
 
-          node scripts/openrouter-triage.js || {
-            echo "OpenRouter triage failed, but continuing..."
-            gh issue comment ${{ needs.detect-wr.outputs.issue_number }} \
-              --body "⚠️ OpenRouter triage encountered an error. Manual research coordination may be needed."
-          }
+          if ! node scripts/openrouter-triage.js; then
+            echo "OpenRouter triage failed; creating self-heal packet and routing fallback labels."
+            node scripts/agent-self-heal.js \
+              --component "weekly-research/openrouter-triage" \
+              --error "OpenRouter triage failed during WR research automation. Continue via fallback labels and no-key/local research lanes." \
+              --issue "${{ needs.detect-wr.outputs.issue_number }}" \
+              --repo "${{ github.repository }}" \
+              --apply
+          fi
       - name: Trigger 49Agents research (if configured)
         if: env.AGENT_HQ_TOKEN != ''
         env:

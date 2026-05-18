@@ -4,6 +4,10 @@ title: "[WR] "
 labels:
   - work-request
   - weekly-research
+  - wr:in-progress
+  - deep-research
+  - openrouter
+  - role:orchestrator
 body:
   - type: markdown
     attributes:
