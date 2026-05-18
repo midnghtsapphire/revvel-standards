@@ -453,7 +453,7 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 #### Accessibility Features
 
-**Current Accessibility:** WCAG AAA
+**Current Accessibility:** WCAG AA (targeting AAA for contrast via theme toggle)
 
 **Required:**
 
