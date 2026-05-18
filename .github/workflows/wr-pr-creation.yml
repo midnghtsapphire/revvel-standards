@@ -312,10 +312,13 @@ jobs:
                     ref: repoData.default_branch,
                   });
                   const packetText = Buffer.from(packetFile.content || '', 'base64').toString('utf8');
+                  const SYNTHESIS_SECTION_REGEX = /## Synthesis[\s\S]*?(?=\n## Code Review Handoff\b|$)/;
                   // Keep only the packet synthesis block so the WR gets the
                   // decision-ready research summary without duplicating the
-                  // handoff checklist footer.
-                  const synthesis = packetText.match(/## Synthesis[\s\S]*?(?=\n## Code Review Handoff\b|$)/)?.[0]?.trim();
+                  // handoff checklist footer. The packet structure is defined
+                  // by `scripts/research-engine.js` and ends the synthesis
+                  // section at `## Code Review Handoff`.
+                  const synthesis = packetText.match(SYNTHESIS_SECTION_REGEX)?.[0]?.trim();
                   resolvedFindings = [
                     '## Research Findings',
                     '',
@@ -495,6 +498,7 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
             const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
+            const normalizeLabel = (label) => typeof label === 'string' ? label : label.name;
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -503,7 +507,7 @@ jobs:
             const labels = Array.from(new Set([
               'documentation',
               ...((issue.labels || [])
-                .map(label => typeof label === 'string' ? label : label.name)
+                .map(normalizeLabel)
                 .filter(label =>
                   label === 'weekly-research' ||
                   label === 'work-request' ||
