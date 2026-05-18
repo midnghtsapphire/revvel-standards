@@ -13,15 +13,22 @@ const MODES = [
   { id: 'mono', label: 'Monospace' },
 ];
 
+type ModeId = (typeof MODES)[number]['id'];
+
+function isModeId(value: string): value is ModeId {
+  return MODES.some((item) => item.id === value);
+}
+
 export default function Page() {
   const [idea, setIdea] = useState('');
   const [audience, setAudience] = useState('founders');
-  const [mode, setMode] = useState('default');
+  const [mode, setMode] = useState<ModeId>('default');
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState('');
 
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? window.localStorage.getItem('pf-mode') : null;
-    if (stored && MODES.some((item) => item.id === stored)) {
+    if (stored && isModeId(stored)) {
       setMode(stored);
     }
   }, []);
@@ -40,9 +47,15 @@ export default function Page() {
   const markdown = packet ? packetToMarkdown(packet) : '';
 
   async function copyMarkdown() {
-    await navigator.clipboard.writeText(markdown);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setCopyError('');
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+      setCopyError('Clipboard access is unavailable. Copy the markdown manually below.');
+    }
   }
 
   return (
@@ -114,6 +127,8 @@ export default function Page() {
               {copied ? 'Copied' : 'Copy markdown'}
             </button>
           </div>
+
+          {copyError ? <p className="text-sm text-amber-200">{copyError}</p> : null}
 
           <pre className="whitespace-pre-wrap rounded border border-white/10 bg-black/40 p-4 text-sm">
             {markdown}
