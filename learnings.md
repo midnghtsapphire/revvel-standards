@@ -317,3 +317,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** When a PR is green but not squash-mergeable, check `mergeStateStatus` and merge `origin/main` before assuming reviews are the blocker. If CodeQL fails with "advanced configurations cannot be processed when the default setup is enabled," keep the advanced workflow manual-only or disable default setup; do not run both automatically. For regulated or revenue-facing filtering, document status and score together, require threshold bands and explanation trails, and evaluate async eligibility decisions before filtering exported records.
 
 **Next Action:** Confirm PR #13482 checks pass after the merge-resolution push.
+
+---
+
+**Date/Time:** 2026-05-18T22:30:00Z
+
+**Task Attempted:** Fix blank/BASIC WR label parity, make agent/GOAP errors self-heal, and remove Doppler as a hard dependency for credential readiness.
+
+**Outcome:** Success — both WR templates now carry the full canonical WR routing label set; WR PR creation normalizes those labels; WR auto-classify accepts `[WR]`/`weekly-research` signals when labels lag; Credential Gatekeeper now runs a backup harness even without Doppler; weekly research OpenRouter failures create a self-heal packet and route `auto-fix`, `ralph-loop`, and `agent-fallback`; workflow validation, label checks, focused tests, and root `npm test` pass.
+
+**Root Cause of Failure (If any):** The previous BASIC WR fix only guaranteed the minimum `work-request`/`weekly-research` path, while downstream WR automation expects a richer routing set (`wr:in-progress`, `deep-research`, `openrouter`, `role:orchestrator`). Credential Gatekeeper also exited early when no Doppler token existed, which turned a missing paid vendor account into a workflow blocker even when GitHub Actions secrets or FOSS/local backups could satisfy the same need. Full validation also exposed a missing CodeQL job timeout and a malformed workflow validation test block.
+
+**Self-Healing Fix / Learned Lesson:** Treat labels as a contract shared by templates, workflow detection, and PR mirroring. Secret readiness must check GitHub-native and FOSS backup paths before declaring a blocker: direct GitHub Actions secrets, env, JSON, SOPS/age, pass, Bitwarden CLI, 1Password CLI, Infisical/Vault handoff, and only then Doppler. Agent failures should emit a deterministic recovery packet with routing labels instead of a manual-only comment. If `automation-doctor` cannot run because root deps are missing, run `npm ci`; if it finds a missing timeout, patch the workflow immediately.
+
+**Next Action:** Monitor PR #13560 CI/review; no remaining code blocker from this session.

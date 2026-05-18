@@ -130,7 +130,9 @@
 | Project v2 ID discovery helpers | ✅ live | [`.github/workflows/print-project-v2-ids.yml`](.github/workflows/print-project-v2-ids.yml) (+ PAT variant `print-project-v2-ids-pat.yml`) |
 | Project v2 setup walkthrough | ✅ live | [`docs/github-project-v2-workflows.md`](docs/github-project-v2-workflows.md) |
 | Research Engine Orchestrator | ✅ documented + implemented | [`scripts/research-engine.js`](scripts/research-engine.js), [`.github/workflows/research-engine.yml`](.github/workflows/research-engine.yml), and [`docs/RESEARCH_ENGINE_STANDARD.md`](docs/RESEARCH_ENGINE_STANDARD.md) provide layered WR research across marketing, SEO, competitors, audience/chatter, facts, technical delivery, revenue, and code-review auto-fix lanes |
-| BASIC WR label normalization | ✅ live | WR templates apply `work-request` + `weekly-research`; `wr-pr-creation.yml` and `weekly-research.yml` also accept BASIC WR issue type and normalize missing WR labels before routing |
+| BASIC WR label normalization | ✅ live | WR templates apply the full canonical WR label set (`work-request`, `weekly-research`, `wr:in-progress`, `deep-research`, `openrouter`, `role:orchestrator`); `wr-pr-creation.yml`, `weekly-research.yml`, and `wr-auto-classify.yml` also accept `[WR]`/BASIC WR signals when labels lag |
+| Credential Backup Harness | ✅ implemented + tested | [`scripts/credential-backup-harness.js`](scripts/credential-backup-harness.js), [`scripts/gatekeeper-sync.sh`](scripts/gatekeeper-sync.sh), and [`docs/CREDENTIAL_BACKUP_HARNESS.md`](docs/CREDENTIAL_BACKUP_HARNESS.md) let Credential Gatekeeper resolve secrets from GitHub Actions secrets, env, JSON, SOPS/age, pass, Bitwarden CLI, 1Password CLI, Infisical/Vault handoff, or Doppler; Doppler is optional |
+| Agent Self-Heal Utility | ✅ implemented + tested | [`scripts/agent-self-heal.js`](scripts/agent-self-heal.js) emits deterministic recovery packets and weekly WR research now routes OpenRouter failures to `auto-fix` + `ralph-loop` + `agent-fallback` instead of manual-only comments |
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 | Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
 
@@ -161,6 +163,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-18 22:30 UTC
+Updated by: Cursor
+Session summary: Added full blank/BASIC WR label parity, Doppler-independent credential backup harness, agent self-heal packets for WR research failures, CodeQL timeout hygiene, and verified workflow validation, label checks, targeted tests, and root `npm test`.
+
 Last updated: 2026-05-17 21:20 UTC
 Updated by: Cursor
 Session summary: Resolved PR #13482 merge conflicts with main, categorized the life-insurance scoring concerns, added the Decision Scoring Engine standard, corrected async eligibility pseudocode guidance, and made the advanced CodeQL workflow manual-only because default code scanning is enabled.
