@@ -130,7 +130,7 @@ jobs:
                   });
                   return;
                 }
-                throw e;
+                core.notice(`Could not ensure label "${name}": ${e.message}`);
               }
             };
 
@@ -232,7 +232,7 @@ jobs:
                   });
                 } catch (e) {
                   if (e.status !== 404) {
-                    throw e;
+                    core.notice(`Could not remove label "${label}": ${e.message}`);
                   }
                 }
               }
