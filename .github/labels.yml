@@ -216,7 +216,7 @@ labels:
 
   - name: agent-fallback
     color: "6f42c1"
-    description: "Route issue or PR to the OpenRouter → Cursor → OpenHands fallback chain"
+    description: "Route issue or PR to the OpenHands → Cursor → OpenRouter fallback chain"
 
   # ── OpenRouter instantiation lifecycle (visibility into the instantiate dance)
   - name: "openrouter:instantiating"
