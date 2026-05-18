@@ -37,7 +37,7 @@ When a workflow, extension, CLI, or MCP-adjacent tool is needed:
 
 ### Decision Notes
 
-- **Accessibility:** Do not claim full WCAG AAA conformance unless the shipped artifact has both automated accessibility checks (e.g., axe-core or Pa11y) and a documented manual WCAG 2.2 AAA review covering the relevant success criteria, performed by a qualified accessibility reviewer or equivalent third-party audit; use wording like `A/AA-oriented`, `enhanced contrast`, or `high-contrast mode` unless that evidence exists.
+- **Accessibility:** Do not claim full WCAG AAA conformance unless the shipped artifact has both automated accessibility checks (e.g., axe-core or Pa11y) and a documented manual WCAG 2.2 AAA review covering the relevant success criteria, performed by a qualified accessibility reviewer (such as an IAAP-certified specialist, an equivalent accessibility auditor, or a documented third-party audit with comparable experience); use wording like `A/AA-oriented`, `enhanced contrast`, or `high-contrast mode` unless that evidence exists.
 - **Marketplace pricing:** Verify pricing at adoption time because Marketplace plans and free tiers can change.
 - **MCP policy:** Because GitHub Marketplace has limited MCP coverage, a GitHub-hosted OSS repo is an acceptable first-choice equivalent for MCP servers.
 
