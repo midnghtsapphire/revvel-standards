@@ -50,6 +50,7 @@
 | BUG-014 | Project dashboard parser detected catalog links but did not assign them, and README scanning included dependency folders / checkout-specific root names | medium | resolved | 2026-05-15 |
 | BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 | BUG-016 | BASIC WR / issue-type intake could miss required WR labels, causing `wr-pr-creation.yml` to skip instead of creating a PR | high | resolved | 2026-05-17 |
+| BUG-017 | Root workflow validation failed on malformed `ship-status-audit.yml` markdown template literal indentation and duplicate `script` keys in `ship-to-market.yml` | medium | resolved | 2026-05-19 |
 
 ---
 
@@ -99,8 +100,9 @@
 
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
-| `node tests/workflow-yaml-validation.test.js` | 2026-05-18 | ⚠️ changed workflows pass; suite still reports 6 pre-existing failures from BUG-006 | — |
-| `npm test` | 2026-05-17 | ✅ passing after `npm ci` | — |
+| `node tests/workflow-yaml-validation.test.js` | 2026-05-19 | ✅ all 124 workflows parse and expose required top-level keys | — |
+| `npm test` | 2026-05-19 | ✅ passing after `npm ci` | — |
+| Green Website Reporting standard | 2026-05-19 | ✅ `node tests/green-website-standard.test.js`, `node tests/workflow-yaml-validation.test.js`, `npm run workflows:validate -- --no-report`, and `npm test` pass after `npm ci` | Verifies active workflow, portable template, README marker/card contract, standard docs, and workflow syntax |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
@@ -135,6 +137,7 @@
 | Agent Self-Heal Utility | ✅ implemented + tested | [`scripts/agent-self-heal.js`](scripts/agent-self-heal.js) emits deterministic recovery packets and weekly WR research now routes OpenRouter failures to `auto-fix` + `ralph-loop` + `agent-fallback` instead of manual-only comments |
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 | Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
+| Green Website Reporting | ✅ implemented + tested | [`.github/workflows/green-website.yml`](.github/workflows/green-website.yml), [`templates/cicd/green-website.yml`](templates/cicd/green-website.yml), and [`standards/GREEN_WEBSITE_REPORTING_STANDARD.md`](standards/GREEN_WEBSITE_REPORTING_STANDARD.md) standardize `filiptronicek/green-action@v1.0.2` reporting for Revvel public web apps with README card updates, committed `carbon` data, weekly/manual runs, and `GREEN_WEBSITE_URL` override support |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 
@@ -163,6 +166,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-05-19 05:34 UTC
+Updated by: Cursor
+Session summary: Added green website reporting workflow/template/standard with README carbon marker support, fixed workflow YAML blockers in ship-status/ship-to-market, and verified focused green tests, workflow validation, Automation Doctor, and full root npm test pass.
+
 Last updated: 2026-05-18 22:30 UTC
 Updated by: Cursor
 Session summary: Added full blank/BASIC WR label parity, Doppler-independent credential backup harness, agent self-heal packets for WR research failures, CodeQL timeout hygiene, and verified workflow validation, label checks, targeted tests, and root `npm test`.
