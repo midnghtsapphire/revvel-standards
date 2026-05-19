@@ -1,13 +1,9 @@
-# ARCHIVED: WR_TEMPLATE.md
+# WR_TEMPLATE_FULL.md
 # 
-# **DEPRECATED** - Do not use this file. See `WR_TEMPLATE_SIMPLE.md` instead.
+# **ADVANCED TEMPLATE** - For users who are very specific about outcomes.
 # 
-# This template was **767 lines** with 50+ required fields. Users copy/pasted the 
-# same description into every field. Now: user fills title + description only.
-# 
-# Archived: 2026-05-19
-# Reason: Too verbose - simplified to WR_TEMPLATE_SIMPLE.md (65 lines)
-# Status: REPLACED by WR_TEMPLATE_SIMPLE.md
+# Use this if you want complete control over every detail.
+# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended).
 # 
 # ─────────────────────────────────────────────────────────────────────────────
 # 
@@ -778,9 +774,10 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Last Updated:** {RESEARCH_DATE}  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+
 # ─────────────────────────────────────────────────────────────────────────────
-# END ARCHIVED
+# END ADVANCED TEMPLATE
 # 
-# This file is deprecated as of 2026-05-19
-# Use WR_TEMPLATE_SIMPLE.md for new WRs
+# For advanced users who want full control
+# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
 # ─────────────────────────────────────────────────────────────────────────────
