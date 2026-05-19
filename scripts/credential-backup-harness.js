@@ -164,7 +164,7 @@ function shellQuote(value) {
 function hasBinary(bin) {
   const probe = process.platform === 'win32'
     ? safeSpawn('where', [bin])
-    : safeSpawn('bash', ['-lc', `command -v ${shellQuote(bin)}`]);
+    : safeSpawn('sh', ['-c', `command -v ${shellQuote(bin)}`]);
   return probe.ok && Boolean(probe.stdout);
 }
 
