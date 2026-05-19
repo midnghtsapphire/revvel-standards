@@ -58,17 +58,13 @@ jobs:
       - name: Parse delivery labels / dispatch input
         id: labels
         run: |
-          INPUT="${{ github.event.inputs.channel }}"
-
-          # Only access PR labels if this is a pull_request event
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
           else
             LABELS=""
           fi
-
-          ALL="$([[ $INPUT == 'all' || $LABELS == *'deliver:all'* ]] && echo
-          true || echo false)"
+          INPUT="${{ github.event.inputs.channel }}"
+          ALL="$([[ "$INPUT" == "all" || "$LABELS" == *"deliver:all"* ]] && echo true || echo false)"
 
 
           check() {
@@ -118,11 +114,12 @@ jobs:
           echo "marketplace=$(check marketplace)" >> $GITHUB_OUTPUT
       - name: Extract linked issue number
         id: meta
-        env:
-          PR_BODY: ${{ github.event_name == 'pull_request' && github.event.pull_request.body || '' }}
         run: |
-          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
-
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ISSUE=$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
+          else
+            ISSUE=""
+          fi
           echo "issue_num=$ISSUE" >> $GITHUB_OUTPUT
     timeout-minutes: 30
   deliver-api:
@@ -176,9 +173,9 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: >
-            const url = `${{ steps.deploy.outputs.url }}`;
+            const url = '${{ steps.deploy.outputs.url }}';
 
-            const body = url && url.includes('NOT_DEPLOYED')
+            const body = url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
               : `✅ **API deployed** → ${url}`;
             github.rest.issues.createComment({
@@ -233,9 +230,8 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: >
-            const vercelUrl = `${{ steps.vercel.outputs.url }}`;
-            const netlifyUrl = `${{ steps.netlify.outputs.url }}`;
-            const url = vercelUrl || netlifyUrl;
+            const url = '${{ steps.vercel.outputs.url ||
+            steps.netlify.outputs.url }}';
 
             const body = url
               ? `✅ **App deployed** → ${url}`
@@ -703,8 +699,8 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const chrome = `${{ steps.chrome.outputs.result }}` || '';
-            const vscode = `${{ steps.vscode.outputs.result }}` || '';
+            const chrome = '${{ steps.chrome.outputs.result }}' || '';
+            const vscode = '${{ steps.vscode.outputs.result }}' || '';
             const lines = [];
             if (chrome) lines.push(chrome.includes('SKIPPED') ? `⚠️ **Chrome** — ${chrome}` : `✅ **Chrome** — ${chrome}`);
             if (vscode) lines.push(vscode.includes('SKIPPED') ? `⚠️ **VS Code** — ${vscode}` : `✅ **VS Code** — ${vscode}`);
