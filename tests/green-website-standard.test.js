@@ -61,7 +61,7 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   if (actionStep.env?.URL !== '${{ steps.target.outputs.url }}') {
     throw new Error(`${relativePath} must pass the resolved target URL to green-action`);
   }
-  if (!resolveStep || !String(resolveStep.run || '').includes('GREEN_WEBSITE_URL')) {
+  if (!resolveStep || !JSON.stringify(resolveStep).includes('GREEN_WEBSITE_URL')) {
     throw new Error(`${relativePath} must resolve vars.GREEN_WEBSITE_URL`);
   }
   if (!markerStep || !String(markerStep.run || '').includes('<!-- CARBON-STATS -->')) {

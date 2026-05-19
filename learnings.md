@@ -331,3 +331,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Treat labels as a contract shared by templates, workflow detection, and PR mirroring. Secret readiness must check GitHub-native and FOSS backup paths before declaring a blocker: direct GitHub Actions secrets, env, JSON, SOPS/age, pass, Bitwarden CLI, 1Password CLI, Infisical/Vault handoff, and only then Doppler. Agent failures should emit a deterministic recovery packet with routing labels instead of a manual-only comment. If `automation-doctor` cannot run because root deps are missing, run `npm ci`; if it finds a missing timeout, patch the workflow immediately.
 
 **Next Action:** Monitor PR #13560 CI/review; no remaining code blocker from this session.
+
+---
+
+**Date/Time:** 2026-05-19T05:34Z
+
+**Task Attempted:** Unstick WR #13595 / PR context requesting `filiptronicek/green-action@v1.0.2` green website reporting for all Revvel apps.
+
+**Outcome:** Success - added the active Revvel green website workflow, portable app template, reporting standard, README carbon marker, and regression coverage. Focused green tests, workflow YAML validation, Automation Doctor, and full root `npm test` pass after `npm ci`.
+
+**Root Cause of Failure (If any):** The prior work stopped after triage/research comments and never created the workflow/template/docs. During validation, the new workflow initially had an unquoted `if:` expression containing `docs:`, which YAML parsed as a nested mapping. Full workflow validation also exposed two pre-existing blockers: an unindented multiline JavaScript template literal in `ship-status-audit.yml` and duplicate `script` keys in `ship-to-market.yml`.
+
+**Self-Healing Fix / Learned Lesson:** Quote GitHub Actions expressions when they contain commit-message strings with colons, and keep README-mutating workflows guarded against their own generated commits. When root workflow validation fails beyond the target workflow, continue fixing small YAML syntax blockers so the repo-wide validation gate returns to green.
+
+**Next Action:** Monitor PR #13600 CI/review; apply the `templates/cicd/green-website.yml` template to public app repos that need green website reporting.

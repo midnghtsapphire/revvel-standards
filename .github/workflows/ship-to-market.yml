@@ -130,9 +130,6 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
-          PR_BODY: ${{ github.event_name == 'pull_request' && github.event.pull_request.body || '' }}
-        run: |
-          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
 
           echo "issue_num=$ISSUE" >> $GITHUB_OUTPUT
     timeout-minutes: 30
@@ -190,8 +187,6 @@ jobs:
         with:
           script: |
             const url = process.env.DEPLOY_URL || '';
-          script: >
-            const url = `${{ steps.deploy.outputs.url }}`;
 
             const body = url && url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
@@ -252,10 +247,6 @@ jobs:
         with:
           script: |
             const url = process.env.VERCEL_URL || process.env.NETLIFY_URL || '';
-          script: >
-            const vercelUrl = `${{ steps.vercel.outputs.url }}`;
-            const netlifyUrl = `${{ steps.netlify.outputs.url }}`;
-            const url = vercelUrl || netlifyUrl;
 
             const body = url
               ? '✅ **App deployed** → ' + url
