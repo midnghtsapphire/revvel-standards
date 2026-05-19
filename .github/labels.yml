@@ -678,3 +678,81 @@ labels:
   - name: "ui-creation-complete"
     color: "10b981"
     description: "UI creation complete — artifacts ready"
+
+  # ── Ship-to-Market Delivery Channels ─────────────────────────────────────────
+  # These labels trigger matching delivery jobs in ship-to-market.yml on PR merge.
+  - name: "deliver:all"
+    color: "0e8a16"
+    description: "Trigger all delivery channels on merge"
+
+  - name: "deliver:api"
+    color: "1d76db"
+    description: "Deploy REST/GraphQL API (Railway / Fly / Render)"
+
+  - name: "deliver:app"
+    color: "0075ca"
+    description: "Deploy web app (Vercel / Netlify / Cloudflare)"
+
+  - name: "deliver:mobile"
+    color: "5319e7"
+    description: "Deploy to iOS App Store + Google Play Store"
+
+  - name: "deliver:android"
+    color: "3ddc84"
+    description: "Deploy Android app to Google Play Store"
+
+  - name: "deliver:ios"
+    color: "555555"
+    description: "Deploy iOS app to Apple App Store / TestFlight"
+
+  - name: "deliver:pdf"
+    color: "e4e669"
+    description: "Render and upload PDF artifact"
+
+  - name: "deliver:cli"
+    color: "006b75"
+    description: "Publish CLI binary to npm / PyPI / Homebrew"
+
+  - name: "deliver:package"
+    color: "0075ca"
+    description: "Publish package to npm / PyPI"
+
+  - name: "deliver:docker"
+    color: "2496ed"
+    description: "Build and push Docker image to registry"
+
+  - name: "deliver:mcp"
+    color: "6f42c1"
+    description: "Package and deploy MCP server"
+
+  - name: "deliver:docs"
+    color: "0075ca"
+    description: "Build and deploy documentation site"
+
+  - name: "deliver:video"
+    color: "d93f0b"
+    description: "Record or render demo video"
+
+  - name: "deliver:extension"
+    color: "fbca04"
+    description: "Build and upload Chrome / VS Code extension"
+
+  - name: "deliver:vscode"
+    color: "007acc"
+    description: "Publish VS Code extension to Marketplace"
+
+  - name: "deliver:action"
+    color: "24292f"
+    description: "Publish GitHub Action to Marketplace"
+
+  - name: "deliver:openapi"
+    color: "85ea2d"
+    description: "Publish / validate OpenAPI spec"
+
+  - name: "deliver:migration"
+    color: "fbca04"
+    description: "Run and validate database migration"
+
+  - name: "deliver:marketplace"
+    color: "e4e669"
+    description: "Draft app store listing (human review required)"
