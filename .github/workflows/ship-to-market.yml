@@ -58,6 +58,13 @@ jobs:
       - name: Parse delivery labels / dispatch input
         id: labels
         run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+          else
+            LABELS=""
+          fi
+          INPUT="${{ github.event.inputs.channel }}"
+          ALL="$([[ "$INPUT" == "all" || "$LABELS" == *"deliver:all"* ]] && echo true || echo false)"
           INPUT="${{ github.event.inputs.channel }}"
 
           # Only access PR labels if this is a pull_request event
@@ -118,7 +125,11 @@ jobs:
           echo "marketplace=$(check marketplace)" >> $GITHUB_OUTPUT
       - name: Extract linked issue number
         id: meta
+        if: github.event_name == 'pull_request'
         env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
           PR_BODY: ${{ github.event_name == 'pull_request' && github.event.pull_request.body || '' }}
         run: |
           ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
@@ -174,13 +185,17 @@ jobs:
       - name: Comment result on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
+          script: |
+            const url = process.env.DEPLOY_URL || '';
           script: >
             const url = `${{ steps.deploy.outputs.url }}`;
 
             const body = url && url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
-              : `✅ **API deployed** → ${url}`;
+              : '✅ **API deployed** → ' + url;
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.payload.pull_request?.number ?? 0, body
@@ -231,14 +246,19 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          VERCEL_URL: ${{ steps.vercel.outputs.url }}
+          NETLIFY_URL: ${{ steps.netlify.outputs.url }}
         with:
+          script: |
+            const url = process.env.VERCEL_URL || process.env.NETLIFY_URL || '';
           script: >
             const vercelUrl = `${{ steps.vercel.outputs.url }}`;
             const netlifyUrl = `${{ steps.netlify.outputs.url }}`;
             const url = vercelUrl || netlifyUrl;
 
             const body = url
-              ? `✅ **App deployed** → ${url}`
+              ? '✅ **App deployed** → ' + url
               : '⚠️ **App deploy skipped** — add `VERCEL_TOKEN` or `NETLIFY_AUTH_TOKEN` to secrets.';
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -417,12 +437,14 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          MCP_URL: ${{ steps.deploy_mcp.outputs.url }}
         with:
           script: |
-            const url = '${{ steps.deploy_mcp.outputs.url }}';
+            const url = process.env.MCP_URL || '';
             const body = url && !url.includes('NOT_DEPLOYED')
-              ? `✅ **MCP server deployed** → ${url}/mcp`
-              : `⚠️ **MCP deploy skipped** — add \`RAILWAY_TOKEN\` secret.`;
+              ? '✅ **MCP server deployed** → ' + url + '/mcp'
+              : '⚠️ **MCP deploy skipped** — add `RAILWAY_TOKEN` secret.';
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.payload.pull_request?.number ?? 0, body
@@ -701,8 +723,13 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          CHROME: ${{ steps.chrome.outputs.result }}
+          VSCODE: ${{ steps.vscode.outputs.result }}
         with:
           script: |
+            const chrome = process.env.CHROME || '';
+            const vscode = process.env.VSCODE || '';
             const chrome = `${{ steps.chrome.outputs.result }}` || '';
             const vscode = `${{ steps.vscode.outputs.result }}` || '';
             const lines = [];

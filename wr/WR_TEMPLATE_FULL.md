@@ -1,3 +1,12 @@
+# WR_TEMPLATE_FULL.md
+# 
+# **ADVANCED TEMPLATE** - For users who are very specific about outcomes.
+# 
+# Use this if you want complete control over every detail.
+# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended).
+# 
+# ─────────────────────────────────────────────────────────────────────────────
+# 
 # WR: {REPO_NAME}
 
 **Repository:** [{REPO_NAME}]({REPO_URL})  
@@ -765,3 +774,10 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Last Updated:** {RESEARCH_DATE}  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# END ADVANCED TEMPLATE
+# 
+# For advanced users who want full control
+# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
+# ─────────────────────────────────────────────────────────────────────────────
