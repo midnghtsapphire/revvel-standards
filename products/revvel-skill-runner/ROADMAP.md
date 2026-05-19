@@ -7,7 +7,7 @@
 - [ ] Launch waitlist
 - [ ] First 100 paying users
 
-## Phase 2 — $30k/mo (Month 6-18)
+## Phase 2 — $30k/mo (Month 7-18)
 - [ ] Affiliate program live
 - [ ] Newsletter at 5k subs
 - [ ] Enterprise tier
