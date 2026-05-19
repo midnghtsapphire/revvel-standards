@@ -1,0 +1,74 @@
+name: Eco Github Extensions
+
+on:
+  pull_request:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: start-measurement
+        continue-on-error: true
+
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+
+      - name: Checkout Repo Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: get-measurement
+          label: 'repo checkout'
+        continue-on-error: true
+
+      - name: Run sustainable npm install
+        uses: lowlydba/sustainable-npm@v3.0.0
+
+      - name: sustainable npm measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: get-measurement
+          label: 'sustainable npm'
+        continue-on-error: true
+
+      - name: Show Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: display-results
+        continue-on-error: true
+
+  a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+
+      - name: Run accessibility check
+        uses: zachkklein/WCAG_PR_Checker@v2
+        with:
+          APP_DIR: '.'
+          BUILD_DIR: 'public'
+          URLS: '/'
+        continue-on-error: true
+
+  ecoinfra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+
+      - name: Check Eco Infra emissions
+        uses: ecoinfra/ecoinfra-action@v1.1.2
+        with:
+          token: ${{ secrets.ECOINFRA_TOKEN }}
+          project-name: 'eco-github-extensions'
+          file: './state.json'
+        continue-on-error: true
