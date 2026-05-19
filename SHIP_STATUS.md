@@ -43,7 +43,7 @@
 | — | oAudrey retro 2026-04-28 (sites not live) | in-progress | @copilot | 2026-04-30 |
 | — | oAudrey retro 2026-04-30 (sites not live) | in-progress | @copilot | 2026-05-01 |
 
-### Tasks
+### Tasks (In Progress)
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
@@ -51,6 +51,8 @@
 | T004 | Automated Product Pipeline standard + skill + scaffold | in-progress | @copilot | 2026-04-27 |
 | T005 | Watchdog agent repair routing | done | @cursor | 2026-05-18 |
 | T007 | ColdTrace python-jose security upgrade | done | @cursor | 2026-05-15 |
+
+### Tasks (Completed)
 
 | ID | Title | Status | Owner | Last Touched |
 |-----|-------|--------|------|------------|
