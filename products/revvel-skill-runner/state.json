@@ -1,0 +1,23 @@
+{
+  "name": "revvel-skill-runner",
+  "phase": "build",
+  "created": "2025-01-01",
+  "target_revenue_monthly_usd": 10000,
+  "mission_alignment": "10M-in-3-years",
+  "funding_rail": "polar.sh",
+  "stages": {
+    "research": "pending",
+    "decision": "pending",
+    "build": "in_progress",
+    "certify": "pending",
+    "deploy": "pending",
+    "monetize": "pending",
+    "market": "pending",
+    "sales": "pending"
+  },
+  "exrup_components": {
+    "accessibility_controls": true,
+    "newsletter": true,
+    "affiliate_marketing": true
+  }
+}
