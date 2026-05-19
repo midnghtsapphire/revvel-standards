@@ -18,7 +18,7 @@
 
 {TITLE}
 
-{description}
+{DESCRIPTION}
 
 ---
 
