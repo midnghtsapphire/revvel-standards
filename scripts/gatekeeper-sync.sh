@@ -10,8 +10,8 @@
 # Inputs:
 #   --secrets   Comma-separated list of secret names to sync (required).
 #   --repo      owner/repo target for `gh secret set` (default: $GITHUB_REPOSITORY).
-#   --project   Doppler project if Doppler is available (default: revvel-standards).
-#   --config    Doppler config if Doppler is available (default: prd).
+#   --project   Doppler project metadata in summaries (default: revvel-standards).
+#   --config    Doppler config metadata in summaries (default: prd).
 #   --json      Emit a JSON summary on stdout (machine-readable).
 #
 # Environment:
@@ -22,7 +22,8 @@
 # Backup sources:
 #   SECRET_NAME environment variables, CREDENTIAL_BACKUP_JSON(_FILE),
 #   CREDENTIAL_BACKUP_SOPS_FILE, pass, Bitwarden CLI, 1Password CLI,
-#   GitHub Actions secrets already present in the target repo, and Doppler.
+#   Infisical, Vault, GitHub Actions secrets already present in the target
+#   repo, and Doppler.
 #
 # Exits non-zero only on a hard failure (malformed args or harness failure).
 # Per-secret misses are reported in JSON but do not abort the run so a partial
@@ -31,7 +32,7 @@
 set -euo pipefail
 
 usage() {
-  sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'
   exit "${1:-0}"
 }
 
@@ -77,15 +78,28 @@ done
 [[ -z "$REPO" ]] && { echo "error: --repo (or \$GITHUB_REPOSITORY) is required" >&2; exit 2; }
 [[ "$REPO" == */* ]] || { echo "error: --repo must be owner/repo" >&2; exit 2; }
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+HARNESS="${REPO_ROOT}/scripts/credential-backup-harness.js"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[gatekeeper-sync] node is required" >&2
+  exit 1
+fi
+
+if [[ ! -f "${HARNESS}" ]]; then
+  echo "[gatekeeper-sync] missing harness at ${HARNESS}" >&2
+  exit 1
+fi
+
 HARNESS_ARGS=(
-  "$SCRIPT_DIR/credential-backup-harness.js"
-  --secrets "$SECRETS_CSV"
-  --repo "$REPO"
-  --project "$PROJECT"
-  --config "$CONFIG"
+  "${HARNESS}"
+  --secrets "${SECRETS_CSV}"
+  --repo "${REPO}"
+  --project "${PROJECT}"
+  --config "${CONFIG}"
 )
-if [[ "$JSON_OUT" -eq 1 ]]; then
+if [[ "${JSON_OUT}" -eq 1 ]]; then
   HARNESS_ARGS+=(--json)
 fi
 

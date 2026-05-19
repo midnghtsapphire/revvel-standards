@@ -8,8 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       channel:
-        description: Delivery channel to run (api | app | pdf | cli | docker | mcp |
-          docs | video | all)
+        description: >
+          Delivery channel to run
+          (api | app | mobile | android | ios | pdf | cli | package | docker | mcp |
+          docs | video | extension | vscode | action | openapi | migration |
+          marketplace | all)
         required: true
         default: all
 permissions:
@@ -34,12 +37,22 @@ jobs:
     outputs:
       run_api: ${{ steps.labels.outputs.api }}
       run_app: ${{ steps.labels.outputs.app }}
+      run_mobile: ${{ steps.labels.outputs.mobile }}
+      run_android: ${{ steps.labels.outputs.android }}
+      run_ios: ${{ steps.labels.outputs.ios }}
       run_pdf: ${{ steps.labels.outputs.pdf }}
       run_cli: ${{ steps.labels.outputs.cli }}
+      run_package: ${{ steps.labels.outputs.package }}
       run_docker: ${{ steps.labels.outputs.docker }}
       run_mcp: ${{ steps.labels.outputs.mcp }}
       run_docs: ${{ steps.labels.outputs.docs }}
       run_video: ${{ steps.labels.outputs.video }}
+      run_extension: ${{ steps.labels.outputs.extension }}
+      run_vscode: ${{ steps.labels.outputs.vscode }}
+      run_action: ${{ steps.labels.outputs.action }}
+      run_openapi: ${{ steps.labels.outputs.openapi }}
+      run_migration: ${{ steps.labels.outputs.migration }}
+      run_marketplace: ${{ steps.labels.outputs.marketplace }}
       issue_num: ${{ steps.meta.outputs.issue_num }}
     steps:
       - name: Parse delivery labels / dispatch input
@@ -63,21 +76,41 @@ jobs:
           }
 
 
-          echo "api=$(check api)"       >> $GITHUB_OUTPUT
+          echo "api=$(check api)"               >> $GITHUB_OUTPUT
 
-          echo "app=$(check app)"       >> $GITHUB_OUTPUT
+          echo "app=$(check app)"               >> $GITHUB_OUTPUT
 
-          echo "pdf=$(check pdf)"       >> $GITHUB_OUTPUT
+          echo "mobile=$(check mobile)"         >> $GITHUB_OUTPUT
 
-          echo "cli=$(check cli)"       >> $GITHUB_OUTPUT
+          echo "android=$(check android)"       >> $GITHUB_OUTPUT
 
-          echo "docker=$(check docker)" >> $GITHUB_OUTPUT
+          echo "ios=$(check ios)"               >> $GITHUB_OUTPUT
 
-          echo "mcp=$(check mcp)"       >> $GITHUB_OUTPUT
+          echo "pdf=$(check pdf)"               >> $GITHUB_OUTPUT
 
-          echo "docs=$(check docs)"     >> $GITHUB_OUTPUT
+          echo "cli=$(check cli)"               >> $GITHUB_OUTPUT
 
-          echo "video=$(check video)"   >> $GITHUB_OUTPUT
+          echo "package=$(check package)"       >> $GITHUB_OUTPUT
+
+          echo "docker=$(check docker)"         >> $GITHUB_OUTPUT
+
+          echo "mcp=$(check mcp)"               >> $GITHUB_OUTPUT
+
+          echo "docs=$(check docs)"             >> $GITHUB_OUTPUT
+
+          echo "video=$(check video)"           >> $GITHUB_OUTPUT
+
+          echo "extension=$(check extension)"   >> $GITHUB_OUTPUT
+
+          echo "vscode=$(check vscode)"         >> $GITHUB_OUTPUT
+
+          echo "action=$(check action)"         >> $GITHUB_OUTPUT
+
+          echo "openapi=$(check openapi)"       >> $GITHUB_OUTPUT
+
+          echo "migration=$(check migration)"   >> $GITHUB_OUTPUT
+
+          echo "marketplace=$(check marketplace)" >> $GITHUB_OUTPUT
       - name: Extract linked issue number
         id: meta
         env:
@@ -486,18 +519,399 @@ jobs:
               issue_number: context.payload.pull_request?.number ?? 0, body
             });
     timeout-minutes: 30
+  deliver-mobile:
+    name: 📱 Deliver → Mobile (iOS + Android)
+    needs: gate
+    if: >
+      needs.gate.outputs.run_mobile == 'true' ||
+      needs.gate.outputs.run_android == 'true' ||
+      needs.gate.outputs.run_ios == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - name: Dispatch auto-deploy-to-stores workflow
+        id: dispatch
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            // Resolve which platforms are requested
+            const wantsAndroid = '${{ needs.gate.outputs.run_android }}' === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const wantsIos     = '${{ needs.gate.outputs.run_ios }}'     === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const platform     = wantsAndroid && wantsIos ? 'both' : wantsAndroid ? 'android' : 'ios';
+
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}';
+
+            core.info(`Dispatching auto-deploy-to-stores.yml — platform: ${platform}, issue: ${issueNumber || 'none'}`);
+
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'auto-deploy-to-stores.yml',
+                ref: 'main',
+                inputs: {
+                  issue_number: issueNumber || '',
+                  platform,
+                  android_track: 'internal',
+                  ios_environment: 'testflight',
+                },
+              });
+              core.setOutput('dispatched', 'true');
+            } catch (e) {
+              core.warning('Could not dispatch auto-deploy-to-stores.yml: ' + e.message);
+              core.setOutput('dispatched', 'false');
+            }
+      - name: Comment dispatch result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}'.trim();
+            const actionsUrl = `https://github.com/${{ github.repository }}/actions/workflows/auto-deploy-to-stores.yml`;
+            const body = dispatched === 'true'
+              ? `📱 **Mobile store deployment dispatched** → [View progress in auto-deploy-to-stores.yml](${actionsUrl})\n\n> Deployment enforces the **deep research gate** — the originating WR issue must have \`deep-research\` + \`research:complete\` labels before stores are updated.`
+              : `⚠️ **Mobile dispatch failed** — could not start \`auto-deploy-to-stores.yml\`. [Trigger it manually](${actionsUrl}).`;
+
+            if (!issueNumber) {
+              core.info('No originating issue/PR number available; skipping dispatch result comment.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(issueNumber),
+              body
+            });
+    timeout-minutes: 30
+  deliver-package:
+    name: 📦 Deliver → Package (npm / PyPI)
+    needs: gate
+    if: needs.gate.outputs.run_package == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "20"
+          registry-url: https://registry.npmjs.org
+      - run: npm ci --if-present && npm run build --if-present
+      - name: Publish package
+        id: publish
+        run: |
+          if [[ -f setup.py || -f pyproject.toml ]]; then
+            if [[ -z "${{ secrets.PYPI_TOKEN }}" ]]; then
+              echo "result=SKIPPED — add PYPI_TOKEN secret" >> $GITHUB_OUTPUT
+            else
+              pip install build twine
+              python -m build
+              twine upload dist/* --non-interactive
+              PKG=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['name']+'@'+d['project']['version'])" 2>/dev/null || echo "package")
+              echo "result=Published Python $PKG to PyPI" >> $GITHUB_OUTPUT
+            fi
+          elif [[ -f package.json ]]; then
+            if [[ -z "${{ secrets.NPM_TOKEN }}" ]]; then
+              echo "result=SKIPPED — add NPM_TOKEN secret" >> $GITHUB_OUTPUT
+            else
+              npm publish --access public 2>&1 | tail -5
+              PKG=$(node -p "require('./package.json').name + '@' + require('./package.json').version" 2>/dev/null || echo "unknown")
+              echo "result=Published $PKG to npm" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "result=SKIPPED — no package.json or pyproject.toml found" >> $GITHUB_OUTPUT
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          TWINE_USERNAME: __token__
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.publish.outputs.result }}';
+            const ok = result && !result.includes('SKIPPED');
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: ok ? `✅ **Package published** → \`${result}\`` : `⚠️ **Package publish skipped** — ${result}`
+            });
+    timeout-minutes: 30
+  deliver-extension:
+    name: 🧩 Deliver → Extension (Chrome / VS Code)
+    needs: gate
+    if: >
+      needs.gate.outputs.run_extension == 'true' ||
+      needs.gate.outputs.run_vscode == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "20"
+      - run: npm ci --if-present && npm run build --if-present
+      - name: Publish Chrome extension
+        id: chrome
+        if: needs.gate.outputs.run_extension == 'true'
+        run: |
+          if [[ -f manifest.json ]]; then
+            if [[ -z "${{ secrets.CHROME_CLIENT_SECRET }}" ]]; then
+              echo "result=SKIPPED — add CHROME_CLIENT_ID, CHROME_CLIENT_SECRET, CHROME_REFRESH_TOKEN secrets" >> $GITHUB_OUTPUT
+            else
+              npm install -g web-ext
+              web-ext build --overwrite-dest
+              echo "result=Chrome extension packaged — manual upload required (Chrome Web Store API limits automated publishing)" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "result=SKIPPED — no manifest.json found" >> $GITHUB_OUTPUT
+          fi
+        env:
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      - name: Publish VS Code extension
+        id: vscode
+        if: needs.gate.outputs.run_vscode == 'true'
+        run: |
+          if [[ -f package.json ]] && node -e "const p=require('./package.json'); process.exit(p.engines?.vscode ? 0 : 1)" 2>/dev/null; then
+            if [[ -z "${{ secrets.VSCE_TOKEN }}" ]]; then
+              echo "result=SKIPPED — add VSCE_TOKEN secret" >> $GITHUB_OUTPUT
+            else
+              npm install -g @vscode/vsce
+              vsce publish --pat "${{ secrets.VSCE_TOKEN }}"
+              PKG=$(node -p "require('./package.json').name + '@' + require('./package.json').version" 2>/dev/null || echo "extension")
+              echo "result=Published $PKG to VS Code Marketplace" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "result=SKIPPED — no VS Code extension (package.json missing engines.vscode)" >> $GITHUB_OUTPUT
+          fi
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const chrome = '${{ steps.chrome.outputs.result }}' || '';
+            const vscode = '${{ steps.vscode.outputs.result }}' || '';
+            const lines = [];
+            if (chrome) lines.push(chrome.includes('SKIPPED') ? `⚠️ **Chrome** — ${chrome}` : `✅ **Chrome** — ${chrome}`);
+            if (vscode) lines.push(vscode.includes('SKIPPED') ? `⚠️ **VS Code** — ${vscode}` : `✅ **VS Code** — ${vscode}`);
+            if (!lines.length) return;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: `🧩 **Extension delivery**\n\n${lines.join('\n')}`
+            });
+    timeout-minutes: 30
+  deliver-action:
+    name: ⚙️ Deliver → GitHub Action
+    needs: gate
+    if: needs.gate.outputs.run_action == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Validate action.yml
+        id: validate
+        run: |
+          if [[ ! -f action.yml && ! -f action.yaml ]]; then
+            echo "result=SKIPPED — no action.yml found. Create action.yml to publish a GitHub Action." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "result=action.yml present — tag a release to publish to GitHub Marketplace" >> $GITHUB_OUTPUT
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.validate.outputs.result }}';
+            const ok = result && !result.includes('SKIPPED');
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: ok ? `✅ **GitHub Action** — ${result}` : `⚠️ **GitHub Action skipped** — ${result}`
+            });
+    timeout-minutes: 30
+  deliver-openapi:
+    name: 📋 Deliver → OpenAPI Spec
+    needs: gate
+    if: needs.gate.outputs.run_openapi == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "20"
+      - run: npm ci --if-present
+      - name: Generate / validate OpenAPI spec
+        id: openapi
+        run: |
+          SPEC_FILE=""
+          for f in openapi.yml openapi.yaml openapi.json docs/openapi.yml docs/openapi.yaml; do
+            [[ -f "$f" ]] && SPEC_FILE="$f" && break
+          done
+          if [[ -z "$SPEC_FILE" ]]; then
+            echo "result=SKIPPED — no openapi.yml / openapi.json found" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          npm install -g @redocly/cli 2>/dev/null || true
+          if command -v redocly &>/dev/null; then
+            redocly lint "$SPEC_FILE" && echo "result=Spec validated: $SPEC_FILE" >> $GITHUB_OUTPUT || echo "result=FAILED — spec validation errors (see logs)" >> $GITHUB_OUTPUT
+          else
+            echo "result=Spec found: $SPEC_FILE (install @redocly/cli for validation)" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/upload-artifact@v7.0.1
+        if: steps.openapi.outputs.result != '' && !contains(steps.openapi.outputs.result, 'SKIPPED')
+        with:
+          name: openapi-spec-${{ github.run_id }}
+          path: |
+            openapi.yml
+            openapi.yaml
+            openapi.json
+            docs/openapi.*
+          retention-days: 30
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.openapi.outputs.result }}';
+            const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: ok ? `✅ **OpenAPI spec** — ${result}` : `⚠️ **OpenAPI skipped/failed** — ${result}`
+            });
+    timeout-minutes: 30
+  deliver-migration:
+    name: 🗄️ Deliver → Database Migration
+    needs: gate
+    if: needs.gate.outputs.run_migration == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "20"
+      - run: npm ci --if-present
+      - name: Run database migration
+        id: migrate
+        run: |
+          if [[ -f prisma/schema.prisma ]]; then
+            echo "Detected Prisma schema"
+            if [[ -z "${{ secrets.DATABASE_URL }}" ]]; then
+              echo "result=SKIPPED — add DATABASE_URL secret" >> $GITHUB_OUTPUT
+            else
+              npx prisma migrate deploy
+              echo "result=Prisma migration applied successfully" >> $GITHUB_OUTPUT
+            fi
+          elif command -v alembic &>/dev/null; then
+            if [[ -z "${{ secrets.DATABASE_URL }}" ]]; then
+              echo "result=SKIPPED — add DATABASE_URL secret" >> $GITHUB_OUTPUT
+            else
+              alembic upgrade head
+              echo "result=Alembic migration applied successfully" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "result=SKIPPED — no prisma/schema.prisma or alembic found. Add migration config and DATABASE_URL secret." >> $GITHUB_OUTPUT
+          fi
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.migrate.outputs.result }}';
+            const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: ok ? `✅ **Migration** — ${result}` : `⚠️ **Migration skipped** — ${result}`
+            });
+    timeout-minutes: 30
+  deliver-marketplace:
+    name: 🏪 Deliver → Marketplace Listing (Draft)
+    needs: gate
+    if: needs.gate.outputs.run_marketplace == 'true'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - name: Generate marketplace listing draft
+        id: listing
+        run: |
+          mkdir -p dist/marketplace
+          README=""
+          [[ -f README.md ]] && README=$(head -100 README.md)
+          TITLE=$(echo "$README" | head -1 | sed 's/^#\s*//')
+          DESCRIPTION=$(echo "$README" | sed -n '/^$/,/^##/{/^##/q; p}' | head -10 | tr '\n' ' ')
+          cat > dist/marketplace/listing-draft.md << EOF
+          # Marketplace Listing Draft
+
+          **Title:** ${TITLE:-$(basename "$PWD")}
+
+          **Short Description:** ${DESCRIPTION:-See README.md for details.}
+
+          **Categories:** (fill in — e.g., Developer Tools, Productivity, Utilities)
+
+          **Screenshots:** (add 1280×800 screenshots to dist/marketplace/screenshots/)
+
+          **Keywords:** (fill in SEO keywords)
+
+          ---
+          *Auto-generated draft — human review required before submitting to store.*
+          EOF
+          echo "result=Listing draft generated in dist/marketplace/listing-draft.md" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: marketplace-listing-${{ github.run_id }}
+          path: dist/marketplace/
+          retention-days: 30
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const run = '${{ github.run_id }}';
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request?.number ?? 0,
+              body: `🏪 **Marketplace listing draft generated** — [Download artifact](https://github.com/${{ github.repository }}/actions/runs/${run})\n\n> ⚠️ Human review required before submitting to any store. Edit \`listing-draft.md\` with your actual title, description, screenshots, and keywords.`
+            });
+    timeout-minutes: 30
   ship-complete:
     name: ✅ Ship Complete
     needs:
       - gate
       - deliver-api
       - deliver-app
+      - deliver-mobile
       - deliver-pdf
       - deliver-cli
+      - deliver-package
       - deliver-docker
       - deliver-mcp
       - deliver-docs
       - deliver-video
+      - deliver-extension
+      - deliver-action
+      - deliver-openapi
+      - deliver-migration
+      - deliver-marketplace
     if: always()
     runs-on: ubuntu-latest
     env:

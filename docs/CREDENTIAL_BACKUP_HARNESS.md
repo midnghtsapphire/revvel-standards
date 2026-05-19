@@ -1,91 +1,53 @@
 # Credential Backup Harness
 
-The Credential Backup Harness keeps WR and agent workflows moving when Doppler
-is not configured or does not contain the needed secrets. Doppler remains
-supported, but it is no longer the only path.
+Doppler is no longer required. The Credential Gatekeeper now resolves secrets
+from multiple sources via `scripts/credential-backup-harness.js`. The legacy
+`scripts/gatekeeper-sync.sh` delegates to the harness so existing CI calls keep
+working.
 
-## What it does
+## Resolution Order
 
-`scripts/credential-backup-harness.js` accepts a comma-separated secret list,
-checks every configured backup source, and syncs resolved values to GitHub
-Actions secrets with `gh secret set`. It never prints secret values.
+1. **GitHub Actions secrets / environment** — anything already exported.
+2. **JSON backup** — `CREDENTIAL_BACKUP_JSON` (inline) or `CREDENTIAL_BACKUP_JSON_FILE`.
+3. **SOPS/age** — `CREDENTIAL_BACKUP_SOPS_FILE` (requires `sops` on PATH).
+4. **pass** — `CREDENTIAL_BACKUP_PASS_PREFIX` (requires `pass`).
+5. **Bitwarden CLI** — `CREDENTIAL_BACKUP_BW_PREFIX` + `BW_SESSION`.
+6. **1Password CLI** — `CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE` (e.g. `op://vault/{KEY}/credential`).
+7. **Infisical** — `INFISICAL_TOKEN` (requires `infisical`).
+8. **Vault** — `VAULT_ADDR` plus authentication (`VAULT_TOKEN`, a
+   pre-authenticated Vault CLI session, or another Vault-supported auth method)
+   and optional `CREDENTIAL_BACKUP_VAULT_PATH`.
+9. **Doppler** — optional fallback when `doppler` is available.
 
-```bash
-node scripts/credential-backup-harness.js \
-  --secrets OPENROUTER_API_KEY,DIGITALOCEAN_API_TOKEN \
-  --repo midnghtsapphire/revvel-standards \
-  --json
-```
+The first source returning a non-empty value wins. Missing keys are reported as
+`missing` so the Gatekeeper can flag what still needs to be provisioned.
 
-`scripts/gatekeeper-sync.sh` now delegates to this harness, so existing
-workflows keep working.
-
-## Source order
-
-| Source | Type | Cost / openness | Configuration |
-|---|---|---|---|
-| GitHub Actions secrets | GitHub app / connector | Included with GitHub | Already-present repo secrets count as ready |
-| Direct environment | CLI / CI | Free / FOSS-compatible | Export `SECRET_NAME=value` in the runtime |
-| JSON backup | Connector | Free / FOSS-compatible | `CREDENTIAL_BACKUP_JSON` or `CREDENTIAL_BACKUP_JSON_FILE` |
-| SOPS + age/GPG | CLI | Free / FOSS | `CREDENTIAL_BACKUP_SOPS_FILE` |
-| pass | CLI | Free / FOSS | `CREDENTIAL_BACKUP_PASS_PREFIX` |
-| Bitwarden CLI | CLI / browser extension ecosystem | Free personal tier / FOSS clients | `BW_SESSION` + `CREDENTIAL_BACKUP_BW_PREFIX` |
-| 1Password CLI | CLI / extension ecosystem | Free developer tooling / paid vault | `OP_SERVICE_ACCOUNT_TOKEN` + `CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE` |
-| Doppler | Connector | Optional vendor free/paid tier | `DOPPLER_TOKEN` or accepted aliases |
-| Infisical | MCP / CLI / connector | Free cloud tier or self-hosted FOSS | Sync to env/SOPS, then run harness |
-| HashiCorp Vault | MCP / CLI / connector | Self-hosted FOSS or cloud free tier | Sync to env/SOPS, then run harness |
-
-## Safe backup patterns
-
-### Direct GitHub secret
-
-Use this when Doppler is unavailable:
+## Usage
 
 ```bash
-gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
+# Report which sources are configured and which keys are resolvable
+node scripts/credential-backup-harness.js --report
+
+# Resolve specific keys, output redacted JSON
+node scripts/credential-backup-harness.js --keys OPENROUTER_API_KEY,POLAR_ACCESS_TOKEN
+
+# Emit multiline-safe GITHUB_ENV entries
+node scripts/credential-backup-harness.js --keys OPENROUTER_API_KEY --format github-actions
 ```
 
-### Local encrypted SOPS file
+External CLI providers are bounded by `CREDENTIAL_BACKUP_CLI_TIMEOUT_MS`
+(default `15000`) so one hung provider cannot block credential sync forever.
 
-Keep the encrypted file outside the repo or commit only encrypted content:
+## Migration
 
-```bash
-export CREDENTIAL_BACKUP_SOPS_FILE="$HOME/.revvel/secrets.enc.json"
-node scripts/credential-backup-harness.js --secrets OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
-```
+- If GitHub Actions secrets are already set, nothing changes.
+- To enable a backup source, set the relevant env vars above.
+- Remove any `doppler login` / `doppler setup` gating from custom scripts; the
+  harness will use Doppler only if its CLI is present.
 
-### pass
+## Self-Heal Integration
 
-```bash
-pass insert revvel/OPENROUTER_API_KEY
-export CREDENTIAL_BACKUP_PASS_PREFIX=revvel
-node scripts/credential-backup-harness.js --secrets OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
-```
-
-### Bitwarden CLI
-
-```bash
-export BW_SESSION="$(bw unlock --raw)"
-export CREDENTIAL_BACKUP_BW_PREFIX=revvel
-node scripts/credential-backup-harness.js --secrets OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
-```
-
-### 1Password CLI
-
-```bash
-export CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE='op://Revvel/{secret}/credential'
-node scripts/credential-backup-harness.js --secrets OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
-```
-
-## Workflow behavior
-
-`credential-gatekeeper.yml` now:
-
-1. Generates the credential BOM.
-2. Runs the backup harness even when no Doppler token exists.
-3. Marks secrets already present in GitHub Actions as ready.
-4. Resolves from configured backup sources where possible.
-5. Leaves a table showing which secrets are ready, missing, or failed.
-
-If every required secret is already present or resolved, the workflow removes
-`credentials-missing` and applies `credentials-ready`.
+Agents that fail (e.g., OpenRouter triage in `weekly-research.yml`) invoke
+`scripts/agent-self-heal.js` to emit fallback routing labels and a recovery
+packet, ensuring WR issues keep moving even when a single credential source or
+agent is unavailable.

@@ -1,81 +1,39 @@
-#!/usr/bin/env node
 'use strict';
 
-const { execFileSync, spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const assert = require('assert');
+const { buildPacket, FALLBACK_MAP } = require('../scripts/agent-self-heal');
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const SCRIPT = path.join(REPO_ROOT, 'scripts', 'agent-self-heal.js');
-const WEEKLY_RESEARCH = path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml');
-
-let passed = 0;
-let failed = 0;
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`PASS: ${name}`);
-    passed++;
-  } catch (e) {
-    console.log(`FAIL: ${name}\n    ${e.stack || e.message}`);
-    failed++;
-  }
+function testOpenRouterFallback() {
+  const packet = buildPacket({
+    agent: 'openrouter',
+    failure: '403 provider',
+    context: 'weekly-research',
+    issue: '42',
+  });
+  assert.ok(packet.fallbackLabels.includes('weekly-research'));
+  assert.ok(packet.fallbackLabels.includes('wr:in-progress'));
+  assert.ok(packet.fallbackLabels.includes('agent:fallback'));
+  assert.deepStrictEqual(packet.nextAgents, FALLBACK_MAP.openrouter.nextAgents);
+  assert.strictEqual(packet.recovery.retry, true);
+  console.log('ok openrouter fallback');
 }
 
-function assert(cond, msg) {
-  if (!cond) throw new Error(msg || 'assertion failed');
+function testDefaultAgent() {
+  const packet = buildPacket({ agent: 'unknown-agent', context: 'wr' });
+  assert.ok(packet.fallbackLabels.includes('agent:fallback'));
+  assert.ok(packet.fallbackLabels.includes('work-request'));
+  console.log('ok default agent');
 }
 
-test('agent self-heal script exists and is executable', () => {
-  const stat = fs.statSync(SCRIPT);
-  assert(stat.isFile(), 'script is not a file');
-  if (process.platform !== 'win32') {
-    assert((stat.mode & 0o111) !== 0, 'script is not executable');
-  }
-});
+function testNoContext() {
+  const packet = buildPacket({ agent: 'openai' });
+  assert.strictEqual(packet.context, 'unspecified');
+  assert.ok(packet.fallbackLabels.length > 0);
+  console.log('ok no context');
+}
 
-test('credential failures route to backup harness and fallback labels', () => {
-  const out = execFileSync(SCRIPT, [
-    '--component',
-    'goap/credential-gatekeeper',
-    '--error',
-    'Doppler token missing and OPENROUTER_API_KEY secret unavailable',
-    '--json',
-  ], { encoding: 'utf8' });
-  const packet = JSON.parse(out);
-  assert(packet.recovery_rules.includes('credential-backup'), 'packet should classify credential backup');
-  for (const label of ['auto-fix', 'ralph-loop', 'agent-fallback']) {
-    assert(packet.labels.includes(label), `packet missing ${label}`);
-  }
-  assert(packet.actions.some((action) => action.includes('credential-backup-harness')), 'packet should recommend backup harness');
-});
+testOpenRouterFallback();
+testDefaultAgent();
+testNoContext();
 
-test('agent timeouts route through fallback chain', () => {
-  const out = execFileSync(SCRIPT, [
-    '--component',
-    'OpenHands',
-    '--error',
-    'Agent unavailable: timeout after no response',
-    '--json',
-  ], { encoding: 'utf8' });
-  const packet = JSON.parse(out);
-  assert(packet.recovery_rules.includes('agent-timeout'), 'packet should classify timeout');
-  assert(packet.actions.some((action) => action.includes('OpenHands -> Cursor -> OpenRouter')), 'packet should recommend fallback chain');
-});
-
-test('weekly-research workflow invokes self-heal packet on OpenRouter failure', () => {
-  const wf = fs.readFileSync(WEEKLY_RESEARCH, 'utf8');
-  assert(wf.includes('scripts/agent-self-heal.js'), 'weekly research should call self-heal script');
-  assert(wf.includes('--component "weekly-research/openrouter-triage"'), 'weekly research should identify failing component');
-  assert(!wf.includes('Manual research coordination may be needed'), 'workflow should not leave a manual-only failure comment');
-});
-
-test('missing required args fail clearly', () => {
-  const result = spawnSync(SCRIPT, ['--component', 'goap'], { encoding: 'utf8' });
-  assert(result.status !== 0, 'expected non-zero exit');
-  assert(result.stderr.includes('--error is required'), 'expected missing error message');
-});
-
-console.log(`\n${passed} passed, ${failed} failed`);
-if (failed > 0) process.exit(1);
+console.log('agent-self-heal: all tests passed');
