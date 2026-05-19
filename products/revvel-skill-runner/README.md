@@ -36,6 +36,31 @@ npm install
 npm run dev
 ```
 
+Create your runtime config:
+
+```bash
+cp .env.example .env.local
+```
+
+Required environment variables:
+
+- `NEWSLETTER_WEBHOOK_URL` — endpoint that receives newsletter signups
+- `NEXT_PUBLIC_POLAR_CHECKOUT_URL` — public checkout URL for paid plans
+
+## Production Readiness
+
+- Checkout CTA wired to Polar checkout URL (`NEXT_PUBLIC_POLAR_CHECKOUT_URL`)
+- Newsletter submission wired to `/api/newsletter` server route
+- Lint/build scripts validated for Next.js 16
+
+## Deployment
+
+See [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md) for Vercel deployment steps.
+
+## Go-To-Market
+
+See [`GO_TO_MARKET.md`](./GO_TO_MARKET.md) for launch channels, ROI model, and sourced market research.
+
 ## Monetization
 
 Primary funding rail: **Polar.sh** (GitHub funding platform).

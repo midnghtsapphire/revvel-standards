@@ -4,17 +4,46 @@ import { useState, FormEvent } from "react";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
+  const [status, setStatus] = useState<"idle" | "ok" | "err" | "loading">(
+    "idle",
+  );
+  const [message, setMessage] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email.includes("@")) {
       setStatus("err");
+      setMessage("Please enter a valid email.");
       return;
     }
-    // TODO: wire to ESP (Resend/Buttondown)
-    setStatus("ok");
-    setEmail("");
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        setStatus("err");
+        setMessage(data.message ?? "Unable to subscribe right now.");
+        return;
+      }
+
+      setStatus("ok");
+      setMessage(data.message ?? "Subscribed! Check your inbox.");
+      setEmail("");
+    } catch {
+      setStatus("err");
+      setMessage("Unable to subscribe right now.");
+    }
   }
 
   return (
@@ -38,19 +67,20 @@ export default function Newsletter() {
         />
         <button
           type="submit"
+          disabled={status === "loading"}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
-          Subscribe
+          {status === "loading" ? "Subscribing..." : "Subscribe"}
         </button>
       </form>
       {status === "ok" && (
         <p role="status" className="mt-3 text-green-600">
-          Subscribed! Check your inbox.
+          {message}
         </p>
       )}
       {status === "err" && (
         <p role="alert" className="mt-3 text-red-600">
-          Please enter a valid email.
+          {message}
         </p>
       )}
     </section>
