@@ -232,5 +232,37 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   }
 });
 
+test('research-engine.yml dispatches wr-pr-creation after research run', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs?.research?.steps || [];
+  const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+
+  if (!dispatchStep) {
+    throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
+  }
+
+  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+
+  const script = dispatchStep.with?.script || '';
+  if (!script.includes("const workflowId = 'wr-pr-creation.yml'")) {
+    throw new Error('Dispatch step script must target wr-pr-creation.yml');
+  }
+  if (!script.includes('createWorkflowDispatch')) {
+    throw new Error('Dispatch step script must call createWorkflowDispatch');
+  }
+  if (!script.includes('workflow_id: workflowId')) {
+    throw new Error('Dispatch step script must pass workflow_id in dispatch payload');
+  }
+  if (!script.includes('listWorkflowRuns')) {
+    throw new Error('Dispatch step script must verify run startup via listWorkflowRuns');
+  }
+  if (!script.includes("event: 'workflow_dispatch'")) {
+    throw new Error('Dispatch step startup check must filter workflow_dispatch runs');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
