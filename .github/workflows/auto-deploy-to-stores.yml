@@ -4,8 +4,9 @@ name: 📱 Auto Deploy to Stores
 # This workflow enforces the full WR revvel-standards lifecycle:
 #   1. Deep research gate — the originating WR issue must have deep-research
 #      + research:complete (or wr:research-complete / wr:complete) before
-#      any store deployment is attempted.  If research is missing the workflow
-#      dispatches research-engine.yml and blocks until it completes.
+#      any store deployment is attempted. If research is missing, the workflow
+#      dispatches research-engine.yml and stops; re-run this workflow after
+#      research completes.
 #   2. Android deployment — Expo EAS → Fastlane → Bubblewrap TWA (priority order)
 #   3. iOS deployment      — Expo EAS → Fastlane → Capacitor (on macos-latest)
 #   4. Result reporting    — posts a summary to the originating WR issue and
