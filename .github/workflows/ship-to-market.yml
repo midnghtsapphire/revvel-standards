@@ -177,7 +177,7 @@ jobs:
             const url = process.env.DEPLOY_URL || '';
             const body = url && url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
-              : `✅ **API deployed** → ${url}`;
+              : '✅ **API deployed** → ' + url;
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.payload.pull_request?.number ?? 0, body
@@ -235,7 +235,7 @@ jobs:
           script: |
             const url = process.env.VERCEL_URL || process.env.NETLIFY_URL || '';
             const body = url
-              ? `✅ **App deployed** → ${url}`
+              ? '✅ **App deployed** → ' + url
               : '⚠️ **App deploy skipped** — add `VERCEL_TOKEN` or `NETLIFY_AUTH_TOKEN` to secrets.';
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -414,12 +414,14 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          MCP_URL: ${{ steps.deploy_mcp.outputs.url }}
         with:
           script: |
-            const url = '${{ steps.deploy_mcp.outputs.url }}';
+            const url = process.env.MCP_URL || '';
             const body = url && !url.includes('NOT_DEPLOYED')
-              ? `✅ **MCP server deployed** → ${url}/mcp`
-              : `⚠️ **MCP deploy skipped** — add \`RAILWAY_TOKEN\` secret.`;
+              ? '✅ **MCP server deployed** → ' + url + '/mcp'
+              : '⚠️ **MCP deploy skipped** — add `RAILWAY_TOKEN` secret.';
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.payload.pull_request?.number ?? 0, body
