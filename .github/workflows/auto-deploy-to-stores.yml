@@ -180,10 +180,14 @@ jobs:
           script: |
             const issueNumber = '${{ needs.gate.outputs.issue_number }}';
 
-            // No linked issue — allow through so PR-only deploys still work
+            // No linked issue — hard fail: a WR issue is mandatory for store deploys
             if (!issueNumber) {
-              core.warning('No originating WR issue found. Bypassing research gate — attach a "Closes #N" line to the PR body to enforce research requirements.');
-              core.setOutput('research_ok', 'true');
+              core.setOutput('research_ok', 'false');
+              core.setFailed(
+                'No originating WR issue found. A linked Work Request issue is required for all store deployments.\n' +
+                'Add "Closes #<issue_number>" to the PR body, or supply the issue_number input when triggering manually.\n' +
+                'Per revvel-standards, every store deploy must be backed by a WR issue with completed deep research.'
+              );
               return;
             }
 
@@ -194,8 +198,11 @@ jobs:
             }).catch(() => ({ data: null }));
 
             if (!issue) {
-              core.warning(`Issue #${issueNumber} not found — bypassing research gate`);
-              core.setOutput('research_ok', 'true');
+              core.setOutput('research_ok', 'false');
+              core.setFailed(
+                `Issue #${issueNumber} not found in this repository. ` +
+                'Verify the issue number in the PR body ("Closes #N") or workflow input and re-run.'
+              );
               return;
             }
 
