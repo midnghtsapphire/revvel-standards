@@ -247,10 +247,20 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
 
   const script = dispatchStep.with?.script || '';
-  for (const needle of ['createWorkflowDispatch', "workflow_id: workflowId", "const workflowId = 'wr-pr-creation.yml'", 'listWorkflowRuns', "event: 'workflow_dispatch'"]) {
-    if (!script.includes(needle)) {
-      throw new Error(`Dispatch step script missing expected snippet: ${needle}`);
-    }
+  if (!script.includes("const workflowId = 'wr-pr-creation.yml'")) {
+    throw new Error('Dispatch step script must target wr-pr-creation.yml');
+  }
+  if (!script.includes('createWorkflowDispatch')) {
+    throw new Error('Dispatch step script must call createWorkflowDispatch');
+  }
+  if (!script.includes('workflow_id: workflowId')) {
+    throw new Error('Dispatch step script must pass workflow_id in dispatch payload');
+  }
+  if (!script.includes('listWorkflowRuns')) {
+    throw new Error('Dispatch step script must verify run startup via listWorkflowRuns');
+  }
+  if (!script.includes("event: 'workflow_dispatch'")) {
+    throw new Error('Dispatch step startup check must filter workflow_dispatch runs');
   }
 });
 

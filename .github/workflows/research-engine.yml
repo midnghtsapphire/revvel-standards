@@ -121,6 +121,7 @@ jobs:
             const issueNumber = '${{ needs.route.outputs.issue_number }}'.trim();
             const workflowId = 'wr-pr-creation.yml';
             const dispatchTime = Date.now();
+            const MATCH_WINDOW_MS = 120000; // Account for API/listing clock skew around dispatch time.
 
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -149,7 +150,7 @@ jobs:
 
               foundRun = (data.workflow_runs || []).find((run) => {
                 const created = new Date(run.created_at || 0).getTime();
-                return Number.isFinite(created) && created >= (dispatchTime - 120000);
+                return Number.isFinite(created) && created >= (dispatchTime - MATCH_WINDOW_MS);
               });
 
               if (foundRun) {
