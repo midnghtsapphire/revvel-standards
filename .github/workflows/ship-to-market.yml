@@ -530,62 +530,51 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.4.0
+      - name: Dispatch auto-deploy-to-stores workflow
+        id: dispatch
+        uses: actions/github-script@v9.0.0
         with:
-          node-version: "20"
-          cache: npm
-      - run: npm ci --if-present && npm run build --if-present
-      - name: Deploy Android → Google Play
-        id: android
-        if: >
-          needs.gate.outputs.run_mobile == 'true' ||
-          needs.gate.outputs.run_android == 'true'
-        run: |
-          if [[ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" ]]; then
-            echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
-          elif command -v bundle &>/dev/null && [[ -f Fastfile || -f fastlane/Fastfile ]]; then
-            TRACK="${{ github.event.inputs.channel }}"
-            [[ "$TRACK" == 'beta' || "$TRACK" == 'alpha' || "$TRACK" == 'production' ]] || TRACK='internal'
-            bundle exec fastlane android "$TRACK"
-            echo "result=Deployed to Play Store track: $TRACK" >> $GITHUB_OUTPUT
-          else
-            echo "result=SKIPPED — Fastlane not configured. Add Gemfile + fastlane/Fastfile and GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret." >> $GITHUB_OUTPUT
-          fi
-        env:
-          GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-      - name: Deploy iOS → App Store / TestFlight
-        id: ios
-        if: >
-          needs.gate.outputs.run_mobile == 'true' ||
-          needs.gate.outputs.run_ios == 'true'
-        run: |
-          if [[ -z "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" ]]; then
-            echo "result=SKIPPED — add APP_STORE_CONNECT_API_KEY_ID, APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_API_KEY_CONTENT secrets" >> $GITHUB_OUTPUT
-          else
-            echo "result=SKIPPED — iOS builds require macos-latest runner. Set runs-on: macos-latest in your app-specific workflow." >> $GITHUB_OUTPUT
-          fi
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-      - name: Comment result
+          script: |
+            // Resolve which platforms are requested
+            const wantsAndroid = '${{ needs.gate.outputs.run_android }}' === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const wantsIos     = '${{ needs.gate.outputs.run_ios }}'     === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const platform     = wantsAndroid && wantsIos ? 'both' : wantsAndroid ? 'android' : 'ios';
+
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}';
+
+            core.info(`Dispatching auto-deploy-to-stores.yml — platform: ${platform}, issue: ${issueNumber || 'none'}`);
+
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'auto-deploy-to-stores.yml',
+                ref: 'main',
+                inputs: {
+                  issue_number: issueNumber || '',
+                  platform,
+                  android_track: 'internal',
+                  ios_environment: 'testflight',
+                },
+              });
+              core.setOutput('dispatched', 'true');
+            } catch (e) {
+              core.warning('Could not dispatch auto-deploy-to-stores.yml: ' + e.message);
+              core.setOutput('dispatched', 'false');
+            }
+      - name: Comment dispatch result
         if: always()
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const android = '${{ steps.android.outputs.result }}' || 'not triggered';
-            const ios     = '${{ steps.ios.outputs.result }}'     || 'not triggered';
-            const androidOk = android && !android.includes('SKIPPED') && !android.includes('not triggered');
-            const iosOk     = ios     && !ios.includes('SKIPPED')     && !ios.includes('not triggered');
-            const lines = [];
-            if (android !== 'not triggered') lines.push(androidOk ? `✅ **Android** → ${android}` : `⚠️ **Android** — ${android}`);
-            if (ios     !== 'not triggered') lines.push(iosOk     ? `✅ **iOS** → ${ios}`         : `⚠️ **iOS** — ${ios}`);
-            if (!lines.length) return;
+            const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
+            const actionsUrl = `https://github.com/${{ github.repository }}/actions/workflows/auto-deploy-to-stores.yml`;
+            const body = dispatched === 'true'
+              ? `📱 **Mobile store deployment dispatched** → [View progress in auto-deploy-to-stores.yml](${actionsUrl})\n\n> Deployment enforces the **deep research gate** — the originating WR issue must have \`deep-research\` + \`research:complete\` labels before stores are updated.`
+              : `⚠️ **Mobile dispatch failed** — could not start \`auto-deploy-to-stores.yml\`. [Trigger it manually](${actionsUrl}).`;
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
-              issue_number: context.payload.pull_request?.number ?? 0,
-              body: `📱 **Mobile store deployment**\n\n${lines.join('\n')}`
+              issue_number: context.payload.pull_request?.number ?? 0, body
             });
     timeout-minutes: 30
   deliver-package:
