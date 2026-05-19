@@ -449,7 +449,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Readiness Checklist:**
 
-- [x] All tests passing
+- [ ] All tests passing
 - [x] No linting errors
 - [x] No security vulnerabilities
 - [ ] Deployment configured
