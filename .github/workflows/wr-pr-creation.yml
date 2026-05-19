@@ -511,8 +511,38 @@ jobs:
               repo: context.repo.repo,
               issue_number: issueNumber,
             });
+
+            // Parse Output Type from issue body to determine deliver label
+            const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            const outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            const OUTPUT_TYPE_DELIVER_MAP = {
+              'production-app': 'deliver:app',
+              'app': 'deliver:app',
+              'web-app': 'deliver:app',
+              'sellable-pdf': 'deliver:pdf',
+              'pdf': 'deliver:pdf',
+              'technical-documentation': 'deliver:docs',
+              'project-management-doc': 'deliver:docs',
+              'docs': 'deliver:docs',
+              'documentation': 'deliver:docs',
+              'api': 'deliver:api',
+              'cli-tool': 'deliver:cli',
+              'cli': 'deliver:cli',
+              'docker': 'deliver:docker',
+              'mcp-server': 'deliver:mcp',
+              'mcp': 'deliver:mcp',
+              'video': 'deliver:video',
+            };
+            const deliverLabel = OUTPUT_TYPE_DELIVER_MAP[outputTypeRaw];
+            if (deliverLabel) {
+              core.info(`Output Type "${outputTypeRaw}" → auto-applying label: ${deliverLabel}`);
+            } else if (outputTypeRaw) {
+              core.info(`Output Type "${outputTypeRaw}" has no deliver label mapping — skipping auto-deliver label`);
+            }
+
             const labels = Array.from(new Set([
               'documentation',
+              ...(deliverLabel ? [deliverLabel] : []),
               ...((issue.labels || [])
                 .map(normalizeLabel)
                 .filter(label =>

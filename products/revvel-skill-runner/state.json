@@ -1,4 +1,25 @@
 {
+  "name": "revvel-skill-runner",
+  "phase": "build",
+  "created": "2025-01-01",
+  "target_revenue_monthly_usd": 10000,
+  "mission_alignment": "10M-in-3-years",
+  "funding_rail": "polar.sh",
+  "stages": {
+    "research": "completed",
+    "decision": "completed",
+    "build": "completed",
+    "certify": "pending",
+    "deploy": "in_progress",
+    "monetize": "in_progress",
+    "market": "in_progress",
+    "sales": "in_progress"
+  },
+  "exrup_components": {
+    "accessibility_controls": true,
+    "newsletter": true,
+    "affiliate_marketing": true
+  }
   "product_slug": "revvel-skill-runner",
   "shape": "full-app",
   "step": 0,

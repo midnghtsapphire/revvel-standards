@@ -57,7 +57,8 @@ revenue-generating products:
     ├── music-video-creator/
     ├── affiliate-hub/
     ├── ai-video-toolkit/
-    └── screen-recorder-finder/
+    ├── screen-recorder-finder/
+    └── revvel-skill-runner/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -75,6 +76,7 @@ collisions:
 | Affiliate Hub            | `products/affiliate-hub`              | 3001     | Next.js. May require `npm install --legacy-peer-deps` (see gotchas).  |
 | AI Video Toolkit         | `products/ai-video-toolkit`           | 3002     | Next.js.                                                              |
 | Screen Recorder Finder   | `products/screen-recorder-finder`     | 3003     | Next.js.                                                              |
+| Revvel Skill Runner      | `products/revvel-skill-runner`        | 3004     | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution.         |
 
 Start a specific product on its assigned port:
 
@@ -83,6 +85,7 @@ cd products/music-video-creator && npm run dev -- -p 3000
 cd products/affiliate-hub        && npm run dev -- -p 3001
 cd products/ai-video-toolkit     && npm run dev -- -p 3002
 cd products/screen-recorder-finder && npm run dev -- -p 3003
+cd products/revvel-skill-runner  && npm run dev -- -p 3004
 ```
 
 ### Running and testing
