@@ -114,12 +114,11 @@ jobs:
           echo "marketplace=$(check marketplace)" >> $GITHUB_OUTPUT
       - name: Extract linked issue number
         id: meta
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            ISSUE=$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
-          else
-            ISSUE=""
-          fi
+          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
           echo "issue_num=$ISSUE" >> $GITHUB_OUTPUT
     timeout-minutes: 30
   deliver-api:
