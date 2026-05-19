@@ -359,6 +359,7 @@ jobs:
               echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
               exit 0
             fi
+            sudo apt-get update
             sudo apt-get install -y default-jdk 2>/dev/null
             npm install -g @bubblewrap/cli
             bubblewrap build
