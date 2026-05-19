@@ -320,14 +320,14 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
-**Date/Time:** 2026-05-18T23:40Z
+**Date/Time:** 2026-05-18T22:30:00Z
 
-**Task Attempted:** Resolve PR #13564 credential backup / Doppler-optional review findings from cubic.
+**Task Attempted:** Fix blank/BASIC WR label parity, make agent/GOAP errors self-heal, and remove Doppler as a hard dependency for credential readiness.
 
-**Outcome:** Success — restored `gatekeeper-sync.sh --secrets/--repo/--json` compatibility, kept Doppler optional, added bounded external CLI calls, changed `github-actions` output to multiline-safe `$GITHUB_ENV` heredocs, documented Vault authentication requirements, removed Doppler-only gates from credential recovery workflows, and verified targeted tests, workflow validation, label checks, and root `npm test`.
+**Outcome:** Success — both WR templates now carry the full canonical WR routing label set; WR PR creation normalizes those labels; WR auto-classify accepts `[WR]`/`weekly-research` signals when labels lag; Credential Gatekeeper now runs a backup harness even without Doppler; weekly research OpenRouter failures create a self-heal packet and route `auto-fix`, `ralph-loop`, and `agent-fallback`; workflow validation, label checks, focused tests, and root `npm test` pass.
 
-**Root Cause of Failure (If any):** The first harness implementation replaced the legacy sync script with a direct `--keys` resolver invocation. Existing workflows still called `--secrets/--repo/--json` and expected a summary containing `synced`, `missing_in_doppler`, and `failed`, so auto-provision comments and self-heal flows could silently lose sync behavior. The harness also emitted workflow commands into env-file output and allowed provider CLIs to run without a timeout.
+**Root Cause of Failure (If any):** The previous BASIC WR fix only guaranteed the minimum `work-request`/`weekly-research` path, while downstream WR automation expects a richer routing set (`wr:in-progress`, `deep-research`, `openrouter`, `role:orchestrator`). Credential Gatekeeper also exited early when no Doppler token existed, which turned a missing paid vendor account into a workflow blocker even when GitHub Actions secrets or FOSS/local backups could satisfy the same need. Full validation also exposed a missing CodeQL job timeout and a malformed workflow validation test block.
 
-**Self-Healing Fix / Learned Lesson:** When replacing a credential backend, preserve the caller contract first and then swap the resolver behind it. GitHub env files must contain only env-file syntax; masking commands belong in logs, not `$GITHUB_ENV`. Every external secret-provider CLI should have a timeout so one hung provider cannot stall all credential recovery. If Doppler is optional in the harness, every workflow caller must also avoid Doppler-only skip gates.
+**Self-Healing Fix / Learned Lesson:** Treat labels as a contract shared by templates, workflow detection, and PR mirroring. Secret readiness must check GitHub-native and FOSS backup paths before declaring a blocker: direct GitHub Actions secrets, env, JSON, SOPS/age, pass, Bitwarden CLI, 1Password CLI, Infisical/Vault handoff, and only then Doppler. Agent failures should emit a deterministic recovery packet with routing labels instead of a manual-only comment. If `automation-doctor` cannot run because root deps are missing, run `npm ci`; if it finds a missing timeout, patch the workflow immediately.
 
-**Next Action:** Monitor PR #13564 review/CI for any remaining credential-source edge cases.
+**Next Action:** Monitor PR #13560 CI/review; no remaining code blocker from this session.

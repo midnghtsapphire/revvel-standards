@@ -128,7 +128,16 @@ test('Work Request templates apply canonical WR routing labels', () => {
   );
   const labelsYaml = fs.readFileSync(path.join(REPO_ROOT, '.github', 'labels.yml'), 'utf8');
 
-  for (const label of ['work-request', 'weekly-research']) {
+  const canonicalWrLabels = [
+    'work-request',
+    'weekly-research',
+    'wr:in-progress',
+    'deep-research',
+    'openrouter',
+    'role:orchestrator',
+  ];
+
+  for (const label of canonicalWrLabels) {
     assert(labelsFromTemplate(primary).includes(label), `primary WR template missing ${label}`);
     assert(labelsFromTemplate(quick).includes(label), `quick WR template missing ${label}`);
     assertLabelDefinition(labelsYaml, label);
@@ -154,7 +163,22 @@ test('WR workflows accept BASIC WR issue type and work-request label', () => {
     assert(workflow.includes("labelSet.has('work-request')"), 'WR workflow must accept work-request label');
     assert(workflow.includes("'basic wr'"), 'WR workflow must accept BASIC WR issue type');
     assert(workflow.includes("'weekly-research'"), 'WR workflow must apply weekly-research label');
+    assert(workflow.includes("'deep-research'"), 'WR workflow must apply deep-research label');
+    assert(workflow.includes("'openrouter'"), 'WR workflow must apply openrouter label');
+    assert(workflow.includes("'role:orchestrator'"), 'WR workflow must apply role:orchestrator label');
   }
+});
+
+test('WR auto-classify accepts title and weekly-research signals when blank WR labels lag', () => {
+  const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'), 'utf8');
+  assert(
+    wf.includes("contains(github.event.issue.labels.*.name, 'weekly-research')"),
+    'wr-auto-classify must accept weekly-research label'
+  );
+  assert(
+    wf.includes("startsWith(github.event.issue.title, '[WR]')"),
+    'wr-auto-classify must accept [WR] title prefix'
+  );
 });
 
 test('WR PR creation waits for research completion and ignores PR comments', () => {

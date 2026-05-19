@@ -1,0 +1,39 @@
+name: Copilot Setup Steps
+
+# Run automatically when this file or root dependency files change to validate setup steps,
+# and allow manual testing via the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+      - package.json
+      - package-lock.json
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+      - package.json
+      - package-lock.json
+
+jobs:
+  # Job MUST be named `copilot-setup-steps` to be picked up by Copilot cloud agent.
+  copilot-setup-steps:
+    name: Install root tooling for revvel-standards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install root dependencies
+        run: npm ci

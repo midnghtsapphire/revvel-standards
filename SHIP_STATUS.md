@@ -31,6 +31,7 @@
 | #13499 | add layered research engine orchestrator | open | @Cursor | 2026-05-17 |
 | #13503 | add prompt generation app | open | @Cursor | 2026-05-17 |
 | #13507 | add no-key Perplexity research integration | open | @Cursor | 2026-05-17 |
+| #13560 | add WR label parity and credential backup harness | open | @Cursor | 2026-05-18 |
 
 ### Issues
 
@@ -65,7 +66,7 @@
 | T013 | BASIC WR label normalization | done | @cursor | 2026-05-17 |
 | T013 | Revvel PromptForge prompt generation app | done | @cursor | 2026-05-17 |
 | T014 | Perplexity no-key research integration | done | @cursor | 2026-05-17 |
-| T015 | Doppler-optional credential backup harness compatibility | done | @cursor | 2026-05-18 |
+| T015 | WR label parity + credential backup harness + agent self-heal | done | @cursor | 2026-05-18 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---
