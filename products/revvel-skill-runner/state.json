@@ -6,14 +6,14 @@
   "mission_alignment": "10M-in-3-years",
   "funding_rail": "polar.sh",
   "stages": {
-    "research": "pending",
-    "decision": "pending",
-    "build": "in_progress",
+    "research": "completed",
+    "decision": "completed",
+    "build": "completed",
     "certify": "pending",
-    "deploy": "pending",
-    "monetize": "pending",
-    "market": "pending",
-    "sales": "pending"
+    "deploy": "in_progress",
+    "monetize": "in_progress",
+    "market": "in_progress",
+    "sales": "in_progress"
   },
   "exrup_components": {
     "accessibility_controls": true,

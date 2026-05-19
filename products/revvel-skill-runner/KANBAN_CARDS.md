@@ -8,7 +8,7 @@
 - Landing page copy v2
 
 ## In Progress
-- Initial scaffold ✅
+- Production launch hardening ✅
 
 ## Done
 - Repo structure
