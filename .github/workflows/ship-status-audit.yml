@@ -51,7 +51,7 @@ Weekly digest of all active workstreams.
               // SHIP_STATUS.md doesn't exist
             }
 
-            github.rest.createIssue({
+            github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '[AUDIT] Ship Status Weekly Digest',
