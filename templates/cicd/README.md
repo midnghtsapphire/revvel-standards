@@ -31,11 +31,6 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `circleci-openrouter.yml` | CircleCI equivalent of AI CI failure analysis (calls OpenRouter directly on CircleCI `when: on_fail`) | `.circleci/config.yml` |
 | `ai-code-reviewer-pro.yml` | Inline AI review comments on changed lines + summary ([`VIVAAN-DHAWAN/ai-code-reviewer`](https://github.com/VIVAAN-DHAWAN/ai-code-reviewer)) | `.github/workflows/ai-code-reviewer-pro.yml` |
 | `android-resource-translator.yml` | Android `strings.xml` missing-translation → auto-PR ([`duartebarbosadev/AndroidResourceTranslator`](https://github.com/duartebarbosadev/AndroidResourceTranslator)) | `.github/workflows/android-resource-translator.yml` |
-| `eco-ci-energy-estimation.yml` | Measures GitHub runner energy usage across checkout / install / test steps ([`green-coding-solutions/eco-ci-energy-estimation`](https://github.com/green-coding-solutions/eco-ci-energy-estimation)) | `.github/workflows/eco-ci-energy-estimation.yml` |
-| `sustainable-npm.yml` | Applies low-overhead npm defaults to reduce install waste in Node CI ([`lowlydba/sustainable-npm`](https://github.com/lowlydba/sustainable-npm)) | `.github/workflows/sustainable-npm.yml` |
-| `a11yguard.yml` | Accessibility regression / audit workflow for preview or production URLs ([`a11ywatch/github-actions`](https://github.com/a11ywatch/github-actions)) | `.github/workflows/a11yguard.yml` |
-| `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
-| `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
 | `mcp-server-evals.yml` | LLM-as-judge evaluations against an MCP server ([`mcp-use/eval-action`](https://github.com/mcp-use/eval-action)) | `.github/workflows/mcp-server-evals.yml` |
 | `gass-scoring.yml` | On-chain PR quality score via O2 Oracle ([`michael-bey/gass`](https://github.com/michael-bey/gass)) | `.github/workflows/gass-scoring.yml` |
 | `iara-code-reviewer.yml` | Iara AI reviewer — bugs / SAST / performance ([`felipefernandes/iara`](https://github.com/felipefernandes/iara)) | `.github/workflows/iara-code-reviewer.yml` |
@@ -46,6 +41,11 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `posthog-annotations.yml` | PostHog annotations — marks PR merges, releases, deployments on analytics charts | `.github/workflows/posthog-annotations.yml` |
 | `posthog-send-event.yml` | PostHog custom events — track CI/CD pipeline events (reusable workflow) | `.github/workflows/posthog-send-event.yml` |
 | `posthog-upload-sourcemaps.yml` | PostHog source maps upload — enables readable error stack traces | `.github/workflows/posthog-upload-sourcemaps.yml` |
+| `eco-ci-energy-estimation.yml` | Measures GitHub runner energy usage across checkout / install / test steps ([`green-coding-solutions/eco-ci-energy-estimation`](https://github.com/green-coding-solutions/eco-ci-energy-estimation)) | `.github/workflows/eco-ci-energy-estimation.yml` |
+| `sustainable-npm.yml` | Applies low-overhead npm defaults to reduce install waste in Node CI ([`lowlydba/sustainable-npm`](https://github.com/lowlydba/sustainable-npm)) | `.github/workflows/sustainable-npm.yml` |
+| `a11yguard.yml` | Accessibility regression / audit workflow for preview or production URLs ([`a11ywatch/github-actions`](https://github.com/a11ywatch/github-actions)) | `.github/workflows/a11yguard.yml` |
+| `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
+| `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
 
 > **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
 > `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
