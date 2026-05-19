@@ -65,6 +65,17 @@ jobs:
           fi
           INPUT="${{ github.event.inputs.channel }}"
           ALL="$([[ "$INPUT" == "all" || "$LABELS" == *"deliver:all"* ]] && echo true || echo false)"
+          INPUT="${{ github.event.inputs.channel }}"
+
+          # Only access PR labels if this is a pull_request event
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+          else
+            LABELS=""
+          fi
+
+          ALL="$([[ $INPUT == 'all' || $LABELS == *'deliver:all'* ]] && echo
+          true || echo false)"
 
 
           check() {
@@ -119,6 +130,10 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
+          PR_BODY: ${{ github.event_name == 'pull_request' && github.event.pull_request.body || '' }}
+        run: |
+          ISSUE=$(echo "$PR_BODY" | grep -oP '(?<=Closes #|Fixes #|Resolves #)\d+' | head -1 || echo "")
+
           echo "issue_num=$ISSUE" >> $GITHUB_OUTPUT
     timeout-minutes: 30
   deliver-api:
@@ -175,6 +190,9 @@ jobs:
         with:
           script: |
             const url = process.env.DEPLOY_URL || '';
+          script: >
+            const url = `${{ steps.deploy.outputs.url }}`;
+
             const body = url && url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
               : '✅ **API deployed** → ' + url;
@@ -234,6 +252,11 @@ jobs:
         with:
           script: |
             const url = process.env.VERCEL_URL || process.env.NETLIFY_URL || '';
+          script: >
+            const vercelUrl = `${{ steps.vercel.outputs.url }}`;
+            const netlifyUrl = `${{ steps.netlify.outputs.url }}`;
+            const url = vercelUrl || netlifyUrl;
+
             const body = url
               ? '✅ **App deployed** → ' + url
               : '⚠️ **App deploy skipped** — add `VERCEL_TOKEN` or `NETLIFY_AUTH_TOKEN` to secrets.';
@@ -707,6 +730,8 @@ jobs:
           script: |
             const chrome = process.env.CHROME || '';
             const vscode = process.env.VSCODE || '';
+            const chrome = `${{ steps.chrome.outputs.result }}` || '';
+            const vscode = `${{ steps.vscode.outputs.result }}` || '';
             const lines = [];
             if (chrome) lines.push(chrome.includes('SKIPPED') ? `⚠️ **Chrome** — ${chrome}` : `✅ **Chrome** — ${chrome}`);
             if (vscode) lines.push(vscode.includes('SKIPPED') ? `⚠️ **VS Code** — ${vscode}` : `✅ **VS Code** — ${vscode}`);
