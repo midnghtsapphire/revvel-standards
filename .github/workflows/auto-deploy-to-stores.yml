@@ -253,7 +253,7 @@ jobs:
                   '`research-engine.yml` has been dispatched automatically. Once it completes and applies `research:complete`, re-run this workflow:',
                   '',
                   `> [Re-run Auto Deploy to Stores](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/auto-deploy-to-stores.yml)`,
-                ].filter(l => l !== undefined).join('\n'),
+                ].filter(l => l !== undefined && l !== '').join('\n'),
               });
 
               // Apply deep-research label if missing
@@ -344,7 +344,7 @@ jobs:
             fi
             echo "$GOOGLE_PLAY_JSON_KEY" > /tmp/play-store-key.json
             SUPPLY_JSON_KEY=/tmp/play-store-key.json bundle exec fastlane android "$TRACK"
-            PKG=$(grep -r 'package_name\|applicationId' android/app/build.gradle 2>/dev/null | head -1 | grep -oP '"[^"]+"' | head -1 | tr -d '"' || echo "app")
+            PKG=$(grep 'package_name\|applicationId' android/app/build.gradle 2>/dev/null | head -1 | grep -oP '"[^"]+"' | head -1 | tr -d '"' || echo "app")
             echo "result=Fastlane deployed $PKG to Play Store (track: $TRACK)" >> $GITHUB_OUTPUT
             echo "url=https://play.google.com/console" >> $GITHUB_OUTPUT
             exit 0
