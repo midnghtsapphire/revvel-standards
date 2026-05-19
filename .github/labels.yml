@@ -715,7 +715,7 @@ labels:
 
   - name: "deliver:package"
     color: "0075ca"
-    description: "Publish package to npm / PyPI / Homebrew"
+    description: "Publish package to npm / PyPI"
 
   - name: "deliver:docker"
     color: "2496ed"
