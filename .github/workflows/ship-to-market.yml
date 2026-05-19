@@ -545,7 +545,8 @@ jobs:
           if [[ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" ]]; then
             echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
           elif command -v bundle &>/dev/null && [[ -f Fastfile || -f fastlane/Fastfile ]]; then
-            TRACK="${{ github.event.inputs.channel == 'android' && 'internal' || 'internal' }}"
+            TRACK="${{ github.event.inputs.channel }}"
+            [[ "$TRACK" == 'beta' || "$TRACK" == 'alpha' || "$TRACK" == 'production' ]] || TRACK='internal'
             bundle exec fastlane android "$TRACK"
             echo "result=Deployed to Play Store track: $TRACK" >> $GITHUB_OUTPUT
           else
@@ -857,7 +858,7 @@ jobs:
         run: |
           mkdir -p dist/marketplace
           README=""
-          [[ -f README.md ]] && README=$(cat README.md | head -100)
+          [[ -f README.md ]] && README=$(head -100 README.md)
           TITLE=$(echo "$README" | head -1 | sed 's/^#\s*//')
           DESCRIPTION=$(echo "$README" | sed -n '/^$/,/^##/{/^##/q; p}' | head -10 | tr '\n' ' ')
           cat > dist/marketplace/listing-draft.md << EOF
