@@ -113,6 +113,57 @@ jobs:
             git commit -m "research: add research engine packet"
             git push
           fi
+      - name: Dispatch WR PR creation workflow
+        if: needs.route.outputs.issue_number != ''
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issueNumber = '${{ needs.route.outputs.issue_number }}'.trim();
+            const workflowId = 'wr-pr-creation.yml';
+            const dispatchTime = Date.now();
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflowId,
+              ref: 'main',
+              inputs: {
+                issue_number: issueNumber,
+              },
+            });
+            core.info(`Dispatched ${workflowId} for issue #${issueNumber}`);
+
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            const delays = [5000, 10000, 20000, 30000];
+            let foundRun = null;
+
+            for (const delay of delays) {
+              await sleep(delay);
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflowId,
+                event: 'workflow_dispatch',
+                per_page: 20,
+              });
+
+              foundRun = (data.workflow_runs || []).find((run) => {
+                const created = new Date(run.created_at || 0).getTime();
+                return Number.isFinite(created) && created >= (dispatchTime - 120000);
+              });
+
+              if (foundRun) {
+                core.info(`Confirmed WR PR workflow run #${foundRun.run_number}: ${foundRun.html_url}`);
+                break;
+              }
+            }
+
+            if (!foundRun) {
+              core.warning(
+                `Dispatched ${workflowId} for issue #${issueNumber} but could not confirm a started run yet. ` +
+                `Check: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/${workflowId}`
+              );
+            }
     timeout-minutes: 45
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

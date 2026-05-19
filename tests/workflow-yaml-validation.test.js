@@ -232,5 +232,27 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   }
 });
 
+test('research-engine.yml dispatches wr-pr-creation after research run', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs?.research?.steps || [];
+  const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+
+  if (!dispatchStep) {
+    throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
+  }
+
+  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+
+  const script = dispatchStep.with?.script || '';
+  for (const needle of ['createWorkflowDispatch', "workflow_id: workflowId", "const workflowId = 'wr-pr-creation.yml'", 'listWorkflowRuns', "event: 'workflow_dispatch'"]) {
+    if (!script.includes(needle)) {
+      throw new Error(`Dispatch step script missing expected snippet: ${needle}`);
+    }
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
