@@ -168,11 +168,12 @@ jobs:
       - name: Comment result on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
-          script: >
-            const url = '${{ steps.deploy.outputs.url }}';
-
-            const body = url.includes('NOT_DEPLOYED')
+          script: |
+            const url = process.env.DEPLOY_URL || '';
+            const body = url && url.includes('NOT_DEPLOYED')
               ? '⚠️ **API deliver skipped** — add `RAILWAY_TOKEN` or `FLY_API_TOKEN` to repo secrets.'
               : `✅ **API deployed** → ${url}`;
             github.rest.issues.createComment({
@@ -225,11 +226,12 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          VERCEL_URL: ${{ steps.vercel.outputs.url }}
+          NETLIFY_URL: ${{ steps.netlify.outputs.url }}
         with:
-          script: >
-            const url = '${{ steps.vercel.outputs.url ||
-            steps.netlify.outputs.url }}';
-
+          script: |
+            const url = process.env.VERCEL_URL || process.env.NETLIFY_URL || '';
             const body = url
               ? `✅ **App deployed** → ${url}`
               : '⚠️ **App deploy skipped** — add `VERCEL_TOKEN` or `NETLIFY_AUTH_TOKEN` to secrets.';
@@ -694,10 +696,13 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          CHROME: ${{ steps.chrome.outputs.result }}
+          VSCODE: ${{ steps.vscode.outputs.result }}
         with:
           script: |
-            const chrome = '${{ steps.chrome.outputs.result }}' || '';
-            const vscode = '${{ steps.vscode.outputs.result }}' || '';
+            const chrome = process.env.CHROME || '';
+            const vscode = process.env.VSCODE || '';
             const lines = [];
             if (chrome) lines.push(chrome.includes('SKIPPED') ? `⚠️ **Chrome** — ${chrome}` : `✅ **Chrome** — ${chrome}`);
             if (vscode) lines.push(vscode.includes('SKIPPED') ? `⚠️ **VS Code** — ${vscode}` : `✅ **VS Code** — ${vscode}`);
