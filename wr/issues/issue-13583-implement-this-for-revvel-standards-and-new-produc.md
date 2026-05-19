@@ -77,7 +77,7 @@ on:
 | Property | Value |
 |----------|-------|
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-19 |
+| Created | 2026-02-20 |
 | Last Updated | 2026-05-19 |
 | Primary Language | JavaScript |
 | Stars | {STARS} |
@@ -651,7 +651,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13583-implement-this-for-revvel-standards-and-new-produc.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]
