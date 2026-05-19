@@ -344,6 +344,7 @@ jobs:
               exit 0
             fi
             echo "$GOOGLE_PLAY_JSON_KEY" > /tmp/play-store-key.json
+            bundle install --jobs 4 --retry 3
             SUPPLY_JSON_KEY=/tmp/play-store-key.json bundle exec fastlane android "$TRACK"
             PKG=$(grep 'package_name\|applicationId' android/app/build.gradle 2>/dev/null | head -1 | grep -oP '"[^"]+"' | head -1 | tr -d '"' || echo "app")
             echo "result=Fastlane deployed $PKG to Play Store (track: $TRACK)" >> $GITHUB_OUTPUT
