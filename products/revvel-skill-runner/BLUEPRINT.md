@@ -17,3 +17,8 @@ A production-grade skill execution engine that monetizes via Polar.sh, newslette
 
 ## North Star
 $10k/month by Month 6, contributing to the $10M / 3-year goal.
+# BLUEPRINT
+
+## Architecture
+
+Revvel Skill Runner execution engine.

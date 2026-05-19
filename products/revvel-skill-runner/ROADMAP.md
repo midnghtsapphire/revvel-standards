@@ -19,3 +19,8 @@
 ## Phase 4 — $10M total (Month 30-36)
 - [ ] Strategic partnerships
 - [ ] Exit-ready financials
+# ROADMAP
+
+Phase 1: Initial deployment.
+Phase 2: Market penetration.
+Phase 3: Scaling.

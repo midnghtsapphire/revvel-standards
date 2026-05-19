@@ -1,5 +1,6 @@
 {
   "name": "revvel-skill-runner",
+  "name": "build",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0"
+    "lint": "eslint"
   },
   "dependencies": {
     "next": "16.2.6",

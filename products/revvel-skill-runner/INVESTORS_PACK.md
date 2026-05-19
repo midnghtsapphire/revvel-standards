@@ -16,3 +16,7 @@ The production skill-execution runner powering the next wave of AI-driven workfl
 
 ## Ask
 Strategic intros to OSINT and dev-tools distribution partners.
+# INVESTORS PACK
+
+## Executive Summary
+Revvel Skill Runner represents a core piece of the $10M pipeline.

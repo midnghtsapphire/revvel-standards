@@ -1,10 +1,10 @@
 # Automation Doctor Report
 
-Generated: 2026-05-18T22:20:18.829Z
+Generated: 2026-05-19T00:45:42.097Z
 
 ## Workflow Validation
 
-- Valid workflows: 0
+- Valid workflows: 122
 - Invalid workflows: 0
 - Jobs missing timeout: 0
 

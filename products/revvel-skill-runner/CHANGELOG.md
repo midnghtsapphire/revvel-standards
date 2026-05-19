@@ -14,3 +14,7 @@
 - Newsletter signup component
 - Affiliate Marketing component
 - Product docs (BLUEPRINT, BOM, ROADMAP, INVESTORS_PACK, KANBAN_CARDS)
+# CHANGELOG
+
+## Unreleased
+- Initial release.
