@@ -568,13 +568,22 @@ jobs:
         with:
           script: |
             const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}'.trim();
             const actionsUrl = `https://github.com/${{ github.repository }}/actions/workflows/auto-deploy-to-stores.yml`;
             const body = dispatched === 'true'
               ? `📱 **Mobile store deployment dispatched** → [View progress in auto-deploy-to-stores.yml](${actionsUrl})\n\n> Deployment enforces the **deep research gate** — the originating WR issue must have \`deep-research\` + \`research:complete\` labels before stores are updated.`
               : `⚠️ **Mobile dispatch failed** — could not start \`auto-deploy-to-stores.yml\`. [Trigger it manually](${actionsUrl}).`;
-            github.rest.issues.createComment({
-              owner: context.repo.owner, repo: context.repo.repo,
-              issue_number: context.payload.pull_request?.number ?? 0, body
+
+            if (!issueNumber) {
+              core.info('No originating issue/PR number available; skipping dispatch result comment.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(issueNumber),
+              body
             });
     timeout-minutes: 30
   deliver-package:
