@@ -41,18 +41,27 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `posthog-annotations.yml` | PostHog annotations — marks PR merges, releases, deployments on analytics charts | `.github/workflows/posthog-annotations.yml` |
 | `posthog-send-event.yml` | PostHog custom events — track CI/CD pipeline events (reusable workflow) | `.github/workflows/posthog-send-event.yml` |
 | `posthog-upload-sourcemaps.yml` | PostHog source maps upload — enables readable error stack traces | `.github/workflows/posthog-upload-sourcemaps.yml` |
+| `eco-ci-energy-estimation.yml` | Measures GitHub runner energy usage across checkout / install / test steps ([`green-coding-solutions/eco-ci-energy-estimation`](https://github.com/green-coding-solutions/eco-ci-energy-estimation)) | `.github/workflows/eco-ci-energy-estimation.yml` |
+| `sustainable-npm.yml` | Applies low-overhead npm defaults to reduce install waste in Node CI ([`lowlydba/sustainable-npm`](https://github.com/lowlydba/sustainable-npm)) | `.github/workflows/sustainable-npm.yml` |
+| `a11yguard.yml` | Accessibility regression / audit workflow for preview or production URLs ([`a11ywatch/github-actions`](https://github.com/a11ywatch/github-actions)) | `.github/workflows/a11yguard.yml` |
+| `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
+| `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
 
 > **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
 > `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
 > (Vault path `revvel/shared/llm/openrouter`).
 > See [`docs/OPENROUTER_MARKETPLACE_ACTIONS.md`](../../docs/OPENROUTER_MARKETPLACE_ACTIONS.md)
 > for rollout steps, cost governance, and per-action extra secrets.
-
 > **PostHog integrations.** The PostHog templates (`hog-heaven-release-annotations.yml`, 
 > `posthog-annotations.yml`, `posthog-send-event.yml`, `posthog-upload-sourcemaps.yml`) 
 > require `POSTHOG_API_KEY`, `POSTHOG_PROJECT_ID`, and (for annotations/sourcemaps) 
 > `POSTHOG_PERSONAL_API_KEY` secrets. See `skills/posthog/SKILL.md` and 
 > `templates/standards/posthog-events.md` for setup instructions.
+> **Eco/accessibility bundle.** The templates `eco-ci-energy-estimation.yml`,
+> `sustainable-npm.yml`, `a11yguard.yml`, `eco-infra-action.yml`, and
+> `naukri-resume-action.yml` are documented together in
+> [`docs/ECO_MARKETPLACE_ACTIONS.md`](../../docs/ECO_MARKETPLACE_ACTIONS.md),
+> including latest release pins, repo fit, and rollout caveats.
 
 ---
 
