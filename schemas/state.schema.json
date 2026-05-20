@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "project_class": {
+      "type": "string"
+    },
+    "shape": {
+      "type": "string"
+    },
+    "current_step": {
+      "type": "string"
+    },
+    "requires": {
+      "type": "object",
+      "properties": {
+        "vercel_preview": {
+          "type": "boolean"
+        },
+        "repo": {
+          "type": "boolean"
+        },
+        "social_announcement": {
+          "type": "boolean"
+        },
+        "paid_apis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "object",
+      "properties": {
+        "intake": { "type": "string" },
+        "evaluate": { "type": "string" },
+        "route": { "type": "string" },
+        "bom": { "type": "string" },
+        "build": { "type": "string" },
+        "certify": { "type": "string" },
+        "deploy": { "type": "string" },
+        "market": { "type": "string" },
+        "measure": { "type": "string" }
+      }
+    }
+  },
+  "required": ["slug", "status", "project_class", "shape", "current_step", "requires", "steps"]
+}
