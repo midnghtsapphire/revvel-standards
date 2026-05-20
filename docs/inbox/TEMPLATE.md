@@ -16,13 +16,13 @@ requires:
   paid_apis: []
   # add API names when paid integrations are required
 output_type: app
-# allowed: app, job_task, ...
+# examples: app, job_task
 delivery_mode: vercel_preview
-# allowed: vercel_preview, pr_or_patch, ...
+# examples: vercel_preview, pr_or_patch
 deployment_target: vercel
-# allowed: vercel, existing_repo, ...
+# examples: vercel, existing_repo
 monetization_mode: lead_generation
-# allowed: lead_generation, employment, ...
+# examples: lead_generation, employment
 ---
 
 # Project Description
