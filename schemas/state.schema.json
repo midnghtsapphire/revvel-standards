@@ -1,6 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "slug": {
       "type": "string"
@@ -19,6 +20,7 @@
     },
     "requires": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "vercel_preview": {
           "type": "boolean"
@@ -35,10 +37,12 @@
             "type": "string"
           }
         }
-      }
+      },
+      "required": ["vercel_preview", "repo", "social_announcement"]
     },
     "steps": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "intake": { "type": "string" },
         "evaluate": { "type": "string" },
@@ -49,7 +53,8 @@
         "deploy": { "type": "string" },
         "market": { "type": "string" },
         "measure": { "type": "string" }
-      }
+      },
+      "required": ["intake", "evaluate", "route", "bom", "build", "certify", "deploy", "market", "measure"]
     }
   },
   "required": ["slug", "status", "project_class", "shape", "current_step", "requires", "steps"]
