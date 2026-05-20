@@ -13,6 +13,8 @@ requires:
   repo: false
   vercel_preview: false
   social_announcement: false
+  paid_apis: []
+  # add API names when paid integrations are required
 output_type: app
 # allowed: app, job_task, ...
 delivery_mode: vercel_preview
