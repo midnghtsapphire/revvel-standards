@@ -3,6 +3,9 @@ on:
   pull_request:
     types: [closed]
 
+permissions:
+  contents: read
+
 jobs:
   post_to_social_media:
     if: github.event.pull_request.merged == true
@@ -53,5 +56,9 @@ jobs:
                --arg fb "$FACEBOOK_POST" \
                '{twitter: $tw, linkedin: $li, facebook: $fb}')
 
-             curl -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$ZAPIER_WEBHOOK_URL"
-          fi
+             curl --fail --show-error --silent --max-time 30 \
+               -X POST \
+               -H "Content-Type: application/json" \
+               -d "$PAYLOAD" \
+               "$ZAPIER_WEBHOOK_URL"
+           fi

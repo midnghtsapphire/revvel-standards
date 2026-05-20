@@ -8,6 +8,7 @@ export PR_LABELS="launch,enhancement"
 
 # Setup secure output file
 export TEST_OUTPUT_FILE=$(mktemp)
+unset GITHUB_OUTPUT
 
 # Run the reusable formatter script
 ./scripts/social_post_formatter.sh
@@ -70,5 +71,5 @@ if [ $FAILED -eq 0 ]; then
     echo "All tests passed successfully!"
 else
     echo "Some tests failed!"
-    # Sandbox-safe exit indicator
+    exit 1
 fi
