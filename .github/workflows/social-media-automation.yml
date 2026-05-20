@@ -1,0 +1,57 @@
+name: Social Media Automation
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  post_to_social_media:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract PR Metadata and Format Posts
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        id: format_posts
+        run: |
+          # Source the reusable formatting script
+          # It outputs securely to GITHUB_OUTPUT
+          ./scripts/social_post_formatter.sh
+
+      - name: Dry Run Logging
+        env:
+          TW: ${{ steps.format_posts.outputs.twitter_post }}
+          LI: ${{ steps.format_posts.outputs.linkedin_post }}
+          FB: ${{ steps.format_posts.outputs.facebook_post }}
+        run: |
+          echo "--- DRY RUN OUTPUT ---"
+          echo "Twitter: $TW"
+          echo "LinkedIn: $LI"
+          echo "Facebook: $FB"
+          echo "----------------------"
+
+      - name: Send to Zapier Webhook
+        env:
+          ZAPIER_WEBHOOK_URL: ${{ secrets.ZAPIER_WEBHOOK_URL }}
+          TWITTER_POST: ${{ steps.format_posts.outputs.twitter_post }}
+          LINKEDIN_POST: ${{ steps.format_posts.outputs.linkedin_post }}
+          FACEBOOK_POST: ${{ steps.format_posts.outputs.facebook_post }}
+        run: |
+          # If the webhook URL is missing (e.g. during a dry run), skip posting
+          if [ -z "$ZAPIER_WEBHOOK_URL" ]; then
+             echo "ZAPIER_WEBHOOK_URL is not set. Skipping live webhook dispatch."
+          else
+             PAYLOAD=$(jq -n \
+               --arg tw "$TWITTER_POST" \
+               --arg li "$LINKEDIN_POST" \
+               --arg fb "$FACEBOOK_POST" \
+               '{twitter: $tw, linkedin: $li, facebook: $fb}')
+
+             curl -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$ZAPIER_WEBHOOK_URL"
+          fi
