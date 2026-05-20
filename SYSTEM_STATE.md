@@ -101,7 +101,7 @@
 | Suite | Last Run | Status | Coverage |
 |---|---|---|---|
 | `node tests/workflow-yaml-validation.test.js` | 2026-05-19 | ✅ all 124 workflows parse and expose required top-level keys | — |
-| `npm test` | 2026-05-19 | ✅ passing after `npm ci` | — |
+| `npm test` | 2026-05-20 | ✅ passing after schema contract fix | — |
 | Green Website Reporting standard | 2026-05-19 | ✅ `node tests/green-website-standard.test.js`, `node tests/workflow-yaml-validation.test.js`, `npm run workflows:validate -- --no-report`, and `npm test` pass after `npm ci` | Verifies active workflow, portable template, README marker/card contract, standard docs, and workflow syntax |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
