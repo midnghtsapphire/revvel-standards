@@ -40,6 +40,8 @@
 - **Estimated Effort:** _(auto)_
 - **Risk Assessment:** _(auto)_
 - **Success Metrics:** _(auto)_
+- **Artifact Engine Map:** _(auto)_
+- **Agent Self-Healing Journal:** _(auto)_
 
 ---
 

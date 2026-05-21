@@ -227,6 +227,16 @@ Every WR task follows this standard checklist:
   - [ ] Assess distribution channel (organic search, social, community, API)
   - [ ] Verify all market claims with factual citations — no hallucinated stats
 
+- [ ] **Artifact engine map** *(required for every WR/PR)*
+  - [ ] End with a map for every required output shape: PDF, CLI, API, MCP, skill, website/app UI, and agent automation
+  - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
+  - [ ] Reuse existing repo engines where available (for example PDF routing, UI creation, orchestration/MCP contracts) instead of inventing duplicate systems
+
+- [ ] **Agent self-healing journal** *(required at the end of every WR/PR)*
+  - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
+  - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable
+  - [ ] Preserve required credential, security, and compliance gates unless a reviewed standard explicitly replaces them
+
 ---
 
 ## Research Findings Format
@@ -311,6 +321,29 @@ Every WR task follows this standard checklist:
 1. [ ] [Action item 1]
 2. [ ] [Action item 2]
 3. [ ] [Action item 3]
+
+---
+
+### Artifact Engine Map
+
+| Artifact Shape | Existing engine / standard | Status | Required action |
+| --- | --- | --- | --- |
+| Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
+| PDF | [workflow/script/standard] | [exists/gap] | [action] |
+| CLI | [workflow/script/standard] | [exists/gap] | [action] |
+| API | [workflow/script/standard] | [exists/gap] | [action] |
+| MCP | [workflow/script/standard] | [exists/gap] | [action] |
+| Skill | [workflow/script/standard] | [exists/gap] | [action] |
+| Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
+
+---
+
+### Agent Self-Healing Journal
+
+- **Issue detected:** [what was missing or wrong]
+- **Research / correction:** [what the agent verified and changed]
+- **Revvel-standards change:** [what standard/template/workflow/checklist was updated]
+- **Outcome to preserve:** [durable learning for future WR/PR work]
 
 ---
 

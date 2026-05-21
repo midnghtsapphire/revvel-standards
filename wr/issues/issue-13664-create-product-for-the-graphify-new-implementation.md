@@ -469,6 +469,43 @@ removes any implication that there should be another implementation path.
 
 ---
 
+## Artifact Engine Map
+
+| Artifact Shape | Existing engine / standard | Status | Required action for Graphify |
+| --- | --- | --- | --- |
+| Website / UI | `.github/workflows/ui-creation-engine.yml` + the existing Next.js product app | Exists | Expand the current app into the buyer-facing launch surface instead of creating another product |
+| PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
+| CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
+| API | Product route implementation in `products/graphify-evaluator` | Gap/partial | Add the report-generation/API surface in this product rather than spinning up a second implementation |
+| MCP | `docs/orchestration/project-orchestration-standard.md` + `docs/orchestration/openrouter-execution-contract.md` | Exists | Bind any MCP-facing delivery to the existing orchestration contract |
+| Skill | `skills/` vault and registry patterns | Exists | Package reusable Graphify automation as a skill if it becomes a repeatable repo pattern |
+| Agent automation | existing WR/PR automation + repo workflows | Exists | Keep Graphify delivery attached to revvel-standards automation and add a dedicated engine only if a real gap remains |
+
+This is the missing bridge between the research artifact and the actual ship
+surfaces. The rule is not “invent more implementations”; it is “map every
+required artifact to the engine that will actually produce it, and mark any real
+gap that still needs implementation.”
+
+---
+
+## Agent Self-Healing Journal
+
+- **Issue detected:** Earlier WR content drifted toward a generic research
+  artifact and did not explicitly preserve the full revvel-standards system the
+  user expected around ship surfaces and self-healing outcomes.
+- **Research / correction:** The WR was corrected to keep
+  `products/graphify-evaluator` as the single implementation path, restore the
+  `$10k/month → $10M total by year 3` framing, and add an explicit artifact
+  engine map instead of assuming those engines were implicit.
+- **Revvel-standards change:** `docs/WEEKLY_RESEARCH_PROCESS.md` and
+  `WR_TEMPLATE_BASIC.md` now require every WR/PR to end with an Artifact Engine
+  Map and an Agent Self-Healing Journal.
+- **Outcome to preserve:** Useful rollback/self-healing findings should be
+  turned into standards and templates, but required standards gates should not
+  be silently removed unless a reviewed replacement standard exists.
+
+---
+
 ## References
 
 ### Repository sources
