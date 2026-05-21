@@ -23,6 +23,9 @@ Creator Payout Tracker is a **Next.js 15 web app** that shows real 2025 payout r
 - **Ad Revenue Tab** — YouTube (long-form + Shorts), TikTok Creator Rewards, Instagram Reels, Spotify streams
 - **Subscription Tab** — Kick, Substack, Patreon, OnlyFans, Twitch (Affiliate + Partner Plus), Ko-fi
 - **Earnings Calculator** — enter monthly views, paying subscribers, and subscription price; table updates live
+- **Recommendation Engine** — ranks the best payout moves for the creator's entered metrics
+- **Strategy Brief Export** — downloads a Markdown brief and CSV estimate table for agencies or creator audits
+- **Report API** — `POST /api/report` returns the same ranked estimates, Markdown, and CSV for automations
 - **Quick Scenarios** — one-click presets for micro-creator through pro creator tiers
 - **Platform Deep Dives** — per-platform cards with RPM range, net payout per sub, platform cut %, eligibility requirements, pros/cons
 - **Category Filters** — filter by Video, Live Streaming, Subscriptions, Newsletters, Audio/Music
@@ -35,7 +38,49 @@ Creator Payout Tracker is a **Next.js 15 web app** that shows real 2025 payout r
 ```bash
 cd products/creator-payout-tracker
 npm install
+npm run test
+npm run lint
+npm run build
 npm run dev    # starts on http://localhost:3005
+```
+
+---
+
+## Runtime Configuration
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Creator Pro checkout URL. Falls back to an email contact link when unset. |
+
+Create local config:
+
+```bash
+cp .env.example .env.local
+```
+
+---
+
+## Report API
+
+```bash
+curl -X POST http://localhost:3005/api/report \
+  -H "Content-Type: application/json" \
+  -d '{"monthlyViews":100000,"monthlySubscribers":100,"subscriptionPrice":5}'
+```
+
+Response shape:
+
+```json
+{
+  "metrics": {
+    "monthlyViews": 100000,
+    "monthlySubscribers": 100,
+    "subscriptionPrice": 5
+  },
+  "topPlatforms": [],
+  "markdown": "# Creator Payout Strategy Brief...",
+  "csv": "\"Platform\",\"Category\"..."
+}
 ```
 
 ---
@@ -44,7 +89,7 @@ npm run dev    # starts on http://localhost:3005
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
 | Deploy | Vercel |
@@ -67,8 +112,8 @@ Payout figures are community-sourced estimates derived from:
 
 ## Monetization Path
 
-1. **Free tier** — full rankings + calculator, no paywall
-2. **Creator Pro ($9/mo)** — exportable earnings reports, payout change alerts, all platforms with deep analytics
+1. **Free tier** — full rankings, calculator, Markdown brief, and CSV export
+2. **Creator Pro ($9/mo)** — payout change alerts, niche RPM briefings, all platforms with deep analytics
 3. **Agency ($49/mo)** — API access, white-label reports for creator roster management
 4. **Affiliate revenue** — platform referral links (Kick, Substack, Patreon all have affiliate programs)
 5. **Sponsored rankings** — platform promotion (clearly labeled, editorial firewall)
