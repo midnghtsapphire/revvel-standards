@@ -59,10 +59,10 @@ so you only change that list:
 gh api -X PATCH \
   repos/midnghtsapphire/revvel-standards/branches/main/protection/required_status_checks \
   -f strict=true \
-  -f 'contexts[]=semgrep' \
-  -f 'contexts[]=Analyze (javascript-typescript)' \
-  -f 'contexts[]=Analyze (actions)' \
-  -f 'contexts[]=<exact CI test job name>'
+  -f 'checks[][context]=semgrep' \
+  -f 'checks[][context]=Analyze (javascript-typescript)' \
+  -f 'checks[][context]=Analyze (actions)' \
+  -f 'checks[][context]=<exact CI test job name>'
 ```
 
 Add `Jules PR Review` later, after the key/runtime issue above is fixed.
