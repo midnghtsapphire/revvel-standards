@@ -149,6 +149,30 @@ test('Work Request templates apply canonical WR routing labels', () => {
   }
 });
 
+test('WR templates allow title-only intake for orchestrator-filled routing', () => {
+  const templates = [
+    fs.readFileSync(
+      path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml'),
+      'utf8'
+    ),
+    fs.readFileSync(
+      path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '10-openhands-system-wr.yml'),
+      'utf8'
+    ),
+  ];
+
+  for (const template of templates) {
+    assert(
+      template.includes('Title-only intake is allowed.'),
+      'WR template must document title-only intake'
+    );
+    assert(
+      !template.includes('required: true'),
+      'WR templates must not require body fields when title-only intake is supported'
+    );
+  }
+});
+
 test('WR workflows accept BASIC WR issue type and work-request label', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
