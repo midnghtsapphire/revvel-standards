@@ -1,13 +1,52 @@
-# Revvel Runner Orchestrator
+# Runner Orchestrator
 
-The Runner Orchestrator is the state-machine and heart of the execution OS.
+The **Runner Orchestrator** is the top-level dispatcher in the Revvel Execution OS. It owns `state.json`, routes intake to engines, and enforces the Procurement BOM rule.
 
-## Role & Responsibilities
+## Responsibilities
 
-1. **Reads `state.json`**: Evaluates the current state of a given project.
-2. **Finds the next incomplete step**: Checks the `"steps"` mapping to see what remains pending.
-3. **Runs the correct engine**: Dispatches the specific engine (e.g., `bom-engine`, `build-app-engine`) needed for the current step.
-4. **Writes results back**: Updates the project's `state.json` and artifact outputs.
-5. **Maintains Goal & Stat Authority**: Explicitly preserves revenue goals (e.g., $10M goal) and statistical metrics without deleting or overwriting them with generic placeholders.
+1. **Ingest** new items from `docs/inbox/` matching `TEMPLATE.md` frontmatter.
+2. **Validate** revenue target and goal phase — refuse intake without them.
+3. **Initialize** `state.json` per intake, validated against `schemas/state.schema.json`.
+4. **Dispatch** to the engine declared in `route_to_engine` (or routing engine if absent).
+5. **Persist** engine outputs as steps; chain to `next_engine` until `status = done`.
+6. **Halt on BOM.** If any engine or runner returns `needs_procurement`, set state status to `needs_procurement`, write the BOM, and stop.
 
-It stops safely if it needs explicit human approval, or if runners require missing access/APIs (triggering the procurement BOM flow).
+## State Flow
+
+```
+intake (inbox)
+   │
+   ▼
+orchestrator.init() ──► state.json (status=routed)
+   │
+   ▼
+engine.run() ──► artifacts | next_engine | runner_calls | bom
+   │                                          │
+   │                                          ▼
+   │                                    runner.execute()
+   │                                          │
+   │                                  result | bom
+   ▼
+state.append_step(...) ──► validate against schema
+   │
+   ▼
+if bom → status=needs_procurement, STOP
+else if next_engine → loop
+else → status=done
+```
+
+## Supported Runner Targets
+
+See [`docs/standards/RUNNER_TARGETS.md`](../../docs/standards/RUNNER_TARGETS.md).
+
+## Files
+
+- `state.json` — runtime state per intake (schema-enforced).
+- `engines/CONTRACT.md` — engine + runner interface.
+- `schemas/state.schema.json` — validation.
+
+## Invariants
+
+- The orchestrator NEVER calls a runner directly. Only engines do.
+- The orchestrator NEVER discards a revenue target.
+- The orchestrator NEVER continues past a `needs_procurement` step.

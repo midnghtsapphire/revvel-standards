@@ -10,6 +10,19 @@
  * Environment:
  *   ISSUE_NUMBER - GitHub issue number to research
  *   REPO - Repository in format owner/repo
+ * Researches GitHub issues using Perplexity Sonar API (direct) or via
+ * OpenRouter's Perplexity models (no-API-key fallback when
+ * PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present).
+ *
+ * Usage:
+ *   PERPLEXITY_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *   OPENROUTER_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *
+ * Environment:
+ *   PERPLEXITY_API_KEY  - Perplexity API key (direct lane; preferred)
+ *   OPENROUTER_API_KEY  - OpenRouter API key (no-API fallback via perplexity/sonar-pro)
+ *   ISSUE_NUMBER        - GitHub issue number to research
+ *   REPO                - Repository in format owner/repo
  */
 
 const fs = require('fs');
@@ -19,6 +32,9 @@ const { execFileSync } = require('child_process');
 const CONFIG = {
   model: 'sonar',
   fallbackMode: 'auto',
+  model: 'sonar-pro',
+  openrouterModel: 'perplexity/sonar-pro',
+  fallbackModel: 'sonar-deep-research',
   outputFile: '/tmp/perplexity-research.md',
 };
 
@@ -98,6 +114,17 @@ async function main() {
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
 
+  const apiKey = process.env.PERPLEXITY_API_KEY;
+  const openrouterKey = process.env.OPENROUTER_API_KEY;
+  const issueNumber = process.env.ISSUE_NUMBER;
+  const repo = process.env.REPO;
+
+  if (!apiKey && !openrouterKey) {
+    throw new Error(
+      'No research API key available. Set PERPLEXITY_API_KEY (direct Perplexity lane) ' +
+      'or OPENROUTER_API_KEY (no-key Perplexity lane via OpenRouter perplexity/sonar-pro).'
+    );
+  }
   if (!issueNumber) {
     throw new Error('Missing ISSUE_NUMBER');
   }
@@ -105,7 +132,8 @@ async function main() {
     throw new Error('Missing REPO (format: owner/repo)');
   }
 
-  console.log('🔍 Researching issue #' + issueNumber + ' in ' + repo + '...');
+  const lane = apiKey ? 'direct Perplexity API' : 'OpenRouter perplexity/sonar-pro (no-key lane)';
+  console.log(`🔍 Researching issue #${issueNumber} in ${repo} via ${lane}...`);
 
   // Fetch issue details using gh CLI
   const issue = await fetchGitHubIssue(repo, issueNumber);
@@ -117,6 +145,10 @@ async function main() {
 
   // Call Perplexity through the no-key bridge
   const research = await callPerplexityNoKey(prompt);
+  // Call Perplexity (direct) or OpenRouter (no-key fallback)
+  const research = apiKey
+    ? await callPerplexity(apiKey, prompt)
+    : await callPerplexityViaOpenRouter(openrouterKey, prompt);
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
@@ -196,6 +228,45 @@ async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
   return text;
 }
 
+/**
+ * No-key Perplexity lane: route through OpenRouter using perplexity/sonar-pro.
+ * Used when PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present.
+ */
+async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openrouterKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
+      'X-Title': 'revvel-standards mindmappr research'
+    },
+    body: JSON.stringify({
+      model: CONFIG.openrouterModel,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: CONFIG.maxTokens,
+      temperature: CONFIG.temperature
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenRouter/Perplexity API error (${response.status}): ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
+}
+
 async function fetchGitHubIssue(repo, issueNumber) {
   // Get issue details
   const issueData = JSON.parse(
@@ -254,3 +325,4 @@ if (require.main === module) {
 }
 
 module.exports = { callPerplexityNoKey, buildResearchPrompt, fetchGitHubIssue };
+module.exports = { callPerplexity, callPerplexityViaOpenRouter, buildResearchPrompt, fetchGitHubIssue };

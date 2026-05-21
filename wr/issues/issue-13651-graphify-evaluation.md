@@ -31,6 +31,30 @@
 
 This Work Request tracks the evaluation of `safishamsi/graphify` and similar codebase graphing tools. Graphify is an LLM-powered tool that builds relationship graphs of your codebase (code ASTs and dependencies) locally and integrates with GitHub PRs, IDEs, and other platforms. The recommendation is to use Graphify's API to construct a Web-Based Code Graph Visualizer (Code Graph Evaluator) as a Next.js production application targeting developers and software engineers. This tool will include affiliate marketing modules and newsletters.
 
+### Product Created From This Research
+
+**Product name:** Graphify Evaluator  
+**Implementation path:** `products/graphify-evaluator`  
+**Product type:** Next.js production app (ship-to-market)  
+**Core user outcome:** Evaluate whether to adopt Graphify-based semantic code graphing vs manual/lexical approaches before implementation in CI/CD.
+
+### Deep-Research Engine Recommendation (Explicit)
+
+The deep-research output recommends creating **Graphify Evaluator** as a web app product from the findings above:
+
+- Product recommendation statement: Executive Summary (this document)
+- Research evidence backing recommendation:
+  - Step 2: market demand + developer pain points
+  - Step 3: BOM and selected stack
+  - Step 4: competitor gap analysis
+  - Step 5: monetization path
+
+### Ship-to-Market Recommendation for This Integration
+
+- **Recommended product to ship:** Graphify Evaluator
+- **Revvel-standards addition:** `products/graphify-evaluator`
+- **Implementation status in this PR:** Implemented with product scaffold and ship-to-market docs
+
 ---
 
 ## Step 1: Repository Discovery
@@ -70,9 +94,23 @@ This Work Request tracks the evaluation of `safishamsi/graphify` and similar cod
 
 | Source | Sentiment | Key Complaints | What we solve |
 | --- | --- | --- | --- |
-| Reddit (r/programming) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
-| Hacker News | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
-| GitHub Issues | Frustrated | "Doesn't work with mono-repos", "Conflicting graph.json files" | Graphify provides a union-merge git hook and clustering exclusions |
+| [Reddit thread](https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
+| [Hacker News thread](https://news.ycombinator.com/item?id=39771383) | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
+| [GitHub Issue #462](https://github.com/safishamsi/graphify/issues/462) | Frustrated | "Doesn't work with mono-repos" | Graphify provides a union-merge git hook and clustering exclusions |
+| [GitHub Issue #949](https://github.com/safishamsi/graphify/issues/949) | Frustrated | "Conflicting graph.json files" | Graphify provides a union-merge git hook and clustering exclusions |
+
+### Deep Research Sources (Citations)
+
+- Graphify repository and docs: <https://github.com/safishamsi/graphify>
+- Graphify stars/activity reference (50,340 stars as of 2026-05-21): <https://github.com/safishamsi/graphify>
+- Community signal source (discussion thread): <https://news.ycombinator.com/item?id=39771383>
+- Developer pain-point source (community thread): <https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/>
+- Graphify issue references used in pain-point analysis:
+  - Monorepo/workspace resolution issue: <https://github.com/safishamsi/graphify/issues/462>
+  - Cross-platform graph target instability issue: <https://github.com/safishamsi/graphify/issues/949>
+- Competitor baseline references:
+  - Madge (~10,076 stars): <https://github.com/pahen/madge>
+  - dependency-cruiser (~6,673 stars): <https://github.com/sverweij/dependency-cruiser>
 
 ---
 
@@ -113,4 +151,5 @@ Graphify contrasts with standard manual code documentation approaches (e.g. stat
 ## Step 7: Save This Prompt & Findings
 
 - [x] WR saved to `wr/issues/issue-13651-graphify-evaluation.md`
-- [ ] Product scaffolded
+- [x] Product scaffolded at `products/graphify-evaluator`
+- [x] Product docs completed: `README.md`, `CHANGELOG.md`, `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`

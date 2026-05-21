@@ -8,6 +8,10 @@ This document describes the process, the implementation, and how to tune it.
 
 ## TL;DR
 
+1. Open issues and pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
+2. The workflow then attempts to assign **`@oaudrey`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
+3. **Issues are labeled/routed immediately on open and reopen** via the live `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml). WR issues additionally receive the `mindmappr` label and a best-effort `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
+4. The hourly cron sweep remains enabled as a backstop for anything missed by event-driven processing.
 1. Open pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
 2. The workflow then attempts to assign **`@Copilot`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
 3. **Issues are labeled and assigned immediately on open** — the `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml) is active. WR issues additionally receive the `mindmappr` label and `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
@@ -19,19 +23,19 @@ Implementation: [`.github/workflows/openrouter-assignee.yml`](../.github/workflo
 
 ---
 
-## Why the GitHub assignee is `@Copilot` and not `@openrouter`
+## Why the GitHub assignee is `@oaudrey` and not `@openrouter`
 
-OpenRouter is a service, not a GitHub user — it cannot be set as a GitHub `assignee`. The Revvel Agent Registry (`skills/openrouter-swarms/SKILL.md`) already defines `@Copilot` as the orchestrator that routes through OpenRouter using the `OPENROUTER_API_KEY` secret. So:
+OpenRouter is a service, not a GitHub user — it cannot be set as a GitHub `assignee`. This workflow uses **`@oaudrey`** as the GitHub-visible alias for the oAudrey/OpenRouter orchestrator while the actual routing still happens through the `openrouter` label and the `OPENROUTER_API_KEY` secret. So:
 
 | Signal | Value | Purpose |
 |---|---|---|
-| GitHub `assignee` | `@Copilot` | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
+| GitHub `assignee` | `@oaudrey` | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
 | Label | `openrouter` | Routing hint for any automation that filters by OpenRouter-owned work |
 | Label | `auto-fix`, `copilot` | Shared routing labels consumed by the Ralph loop |
 | Label | `role:orchestrator` | Default role marker for first-line-of-sight routing |
 | Comment | First-line-of-sight notice | Points reviewers / auditors at `OPENROUTER_API_KEY`, the skill, and this doc |
 
-If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned later, swap the `assignees: ['Copilot']` value in the workflow — no other changes required.
+If `@oaudrey` is not a collaborator in a target repo, the assignment attempt fails **non-fatally** and routing still completes via labels/comments. If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned later, swap the `assignees: ['oaudrey']` value in the workflow — no other changes required.
 
 ---
 
@@ -50,7 +54,7 @@ If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned
 
 ## Optional: `ADMIN_GITHUB_TOKEN` (elevated routing permissions)
 
-If the default `GITHUB_TOKEN` does not have enough rights to assign `@Copilot` or apply routing labels, provide an elevated token:
+If the default `GITHUB_TOKEN` does not have enough rights to assign `@oaudrey` or apply routing labels, provide an elevated token:
 
 - Secret name: `ADMIN_GITHUB_TOKEN`
 - Type: GitHub App installation token or PAT with **minimum** scopes (`issues:write`, `pull_requests:write`, `contents:read`).
@@ -76,7 +80,7 @@ For every open issue and PR in the repo it:
 
 1. Skips items already labelled `openrouter` (already routed in a previous sweep).
 2. Skips items with `no-triage`.
-3. Otherwise: applies routing labels first, attempts `@Copilot` assignment (non-fatal), then posts a sweep comment.
+3. Otherwise: applies routing labels first, attempts `@oaudrey` assignment (non-fatal), then posts a sweep comment.
 
 A run summary is written to the workflow summary page (`Routed / Skipped / Total open / Dry run / Secret status`).
 
