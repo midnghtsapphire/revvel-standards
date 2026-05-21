@@ -227,10 +227,20 @@ Every WR task follows this standard checklist:
   - [ ] Assess distribution channel (organic search, social, community, API)
   - [ ] Verify all market claims with factual citations — no hallucinated stats
 
+- [ ] **Product / Output Selections** *(required for every WR/PR)*
+  - [ ] Explicitly select which artifact shapes are in scope: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video/demo/training/YouTube, docs, and agent automation
+  - [ ] For any selected video output, state the intended format and target length
+  - [ ] For any enhanced feature or new requirement that should apply globally, update both the current WR and revvel-standards so future WRs inherit it
+
+- [ ] **Platform defaults & website requirements** *(required when a website/app surface is in scope)*
+  - [ ] Website in Test must name the Vercel URL or explicitly mark the gap
+  - [ ] Backend/integration/runtime defaults must use DigitalOcean unless the WR documents a reviewed exception
+  - [ ] Customer-facing websites must document admin access plus user login requirements, including Apple, Google, and GitHub sign-in when auth is in scope
+
 - [ ] **Artifact Engine Map** *(required for every WR/PR)*
-  - [ ] End with a map for every required output shape: PDF, CLI, API, MCP, skill, website/app UI, and agent automation
+  - [ ] End with a map for every required output shape: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video, docs, and agent automation
   - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
-  - [ ] Reuse existing repo engines where available (for example PDF routing, UI creation, orchestration/MCP contracts) instead of inventing duplicate systems
+  - [ ] Reuse existing repo engines where available (for example delivery matrix, PDF routing, UI creation, video standards, orchestration/MCP contracts) instead of inventing duplicate systems
 
 - [ ] **Agent Self-Healing Journal** *(required at the end of every WR/PR)*
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
@@ -324,16 +334,43 @@ Every WR task follows this standard checklist:
 
 ---
 
+### Product / Output Selections
+
+| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
+| --- | --- | --- | --- | --- |
+| Website / app UI | [yes/no] | [site/app] | [workflow/script/standard] | [notes] |
+| API | [yes/no] | [REST/GraphQL/etc.] | [workflow/script/standard] | [notes] |
+| CLI | [yes/no] | [binary/package] | [workflow/script/standard] | [notes] |
+| MCP | [yes/no] | [server/router/tool manifest] | [workflow/script/standard] | [notes] |
+| Skill | [yes/no] | [skill type] | [workflow/script/standard] | [notes] |
+| PDF | [yes/no] | [report/guide/etc.] | [workflow/script/standard] | [notes] |
+| PowerPoint / deck | [yes/no] | [sales/training/review deck] | [workflow/script/standard] | [notes] |
+| Video | [yes/no] | [demo/training/review/YouTube + target length] | [workflow/script/standard] | [notes] |
+| Docs | [yes/no] | [site/spec/readme] | [workflow/script/standard] | [notes] |
+| Agent automation | [yes/no] | [workflow/agent/service] | [workflow/script/standard] | [notes] |
+
+---
+
+### Platform Defaults & Website Requirements
+
+- **Website in Test:** [Vercel URL or documented gap]
+- **Integration runtime:** [DigitalOcean by default / documented exception]
+- **Admin surface:** [required / not required / gap]
+- **User auth:** [Apple / Google / GitHub / other / not required]
+
 ### Artifact Engine Map
 
 | Artifact Shape | Existing engine / standard | Status | Required action |
 | --- | --- | --- | --- |
 | Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
-| PDF | [workflow/script/standard] | [exists/gap] | [action] |
-| CLI | [workflow/script/standard] | [exists/gap] | [action] |
 | API | [workflow/script/standard] | [exists/gap] | [action] |
+| CLI | [workflow/script/standard] | [exists/gap] | [action] |
 | MCP | [workflow/script/standard] | [exists/gap] | [action] |
 | Skill | [workflow/script/standard] | [exists/gap] | [action] |
+| PDF | [workflow/script/standard] | [exists/gap] | [action] |
+| PowerPoint / deck | [workflow/script/standard] | [exists/gap] | [action] |
+| Video | [workflow/script/standard] | [exists/gap] | [action] |
+| Docs | [workflow/script/standard] | [exists/gap] | [action] |
 | Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
 
 ---

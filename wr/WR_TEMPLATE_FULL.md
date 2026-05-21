@@ -33,6 +33,10 @@
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
 - [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
+- [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
+- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
+- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -116,6 +120,30 @@ on:
 - **Database:** [Type and provider]
 - **Deployment:** [Platform]
 - **CI/CD:** [Tooling]
+
+---
+
+## Step 1A: Product / Output Selections
+
+| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
+|--------------|-----------|-----------------|---------------------------|-------|
+| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
+| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
+| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
+| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
+| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
+| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
+| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
+| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
+| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
+| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+
+### Platform Defaults & Website Requirements
+
+- **Website in Test:** [Vercel URL or documented gap]
+- **Integration runtime:** [DigitalOcean by default / documented exception]
+- **Admin surface:** [required / not required / gap]
+- **User auth:** [Apple / Google / GitHub / other / not required]
 
 ---
 

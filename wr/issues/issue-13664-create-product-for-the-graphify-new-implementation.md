@@ -469,16 +469,51 @@ removes any implication that there should be another implementation path.
 
 ---
 
+## Product / Output Selections
+
+| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
+| --- | --- | --- | --- | --- |
+| Website / app UI | Yes | Next.js web app | `.github/workflows/ui-creation-engine.yml` + product app | This is the primary buyer-facing ship surface |
+| API | Yes | report-generation/product API | product implementation in `products/graphify-evaluator` | Needed if the evaluator accepts repo input or serves generated outputs |
+| CLI | Yes | Graphify execution backend | Graphify upstream CLI | Keep as the local-first execution path behind the product |
+| MCP | Optional / future | tool/server output | orchestration + MCP standards | Only if launch scope exposes Graphify through MCP |
+| Skill | Optional / future | reusable skill automation | `skills/` vault patterns | Use if a repeatable Graphify workflow should be packaged for agents |
+| PDF | Optional / recommended | downloadable audit/report | PDF router + ship-to-market PDF path | Strong fit for paid audit deliverables |
+| PowerPoint / deck | Optional / recommended | sales or review deck | delivery matrix gap to implement when needed | Useful for enterprise review/readout packaging |
+| Video | Optional / recommended | demo or review video, 2–10 minutes | delivery matrix + video standards | Useful for product walkthroughs and YouTube distribution |
+| Docs | Yes | README + GTM/deployment/security docs | revvel-standards documentation bundle | Required for ship-to-market readiness |
+| Agent automation | Yes | WR/PR/workflow automation | existing repo automation | Keep the product wired into current revvel flows |
+
+### Platform Defaults & Website Requirements
+
+- **Website in Test:** should resolve to a Vercel preview URL and be referenced
+  in the product README when the implementation PR ships.
+- **Integration runtime:** backend/integration automation should default to
+  DigitalOcean unless a reviewed exception is documented in the implementation
+  PR.
+- **Admin surface:** any customer-facing website/app variant should include an
+  admin panel/login path.
+- **User auth:** any customer-facing website/app variant should plan for user
+  login with Apple, Google, and GitHub when auth is in scope.
+
+These are now part of the global WR standard for future feature requests, not
+just a one-off note in this Graphify document.
+
+---
+
 ## Artifact Engine Map
 
 | Artifact Shape | Existing engine / standard | Status | Required action for Graphify |
 | --- | --- | --- | --- |
 | Website / UI | `.github/workflows/ui-creation-engine.yml` + the existing Next.js product app | Exists | Expand the current app into the buyer-facing launch surface instead of creating another product |
-| PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
-| CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
 | API | Product route implementation in `products/graphify-evaluator` | Gap/partial | Add the report-generation/API surface in this product rather than spinning up a second implementation |
+| CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
 | MCP | `docs/orchestration/project-orchestration-standard.md` + `docs/orchestration/openrouter-execution-contract.md` | Exists | Bind any MCP-facing delivery to the existing orchestration contract |
 | Skill | `skills/` vault and registry patterns | Exists | Package reusable Graphify automation as a skill if it becomes a repeatable repo pattern |
+| PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
+| PowerPoint / deck | `standards/DELIVERY_MATRIX.md` | Gap | Add a deck-generation engine only if enterprise review decks become part of launch packaging |
+| Video | `standards/DELIVERY_MATRIX.md` + `docs/videos-music/video-publishing-standard.md` | Partial | Reuse the video delivery contract for demos/reviews and add a Graphify-specific flow only if launch scope includes video |
+| Docs | revvel-standards documentation bundle | Exists | Ship the required docs as part of the same implementation PR |
 | Agent automation | existing WR/PR automation + repo workflows | Exists | Keep Graphify delivery attached to revvel-standards automation and add a dedicated engine only if a real gap remains |
 
 This is the missing bridge between the research artifact and the actual ship
@@ -498,11 +533,13 @@ gap that still needs implementation.”
   `$10k/month → $10M total by year 3` framing, and add an explicit artifact
   engine map instead of assuming those engines were implicit.
 - **Revvel-standards change:** `docs/WEEKLY_RESEARCH_PROCESS.md` and
-  `WR_TEMPLATE_BASIC.md` now require every WR/PR to end with an Artifact Engine
-  Map and an Agent Self-Healing Journal.
+  the WR templates now require product/output selections, platform defaults,
+  an Artifact Engine Map, and an Agent Self-Healing Journal for every WR/PR.
 - **Outcome to preserve:** Useful rollback/self-healing findings should be
-  turned into standards and templates, but required standards gates should not
-  be silently removed unless a reviewed replacement standard exists.
+  turned into standards and templates, and any enhanced feature requirement
+  that should apply globally must update both the active WR and revvel-standards
+  so future projects inherit it. Required standards gates should not be
+  silently removed unless a reviewed replacement standard exists.
 
 ---
 
