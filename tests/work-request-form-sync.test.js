@@ -300,6 +300,10 @@ test('PDF pipeline batch dropdown exists with expected options', () => {
     'wr-auto-classify playbook guard missing pdf_batch_allowed set'
   );
   assert(
+    wf.includes('if final.get("Output Type") == "sellable-pdf" and pdf_batch_raw:'),
+    'wr-auto-classify should only evaluate PDF pipeline batch values for sellable-pdf requests'
+  );
+  assert(
     fs.existsSync(path.join(REPO_ROOT, 'workflows', 'PDF_WR_PLAYBOOK.md')),
     'workflows/PDF_WR_PLAYBOOK.md missing'
   );
