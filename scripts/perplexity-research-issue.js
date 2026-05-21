@@ -253,4 +253,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { callPerplexity, buildResearchPrompt, fetchGitHubIssue };
+module.exports = { callPerplexityNoKey, buildResearchPrompt, fetchGitHubIssue };
