@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 "use strict";
 
-const engine = require("./research-engine.js");
+let engine;
+try {
+  engine = require("./research-engine.js");
+} catch (error) {
+  throw new Error(`Unable to load scripts/research-engine.js: ${error.message}`, { cause: error });
+}
 
 function getRequiredCompatEnvVar(name, env = process.env) {
   const value = env[name];
@@ -55,7 +60,11 @@ async function main(env = process.env, runner = engine.runResearchEngine) {
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error(`Research module failed: ${engine.truncateForComment(error.stack || error.message)}`);
+    const truncate =
+      engine && typeof engine.truncateForComment === "function"
+        ? engine.truncateForComment
+        : (value) => String(value || "");
+    console.error(`Research module failed: ${truncate(error.stack || error.message)}`);
     process.exit(1);
   });
 }

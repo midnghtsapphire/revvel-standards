@@ -21,6 +21,17 @@ async function test(name, fn) {
 }
 
 async function run() {
+  await test("fails fast when required compatibility env vars are missing", () => {
+    assert.throws(
+      () => script.getCompatOptions({ OUTPUT_FILE: "docs/research-output.md" }),
+      /Missing required environment variable: QUESTION/,
+    );
+    assert.throws(
+      () => script.getCompatOptions({ QUESTION: "Evaluate graphify alternatives" }),
+      /Missing required environment variable: OUTPUT_FILE/,
+    );
+  });
+
   await test("maps legacy research-module env vars to research-engine options", () => {
     const options = script.getCompatOptions({
       QUESTION: "Evaluate graphify alternatives",
@@ -42,6 +53,16 @@ async function run() {
     });
 
     assert.strictEqual(options.depth, "standard");
+  });
+
+  await test("falls back to RESEARCH_MODE when RESEARCH_DEPTH is not provided", () => {
+    const options = script.getCompatOptions({
+      QUESTION: "Evaluate graphify alternatives",
+      OUTPUT_FILE: "docs/research-output.md",
+      RESEARCH_MODE: "swarm",
+    });
+
+    assert.strictEqual(options.depth, "swarm");
   });
 
   await test("delegates compatibility runs through the research-engine runner", async () => {
@@ -72,7 +93,7 @@ async function run() {
   });
 
   await test("writes a visible blocked packet when the OpenRouter key is missing", async () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-module-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-compat-test-"));
     const outputFile = path.join(tmpDir, "packet.md");
 
     try {
