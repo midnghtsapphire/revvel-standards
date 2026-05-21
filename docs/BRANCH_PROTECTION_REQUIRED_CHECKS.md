@@ -28,6 +28,14 @@ API), not something a workflow file can do.
 Leave the LLM rewrite reviewers (OpenRouter, PandaOps) **non-required** — they
 are advisory and dispatch-only by design to control cost.
 
+> **Known issue — do not require `Jules PR Review` yet.** As of 2026-05-21 the
+> Jules job fails at runtime without posting a `jules/review` verdict on every
+> PR. The workflow guard only checks that `JULES_API_KEY` is *non-empty*, not
+> valid — so an invalid/expired key passes the guard, the action runs, and it
+> fails on the Jules API call. Verify/rotate `JULES_API_KEY` in
+> **Settings → Secrets and variables → Actions**, confirm a green `jules/review`
+> status appears on a PR, and only then add it to the required list.
+
 ## How to set it
 
 GitHub UI: **Settings → Branches → Branch protection rules → `main` (edit) →
