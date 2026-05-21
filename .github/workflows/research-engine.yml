@@ -92,6 +92,7 @@ jobs:
         with:
           node-version: "22"
       - name: Run research engine
+        continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
