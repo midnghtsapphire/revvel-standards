@@ -347,7 +347,7 @@ jobs:
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
         uses: peter-evans/create-pull-request@v8.1.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "TrustForge: E-E-A-T health report run #${{ steps.trustforge.outputs.run_number }}"
           title: "[TrustForge] E-E-A-T Health Report #${{ steps.trustforge.outputs.run_number }}"
           body: |
