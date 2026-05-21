@@ -232,6 +232,13 @@ Every WR task follows this standard checklist:
   - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
   - [ ] Reuse existing repo engines where available (for example PDF routing, UI creation, orchestration/MCP contracts) instead of inventing duplicate systems
 
+- [ ] **Product-type selection matrix** *(required for every WR/PR)*
+  - [ ] Explicitly mark selected delivery engines for: API, CLI, MCP, skill, PDF, PowerPoint, and video generation
+  - [ ] If video is selected, specify target format(s): short review clips, YouTube-length videos, and training-length videos
+  - [ ] If news/media execution is selected, include the news-brand output path in the same matrix
+  - [ ] Include website/app surface requirements with admin login and user login coverage (Apple, Google, GitHub OAuth)
+  - [ ] Deployment split rule: UI/test surface may run on Vercel, but integration infrastructure should default to DigitalOcean standards unless a reviewed exception is documented
+
 - [ ] **Agent self-healing journal** *(required at the end of every WR/PR)*
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
   - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable
@@ -330,11 +337,14 @@ Every WR task follows this standard checklist:
 | --- | --- | --- | --- |
 | Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
 | PDF | [workflow/script/standard] | [exists/gap] | [action] |
+| PowerPoint | [workflow/script/standard] | [exists/gap] | [action] |
+| Video generation (review / YouTube / training) | [workflow/script/standard] | [exists/gap] | [action] |
 | CLI | [workflow/script/standard] | [exists/gap] | [action] |
 | API | [workflow/script/standard] | [exists/gap] | [action] |
 | MCP | [workflow/script/standard] | [exists/gap] | [action] |
 | Skill | [workflow/script/standard] | [exists/gap] | [action] |
 | Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
+| Website auth/admin surface | [workflow/script/standard] | [exists/gap] | [action] |
 
 ---
 

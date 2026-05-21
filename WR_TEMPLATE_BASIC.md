@@ -40,7 +40,10 @@
 - **Estimated Effort:** _(auto)_
 - **Risk Assessment:** _(auto)_
 - **Success Metrics:** _(auto)_
+- **Product-Type & Output Length Selection Matrix (API/CLI/MCP/Skill/PDF/PowerPoint/Video):** _(auto)_
 - **Artifact Engine Map:** _(auto)_
+- **Deployment Split (Vercel UI + DigitalOcean integrations):** _(auto)_
+- **Website Auth/Admin Coverage (Admin + Apple/Google/GitHub login):** _(auto)_
 - **Agent Self-Healing Journal:** _(auto)_
 
 ---

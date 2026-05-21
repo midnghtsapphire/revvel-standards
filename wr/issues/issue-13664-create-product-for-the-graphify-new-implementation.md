@@ -471,15 +471,39 @@ removes any implication that there should be another implementation path.
 
 ## Artifact Engine Map
 
+## Product-Type & Engine Selection Matrix
+
+| Product Type / Output | Selection | Engine / Standard | Notes |
+| --- | --- | --- | --- |
+| API | ✅ Selected | Product route implementation in `products/graphify-evaluator` | Needed for report-generation and integrations |
+| CLI | ✅ Selected | Graphify upstream CLI + product wrapper conventions | Core execution path for graph/report generation |
+| MCP | ✅ Selected | `docs/orchestration/openrouter-execution-contract.md` | Use existing orchestration contract |
+| Skill | ✅ Selected | `skills/` vault patterns | Capture reusable Graphify automation |
+| PDF | ✅ Selected | `.github/workflows/pdf-work-request-router.yml` | Deliver downloadable report artifacts |
+| PowerPoint | ⚠️ Gap | Artifact engine map + WR process templates | Add dedicated PPT generation engine when product requirement is confirmed |
+| Video generation | ⚠️ Gap | Artifact engine map + WR process templates | Define review clips, YouTube-length, and training-length output engine |
+| News-brand output | ⚠️ Gap | Product-type matrix requirement in WR process | Include when media/news distribution is selected |
+
+### Website Surface and Deployment/Auth Standards
+
+- UI test surface may run on Vercel for rapid verification.
+- Integration infrastructure should follow DigitalOcean standards by default unless a reviewed exception is documented.
+- Every website/app surface should include an admin login plus user login options for Apple, Google, and GitHub OAuth.
+
+---
+
 | Artifact Shape | Existing engine / standard | Status | Required action for Graphify |
 | --- | --- | --- | --- |
 | Website / UI | `.github/workflows/ui-creation-engine.yml` + the existing Next.js product app | Exists | Expand the current app into the buyer-facing launch surface instead of creating another product |
 | PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
+| PowerPoint | Product-type matrix requirement in WR process | Gap | Add a dedicated PPT artifact engine before launch if stakeholder output requires decks |
+| Video generation (review / YouTube / training) | Product-type matrix requirement in WR process | Gap | Add a dedicated video artifact engine with explicit output-length selection |
 | CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
 | API | Product route implementation in `products/graphify-evaluator` | Gap/partial | Add the report-generation/API surface in this product rather than spinning up a second implementation |
 | MCP | `docs/orchestration/project-orchestration-standard.md` + `docs/orchestration/openrouter-execution-contract.md` | Exists | Bind any MCP-facing delivery to the existing orchestration contract |
 | Skill | `skills/` vault and registry patterns | Exists | Package reusable Graphify automation as a skill if it becomes a repeatable repo pattern |
 | Agent automation | existing WR/PR automation + repo workflows | Exists | Keep Graphify delivery attached to revvel-standards automation and add a dedicated engine only if a real gap remains |
+| Website auth/admin surface | WR process + template requirements | Gap | Require admin and Apple/Google/GitHub login coverage in implementation checklist |
 
 This is the missing bridge between the research artifact and the actual ship
 surfaces. The rule is not “invent more implementations”; it is “map every
