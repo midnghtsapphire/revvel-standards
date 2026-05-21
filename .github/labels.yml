@@ -408,6 +408,22 @@ labels:
     color: "0e8a16"
     description: "WR task completed with findings documented"
 
+  - name: "wr:retrigger-attempts-1"
+    color: "fef2c0"
+    description: "WR PR auto-healer retry attempt 1"
+
+  - name: "wr:retrigger-attempts-2"
+    color: "f9d71c"
+    description: "WR PR auto-healer retry attempt 2"
+
+  - name: "wr:retrigger-attempts-3"
+    color: "d93f0b"
+    description: "WR PR auto-healer retry attempt 3"
+
+  - name: wr-stuck
+    color: "b60205"
+    description: "WR auto-healer escalation tracking"
+
   # -- Research Engine Orchestrator --------------------------------------------
   - name: research-engine
     color: "6f42c1"

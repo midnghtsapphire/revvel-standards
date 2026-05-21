@@ -309,7 +309,7 @@ jobs:
         if: steps.result.outputs.success == 'true'
         uses: peter-evans/create-pull-request@v8.1.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
           title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"

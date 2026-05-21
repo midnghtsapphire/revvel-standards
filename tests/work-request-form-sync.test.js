@@ -221,6 +221,43 @@ test('WR PR creation mirrors deep research labels onto the generated PR', () => 
   );
 });
 
+test('WR PR creation uses an existing template and clears recovered stuck labels', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+  const labelsYaml = fs.readFileSync(path.join(REPO_ROOT, '.github', 'labels.yml'), 'utf8');
+
+  assert(
+    fs.statSync(path.join(REPO_ROOT, 'wr', 'WR_TEMPLATE_FULL.md')).isFile(),
+    'Canonical full WR template must exist'
+  );
+  assert(
+    wrPrCreation.includes('wr/WR_TEMPLATE_FULL.md') &&
+      wrPrCreation.includes('wr/WR_TEMPLATE_BASIC.md'),
+    'WR PR creation must use existing WR template paths'
+  );
+  assert(
+    wrPrCreation.includes('ISSUE_BODY: ${{ needs.detect-completion.outputs.issue_body }}'),
+    'WR PR creation must pass the issue body into document generation'
+  );
+  assert(
+    wrPrCreation.includes("name.startsWith('wr:retrigger-attempts-')") &&
+      wrPrCreation.includes("name === 'lifecycle:stuck'") &&
+      wrPrCreation.includes("name === 'wr-stuck'"),
+    'WR PR creation must clear auto-healer stuck labels after a PR is created'
+  );
+
+  for (const label of [
+    'wr:retrigger-attempts-1',
+    'wr:retrigger-attempts-2',
+    'wr:retrigger-attempts-3',
+    'wr-stuck',
+  ]) {
+    assertLabelDefinition(labelsYaml, label);
+  }
+});
+
 test('Work Request Output Type options match wr-auto-classify DROPDOWN_FIELDS', () => {
   const tmplPath = path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml');
   const tmpl = fs.readFileSync(tmplPath, 'utf8');
