@@ -39,7 +39,7 @@ jobs:
       - name: Check Perplexity agent
         id: perplexity
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/" \
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/v1/models" \
             -H "Authorization: Bearer $PERPLEXITY_API_KEY" 2>&1 || echo "000")
           
           if [[ "$response" == "200" ]]; then
