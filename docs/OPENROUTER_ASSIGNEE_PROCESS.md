@@ -12,6 +12,10 @@ This document describes the process, the implementation, and how to tune it.
 2. The workflow then attempts to assign **`@oaudrey`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
 3. **Issues are labeled/routed immediately on open and reopen** via the live `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml). WR issues additionally receive the `mindmappr` label and a best-effort `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
 4. The hourly cron sweep remains enabled as a backstop for anything missed by event-driven processing.
+1. Open pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
+2. The workflow then attempts to assign **`@Copilot`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
+3. **Issues are labeled and assigned immediately on open** — the `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml) is active. WR issues additionally receive the `mindmappr` label and `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
+4. If that `issues:` trigger is re-enabled later, newly opened issues will follow the same label-first routing path immediately on the event.
 5. A **cron sweep runs every hour, 24/7**, to pick up issues opened before the secret was configured and anything else missed by event-driven processing.
 6. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
 
