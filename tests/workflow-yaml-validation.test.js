@@ -358,5 +358,27 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
 });
 
+test('morty-post-mortems.yml stays automated with required write scopes', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'morty-post-mortems.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const permissions = doc.permissions || {};
+
+  if (!Object.prototype.hasOwnProperty.call(on, 'push') ||
+      !Object.prototype.hasOwnProperty.call(on, 'pull_request') ||
+      !Object.prototype.hasOwnProperty.call(on, 'workflow_dispatch')) {
+    throw new Error('morty-post-mortems.yml must support push, pull_request, and workflow_dispatch triggers');
+  }
+  if (permissions.contents !== 'read') {
+    throw new Error('morty-post-mortems.yml must keep contents: read least-privilege access');
+  }
+  if (permissions.issues !== 'write') {
+    throw new Error('morty-post-mortems.yml must grant issues: write for Morty issue operations');
+  }
+  if (permissions['pull-requests'] !== 'write') {
+    throw new Error('morty-post-mortems.yml must grant pull-requests: write for PR comment/update operations');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
