@@ -122,36 +122,43 @@ None
 ### Summary
 
 Create a GitHub assignment workflow that routes GOAP/OpenRouter/Jules WR work to
-`@midnghtsapphire`, keeps WR output aligned with revvel-standards, and routes
-non-GOAP follow-up tasks to `@radiochaser`.
+`@midnghtsapphire` with `@radiochaser` as an additional GOAP support assignee,
+keeps WR output aligned with revvel-standards, and routes non-GOAP follow-up
+tasks to `@radiochaser`.
 
 ### Objective
 
 Ensure any WR process item related to GOAP, OpenRouter, or Jules is assigned to
-`@midnghtsapphire` and that non-GOAP tasks in this PR scope are assigned to
-`@radiochaser`.
+`@midnghtsapphire` with `@radiochaser` added for GOAP support coverage, and that
+non-GOAP tasks in this PR scope are assigned to `@radiochaser`.
 
 
 ### Required Bundle
 
 - Assignment routing for keywords: `goap`, `openrouter`, `jules` →
-  `@midnghtsapphire`.
+  `@midnghtsapphire` + `@radiochaser` (support lane).
 - WR items created by `@midnghtsapphire` must follow revvel-standards with no
   process deviations.
 - GOAP lane includes skills + CEO-factory agents from the root-level
-  `agent-factory/` directory and
-  runner-capable execution paths for no-API Perplexity and OpenRouter API
-  tasks.
+  `agent-factory/` directory, where Agent Factory acts as the GOAP
+  admin-assistance orchestrator.
+- GOAP lane must be able to invoke required skills with swarm-style execution,
+  including no-API Perplexity and OpenRouter API runner-capable tasks.
+- Load skills from revvel-standards and the revvel skills hub when GOAP tasks
+  require them.
+- If work references `devina` or `code-claw` repositories, create/route linked
+  tasks in those repositories under the Devina lane.
 - Non-GOAP tasks in this PR scope route to `@radiochaser`.
 
 
 ### Definition of Done
 
 - GOAP/OpenRouter/Jules assignment checks pass and apply
-  `assignee=midnghtsapphire`.
+  `assignee=midnghtsapphire` plus GOAP support assignment to `@radiochaser`.
 - Workflow/logic clearly separates GOAP-routed tasks vs. non-GOAP tasks for
   `radiochaser`.
-- Documentation maps runner behavior for requested GOAP and skills execution.
+- Documentation maps runner behavior for requested GOAP skills execution,
+  including no-API Perplexity, OpenRouter API, and Agent Factory orchestration.
 
 
 ### Do Not Under-Scope
@@ -177,14 +184,16 @@ _No response_
 ### Validation Expectations
 
 Validate the routing matrix with examples for:
-1. GOAP/OpenRouter/Jules content → `@midnghtsapphire`
+1. GOAP/OpenRouter/Jules content → `@midnghtsapphire` + GOAP support `@radiochaser`
 2. Other non-GOAP tasks defined in this issue → `@radiochaser`
+3. Devina/code-claw referenced work → linked Devina-lane tasks in those repos
 
 
 ### Blocker Rule
 
 If any GOAP/OpenRouter/Jules item is not routed to `@midnghtsapphire`, or if
-non-GOAP tasks are not mapped to `@radiochaser`, treat the WR as incomplete.
+required GOAP support assignment to `@radiochaser` is missing, or if non-GOAP
+tasks are not mapped to `@radiochaser`, treat the WR as incomplete.
 
 
 ### Acknowledgements
