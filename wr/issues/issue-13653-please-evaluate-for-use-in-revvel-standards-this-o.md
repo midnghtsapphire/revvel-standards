@@ -1,9 +1,9 @@
 # WR: [WR] evaluate PaddleOCR for use in revvel-standards
 
-**Issue:** #13653  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-05-21  
-**Status:** ✅ Complete
+**Issue:** #13653
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
+**Created:** 2026-05-21
+**Status:** ✅ Implemented
 
 ---
 
@@ -11,7 +11,8 @@
 
 Evaluate and implement PaddleOCR (<https://github.com/PaddlePaddle/PaddleOCR>) for `revvel-standards`.
 
-We need robust Optical Character Recognition (OCR) capabilities for parsing PDFs, images, and other visual media into structured data (Markdown/JSON) suitable for LLM integration.
+We need robust Optical Character Recognition (OCR) capabilities for parsing PDFs, images,
+and other visual media into structured data (Markdown/JSON) suitable for LLM integration.
 
 ---
 
@@ -31,7 +32,10 @@ We need robust Optical Character Recognition (OCR) capabilities for parsing PDFs
 
 ## Executive Summary & Market Research
 
-PaddleOCR is a global leading OCR toolkit and Document AI engine. It is exceptionally well-suited for `revvel-standards` because it offers SOTA document Vision-Language Models (like PaddleOCR-VL-1.5) that can parse messy visuals into structured data (Markdown and JSON) which is critical for the LLM era.
+PaddleOCR is a global leading OCR toolkit and Document AI engine. It is exceptionally
+well-suited for `revvel-standards` because it offers SOTA document Vision-Language Models
+(like PaddleOCR-VL-1.5) that can parse messy visuals into structured data (Markdown and
+JSON) which is critical for the LLM era.
 
 ### Current Market Trends
 
@@ -54,43 +58,82 @@ PaddleOCR is a global leading OCR toolkit and Document AI engine. It is exceptio
 
 ---
 
-## Implementation Steps & Ship to Market
+## Implementation — Shipped ✅
 
-### 1. Requirements & Dependencies
+### Files Delivered
 
-- Add PaddleOCR dependencies to a new Python skill/agent module in `revvel-standards`:
+| File | Purpose |
+| ---- | ------- |
+| `products/revvel-skill-runner/app/api/ocr/route.ts` | Cloud OCR endpoint (OpenRouter vision model → Markdown) |
+| `products/revvel-skill-runner/app/page.tsx` | OCR Document Parser skill card with image URL input |
+| `scripts/ocr-service.py` | Local PaddleOCR CLI — PP-Structure for Markdown/JSON extraction |
 
-  ```bash
-  pip install paddlepaddle paddleocr
-  ```
+### Cloud Path (Immediate — no Python install needed)
 
-- **Note**: Ensure the environment supports the required C++ dependencies (libgl1-mesa-glx).
+The `revvel-skill-runner` now includes an **OCR Document Parser** skill card. Paste a
+public image URL, click **Run**, and receive Markdown output via an OpenRouter vision
+model (`claude-3.7-sonnet`).
 
-### 2. Create the OCR Service Module
+**API endpoint:**
 
-- Develop a Python script/service (`ocr_service.py` or similar) that exposes PaddleOCR functionality:
-  - Initialize the model `PaddleOCR(use_angle_cls=True, lang='en')`.
-  - Create functions to accept image paths/bytes and return extracted text.
-  - Implement `PP-Structure` integration for converting PDFs/Images directly to Markdown.
+```text
+POST /api/ocr
+Content-Type: application/json
 
-### 3. Integration with Revvel Runners
+{ "imageUrl": "https://example.com/invoice.png" }
+```
 
-- Create a specific Runner (`revvel-skill-runner`) action that allows agents to pass a document/image URL or base64 string and get back Markdown.
+Response:
 
-### 4. Tests & Validation
+```json
+{ "output": "## Invoice\n\n| Item | Price |\n|------|-------|\n...", "model": "..." }
+```
 
-- Ensure tests verify multi-language extraction and table-to-markdown accuracy.
-- Verify lightweight footprint during CI runs (use CPU inference mode by default `use_gpu=False`).
+### Local / Edge Path (PaddleOCR)
+
+```bash
+pip install paddlepaddle paddleocr
+
+python scripts/ocr-service.py --input ./scan.png
+
+python scripts/ocr-service.py --input ./report.pdf --structure
+
+python scripts/ocr-service.py --input https://example.com/doc.jpg --output ./doc.md
+
+python scripts/ocr-service.py --input ./invoice.png --format json
+```
+
+Environment variables:
+
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `OCR_LANG` | `en` | Target language code (e.g. `ch`, `fr`, `ja`) |
+| `OCR_GPU` | `0` | Set to `1` to enable GPU inference |
+| `OCR_ANGLE_CLS` | `1` | Set to `0` to skip angle classification |
+
+### RAG Pipeline Integration
+
+```python
+import subprocess
+
+result = subprocess.run(
+    ["python", "scripts/ocr-service.py", "--input", image_path, "--structure"],
+    capture_output=True, text=True
+)
+markdown_content = result.stdout
+# → index into Chroma / Pinecone / LlamaIndex
+```
 
 ---
 
 ## Status Summary
 
 **Research Status:** ✅ Complete
+**Implementation Status:** ✅ Shipped
 **Implementation Priority:** P1
 **Ship-to-Market Ready:** Yes
 **Approval Required:** @midnghtsapphire
 
 ---
 
-**Last Updated:** 2026-05-21  
+**Last Updated:** 2026-05-21
