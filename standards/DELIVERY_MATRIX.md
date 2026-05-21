@@ -33,6 +33,7 @@ Each of those requires a separate delivery workflow wired to the same WR trigger
 | **App (mobile)** | `deliver:mobile` | Build iOS/Android, upload to TestFlight / Play internal | Fastlane, Expo EAS, Bitrise | Semi-auto | Build failure → comment, human submits to store |
 | **CLI tool** | `deliver:cli` | Build binary, publish to npm/PyPI/Homebrew, or attach to GitHub Release | `pkg`, `pyinstaller`, `ncc`, `oclif`, npm publish | Auto | Publish fails → comment with error |
 | **npm / PyPI package** | `deliver:package` | Bump version, tag release, publish to registry | `semantic-release`, `release-please`, `twine`, `npm publish` | Auto | Registry auth fails → comment, human publishes |
+| **PowerPoint / Deck** | `deliver:deck` | Generate PPTX/slide deck, export PDF if needed, attach artifact or publish deck link | `pptxgenjs`, Google Slides API, Marp/Reveal export | Auto | Deck render/export fails → comment with artifact gap |
 | **Video / Demo** | `deliver:video` | Record screen or render from script, upload to YouTube/S3 | `ffmpeg`, `playwright` screen recording, `remotion`, `manim` | Semi-auto | Render fails → comment, human records |
 | **MCP server** | `deliver:mcp` | Package server, register with MCP registry or deploy as endpoint, update manifest | Docker, Fly.io, MCP SDK, `mcp.json` manifest | Auto | Registration fails → comment with manifest diff |
 | **Chrome extension** | `deliver:extension` | Zip, validate manifest, upload to Chrome Web Store draft | `web-ext`, CWS Upload API | Semi-auto | Validation fails → comment with lint output |
@@ -160,10 +161,15 @@ Add this section to the existing WR template to capture delivery intent at the t
 - [ ] `deliver:mcp` — package and deploy MCP server
 - [ ] `deliver:video` — record or render demo video
 - [ ] `deliver:package` — publish to npm / PyPI / Homebrew
+- [ ] `deliver:deck` — generate PowerPoint / review / training deck artifact
 - [ ] `deliver:extension` — build and upload Chrome / VS Code extension
 - [ ] `deliver:action` — publish GitHub Action to Marketplace
 - [ ] `deliver:marketplace` — draft store listing (human review required)
 - [ ] `deliver:migration` — run and validate database migration
+
+**If `deliver:video` is selected:**
+- format: demo / training / review / YouTube / news-brand
+- target length: <60s / 1–5 min / 5–15 min / 15+ min
 
 **Definition of done for this WR:**
 <!-- One sentence: what does "shipped" look like? -->
