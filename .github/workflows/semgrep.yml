@@ -56,6 +56,10 @@ jobs:
         # ERROR-severity findings new to the branch fail the job. Runs on PRs
         # only (push/schedule have no base to diff against).
         if: github.event_name == 'pull_request'
+        env:
+          # Map the PR base SHA to an env var instead of inlining the
+          # ${{ }} expression in the shell (repo command-injection rule).
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           semgrep scan \
             --config=p/secrets \
@@ -63,7 +67,7 @@ jobs:
             --severity=ERROR \
             --error \
             --metrics=off \
-            --baseline-commit "${{ github.event.pull_request.base.sha }}"
+            --baseline-commit "$BASE_SHA"
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
