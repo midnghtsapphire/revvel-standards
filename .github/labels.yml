@@ -206,6 +206,10 @@ labels:
     color: "7057ff"
     description: "Assigned to GitHub Copilot for fixing"
 
+  - name: mindmappr
+    color: "0075ca"
+    description: "Expert code assistant (mindmappr) assigned as WR agent"
+
   - name: ralph-loop
     color: "ff6b35"
     description: "Managed by the Ralph Loop self-healing workflow"
@@ -275,6 +279,10 @@ labels:
   - name: codex
     color: "5319e7"
     description: "Routed to Codex (via OpenRouter) for code execution"
+
+  - name: rex
+    color: "1f6feb"
+    description: "Routed to Rex — the oAudrey Agent Factory / no-key Perplexity lane"
 
   - name: jules
     color: "4285f4"

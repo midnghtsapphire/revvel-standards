@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0
 **Generated:** 2026-05-21T01:48:31.115Z
-**Status:** blocked
+**Status:** product-shipped / AI-lane credentials blocked
 **Engine:** `scripts/research-engine.js`
 **Depth:** triangulated
 **Issue:** #13641
@@ -175,11 +175,15 @@ It covers: verified 2025 payout rates for 12 platforms, SEO keyword analysis, BO
 
 ## Product Delivered
 
-The creator-payout-tracker product was built at `products/creator-payout-tracker/` (Next.js 15, port 3005):
+The creator-payout-tracker product was built at `products/creator-payout-tracker/` (Next.js 16, port 3005):
 - Platform rankings table (ad revenue + subscription tabs, 12 platforms)
 - Live earnings calculator
 - Platform deep-dive cards
 - Category filters + SEO metadata
+- Recommendation engine for creator-specific payout moves
+- Markdown strategy brief export and CSV estimate export
+- `/api/report` endpoint for automation and agency workflows
+- Creator Pro checkout CTA via `NEXT_PUBLIC_POLAR_CHECKOUT_URL`
 
 ## Infrastructure Classification
 

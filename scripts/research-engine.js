@@ -649,12 +649,16 @@ async function updateStartState(context) {
     ...LANE_DEFINITIONS.map((lane) => lane.roleLabel),
   ];
   if (context.issueNumber) {
-    await addLabels({
-      githubToken: context.githubToken,
-      repository: context.repository,
-      number: context.issueNumber,
-      labels,
-    });
+    try {
+      await addLabels({
+        githubToken: context.githubToken,
+        repository: context.repository,
+        number: context.issueNumber,
+        labels,
+      });
+    } catch (error) {
+      console.log(`::warning::Could not apply start-state labels to #${context.issueNumber}: ${error.message}`);
+    }
   }
 }
 
@@ -668,12 +672,16 @@ async function updateCompleteState(context, laneReports, status) {
       ? ["research:complete", "research:review-needed", "bito-ai", "awaiting-review"]
       : ["research:blocked", "openrouter:needs-key", "needs-human"];
 
-  await addLabels({
-    githubToken: context.githubToken,
-    repository: context.repository,
-    number: targetNumber,
-    labels: labelsToAdd,
-  });
+  try {
+    await addLabels({
+      githubToken: context.githubToken,
+      repository: context.repository,
+      number: targetNumber,
+      labels: labelsToAdd,
+    });
+  } catch (error) {
+    console.log(`::warning::Could not apply complete-state labels to #${targetNumber}: ${error.message}`);
+  }
   await removeLabels({
     githubToken: context.githubToken,
     repository: context.repository,
@@ -681,12 +689,16 @@ async function updateCompleteState(context, laneReports, status) {
     labels: ["research:orchestrating"],
   });
 
-  await postComment({
-    githubToken: context.githubToken,
-    repository: context.repository,
-    number: targetNumber,
-    body: buildReviewRequestComment({ outputFile: context.outputFile, laneReports }),
-  });
+  try {
+    await postComment({
+      githubToken: context.githubToken,
+      repository: context.repository,
+      number: targetNumber,
+      body: buildReviewRequestComment({ outputFile: context.outputFile, laneReports }),
+    });
+  } catch (error) {
+    console.log(`::warning::Could not post research review comment on #${targetNumber}: ${error.message}`);
+  }
 }
 
 async function requestPrReviews(context) {

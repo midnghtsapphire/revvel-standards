@@ -1,182 +1,126 @@
 const assert = require("assert");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
-const https = require("https");
-
-const testOutputPath = path.join(__dirname, "research-test-output.md");
-process.env.OPENROUTER_API_KEY = "test-key";
-process.env.QUESTION = "What is the meaning of life?";
-process.env.OUTPUT_FILE = testOutputPath;
 
 const script = require("../../scripts/research-module.js");
 
-async function runTests() {
-  console.log("Running research-module tests...");
-  let failed = false;
+let passed = 0;
+let failed = 0;
 
-  const originalRequest = https.request;
-  const originalLog = console.log;
-  const originalWarn = console.warn;
-  const originalError = console.error;
-
-  // Helper to mock https.request
-  function mockHttpsRequest(onReq) {
-    https.request = function (options, callback) {
-      const req = {
-        _events: {},
-        on: function(event, cb) {
-          this._events[event] = cb;
-        },
-        emit: function(event, ...args) {
-          if (this._events[event]) {
-            this._events[event](...args);
-          }
-        },
-        end: () => {},
-        write: () => {},
-      };
-      if (onReq) onReq(req, callback, options);
-      return req;
-    };
-  }
-
+async function test(name, fn) {
   try {
-    // 1. Success test
-    console.log("  Testing successful response...");
-    mockHttpsRequest((req, callback) => {
-      process.nextTick(() => {
-        const res = {
-          statusCode: 200,
-          on: (event, cb) => {
-            if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Success response" } }] })));
-            if (event === "end") cb();
-          },
-        };
-        callback(res);
-      });
-    });
-    const result = await script.callOpenRouter("model", "sys", "user");
-    assert.strictEqual(result, "Success response");
-    console.log("  ✅ Success test passed.");
-
-    // 2. OpenRouter error test
-    console.log("  Testing OpenRouter API error...");
-    mockHttpsRequest((req, callback) => {
-      process.nextTick(() => {
-        const res = {
-          statusCode: 200,
-          on: (event, cb) => {
-            if (event === "data") cb(Buffer.from(JSON.stringify({ error: { message: "API Error" } })));
-            if (event === "end") cb();
-          },
-        };
-        callback(res);
-      });
-    });
-    await assert.rejects(
-      script.callOpenRouter("model", "sys", "user"),
-      /OpenRouter error: API Error/
-    );
-    console.log("  ✅ API error test passed.");
-
-    // 3. Invalid JSON response test (THE FIX WE ADDED)
-    console.log("  Testing invalid JSON response...");
-    const invalidJson = "Not a JSON";
-    mockHttpsRequest((req, callback) => {
-      process.nextTick(() => {
-        const res = {
-          statusCode: 200,
-          on: (event, cb) => {
-            if (event === "data") cb(Buffer.from(invalidJson));
-            if (event === "end") cb();
-          },
-        };
-        callback(res);
-      });
-    });
-    await assert.rejects(
-      script.callOpenRouter("model", "sys", "user"),
-      (err) => {
-        assert(err.message.includes("Failed to parse OpenRouter response"));
-        assert(err.message.includes("Raw: " + invalidJson));
-        return true;
-      }
-    );
-    console.log("  ✅ Invalid JSON test passed.");
-
-    // 4. Network error test
-    console.log("  Testing network error...");
-    mockHttpsRequest((req, callback) => {
-      process.nextTick(() => {
-        req.emit('error', new Error("Simulated network failure"));
-      });
-    });
-    await assert.rejects(
-      script.callOpenRouter("model", "sys", "user"),
-      /Simulated network failure/
-    );
-    console.log("  ✅ Network error test passed.");
-
-    // 5. Full main() flow test
-    console.log("  Testing full main() flow...");
-    let requestCount = 0;
-    mockHttpsRequest((req, callback) => {
-      requestCount++;
-      const currentCount = requestCount;
-      process.nextTick(() => {
-        if (currentCount === 1) {
-          // First agent fails
-          req.emit('error', new Error("First agent failure"));
-        } else {
-          // Others succeed
-          const res = {
-            statusCode: 200,
-            on: (event, cb) => {
-              if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Agent/Synthesis content" } }] })));
-              if (event === "end") cb();
-            },
-          };
-          callback(res);
-        }
-      });
-    });
-
-    let warnings = [];
-    console.log = () => {};
-    console.warn = (msg) => { warnings.push(msg); };
-    console.error = () => {};
-
-    await script.main();
-
-    // Restore output
-    console.log = originalLog;
-    console.warn = originalWarn;
-    console.error = originalError;
-
-    assert(warnings.some(w => w.includes("Failed: First agent failure")), "Should log warning about agent failure. Warnings: " + JSON.stringify(warnings));
-    assert(fs.existsSync(testOutputPath), "Output file should be created");
-    const output = fs.readFileSync(testOutputPath, "utf8");
-    assert(output.includes("Agent/Synthesis content"), "Output should contain content");
-    console.log("  ✅ Full main() flow test passed.");
-
-  } catch (err) {
-    console.log = originalLog;
-    console.warn = originalWarn;
-    console.error = originalError;
-    console.error("  ❌ Test failed:", err);
-    failed = true;
-  } finally {
-    https.request = originalRequest;
-    if (fs.existsSync(testOutputPath)) fs.unlinkSync(testOutputPath);
-  }
-
-  if (failed) {
-    process.exit(1);
-  } else {
-    console.log("\nAll research-module tests passed! ✨");
+    await fn();
+    console.log(`PASS: ${name}`);
+    passed += 1;
+  } catch (error) {
+    console.log(`FAIL: ${name}`);
+    console.log(error.stack || error.message);
+    failed += 1;
   }
 }
 
-if (require.main === module) {
-  runTests().catch(err => { console.error(err); process.exit(1); });
+async function run() {
+  await test("fails fast when required compatibility env vars are missing", () => {
+    assert.throws(
+      () => script.getCompatOptions({ OUTPUT_FILE: "docs/research-output.md" }),
+      /Missing required environment variable: QUESTION/,
+    );
+    assert.throws(
+      () => script.getCompatOptions({ QUESTION: "Evaluate graphify alternatives" }),
+      /Missing required environment variable: OUTPUT_FILE/,
+    );
+  });
+
+  await test("maps legacy research-module env vars to research-engine options", () => {
+    const options = script.getCompatOptions({
+      QUESTION: "Evaluate graphify alternatives",
+      OUTPUT_FILE: "docs/research-output.md",
+      GITHUB_REPOSITORY: "midnghtsapphire/revvel-standards",
+    });
+
+    assert.strictEqual(options.query, "Evaluate graphify alternatives");
+    assert.strictEqual(options.outputFile, "docs/research-output.md");
+    assert.strictEqual(options.repository, "midnghtsapphire/revvel-standards");
+    assert.strictEqual(options.depth, "triangulated");
+  });
+
+  await test("honors explicit research depth when delegating to the research engine", () => {
+    const options = script.getCompatOptions({
+      QUESTION: "Evaluate graphify alternatives",
+      OUTPUT_FILE: "docs/research-output.md",
+      RESEARCH_DEPTH: "standard",
+    });
+
+    assert.strictEqual(options.depth, "standard");
+  });
+
+  await test("falls back to RESEARCH_MODE when RESEARCH_DEPTH is not provided", () => {
+    const options = script.getCompatOptions({
+      QUESTION: "Evaluate graphify alternatives",
+      OUTPUT_FILE: "docs/research-output.md",
+      RESEARCH_MODE: "swarm",
+    });
+
+    assert.strictEqual(options.depth, "swarm");
+  });
+
+  await test("delegates compatibility runs through the research-engine runner", async () => {
+    let receivedOptions = null;
+    const expectedResult = {
+      context: {
+        query: "Evaluate graphify alternatives",
+        depth: "triangulated",
+      },
+      status: "complete",
+      outputPath: "/tmp/research-output.md",
+    };
+
+    const result = await script.runCompatibilityResearch(
+      {
+        QUESTION: "Evaluate graphify alternatives",
+        OUTPUT_FILE: "docs/research-output.md",
+      },
+      async (options) => {
+        receivedOptions = options;
+        return expectedResult;
+      },
+    );
+
+    assert.strictEqual(receivedOptions.query, "Evaluate graphify alternatives");
+    assert.strictEqual(receivedOptions.depth, "triangulated");
+    assert.strictEqual(receivedOptions.outputFile, "docs/research-output.md");
+    assert.strictEqual(result, expectedResult);
+  });
+
+  await test("writes a visible blocked packet when the OpenRouter key is missing", async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-compat-test-"));
+    const outputFile = path.join(tmpDir, "packet.md");
+
+    try {
+      const result = await script.main({
+        QUESTION: "Evaluate graphify alternatives",
+        OUTPUT_FILE: outputFile,
+        GITHUB_REPOSITORY: "midnghtsapphire/revvel-standards",
+        DRY_RUN: "true",
+      });
+
+      assert.strictEqual(result.status, "blocked");
+      assert.ok(fs.existsSync(outputFile));
+      const output = fs.readFileSync(outputFile, "utf8");
+      assert.ok(output.includes("Research Engine Packet"));
+      assert.ok(output.includes("OPENROUTER_API_KEY"));
+      assert.ok(output.includes("infrastructure blocker"));
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
+  process.exit(failed === 0 ? 0 : 1);
 }
+
+run().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

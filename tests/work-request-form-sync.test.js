@@ -73,6 +73,20 @@ function dropdownOptionsFromTemplate(content, id) {
   return opts;
 }
 
+function requiredFlagFromTemplate(content, id) {
+  const marker = `id: ${id}`;
+  const start = content.indexOf(marker);
+  if (start < 0) {
+    throw new Error(`field id "${id}" not found in template`);
+  }
+  const slice = content.slice(start);
+  const match = slice.match(/\n\s{4}validations:\n\s{6}required:\s*(true|false)\b/);
+  if (!match) {
+    throw new Error(`required validation flag not found for "${id}"`);
+  }
+  return match[1] === 'true';
+}
+
 function labelsFromTemplate(content) {
   const start = content.indexOf('\nlabels:\n');
   if (start < 0) {
@@ -310,9 +324,41 @@ test('PDF pipeline batch dropdown exists with expected options', () => {
     'wr-auto-classify playbook guard missing pdf_batch_allowed set'
   );
   assert(
+    /if\s+final\.get\("Output Type"\)\s*==\s*"sellable-pdf"\s*:\s*\n\s*pdf_batch_raw\s*=\s*parse_form_section\(/.test(wf),
+    'wr-auto-classify should only parse PDF pipeline batch for sellable-pdf requests'
+  );
+  assert(
+    /if\s+final\.get\("Output Type"\)\s*==\s*"sellable-pdf"\s+and\s+pdf_batch_raw\s*:/.test(wf),
+    'wr-auto-classify should only evaluate PDF pipeline batch values for sellable-pdf requests'
+  );
+  assert(
     fs.existsSync(path.join(REPO_ROOT, 'workflows', 'PDF_WR_PLAYBOOK.md')),
     'workflows/PDF_WR_PLAYBOOK.md missing'
   );
+});
+
+test('Work Request heavy template keeps only Output Type required', () => {
+  const tmplPath = path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml');
+  const tmpl = fs.readFileSync(tmplPath, 'utf8');
+
+  assert(requiredFlagFromTemplate(tmpl, 'output_type'), 'output_type should remain required');
+
+  for (const id of [
+    'pdf_pipeline_batch',
+    'research_mode',
+    'delivery_mode',
+    'lifecycle_mode',
+    'commercial_mode',
+    'summary',
+    'objective',
+    'required_bundle',
+    'definition_of_done',
+    'do_not_under_scope',
+    'delivery_shape',
+    'blocker_rule',
+  ]) {
+    assert(!requiredFlagFromTemplate(tmpl, id), `${id} should be optional`);
+  }
 });
 
 test('PDF_WR_PLAYBOOK links AUTOMATED_PRODUCT_PIPELINE and PDF shape', () => {

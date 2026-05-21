@@ -4,6 +4,18 @@ import { useState } from "react";
 
 const SKILLS = [
   {
+    id: "ocr-document-parser",
+    name: "OCR Document Parser",
+    category: "Document AI",
+    description:
+      "Extract structured Markdown from images, PDFs, and scanned docs. Powered by vision LLM (cloud) or PaddleOCR (local). Feeds directly into RAG pipelines.",
+    trigger: "ocr document parser",
+    icon: "📄",
+    inputLabel: "Image URL",
+    inputPlaceholder: "https://example.com/invoice.png",
+    inputType: "url" as const,
+  },
+  {
     id: "product-pipeline",
     name: "Product Pipeline",
     category: "Product Operations",
@@ -35,7 +47,7 @@ const SKILLS = [
     name: "Skill Forge",
     category: "Developer Tools",
     description:
-      "Scaffold, validate, and publish new Revvel skills. Automates SKILL.md, tests, and registry entry.",
+      "Create, validate, and publish new Revvel skills. Automates SKILL.md, tests, and registry entry.",
     trigger: "skill forge",
     icon: "⚒️",
   },
@@ -65,6 +77,7 @@ export default function HomePage() {
   const [query, setQuery] = useState("");
   const [runStatus, setRunStatus] = useState<Record<string, RunStatus>>({});
   const [outputs, setOutputs] = useState<Record<string, string>>({});
+  const [skillInputs, setSkillInputs] = useState<Record<string, string>>({});
 
   const filtered = SKILLS.filter(
     (s) =>
@@ -73,11 +86,31 @@ export default function HomePage() {
       s.description.toLowerCase().includes(query.toLowerCase())
   );
 
-  async function runSkill(skillId: string, trigger: string) {
+  async function runSkill(skillId: string, trigger: string, customInput?: string) {
     setRunStatus((prev) => ({ ...prev, [skillId]: "running" }));
     setOutputs((prev) => ({ ...prev, [skillId]: "" }));
 
     try {
+      // OCR skill routes to the dedicated /api/ocr endpoint
+      if (skillId === "ocr-document-parser") {
+        const imageUrl = customInput?.trim();
+        if (!imageUrl) {
+          setOutputs((prev) => ({ ...prev, [skillId]: "⚠️ Paste an image URL above and click Run." }));
+          setRunStatus((prev) => ({ ...prev, [skillId]: "error" }));
+          return;
+        }
+        const res = await fetch("/api/ocr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "OCR failed");
+        setOutputs((prev) => ({ ...prev, [skillId]: data.output }));
+        setRunStatus((prev) => ({ ...prev, [skillId]: "done" }));
+        return;
+      }
+
       const res = await fetch("/api/run-skill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -143,7 +176,13 @@ export default function HomePage() {
                 skill={skill}
                 status={runStatus[skill.id] ?? "idle"}
                 output={outputs[skill.id] ?? ""}
-                onRun={() => runSkill(skill.id, skill.trigger)}
+                inputValue={skillInputs[skill.id] ?? ""}
+                onInputChange={(val) =>
+                  setSkillInputs((prev) => ({ ...prev, [skill.id]: val }))
+                }
+                onRun={() =>
+                  runSkill(skill.id, skill.trigger, skillInputs[skill.id])
+                }
               />
             ))}
           </div>
@@ -165,11 +204,15 @@ function SkillCard({
   skill,
   status,
   output,
+  inputValue,
+  onInputChange,
   onRun,
 }: {
   skill: (typeof SKILLS)[number];
   status: RunStatus;
   output: string;
+  inputValue: string;
+  onInputChange: (val: string) => void;
   onRun: () => void;
 }) {
   const statusConfig: Record<
@@ -197,6 +240,21 @@ function SkillCard({
         <p className="text-gray-400 text-sm mt-1">{skill.description}</p>
       </div>
 
+      {"inputLabel" in skill && skill.inputLabel && (
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-gray-500 uppercase tracking-wide">
+            {skill.inputLabel}
+          </label>
+          <input
+            type={skill.inputType ?? "text"}
+            placeholder={skill.inputPlaceholder ?? ""}
+            value={inputValue}
+            onChange={(e) => onInputChange(e.target.value)}
+            className="bg-black/30 border border-purple-900/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition"
+          />
+        </div>
+      )}
+
       <button
         onClick={onRun}
         disabled={status === "running"}
@@ -207,7 +265,7 @@ function SkillCard({
 
       {output && (
         <div
-          className={`rounded-lg p-3 text-xs font-mono whitespace-pre-wrap break-words max-h-40 overflow-auto ${
+          className={`rounded-lg p-3 text-xs font-mono whitespace-pre-wrap break-words max-h-60 overflow-auto ${
             status === "error"
               ? "bg-red-900/30 text-red-300"
               : "bg-black/40 text-green-300"

@@ -1,0 +1,136 @@
+name: GOAP Assignment Router
+
+on:
+  issues:
+    types: [opened, reopened, edited]
+  pull_request_target:
+    types: [opened, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: goap-assignment-router-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  route-goap-assignment:
+    name: Route GOAP/OpenRouter/Jules assignments
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Route issue or PR
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue?.number || context.payload.pull_request?.number;
+            if (!issueNumber) {
+              core.notice('No issue or PR number found; skipping routing.');
+              return;
+            }
+
+            const isPR = !!context.payload.pull_request;
+
+            let item;
+            try {
+              if (isPR) {
+                const { data } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: issueNumber,
+                });
+                item = data;
+              } else {
+                const { data } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                item = data;
+              }
+            } catch (err) {
+              core.error(`Failed to fetch item data: ${err.message}`);
+              return;
+            }
+
+            const title = (item.title || '').toLowerCase();
+            const body = (item.body || '').toLowerCase();
+            const fullText = `${title}\n${body}`;
+
+            const goapKeywords = ['goap', 'openrouter', 'jules'];
+            const isGoap = goapKeywords.some(kw => fullText.includes(kw));
+
+            const devinaKeywords = ['devina', 'code-claw'];
+            const isDevina = devinaKeywords.some(kw => fullText.includes(kw));
+
+            // Devina / code-claw linking rule
+            if (isDevina) {
+              const devinaComment = "🤖 **Devina / Code-Claw Detected**\n\nThis item references `devina` or `code-claw`.\nIdeally, tasks related to these should be created and routed in their respective repositories under the Devina lane.";
+              try {
+                // Check if the comment was already posted
+                const comments = await github.paginate(github.rest.issues.listComments, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                const alreadyPosted = comments.some(c => c.body.includes("Devina / Code-Claw Detected"));
+
+                if (!alreadyPosted) {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                    body: devinaComment,
+                  });
+                  core.info('Posted Devina / code-claw cross-repository guidance comment.');
+                } else {
+                  core.info('Devina comment already exists. Skipping.');
+                }
+              } catch (err) {
+                core.notice(`Failed to process Devina comment: ${err.message}`);
+              }
+            }
+
+            // Determine assignees
+            let assigneesToSet = [];
+
+            if (isGoap) {
+               assigneesToSet = ['midnghtsapphire', 'radiochaser'];
+               core.info(`Detected GOAP/OpenRouter/Jules keywords. Assigning @midnghtsapphire + @radiochaser.`);
+            } else {
+               // Non-GOAP tasks route to radiochaser
+               assigneesToSet = ['radiochaser'];
+               core.info(`No GOAP/OpenRouter/Jules keywords detected. Routing non-GOAP tasks to @radiochaser.`);
+            }
+
+            // Check current assignees to avoid unnecessary API calls
+            const currentAssignees = new Set(
+              (item.assignees || [])
+                .map(a => (a && a.login ? String(a.login).toLowerCase() : null))
+                .filter(Boolean)
+            );
+            const missingAssignees = assigneesToSet.filter(
+              a => !currentAssignees.has(String(a).toLowerCase())
+            );
+
+            if (missingAssignees.length > 0) {
+              try {
+                await github.rest.issues.addAssignees({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  assignees: missingAssignees,
+                });
+                core.info(`Successfully added assignees: ${missingAssignees.join(', ')}`);
+              } catch (error) {
+                core.error(`Failed to add assignees: ${error.message}`);
+              }
+            } else {
+              core.info(`All required assignees (${assigneesToSet.join(', ')}) are already assigned.`);
+            }

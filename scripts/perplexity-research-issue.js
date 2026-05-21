@@ -2,7 +2,7 @@
 
 /**
  * Perplexity Research Script
- * Researches GitHub issues using the no-key helallao/perplexity-ai fork
+ * Researches GitHub issues using the no-key helallao/perplexity-ai bridge.
  * 
  * Usage:
  *   ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
@@ -10,27 +10,121 @@
  * Environment:
  *   ISSUE_NUMBER - GitHub issue number to research
  *   REPO - Repository in format owner/repo
- *   PERPLEXITY_PYTHON - Optional Python executable override (default: python3)
- *   PERPLEXITY_MODEL - Optional no-key Labs model (default: sonar)
+ * Researches GitHub issues using Perplexity Sonar API (direct) or via
+ * OpenRouter's Perplexity models (no-API-key fallback when
+ * PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present).
+ *
+ * Usage:
+ *   PERPLEXITY_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *   OPENROUTER_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *
+ * Environment:
+ *   PERPLEXITY_API_KEY  - Perplexity API key (direct lane; preferred)
+ *   OPENROUTER_API_KEY  - OpenRouter API key (no-API fallback via perplexity/sonar-pro)
+ *   ISSUE_NUMBER        - GitHub issue number to research
+ *   REPO                - Repository in format owner/repo
  */
 
 const fs = require('fs');
-const { execFileSync, spawn } = require('child_process');
+const { execFileSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
-  provider: 'helallao/perplexity-ai',
-  providerUrl: 'https://github.com/helallao/perplexity-ai',
-  model: process.env.PERPLEXITY_MODEL || 'sonar',
+  model: 'sonar',
+  fallbackMode: 'auto',
+  model: 'sonar-pro',
+  openrouterModel: 'perplexity/sonar-pro',
+  fallbackModel: 'sonar-deep-research',
   outputFile: '/tmp/perplexity-research.md',
-  timeoutMs: Number(process.env.PERPLEXITY_TIMEOUT_MS || 120000),
-  pythonExecutable: process.env.PERPLEXITY_PYTHON || process.env.PYTHON || 'python3',
 };
+
+const NO_KEY_INSTALL_HINT =
+  'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+
+const NO_KEY_BRIDGE = `
+import sys
+
+prompt = sys.argv[1]
+labs_model = sys.argv[2]
+fallback_mode = sys.argv[3]
+install_hint = sys.argv[4]
+
+try:
+    from perplexity import LabsClient, Client
+except Exception as exc:
+    raise SystemExit(
+        f"Missing no-key Perplexity dependency ({exc}). Install with: {install_hint}"
+    )
+
+def normalize(value):
+    if isinstance(value, str):
+        return value.strip()
+
+    if isinstance(value, dict):
+        for key in ("output", "answer", "text", "content"):
+            candidate = value.get(key)
+            if isinstance(candidate, str) and candidate.strip():
+                return candidate.strip()
+
+        chunks = value.get("chunks")
+        if isinstance(chunks, list):
+            parts = []
+            for chunk in chunks:
+                if not isinstance(chunk, dict):
+                    continue
+                for key in ("text", "answer", "content"):
+                    candidate = chunk.get(key)
+                    if isinstance(candidate, str) and candidate.strip():
+                        parts.append(candidate.strip())
+                        break
+            if parts:
+                return "\\n".join(parts).strip()
+
+    return ""
+
+labs_error = ""
+response_text = ""
+
+try:
+    response_text = normalize(LabsClient().ask(prompt, model=labs_model))
+except Exception as exc:
+    labs_error = str(exc)
+
+if not response_text:
+    try:
+        response_text = normalize(Client().search(prompt, mode=fallback_mode))
+    except Exception as exc:
+        if labs_error:
+            raise SystemExit(
+                f"LabsClient failed: {labs_error}; Client.search failed: {exc}"
+            )
+        raise SystemExit(f"Client.search failed: {exc}")
+
+if not response_text:
+    if labs_error:
+        raise SystemExit(
+            f"No response returned from no-key Perplexity bridge. LabsClient detail: {labs_error}"
+        )
+    raise SystemExit("No response returned from no-key Perplexity bridge.")
+
+print(response_text)
+`;
 
 async function main() {
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
 
+  const apiKey = process.env.PERPLEXITY_API_KEY;
+  const openrouterKey = process.env.OPENROUTER_API_KEY;
+  const issueNumber = process.env.ISSUE_NUMBER;
+  const repo = process.env.REPO;
+
+  if (!apiKey && !openrouterKey) {
+    throw new Error(
+      'No research API key available. Set PERPLEXITY_API_KEY (direct Perplexity lane) ' +
+      'or OPENROUTER_API_KEY (no-key Perplexity lane via OpenRouter perplexity/sonar-pro).'
+    );
+  }
   if (!issueNumber) {
     throw new Error('Missing ISSUE_NUMBER');
   }
@@ -38,7 +132,8 @@ async function main() {
     throw new Error('Missing REPO (format: owner/repo)');
   }
 
-  console.log('🔍 Researching issue #' + issueNumber + ' in ' + repo + '...');
+  const lane = apiKey ? 'direct Perplexity API' : 'OpenRouter perplexity/sonar-pro (no-key lane)';
+  console.log(`🔍 Researching issue #${issueNumber} in ${repo} via ${lane}...`);
 
   // Fetch issue details using gh CLI
   const issue = await fetchGitHubIssue(repo, issueNumber);
@@ -46,10 +141,14 @@ async function main() {
   // Build research prompt
   const prompt = buildResearchPrompt(issue);
 
-  console.log('🤔 Asking Perplexity through no-key provider ' + CONFIG.provider + '...');
+  console.log('🤔 Asking Perplexity (no-key bridge)...');
 
-  // Call the no-key Perplexity fork. The workflow installs it from GitHub.
-  const research = await callPerplexity(prompt);
+  // Call Perplexity through the no-key bridge
+  const research = await callPerplexityNoKey(prompt);
+  // Call Perplexity (direct) or OpenRouter (no-key fallback)
+  const research = apiKey
+    ? await callPerplexity(apiKey, prompt)
+    : await callPerplexityViaOpenRouter(openrouterKey, prompt);
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
@@ -60,72 +159,6 @@ async function main() {
 
   console.log('✅ Research complete for issue #' + issueNumber);
 }
-
-const PYTHON_RESEARCH_BRIDGE = String.raw`
-import json
-import sys
-import traceback
-
-payload = json.loads(sys.stdin.read())
-prompt = payload["prompt"]
-model = payload.get("model") or "sonar"
-errors = []
-
-def answer_from(value):
-    if value is None:
-        return ""
-    if isinstance(value, str):
-        return value
-    if isinstance(value, dict):
-        for key in ("answer", "output", "text", "content"):
-            candidate = value.get(key)
-            if isinstance(candidate, str) and candidate.strip():
-                return candidate
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
-
-try:
-    from perplexity.labs import LabsClient
-
-    labs = LabsClient()
-    labs_response = labs.ask(prompt, model=model)
-    answer = answer_from(labs_response)
-    if answer.strip():
-        print(json.dumps({
-            "provider": "helallao/perplexity-ai",
-            "mode": "labs",
-            "model": model,
-            "answer": answer,
-        }))
-        sys.exit(0)
-    errors.append("LabsClient returned an empty response")
-except Exception as exc:
-    errors.append("LabsClient failed: " + str(exc))
-
-try:
-    from perplexity import Client
-
-    web_response = Client().search(prompt, mode="auto")
-    answer = answer_from(web_response)
-    if answer.strip():
-        print(json.dumps({
-            "provider": "helallao/perplexity-ai",
-            "mode": "web-auto",
-            "model": "auto",
-            "answer": answer,
-        }))
-        sys.exit(0)
-    errors.append("Client.search returned an empty response")
-except Exception as exc:
-    errors.append("Client.search failed: " + str(exc))
-
-print(json.dumps({
-    "error": "No-key Perplexity research failed",
-    "details": errors,
-    "traceback": traceback.format_exc(),
-}), file=sys.stderr)
-sys.exit(1)
-`;
 
 function buildResearchPrompt(issue) {
   return `
@@ -178,117 +211,70 @@ Return your response in this format:
 `;
 }
 
-async function callPerplexity(promptOrApiKey, maybePrompt, options = {}) {
-  const prompt = maybePrompt || promptOrApiKey;
-  const runner = options.runner || runNoKeyPerplexity;
-  const result = await runner(prompt, options);
-  return normalizeResearchResult(result);
-}
-
-function normalizeResearchResult(result) {
-  if (typeof result === 'string') {
-    return result;
-  }
-  if (result && typeof result.answer === 'string' && result.answer.trim()) {
-    const provider = result.provider || CONFIG.provider;
-    const mode = result.mode || 'unknown';
-    const model = result.model || CONFIG.model;
-    return `${result.answer.trim()}
-
----
-_Research provider: ${provider} (${mode}, ${model}); no official Perplexity API key used._`;
-  }
-  return JSON.stringify(result, null, 2);
-}
-
-function runNoKeyPerplexity(prompt, options = {}) {
-  const pythonExecutable = options.pythonExecutable || CONFIG.pythonExecutable;
-  const timeoutMs = options.timeoutMs || CONFIG.timeoutMs;
-  const model = options.model || CONFIG.model;
-
-  return new Promise((resolve, reject) => {
-    const child = spawn(pythonExecutable, ['-c', PYTHON_RESEARCH_BRIDGE], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      env: process.env,
-    });
-
-    let stdout = '';
-    let stderr = '';
-    let settled = false;
-    const timer = setTimeout(() => {
-      settled = true;
-      child.kill('SIGTERM');
-      reject(new Error(`No-key Perplexity research timed out after ${timeoutMs}ms`));
-    }, timeoutMs);
-
-    child.stdout.on('data', (chunk) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on('data', (chunk) => {
-      stderr += chunk.toString();
-    });
-    child.on('error', (error) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      reject(error);
-    });
-    child.on('close', (code) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      if (code !== 0) {
-        reject(new Error(buildNoKeyFailureMessage(code, stderr, stdout)));
-        return;
-      }
-
-      try {
-        const parsed = parseLastJsonLine(stdout);
-        resolve(parsed);
-      } catch (error) {
-        reject(new Error(`No-key Perplexity returned unparseable output: ${error.message}\n${stdout}`));
-      }
-    });
-
-    child.stdin.write(JSON.stringify({ prompt, model }));
-    child.stdin.end();
-  });
-}
-
-function parseLastJsonLine(stdout) {
-  const lines = stdout.trim().split('\n').filter(Boolean);
-  for (const line of lines.reverse()) {
-    try {
-      return JSON.parse(line);
-    } catch (error) {
-      // Ignore log lines emitted by dependencies.
+async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
+  const output = execFileSyncImpl(
+    'python3',
+    ['-c', NO_KEY_BRIDGE, prompt, CONFIG.model, CONFIG.fallbackMode, NO_KEY_INSTALL_HINT],
+    {
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
     }
+  );
+
+  const text = output.trim();
+  if (!text) {
+    throw new Error('No response returned from no-key Perplexity bridge.');
   }
-  throw new Error('no JSON payload found');
+  return text;
 }
 
-function buildNoKeyFailureMessage(code, stderr, stdout) {
-  const installHint = [
-    `No-key Perplexity provider exited with code ${code}.`,
-    `Install with: python -m pip install "perplexity-api @ git+${CONFIG.providerUrl}.git@main"`,
-    'This integration intentionally avoids Emailnator/account generation and does not require PERPLEXITY_API_KEY.',
-  ].join(' ');
-  const details = [stderr.trim(), stdout.trim()].filter(Boolean).join('\n');
-  return details ? `${installHint}\n${details}` : installHint;
+/**
+ * No-key Perplexity lane: route through OpenRouter using perplexity/sonar-pro.
+ * Used when PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present.
+ */
+async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openrouterKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
+      'X-Title': 'revvel-standards mindmappr research'
+    },
+    body: JSON.stringify({
+      model: CONFIG.openrouterModel,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: CONFIG.maxTokens,
+      temperature: CONFIG.temperature
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenRouter/Perplexity API error (${response.status}): ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
 }
 
 async function fetchGitHubIssue(repo, issueNumber) {
   // Get issue details
   const issueData = JSON.parse(
-    execFileSync('gh', [
-      'issue',
-      'view',
-      String(issueNumber),
-      '--repo',
-      repo,
-      '--json',
-      'title,body,labels,comments',
-    ], { encoding: 'utf8' })
+    execFileSync(
+      'gh',
+      ['issue', 'view', String(issueNumber), '--repo', repo, '--json', 'title,body,labels,comments'],
+      { encoding: 'utf8' }
+    )
   );
 
   // Get recent commits that might be related
@@ -323,15 +309,11 @@ _Next: Label with \`wr:jules\` or \`wr:code\` to proceed_
   const tmpFile = '/tmp/perplexity-comment.md';
   fs.writeFileSync(tmpFile, body);
 
-  execFileSync('gh', [
-    'issue',
-    'comment',
-    String(issueNumber),
-    '--repo',
-    repo,
-    '--body-file',
-    tmpFile,
-  ], { encoding: 'utf8' });
+  execFileSync(
+    'gh',
+    ['issue', 'comment', String(issueNumber), '--repo', repo, '--body-file', tmpFile],
+    { encoding: 'utf8' }
+  );
 }
 
 // Run if executed directly
@@ -342,13 +324,5 @@ if (require.main === module) {
   });
 }
 
-module.exports = {
-  CONFIG,
-  callPerplexity,
-  buildNoKeyFailureMessage,
-  buildResearchPrompt,
-  fetchGitHubIssue,
-  normalizeResearchResult,
-  parseLastJsonLine,
-  runNoKeyPerplexity,
-};
+module.exports = { callPerplexityNoKey, buildResearchPrompt, fetchGitHubIssue };
+module.exports = { callPerplexity, callPerplexityViaOpenRouter, buildResearchPrompt, fetchGitHubIssue };

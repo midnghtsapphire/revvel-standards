@@ -84,19 +84,28 @@ test('openrouter-assignee.yml uses openrouter label as routing idempotency key',
   }
 });
 
-test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment', () => {
+test('openrouter-assignee.yml listens for issue-open routing and applies labels before non-fatal oAudrey assignment', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-assignee.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
+    throw new Error('openrouter-assignee.yml must listen for opened/reopened issues');
+  }
 
   const routeNewSteps = doc.jobs['route-new'].steps;
   const labelsIndex = routeNewSteps.findIndex((step) => step.name === 'Apply routing labels');
-  const assignIndex = routeNewSteps.findIndex((step) => step.name === 'Assign to Copilot orchestrator');
+  const assignIndex = routeNewSteps.findIndex((step) => step.name === 'Assign to oAudrey orchestrator');
   if (labelsIndex < 0 || assignIndex < 0 || labelsIndex > assignIndex) {
     throw new Error('route-new step order must be labels before assignment');
   }
 
   const routeNewAssign = routeNewSteps[assignIndex];
   const routeNewAssignScript = routeNewAssign.with?.script || '';
+  if (!routeNewAssignScript.includes("assignees: ['oaudrey']")) {
+    throw new Error('route-new assignment must target @oaudrey');
+  }
   if (!routeNewAssignScript.includes('try {') || !routeNewAssignScript.includes('non-fatal')) {
     throw new Error('route-new assignment is not wrapped as non-fatal');
   }
@@ -124,7 +133,10 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   if (labelsPos < 0 || assignPos < 0 || labelsPos > assignPos) {
     throw new Error('cron routing must apply labels before assignment');
   }
-  if (!routeDiscoveredScript.includes('Could not assign @Copilot (non-fatal)')) {
+  if (!routeDiscoveredScript.includes("assignees: ['oaudrey']")) {
+    throw new Error('cron routing assignment must target @oaudrey');
+  }
+  if (!routeDiscoveredScript.includes('Could not assign @oaudrey (non-fatal)')) {
     throw new Error('cron assignment should log non-fatal notice');
   }
   if (routeDiscoveredScript.includes('process.env.TO_ROUTE_JSON')) {
@@ -135,6 +147,29 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   }
   if (!routeDiscoveredScript.includes('github.paginate(github.rest.issues.listForRepo,')) {
     throw new Error('cron routing should recompute candidates from GitHub API pagination');
+  }
+});
+
+test('proof-of-life.yml supports Rex as a label-only assignee lane', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'proof-of-life.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  if (!content.includes('- Rex')) {
+    throw new Error('proof-of-life assignee options must include Rex');
+  }
+  if (!content.includes("labels.push('rex')")) {
+    throw new Error('proof-of-life must label Rex runs with rex');
+  }
+  if (!content.includes('Routed through **Rex**')) {
+    throw new Error('proof-of-life comment must describe the Rex lane');
+test('openrouter-triage.yml listens for issue-open triage', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'openrouter-triage.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
+    throw new Error('openrouter-triage.yml must listen for opened/reopened issues');
   }
 });
 
@@ -258,6 +293,41 @@ test('wr-pr-creation.yml uses existing WR templates and preserves issue body', (
   }
 });
 
+test('wr-pr-creation.yml suppresses operational issue_comment retry loops', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const detectJob = doc.jobs['detect-completion'];
+  const notifyJob = doc.jobs['notify-skip'];
+  const checkStep = detectJob.steps.find((step) => step.name === 'Check if PR should be created');
+
+  if (!detectJob.outputs?.should_notify_skip || !detectJob.outputs?.skip_reason) {
+    throw new Error('detect-completion must expose skip notification outputs');
+  }
+  if (!checkStep) {
+    throw new Error('Check if PR should be created step not found');
+  }
+
+  const script = checkStep.with?.script || '';
+  const requiredSnippets = [
+    'operationalCommentMarkers',
+    'WR PR Creation Failed',
+    'WR PR Creation: Skipped',
+    'WR PR Created!',
+    'operational_bot_comment',
+    "context.eventName !== 'issue_comment'",
+  ];
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`WR PR detection must suppress retry loops; missing ${snippet}`);
+    }
+  }
+
+  const notifyIf = String(notifyJob.if || '');
+  if (!notifyIf.includes("needs.detect-completion.outputs.should_notify_skip == 'true'")) {
+    throw new Error('notify-skip job must honor should_notify_skip');
+  }
+});
+
 test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and OpenRouter', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
@@ -294,8 +364,27 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc['true'] || {};
+  const issueCommentTypes = on.issue_comment?.types || [];
   const steps = doc.jobs?.research?.steps || [];
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+  const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
+
+  if (!Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
+    throw new Error('research-engine.yml must support issue_comment triggers');
+  }
+  if (!issueCommentTypes.includes('created') || !issueCommentTypes.includes('edited')) {
+    throw new Error('research-engine.yml issue_comment trigger must include created and edited');
+  }
+  if (!routeScript.includes('isPullRequestComment')) {
+    throw new Error('Research engine route must detect pull request comments');
+  }
+  if (!routeScript.includes('commentTriggered')) {
+    throw new Error('Research engine route must evaluate issue comment trigger phrases');
+  }
+  if (!routeScript.includes('!isPullRequestComment')) {
+    throw new Error('Research engine route must ignore pull request comments');
+  }
 
   if (!dispatchStep) {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
@@ -320,6 +409,28 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
   if (!script.includes("event: 'workflow_dispatch'")) {
     throw new Error('Dispatch step startup check must filter workflow_dispatch runs');
+  }
+});
+
+test('morty-post-mortems.yml stays automated with required write scopes', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'morty-post-mortems.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const permissions = doc.permissions || {};
+
+  if (!Object.prototype.hasOwnProperty.call(on, 'push') ||
+      !Object.prototype.hasOwnProperty.call(on, 'pull_request') ||
+      !Object.prototype.hasOwnProperty.call(on, 'workflow_dispatch')) {
+    throw new Error('morty-post-mortems.yml must support push, pull_request, and workflow_dispatch triggers');
+  }
+  if (permissions.contents !== 'read') {
+    throw new Error('morty-post-mortems.yml must keep contents: read least-privilege access');
+  }
+  if (permissions.issues !== 'write') {
+    throw new Error('morty-post-mortems.yml must grant issues: write for Morty issue operations');
+  }
+  if (permissions['pull-requests'] !== 'write') {
+    throw new Error('morty-post-mortems.yml must grant pull-requests: write for PR comment/update operations');
   }
 });
 
