@@ -34,6 +34,7 @@
 | #13560 | add WR label parity and credential backup harness | open | @Cursor | 2026-05-18 |
 | #13600 | add green website reporting standard | open | @Cursor | 2026-05-19 |
 | #13637 | fix state schema product slug contract | open | @Cursor | 2026-05-20 |
+| #13665 | productize creator payout tracker + OCR WR | open | @Cursor | 2026-05-21 |
 
 ### Issues
 
@@ -73,6 +74,7 @@
 | T015 | WR label parity + credential backup harness + agent self-heal | done | @cursor | 2026-05-18 |
 | T016 | Green website reporting standard | done | @cursor | 2026-05-19 |
 | T017 | State schema product_slug contract fix | done | @cursor | 2026-05-20 |
+| T018 | Creator Payout Tracker shippable product engine | done | @cursor | 2026-05-21 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

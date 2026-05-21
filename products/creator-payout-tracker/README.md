@@ -49,7 +49,7 @@ npm run dev    # starts on http://localhost:3005
 ## Runtime Configuration
 
 | Variable | Required | Description |
-|----------|----------|-------------|
+| --- | --- | --- |
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Creator Pro checkout URL. Falls back to an email contact link when unset. |
 
 Create local config:
@@ -88,7 +88,7 @@ Response shape:
 ## Stack
 
 | Layer | Technology |
-|-------|-----------|
+| --- | --- |
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
@@ -101,6 +101,7 @@ Response shape:
 ## Data Sources
 
 Payout figures are community-sourced estimates derived from:
+
 - Platform official documentation
 - Reddit creator communities (r/NewTubers, r/Twitch, r/CreatorEconomy)
 - Industry reports: Influencer Marketing Hub, MilX, LiveWire Weekly, Fundmates, Base.Tube
