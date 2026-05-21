@@ -1,5 +1,10 @@
 {
   "product_slug": "demo-product",
+  "intake_id": "demo-product",
+  "revenue_target_monthly_usd": 2000,
+  "goal_phase": 1,
+  "status": "new",
+  "steps": [],
   "shape": "pdf",
   "step": 0,
   "step_name": "scaffolded",

@@ -28,7 +28,7 @@ body:
   - type: dropdown
     id: output_type
     attributes:
-      label: Output Type (optional)
+      label: Output Type (required)
       description: What are you asking to create or change?
       options:
         - production-app
@@ -43,7 +43,7 @@ body:
         - api-product
         - invention-flow
     validations:
-      required: false
+      required: true
 
   - type: dropdown
     id: pdf_pipeline_batch

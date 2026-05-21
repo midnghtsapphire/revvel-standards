@@ -3,10 +3,11 @@
   "$id": "https://revvel.dev/schemas/state.schema.json",
   "title": "Revvel Execution State",
   "type": "object",
-  "required": ["intake_id", "revenue_target_monthly_usd", "goal_phase", "steps", "status"],
+  "required": ["intake_id", "product_slug", "revenue_target_monthly_usd", "goal_phase", "steps", "status"],
   "properties": {
     "intake_id": { "type": "string", "minLength": 1 },
-    "created_at": { "type": "string", "format": "date-time" },
+    "product_slug": { "type": "string", "minLength": 1 },
+    "created_at": { "type": ["string", "null"], "format": "date-time" },
     "updated_at": { "type": "string", "format": "date-time" },
     "revenue_target_monthly_usd": { "type": "number", "minimum": 0 },
     "goal_phase": { "type": "integer", "enum": [1, 2, 3, 4] },

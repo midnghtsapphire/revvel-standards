@@ -180,10 +180,20 @@ test('WR templates allow title-only intake for orchestrator-filled routing', () 
       template.includes('Title-only intake is allowed.'),
       'WR template must document title-only intake'
     );
+    // 2026-05-21 (Claude): title-only intake allows the orchestrator to fill the
+    // rest, but Output Type stays required (you must declare what to build).
+    // So at most one field — output_type — may be required; no other body field.
+    const requiredCount = (template.match(/required:\s*true/g) || []).length;
     assert(
-      !template.includes('required: true'),
-      'WR templates must not require body fields when title-only intake is supported'
+      requiredCount <= 1,
+      'WR templates must not require body fields beyond Output Type'
     );
+    if (requiredCount === 1) {
+      assert(
+        requiredFlagFromTemplate(template, 'output_type'),
+        'the only required WR field may be output_type'
+      );
+    }
   }
 });
 
