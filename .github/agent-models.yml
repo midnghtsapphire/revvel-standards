@@ -51,7 +51,7 @@ profiles:
 
   # Review profile - explicit task-routed review profile for GitHub/VS Code automation
   review:
-    description: "Best available reviewer - GTP-4o or Claude for quality checks"
+    description: "Best available reviewer - GPT-4o or Claude for quality checks"
     provider: openrouter
     primary: "openai/gpt-4o"
     fallback: "anthropic/claude-sonnet-4-20250514"
@@ -61,7 +61,7 @@ profiles:
 
   # Backward-compatible alias for older workflow references
   best_reviewer:
-    description: "Alias of review for legacy workflow compatibility"
+    description: "Alias of review profile (GPT-4o or Claude) for legacy workflow compatibility"
     provider: openrouter
     primary: "openai/gpt-4o"
     fallback: "anthropic/claude-sonnet-4-20250514"
