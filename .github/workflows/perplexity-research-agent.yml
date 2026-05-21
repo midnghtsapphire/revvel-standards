@@ -46,7 +46,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
-          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          # 2026-05-21 (Claude): removed the direct Perplexity key env — this
+          # lane is keyless (helallao bridge) with OpenRouter as the free
+          # backup. See docs/PERPLEXITY_NO_KEY_INTEGRATION.md
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           node scripts/perplexity-research-issue.js
