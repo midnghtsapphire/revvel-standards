@@ -245,11 +245,17 @@ Every WR task follows this standard checklist:
   - [ ] Backend/integration/runtime defaults must use DigitalOcean unless the WR documents a reviewed exception
   - [ ] Customer-facing websites must document admin access plus user login requirements, including Apple, Google, GitHub, GitLab, and Microsoft sign-in when auth is in scope
  
+- [ ] **Platform defaults & website requirements** *(required when a website/app surface is in scope)*
+  - [ ] Website in Test must name the Vercel URL or explicitly mark the gap
+  - [ ] Backend/integration/runtime defaults must use DigitalOcean unless the WR documents a reviewed exception
+  - [ ] Customer-facing websites must document admin access plus user login requirements, including Apple, Google, and GitHub sign-in when auth is in scope
+
 - [ ] **Artifact Engine Map** *(required for every WR/PR)*
   - [ ] End with a map for every required output shape: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video, docs, and agent automation
   - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
   - [ ] Reuse existing repo engines where available (for example delivery matrix, PDF routing, UI creation, video standards, orchestration/MCP contracts) instead of inventing duplicate systems
  
+
 - [ ] **Agent Self-Healing Journal** *(required at the end of every WR/PR)*
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
   - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable

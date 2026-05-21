@@ -488,6 +488,35 @@ removes any implication that there should be another implementation path.
 - Integration infrastructure should follow `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` (DigitalOcean baseline) by default unless a reviewed exception is documented.
 - Every website/app surface should include an admin login plus user login options for Apple, Google, GitHub, GitLab, and Microsoft OAuth.
 - Transactional surfaces should include a shopping cart, Stripe subscription tiering, and a usage/on-demand token policy.
+## Product / Output Selections
+
+| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
+| --- | --- | --- | --- | --- |
+| Website / app UI | Yes | Next.js web app | `.github/workflows/ui-creation-engine.yml` + product app | This is the primary buyer-facing ship surface |
+| API | Yes | report-generation/product API | product implementation in `products/graphify-evaluator` | Needed if the evaluator accepts repo input or serves generated outputs |
+| CLI | Yes | Graphify execution backend | Graphify upstream CLI | Keep as the local-first execution path behind the product |
+| MCP | Optional / future | tool/server output | orchestration + MCP standards | Only if launch scope exposes Graphify through MCP |
+| Skill | Optional / future | reusable skill automation | `skills/` vault patterns | Use if a repeatable Graphify workflow should be packaged for agents |
+| PDF | Optional / recommended | downloadable audit/report | PDF router + ship-to-market PDF path | Strong fit for paid audit deliverables |
+| PowerPoint / deck | Optional / recommended | sales or review deck | delivery matrix gap to implement when needed | Useful for enterprise review/readout packaging |
+| Video | Optional / recommended | demo or review video, 2–10 minutes | delivery matrix + video standards | Useful for product walkthroughs and YouTube distribution |
+| Docs | Yes | README + GTM/deployment/security docs | revvel-standards documentation bundle | Required for ship-to-market readiness |
+| Agent automation | Yes | WR/PR/workflow automation | existing repo automation | Keep the product wired into current revvel flows |
+
+### Platform Defaults & Website Requirements
+
+- **Website in Test:** should resolve to a Vercel preview URL and be referenced
+  in the product README when the implementation PR ships.
+- **Integration runtime:** backend/integration automation should default to
+  DigitalOcean unless a reviewed exception is documented in the implementation
+  PR.
+- **Admin surface:** any customer-facing website/app variant should include an
+  admin panel/login path.
+- **User auth:** any customer-facing website/app variant should plan for user
+  login with Apple, Google, and GitHub when auth is in scope.
+
+These are now part of the global WR standard for future feature requests, not
+just a one-off note in this Graphify document.
 
 ---
 
@@ -498,6 +527,11 @@ removes any implication that there should be another implementation path.
 | API | Product route implementation in `products/graphify-evaluator` | Gap/partial | Add the report-generation/API surface in this product rather than spinning up a second implementation |
 | CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
 | MCP | `docs/orchestration/project-orchestration-standard.md` | Exists | Bind any MCP-facing delivery to the existing orchestration contract standard |
+| --- | --- | --- | --- |
+| Website / UI | `.github/workflows/ui-creation-engine.yml` + the existing Next.js product app | Exists | Expand the current app into the buyer-facing launch surface instead of creating another product |
+| API | Product route implementation in `products/graphify-evaluator` | Gap/partial | Add the report-generation/API surface in this product rather than spinning up a second implementation |
+| CLI | Graphify upstream CLI + product wrapper conventions | Partial | Keep the CLI as the execution backend and document local run/export flows in product docs |
+| MCP | `docs/orchestration/project-orchestration-standard.md` + `docs/orchestration/openrouter-execution-contract.md` | Exists | Bind any MCP-facing delivery to the existing orchestration contract |
 | Skill | `skills/` vault and registry patterns | Exists | Package reusable Graphify automation as a skill if it becomes a repeatable repo pattern |
 | PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
 | PowerPoint / deck | `standards/DELIVERY_MATRIX.md` | Gap | Add a deck-generation engine only if enterprise review decks become part of launch packaging |
