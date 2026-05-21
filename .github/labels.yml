@@ -206,6 +206,10 @@ labels:
     color: "7057ff"
     description: "Assigned to GitHub Copilot for fixing"
 
+  - name: mindmappr
+    color: "0075ca"
+    description: "Expert code assistant (mindmappr) assigned as WR agent"
+
   - name: ralph-loop
     color: "ff6b35"
     description: "Managed by the Ralph Loop self-healing workflow"
