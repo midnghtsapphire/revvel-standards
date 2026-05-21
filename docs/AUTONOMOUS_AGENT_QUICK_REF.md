@@ -8,7 +8,7 @@
 
 ## 7 Core Autonomy Principles
 
-### 1. OBSESSIVE PROBLEM-SOLVING
+### 1. DRIVEN PROBLEM-SOLVING
 > Try 3+ alternatives before escalating
 
 **When blocked:**
@@ -347,7 +347,7 @@ gh run view <run-id> --log | grep -A 10 "recovery"
 
 ## Remember
 
-**The goal is not to be perfect.** The goal is to be **obsessively resourceful** and **continuously improving**.
+**The goal is not to be perfect.** The goal is to be **relentlessly resourceful** and **continuously improving**.
 
 - ✅ Try 3 alternatives
 - ✅ Document everything

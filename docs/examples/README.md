@@ -38,7 +38,7 @@ When you solve a problem autonomously:
 
 ## Related Documentation
 
-- `docs/AGENTS.md` — Core agent instructions emphasizing obsessive autonomy
+- `docs/AGENTS.md` — Core agent instructions emphasizing driven autonomy
 - `docs/AGENT_AUTONOMY_PROTOCOLS.md` — Detailed protocols for GOAP, swarms, self-healing
 - `recurse-rules.md` — Code quality rules including autonomy requirements
 

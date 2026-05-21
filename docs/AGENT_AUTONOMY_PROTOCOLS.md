@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the protocols that enable agents to operate with **obsessive autonomy** in the MIDNGHTSAPPHIRE organization. These protocols ensure agents are self-sufficient, self-healing, and relentlessly resourceful.
+This document defines the protocols that enable agents to operate with **driven autonomy** in the MIDNGHTSAPPHIRE organization. These protocols ensure agents are self-sufficient, self-healing, and relentlessly resourceful.
 
 ## GOAP (Goal-Oriented Action Planning)
 
@@ -594,4 +594,4 @@ These protocols enable agents to:
 - ✅ Document solutions for future use
 - ✅ Ship working code despite obstacles
 
-**This is the MIDNGHTSAPPHIRE way. This is obsessive autonomy.**
+**This is the MIDNGHTSAPPHIRE way. This is driven autonomy.**

@@ -73,7 +73,7 @@ Aligns with WR North Star (Revenue First):
 ## Alignment with Revvel Standards
 
 ✅ **WR North Star** — Revenue focus with consulting path
-✅ **Obsessive Autonomy** — Automated benchmark suite
+✅ **Driven Autonomy** — Automated benchmark suite
 ✅ **Ship Working Code** — Evaluations based on real tests, not claims
 ✅ **Prime Directive** — Will ship benchmarks, not just plans
 

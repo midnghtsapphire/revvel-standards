@@ -376,7 +376,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - Estimated monthly revenue: [$amount]
 - Time to first revenue: [Weeks/months]
 
-### Obsessive Autonomy Assessment
+### Driven Autonomy Assessment
 
 **Current Autonomy Level:** [Low/Medium/High]
 

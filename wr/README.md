@@ -77,7 +77,7 @@ All WRs must align with the Prime Directive from `docs/AGENTS.md`:
 - **10M by 2030** - Revenue goal
 - **$2000+/month** - Monthly revenue target (starting May 1, 2026)
 - **Ship to Market** - Working, tested code (not plans)
-- **Obsessive Autonomy** - Never stop at blockers
+- **Driven Autonomy** - Never stop at blockers
 - **Self-Healing** - Fix errors autonomously
 
 ## Related Documentation

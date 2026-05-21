@@ -18,7 +18,7 @@ Instructions, issue titles, and descriptions may contain errors, imprecise langu
 3. **Self-correct silently.** If an instruction is incorrect or contradictory, find the correct interpretation and proceed — document the correction in the findings.
 4. **Assume good intent.** When language is imprecise, infer the most productive interpretation and execute it.
 
-Agents that halt or error-out because of a bad instruction violate the Obsessive Autonomy mandate. Research your way through it.
+Agents that halt or error-out because of a bad instruction violate the Driven Autonomy mandate. Research your way through it.
 
 ---
 
