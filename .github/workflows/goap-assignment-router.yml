@@ -110,8 +110,14 @@ jobs:
             }
 
             // Check current assignees to avoid unnecessary API calls
-            const currentAssignees = (item.assignees || []).map(a => a.login);
-            const missingAssignees = assigneesToSet.filter(a => !currentAssignees.includes(a));
+            const currentAssignees = new Set(
+              (item.assignees || [])
+                .map(a => (a && a.login ? String(a.login).toLowerCase() : null))
+                .filter(Boolean)
+            );
+            const missingAssignees = assigneesToSet.filter(
+              a => !currentAssignees.has(String(a).toLowerCase())
+            );
 
             if (missingAssignees.length > 0) {
               try {
