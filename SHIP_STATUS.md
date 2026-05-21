@@ -33,6 +33,7 @@
 | #13507 | add no-key Perplexity research integration | open | @Cursor | 2026-05-17 |
 | #13560 | add WR label parity and credential backup harness | open | @Cursor | 2026-05-18 |
 | #13600 | add green website reporting standard | open | @Cursor | 2026-05-19 |
+| #13637 | fix state schema product slug contract | open | @Cursor | 2026-05-20 |
 
 ### Issues
 
@@ -71,6 +72,7 @@
 | T014 | Perplexity no-key research integration | done | @cursor | 2026-05-17 |
 | T015 | WR label parity + credential backup harness + agent self-heal | done | @cursor | 2026-05-18 |
 | T016 | Green website reporting standard | done | @cursor | 2026-05-19 |
+| T017 | State schema product_slug contract fix | done | @cursor | 2026-05-20 |
 | | **ALL 70 REPOS DONE ✅** | | | | |
 
 ---

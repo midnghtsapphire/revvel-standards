@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Revvel agent-generated product state",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "product_slug": { "type": "string", "minLength": 1 },
+    "shape": { "type": "string", "minLength": 1 },
+    "step": { "type": "integer", "minimum": 0 },
+    "step_name": { "type": "string", "minLength": 1 },
+    "bom_ready": { "type": "boolean" },
+    "build_green": { "type": "boolean" },
+    "certified": { "type": "boolean" },
+    "monetized": { "type": "boolean" },
+    "deployed": { "type": "boolean" },
+    "marketed": { "type": "boolean" },
+    "created_at": { "type": ["string", "null"] },
+    "last_updated_at": { "type": ["string", "null"] },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [
+    "product_slug",
+    "shape",
+    "step",
+    "step_name",
+    "bom_ready",
+    "build_green",
+    "certified",
+    "monetized",
+    "deployed",
+    "marketed",
+    "created_at",
+    "last_updated_at",
+    "notes"
+  ]
+}

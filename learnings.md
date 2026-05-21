@@ -345,3 +345,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Quote GitHub Actions expressions when they contain commit-message strings with colons, and keep README-mutating workflows guarded against their own generated commits. When root workflow validation fails beyond the target workflow, continue fixing small YAML syntax blockers so the repo-wide validation gate returns to green.
 
 **Next Action:** Monitor PR #13600 CI/review; apply the `templates/cicd/green-website.yml` template to public app repos that need green website reporting.
+
+---
+
+**Date/Time:** 2026-05-20T23:56Z
+
+**Task Attempted:** Verify and fix state schema drift between `schemas/state.schema.json` and the product-state tooling.
+
+**Outcome:** Success - the schema now requires `product_slug`, matches the agent-generated product state template and `init-product.sh` emitted shape, includes Ajv-backed regression coverage, and passes both `node tests/state-schema.test.js` and root `npm test`.
+
+**Root Cause of Failure (If any):** The schema had diverged from the producers/consumers: it required legacy `slug` plus unrelated `status`/`project_class`/`requires`/`steps` fields while the template and scaffolder emit `product_slug`, `step`, `step_name`, readiness booleans, timestamps, and `notes`. The first regression run also surfaced that Ajv uses the canonical Draft 7 meta-schema URI, so the schema's `https://` meta URI prevented compilation.
+
+**Self-Healing Fix / Learned Lesson:** Contract schemas must be tested against the exact templates and generated examples they are meant to govern. Use a real JSON Schema validator in CI and include both positive fixtures (template/example/generated shape) and a negative fixture for the deprecated field name. Prefer the canonical `http://json-schema.org/draft-07/schema#` URI for Ajv Draft 7 compatibility.
+
+**Next Action:** Monitor PR #13637 CI/review; keep future product-state field changes synchronized across schema, template, scaffolder, and tests.
