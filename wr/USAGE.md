@@ -127,7 +127,7 @@ Each WR includes:
 
 ### Step 3: revvel-standards Requirements
 - Prime Directive alignment (10M by 2030, $2000+/month)
-- Obsessive autonomy assessment
+- Driven autonomy assessment
 - Self-healing capabilities
 - Ship-to-market status
 

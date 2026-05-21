@@ -46,6 +46,17 @@ jobs:
         with:
           sarif_file: semgrep.sarif
           category: semgrep
+      - name: Semgrep blocking gate (ERROR severity)
+        # 2026-05-21 (Claude): the SARIF upload above is advisory; this step
+        # actually blocks the merge on high-severity security + secret findings.
+        # Only ERROR-severity findings fail the job; warnings stay advisory.
+        run: |
+          semgrep scan \
+            --config=p/secrets \
+            --config=p/security-audit \
+            --severity=ERROR \
+            --error \
+            --metrics=off
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

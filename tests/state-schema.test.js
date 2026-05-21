@@ -3,7 +3,9 @@
 
 const fs = require('fs');
 const path = require('path');
-const Ajv = require('ajv');
+// 2026-05-21 (Claude): schemas/state.schema.json declares draft 2020-12, so use
+// Ajv's 2020 build instead of the default draft-07 entrypoint (was: require('ajv')).
+const Ajv = require('ajv/dist/2020');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
@@ -31,6 +33,9 @@ function readJson(relativePath) {
 
 const schema = readJson('schemas/state.schema.json');
 const ajv = new Ajv({ allErrors: true, strict: true });
+// 2026-05-21 (Claude): register standard formats (date-time, etc.) so strict
+// mode does not reject the schema's "format" keywords.
+require('ajv-formats')(ajv);
 const validate = ajv.compile(schema);
 
 function assertValidState(relativePath) {

@@ -528,7 +528,7 @@ function formatLaneAudit(laneReports) {
     .join("\n\n");
 }
 
-function buildReviewRequestComment({ outputFile, laneReports }) {
+function buildReviewRequestComment({ outputFile, laneReports, includeCoderTrigger = false }) {
   const laneLabels = laneReports.map((report) => `\`${report.roleLabel}\``).join(", ");
   return [
     "<!-- revvel-research-engine-review-request -->",
@@ -536,6 +536,12 @@ function buildReviewRequestComment({ outputFile, laneReports }) {
     "",
     `Research packet: \`${outputFile}\``,
     `Lane labels: ${laneLabels}`,
+    // On issues the coder auto-advances from the `wr:research-complete` label, so
+    // the comment omits the trigger phrase to avoid a duplicate run. On PRs the
+    // `issues: labeled` event does not apply, so the phrase is the trigger there.
+    ...(includeCoderTrigger
+      ? ["", "Research Findings: research is complete — the OpenRouter coding agent is cleared to implement this packet."]
+      : []),
     "",
     "Code-review agents must review the research before implementation proceeds.",
     "",
@@ -669,7 +675,7 @@ async function updateCompleteState(context, laneReports, status) {
 
   const labelsToAdd =
     status === "complete"
-      ? ["research:complete", "research:review-needed", "bito-ai", "awaiting-review"]
+      ? ["research:complete", "wr:research-complete", "research:review-needed", "bito-ai", "awaiting-review"]
       : ["research:blocked", "openrouter:needs-key", "needs-human"];
 
   try {
@@ -694,7 +700,11 @@ async function updateCompleteState(context, laneReports, status) {
       githubToken: context.githubToken,
       repository: context.repository,
       number: targetNumber,
-      body: buildReviewRequestComment({ outputFile: context.outputFile, laneReports }),
+      body: buildReviewRequestComment({
+        outputFile: context.outputFile,
+        laneReports,
+        includeCoderTrigger: Boolean(context.prNumber),
+      }),
     });
   } catch (error) {
     console.log(`::warning::Could not post research review comment on #${targetNumber}: ${error.message}`);
@@ -732,7 +742,11 @@ async function findAndRequestLinkedPrReviews(context) {
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
-        body: buildReviewRequestComment({ outputFile: context.outputFile, laneReports: LANE_DEFINITIONS }),
+        body: buildReviewRequestComment({
+          outputFile: context.outputFile,
+          laneReports: LANE_DEFINITIONS,
+          includeCoderTrigger: true,
+        }),
       });
     }
   } catch (error) {

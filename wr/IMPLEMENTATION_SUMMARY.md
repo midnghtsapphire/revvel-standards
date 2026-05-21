@@ -66,7 +66,7 @@ The `WR_TEMPLATE.md` includes all 7 steps from `/promptforproject.md`:
 
 **Step 3: revvel-standards Requirements**
 - Prime Directive alignment (10M by 2030, $2000+/month)
-- Obsessive autonomy assessment
+- Driven autonomy assessment
 - Self-healing capabilities
 - Ship-to-market status
 
@@ -298,7 +298,7 @@ The WR repository review system follows the standard WR process:
 
 Every WR enforces:
 - Prime Directive (10M by 2030, $2000+/month)
-- Obsessive Autonomy (never stop at blockers)
+- Driven Autonomy (never stop at blockers)
 - Self-Healing (fix errors autonomously)
 - Ship to Market (working code, not plans)
 

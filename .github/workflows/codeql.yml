@@ -53,7 +53,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['actions']
+        # 2026-05-21 (Claude): scan the JS sources, not just workflow files.
+        language: ['actions', 'javascript-typescript']
 
     steps:
       - name: Checkout repository

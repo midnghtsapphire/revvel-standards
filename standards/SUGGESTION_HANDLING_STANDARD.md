@@ -115,7 +115,7 @@ When an agent (Jules, Copilot, Bito, OpenRouter reviewer) finds content it disag
 
 ## References
 
-- [`docs/AGENTS.md`](../docs/AGENTS.md) — Suggestion Handling section under Obsessive Autonomy
+- [`docs/AGENTS.md`](../docs/AGENTS.md) — Suggestion Handling section under Driven Autonomy
 - [`docs/AGENTS.md`](../docs/AGENTS.md) — The Autonomy Mandate, rule 1: "Never stop at blockers"
 - [`standards/ZERO_HUMAN_FRAMEWORK.md`](./ZERO_HUMAN_FRAMEWORK.md)
 - [`standards/SELF_HEALING_STANDARDS.md`](./SELF_HEALING_STANDARDS.md)

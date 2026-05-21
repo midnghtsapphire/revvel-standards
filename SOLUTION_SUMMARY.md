@@ -285,7 +285,7 @@ The automation is now ACTIVE and will:
 4. **On detection:** Auto-recover secrets, auto-progress labels
 5. **On failure:** Create P0 issues with specific next actions
 
-You don't need to do anything. The system is now obsessively autonomous and self-healing.
+You don't need to do anything. The system is now relentlessly autonomous and self-healing.
 
 ---
 

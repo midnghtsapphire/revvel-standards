@@ -2,27 +2,27 @@
 
 /**
  * Perplexity Research Script
- * Researches GitHub issues using the no-key helallao/perplexity-ai bridge.
- * 
+ *
+ * Researches GitHub issues with Perplexity using a free, no-key-first strategy:
+ *   1. PRIMARY (free): the no-key `helallao/perplexity-ai` Python bridge —
+ *      anonymous Labs/Web access, no API key required.
+ *   2. BACKUP: OpenRouter `perplexity/sonar-pro` when the no-key bridge is
+ *      unavailable/rate-limited and OPENROUTER_API_KEY is present.
+ *
+ * 2026-05-21 (Claude): reconciled a botched merge that had concatenated two
+ * separate implementations (duplicate `issueNumber`/`research` declarations,
+ * a duplicate CONFIG.model, two `module.exports`, and a call to an undefined
+ * `callPerplexity`). No capability was dropped — both the no-key bridge and the
+ * OpenRouter backup are preserved; only the never-defined direct-key path was
+ * removed. See docs/PERPLEXITY_NO_KEY_INTEGRATION.md.
+ *
  * Usage:
  *   ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
- * 
- * Environment:
- *   ISSUE_NUMBER - GitHub issue number to research
- *   REPO - Repository in format owner/repo
- * Researches GitHub issues using Perplexity Sonar API (direct) or via
- * OpenRouter's Perplexity models (no-API-key fallback when
- * PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present).
- *
- * Usage:
- *   PERPLEXITY_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
- *   OPENROUTER_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
  *
  * Environment:
- *   PERPLEXITY_API_KEY  - Perplexity API key (direct lane; preferred)
- *   OPENROUTER_API_KEY  - OpenRouter API key (no-API fallback via perplexity/sonar-pro)
- *   ISSUE_NUMBER        - GitHub issue number to research
- *   REPO                - Repository in format owner/repo
+ *   ISSUE_NUMBER        - GitHub issue number to research (required)
+ *   REPO                - Repository in format owner/repo (required)
+ *   OPENROUTER_API_KEY  - Optional backup lane (perplexity/sonar-pro)
  */
 
 const fs = require('fs');
@@ -30,11 +30,11 @@ const { execFileSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
-  model: 'sonar',
-  fallbackMode: 'auto',
-  model: 'sonar-pro',
-  openrouterModel: 'perplexity/sonar-pro',
-  fallbackModel: 'sonar-deep-research',
+  model: 'sonar',                          // LabsClient model for the no-key bridge
+  fallbackMode: 'auto',                    // Client.search mode inside the bridge
+  openrouterModel: 'perplexity/sonar-pro', // backup lane via OpenRouter
+  maxTokens: 4000,
+  temperature: 0.3,
   outputFile: '/tmp/perplexity-research.md',
 };
 
@@ -113,18 +113,8 @@ print(response_text)
 async function main() {
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
-
-  const apiKey = process.env.PERPLEXITY_API_KEY;
   const openrouterKey = process.env.OPENROUTER_API_KEY;
-  const issueNumber = process.env.ISSUE_NUMBER;
-  const repo = process.env.REPO;
 
-  if (!apiKey && !openrouterKey) {
-    throw new Error(
-      'No research API key available. Set PERPLEXITY_API_KEY (direct Perplexity lane) ' +
-      'or OPENROUTER_API_KEY (no-key Perplexity lane via OpenRouter perplexity/sonar-pro).'
-    );
-  }
   if (!issueNumber) {
     throw new Error('Missing ISSUE_NUMBER');
   }
@@ -132,8 +122,7 @@ async function main() {
     throw new Error('Missing REPO (format: owner/repo)');
   }
 
-  const lane = apiKey ? 'direct Perplexity API' : 'OpenRouter perplexity/sonar-pro (no-key lane)';
-  console.log(`🔍 Researching issue #${issueNumber} in ${repo} via ${lane}...`);
+  console.log(`🔍 Researching issue #${issueNumber} in ${repo}...`);
 
   // Fetch issue details using gh CLI
   const issue = await fetchGitHubIssue(repo, issueNumber);
@@ -141,14 +130,22 @@ async function main() {
   // Build research prompt
   const prompt = buildResearchPrompt(issue);
 
-  console.log('🤔 Asking Perplexity (no-key bridge)...');
-
-  // Call Perplexity through the no-key bridge
-  const research = await callPerplexityNoKey(prompt);
-  // Call Perplexity (direct) or OpenRouter (no-key fallback)
-  const research = apiKey
-    ? await callPerplexity(apiKey, prompt)
-    : await callPerplexityViaOpenRouter(openrouterKey, prompt);
+  // Primary: free no-key bridge. Backup: OpenRouter perplexity/sonar-pro.
+  let research;
+  try {
+    console.log('🤔 Asking Perplexity via the no-key bridge (primary, free)...');
+    research = await callPerplexityNoKey(prompt);
+  } catch (bridgeError) {
+    console.warn(`⚠️ No-key bridge unavailable: ${bridgeError.message}`);
+    if (!openrouterKey) {
+      throw new Error(
+        'No-key Perplexity bridge failed and no OPENROUTER_API_KEY backup is set. ' +
+        `Install the bridge with: ${NO_KEY_INSTALL_HINT}`
+      );
+    }
+    console.log('↩️ Falling back to OpenRouter perplexity/sonar-pro (backup)...');
+    research = await callPerplexityViaOpenRouter(openrouterKey, prompt);
+  }
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
@@ -166,7 +163,7 @@ You are the Revvel Standards research agent.
 
 Research this GitHub issue and produce:
 1. Concise diagnosis of the problem
-2. Likely files/workflows involved  
+2. Likely files/workflows involved
 3. Current best-practice references
 4. Implementation plan for the coding agent
 5. Tests that should pass
@@ -211,6 +208,9 @@ Return your response in this format:
 `;
 }
 
+/**
+ * Primary lane: free no-key Perplexity via the helallao/perplexity-ai bridge.
+ */
 async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
   const output = execFileSyncImpl(
     'python3',
@@ -229,8 +229,8 @@ async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
 }
 
 /**
- * No-key Perplexity lane: route through OpenRouter using perplexity/sonar-pro.
- * Used when PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present.
+ * Backup lane: route through OpenRouter using perplexity/sonar-pro.
+ * Used when the no-key bridge fails but OPENROUTER_API_KEY is present.
  */
 async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -239,7 +239,7 @@ async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
       'Authorization': `Bearer ${openrouterKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-      'X-Title': 'revvel-standards mindmappr research'
+      'X-Title': 'revvel-standards perplexity research'
     },
     body: JSON.stringify({
       model: CONFIG.openrouterModel,
@@ -324,5 +324,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = { callPerplexityNoKey, buildResearchPrompt, fetchGitHubIssue };
-module.exports = { callPerplexity, callPerplexityViaOpenRouter, buildResearchPrompt, fetchGitHubIssue };
+module.exports = {
+  callPerplexityNoKey,
+  callPerplexityViaOpenRouter,
+  buildResearchPrompt,
+  fetchGitHubIssue,
+  postResearchComment,
+};

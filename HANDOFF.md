@@ -15,9 +15,9 @@ All work for issue #381 and the requested agent autonomy overhaul is complete, t
 - **Tested:** 5 problem cases including original failure - all pass
 
 ### 2. Agent Autonomy Transformation ✅
-- **Problem:** Agents escalating prematurely, not being obsessive about solutions
+- **Problem:** Agents escalating prematurely, not being driven about solutions
 - **Solution:** Complete overhaul of agent instructions and protocols
-- **Result:** "Obsessive Autonomy" is now core operating principle
+- **Result:** "Driven Autonomy" is now core operating principle
 - **Scope:** 6 files modified/created, 17KB of new documentation
 
 ### 3. Self-Healing Infrastructure ✅
@@ -32,7 +32,7 @@ All work for issue #381 and the requested agent autonomy overhaul is complete, t
 
 ### Modified (3)
 1. `.github/issue-branch.yml` - Git-safe character sanitization
-2. `docs/AGENTS.md` - Obsessive autonomy overhaul
+2. `docs/AGENTS.md` - Driven autonomy overhaul
 3. `recurse-rules.md` - 5 new autonomy rules
 
 ### Created (3)
@@ -56,7 +56,7 @@ All work for issue #381 and the requested agent autonomy overhaul is complete, t
 This PR is ready to merge. All requested changes are complete:
 
 1. ✅ Branch naming issue is fixed
-2. ✅ Agents are now obsessively autonomous
+2. ✅ Agents are now relentlessly autonomous
 3. ✅ Self-healing is required and documented
 4. ✅ Deep research is mandatory
 5. ✅ Escalation is last resort
@@ -104,7 +104,7 @@ If you encounter a similar problem:
 
 **Technical:** Branch creation now works for all issue titles.
 
-**Cultural:** Agents are now obsessively autonomous, self-healing, and relentlessly resourceful.
+**Cultural:** Agents are now relentlessly autonomous, self-healing, and relentlessly resourceful.
 
 **Impact:** MIDNGHTSAPPHIRE agents operate at a higher level of autonomy and effectiveness.
 
