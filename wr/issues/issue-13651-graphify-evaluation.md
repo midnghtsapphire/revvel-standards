@@ -94,19 +94,22 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
 
 | Source | Sentiment | Key Complaints | What we solve |
 | --- | --- | --- | --- |
-| Reddit (r/programming) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
-| Hacker News | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
-| GitHub Issues | Frustrated | "Doesn't work with mono-repos", "Conflicting graph.json files" | Graphify provides a union-merge git hook and clustering exclusions |
+| [Reddit thread](https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
+| [Hacker News thread](https://news.ycombinator.com/item?id=39771383) | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
+| [GitHub Issues](https://github.com/safishamsi/graphify/issues/462) + [Issue #949](https://github.com/safishamsi/graphify/issues/949) | Frustrated | "Monorepo resolution gaps", "Cross-platform graph target instability" | Graphify provides a union-merge git hook and clustering exclusions |
 
 ### Deep Research Sources (Citations)
 
 - Graphify repository and docs: <https://github.com/safishamsi/graphify>
-- Graphify stars/activity reference (repo metadata): <https://github.com/safishamsi/graphify>
-- Community signal source (discussion): <https://news.ycombinator.com/>
-- Developer pain-point source (community forums): <https://www.reddit.com/r/programming/>
+- Graphify stars/activity reference (50,340 stars as of 2026-05-21): <https://github.com/safishamsi/graphify>
+- Community signal source (discussion thread): <https://news.ycombinator.com/item?id=39771383>
+- Developer pain-point source (community thread): <https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/>
+- Graphify issue references used in pain-point analysis:
+  - Monorepo/workspace resolution issue: <https://github.com/safishamsi/graphify/issues/462>
+  - Cross-platform graph target instability issue: <https://github.com/safishamsi/graphify/issues/949>
 - Competitor baseline references:
-  - Madge: <https://github.com/pahen/madge>
-  - dependency-cruiser: <https://github.com/sverweij/dependency-cruiser>
+  - Madge (~10,076 stars): <https://github.com/pahen/madge>
+  - dependency-cruiser (~6,673 stars): <https://github.com/sverweij/dependency-cruiser>
 
 ---
 
