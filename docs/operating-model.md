@@ -41,7 +41,7 @@ Work requests are filed through one of two issue templates. Both apply the `work
 
 The New Issue chooser shows two cards, sorted by filename:
 
-1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. Anti-under-scoping is baked into the form itself: every WR carries its own bundle contract into the implementer's context, so README updates, REMINDERS scaffolds, and discoverability work cannot be silently dropped from the resulting PR.
+1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Anti-under-scoping fields are still present (Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule), but they are now optional so you can file quickly and let research/triage backfill detail from your prose when needed.
 
 2. **[`OpenHands System WR (Quick / Internal)`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml)** (`10-OpenHands-system-wr.yml`) — the **lightweight system form**. Output Type is the only required field; every other routing dropdown defaults to `auto-classify` and is filled in from your description by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill (small follow-up fixes, internal scripts, agent-routed automation).
 
@@ -49,20 +49,16 @@ The lightweight form additionally applies the `quick` and `OpenHands` labels so 
 
 ### Required fields
 
-**Heavy form (`00-work-request.yml`)** — intake rejects the form if any of these are blank:
+**Heavy form (`00-work-request.yml`)** — only one field is required now:
 
 - **Output Type** — the hard constraint on the deliverable (production-app, cli-product, api-product, sellable-pdf, etc.)
-- **Research Mode** — `standard` or `deepresearch`
-- **Delivery Mode** — `build-direct`, `build-with-brief-options`, or `proposal-first`
-- **Lifecycle Mode** — `new-build`, `refresh-existing`, or `audit-only`
-- **Commercial Mode** — `digital-product`, `saas-app`, `api-usage`, `license`, `client-billable`, or `internal-only`
-- **Summary** — one-line description
-- **Objective** — what should be true after this work is done
-- **Required Bundle** — everything that must be included in the same PR unless there is a hard blocker
-- **Definition of Done** — what makes this WR complete
-- **Do Not Under-Scope** — explicit statement of what must not be silently deferred
-- **Delivery Shape** — `One PR`, `One PR preferred, split only if blocked`, `Proposal first`, or `Multiple PRs intentionally planned`
-- **Blocker Rule** — what should happen if one part cannot be completed
+
+Optional in the heavy form (recommended when you already know them):
+
+- PDF pipeline batch
+- Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode
+- Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Explicit Exclusions
+- Delivery Shape, Expected Scope, Validation Expectations, Blocker Rule
 
 **Lightweight form (`10-OpenHands-system-wr.yml`)** — only two are required:
 
@@ -98,7 +94,7 @@ Field semantics:
 
 ### Heavy-form fields the classifier does not auto-fill
 
-The heavy form intentionally captures bundled-scope expectations (`Summary`, `Objective`, `Required Bundle`, `Definition of Done`, `Do Not Under-Scope`, `Explicit Exclusions`, `Expected Scope`, `Validation Expectations`, `Blocker Rule`, `Acknowledgements`) as free-text in the issue body. These are read by the implementer (and downstream review automation) but are NOT mapped to Project v2 fields today. A future WR will map a subset of them (Summary -> "Owner Notes", Required Bundle -> a new "Required Bundle" text field, Definition of Done -> a new "Definition of Done" text field) once the Project v2 schema is updated.
+The heavy form intentionally captures bundled-scope expectations (`Summary`, `Objective`, `Required Bundle`, `Definition of Done`, `Do Not Under-Scope`, `Explicit Exclusions`, `Expected Scope`, `Validation Expectations`, `Blocker Rule`, `Acknowledgements`) as free-text in the issue body when you provide them. These are read by the implementer (and downstream review automation) but are NOT mapped to Project v2 fields today. A future WR will map a subset of them (Summary -> "Owner Notes", Required Bundle -> a new "Required Bundle" text field, Definition of Done -> a new "Definition of Done" text field) once the Project v2 schema is updated.
 
 ---
 
