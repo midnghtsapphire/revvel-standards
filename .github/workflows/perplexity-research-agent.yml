@@ -24,6 +24,7 @@ permissions:
 
 env:
   PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
 jobs:
   research:
@@ -39,12 +40,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
 
-      - name: Research issue with Perplexity Sonar
+      - name: Research issue with Perplexity (direct or OpenRouter no-key lane)
         id: research
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           node scripts/perplexity-research-issue.js
 
