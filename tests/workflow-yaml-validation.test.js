@@ -329,8 +329,27 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true || {};
+  const issueCommentTypes = on.issue_comment?.types || [];
   const steps = doc.jobs?.research?.steps || [];
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+  const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
+
+  if (!Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
+    throw new Error('research-engine.yml must support issue_comment triggers');
+  }
+  if (!issueCommentTypes.includes('created') || !issueCommentTypes.includes('edited')) {
+    throw new Error('research-engine.yml issue_comment trigger must include created and edited');
+  }
+  if (!routeScript.includes('isPullRequestComment')) {
+    throw new Error('Research engine route must detect pull request comments');
+  }
+  if (!routeScript.includes('commentTriggered')) {
+    throw new Error('Research engine route must evaluate issue comment trigger phrases');
+  }
+  if (!routeScript.includes('!isPullRequestComment')) {
+    throw new Error('Research engine route must ignore pull request comments');
+  }
 
   if (!dispatchStep) {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
