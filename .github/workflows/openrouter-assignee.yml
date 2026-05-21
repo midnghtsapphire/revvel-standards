@@ -1,7 +1,7 @@
 name: OpenRouter Assignee — First Line of Sight
 
-# Automatically assigns all new issues and PRs to @Copilot (a GitHub user account
-# representing the OpenRouter orchestrator, NOT the paid GitHub Copilot service)
+# Automatically assigns all new issues and PRs to @oaudrey (the GitHub-visible
+# alias for the OpenRouter / oAudrey orchestrator)
 # as the first line of sight. This follows the Automation Routing Policy: all
 # automation routes through OpenRouter via OPENROUTER_API_KEY. Runs on:
 #   1. Every new issue/PR opened or reopened
@@ -16,9 +16,8 @@ name: OpenRouter Assignee — First Line of Sight
 # Reference: docs/OPENROUTER_ASSIGNEE_PROCESS.md
 
 on:
-  # issues live trigger disabled — was racing with other workflows
-  # issues:
-  #   types: [opened, reopened]
+  issues:
+    types: [opened, reopened]
   pull_request_target:
     types: [opened, reopened, ready_for_review]
   schedule:
@@ -134,7 +133,7 @@ jobs:
               }
             }
 
-      - name: Assign to Copilot orchestrator
+      - name: Assign to oAudrey orchestrator
         id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
@@ -148,12 +147,12 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
-                assignees: ['Copilot'],
+                assignees: ['oaudrey'],
               });
-              core.info(`✅ Assigned @Copilot to #${issueNumber}`);
+              core.info(`✅ Assigned @oaudrey to #${issueNumber}`);
               core.setOutput('assigned', 'true');
             } catch (error) {
-              core.notice(`Could not assign @Copilot to #${issueNumber} (non-fatal): ${error.message}`);
+              core.notice(`Could not assign @oaudrey to #${issueNumber} (non-fatal): ${error.message}`);
               core.setOutput('assigned', 'false');
             }
 
@@ -174,11 +173,11 @@ jobs:
 
             const assignSucceeded = '${{ steps.assign.outputs.assigned }}' === 'true';
             const assigneeLine = assignSucceeded
-              ? '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)'
-              : '- ⚠️ Assignee: `@Copilot` — assignment attempted but failed (labels still applied; routing is finalized)';
+              ? '- ✅ Assignee: `@oaudrey` (GitHub-visible oAudrey/OpenRouter orchestrator)'
+              : '- ⚠️ Assignee: `@oaudrey` — assignment attempted but failed (labels still applied; routing is finalized)';
             const assignedText = assignSucceeded
-              ? `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`
-              : `This ${displayKind} has been routed to the OpenRouter orchestrator. **Note:** @Copilot assignment failed (non-fatal) — routing labels are applied and this item will not be re-routed. Assignment will not be retried automatically.`;
+              ? `This ${displayKind} has been automatically assigned to **@oaudrey** — the OpenRouter / oAudrey orchestrator.`
+              : `This ${displayKind} has been routed to the OpenRouter / oAudrey orchestrator. **Note:** @oaudrey assignment failed (non-fatal) — routing labels are applied and this item will not be re-routed. Assignment will not be retried automatically.`;
 
             const comment = [
               '🤖 **OpenRouter First Line of Sight**',
@@ -343,7 +342,7 @@ jobs:
 
               if (isDryRun) {
                 core.info(`  [DRY RUN] Would add labels: openrouter, auto-fix, copilot, role:orchestrator`);
-                core.info(`  [DRY RUN] Would assign @Copilot`);
+                core.info(`  [DRY RUN] Would assign @oaudrey`);
                 core.info(`  [DRY RUN] Would post first-line-of-sight comment`);
                 continue;
               }
@@ -366,28 +365,28 @@ jobs:
                 }
                 core.info(`  ✅ Applied routing labels`);
 
-                // Assign to Copilot (non-fatal — label already guarantees idempotency)
+                // Assign to oAudrey (non-fatal — label already guarantees idempotency)
                 let assignSucceeded = false;
                 try {
                   await github.rest.issues.addAssignees({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: item.number,
-                    assignees: ['Copilot'],
+                    assignees: ['oaudrey'],
                   });
                   assignSucceeded = true;
-                  core.info(`  ✅ Assigned @Copilot`);
+                  core.info(`  ✅ Assigned @oaudrey`);
                 } catch (error) {
-                  core.notice(`  Could not assign @Copilot (non-fatal): ${error.message}`);
+                  core.notice(`  Could not assign @oaudrey (non-fatal): ${error.message}`);
                 }
 
                 const displayKind = item.kind === 'PR' ? 'pull request' : 'issue';
                 const assigneeLine = assignSucceeded
-                  ? '- ✅ Assignee: `@Copilot` (GitHub-visible orchestrator)'
-                  : '- ⚠️ Assignee: `@Copilot` — assignment attempted but failed (labels still applied; routing is finalized)';
+                  ? '- ✅ Assignee: `@oaudrey` (GitHub-visible oAudrey/OpenRouter orchestrator)'
+                  : '- ⚠️ Assignee: `@oaudrey` — assignment attempted but failed (labels still applied; routing is finalized)';
                 const assignedText = assignSucceeded
-                  ? `This ${displayKind} has been automatically assigned to **@Copilot** — the OpenRouter orchestrator.`
-                  : `This ${displayKind} has been routed to the OpenRouter orchestrator. **Note:** @Copilot assignment failed (non-fatal) — routing labels are applied and this item will not be re-routed. Assignment will not be retried automatically.`;
+                  ? `This ${displayKind} has been automatically assigned to **@oaudrey** — the OpenRouter / oAudrey orchestrator.`
+                  : `This ${displayKind} has been routed to the OpenRouter / oAudrey orchestrator. **Note:** @oaudrey assignment failed (non-fatal) — routing labels are applied and this item will not be re-routed. Assignment will not be retried automatically.`;
                 const comment = [
                   '🤖 **OpenRouter First Line of Sight** (cron sweep)',
                   '',
