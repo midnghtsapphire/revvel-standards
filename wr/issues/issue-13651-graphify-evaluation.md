@@ -49,6 +49,12 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
   - Step 4: competitor gap analysis
   - Step 5: monetization path
 
+### Ship-to-Market Recommendation for This Integration
+
+- **Recommended product to ship:** Graphify Evaluator
+- **Revvel-standards addition:** `products/graphify-evaluator`
+- **Implementation status in this PR:** Implemented with product scaffold and ship-to-market docs
+
 ---
 
 ## Step 1: Repository Discovery

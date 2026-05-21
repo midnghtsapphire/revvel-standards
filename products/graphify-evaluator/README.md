@@ -22,6 +22,7 @@ Graphify Evaluator provides a focused UI for teams that need to compare LLM-powe
 
 - Deep research file: [`wr/issues/issue-13651-graphify-evaluation.md`](../../wr/issues/issue-13651-graphify-evaluation.md)
 - Product created from that research: `products/graphify-evaluator`
+- Ship-to-market recommendation from deep research: build and ship this Graphify Evaluator integration as a new revvel-standards product addition
 
 ## Quick Start
 
