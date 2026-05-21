@@ -116,11 +116,14 @@ export default function Home() {
             Collect qualified creators before full launch. Connect this form to your CRM webhook for
             segmented onboarding and paid-plan conversion.
           </p>
-          <p className="mt-4 text-sm text-cyan-100">Use your creator email to join early access.</p>
+          <p id="waitlist-email-hint" className="mt-4 text-sm text-cyan-100">
+            Use your creator email to join early access.
+          </p>
           <form className="mt-6 flex flex-col gap-3 sm:flex-row">
             <input
               type="email"
               aria-label="Email address"
+              aria-describedby="waitlist-email-hint"
               className="w-full rounded-full border border-white/30 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
             />
             <button
