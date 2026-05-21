@@ -35,7 +35,7 @@ const SKILLS = [
     name: "Skill Forge",
     category: "Developer Tools",
     description:
-      "Scaffold, validate, and publish new Revvel skills. Automates SKILL.md, tests, and registry entry.",
+      "Create, validate, and publish new Revvel skills. Automates SKILL.md, tests, and registry entry.",
     trigger: "skill forge",
     icon: "⚒️",
   },
