@@ -17,7 +17,8 @@ body:
         Use this form to define the full intended scope AND how the system should treat it.
 
         Important:
-        - **Output Type** below controls what you are asking for (app, CLI, API, PDF, docs, invention, etc.).
+        - **Title-only intake is allowed.** If you only have a title, submit it and let research / the orchestrator infer the rest.
+        - **Output Type** below controls what you are asking for (app, CLI, API, PDF, docs, invention, etc.) when you choose to fill it in.
         - When Output Type is **sellable-pdf**, use **PDF pipeline batch** (Not applicable / Autocreate 3 / Autocreate 20).
           The full playbook is **form-driven** from those fields (`workflows/PDF_WR_PLAYBOOK.md`); do not rely on hand-picked labels for routing.
         - This form should describe the complete operational unit, not the smallest acceptable patch.
@@ -27,7 +28,7 @@ body:
   - type: dropdown
     id: output_type
     attributes:
-      label: Output Type (required)
+      label: Output Type (optional)
       description: What are you asking to create or change?
       options:
         - production-app
@@ -42,7 +43,7 @@ body:
         - api-product
         - invention-flow
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: pdf_pipeline_batch
