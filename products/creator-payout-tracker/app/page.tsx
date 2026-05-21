@@ -1,6 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import {
+  buildCsvExport,
+  buildMarkdownReport,
+  estimatePlatforms,
+  formatUsd,
+  getTopRecommendations,
+  normalizeMetrics,
+} from './data/calculator';
 import { PLATFORMS, PLATFORM_CATEGORIES, Platform } from './data/platforms';
 
 type SortKey = 'name' | 'rpmMax' | 'subPayoutPer5' | 'platformCutPct';
@@ -38,6 +46,33 @@ export default function HomePage() {
   const [monthlyViews, setMonthlyViews] = useState(100000);
   const [monthlySubscribers, setMonthlySubscribers] = useState(100);
   const [subPrice, setSubPrice] = useState(5);
+  const checkoutUrl =
+    process.env.NEXT_PUBLIC_POLAR_CHECKOUT_URL ??
+    'mailto:audrey@midnghtsapphire.com?subject=Creator%20Payout%20Tracker%20Pro';
+
+  const metrics = useMemo(
+    () =>
+      normalizeMetrics({
+        monthlyViews,
+        monthlySubscribers,
+        subscriptionPrice: subPrice,
+      }),
+    [monthlyViews, monthlySubscribers, subPrice]
+  );
+
+  const estimates = useMemo(() => estimatePlatforms(PLATFORMS, metrics), [metrics]);
+  const topRecommendations = useMemo(
+    () => getTopRecommendations(estimates, 3),
+    [estimates]
+  );
+  const estimateByPlatform = useMemo(
+    () => new Map(estimates.map((estimate) => [estimate.platform.id, estimate])),
+    [estimates]
+  );
+  const markdownReport = useMemo(
+    () => buildMarkdownReport(metrics, estimates),
+    [metrics, estimates]
+  );
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -72,15 +107,31 @@ export default function HomePage() {
   }, [category, sortKey, sortDir, activeTab]);
 
   function calcMonthlyEarnings(p: Platform): string {
-    if (activeTab === 'rpm' && p.rpmMax !== null) {
-      const avgRpm = ((p.rpmMin ?? 0) + p.rpmMax) / 2;
-      return `$${((avgRpm * monthlyViews) / 1000).toFixed(0)}`;
+    const estimate = estimateByPlatform.get(p.id);
+    if (activeTab === 'rpm') {
+      return formatUsd(estimate?.monthlyAdRevenue ?? null);
     }
-    if (activeTab === 'subscription' && p.subPayoutPer5 !== null) {
-      const ratio = subPrice / 5;
-      return `$${(p.subPayoutPer5 * ratio * monthlySubscribers).toFixed(0)}`;
+    if (activeTab === 'subscription') {
+      return formatUsd(estimate?.monthlySubscriptionRevenue ?? null);
     }
-    return '—';
+    return '-';
+  }
+
+  function downloadReport(format: 'markdown' | 'csv') {
+    const content =
+      format === 'markdown' ? markdownReport : buildCsvExport(estimates);
+    const blob = new Blob([content], {
+      type: format === 'markdown' ? 'text/markdown' : 'text/csv',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download =
+      format === 'markdown'
+        ? 'creator-payout-strategy-brief.md'
+        : 'creator-payout-estimates.csv';
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   const SortBtn = ({ k, label }: { k: SortKey; label: string }) => (
@@ -104,6 +155,7 @@ export default function HomePage() {
           <div className="flex gap-4 text-sm text-gray-400">
             <a href="#rankings" className="hover:text-white transition-colors">Rankings</a>
             <a href="#calculator" className="hover:text-white transition-colors">Calculator</a>
+            <a href="#strategy-brief" className="hover:text-white transition-colors">Brief</a>
             <a href="#about" className="hover:text-white transition-colors">About</a>
           </div>
         </div>
@@ -126,6 +178,20 @@ export default function HomePage() {
           <span className="bg-gray-800 px-3 py-1 rounded-full">12 platforms tracked</span>
           <span className="bg-gray-800 px-3 py-1 rounded-full">Free earnings calculator</span>
           <span className="bg-gray-800 px-3 py-1 rounded-full">⚠️ Data are estimates — see disclaimer below</span>
+        </div>
+        <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
+          <a
+            href="#calculator"
+            className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-5 py-3 text-sm font-bold text-white hover:bg-violet-500 transition-colors"
+          >
+            Calculate my payout mix
+          </a>
+          <a
+            href={checkoutUrl}
+            className="inline-flex items-center justify-center rounded-lg border border-violet-700 px-5 py-3 text-sm font-bold text-violet-200 hover:bg-violet-950 transition-colors"
+          >
+            Upgrade for payout alerts
+          </a>
         </div>
       </section>
 
@@ -343,6 +409,79 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Strategy Brief */}
+      <section id="strategy-brief" className="max-w-6xl mx-auto px-4 pb-16">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1.25fr]">
+          <div className="bg-violet-950/40 border border-violet-800 rounded-2xl p-6">
+            <p className="text-xs font-semibold text-violet-300 uppercase tracking-wider mb-2">
+              Productized recommendation engine
+            </p>
+            <h2 className="text-2xl font-bold text-white mb-3">
+              Your top payout moves
+            </h2>
+            <p className="text-sm text-violet-100/80 mb-5">
+              The app turns the deep-research payout dataset into a ranked,
+              downloadable strategy brief for the creator metrics entered above.
+            </p>
+            <div className="space-y-3">
+              {topRecommendations.map((estimate, index) => (
+                <div
+                  key={estimate.platform.id}
+                  className="rounded-xl bg-black/30 border border-violet-900/70 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-violet-300 font-semibold">
+                        #{index + 1} recommendation
+                      </p>
+                      <h3 className="font-bold text-white">
+                        {estimate.platform.emoji} {estimate.platform.name}
+                      </h3>
+                    </div>
+                    <span className="text-lg font-black text-emerald-300">
+                      {formatUsd(estimate.blendedMonthlyRevenue)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Fits {estimate.platform.bestFor.slice(0, 3).join(', ')}.
+                    Pays {estimate.platform.paymentCadence.toLowerCase()}.
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                onClick={() => downloadReport('markdown')}
+                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500 transition-colors"
+              >
+                Download Markdown brief
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadReport('csv')}
+                className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-bold text-gray-100 hover:bg-gray-700 transition-colors"
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h2 className="text-xl font-bold text-white">
+                Strategy brief preview
+              </h2>
+              <span className="rounded-full bg-gray-800 px-3 py-1 text-xs text-gray-400">
+                API-ready report
+              </span>
+            </div>
+            <pre className="max-h-96 overflow-auto rounded-xl bg-black/50 p-4 text-xs leading-relaxed text-emerald-200 whitespace-pre-wrap">
+              {markdownReport}
+            </pre>
+          </div>
+        </div>
+      </section>
+
       {/* Platform Deep Dives */}
       <section id="platforms" className="max-w-6xl mx-auto px-4 pb-16">
         <h2 className="text-2xl font-bold text-white mb-6">Platform Deep Dives</h2>
@@ -410,6 +549,44 @@ export default function HomePage() {
               </a>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Revenue CTA */}
+      <section className="max-w-6xl mx-auto px-4 pb-16">
+        <div className="rounded-2xl border border-emerald-800 bg-emerald-950/30 p-6 md:p-8">
+          <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div>
+              <p className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">
+                Shippable revenue surface
+              </p>
+              <h2 className="text-2xl font-bold text-white mb-3">
+                Turn payout research into a paid creator utility
+              </h2>
+              <p className="text-sm text-emerald-100/80">
+                Free visitors get rankings, estimates, and exports. Creator Pro
+                buyers get quarterly payout-change alerts, niche-specific RPM
+                briefings, and agency-ready report exports.
+              </p>
+            </div>
+            <div className="rounded-xl bg-black/30 border border-emerald-900 p-4">
+              <p className="text-sm font-bold text-white">Creator Pro</p>
+              <p className="text-3xl font-black text-emerald-300 mt-1">
+                $9<span className="text-sm font-medium text-emerald-200">/mo</span>
+              </p>
+              <ul className="mt-3 space-y-2 text-xs text-gray-300">
+                <li>Quarterly payout alert emails</li>
+                <li>Niche RPM briefings for finance, tech, gaming, art</li>
+                <li>Agency-ready Markdown and CSV exports</li>
+              </ul>
+              <a
+                href={checkoutUrl}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500 transition-colors"
+              >
+                Start Creator Pro
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
