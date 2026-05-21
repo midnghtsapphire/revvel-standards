@@ -5,6 +5,10 @@ on:
       - opened
       - reopened
       - labeled
+  issue_comment:
+    types:
+      - created
+      - edited
   workflow_dispatch:
     inputs:
       issue_number:
@@ -54,7 +58,10 @@ jobs:
           script: |
             const dispatch = context.eventName === 'workflow_dispatch';
             const issue = context.payload.issue;
+            const isIssueComment = context.eventName === 'issue_comment';
+            const isPullRequestComment = Boolean(issue?.pull_request);
             const inputs = context.payload.inputs || {};
+            const commentBody = context.payload.comment?.body || '';
             const issueNumber = inputs.issue_number || issue?.number || '';
             const prNumber = inputs.pr_number || '';
             const title = issue?.title || inputs.research_query || '';
@@ -72,11 +79,17 @@ jobs:
             ]);
             const labelTriggered = labels.some(label => triggerLabels.has(label));
             const titleTriggered = /^\[WR\]/i.test(title) || /research|marketing|seo|competitor|audience|chatter/i.test(title);
-            const shouldRun = dispatch || labelTriggered || titleTriggered;
+            const hasAgentMention = /@copilot|@cursoragent|@openhands-agent|@imgbotapp/i.test(commentBody);
+            const hasResearchIntent = /research engine|deep research|create a product|ship to market|implement|research|wr/i.test(commentBody);
+            const commentTriggered = hasResearchIntent && (hasAgentMention || /research engine|deep research|wr/i.test(commentBody));
+            const issueEventTriggered = labelTriggered || titleTriggered;
+            const issueCommentTriggered = isIssueComment && !isPullRequestComment && (commentTriggered || issueEventTriggered);
+            const shouldRun = dispatch || issueCommentTriggered || (!isIssueComment && issueEventTriggered);
+            const querySource = isIssueComment ? commentBody : title;
             core.setOutput('should_run', shouldRun ? 'true' : 'false');
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('pr_number', String(prNumber));
-            core.setOutput('research_query', inputs.research_query || title || '');
+            core.setOutput('research_query', inputs.research_query || querySource || '');
             core.setOutput('research_depth', inputs.research_depth || 'triangulated');
     timeout-minutes: 15
   research:
