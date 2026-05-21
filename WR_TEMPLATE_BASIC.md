@@ -41,6 +41,8 @@
 - **Risk Assessment:** _(auto)_
 - **Success Metrics:** _(auto)_
 - **Product-Type & Output Length Selection Matrix (API/CLI/MCP/Skill/PDF/PowerPoint/Video/News-Media):** _(auto)_
+- **Product / Output Selections:** _(auto)_
+- **Platform Defaults & Website Requirements:** _(auto)_
 - **Artifact Engine Map:** _(auto)_
 - **Deployment Split (Vercel UI + DigitalOcean integrations):** _(auto)_
 - **Website Auth/Admin Coverage (Admin + Apple/Google/GitHub/GitLab/Microsoft login):** _(auto)_
