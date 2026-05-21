@@ -121,31 +121,47 @@ None
 
 ### Summary
 
-_No response_
+Create a GitHub assignment workflow that routes GOAP/OpenRouter/Jules WR work to
+`@midnghtsapphire`, keeps WR output aligned with revvel-standards, and routes
+non-GOAP follow-up tasks to `@radiochaser`.
 
 ### Objective
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+Ensure any WR process item related to GOAP, OpenRouter, or Jules is assigned to
+`@midnghtsapphire` and that non-GOAP tasks in this PR scope are assigned to
+`@radiochaser`.
 
 
 ### Required Bundle
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+- Assignment routing for keywords: `goap`, `openrouter`, `jules` →
+  `@midnghtsapphire`.
+- WR items created by `@midnghtsapphire` must follow revvel-standards with no
+  process deviations.
+- GOAP lane includes skills + CEO factory agents and runner-capable execution
+  paths for no-API Perplexity and OpenRouter API tasks.
+- Non-GOAP tasks in this PR scope route to `@radiochaser`.
 
 
 ### Definition of Done
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+- GOAP/OpenRouter/Jules assignment checks pass and apply
+  `assignee=midnghtsapphire`.
+- Workflow/logic clearly separates GOAP-routed tasks vs. non-GOAP tasks for
+  `radiochaser`.
+- Documentation maps runner behavior for requested GOAP and skills execution.
 
 
 ### Do Not Under-Scope
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+Do not treat assignment as one-time issue triage only. Assignment must be
+applied across the WR flow phases where routing decisions are made.
 
 
 ### Explicit Exclusions
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+No scope expansion to unrelated assignment policies outside this issue's GOAP /
+OpenRouter / Jules routing requirements.
 
 
 ### Delivery Shape
@@ -158,12 +174,15 @@ _No response_
 
 ### Validation Expectations
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+Validate the routing matrix with examples for:
+1. GOAP/OpenRouter/Jules content → `@midnghtsapphire`
+2. Other tasks in this PR scope → `@radiochaser`
 
 
 ### Blocker Rule
 
-Duties review all merged prs. And make sure things that were implemented are there. You can leave in anything great that was removed or deleted. Rewritten or commented out. Generate a report first after research of problems-are they fixed better? Is anything stepping on each other. Are all engines wired un and actually working, please add fixes to any gaps missing. Anything removed that can lower costs? Use foss and free llms opensource. I have local Llama too? Diagnose whole revvel-standards and what it needs to increase oAudrey, Freedom Angel, Glow starlets authority and trust. There should be a whole engine adding meta data, naming images seo names and robust alttext? A competent plan each day to increase seo. Start each day with a report initiating handoff docs. Add high value wr requests. Create an engine for midnghtsapphire Assignee with runners
+If any GOAP/OpenRouter/Jules item is not routed to `@midnghtsapphire`, or if
+non-GOAP tasks are not mapped to `@radiochaser`, treat the WR as incomplete.
 
 
 ### Acknowledgements
