@@ -1,6 +1,6 @@
 # OpenMythos
 
-OpenMythos is a production-app website UI scaffold for launching a mythic worldbuilding product.
+OpenMythos is a production-app website UI for launching a sellable mythic worldbuilding product.
 
 ## Quick Start
 
@@ -10,22 +10,26 @@ npm install
 npm run dev
 ```
 
-Runs at: `http://localhost:3006`
+Runs at: `http://localhost:3007`
 
 ## Included UI
 
-- Hero section with OpenMythos positioning
-- Product pillars (Lore Engine, Character Forge, Launch Kit)
-- Launch roadmap section
-- Waitlist call-to-action form block
+- Glassmorphic hero + CTA
+- Template-based product pillars
+- Ship-to-market execution section
+- Offer stack (Starter / Pro / Studio)
+- Waitlist capture block for CRM/webhook wiring
 
 ## Scripts
 
-- `npm run dev` — start local dev server on port 3006
+- `npm run dev` — start local dev server on port 3007
 - `npm run build` — production build
-- `npm run start` — serve production build on port 3006
+- `npm run start` — serve production build on port 3007
 - `npm run lint` — run ESLint
 
 ## Deployment
 
-Deploy to Vercel as a standard Next.js app.
+Deploy to Vercel as a standard Next.js app. See:
+
+- [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
+- [`GO_TO_MARKET.md`](./GO_TO_MARKET.md)

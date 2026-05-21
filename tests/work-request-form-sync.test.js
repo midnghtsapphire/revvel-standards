@@ -300,7 +300,11 @@ test('PDF pipeline batch dropdown exists with expected options', () => {
     'wr-auto-classify playbook guard missing pdf_batch_allowed set'
   );
   assert(
-    wf.includes('if final.get("Output Type") == "sellable-pdf" and pdf_batch_raw:'),
+    /if\s+final\.get\("Output Type"\)\s*==\s*"sellable-pdf"\s*:\s*\n\s*pdf_batch_raw\s*=\s*parse_form_section\(/.test(wf),
+    'wr-auto-classify should only parse PDF pipeline batch for sellable-pdf requests'
+  );
+  assert(
+    /if\s+final\.get\("Output Type"\)\s*==\s*"sellable-pdf"\s+and\s+pdf_batch_raw\s*:/.test(wf),
     'wr-auto-classify should only evaluate PDF pipeline batch values for sellable-pdf requests'
   );
   assert(

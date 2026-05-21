@@ -439,7 +439,9 @@ jobs:
               add_label(f"output-type:{final['Output Type']}")
 
           pdf_batch_allowed = {"Not applicable", "Autocreate 3", "Autocreate 20"}
-          pdf_batch_raw = parse_form_section(ISSUE_BODY, "PDF pipeline batch")
+          pdf_batch_raw = None
+          if final.get("Output Type") == "sellable-pdf":
+              pdf_batch_raw = parse_form_section(ISSUE_BODY, "PDF pipeline batch")
           extra_summary = []
           if final.get("Output Type") == "sellable-pdf" and pdf_batch_raw:
               if pdf_batch_raw in pdf_batch_allowed:
