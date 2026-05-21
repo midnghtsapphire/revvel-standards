@@ -14,8 +14,9 @@
 This WR now goes through the full revvel-standards process instead of leaving
 behind an unfilled template. The key finding is that
 `products/graphify-evaluator` already exists in this repository, so the right
-ship-to-market move is not to create another scaffold, but to finish the
-existing product bundle to revvel-standards quality.
+ship-to-market move is not to create another scaffold or alternate
+implementation, but to ship this exact product to revvel-standards quality in
+one execution path.
 
 Graphify is a strong upstream candidate because it is a large, active
 open-source project with 50k+ GitHub stars, 5k+ forks, a recent push on
@@ -24,6 +25,11 @@ reports, and assistant integrations. The business opportunity is a
 productized, local-first codebase graph evaluator for engineering leads,
 platform teams, and agencies that need fast architecture understanding,
 onboarding support, and change-risk analysis.
+
+This WR should stay anchored to the repository north star:
+**Start at $10k/month → Scale to $10M total by year 3.** The product direction
+therefore needs to bias toward a revenue-generating ship-to-market release, not
+an open-ended research branch or a second implementation concept.
 
 ---
 
@@ -34,13 +40,34 @@ of the work as placeholders. Per the revvel-standards research rules, user
 instructions are a starting point, not the final answer, so the corrected scope
 is:
 
-1. Audit the existing Graphify product work already in this repo.
-2. Complete the revvel-standards research package around that product.
-3. Define the exact ship-to-market bundle still required before calling the
-   product ready.
+1. Treat `products/graphify-evaluator` as the only Graphify implementation path
+   for this issue.
+2. Audit that product against revvel-standards requirements.
+3. Complete the revvel-standards research package around that same product.
+4. Define the exact ship-to-market bundle required to ship it in a single
+   iteration.
 
 This means the correct deliverable is a completed WR plus a concrete completion
-plan for `products/graphify-evaluator`, not another empty product scaffold.
+plan for `products/graphify-evaluator`, not another empty product scaffold, not
+another repo concept, and not a staged multi-implementation rewrite.
+
+---
+
+## Prime Directive Alignment
+
+This WR is only valid if it supports the repository goal of reaching
+**$10k/month first and $10M total by year 3**. For this issue, that means:
+
+1. The Graphify product must be framed as a sellable ship-to-market asset.
+2. The WR must support a single extreme-programming iteration, not a chain of
+   vague future passes.
+3. Recommendations must increase the odds of shipping revenue faster:
+   - faster onboarding value
+   - architecture audit revenue
+   - consulting upsell
+   - recurring monitoring revenue
+4. Any language that sounds like "there are other implementations" should be
+   removed; this product is the implementation.
 
 ---
 
@@ -114,9 +141,10 @@ than creating a second Graphify app. Current state:
 
 ### Conclusion from the audit
 
-The product is **partially started, not ship-to-market ready**. The next PR for
-this initiative should focus on converting the existing evaluator into a full
-revvel-standards product bundle instead of starting over.
+The product is **the implementation for this issue**, but it is not yet at the
+finish line. The remaining work is not a search for a different path; it is the
+missing ship-to-market bundle required to take this exact product from
+partially-started to launchable.
 
 ---
 
@@ -334,10 +362,11 @@ $299-$999 per repo audit, infrastructure cost is negligible relative to revenue.
 
 ---
 
-## Required Revvel Bundle for the Next PR
+## Required Revvel Bundle for This Ship-to-Market Iteration
 
-To satisfy the "whole revvel-standards process," the next implementation PR for
-`products/graphify-evaluator` should ship this full bundle:
+To satisfy the "whole revvel-standards process," this Graphify implementation
+should ship with the full bundle below as part of the same ship-to-market
+iteration:
 
 - `README.md` with product story, quick start, screenshots, pricing CTA, and
   test URL
@@ -364,9 +393,9 @@ The Graphify product is only "done" when:
 
 ---
 
-## Recommended Next Implementation Sequence
+## Single-Iteration Execution Sequence
 
-### P0
+### Launch-critical work
 
 1. Expand the landing page from evaluator copy into a sellable product page.
 2. Fill `README.md`, `CHANGELOG.md`, `ROADMAP.md`, and `BLUEPRINT.md`.
@@ -374,24 +403,29 @@ The Graphify product is only "done" when:
    `SECURITY.md`.
 4. Add a sample report/download flow or at least a realistic demo artifact.
 
-### P1
+### Revenue-critical work
 
 1. Add repo input/connect flow and report generation UX.
 2. Add analytics and lead capture.
 3. Add pricing/checkout integration.
 
-### P2
+### Retention and expansion work
 
 1. Add recurring monitoring or CI-based reevaluation.
 2. Add consulting upsell and benchmark comparisons.
 3. Add case studies and SEO content.
 
+> **Execution rule:** this sequence is not meant to justify separate
+> implementations. It exists to define the work required to ship the one
+> Graphify product tracked by this WR.
+
 ---
 
 ## Validation Plan
 
-The current repository baseline passes `npm test` at the root. For the next
-implementation PR on this product, the minimum validation should be:
+The current repository baseline passes `npm test` at the root. For the
+ship-to-market implementation of this product, the minimum validation should
+be:
 
 ```bash
 cd products/graphify-evaluator
@@ -406,13 +440,13 @@ If product tests are added later, they must also be wired into CI explicitly.
 ## Final Recommendation
 
 **Do not create another Graphify product scaffold.** Treat
-`products/graphify-evaluator` as the canonical product, and use the next PR to
-finish the missing revvel-standards bundle around it.
+`products/graphify-evaluator` as the canonical and only implementation for this
+issue, and ship the missing revvel-standards bundle around it.
 
 That is the smallest path that still honors the user feedback: it takes this WR
-through the whole revvel-standards process, corrects the earlier placeholder
-draft, and leaves a concrete ship-to-market implementation target instead of a
-template.
+through the whole revvel-standards process, restores the Prime Directive
+framing, makes the one-iteration ship-to-market expectation explicit, and
+removes any implication that there should be another implementation path.
 
 ---
 
