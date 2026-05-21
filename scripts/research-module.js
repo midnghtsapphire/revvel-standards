@@ -5,7 +5,9 @@ let engine;
 try {
   engine = require("./research-engine.js");
 } catch (error) {
-  throw new Error(`Unable to load scripts/research-engine.js: ${error.message}`, { cause: error });
+  const compatError = new Error(`Unable to load scripts/research-engine.js: ${error.message}`);
+  compatError.cause = error;
+  throw compatError;
 }
 
 function getRequiredCompatEnvVar(name, env = process.env) {

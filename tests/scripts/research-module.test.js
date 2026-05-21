@@ -88,6 +88,7 @@ async function run() {
     );
 
     assert.strictEqual(receivedOptions.query, "Evaluate graphify alternatives");
+    assert.strictEqual(receivedOptions.depth, "triangulated");
     assert.strictEqual(receivedOptions.outputFile, "docs/research-output.md");
     assert.strictEqual(result, expectedResult);
   });
