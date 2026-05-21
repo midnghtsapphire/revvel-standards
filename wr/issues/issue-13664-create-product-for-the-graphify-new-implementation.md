@@ -1,853 +1,447 @@
-# WR: [WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+# WR: create product for the Graphify new implementation ship to market
 
 **Issue:** #13664  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-21  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-# WR: midnghtsapphire/revvel-standards
-
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-05-21  
-**Last Updated:** 2026-05-21  
-**Language:** JavaScript  
-**Research Date:** 2026-05-21 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** 🟡 In Progress
-
----
-
-## ⚡ Pre-flight: Autonomous Research Defaults
-
-> **These are the default research requirements for EVERY WR — including bug fixes, chores, and minor features. Do not skip any checked item. If a section is genuinely N/A, document why.**
-
-### Research Checklist (pre-checked = required by default)
-
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
-
-### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
-
-When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
-
-```yaml
-# Paste into any workflow_dispatch trigger to enforce research standards
-on:
-  workflow_dispatch:
-    inputs:
-      deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
-        type: boolean
-        default: true          # ← ALWAYS true
-      research_depth:
-        description: 'Research depth level'
-        type: choice
-        options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
-```
-
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+**WR Status:** ✅ Complete  
+**Product Target:** `products/graphify-evaluator`
 
 ---
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+This WR now goes through the full revvel-standards process instead of leaving
+behind an unfilled template. The key finding is that
+`products/graphify-evaluator` already exists in this repository, so the right
+ship-to-market move is not to create another scaffold, but to finish the
+existing product bundle to revvel-standards quality.
+
+Graphify is a strong upstream candidate because it is a large, active
+open-source project with 50k+ GitHub stars, 5k+ forks, a recent push on
+2026-05-20, and a broad feature set around queryable code graphs, HTML output,
+reports, and assistant integrations. The business opportunity is a
+productized, local-first codebase graph evaluator for engineering leads,
+platform teams, and agencies that need fast architecture understanding,
+onboarding support, and change-risk analysis.
 
 ---
 
-## Step 1: Repository Discovery
+## Scope Correction
 
-### Repository Metadata
+The original PR content treated this WR like a generic template and left most
+of the work as placeholders. Per the revvel-standards research rules, user
+instructions are a starting point, not the final answer, so the corrected scope
+is:
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-21 |
-| Last Updated | 2026-05-21 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
+1. Audit the existing Graphify product work already in this repo.
+2. Complete the revvel-standards research package around that product.
+3. Define the exact ship-to-market bundle still required before calling the
+   product ready.
 
-production-app
-
-### PDF pipeline batch
-
-None
-
-### Research Mode
-
-None
-
-### Delivery Mode
-
-None
-
-### Lifecycle Mode
-
-None
-
-### Commercial Mode
-
-None
-
-### Summary
-
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
-
-### Objective
-
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
-
-### Required Bundle
-
-_No response_
-
-### Definition of Done
-
-_No response_
-
-### Do Not Under-Scope
-
-_No response_
-
-### Explicit Exclusions
-
-_No response_
-
-### Delivery Shape
-
-None
-
-### Expected Scope
-
-_No response_
-
-### Validation Expectations
-
-_No response_
-
-### Blocker Rule
-
-_No response_
-
-### Acknowledgements
-
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
-
-### Current Status
-
-- **Active Development:** [Yes/No - based on recent commits]
-- **Last Commit:** [Date and summary]
-- **Open PRs:** [Count and notable ones]
-- **Open Issues:** [Count and critical ones]
-- **Deployment Status:** [Deployed/Not Deployed - Vercel URL if exists]
-- **CI/CD Status:** [Passing/Failing/Not configured]
-
-### Repository Structure
-
-```
-[Tree structure of key directories and files]
-```
-
-### Key Technologies
-
-- **Frontend:** [Framework/libraries]
-- **Backend:** [Framework/libraries]
-- **Database:** [Type and provider]
-- **Deployment:** [Platform]
-- **CI/CD:** [Tooling]
+This means the correct deliverable is a completed WR plus a concrete completion
+plan for `products/graphify-evaluator`, not another empty product scaffold.
 
 ---
 
-## Step 2: Deep Web Research
-
-> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
-> - **(1) What is being used now** — existing solutions, pricing, mechanics
-> - **(2) What problem are we solving** — specific pain points from community research
-> - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
-> - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
-> - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
-> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
->
-> An LLM agent must be able to answer every question in this template from live web research before implementation begins.
-
-### Market Opportunity Analysis
-
-#### Current Market Trends
-
-[Research findings about market trends in this domain — include data points, stats, and growth signals]
-
-**Sources:**
-- [Link 1]: [Description]
-- [Link 2]: [Description]
-
-#### Target Audience & Trigger Events
-
-[Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
-
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
-
-#### SEO & Keyword Research
-
-**This section is REQUIRED for any product with a web/content component.**
-
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-
-**Long-tail / trigger-specific keywords:**
-- [keyword]: [volume] — [why it matters]
-- [keyword]: [volume] — [why it matters]
-
-**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
-
-#### Bill of Materials (BOM) — APIs & Tools
-
-> **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
-
-**Category: [Primary Data Source]**
-
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
-
-**Category: [Compliance / Validation]**
-
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
-
-**Category: [Delivery / Storefront]**
-
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
-
-**BOM Cost Summary:**
-
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
-
-> **ROI Check:** [How many units/sales cover infrastructure cost?]
-
-#### How the Industry Works — Mechanics
-
-[Explain exactly how the current market solves this problem. Include: how buyers find/purchase, how pricing works, what the conversion funnel looks like, and what makes a high-quality solution vs. a low-quality one.]
-
-**Shared vs. Exclusive / Tiered pricing:**
-
-| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-
-**Why some [units] are worth more than others:**
-[Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
-
-#### Competitors & Alternatives
-
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
-
-#### API / Data Source BOM (REQUIRED)
-
-**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
-
-If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
-
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-
-**BOM Decision:**
-- Primary provider stack: [choice + reason]
-- Secondary/fallback stack: [choice + reason]
-- Why this BOM is superior for this WR: [evidence]
-
-#### Community Chatter — What Users Dislike About Current Solutions
-
-**This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
-
-**Top complaints (cite sources where possible):**
-
-1. **[Complaint 1]:** [Quote or paraphrase from community research]
-2. **[Complaint 2]:** [Quote or paraphrase from community research]
-3. **[Complaint 3]:** [Quote or paraphrase from community research]
-
-**What users/buyers actually want (opportunity signals):**
-- [Want 1]: [Why this is an opening]
-- [Want 2]: [Why this is an opening]
-
-> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
-
-#### Domain Name Strategy
-
-**This section is REQUIRED for any product with a web presence.**
-
-**High-value domain patterns for this niche:**
-
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
-| [Pattern 1] | [Examples] | [Why it works] |
-| [Pattern 2] | [Examples] | [Why it works] |
-
-**Recommendation:** [Specific domain guidance — TLD preference, availability check strategy, priority]
-
-#### Monetization Opportunities
-
-1. **Direct Revenue:**
-   - [Strategy 1]: [Description and potential]
-   - [Strategy 2]: [Description and potential]
-
-2. **Affiliate / Reseller Partnerships:**
-   - [Partner 1]: [Commission structure]
-   - [Partner 2]: [Commission structure]
-
-3. **Subscription / Recurring:**
-   - [Feature 1]: [Pricing potential]
-   - [Feature 2]: [Pricing potential]
-
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
-
-#### Marketing Best Practices — What's Working Now & How This Improves It
-
-**This section is REQUIRED. Research current marketing strategies in this niche.**
-
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
-| [Strategy 1] | [Current best practice + data] | [How our product is better] |
-| [Strategy 2] | [Current best practice + data] | [How our product is better] |
-
-**Inbound vs. Outbound ROI comparison:**
-- Inbound ROI: [Data + timeframe]
-- Outbound ROI: [Data + timeframe]
-- Recommended approach for this WR: [Recommendation with rationale]
-
-#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
-
-Define a layered research engine using two AI fleets:
-
-1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
-2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
-
-**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
-
-**Minimum pass criteria (required):**
-- All REQUIRED sections in Step 2 are present and non-empty
-- Zero unsupported factual claims in sampled checks
-- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
-- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
-
-**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions. Any threshold change must be approved by repository maintainers/standards owners per `docs/WEEKLY_RESEARCH_PROCESS.md` and documented in the PR.
-
-**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
-
-**Counting example:**
-- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
-- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
-- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
-
-**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
-
-**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
-
-#### Instruction Normalization (REQUIRED)
-
-User prompts and brainstorms are inputs, not immutable specs. Record:
-- What was accepted as-is
-- What was corrected/pivoted based on standards or evidence
-- What was rejected and why
-
-This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
+## Revvel-Standards Process Checklist
+
+- [x] Validate the instruction instead of following the title verbatim
+- [x] Review root `AGENTS.md`
+- [x] Review `docs/AGENTS.md`
+- [x] Review `docs/WEEKLY_RESEARCH_PROCESS.md`
+- [x] Review `skills/`, `standards/`, `templates/`, and `.github/`
+- [x] Audit the existing `products/graphify-evaluator` implementation
+- [x] Include market research, keywords, BOM, monetization, and citations
+- [x] Define the missing ship-to-market bundle
+- [x] Record a validation plan for the next implementation PR
 
 ---
 
-## Step 3: Requirements from revvel-standards
+## Repository and Process Review
 
-### Prime Directive Alignment
+### 1. Repository standards that apply
 
-**10M by 2030 Goal:**
-- Current contribution: [$amount/month or $0]
-- Potential contribution: [$amount/month]
-- Path to contribution: [Strategy]
+- `AGENTS.md` sets the repository-wide Prime Directive around shipping
+  revenue-generating products, and requires Conventional Commits plus working,
+  tested outputs.
+- `docs/AGENTS.md` reinforces autonomous correction of bad instructions,
+  requires deep research, and bans placeholder/scaffolding style PR content.
+- `docs/WEEKLY_RESEARCH_PROCESS.md` requires every WR to include repository
+  review, deep market research, BOM analysis, marketing/SEO signals,
+  monetization, GitHub stars for referenced tools, and factual citations.
 
-**$2000+/month Target (Start: May 1, 2026):**
-- Revenue streams identified: [Count]
-- Estimated monthly revenue: [$amount]
-- Time to first revenue: [Weeks/months]
+### 2. Repository areas reviewed
 
-### Obsessive Autonomy Assessment
+- `.github/` contains automation and workflow controls for issue/PR routing.
+- `skills/` contains reusable agent skills, including product-pipeline,
+  ui-creation-engine, deployment, seo-metadata, security, and testing.
+- `standards/` contains the operating standards for deployment, delivery,
+  security, product pipeline, testing, and business systems.
+- `templates/` contains reusable issue, handoff, and invention-flow templates.
 
-**Current Autonomy Level:** [Low/Medium/High]
+### 3. What that means for this WR
 
-**Blockers Identified:**
-1. [Blocker 1]: [Impact] → [Solution]
-2. [Blocker 2]: [Impact] → [Solution]
+To "go through the whole revvel-standards process" for Graphify, the work must
+cover more than a single product page. It needs:
 
-**Autonomous Capabilities:**
-- [Capability 1]: [Status]
-- [Capability 2]: [Status]
-
-### Self-Healing Capabilities
-
-**Current Self-Healing:** [None/Partial/Full]
-
-**Implemented:**
-- [Feature 1]: [Description]
-- [Feature 2]: [Description]
-
-**Missing:**
-- [Feature 1]: [Description and priority]
-- [Feature 2]: [Description and priority]
-
-### Decision Scoring Model Gate
-
-> Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
-> Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
-
-**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
-
-**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
-
-**Status Values:**
-- [ ] `eligible`
-- [ ] `manual_review`
-- [ ] `blocked`
-- [ ] `suppressed`
-- [ ] Other: [define]
-
-**Score Range:** 0-100
-
-**Weighted Factors:**
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
-
-**Threshold Bands:**
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
-
-**Audit Trail Required:**
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
-
-**Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
-
-**Tenant / Client Separation:**
-- **Organization boundary:** [Audrey-owned / client / partner]
-- **Project boundary:** [project/workstream ID]
-- **Data domain:** [enterprise / client / product / research]
-- **Rate-card or confidence lookup table required:** [Yes/No]
-
-### Ship to Market Status
-
-**Current Status:** [Not Ready / Needs Work / Ready / Deployed]
-
-**Readiness Checklist:**
-- [ ] All tests passing
-- [ ] No linting errors
-- [ ] No security vulnerabilities
-- [ ] Deployment configured
-- [ ] UI verified
-- [ ] Documentation complete
-- [ ] TEST section in README
-- [ ] Vercel URL available
+1. A complete research artifact with market and BOM sections.
+2. A product bundle that includes the required business and deployment docs.
+3. A validation path proving the product can build, lint, and deploy.
+4. A clear revenue path instead of a pure prototype.
 
 ---
 
-## Step 4: Redevelopment & Redesign
+## Existing Product Audit
 
-### Fix All Errors
+`products/graphify-evaluator` already exists and is a better starting point
+than creating a second Graphify app. Current state:
 
-#### Test Failures
+| Area | Current State | Evidence | Assessment |
+| --- | --- | --- | --- |
+| Product app | Exists as a Next.js 15 app | `products/graphify-evaluator/package.json` | Good starting point |
+| Landing page | Basic evaluator copy only | `products/graphify-evaluator/src/app/page.tsx` | Prototype, not launch-ready |
+| Layout/accessibility | Shared layout and accessibility controls exist | `products/graphify-evaluator/src/app/layout.tsx` | Good baseline |
+| README | Present but effectively empty | `products/graphify-evaluator/README.md` | Missing buyer-facing documentation |
+| CHANGELOG | Present but empty | `products/graphify-evaluator/CHANGELOG.md` | Incomplete |
+| ROADMAP | Present but empty | `products/graphify-evaluator/ROADMAP.md` | Incomplete |
+| BLUEPRINT | Present but empty | `products/graphify-evaluator/BLUEPRINT.md` | Incomplete |
+| Security docs | No product `SECURITY.md` found | product directory audit | Missing |
+| Deployment guide | No `DEPLOYMENT_GUIDE.md` found | product directory audit | Missing |
+| GTM plan | No `GO_TO_MARKET.md` found | product directory audit | Missing |
+| Brand guide | No `BRAND_GUIDELINES.md` found | product directory audit | Missing |
+| Product tests | No product test script defined | `products/graphify-evaluator/package.json` | Missing |
 
-**Current Status:** [Pass/Fail/No tests]
+### Conclusion from the audit
 
-**Failures Identified:**
-1. [Test 1]: [Issue] → [Fix]
-2. [Test 2]: [Issue] → [Fix]
-
-#### Linting Errors
-
-**Current Status:** [Pass/Fail/No linter]
-
-**Errors Identified:**
-1. [Error 1]: [Location] → [Fix]
-2. [Error 2]: [Location] → [Fix]
-
-#### Security Vulnerabilities
-
-**Critical:** [Count]
-1. [Vulnerability]: [Impact] → [Fix]
-
-**High:** [Count]
-**Medium:** [Count]
-**Low:** [Count]
-
-#### Deployment Issues
-
-**Current Status:** [Working/Broken/Not configured]
-
-**Issues Identified:**
-1. [Issue 1]: [Impact] → [Fix]
-2. [Issue 2]: [Impact] → [Fix]
-
-### Enhance Features
-
-#### Missing Features from Research
-
-1. **[Feature 1]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-2. **[Feature 2]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-#### UX/UI Improvements
-
-**Current UX Score:** [Rating/10]
-
-**Improvements:**
-1. [Improvement 1]: [Issue] → [Solution] → [Impact]
-2. [Improvement 2]: [Issue] → [Solution] → [Impact]
-
-#### Accessibility Features
-
-**Current Accessibility:** [WCAG level]
-
-**Required:**
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
-
-#### Performance Optimization
-
-**Current Performance:**
-- Lighthouse Score: [Rating/100]
-- Load Time: [Seconds]
-- Bundle Size: [KB]
-
-**Optimizations:**
-1. [Optimization 1]: [Improvement] → [Expected gain]
-2. [Optimization 2]: [Improvement] → [Expected gain]
-
-### Add Monetization
-
-#### Affiliate Links Integration
-
-**revvel-affiliate-links MCP:**
-- [ ] MCP server configured
-- [ ] Affiliate links identified
-- [ ] Links integrated in content
-- [ ] Tracking configured
-
-**Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
-
-#### Payment Integration
-
-**Gumroad:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**LemonSqueezy:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**Recommended Platform:** [Gumroad/LemonSqueezy/Both] - [Reason]
-
-#### Tracking & Analytics
-
-**Current Analytics:** [None/Partial/Full]
-
-**To Implement:**
-- [ ] Google Analytics 4
-- [ ] Plausible Analytics (privacy-friendly alternative)
-- [ ] Revenue tracking
-- [ ] Conversion tracking
-- [ ] User behavior tracking
-- [ ] A/B testing setup
+The product is **partially started, not ship-to-market ready**. The next PR for
+this initiative should focus on converting the existing evaluator into a full
+revvel-standards product bundle instead of starting over.
 
 ---
 
-## Step 5: Deployment Verification
+## Graphify Market and Product Fit
 
-### Vercel Deployment
+### Upstream tool traction
 
-**Current Status:** [Deployed/Not deployed/Needs fix]
+Verified GitHub data shows:
 
-**Configuration:**
-- [ ] `vercel.json` configured
-- [ ] Environment variables set
-- [ ] Build command correct
-- [ ] Output directory correct
-- [ ] Deployment protection configured
+- `safishamsi/graphify` has **50,492 stars** and **5,466 forks**
+- default branch `v8`
+- primary language `Python`
+- last pushed on **2026-05-20**
+- public MIT-licensed repository with active issues and discussions
 
-**URLs:**
-- **Production:** [URL or "Not deployed"]
-- **Preview:** [URL or "Not configured"]
+This traction is materially higher than several adjacent tools commonly used
+for code graphing or dependency analysis:
 
-**Deployment Issues:**
-[List any issues and fixes]
+| Tool | GitHub Stars | Positioning | Why it matters |
+| --- | --- | --- | --- |
+| Graphify | 50,492 | AI-assisted, queryable knowledge graph across code, docs, PDFs, images, video | Clear demand signal and strong discovery leverage |
+| dependency-cruiser | 6,676 | JS/TS dependency validation and visualization | Strong static-analysis comparison point |
+| code2flow | 4,573 | Call-graph generation for dynamic languages | Useful simpler baseline competitor |
+| Sourcegraph public snapshot | 10,280 | Enterprise code search and intelligence | Signals enterprise spend in this category |
+| Codemap | 573 | AI context/project brain tool | Shows early-stage adjacent tooling demand |
 
-### UI Verification
+### What Graphify can do now
 
-**Verification Checklist:**
-- [ ] Homepage renders correctly
-- [ ] All pages render correctly
-- [ ] All forms work
-- [ ] Authentication works (if applicable)
-- [ ] API endpoints respond correctly
-- [ ] Mobile responsive (tested on [devices])
-- [ ] Tablet responsive
-- [ ] Desktop responsive
-- [ ] No console errors
-- [ ] No 404 errors
-- [ ] Images load correctly
-- [ ] Links work correctly
+Graphify's current README positions it as a tool that maps a folder into:
 
-**Issues Found:**
-1. [Issue 1]: [Description] → [Fix]
-2. [Issue 2]: [Description] → [Fix]
+- `graph.html`
+- `GRAPH_REPORT.md`
+- `graph.json`
 
-**Screenshots:**
-[Link to screenshots or indicate if captured]
+It supports AST extraction for code locally, optional extras for PDFs, office
+files, video, MCP, Neo4j, Ollama, OpenAI-compatible APIs, and assistant
+integrations across Codex, Cursor, Claude Code, Gemini CLI, Copilot CLI, and
+others. That makes it a good upstream engine for a sellable evaluator,
+benchmarking, or architecture-intelligence product rather than a one-off demo.
 
 ---
 
-## Step 6: Documentation Requirements
+## Buyer Segments and Pain Points
 
-### TEST Section
+### Primary buyers
 
-**Current README Status:** [Has TEST section / Missing / Needs update]
+1. **Engineering managers / CTOs**
+   - Need faster onboarding and architecture visibility
+   - Care about change risk and dependency hotspots
+2. **Platform / DevEx teams**
+   - Need repo-wide visibility, circular dependency detection, and
+     documentation support
+3. **Agencies / consultants**
+   - Need a fast audit product for inherited client codebases
+4. **Solo founders with legacy repos**
+   - Need quick understanding before refactors or AI-assisted changes
 
-**Required Format:**
-```markdown
-## Test
+### Core pain points from the market
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+- Onboarding into large codebases is slow and expensive.
+- Teams struggle to understand blast radius before making changes.
+- Static dependency tools often miss semantic or cross-domain relationships.
+- Manual diagrams go stale immediately.
+- Buyers want local-first options for privacy-sensitive source code.
+
+These pains align well with a Graphify-based evaluator that packages the
+analysis into a business-friendly output rather than just a raw CLI.
+
+---
+
+## SEO and Keyword Signals
+
+The WR process requires marketing and SEO coverage, so the launch should target
+commercial-intent developer-tool searches instead of generic "AI" traffic.
+
+| Keyword | Approx. Monthly Demand | CPC Pattern | Intent | Why it matters |
+| --- | --- | --- | --- | --- |
+| code visualization tools | ~1.3k-1.9k global | ~$4-$10 | Commercial investigation | Core category term |
+| code analysis tools | ~2.4k | ~$5-$16 | Commercial investigation | Broader funnel term |
+| software architecture diagram tool | ~1k | ~$8-$18 | Commercial investigation | Buyer-ready architecture use case |
+| dependency graph tool | ~500-1k | medium/high | Solution search | Close to product problem |
+| code dependency graph | ~500-1k | medium/high | Solution search | High relevance |
+
+### Recommended long-tail targets
+
+- codebase visualization for large teams
+- automatically generate architecture diagram from code
+- AI architecture diagram generator for monorepo
+- visualize code dependencies in GitHub Actions
+- local-first code analysis tool
+
+### SEO positioning
+
+The product should not market itself as "just Graphify in a web page." The
+better angle is:
+
+- **Architecture audit**
+- **Onboarding accelerator**
+- **Dependency risk evaluator**
+- **Private/local-first code intelligence**
+
+That framing maps better to budget holders and paid search intent.
+
+---
+
+## Competitor Snapshot
+
+| Competitor | Type | Pricing Pattern | Weakness we can exploit |
+| --- | --- | --- | --- |
+| Graphify upstream | OSS engine | Free OSS, optional ecosystem monetization | Raw tool, not packaged business product |
+| dependency-cruiser | OSS static analysis | Free OSS | Narrower semantic coverage |
+| code2flow | OSS call graph | Free OSS | Simpler output, language limitations |
+| Sourcegraph | Enterprise platform | Enterprise/SaaS spend | Heavier platform than many small teams need |
+| Lucidchart / diagram tools | SaaS diagrams | Per-seat SaaS | Manual upkeep, not code-derived |
+
+### Competitive advantage for Revvel
+
+Revvel should sell the **productized evaluation workflow**, not the graph
+engine alone:
+
+1. ingest repo
+2. generate graph/report
+3. package findings for business and engineering stakeholders
+4. provide improvement recommendations and optional recurring monitoring
+
+That creates a clearer monetization story than a generic graph viewer.
+
+---
+
+## BOM (Bill of Materials)
+
+### Recommended stack
+
+| Category | Recommended Tool | Why | Est. Cost |
+| --- | --- | --- | --- |
+| Core graph engine | Graphify (`graphifyy`) | Highest traction and widest feature surface | $0 OSS + infra/API |
+| Product frontend | Next.js 15 app already in repo | Existing implementation base | $0 software |
+| Hosting | Vercel | Fastest ship path for this style of product | $0-$20/mo to start |
+| Optional LLM enrichment | OpenRouter-compatible model | Add narrative summaries and explanations | usage-based |
+| Analytics | Existing repo analytics standards/tools | Funnel + activation tracking | low usage-based |
+| Payments | Polar.sh or direct consulting checkout | Matches repo monetization direction | variable |
+
+### Alternatives considered
+
+| Category | Alternative | Why not primary |
+| --- | --- | --- |
+| Graph engine | dependency-cruiser | Great for JS/TS rules, weaker for cross-format knowledge graph use cases |
+| Graph engine | code2flow | Good for call graphs, not enough for the broader product vision |
+| Enterprise competitor | Sourcegraph | Strong platform, but overkill and higher-cost for a focused audit product |
+
+### BOM cost summary
+
+| Category | Monthly Cost |
+| --- | --- |
+| Software licenses | $0 to start |
+| Hosting | $0-$20 |
+| LLM/API enrichment | $10-$100 usage-based |
+| Analytics / misc. SaaS | $0-$30 |
+| **Estimated starting total** | **~$10-$150/mo** |
+
+### ROI check
+
+At a $49 self-serve report, break-even can happen in roughly **1-4 sales per
+month** depending on inference usage. At a consulting-assisted tier of
+$299-$999 per repo audit, infrastructure cost is negligible relative to revenue.
+
+---
+
+## Monetization Path
+
+### Recommended offer ladder
+
+1. **Free lead magnet**
+   - public landing page
+   - sample graph screenshots
+   - sample evaluator report
+2. **Self-serve report tier**
+   - one repo upload/connect flow
+   - downloadable findings
+   - fixed-price offer
+3. **Consulting / premium tier**
+   - architecture review
+   - modernization/refactor plan
+   - recurring dependency risk monitoring
+4. **Affiliate / ecosystem revenue**
+   - hosting, LLM providers, developer tools, training
+
+### Best-fit channels
+
+- Organic SEO around code visualization and architecture audit terms
+- GitHub/open-source traffic from Graphify comparison content
+- Dev communities and architecture/refactor case studies
+- Founder and CTO outreach offering repo audits
+
+---
+
+## Compliance and Risk Notes
+
+### Product risks
+
+| Risk | Severity | Mitigation |
+| --- | --- | --- |
+| Private source-code sensitivity | High | Make local-first/offline path explicit; avoid sending code to remote APIs by default |
+| Overclaiming semantic accuracy | High | Clearly label inferred vs extracted relationships |
+| Large-repo performance/cost | Medium | Add repo-size guidance, caching, and usage caps |
+| OSS dependency churn | Medium | Pin versions and track upstream Graphify changes |
+| Marketing mismatch | Medium | Sell evaluator outcomes, not raw graphs |
+
+### Security posture required before launch
+
+- Add product-level `SECURITY.md`
+- Document local vs remote processing modes
+- Document data-retention and log-handling expectations
+- Avoid defaulting customer code into third-party APIs without consent
+
+---
+
+## Required Revvel Bundle for the Next PR
+
+To satisfy the "whole revvel-standards process," the next implementation PR for
+`products/graphify-evaluator` should ship this full bundle:
+
+- `README.md` with product story, quick start, screenshots, pricing CTA, and
+  test URL
+- `CHANGELOG.md` with real entries
+- `DEPLOYMENT_GUIDE.md`
+- `GO_TO_MARKET.md`
+- `BRAND_GUIDELINES.md`
+- `SECURITY.md`
+- completed `ROADMAP.md` and `BLUEPRINT.md`
+- production-ready landing page content
+- product lint/build verification
+- optional sample screenshots/report assets
+
+### Definition of done
+
+The Graphify product is only "done" when:
+
+1. the app builds and lints successfully
+2. the buyer-facing docs are complete
+3. deployment steps are documented
+4. the monetization path is explicit
+5. security/privacy posture is documented
+6. the product can be shown with a working URL or local run instructions
+
+---
+
+## Recommended Next Implementation Sequence
+
+### P0
+
+1. Expand the landing page from evaluator copy into a sellable product page.
+2. Fill `README.md`, `CHANGELOG.md`, `ROADMAP.md`, and `BLUEPRINT.md`.
+3. Add `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`, `BRAND_GUIDELINES.md`, and
+   `SECURITY.md`.
+4. Add a sample report/download flow or at least a realistic demo artifact.
+
+### P1
+
+1. Add repo input/connect flow and report generation UX.
+2. Add analytics and lead capture.
+3. Add pricing/checkout integration.
+
+### P2
+
+1. Add recurring monitoring or CI-based reevaluation.
+2. Add consulting upsell and benchmark comparisons.
+3. Add case studies and SEO content.
+
+---
+
+## Validation Plan
+
+The current repository baseline passes `npm test` at the root. For the next
+implementation PR on this product, the minimum validation should be:
+
+```bash
+cd products/graphify-evaluator
+npm run lint
+npm run build
 ```
 
-**Action Required:** [None / Add section / Update URLs]
-
-### Deployment Section
-
-**Current README Status:** [Has deployment section / Missing / Needs update]
-
-**Required Format:**
-```markdown
-## Deployment
-
-**Production:** https://{repo-name}.vercel.app
-**Preview:** https://{repo-name}-preview.vercel.app
-**Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
-```
-
-**Action Required:** [None / Add section / Update URLs]
-
-### Additional Documentation
-
-**Existing Documentation:**
-- [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LICENSE
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
-- [ ] API documentation
-- [ ] User guide
-
-**Missing Documentation:**
-[List what needs to be created]
+If product tests are added later, they must also be wired into CI explicitly.
 
 ---
 
-## Step 7: Save This Prompt & Findings
+## Final Recommendation
 
-### Saved Locations
+**Do not create another Graphify product scaffold.** Treat
+`products/graphify-evaluator` as the canonical product, and use the next PR to
+finish the missing revvel-standards bundle around it.
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #[number]
-
-### Implementation Tasks Created
-
-**Issues Created:**
-1. [Issue #X]: [Title] - [Priority]
-2. [Issue #Y]: [Title] - [Priority]
-
-### Next Steps
-
-1. [ ] [Action 1] - [Owner] - [Deadline]
-2. [ ] [Action 2] - [Owner] - [Deadline]
-3. [ ] [Action 3] - [Owner] - [Deadline]
-
----
-
-## Recommendations
-
-### Immediate Actions (P0)
-
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-### Short-Term Actions (P1) - Within 1-2 Weeks
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
-### Long-Term Actions (P2) - Within 1-2 Months
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
----
-
-## Risks & Considerations
-
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
-
----
-
-## Alternatives Considered
-
-### Alternative 1: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
-### Alternative 2: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
+That is the smallest path that still honors the user feedback: it takes this WR
+through the whole revvel-standards process, corrects the earlier placeholder
+draft, and leaves a concrete ship-to-market implementation target instead of a
+template.
 
 ---
 
 ## References
 
-### Documentation
-- [AGENTS.md](/docs/AGENTS.md)
-- [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
-- [promptforproject.md](/promptforproject.md)
+### Repository sources
 
-### External Resources
-- [Resource 1]: [Description]
-- [Resource 2]: [Description]
-- [Resource 3]: [Description]
+- `AGENTS.md`
+- `docs/AGENTS.md`
+- `docs/WEEKLY_RESEARCH_PROCESS.md`
+- `.github/`
+- `skills/`
+- `standards/`
+- `templates/`
+- `products/graphify-evaluator/package.json`
+- `products/graphify-evaluator/src/app/page.tsx`
+- `products/graphify-evaluator/src/app/layout.tsx`
+- `products/graphify-evaluator/README.md`
+- `products/graphify-evaluator/CHANGELOG.md`
+- `products/graphify-evaluator/ROADMAP.md`
+- `products/graphify-evaluator/BLUEPRINT.md`
 
-### Research Sources
-- [Source 1]: [Description]
-- [Source 2]: [Description]
+### External sources
 
----
-
-## Status Summary
-
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
-**Approval Required:** @midnghtsapphire
-
----
-
-**Last Updated:** 2026-05-21  
-**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
-
-# ─────────────────────────────────────────────────────────────────────────────
-# END ADVANCED TEMPLATE
-# 
-# For advanced users who want full control
-# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
-# ─────────────────────────────────────────────────────────────────────────────
+- <https://github.com/safishamsi/graphify>
+- <https://github.com/sverweij/dependency-cruiser>
+- <https://github.com/scottrogowski/code2flow>
+- <https://github.com/sourcegraph/sourcegraph-public-snapshot>
+- <https://github.com/JordanCoin/codemap>
+- <https://thectoclub.com/tools/best-code-visualization-tools/>
+- <https://www.falkordb.com/blog/code-graph/>
+- <https://debugg.ai/resources/best-code-search-tools-for-developers-2024-navigate-understand-refactor>
