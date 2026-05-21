@@ -13,16 +13,19 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 
 let passed = 0;
 let failed = 0;
+const pendingTests = [];
 
 function test(name, fn) {
-  try {
-    fn();
-    console.log(`PASS: ${name}`);
-    passed++;
-  } catch (error) {
-    console.log(`FAIL: ${name}\n    ${error.stack || error.message}`);
-    failed++;
-  }
+  pendingTests.push((async () => {
+    try {
+      await fn();
+      console.log(`PASS: ${name}`);
+      passed++;
+    } catch (error) {
+      console.log(`FAIL: ${name}\n    ${error.stack || error.message}`);
+      failed++;
+    }
+  })());
 }
 
 test('buildResearchPrompt includes issue details and recent comments', () => {
@@ -77,5 +80,7 @@ test('no-key integration doc exists and references the Rex / oAudrey lane', () =
   assert.ok(doc.includes('oAudrey'));
 });
 
-console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
-process.exit(failed === 0 ? 0 : 1);
+Promise.all(pendingTests).then(() => {
+  console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
+  process.exit(failed === 0 ? 0 : 1);
+});
