@@ -162,6 +162,9 @@ test('proof-of-life.yml supports Rex as a label-only assignee lane', () => {
   }
   if (!content.includes('Routed through **Rex**')) {
     throw new Error('proof-of-life comment must describe the Rex lane');
+  }
+});
+
 test('openrouter-triage.yml listens for issue-open triage', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-triage.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

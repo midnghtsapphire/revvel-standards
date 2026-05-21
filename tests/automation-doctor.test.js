@@ -2,6 +2,8 @@
  * Tests for automation-doctor.js
  */
 
+// 2026-05-21 (Claude): import BDD globals so the file runs directly and under `node --test`.
+const { describe, it } = require('node:test');
 const { AutomationDoctor, CONFIG } = require('../scripts/automation-doctor.js');
 const assert = require('assert');
 
