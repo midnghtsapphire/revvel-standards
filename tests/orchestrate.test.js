@@ -17,6 +17,7 @@ const {
   buildState,
   validateState,
   orchestrate,
+  runEngineLoop,
 } = require("../engines/runner-orchestrator/orchestrate");
 
 let passed = 0;
@@ -115,6 +116,46 @@ test("parseIntake reads JSON and coerces revenue/goal_phase", () => {
   assert.strictEqual(intake.revenue_target_monthly_usd, 1500);
   assert.strictEqual(intake.goal_phase, 2);
   assert.strictEqual(intake.intake_id, "intake-p");
+});
+
+test("engine loop chains research -> deliver -> done when the key is present", () => {
+  const state = buildState({ ...baseIntake, output_type: "api-product" });
+  const { status } = runEngineLoop(state, {
+    env: { OPENROUTER_API_KEY: "test-key" },
+    dryRun: true,
+  });
+  assert.strictEqual(status, "done");
+  const research = state.steps.find((s) => s.step_id === "research");
+  const deliver = state.steps.find((s) => s.step_id === "deliver-api");
+  assert.strictEqual(research.status, "ok");
+  assert.strictEqual(deliver.status, "ok");
+  assert.deepStrictEqual(deliver.artifacts, ["deliver:api"]);
+  assert.ok(validateState(state).valid, "state must stay schema-valid through the loop");
+});
+
+test("engine loop halts with a Procurement BOM when OPENROUTER_API_KEY is missing", () => {
+  const state = buildState(baseIntake);
+  const { status } = runEngineLoop(state, { env: {}, dryRun: true });
+  assert.strictEqual(status, "needs_procurement");
+  assert.ok(state.bom, "state.bom must be set on halt");
+  assert.strictEqual(state.bom.items[0].name, "OpenRouter API key");
+  const research = state.steps.find((s) => s.step_id === "research");
+  assert.strictEqual(research.status, "needs_procurement");
+  // Deliver must NOT have run.
+  const deliver = state.steps.find((s) => s.step_id.startsWith("deliver-"));
+  assert.strictEqual(deliver.status, "pending");
+  assert.ok(validateState(state).valid, "halted state must be schema-valid");
+});
+
+test("engine loop writes BOM.md to disk when not dry-run", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "orch-bom-"));
+  const state = buildState(baseIntake);
+  const { bomPath } = runEngineLoop(state, { env: {}, bomDir: tmp });
+  assert.ok(bomPath && fs.existsSync(bomPath), "BOM.md should be written");
+  const bom = fs.readFileSync(bomPath, "utf8");
+  assert.ok(bom.includes("Procurement BOM"));
+  assert.ok(bom.includes("OpenRouter API key"));
+  fs.rmSync(tmp, { recursive: true, force: true });
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

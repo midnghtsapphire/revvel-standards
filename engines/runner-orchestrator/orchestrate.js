@@ -117,7 +117,7 @@ function buildState(intake) {
     goal_phase: intake.goal_phase || 1,
     owner: intake.owner || "midnghtsapphire",
     status: "routed",
-    current_engine: "runner-orchestrator",
+    current_engine: "research",
     created_at: now,
     updated_at: now,
     steps: [
@@ -202,6 +202,147 @@ function orchestrate(intake, opts = {}) {
   return { state, deliverLabel, channel, outPath: opts.dryRun ? null : outPath, status: state.status };
 }
 
+/**
+ * Built-in engines. Each is ({ state, env }) -> result, where result is the
+ * CONTRACT engine output: { status, next_engine?, artifacts?, evidence?,
+ * runner_target?, bom? }. The orchestrator routes (in orchestrate()); these
+ * engines execute and either chain to next_engine or finish/halt.
+ */
+const DEFAULT_REGISTRY = {
+  // Research lane. Requires OPENROUTER_API_KEY; if absent, emit a Procurement
+  // BOM and halt instead of failing vaguely (CONTRACT Rule 2).
+  research: ({ env }) => {
+    if (!env.OPENROUTER_API_KEY) {
+      return {
+        step_id: "research",
+        engine_label: "research-engine",
+        status: "needs_procurement",
+        bom_ref: "BOM.md",
+        bom: {
+          items: [
+            {
+              name: "OpenRouter API key",
+              category: "credential",
+              cost_usd: 0,
+              source: "https://openrouter.ai/keys",
+              acquisition: "Create an OpenRouter account, generate a key, and add OPENROUTER_API_KEY to repo secrets.",
+              blocking: true,
+            },
+          ],
+        },
+      };
+    }
+    return { step_id: "research", engine_label: "research-engine", status: "ok", next_engine: "deliver" };
+  },
+
+  // Deliver lane. Produces the deliver:<channel> label artifact that
+  // ship-to-market.yml consumes, then finishes (no next_engine -> done).
+  deliver: ({ state }) => {
+    const deliverStep = state.steps.find((s) => s.step_id.startsWith("deliver-"));
+    const channel = deliverStep ? deliverStep.step_id.slice("deliver-".length) : "docs";
+    return {
+      step_id: `deliver-${channel}`,
+      engine_label: "ship-to-market",
+      status: "ok",
+      runner_target: runnerTargetFor(channel),
+      artifacts: [`deliver:${channel}`],
+    };
+  },
+};
+
+const TERMINAL = new Set(["done", "needs_procurement", "failed"]);
+
+function writeBom(dir, bom) {
+  const lines = [
+    "# Procurement BOM",
+    "",
+    "This step is blocked pending the items below (engines/CONTRACT.md Rule 2).",
+    "",
+    "| Item | Category | Cost (USD) | Source | Acquisition | Blocking |",
+    "| --- | --- | --- | --- | --- | --- |",
+    ...bom.items.map(
+      (i) =>
+        `| ${i.name} | ${i.category || ""} | ${i.cost_usd ?? ""} | ${i.source || ""} | ${i.acquisition || ""} | ${i.blocking ? "yes" : "no"} |`
+    ),
+    "",
+  ];
+  const bomPath = path.join(dir, "BOM.md");
+  fs.writeFileSync(bomPath, lines.join("\n"));
+  return bomPath;
+}
+
+/**
+ * Execute the engine chain: run current_engine, record the step (validated
+ * against the schema on every mutation, Rule 3), then chain to next_engine,
+ * finish (done), or halt on a Procurement BOM. Pure + re-runnable.
+ *
+ * @returns {{state: object, status: string, bomPath: string|null}}
+ */
+function runEngineLoop(state, opts = {}) {
+  const registry = opts.registry || DEFAULT_REGISTRY;
+  const env = opts.env || process.env;
+  const bomDir = opts.bomDir || process.cwd();
+  const maxSteps = opts.maxSteps || 12;
+  let bomPath = null;
+  let guard = 0;
+
+  while (!TERMINAL.has(state.status) && guard < maxSteps) {
+    guard += 1;
+    const engineName = state.current_engine;
+    const engineFn = registry[engineName];
+    const now = new Date().toISOString();
+
+    if (typeof engineFn !== "function") {
+      state.status = "failed";
+      state.updated_at = now;
+      break;
+    }
+
+    const result = engineFn({ state, env }) || {};
+    const stepId = result.step_id || engineName;
+
+    let step = state.steps.find((s) => s.step_id === stepId);
+    if (!step) {
+      step = { step_id: stepId, engine: result.engine_label || engineName, status: "pending" };
+      state.steps.push(step);
+    }
+    step.engine = result.engine_label || step.engine || engineName;
+    step.status = result.status;
+    step.finished_at = now;
+    step.artifacts = result.artifacts || step.artifacts || [];
+    step.evidence = result.evidence || step.evidence || [];
+    if (result.runner_target !== undefined) step.runner_target = result.runner_target;
+    if (result.error) step.error = result.error;
+    if (result.bom_ref) step.bom_ref = result.bom_ref;
+    state.updated_at = now;
+
+    // Rule 3: never advance on a state that violates the schema.
+    const { valid, errors } = validateState(state);
+    if (!valid) {
+      throw new Error(`State failed schema validation after ${engineName}: ${JSON.stringify(errors)}`);
+    }
+
+    if (result.bom) {
+      state.bom = result.bom;
+      state.status = "needs_procurement";
+      if (!opts.dryRun) bomPath = writeBom(bomDir, result.bom);
+      break;
+    }
+    if (result.status === "failed") {
+      state.status = "failed";
+      break;
+    }
+    if (result.next_engine) {
+      state.current_engine = result.next_engine;
+      continue;
+    }
+    state.status = "done";
+    break;
+  }
+
+  return { state, status: state.status, bomPath };
+}
+
 function runResearch(intake) {
   const env = {
     ...process.env,
@@ -219,7 +360,7 @@ function parseArgs(argv) {
     const a = argv[i];
     if (!a.startsWith("--")) continue;
     const key = a.slice(2);
-    if (key === "research" || key === "dry-run" || key === "help") {
+    if (key === "run" || key === "research" || key === "dry-run" || key === "help") {
       flags[key] = true;
     } else {
       flags[key] = argv[i + 1];
@@ -261,6 +402,7 @@ Flags:
   --intake-id <id>     intake id (default intake-<slug>)
   --owner <name>       owner (default midnghtsapphire)
   --out <path>         where to write state.json
+  --run                execute the engine loop (research -> deliver, BOM-halt)
   --research           also run scripts/research-engine.js
   --dry-run            print the plan without writing/spawning
   --help               show this help`;
@@ -279,6 +421,19 @@ function main() {
   if (result.outPath) console.log(`💾 state.json: ${path.relative(REPO_ROOT, result.outPath)}`);
   else console.log("💡 dry-run: no files written");
   console.log(`➡️  next: apply ${result.deliverLabel} to the PR (ship-to-market.yml will ship it)`);
+
+  if (flags.run) {
+    const { state, status, bomPath } = runEngineLoop(result.state, {
+      env: process.env,
+      bomDir: result.outPath ? path.dirname(result.outPath) : process.cwd(),
+      dryRun: Boolean(flags["dry-run"]),
+    });
+    if (result.outPath) fs.writeFileSync(result.outPath, JSON.stringify(state, null, 2) + "\n");
+    const trail = state.steps.map((s) => `${s.step_id}:${s.status}`).join(" → ");
+    console.log(`🔁 engine loop: ${trail}`);
+    console.log(`🏁 status: ${status}`);
+    if (bomPath) console.log(`🧾 procurement BOM written: ${path.relative(REPO_ROOT, bomPath)}`);
+  }
 
   if (flags.research && !flags["dry-run"]) {
     console.log("🔬 running research engine...");
@@ -304,4 +459,7 @@ module.exports = {
   buildState,
   validateState,
   orchestrate,
+  runEngineLoop,
+  writeBom,
+  DEFAULT_REGISTRY,
 };
