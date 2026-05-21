@@ -104,7 +104,7 @@ jobs:
         if: steps.coder.outputs.files_written != '0'
         uses: peter-evans/create-pull-request@v8.1.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: openrouter/issue-${{ steps.issue.outputs.issue_number }}
           base: main
           title: "OpenRouter: ${{ steps.issue.outputs.issue_title }}"
