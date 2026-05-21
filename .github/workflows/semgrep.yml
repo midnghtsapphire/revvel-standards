@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
+        with:
+          # Full history so the blocking gate can diff against the PR base commit.
+          fetch-depth: 0
       - name: Mark workspace safe (avoid 'dubious ownership' from container UID mismatch)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Run Semgrep scan (OSS rule packs)
@@ -46,17 +49,22 @@ jobs:
         with:
           sarif_file: semgrep.sarif
           category: semgrep
-      - name: Semgrep blocking gate (ERROR severity)
+      - name: Semgrep blocking gate (ERROR severity, diff-aware)
         # 2026-05-21 (Claude): the SARIF upload above is advisory; this step
-        # actually blocks the merge on high-severity security + secret findings.
-        # Only ERROR-severity findings fail the job; warnings stay advisory.
+        # blocks on high-severity security + secret findings that the PR
+        # INTRODUCES. It is diff-aware (--baseline-commit) so the existing
+        # backlog across the repo does not block unrelated PRs — only
+        # ERROR-severity findings new to the branch fail the job. Runs on PRs
+        # only (push/schedule have no base to diff against).
+        if: github.event_name == 'pull_request'
         run: |
           semgrep scan \
             --config=p/secrets \
             --config=p/security-audit \
             --severity=ERROR \
             --error \
-            --metrics=off
+            --metrics=off \
+            --baseline-commit "${{ github.event.pull_request.base.sha }}"
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
