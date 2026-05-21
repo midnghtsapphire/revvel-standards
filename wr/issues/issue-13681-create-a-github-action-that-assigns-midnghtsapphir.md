@@ -1,6 +1,6 @@
-# WR: [WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+# WR: [WR] create a github action that assigns midnghtsapphire to goap, openrouter and jules?
 
-**Issue:** #13664  
+**Issue:** #13681  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-21  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -16,8 +16,6 @@
 **Language:** JavaScript  
 **Research Date:** 2026-05-21 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** ✅ Complete
-**Product Target:** `products/graphify-evaluator`
 **WR Status:** 🟡 In Progress
 
 ---
@@ -123,27 +121,63 @@ None
 
 ### Summary
 
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+Create a GitHub assignment workflow that routes GOAP/OpenRouter/Jules WR work to
+`@midnghtsapphire` with `@radiochaser` as an additional GOAP support assignee,
+keeps WR output aligned with revvel-standards, and routes non-GOAP follow-up
+tasks to `@radiochaser`.
+
+> GOAP support assignee = backup assignee for execution continuity, skill
+> routing help, and operational follow-through when primary GOAP work is active.
 
 ### Objective
 
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+Ensure any WR process item related to GOAP, OpenRouter, or Jules is assigned to
+`@midnghtsapphire` with `@radiochaser` added for GOAP support coverage, and that
+non-GOAP tasks in this PR scope are assigned to `@radiochaser`.
+
 
 ### Required Bundle
 
-_No response_
+- Assignment routing for keywords: `goap`, `openrouter`, `jules` →
+  `@midnghtsapphire` + `@radiochaser` (support lane).
+- WR items created by `@midnghtsapphire` must follow revvel-standards with no
+  process deviations.
+- GOAP lane includes skills + CEO-factory agents from the root-level
+  `agent-factory/` directory, where Agent Factory acts as the GOAP
+  admin-assistance orchestrator (task delegation, skill coordination, and
+  execution-state tracking).
+- GOAP lane must be able to invoke required skills with swarm-style execution,
+  meaning parallel/multi-skill coordination when one skill is insufficient,
+  including no-API Perplexity and OpenRouter API runner-capable tasks.
+- Load skills from revvel-standards and the revvel skills hub when GOAP tasks
+  require them.
+- If work references `devina` or `code-claw` repositories, create/route linked
+  tasks in those repositories under the Devina lane via automated workflow/API
+  routing where available (manual fallback if automation is unavailable).
+- Non-GOAP tasks in this PR scope route to `@radiochaser`.
+
 
 ### Definition of Done
 
-_No response_
+- GOAP/OpenRouter/Jules assignment checks pass and apply
+  `assignee=midnghtsapphire` plus GOAP support assignment to `@radiochaser`.
+- Workflow/logic clearly separates GOAP-routed tasks vs. non-GOAP tasks for
+  `radiochaser`.
+- Documentation maps runner behavior for requested GOAP skills execution,
+  including no-API Perplexity, OpenRouter API, and Agent Factory orchestration.
+
 
 ### Do Not Under-Scope
 
-_No response_
+Do not treat assignment as one-time issue triage only. Assignment must be
+applied across the WR flow phases where routing decisions are made.
+
 
 ### Explicit Exclusions
 
-_No response_
+No scope expansion to unrelated assignment policies outside this issue's GOAP /
+OpenRouter / Jules routing requirements.
+
 
 ### Delivery Shape
 
@@ -155,18 +189,25 @@ _No response_
 
 ### Validation Expectations
 
-_No response_
+Validate the routing matrix with examples for:
+1. GOAP/OpenRouter/Jules content → `@midnghtsapphire` + GOAP support `@radiochaser`
+2. Other non-GOAP tasks defined in this issue → `@radiochaser`
+3. Devina/code-claw referenced work → linked Devina-lane tasks in those repos
+
 
 ### Blocker Rule
 
-_No response_
+If any GOAP/OpenRouter/Jules item is not routed to `@midnghtsapphire`, or if
+required GOAP support assignment to `@radiochaser` is missing, or if non-GOAP
+tasks are not mapped to `@radiochaser`, treat the WR as incomplete.
+
 
 ### Acknowledgements
 
 - [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done. |
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done. |
 | Private | {IS_PRIVATE} |
 | Archived | {IS_ARCHIVED} |
 
