@@ -138,7 +138,8 @@ Ensure any WR process item related to GOAP, OpenRouter, or Jules is assigned to
   `@midnghtsapphire`.
 - WR items created by `@midnghtsapphire` must follow revvel-standards with no
   process deviations.
-- GOAP lane includes skills + CEO-factory agents (`agent-factory/`) and
+- GOAP lane includes skills + CEO-factory agents from the root-level
+  `agent-factory/` directory and
   runner-capable execution paths for no-API Perplexity and OpenRouter API
   tasks.
 - Non-GOAP tasks in this PR scope route to `@radiochaser`.
@@ -177,7 +178,7 @@ _No response_
 
 Validate the routing matrix with examples for:
 1. GOAP/OpenRouter/Jules content → `@midnghtsapphire`
-2. Other tasks in this PR scope → `@radiochaser`
+2. Other non-GOAP tasks defined in this issue → `@radiochaser`
 
 
 ### Blocker Rule
