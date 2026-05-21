@@ -227,12 +227,12 @@ Every WR task follows this standard checklist:
   - [ ] Assess distribution channel (organic search, social, community, API)
   - [ ] Verify all market claims with factual citations — no hallucinated stats
 
-- [ ] **Artifact engine map** *(required for every WR/PR)*
+- [ ] **Artifact Engine Map** *(required for every WR/PR)*
   - [ ] End with a map for every required output shape: PDF, CLI, API, MCP, skill, website/app UI, and agent automation
   - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
   - [ ] Reuse existing repo engines where available (for example PDF routing, UI creation, orchestration/MCP contracts) instead of inventing duplicate systems
 
-- [ ] **Agent self-healing journal** *(required at the end of every WR/PR)*
+- [ ] **Agent Self-Healing Journal** *(required at the end of every WR/PR)*
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
   - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable
   - [ ] Preserve required credential, security, and compliance gates unless a reviewed standard explicitly replaces them
