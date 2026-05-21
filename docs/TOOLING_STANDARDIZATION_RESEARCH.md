@@ -157,7 +157,7 @@ Root `package.json` (additive):
     "checkJs": true,
     "noEmit": true,
     "strict": true,
-    "module": "node22",
+    "module": "nodenext",
     "target": "es2023"
   },
   "include": ["scripts/**/*.js", "tests/**/*.js"]
