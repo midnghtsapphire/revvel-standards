@@ -88,8 +88,9 @@ test('openrouter-assignee.yml listens for issue-open routing and applies labels 
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-assignee.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
   const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
 
-  if (!on.issues || !on.issues.types.includes('opened') || !on.issues.types.includes('reopened')) {
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
     throw new Error('openrouter-assignee.yml must listen for opened/reopened issues');
   }
 
@@ -153,8 +154,9 @@ test('openrouter-triage.yml listens for issue-open triage', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-triage.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
   const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
 
-  if (!on.issues || !on.issues.types.includes('opened') || !on.issues.types.includes('reopened')) {
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
     throw new Error('openrouter-triage.yml must listen for opened/reopened issues');
   }
 });

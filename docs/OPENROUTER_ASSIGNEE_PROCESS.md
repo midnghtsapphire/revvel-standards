@@ -8,7 +8,7 @@ This document describes the process, the implementation, and how to tune it.
 
 ## TL;DR
 
-1. Open pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
+1. Open issues and pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
 2. The workflow then attempts to assign **`@oaudrey`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
 3. **Issues are labeled/routed immediately on open and reopen** via the live `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml).
 4. The hourly cron sweep remains enabled as a backstop for anything missed by event-driven processing.
