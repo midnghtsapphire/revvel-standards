@@ -329,7 +329,7 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
-  const on = doc.on || doc.true || {};
+  const on = doc.on || doc['true'] || {};
   const issueCommentTypes = on.issue_comment?.types || [];
   const steps = doc.jobs?.research?.steps || [];
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
