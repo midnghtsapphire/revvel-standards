@@ -58,7 +58,8 @@ revenue-generating products:
     ├── affiliate-hub/
     ├── ai-video-toolkit/
     ├── screen-recorder-finder/
-    └── revvel-skill-runner/
+    ├── revvel-skill-runner/
+    └── creator-payout-tracker/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -77,6 +78,7 @@ collisions:
 | AI Video Toolkit         | `products/ai-video-toolkit`           | 3002     | Next.js.                                                              |
 | Screen Recorder Finder   | `products/screen-recorder-finder`     | 3003     | Next.js.                                                              |
 | Revvel Skill Runner      | `products/revvel-skill-runner`        | 3004     | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution.         |
+| Creator Payout Tracker   | `products/creator-payout-tracker`     | 3005     | Next.js. Shippable deep-research product for creator payout rankings. |
 
 Start a specific product on its assigned port:
 
@@ -86,6 +88,7 @@ cd products/affiliate-hub        && npm run dev -- -p 3001
 cd products/ai-video-toolkit     && npm run dev -- -p 3002
 cd products/screen-recorder-finder && npm run dev -- -p 3003
 cd products/revvel-skill-runner  && npm run dev -- -p 3004
+cd products/creator-payout-tracker && npm run dev -- -p 3005
 ```
 
 ### Running and testing

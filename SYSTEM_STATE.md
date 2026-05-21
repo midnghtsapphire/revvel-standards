@@ -92,6 +92,7 @@
 | `TAVILY_API_KEY` | ❌ not set | ❌ not set | WR/PR control-plane — LLM-optimized live web search (optional, pairs with Firecrawl) |
 | `OBOT_BASE_URL` | ❌ not set | ❌ not set | WR/PR control-plane — governance gateway |
 | `OBOT_IDP_CONFIG` | ❌ not set | ❌ not set | WR/PR control-plane — IdP for per-user OAuth |
+| `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | ⚠️ optional | ⚠️ optional | Creator Payout Tracker checkout URL for Creator Pro CTA; app falls back to email contact when unset |
 | `WR_DEFAULT_REPO` | `midnghtsapphire/revvel-standards` | `midnghtsapphire/revvel-standards` | Default repo target for WR/PR control-plane |
 
 ---
@@ -103,6 +104,7 @@
 | `node tests/workflow-yaml-validation.test.js` | 2026-05-19 | ✅ all 124 workflows parse and expose required top-level keys | — |
 | `npm test` | 2026-05-20 | ✅ passing after schema contract fix | — |
 | Green Website Reporting standard | 2026-05-19 | ✅ `node tests/green-website-standard.test.js`, `node tests/workflow-yaml-validation.test.js`, `npm run workflows:validate -- --no-report`, and `npm test` pass after `npm ci` | Verifies active workflow, portable template, README marker/card contract, standard docs, and workflow syntax |
+| Creator Payout Tracker product | 2026-05-21 | ✅ `npm run test`, `npm run lint`, `npm run build`, and `npm audit --audit-level=high` pass in `products/creator-payout-tracker` | Verifies payout recommendation engine, Markdown/CSV report export, `/api/report`, TypeScript, and production build. npm audit still reports a moderate nested Next/PostCSS advisory with no stable non-breaking fix. |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
@@ -138,6 +140,7 @@
 | Revvel PromptForge | ✅ implemented + tested | [`products/prompt-generation-app`](products/prompt-generation-app) provides a static prompt-generation UI with source logs, competitor matrix, blue/red-ocean scoring, legal OSINT boundary, markdown export, and root test coverage |
 | Perplexity no-key research | ✅ implemented + tested | [`.github/workflows/perplexity-research-agent.yml`](.github/workflows/perplexity-research-agent.yml), [`scripts/perplexity-research-issue.js`](scripts/perplexity-research-issue.js), and [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](docs/PERPLEXITY_NO_KEY_INTEGRATION.md) use the `helallao/perplexity-ai` fork for issue research without requiring `PERPLEXITY_API_KEY`; account-generation paths are intentionally excluded |
 | Green Website Reporting | ✅ implemented + tested | [`.github/workflows/green-website.yml`](.github/workflows/green-website.yml), [`templates/cicd/green-website.yml`](templates/cicd/green-website.yml), and [`standards/GREEN_WEBSITE_REPORTING_STANDARD.md`](standards/GREEN_WEBSITE_REPORTING_STANDARD.md) standardize `filiptronicek/green-action@v1.0.2` reporting for Revvel public web apps with README card updates, committed `carbon` data, weekly/manual runs, and `GREEN_WEBSITE_URL` override support |
+| Creator Payout Tracker | ✅ productized + tested | [`products/creator-payout-tracker`](products/creator-payout-tracker) is the shipped product from WR #13641 deep research: creator payout rankings, earnings calculator, recommendation engine, Markdown/CSV strategy brief export, `/api/report`, and Creator Pro checkout CTA |
 
 `Status = ✅ documented` means the spec is in this repo and ready to be applied to the GitHub Project / Notion workspace; the runtime artifacts (the actual GitHub Project and Notion databases) are provisioned outside this repo.
 

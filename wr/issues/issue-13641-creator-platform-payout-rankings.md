@@ -29,7 +29,7 @@
 
 ## Executive Summary
 
-The creator economy is a $104B+ market (2025) with 207 million active creators globally, yet no single lightweight tool exists that ranks platforms by actual payout rates and lets individual creators run side-by-side earnings comparisons in under 60 seconds. Existing tools (HypeAuditor, CreatorIQ, Upfluence) are enterprise-priced ($500–$2,000+/mo) and brand-facing — not creator-facing. **Creator Payout Tracker** fills a validated gap: a free-to-start, creator-first comparison and earnings calculator that monetizes via SaaS upgrades, API access, and affiliate partnerships with the very platforms it ranks. The product ships as a Next.js 15 web app under `products/creator-payout-tracker/` at port 3005.
+The creator economy is a $104B+ market (2025) with 207 million active creators globally, yet no single lightweight tool exists that ranks platforms by actual payout rates and lets individual creators run side-by-side earnings comparisons in under 60 seconds. Existing tools (HypeAuditor, CreatorIQ, Upfluence) are enterprise-priced ($500–$2,000+/mo) and brand-facing — not creator-facing. **Creator Payout Tracker** fills a validated gap: a free-to-start, creator-first comparison and earnings calculator that monetizes via SaaS upgrades, API access, and affiliate partnerships with the very platforms it ranks. The product ships as a Next.js 16 web app under `products/creator-payout-tracker/` at port 3005.
 
 ---
 
@@ -223,14 +223,14 @@ Top complaints from creators:
 | API / Tool | Cost | Coverage | Best For | Verdict |
 |------------|------|----------|----------|---------|
 | Social Blade API | $9.99–$99/mo | YouTube, Twitch, TikTok, Instagram stats | Historical channel data | ✅ Good baseline |
-| HypeAuditor API | $500+/mo | Full influencer analytics | Enterprise use | ❌ Too expensive for MVP |
+| HypeAuditor API | $500+/mo | Full influencer analytics | Enterprise use | ❌ Too expensive for creator-first product |
 | Modash API | $299+/mo | Instagram, TikTok, YouTube, Pinterest | Influencer discovery | ❌ Brand-focused |
 | Custom web scraping (ScrapingAnt) | $49/mo | Any platform | Custom data collection | ✅ Flexible, compliant with ToS |
-| Manually curated dataset (internal) | $0 | All platforms | Starter dataset, quarterly refresh | ⭐ Best for MVP (no API dependency) |
+| Manually curated dataset (internal) | $0 | All platforms | Production dataset, quarterly refresh | ⭐ Best current option (no API dependency) |
 | YouTube Data API v3 | Free (10K quota/day) | YouTube channel stats | Channel-level analytics | ✅ For future feature |
 | Twitch API | Free | Twitch channel data | Streaming analytics | ✅ For future feature |
 
-**Recommendation for MVP:** Ship with a manually curated, quarterly-refreshed payout dataset baked into the app. Zero API cost, zero API dependency risk. Add live API integrations in v2 after validation.
+**Recommendation:** Ship with a manually curated, quarterly-refreshed payout dataset baked into the app. Zero API cost, zero API dependency risk. Add live API integrations only after the static-data product proves paid demand.
 
 **Category: Frontend Framework**
 
@@ -265,9 +265,9 @@ Top complaints from creators:
 | Stripe | 2.9%+30¢ | Payment processing | ✅ For custom billing |
 | Lemon Squeezy | 5%+50¢ | SaaS subscriptions | ✅ Acceptable |
 
-**Total MVP Monthly Cost: ~$0** (static data, Vercel free tier, no API subscriptions)  
-**Post-validation (v2) Cost: ~$60–$110/mo** (Social Blade API $99/mo, Vercel Pro $20/mo)  
-**ROI Break-Even at $29/mo SaaS pricing:** 4 paid users covers v2 costs.
+**Total Current Monthly Cost: ~$0** (static data, Vercel free tier, no API subscriptions)  
+**Live-data Cost Range: ~$60–$110/mo** (Social Blade API $99/mo, Vercel Pro $20/mo)  
+**ROI Break-Even at $29/mo SaaS pricing:** 4 paid users covers live-data costs.
 
 ---
 
@@ -308,7 +308,7 @@ At Month 18, $18k MRR = $216k ARR — exceeds Phase 1 goal of $10k/month by Mont
 |-------|----------------|--------|------------|
 | Platform RPM data accuracy | All platforms | No public API for RPM | Use community-sourced, clearly labeled "estimates" with date stamps |
 | Web scraping ToS | YouTube, TikTok | Prohibited in most ToS | Use manually curated data only; no scraping |
-| GDPR | EU users | Applies to calculator if storing inputs | Store no PII; calculator is client-side JS only for MVP |
+| GDPR | EU users | Applies to calculator if storing inputs | Store no PII; calculator runs client-side and `/api/report` does not persist inputs |
 | Affiliate link disclosure | FTC / ASA | Required | Include "This page contains affiliate links" disclosure |
 | Platform name/logo usage | All platforms | Trademark sensitive | Use text-based references; avoid platform logos without permission |
 | Data freshness liability | All | Stale data = bad advice | Clear "last updated" dates + disclaimer that data is estimates |
@@ -331,7 +331,7 @@ At Month 18, $18k MRR = $216k ARR — exceeds Phase 1 goal of $10k/month by Mont
 - "Platform Switch Calculator" social posts — shareable, viral potential
 - Email list with payout change alerts — retention and upgrade driver
 
-**A/B Test Hypotheses (for MVP launch):**
+**A/B Test Hypotheses (for launch):**
 - H1: "Calculator-first" landing page vs "Rankings-first" — test which drives more signups
 - H2: "$9/mo" vs "$79/yr" default pricing display — test which converts better
 - H3: "Free forever" vs "14-day trial" for Pro tier
@@ -344,21 +344,20 @@ At Month 18, $18k MRR = $216k ARR — exceeds Phase 1 goal of $10k/month by Mont
 
 **Path:** `products/creator-payout-tracker/`  
 **Port:** 3005  
-**Framework:** Next.js 15 (TypeScript + Tailwind CSS)  
+**Framework:** Next.js 16 (TypeScript + Tailwind CSS)  
 **Deploy Target:** Vercel  
 
-**Core Features (MVP):**
+**Shipped Features:**
 1. **Platform Rankings Table** — sortable by payout type (ad revenue, subscription, sponsorship)
 2. **Earnings Calculator** — input your metrics (monthly views, subscriber count, streams), get estimated monthly earnings per platform
 3. **Platform Cards** — per-platform deep-dive with payout breakdown, best content type, pros/cons
-4. **Compare Mode** — pick 2 platforms and see side-by-side earnings for your metrics
-5. **Payout Rank Badge** — shareable "Platform Rank" card creators can post to social
+4. **Recommendation Engine** — rank the best payout moves for the creator metrics entered
+5. **Strategy Brief Export** — downloadable Markdown brief and CSV estimate table
+6. **Report API** — `POST /api/report` returns ranked estimates, Markdown, and CSV for automation
 
 **Pages:**
-- `/` — Rankings table + above-fold calculator
-- `/calculator` — Full-featured earnings calculator
-- `/platforms/[slug]` — Individual platform deep-dives
-- `/compare` — Side-by-side comparison tool
+- `/` — Rankings table, calculator, recommendation engine, exports, and platform deep-dives
+- `/api/report` — Programmatic report endpoint for automations and agency workflows
 
 **Data Model (TypeScript):**
 ```ts
@@ -388,9 +387,13 @@ interface Platform {
 ### Deliverables
 
 - [x] WR Research Document (this file)
-- [x] `products/creator-payout-tracker/` Next.js 15 app (port 3005)
+- [x] `products/creator-payout-tracker/` Next.js 16 app (port 3005)
 - [x] Platform rankings table with sorting
 - [x] Earnings calculator (view-based + subscription-based)
+- [x] Recommendation engine + Markdown/CSV strategy brief export
+- [x] `/api/report` programmatic report endpoint
+- [x] Creator Pro checkout CTA (`NEXT_PUBLIC_POLAR_CHECKOUT_URL`)
+- [x] Engine unit test + TypeScript/build validation
 - [x] README.md
 - [x] CHANGELOG.md
 - [x] DEPLOYMENT_GUIDE.md
