@@ -92,11 +92,13 @@ export default function Home() {
           <form className="mt-6 flex flex-col gap-3 sm:flex-row">
             <input
               type="email"
+              aria-label="Email address"
               placeholder="creator@email.com"
               className="w-full rounded-full border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-violet-400"
             />
             <button
               type="submit"
+              aria-label="Submit waitlist form"
               className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
             >
               Get Early Access
