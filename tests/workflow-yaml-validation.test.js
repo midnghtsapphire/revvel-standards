@@ -258,6 +258,41 @@ test('wr-pr-creation.yml uses existing WR templates and preserves issue body', (
   }
 });
 
+test('wr-pr-creation.yml suppresses operational issue_comment retry loops', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const detectJob = doc.jobs['detect-completion'];
+  const notifyJob = doc.jobs['notify-skip'];
+  const checkStep = detectJob.steps.find((step) => step.name === 'Check if PR should be created');
+
+  if (!detectJob.outputs?.should_notify_skip || !detectJob.outputs?.skip_reason) {
+    throw new Error('detect-completion must expose skip notification outputs');
+  }
+  if (!checkStep) {
+    throw new Error('Check if PR should be created step not found');
+  }
+
+  const script = checkStep.with?.script || '';
+  const requiredSnippets = [
+    'operationalCommentMarkers',
+    'WR PR Creation Failed',
+    'WR PR Creation: Skipped',
+    'WR PR Created!',
+    'operational_bot_comment',
+    "context.eventName !== 'issue_comment'",
+  ];
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`WR PR detection must suppress retry loops; missing ${snippet}`);
+    }
+  }
+
+  const notifyIf = String(notifyJob.if || '');
+  if (!notifyIf.includes("needs.detect-completion.outputs.should_notify_skip == 'true'")) {
+    throw new Error('notify-skip job must honor should_notify_skip');
+  }
+});
+
 test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and OpenRouter', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

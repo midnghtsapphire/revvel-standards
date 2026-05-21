@@ -34,6 +34,8 @@ jobs:
          startsWith(github.event.issue.title, '[ALERT]')))
     outputs:
       should_create_pr: ${{ steps.check.outputs.should_create_pr }}
+      should_notify_skip: ${{ steps.check.outputs.should_notify_skip }}
+      skip_reason: ${{ steps.check.outputs.skip_reason }}
       issue_number: ${{ steps.check.outputs.issue_number }}
       issue_title: ${{ steps.check.outputs.issue_title }}
       issue_body: ${{ steps.check.outputs.issue_body }}
@@ -44,9 +46,32 @@ jobs:
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            function skip(reason, { notify = context.eventName !== 'issue_comment' } = {}) {
+              core.info(`Skipping WR PR creation: ${reason}`);
+              core.setOutput('should_create_pr', 'false');
+              core.setOutput('should_notify_skip', notify ? 'true' : 'false');
+              core.setOutput('skip_reason', reason);
+            }
+
             if (!issueNumber) {
               core.notice('No issue number found');
-              core.setOutput('should_create_pr', 'false');
+              skip('no_issue_number', { notify: false });
+              return;
+            }
+
+            const commentBody = context.payload.comment?.body || '';
+            const commentAuthor = context.payload.comment?.user?.login || '';
+            const operationalCommentMarkers = [
+              'WR PR Creation Failed',
+              'WR PR Creation: Skipped',
+              'WR PR Created!',
+            ];
+            const isOperationalBotComment =
+              context.eventName === 'issue_comment' &&
+              commentAuthor === 'github-actions[bot]' &&
+              operationalCommentMarkers.some(marker => commentBody.includes(marker));
+            if (isOperationalBotComment) {
+              skip('operational_bot_comment', { notify: false });
               return;
             }
 
@@ -74,7 +99,7 @@ jobs:
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
             if (!isWR) {
               core.info(`Issue #${issueNumber} is not a WR issue`);
-              core.setOutput('should_create_pr', 'false');
+              skip('not_wr_issue');
               return;
             }
 
@@ -82,7 +107,7 @@ jobs:
             // by the job-level `if:` already).
             if (issue.user && issue.user.login === 'github-actions[bot]') {
               core.info(`Issue #${issueNumber} is bot-created; skipping.`);
-              core.setOutput('should_create_pr', 'false');
+              skip('bot_created_issue');
               return;
             }
 
@@ -157,7 +182,7 @@ jobs:
 
             if (existingPR) {
               core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
-              core.setOutput('should_create_pr', 'false');
+              skip('existing_wr_pr');
               return;
             }
 
@@ -193,6 +218,8 @@ jobs:
             core.info(`Current labels: ${Array.from(labelSet).join(', ')}`);
 
             core.setOutput('should_create_pr', shouldCreate ? 'true' : 'false');
+            core.setOutput('should_notify_skip', shouldCreate || context.eventName === 'issue_comment' ? 'false' : 'true');
+            core.setOutput('skip_reason', shouldCreate ? '' : 'trigger_not_ready');
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', title);
             core.setOutput('issue_body', body);
@@ -200,7 +227,7 @@ jobs:
   notify-skip:
     name: Notify if PR creation was skipped
     needs: detect-completion
-    if: needs.detect-completion.outputs.should_create_pr != 'true'
+    if: needs.detect-completion.outputs.should_create_pr != 'true' && needs.detect-completion.outputs.should_notify_skip == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Post skip notification
