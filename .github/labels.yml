@@ -276,6 +276,10 @@ labels:
     color: "5319e7"
     description: "Routed to Codex (via OpenRouter) for code execution"
 
+  - name: rex
+    color: "1f6feb"
+    description: "Routed to Rex — the oAudrey Agent Factory / no-key Perplexity lane"
+
   - name: jules
     color: "4285f4"
     description: "Routed to Google Jules for deep-research and authoring"

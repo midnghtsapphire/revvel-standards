@@ -2,13 +2,12 @@
 
 /**
  * Perplexity Research Script
- * Researches GitHub issues using Perplexity Sonar API
+ * Researches GitHub issues using the no-key helallao/perplexity-ai bridge.
  * 
  * Usage:
- *   PERPLEXITY_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *   ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
  * 
  * Environment:
- *   PERPLEXITY_API_KEY - Perplexity API key (stored in secrets)
  *   ISSUE_NUMBER - GitHub issue number to research
  *   REPO - Repository in format owner/repo
  */
@@ -18,21 +17,87 @@ const { execFileSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
-  model: 'sonar-pro',
-  fallbackModel: 'sonar-deep-research',
+  model: 'sonar',
+  fallbackMode: 'auto',
   outputFile: '/tmp/perplexity-research.md',
-  maxTokens: 8000,
-  temperature: 0.4
 };
 
+const NO_KEY_INSTALL_HINT =
+  'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+
+const NO_KEY_BRIDGE = `
+import sys
+
+prompt = sys.argv[1]
+labs_model = sys.argv[2]
+fallback_mode = sys.argv[3]
+install_hint = sys.argv[4]
+
+try:
+    from perplexity import LabsClient, Client
+except Exception as exc:
+    raise SystemExit(
+        f"Missing no-key Perplexity dependency ({exc}). Install with: {install_hint}"
+    )
+
+def normalize(value):
+    if isinstance(value, str):
+        return value.strip()
+
+    if isinstance(value, dict):
+        for key in ("output", "answer", "text", "content"):
+            candidate = value.get(key)
+            if isinstance(candidate, str) and candidate.strip():
+                return candidate.strip()
+
+        chunks = value.get("chunks")
+        if isinstance(chunks, list):
+            parts = []
+            for chunk in chunks:
+                if not isinstance(chunk, dict):
+                    continue
+                for key in ("text", "answer", "content"):
+                    candidate = chunk.get(key)
+                    if isinstance(candidate, str) and candidate.strip():
+                        parts.append(candidate.strip())
+                        break
+            if parts:
+                return "\\n".join(parts).strip()
+
+    return ""
+
+labs_error = ""
+response_text = ""
+
+try:
+    response_text = normalize(LabsClient().ask(prompt, model=labs_model))
+except Exception as exc:
+    labs_error = str(exc)
+
+if not response_text:
+    try:
+        response_text = normalize(Client().search(prompt, mode=fallback_mode))
+    except Exception as exc:
+        if labs_error:
+            raise SystemExit(
+                f"LabsClient failed: {labs_error}; Client.search failed: {exc}"
+            )
+        raise SystemExit(f"Client.search failed: {exc}")
+
+if not response_text:
+    if labs_error:
+        raise SystemExit(
+            f"No response returned from no-key Perplexity bridge. LabsClient detail: {labs_error}"
+        )
+    raise SystemExit("No response returned from no-key Perplexity bridge.")
+
+print(response_text)
+`;
+
 async function main() {
-  const apiKey = process.env.PERPLEXITY_API_KEY;
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
 
-  if (!apiKey) {
-    throw new Error('Missing PERPLEXITY_API_KEY secret. Add it to repo secrets.');
-  }
   if (!issueNumber) {
     throw new Error('Missing ISSUE_NUMBER');
   }
@@ -48,10 +113,10 @@ async function main() {
   // Build research prompt
   const prompt = buildResearchPrompt(issue);
 
-  console.log('🤔 Asking Perplexity...');
+  console.log('🤔 Asking Perplexity (no-key bridge)...');
 
-  // Call Perplexity API
-  const research = await callPerplexity(apiKey, prompt);
+  // Call Perplexity through the no-key bridge
+  const research = await callPerplexityNoKey(prompt);
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
@@ -114,37 +179,21 @@ Return your response in this format:
 `;
 }
 
-async function callPerplexity(apiKey, prompt) {
-  const response = await fetch('https://api.perplexity.ai/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: CONFIG.model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: CONFIG.maxTokens,
-      temperature: CONFIG.temperature
-    })
-  });
+async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
+  const output = execFileSyncImpl(
+    'python3',
+    ['-c', NO_KEY_BRIDGE, prompt, CONFIG.model, CONFIG.fallbackMode, NO_KEY_INSTALL_HINT],
+    {
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+    }
+  );
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Perplexity API error (${response.status}): ${error}`);
+  const text = output.trim();
+  if (!text) {
+    throw new Error('No response returned from no-key Perplexity bridge.');
   }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
+  return text;
 }
 
 async function fetchGitHubIssue(repo, issueNumber) {

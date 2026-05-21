@@ -14,6 +14,7 @@ Implementation: [`.github/workflows/proof-of-life.yml`](../.github/workflows/pro
    - **`openrouter`** — runs **independently of Copilot**. No GitHub user is assigned; the `openrouter` label carries the routing signal.
    - **`Copilot`** — assigns GitHub `@Copilot` (orchestrated by OpenRouter).
    - **`codex`** — routes Codex via OpenRouter (`openai/codex-5.1`); label-only, no GitHub user.
+   - **`Rex`** — routes the oAudrey Agent Factory / no-key Perplexity lane via the `rex` label; label-only, no GitHub user.
 4. *(Optional)* Enter a `target_issue` (issue or PR number) to have the workflow assign, label and comment on it. Leave blank for a log-only heartbeat.
 5. The workflow verifies `OPENROUTER_API_KEY`, applies routing labels (`openrouter`, `proof-of-life`, `role-<role>`, plus `copilot` or `codex` where relevant), and posts the proof-of-life comment.
 
@@ -24,7 +25,7 @@ Implementation: [`.github/workflows/proof-of-life.yml`](../.github/workflows/pro
 | Input | Type | Default | Purpose |
 |---|---|---|---|
 | `role` | choice: `orchestrator` \| `fixer` | `orchestrator` | Role the OpenRouter agent plays for the run. `orchestrator` plans and delegates; `fixer` takes over a failing run and pushes a fix. |
-| `assignee` | choice: `openrouter` \| `Copilot` \| `codex` | `openrouter` | Who the work is assigned to. `openrouter` = independent of Copilot; `Copilot` = GitHub Copilot; `codex` = Codex via OpenRouter. |
+| `assignee` | choice: `openrouter` \| `Copilot` \| `codex` \| `Rex` | `openrouter` | Who the work is assigned to. `openrouter` = independent of Copilot; `Copilot` = GitHub Copilot; `codex` = Codex via OpenRouter; `Rex` = oAudrey Agent Factory / no-key Perplexity lane. |
 | `target_issue` | string (number) | *(empty)* | Optional issue or PR number to assign / label / comment on. Blank → log-only run. |
 | `dry_run` | boolean | `false` | Log what *would* happen without making any GitHub mutations. |
 
@@ -39,6 +40,7 @@ OpenRouter is a service, not a GitHub user, and `codex` is a model behind OpenRo
 | `openrouter` | *(none)* | `openrouter`, `proof-of-life`, `role-<role>` | **Independent of Copilot.** OpenRouter owns the run end-to-end; routing is label-only. |
 | `Copilot` | `@Copilot` | `openrouter`, `proof-of-life`, `role-<role>`, `copilot` | Orchestrated by OpenRouter, executed by GitHub Copilot. |
 | `codex` | *(none)* | `openrouter`, `proof-of-life`, `role-<role>`, `codex` | Orchestrated by OpenRouter, executed by the Codex model (`openai/codex-5.1`) — label-only, no GitHub user. |
+| `Rex` | *(none)* | `openrouter`, `proof-of-life`, `role-<role>`, `rex` | oAudrey Agent Factory lane for no-key Perplexity and research-first runs — label-only, no GitHub user. |
 
 If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot` or `revvel-codex-bot`) is provisioned later, swap the `githubAssignee` resolution block in the workflow — no other changes required.
 
@@ -96,7 +98,7 @@ The workflow is self-contained. To enable it on another repo:
 
 1. Copy `.github/workflows/proof-of-life.yml` into the target repo.
 2. Ensure `OPENROUTER_API_KEY` is set in the target repo's Actions secrets (optional — the workflow tolerates it being absent).
-3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `role:orchestrator`, `role:fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
+3. Ensure the `openrouter`, `proof-of-life`, `copilot`, `codex`, `rex`, `role:orchestrator`, `role:fixer` labels exist (automatic if the repo uses `sync-labels.yml` against this repo's `.github/labels.yml`). Missing labels are skipped, not fatal.
 
 ---
 

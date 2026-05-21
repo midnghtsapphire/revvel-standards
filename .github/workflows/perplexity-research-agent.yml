@@ -23,8 +23,6 @@ permissions:
   contents: read
 
 env:
-  PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
-
 jobs:
   research:
     runs-on: ubuntu-latest
@@ -39,7 +37,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
 
-      - name: Research issue with Perplexity Sonar
+      - name: Install no-key Perplexity bridge
+        run: |
+          python3 -m pip install --user "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
+
+      - name: Research issue with Perplexity (no-key)
         id: research
         env:
           GH_TOKEN: ${{ github.token }}

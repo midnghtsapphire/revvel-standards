@@ -17,6 +17,7 @@ on:
           - openrouter
           - Copilot
           - codex
+          - Rex
       target_issue:
         description: Optional issue or PR number to post the proof-of-life onto (leave blank to only log)
         type: string
@@ -86,6 +87,7 @@ jobs:
             const labels = ['openrouter', 'proof-of-life', `role-${role}`];
             if (assignee === 'Copilot') labels.push('copilot');
             if (assignee === 'codex')   labels.push('codex');
+            if (assignee === 'Rex')     labels.push('rex');
 
             // ── Summary line used in both the comment and the run summary ──────
             const summary =
@@ -135,11 +137,13 @@ jobs:
                   `🫀 **Proof of Life — app-review \`revvel-standards-run\`**\n\n` +
                   `${summary}\n\n` +
                   (assignee === 'openrouter'
-                    ? `Running **independently of Copilot** — OpenRouter owns this run end-to-end.\n`
-                    : assignee === 'Copilot'
-                      ? `Routed through **GitHub Copilot** (assignee: \`@Copilot\`), orchestrated by OpenRouter.\n`
-                      : `Routed through **Codex via OpenRouter** (model: \`openai/codex-5.1\`), label-only.\n`) +
-                  `\n` +
+                   ? `Running **independently of Copilot** — OpenRouter owns this run end-to-end.\n`
+                     : assignee === 'Copilot'
+                       ? `Routed through **GitHub Copilot** (assignee: \`@Copilot\`), orchestrated by OpenRouter.\n`
+                       : assignee === 'codex'
+                         ? `Routed through **Codex via OpenRouter** (model: \`openai/codex-5.1\`), label-only.\n`
+                         : `Routed through **Rex** — the oAudrey Agent Factory assignee for no-key Perplexity and research-first runs. Label-only, no GitHub user.\n`) +
+                   `\n` +
                   `- Secret: \`OPENROUTER_API_KEY\` ${hasKey ? '✅ configured' : '⚠️ **not configured** — add it in repo Settings → Secrets'}\n` +
                   `- Role: \`${role}\` (${role === 'orchestrator'
                       ? 'plans, routes, and delegates the run'
