@@ -22,7 +22,6 @@ permissions:
   issues: write
   contents: read
 
-env:
 jobs:
   research:
     runs-on: ubuntu-latest
