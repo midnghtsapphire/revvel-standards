@@ -1,0 +1,16 @@
+name: Morty Post Mortems
+
+on:
+  workflow_dispatch:
+
+jobs:
+  morty-post-mortems:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Morty Post Mortems
+        uses: mentimeter/morty@v1.2.1
+        with:
+          token: ${{ github.token }}
