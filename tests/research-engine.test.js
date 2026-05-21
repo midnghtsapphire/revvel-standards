@@ -66,6 +66,16 @@ async function run() {
     assert.ok(prompt.includes("Recommend"));
   });
 
+  queue("review comment carries the coder trigger phrase only for PRs", () => {
+    const lanes = engine.LANE_DEFINITIONS;
+    const issueComment = engine.buildReviewRequestComment({ outputFile: "/tmp/x.md", laneReports: lanes });
+    const prComment = engine.buildReviewRequestComment({ outputFile: "/tmp/x.md", laneReports: lanes, includeCoderTrigger: true });
+    // Issues auto-advance via the wr:research-complete label, so the comment must
+    // NOT also carry the phrase (would double-fire the coder). PRs need the phrase.
+    assert.ok(!issueComment.includes("Research Findings:"), "issue comment must omit the coder trigger phrase");
+    assert.ok(prComment.includes("Research Findings:"), "PR comment must include the coder trigger phrase");
+  });
+
   queue("formats missing-key packets as visible infrastructure blockers", () => {
     const packet = engine.buildMissingKeyReport({
       query: "research",
