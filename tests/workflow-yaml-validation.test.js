@@ -150,6 +150,18 @@ test('openrouter-assignee.yml listens for issue-open routing and applies labels 
   }
 });
 
+test('proof-of-life.yml supports Rex as a label-only assignee lane', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'proof-of-life.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  if (!content.includes('- Rex')) {
+    throw new Error('proof-of-life assignee options must include Rex');
+  }
+  if (!content.includes("labels.push('rex')")) {
+    throw new Error('proof-of-life must label Rex runs with rex');
+  }
+  if (!content.includes('Routed through **Rex**')) {
+    throw new Error('proof-of-life comment must describe the Rex lane');
 test('openrouter-triage.yml listens for issue-open triage', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-triage.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

@@ -30,6 +30,8 @@ test('buildSystemPrompt includes triage sections and provided labels', () => {
   assert.ok(prompt.includes('Suggested Labels'));
   assert.ok(prompt.includes('triage:new'));
   assert.ok(prompt.includes('openrouter'));
+  assert.ok(prompt.includes('do NOT classify them as incomplete just because sections are empty'));
+  assert.ok(prompt.includes('Infer the likely implementation ask from the title, labels, comments, and repository conventions'));
 });
 
 test('buildUserPrompt includes event kind and fallback body behavior', () => {
