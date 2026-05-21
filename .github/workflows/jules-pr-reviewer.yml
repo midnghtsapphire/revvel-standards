@@ -34,7 +34,7 @@ jobs:
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          fail_on: critical
+          fail_on: blocking
           skip_drafts: true
           skip_forks: true
           bypass_label: jules-override
