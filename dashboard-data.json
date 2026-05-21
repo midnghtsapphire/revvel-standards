@@ -1430,10 +1430,11 @@
   ],
   "projectStatus": [
     {
-      "project": "revvel-standards",
+      "project": "app",
       "file": "/SYSTEM_STATE.md",
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-21T00:53:23.413Z"
+  "lastUpdated": "2026-05-18T17:15:18.263Z"
+  "lastUpdated": "2026-05-18T21:33:51.749Z"
 }
