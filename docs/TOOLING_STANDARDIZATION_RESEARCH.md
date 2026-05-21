@@ -11,12 +11,13 @@
 
 The repo **is** working, but on hand-rolled tooling that a generic readiness
 detector does not recognize and that **cannot enforce** the coverage gate the
-PR-review automation already advertises (80% lines/functions/statements, 75%
-branches). For a ship-to-market (S2M) repo the fix is to **standardize on
-built-in Node tooling** — keep dependencies minimal:
+PR-review automation advertises consistently with the proposed tooling (80%
+lines/functions, 75% branches; add a statements threshold explicitly if that is
+intended to be enforced). For a ship-to-market (S2M) repo the fix is to
+**standardize on built-in Node tooling** — keep dependencies minimal:
 
 - **Test runner:** `node --test` (built-in, zero deps) — replaces the brittle `&&` chain.
-- **Coverage gate:** `c8` (one dev dep) enforcing the 80/75 thresholds in CI.
+- **Coverage gate:** `c8` (one dev dep) enforcing 80% lines/functions and 75% branches in CI; include statements only if a statements threshold is configured.
 - **Manifest:** declare root `workspaces`, pin `engines.node`, set `packageManager` + `"type"`.
 - **Build/typecheck:** `tsc --checkJs --noEmit` (typecheck-as-build via JSDoc) — no bundler at root.
 - **CI:** run the test+coverage+typecheck gate in **GitHub Actions** too (today only CircleCI runs tests) and mark them required.
