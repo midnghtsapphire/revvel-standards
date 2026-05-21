@@ -14,7 +14,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const { execFileSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
@@ -148,17 +148,19 @@ async function callPerplexity(apiKey, prompt) {
 }
 
 async function fetchGitHubIssue(repo, issueNumber) {
-  const { execSync } = await import('child_process');
-  
   // Get issue details
   const issueData = JSON.parse(
-    execSync(`gh issue view ${issueNumber} --repo ${repo} --json title,body,labels,comments`, { encoding: 'utf8' })
+    execFileSync(
+      'gh',
+      ['issue', 'view', String(issueNumber), '--repo', repo, '--json', 'title,body,labels,comments'],
+      { encoding: 'utf8' }
+    )
   );
 
   // Get recent commits that might be related
   let commits = [];
   try {
-    const commitsData = execSync(`git log --oneline -10`, { encoding: 'utf8' });
+    const commitsData = execFileSync('git', ['log', '--oneline', '-10'], { encoding: 'utf8' });
     commits = commitsData.trim().split('\n').slice(0, 5);
   } catch (e) {
     // No commits available
@@ -175,8 +177,6 @@ async function fetchGitHubIssue(repo, issueNumber) {
 }
 
 async function postResearchComment(repo, issueNumber, research) {
-  const { execSync } = await import('child_process');
-  
   const body = `## Perplexity Research Handoff
 
 ${research}
@@ -189,7 +189,11 @@ _Next: Label with \`wr:jules\` or \`wr:code\` to proceed_
   const tmpFile = '/tmp/perplexity-comment.md';
   fs.writeFileSync(tmpFile, body);
 
-  execSync(`gh issue comment ${issueNumber} --repo ${repo} --body-file "${tmpFile}"`, { encoding: 'utf8' });
+  execFileSync(
+    'gh',
+    ['issue', 'comment', String(issueNumber), '--repo', repo, '--body-file', tmpFile],
+    { encoding: 'utf8' }
+  );
 }
 
 // Run if executed directly
