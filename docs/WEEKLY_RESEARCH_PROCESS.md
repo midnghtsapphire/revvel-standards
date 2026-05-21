@@ -235,9 +235,10 @@ Every WR task follows this standard checklist:
 - [ ] **Product-type selection matrix** *(required for every WR/PR)*
   - [ ] Explicitly mark selected delivery engines for: API, CLI, MCP, skill, PDF, PowerPoint, and video generation
   - [ ] If video is selected, specify target format(s): short review clips, YouTube-length videos, and training-length videos
-  - [ ] If news/media execution is selected, include the news-brand output path in the same matrix
-  - [ ] Include website/app surface requirements with admin login and user login coverage (Apple, Google, GitHub OAuth)
-  - [ ] Deployment split rule: UI/test surface may run on Vercel, but integration infrastructure should default to DigitalOcean standards unless a reviewed exception is documented
+  - [ ] If news/media execution is selected, include the news/media distribution output path (channel, artifact type, and automation path) in the same matrix
+  - [ ] Include website/app surface requirements with admin login and user login coverage (Apple, Google, GitHub, GitLab, and Microsoft OAuth)
+  - [ ] For transactional products, include commerce requirements: shopping cart + Stripe subscription tiers and usage/on-demand token policy
+  - [ ] Deployment split rule: UI/test surface may run on Vercel, but integration infrastructure should default to `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` (DigitalOcean baseline) unless a reviewed exception is documented
 
 - [ ] **Agent self-healing journal** *(required at the end of every WR/PR)*
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
