@@ -1,6 +1,6 @@
-# WR: [WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+# WR: [WR] add no api perplexity as The Professor to assignee
 
-**Issue:** #13664  
+**Issue:** #13688  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-21  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -16,8 +16,6 @@
 **Language:** JavaScript  
 **Research Date:** 2026-05-21 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** ✅ Complete
-**Product Target:** `products/graphify-evaluator`
 **WR Status:** 🟡 In Progress
 
 ---
@@ -123,11 +121,11 @@ None
 
 ### Summary
 
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+_No response_
 
 ### Objective
 
-[WR] CREATE PRODUCT FOR THE GRAPHIFY NEW IMPLEMENTATION SHIP TO MARKET
+_No response_
 
 ### Required Bundle
 
@@ -163,7 +161,7 @@ _No response_
 
 ### Acknowledgements
 
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
 - [ ] Explicitly requested secondary items should not be silently deferred.
 - [ ] If the PR is partial, the blocker must be documented.
 - [ ] The PR should reflect the WR's required bundle and definition of done. |

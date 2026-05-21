@@ -84,19 +84,28 @@ test('openrouter-assignee.yml uses openrouter label as routing idempotency key',
   }
 });
 
-test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment', () => {
+test('openrouter-assignee.yml listens for issue-open routing and applies labels before non-fatal oAudrey assignment', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'openrouter-assignee.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
+    throw new Error('openrouter-assignee.yml must listen for opened/reopened issues');
+  }
 
   const routeNewSteps = doc.jobs['route-new'].steps;
   const labelsIndex = routeNewSteps.findIndex((step) => step.name === 'Apply routing labels');
-  const assignIndex = routeNewSteps.findIndex((step) => step.name === 'Assign to Copilot orchestrator');
+  const assignIndex = routeNewSteps.findIndex((step) => step.name === 'Assign to oAudrey orchestrator');
   if (labelsIndex < 0 || assignIndex < 0 || labelsIndex > assignIndex) {
     throw new Error('route-new step order must be labels before assignment');
   }
 
   const routeNewAssign = routeNewSteps[assignIndex];
   const routeNewAssignScript = routeNewAssign.with?.script || '';
+  if (!routeNewAssignScript.includes("assignees: ['oaudrey']")) {
+    throw new Error('route-new assignment must target @oaudrey');
+  }
   if (!routeNewAssignScript.includes('try {') || !routeNewAssignScript.includes('non-fatal')) {
     throw new Error('route-new assignment is not wrapped as non-fatal');
   }
@@ -124,7 +133,10 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   if (labelsPos < 0 || assignPos < 0 || labelsPos > assignPos) {
     throw new Error('cron routing must apply labels before assignment');
   }
-  if (!routeDiscoveredScript.includes('Could not assign @Copilot (non-fatal)')) {
+  if (!routeDiscoveredScript.includes("assignees: ['oaudrey']")) {
+    throw new Error('cron routing assignment must target @oaudrey');
+  }
+  if (!routeDiscoveredScript.includes('Could not assign @oaudrey (non-fatal)')) {
     throw new Error('cron assignment should log non-fatal notice');
   }
   if (routeDiscoveredScript.includes('process.env.TO_ROUTE_JSON')) {
@@ -135,6 +147,17 @@ test('openrouter-assignee.yml applies labels before non-fatal Copilot assignment
   }
   if (!routeDiscoveredScript.includes('github.paginate(github.rest.issues.listForRepo,')) {
     throw new Error('cron routing should recompute candidates from GitHub API pagination');
+  }
+});
+
+test('openrouter-triage.yml listens for issue-open triage', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'openrouter-triage.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+
+  if (!on.issues || !issueTypes.includes('opened') || !issueTypes.includes('reopened')) {
+    throw new Error('openrouter-triage.yml must listen for opened/reopened issues');
   }
 });
 
