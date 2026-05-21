@@ -4,7 +4,7 @@ Generated: 2026-05-21T01:41:50.995Z
 
 ## Workflow Validation
 
-- Valid workflows: 128
+- Valid workflows: 127
 - Invalid workflows: 0
 - Jobs missing timeout: 0
 
