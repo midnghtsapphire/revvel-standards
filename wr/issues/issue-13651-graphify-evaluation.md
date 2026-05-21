@@ -113,4 +113,4 @@ Graphify contrasts with standard manual code documentation approaches (e.g. stat
 ## Step 7: Save This Prompt & Findings
 
 - [x] WR saved to `wr/issues/issue-13651-graphify-evaluation.md`
-- [ ] Product scaffolded
+- [x] Product scaffolded at `products/graphify-evaluator`
