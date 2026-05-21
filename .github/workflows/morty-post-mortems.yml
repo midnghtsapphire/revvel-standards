@@ -9,11 +9,12 @@ permissions:
 jobs:
   morty-post-mortems:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Morty Post Mortems
-        uses: mentimeter/morty@v1.2.1
+        uses: mentimeter/morty@d0db9f4556af12dc142f6af5e2f3d88dbdd3b2a9
         with:
           token: ${{ github.token }}
