@@ -23,7 +23,7 @@ API), not something a workflow file can do.
 | `Analyze (javascript-typescript)` | `codeql.yml` | CodeQL findings in JS sources |
 | `Analyze (actions)` | `codeql.yml` | CodeQL findings in workflows |
 | `Jules PR Review` | `jules-pr-reviewer.yml` | Blocking-severity AI review verdict |
-| CI test job | (test runner) | `npm test` green |
+| CI test job (use the exact name GitHub shows) | test workflow | Repo test suite green |
 
 Leave the LLM rewrite reviewers (OpenRouter, PandaOps) **non-required** — they
 are advisory and dispatch-only by design to control cost.
@@ -43,15 +43,22 @@ Require status checks to pass before merging** → search for and add each check
 name above. Also enable **Require branches to be up to date before merging** so
 checks run against the latest base.
 
-Or via the API (requires admin):
+Prefer the GitHub UI for updates. If you need API automation, first inspect the
+current required-check config so you can replace it intentionally without
+overwriting unrelated branch-protection settings:
 
 ```bash
-gh api -X PUT repos/midnghtsapphire/revvel-standards/branches/main/protection \
-  -f 'required_status_checks[strict]=true' \
-  -f 'required_status_checks[checks][][context]=semgrep' \
-  -f 'required_status_checks[checks][][context]=Analyze (javascript-typescript)' \
-  -f 'required_status_checks[checks][][context]=Jules PR Review'
+gh api repos/midnghtsapphire/revvel-standards/branches/main/protection \
+  --jq '.required_status_checks'
 ```
+
+When you replace the required list, keep it aligned with the table above:
+
+- `semgrep`
+- `Analyze (javascript-typescript)`
+- `Analyze (actions)`
+- the CI test job name GitHub shows for the repo's test workflow
+- add `Jules PR Review` later, after the key/runtime issue above is fixed
 
 > A check name only becomes selectable after it has run on at least one PR, so
 > open one PR first, then add the names that appear.
