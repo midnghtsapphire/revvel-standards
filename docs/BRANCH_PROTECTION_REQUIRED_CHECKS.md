@@ -28,7 +28,7 @@ API), not something a workflow file can do.
 Leave the LLM rewrite reviewers (OpenRouter, PandaOps) **non-required** — they
 are advisory and dispatch-only by design to control cost.
 
-> **Known issue — do not require `Jules PR Review` yet.** As of 2026-05-21 the
+> **Known issue — `Jules PR Review` is a target-state required check, but keep it non-required for now.** As of 2026-05-21 the
 > Jules job fails at runtime without posting a `jules/review` verdict on every
 > PR. The workflow guard only checks that `JULES_API_KEY` is *non-empty*, not
 > valid — so an invalid/expired key passes the guard, the action runs, and it
