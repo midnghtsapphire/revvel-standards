@@ -18,7 +18,7 @@ permissions:
   issues: write
 concurrency:
   group: workflow-action-ref-audit-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   audit:
     name: "Audit uses: refs across all workflows"
@@ -28,7 +28,7 @@ jobs:
       broken_refs: ${{ steps.audit.outputs.broken_refs }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Audit workflow action references
         id: audit
         env:
@@ -98,12 +98,56 @@ jobs:
             exit 1
           fi
           echo "✅ All ${#REFS[@]} action refs resolved."
+      - name: Detect unpinned (non-SHA) action refs
+        id: sha-pin-audit
+        run: |
+          set -uo pipefail
+
+          # Find every uses: ref that is NOT already pinned to a 40-char commit SHA.
+          # This catches mutable tags (@v4, @v1.2.1, @main, etc.) that can be
+          # silently re-pointed to a different commit — a supply-chain risk.
+          mapfile -t UNPINNED < <(
+            grep -RhnE '^\s*-?\s*uses:\s*[^#[:space:]]+' .github/workflows/ .github/actions/ 2>/dev/null \
+              | sed -E 's/^([^:]+:[0-9]+):\s*/\1 /' \
+              | grep -vE '^\s*#' \
+              | grep -E '^[^ ]+ -?\s*uses:\s*[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@' \
+              | awk '{
+                  for (i=1;i<=NF;i++) {
+                    if ($i ~ /uses:/) { ref=$(i+1); break }
+                  }
+                  if (ref !~ /@[a-f0-9]{40}/) print ref
+                }' \
+              | tr -d '"' | tr -d "'" \
+              | grep -vE '^(\./|docker:\/\/)' \
+              | sort -u
+          )
+
+          if [ "${#UNPINNED[@]}" -eq 0 ]; then
+            echo "✅ All action refs are pinned to a full commit SHA."
+          else
+            echo "⚠️ ${#UNPINNED[@]} action ref(s) are NOT pinned to a commit SHA:"
+            printf '  - %s\n' "${UNPINNED[@]}"
+            echo ""
+            echo "Pin each ref to its full commit SHA and add the tag as a comment, e.g.:"
+            echo "  uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2"
+          fi
+
+          {
+            echo "unpinned_count=${#UNPINNED[@]}"
+            if [ "${#UNPINNED[@]}" -gt 0 ]; then
+              echo "unpinned_refs<<EOF"
+              printf '%s\n' "${UNPINNED[@]}"
+              echo "EOF"
+            else
+              echo "unpinned_refs="
+            fi
+          } >> "$GITHUB_OUTPUT"
       - name: Open / update tracking issue (scheduled or main-branch run)
         if: |
           failure() &&
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
@@ -167,7 +211,7 @@ jobs:
           success() &&
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         continue-on-error: true
         with:
           script: |
