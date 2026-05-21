@@ -75,6 +75,7 @@ jobs:
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v9.0.0
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
             const labelsToAdd = [
@@ -83,7 +84,8 @@ jobs:
               'wr:in-progress',
               'deep-research',
               'openrouter',
-              'role:orchestrator'
+              'role:orchestrator',
+              'mindmappr'
             ];
 
             for (const label of labelsToAdd) {
@@ -99,6 +101,19 @@ jobs:
                 core.notice(`Could not add label "${label}": ${error.message}`);
               }
             }
+
+            // Assign @Copilot as the expert code assistant (mindmappr persona)
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                assignees: ['Copilot'],
+              });
+              core.info('✅ Assigned @Copilot (mindmappr expert assistant) to WR issue');
+            } catch (error) {
+              core.notice(`Could not assign @Copilot to WR issue (non-fatal): ${error.message}`);
+            }
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v9.0.0
@@ -111,15 +126,17 @@ jobs:
             This issue has been identified as a Weekly Research task and will receive enhanced deep-research treatment.
 
             **Automation applied:**
-            - ✅ Labeled as \`weekly-research\` + \`deep-research\`
+            - ✅ Labeled as \`weekly-research\` + \`deep-research\` + \`mindmappr\`
+            - ✅ Assigned to **@Copilot** — mindmappr expert code assistant
             - ✅ Routed to OpenRouter orchestrator
             - ✅ Progress tracking enabled (\`wr:in-progress\` → \`wr:complete\`)
 
             **What happens next:**
             1. OpenRouter triage will analyze the research scope
-            2. Research agents will be assigned based on the task requirements
-            3. Findings will be documented in this issue
-            4. When complete, the \`wr:complete\` label will be applied
+            2. **@Copilot (mindmappr)** will act as expert code assistant throughout this WR
+            3. Perplexity research will run (direct API or no-key OpenRouter lane)
+            4. Findings will be documented in this issue
+            5. When complete, the \`wr:complete\` label will be applied
 
             **Research checklist** (from issue description):
             - [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/)
