@@ -24,15 +24,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
         with:
-          fetch-depth: 1
+          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
       - name: Mark workspace safe (avoid 'dubious ownership' from container UID mismatch)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Fetch full history for diff-aware gate
-        if: github.event_name == 'pull_request'
-        run: |
-          if git rev-parse --is-shallow-repository | grep -q true; then
-            git fetch --no-tags --prune --unshallow origin
-          fi
       - name: Run Semgrep scan (OSS rule packs)
         run: |
           semgrep scan \
