@@ -246,7 +246,7 @@ async function runPersona(persona, task, opts = {}) {
  * @param {boolean} [options.silent=false] - Suppress console logging.
  * @param {string} [options.apiKey] - OpenRouter API key (else env).
  * @param {string} [options.profile] - Override the persona's routing profile.
- * @returns {Promise<Object>|Object} Run result, or a deferred handle.
+ * @returns {Promise<Object>} Run result, or a deferred handle.
  */
 async function instantiate(handle, options = {}) {
   const { mode, task, silent = false, ...runOpts } = options;
