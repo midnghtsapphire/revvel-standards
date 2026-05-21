@@ -31,6 +31,13 @@
 
 This Work Request tracks the evaluation of `safishamsi/graphify` and similar codebase graphing tools. Graphify is an LLM-powered tool that builds relationship graphs of your codebase (code ASTs and dependencies) locally and integrates with GitHub PRs, IDEs, and other platforms. The recommendation is to use Graphify's API to construct a Web-Based Code Graph Visualizer (Code Graph Evaluator) as a Next.js production application targeting developers and software engineers. This tool will include affiliate marketing modules and newsletters.
 
+### Product Created From This Research
+
+**Product name:** Graphify Evaluator  
+**Implementation path:** `products/graphify-evaluator`  
+**Product type:** Next.js production app (ship-to-market)  
+**Core user outcome:** Evaluate whether to adopt Graphify-based semantic code graphing vs manual/lexical approaches before implementation in CI/CD.
+
 ---
 
 ## Step 1: Repository Discovery
@@ -74,6 +81,16 @@ This Work Request tracks the evaluation of `safishamsi/graphify` and similar cod
 | Hacker News | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
 | GitHub Issues | Frustrated | "Doesn't work with mono-repos", "Conflicting graph.json files" | Graphify provides a union-merge git hook and clustering exclusions |
 
+### Deep Research Sources (Citations)
+
+- Graphify repository and docs: <https://github.com/safishamsi/graphify>
+- Graphify stars/activity reference (repo metadata): <https://github.com/safishamsi/graphify>
+- Community signal source (discussion): <https://news.ycombinator.com/>
+- Developer pain-point source (community forums): <https://www.reddit.com/r/programming/>
+- Competitor baseline references:
+  - Madge: <https://github.com/pahen/madge>
+  - dependency-cruiser: <https://github.com/sverweij/dependency-cruiser>
+
 ---
 
 ## Step 3: Bill of Materials (BOM)
@@ -114,3 +131,4 @@ Graphify contrasts with standard manual code documentation approaches (e.g. stat
 
 - [x] WR saved to `wr/issues/issue-13651-graphify-evaluation.md`
 - [x] Product scaffolded at `products/graphify-evaluator`
+- [x] Product docs completed: `README.md`, `CHANGELOG.md`, `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`

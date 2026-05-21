@@ -16,6 +16,11 @@ Graphify Evaluator provides a focused UI for teams that need to compare LLM-powe
 - Built-in affiliate and newsletter modules for monetization
 - Accessibility toggle for high-contrast mode
 
+## Research Lineage
+
+- Deep research file: [`wr/issues/issue-13651-graphify-evaluation.md`](../../wr/issues/issue-13651-graphify-evaluation.md)
+- Product created from that research: `products/graphify-evaluator`
+
 ## Quick Start
 
 ```bash
