@@ -450,7 +450,7 @@ jobs:
             echo "" >> temp_header.md
           fi
 
-          # Append the rest of the template (skip first few lines to avoid duplication)
+          OUTPUT_TYPE=$(printf '%s\n' "$ISSUE_BODY" | awk '/^### Output Type$/ { found=1; next } found && NF { print; exit }' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
           tail -n +10 "${WR_FILE}" >> temp_header.md
 
           mv temp_header.md "${WR_FILE}"
