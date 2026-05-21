@@ -126,6 +126,9 @@ Create a GitHub assignment workflow that routes GOAP/OpenRouter/Jules WR work to
 keeps WR output aligned with revvel-standards, and routes non-GOAP follow-up
 tasks to `@radiochaser`.
 
+> GOAP support assignee = backup assignee for execution continuity, skill
+> routing help, and operational follow-through when primary GOAP work is active.
+
 ### Objective
 
 Ensure any WR process item related to GOAP, OpenRouter, or Jules is assigned to
@@ -141,13 +144,16 @@ non-GOAP tasks in this PR scope are assigned to `@radiochaser`.
   process deviations.
 - GOAP lane includes skills + CEO-factory agents from the root-level
   `agent-factory/` directory, where Agent Factory acts as the GOAP
-  admin-assistance orchestrator.
+  admin-assistance orchestrator (task delegation, skill coordination, and
+  execution-state tracking).
 - GOAP lane must be able to invoke required skills with swarm-style execution,
+  meaning parallel/multi-skill coordination when one skill is insufficient,
   including no-API Perplexity and OpenRouter API runner-capable tasks.
 - Load skills from revvel-standards and the revvel skills hub when GOAP tasks
   require them.
 - If work references `devina` or `code-claw` repositories, create/route linked
-  tasks in those repositories under the Devina lane.
+  tasks in those repositories under the Devina lane via automated workflow/API
+  routing where available (manual fallback if automation is unavailable).
 - Non-GOAP tasks in this PR scope route to `@radiochaser`.
 
 
