@@ -39,8 +39,32 @@ else → status=done
 
 See [`docs/standards/RUNNER_TARGETS.md`](../../docs/standards/RUNNER_TARGETS.md).
 
+## CLI
+
+`orchestrate.js` is the runnable implementation. It refuses intake without a
+revenue target (Rule 4), writes a schema-valid `state.json` (Rule 3), and routes
+to the correct `deliver:*` label that `ship-to-market.yml` consumes.
+
+```bash
+# From a JSON intake file
+npm run engine -- --wr intake.json
+
+# Or inline
+npm run engine -- --slug cpap-mask-finder --revenue 2000 --output-type sellable-pdf
+
+# Also run the research engine, or just preview the plan
+npm run engine -- --wr intake.json --research
+npm run engine -- --wr intake.json --dry-run
+```
+
+Intake fields: `intake_id`, `product_slug`, `revenue_target_monthly_usd`
+(required), `goal_phase` (1-4), `output_type` and/or `shape`. `output_type`
+matches the Work Request form dropdown; the orchestrator maps it to a deliver
+channel (e.g. `sellable-pdf` → `deliver:pdf`, `api-product` → `deliver:api`).
+
 ## Files
 
+- `orchestrate.js` — the runnable orchestrator CLI (`npm run engine`).
 - `state.json` — runtime state per intake (schema-enforced).
 - `engines/CONTRACT.md` — engine + runner interface.
 - `schemas/state.schema.json` — validation.
