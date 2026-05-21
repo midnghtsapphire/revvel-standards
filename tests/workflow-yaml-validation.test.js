@@ -232,6 +232,64 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   }
 });
 
+test('wr-pr-creation.yml uses existing WR templates and preserves issue body', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const createJob = doc.jobs['create-wr-pr'];
+  const generateStep = createJob.steps.find((step) => step.name === 'Generate WR document');
+
+  if (!createJob.env || createJob.env.ISSUE_BODY !== '${{ needs.detect-completion.outputs.issue_body }}') {
+    throw new Error('create-wr-pr job must pass issue_body through ISSUE_BODY env');
+  }
+  if (!generateStep) {
+    throw new Error('Generate WR document step not found');
+  }
+
+  const script = generateStep.run || '';
+  if (!script.includes('wr/WR_TEMPLATE_FULL.md')) {
+    throw new Error('WR generation must prefer the canonical wr/WR_TEMPLATE_FULL.md template');
+  }
+  if (script.includes('cp wr/WR_TEMPLATE.md "${WR_FILE}"')) {
+    throw new Error('WR generation still hardcodes removed wr/WR_TEMPLATE.md path');
+  }
+  if (!script.includes('printf') || !script.includes('${ISSUE_BODY}') || !script.includes('OUTPUT_TYPE=')) {
+    throw new Error('WR generation must parse Output Type from ISSUE_BODY safely');
+  }
+});
+
+test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and OpenRouter', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const healStep = doc.jobs.scan.steps.find((step) => step.name === 'Detect stuck WRs and heal');
+
+  if (!healStep) {
+    throw new Error('Detect stuck WRs and heal step not found');
+  }
+
+  const script = healStep.with?.script || '';
+  const requiredSnippets = [
+    'dispatchWorkflowBestEffort',
+    "'agent-fallback.yml'",
+    "prefer_agent: 'openrouter'",
+    "'openrouter-triage.yml'",
+    "'wr-pr-creation.yml'",
+    "'triage:new'",
+    "'agent-fallback'",
+    'upsertEscalationComment',
+    'WR PR Creation failed',
+  ];
+
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`stuck detector escalation is missing ${snippet}`);
+    }
+  }
+
+  if (script.includes('clearAttemptLabels(')) {
+    throw new Error('stuck detector escalation should not clear retry labels during escalation');
+  }
+});
+
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

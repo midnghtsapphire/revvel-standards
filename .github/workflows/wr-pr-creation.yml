@@ -249,6 +249,7 @@ jobs:
     env:
       ISSUE_NUMBER: ${{ needs.detect-completion.outputs.issue_number }}
       ISSUE_TITLE: ${{ needs.detect-completion.outputs.issue_title }}
+      ISSUE_BODY: ${{ needs.detect-completion.outputs.issue_body }}
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Checkout repository
@@ -270,7 +271,7 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -351,10 +352,16 @@ jobs:
         id: create_branch
         run: |
           # Clean title for branch name
-          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
-          BRANCH_NAME="wr/issue-${{ env.ISSUE_NUMBER }}-${CLEAN_TITLE:0:50}"
+          CLEAN_TITLE=$(printf '%s' "${ISSUE_TITLE}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
+          BASE_BRANCH_NAME="wr/issue-${ISSUE_NUMBER}-${CLEAN_TITLE:0:50}"
+          BRANCH_NAME="${BASE_BRANCH_NAME}"
 
-          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          if git ls-remote --exit-code --heads origin "${BRANCH_NAME}" >/dev/null 2>&1; then
+            BRANCH_NAME="${BASE_BRANCH_NAME}-${GITHUB_RUN_ID}"
+            echo "::notice::Base WR branch already exists; using ${BRANCH_NAME}"
+          fi
+
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -367,13 +374,28 @@ jobs:
           mkdir -p wr/issues
 
           # Generate WR filename
-          CLEAN_TITLE=$(echo "${{ env.ISSUE_TITLE }}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
-          WR_FILE="wr/issues/issue-${{ env.ISSUE_NUMBER }}-${CLEAN_TITLE:0:50}.md"
+          CLEAN_TITLE=$(printf '%s' "${ISSUE_TITLE}" | sed 's/\[WR\]//gi' | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/^-*//;s/-*$//')
+          WR_FILE="wr/issues/issue-${ISSUE_NUMBER}-${CLEAN_TITLE:0:50}.md"
 
-          echo "WR_FILE=${WR_FILE}" >> $GITHUB_ENV
+          echo "WR_FILE=${WR_FILE}" >> "$GITHUB_ENV"
 
-          # Copy template
-          cp wr/WR_TEMPLATE.md "${WR_FILE}"
+          # Copy the canonical WR template. The old path, wr/WR_TEMPLATE.md,
+          # was removed when the WR template set was split into BASIC/FULL.
+          TEMPLATE_FILE=""
+          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_BASIC.md; do
+            if [ -f "$candidate" ]; then
+              TEMPLATE_FILE="$candidate"
+              break
+            fi
+          done
+
+          if [ -z "$TEMPLATE_FILE" ]; then
+            echo "::error::No WR template found. Expected wr/WR_TEMPLATE_FULL.md or wr/WR_TEMPLATE_BASIC.md."
+            exit 1
+          fi
+
+          cp "${TEMPLATE_FILE}" "${WR_FILE}"
+          echo "Using WR template: ${TEMPLATE_FILE}"
 
           # Replace placeholders with actual values
           sed -i "s#{REPO_NAME}#midnghtsapphire/revvel-standards#g" "${WR_FILE}"
@@ -412,7 +434,12 @@ jobs:
           mv temp_header.md "${WR_FILE}"
 
           # Read Output Type from issue body and skip app scaffolding if it's a PDF/doc
-          OUTPUT_TYPE=$(echo "${{ env.ISSUE_BODY }}" | grep -A 2 "### Output Type" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
+          OUTPUT_TYPE=$(printf '%s\n' "${ISSUE_BODY}" | awk '
+            BEGIN { found = 0 }
+            /(^|[ \t])### Output Type/ { found = 1; next }
+            found && /(^|[ \t])### / { exit }
+            found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
+          ' | tr -d '\r')
 
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
@@ -443,9 +470,9 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const branchName = '${{ steps.create_branch.outputs.BRANCH_NAME }}';
-            const issueTitle = `${{ env.ISSUE_TITLE }}`.replace(/^\[WR\]\s*/i, '');
+            const issueTitle = (process.env.ISSUE_TITLE || '').replace(/^\[WR\]\s*/i, '');
 
             const prTitle = `[WR] ${issueTitle}`;
 
@@ -595,7 +622,7 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
             const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
 
@@ -629,7 +656,7 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
 
             // Add in-review label
             await github.rest.issues.addLabels({
@@ -652,10 +679,10 @@ jobs:
             }
       - name: Handle workflow failure
         if: failure()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = ${{ env.ISSUE_NUMBER }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             
             const comment = [
               '❌ **WR PR Creation Failed**',
