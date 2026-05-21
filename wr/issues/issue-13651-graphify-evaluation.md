@@ -96,7 +96,8 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
 | --- | --- | --- | --- |
 | [Reddit thread](https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
 | [Hacker News thread](https://news.ycombinator.com/item?id=39771383) | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
-| [GitHub Issues](https://github.com/safishamsi/graphify/issues/462) + [Issue #949](https://github.com/safishamsi/graphify/issues/949) | Frustrated | "Monorepo resolution gaps", "Cross-platform graph target instability" | Graphify provides a union-merge git hook and clustering exclusions |
+| [GitHub Issue #462](https://github.com/safishamsi/graphify/issues/462) | Frustrated | "Monorepo resolution gaps" | Graphify provides a union-merge git hook and clustering exclusions |
+| [GitHub Issue #949](https://github.com/safishamsi/graphify/issues/949) | Frustrated | "Cross-platform graph target instability" | Graphify provides a union-merge git hook and clustering exclusions |
 
 ### Deep Research Sources (Citations)
 
