@@ -40,7 +40,7 @@ jobs:
         id: perplexity
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/v1/models" \
-            -H "Authorization: Bearer $PERPLEXITY_API_KEY" 2>&1 || echo "000")
+            -H "Authorization: Bearer ${{ secrets.PERPLEXITY_API_KEY }}" 2>&1 || echo "000")
           
           if [[ "$response" == "200" ]]; then
             echo "perplexity=healthy" >> $GITHUB_OUTPUT
