@@ -1,30 +1,37 @@
 ---
-project_class: product
-# allowed: product, job_task, research, content, automation, experiment
-business_goal: revenue
-# allowed: revenue, portfolio, job_search, internal_tool, learning
-urgency: now
-# allowed: now, next, later
-complexity: small
-# allowed: small, medium, large
-api_cost_risk: low
-# allowed: low, medium, high
-requires:
-  repo: false
-  vercel_preview: false
-  social_announcement: false
-  paid_apis: []
-  # add API names when paid integrations are required
-output_type: app
-# examples: app, job_task
-delivery_mode: vercel_preview
-# examples: vercel_preview, pr_or_patch
-deployment_target: vercel
-# examples: vercel, existing_repo
-monetization_mode: lead_generation
-# examples: lead_generation, employment
+intake_id: 
+received_at: 
+source: 
+status: new # new | triaged | routed | archived
+priority: P2 # P0 | P1 | P2 | P3
+revenue_target_monthly_usd: 0
+goal_phase: 1 # 1=$10k, 2=$30k, 3=$100k, 4=$10M
+tags: []
+owner: 
+route_to_engine: 
 ---
 
-# Project Description
+# Intake: <title>
 
-(Describe the project here)
+## Problem / Opportunity
+<one paragraph>
+
+## Hypothesis
+<measurable claim>
+
+## Desired Outcome
+- Revenue impact (USD/month):
+- Time-to-ship target:
+- Success metric:
+
+## Constraints / Known Gaps
+- Credentials missing:
+- APIs missing:
+- Infra missing:
+
+## Routing Hint
+Suggested engine: <engine-id>
+Suggested runner target: <github|vercel|supabase|zapier|make|n8n|gumloop|cli|browser>
+
+## Notes
+<freeform>

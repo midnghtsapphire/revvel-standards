@@ -1,14 +1,61 @@
-# Revvel Runner Summary
+# Revvel Runner — Execution OS Summary
 
-## The Gap Addressed
-Historically, Revvel operated primarily as a standards and goals engine. While the orchestrator effectively managed project states, evaluated requirements, and tracked $10M revenue goals, the process frequently stopped at "reporting" without actually shipping an artifact. The missing layer was **runners that finish the thing**.
+> **PRIME DIRECTIVE:** $10k/month → $10M in 3 years.
+> This document explains the paradigm shift from "standards engine" to **execution OS**.
 
-## The Execution OS
-Revvel is now configured as a personal automated execution OS, utilizing a separation of concerns:
+## The Shift
 
-1. **Orchestrator**: Owns the state (`state.json`), goals, stats, routing, and determining the next step. It explicitly preserves existing revenue goals without deleting them.
-2. **Engines**: Evaluate decisions, determine what must be built, and prepare the requirements (e.g., BOMs).
-3. **Runners**: The last-mile executors. They interact directly with external platforms (GitHub, Vercel, Supabase, Zapier, Make, n8n, Gumloop) to create, deploy, and verify the physical artifacts.
+| Before | After |
+|--------|-------|
+| Revvel produced **standards, plans, goals** | Revvel produces **shipped artifacts** |
+| Failures were vague ("configure X") | Failures emit a **Procurement BOM** |
+| Engines wrote prose | Engines write **code, deploys, API calls** |
+| State was implicit | State is `state.json`, schema-enforced |
+| One layer (engine) | Three layers: **Orchestrator → Engine → Runner** |
 
-## Procurement BOM Safety
-To avoid opaque failures, if a runner encounters missing credentials or API access (e.g., n8n, Zapier MCP, Compulife API), it immediately produces a **Procurement BOM**, returning control to the user with an explicit shopping list of required accounts or keys.
+## The Three Layers
+
+### 1. Orchestrator
+- Owns `state.json`.
+- Routes intake from `docs/inbox/` to engines.
+- Refuses intake without `revenue_target_monthly_usd` + `goal_phase`.
+- Halts on `needs_procurement`.
+
+### 2. Engines
+- Stateless; called by the orchestrator.
+- Either produce artifacts or invoke runners.
+- Forbidden from descriptive-only output.
+
+### 3. Runners
+- Execute on a closed set of targets: `github`, `vercel`, `supabase`, `zapier`, `make`, `n8n`, `gumloop`, `polar`, `cli`, `browser`.
+- On missing access → emit **Procurement BOM**.
+
+## The Procurement BOM Rule
+
+The single most important mechanism. When a runner can't execute:
+
+1. It MUST emit `docs/projects/<project>/BOM.md` listing every missing credential, account, API, infra item with **cost, source, and acquisition steps**.
+2. The orchestrator halts.
+3. Humans procure.
+4. The orchestrator resumes.
+
+No more "set your env vars." No more vague failures. Every gap becomes a **shopping list**.
+
+## Files Introduced
+
+- `docs/inbox/TEMPLATE.md` — intake frontmatter.
+- `engines/CONTRACT.md` — Orchestrator/Engine/Runner contract.
+- `schemas/state.schema.json` — state validation.
+- `engines/runner-orchestrator/README.md` — top-level dispatcher.
+- `docs/standards/RUNNER_TARGETS.md` — approved targets + BOM rule.
+- `docs/projects/life-insurance-lead-saas/BOM_TEMPLATE.md` — reusable BOM skeleton.
+- `docs/projects/life-insurance-lead-saas/BOM.md` — first concrete BOM (Phase-1 revenue).
+
+## Why This Maps to $10M
+
+- **Phase 1 ($10k/mo):** First BOM (life-insurance-lead-saas) ships a Polar-monetized lead SaaS in <14 days. Procurement is bounded (<$100 total).
+- **Phase 2 ($30k/mo):** Same orchestrator forks into 3 vertical lead SaaS (HVAC, solar, dental); BOMs reused; runners parallelized.
+- **Phase 3 ($100k/mo):** OSINT product line shipped via the same runner set; Polar storefront scales horizontally.
+- **Phase 4 ($10M total):** Every new product is an intake → BOM → engine chain → runner deploy. The OS itself is the moat.
+
+The orchestrator preserves the revenue goal across every step. **No step exists that doesn't move us toward $10M.**
