@@ -19,11 +19,21 @@ profiles:
 
   # === TASK-SPECIFIC PROFILES ===
   
-  # Best coder - high reasoning for complex file edits
-  best_coder:
+  # Code patch profile - explicit task-routed coding profile for GitHub/VS Code automation
+  code_patch:
     description: "Best available coder - Claude Sonnet 4 or GPT-4o for complex code"
     provider: openrouter
     # OpenRouter will use best reasoning model
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 20000
+    temperature: 0.4
+    use_for: ["code", "file-edit", "refactor", "implement"]
+
+  # Backward-compatible alias for older workflow references
+  best_coder:
+    description: "Alias of code_patch for legacy workflow compatibility"
+    provider: openrouter
     primary: "anthropic/claude-sonnet-4-20250514"
     fallback: "openai/gpt-4o"
     max_tokens: 20000
@@ -39,9 +49,19 @@ profiles:
     max_tokens: 10000
     temperature: 0.4
 
-  # Best reviewer - quality focused, lower temp
-  best_reviewer:
+  # Review profile - explicit task-routed review profile for GitHub/VS Code automation
+  review:
     description: "Best available reviewer - GTP-4o or Claude for quality checks"
+    provider: openrouter
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 8000
+    temperature: 0.2
+    use_for: ["review", "pr-review", "code-review"]
+
+  # Backward-compatible alias for older workflow references
+  best_reviewer:
+    description: "Alias of review for legacy workflow compatibility"
     provider: openrouter
     primary: "openai/gpt-4o"
     fallback: "anthropic/claude-sonnet-4-20250514"
@@ -94,9 +114,9 @@ profiles:
 #Orchestration flow:
 #  # Task-based routing:
 #  #   code/triage -> orchestrator (auto-select best model)
-#  #   file-edit/code -> best_coder (Claude Sonnet 4 or GPT-4o)
+#  #   file-edit/code -> code_patch (Claude Sonnet 4 or GPT-4o)
 #  #   research -> Perplexity Sonar (web-grounded)
-#  #   review -> best_reviewer (quality focus)
+#  #   review -> review (quality focus)
 #  #   simple/quick -> cheap_summary (gpt-4o-mini)
 #
 #  wr:research -> Perplexity (research + WR handoff)
