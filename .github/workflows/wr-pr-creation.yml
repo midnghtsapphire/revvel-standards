@@ -249,6 +249,7 @@ jobs:
     env:
       ISSUE_NUMBER: ${{ needs.detect-completion.outputs.issue_number }}
       ISSUE_TITLE: ${{ needs.detect-completion.outputs.issue_title }}
+      ISSUE_BODY: ${{ needs.detect-completion.outputs.issue_body }}
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Checkout repository
@@ -372,16 +373,53 @@ jobs:
 
           echo "WR_FILE=${WR_FILE}" >> $GITHUB_ENV
 
-          # Copy template
-          cp wr/WR_TEMPLATE.md "${WR_FILE}"
+          # Copy the repo's canonical WR template. Keep fallbacks so this
+          # workflow does not get stuck if the template layout changes again.
+          TEMPLATE_FILE=""
+          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
+            if [[ -f "$candidate" ]]; then
+              TEMPLATE_FILE="$candidate"
+              break
+            fi
+          done
 
-          # Replace placeholders with actual values
-          sed -i "s#{REPO_NAME}#midnghtsapphire/revvel-standards#g" "${WR_FILE}"
-          sed -i "s#{REPO_URL}#https://github.com/midnghtsapphire/revvel-standards#g" "${WR_FILE}"
-          sed -i "s#{CREATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{UPDATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{RESEARCH_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{PRIMARY_LANGUAGE}#JavaScript#g" "${WR_FILE}"
+          if [[ -z "$TEMPLATE_FILE" ]]; then
+            echo "::error::No WR template found. Expected wr/WR_TEMPLATE_FULL.md or wr/WR_TEMPLATE_BASIC.md."
+            exit 1
+          fi
+
+          echo "Using WR template: ${TEMPLATE_FILE}"
+          cp "${TEMPLATE_FILE}" "${WR_FILE}"
+
+          # Replace placeholders with actual values without depending on sed
+          # delimiter escaping for issue titles/bodies.
+          export WR_FILE ISSUE_TITLE ISSUE_BODY
+          python3 - <<'PY'
+          import datetime
+          import os
+          import pathlib
+          import re
+
+          wr_file = pathlib.Path(os.environ["WR_FILE"])
+          title = os.environ.get("ISSUE_TITLE", "")
+          body = os.environ.get("ISSUE_BODY", "")
+          clean_title = re.sub(r"^\[WR\]\s*", "", title, flags=re.IGNORECASE).strip() or title
+          today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+          replacements = {
+              "{REPO_NAME}": "midnghtsapphire/revvel-standards",
+              "{REPO_URL}": "https://github.com/midnghtsapphire/revvel-standards",
+              "{CREATED_DATE}": today,
+              "{UPDATED_DATE}": today,
+              "{RESEARCH_DATE}": today,
+              "{PRIMARY_LANGUAGE}": "JavaScript",
+              "{TITLE}": clean_title,
+              "{DESCRIPTION}": body,
+          }
+          text = wr_file.read_text(encoding="utf8")
+          for key, value in replacements.items():
+              text = text.replace(key, value)
+          wr_file.write_text(text, encoding="utf8")
+          PY
 
           # Insert issue information at the top
           cat > temp_header.md <<EOF
@@ -412,7 +450,7 @@ jobs:
           mv temp_header.md "${WR_FILE}"
 
           # Read Output Type from issue body and skip app scaffolding if it's a PDF/doc
-          OUTPUT_TYPE=$(echo "${{ env.ISSUE_BODY }}" | grep -A 2 "### Output Type" | tail -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
+          OUTPUT_TYPE=$(printf '%s\n' "$ISSUE_BODY" | awk '/^### Output Type/{getline; while ($0 == "") getline; print; exit}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
 
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
@@ -639,16 +677,36 @@ jobs:
               labels: ['in-review'],
             });
 
-            // Remove wr:complete if present (since we're now in refinement phase)
-            try {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                name: 'wr:complete',
-              });
-            } catch (error) {
-              // Label might not exist, ignore
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+
+            // Remove completion and auto-healer labels once the PR exists so
+            // the issue no longer appears stuck after recovery.
+            const labelsToRemove = currentLabels
+              .map(label => label.name)
+              .filter(name =>
+                name === 'wr:complete' ||
+                name === 'lifecycle:stuck' ||
+                name === 'wr-stuck' ||
+                name.startsWith('wr:retrigger-attempts-')
+              );
+
+            for (const name of labelsToRemove) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name,
+                });
+                core.info(`Removed recovered WR label: ${name}`);
+              } catch (error) {
+                core.notice(`Could not remove label "${name}": ${error.message}`);
+              }
             }
       - name: Handle workflow failure
         if: failure()

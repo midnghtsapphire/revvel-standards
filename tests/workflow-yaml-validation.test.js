@@ -214,6 +214,7 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   const namesToCompile = new Set([
     'Check if PR should be created',
     'Apply labels to PR',
+    'Update issue labels',
   ]);
 
   for (const step of steps) {
