@@ -1,6 +1,6 @@
 name: OpenRouter Assignee — First Line of Sight
 
-# Automatically assigns all new issues and PRs to @oaudrey (the GitHub-visible
+# Attempts to assign all new issues and PRs to @oaudrey (the GitHub-visible
 # alias for the OpenRouter / oAudrey orchestrator)
 # as the first line of sight. This follows the Automation Routing Policy: all
 # automation routes through OpenRouter via OPENROUTER_API_KEY. Runs on:

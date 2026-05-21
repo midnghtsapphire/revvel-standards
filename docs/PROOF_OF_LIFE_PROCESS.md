@@ -83,7 +83,7 @@ gh workflow run "Proof of Life — app-review revvel-standards-run" \
 | Workflow | Trigger | Scope | Relationship |
 |---|---|---|---|
 | `proof-of-life.yml` (**new**) | `workflow_dispatch` | On-demand proof-of-life for the app-review `revvel-standards-run` pipeline | Manual heartbeat — pick role + assignee |
-| `openrouter-assignee.yml` | New issue / PR, hourly cron | Routes work **to** the OpenRouter orchestrator (attempts `@oaudrey`, falls back to labels/comments) | Automatic entry point — "first line of sight" |
+| `openrouter-assignee.yml` | Issue/PR opened or reopened, PR `ready_for_review`, hourly cron | Routes work **to** the OpenRouter orchestrator (attempts `@oaudrey`, falls back to labels/comments) | Automatic entry point — "first line of sight" |
 | `ralph-loop.yml` | CI failure on a PR | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails |
 
 The three together give you: **automatic routing → CI-failure self-healing → manual proof-of-life heartbeat** with operator choice of role and executor.
