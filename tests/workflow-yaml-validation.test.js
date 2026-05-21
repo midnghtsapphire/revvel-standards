@@ -275,7 +275,6 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
     "'wr-pr-creation.yml'",
     "'triage:new'",
     "'agent-fallback'",
-    'clearAttemptLabels',
     'upsertEscalationComment',
     'WR PR Creation failed',
   ];
@@ -284,6 +283,10 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
     if (!script.includes(snippet)) {
       throw new Error(`stuck detector escalation is missing ${snippet}`);
     }
+  }
+
+  if (script.includes('clearAttemptLabels(')) {
+    throw new Error('stuck detector escalation should not clear retry labels during escalation');
   }
 });
 

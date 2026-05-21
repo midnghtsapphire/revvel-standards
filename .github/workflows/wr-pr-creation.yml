@@ -436,8 +436,8 @@ jobs:
           # Read Output Type from issue body and skip app scaffolding if it's a PDF/doc
           OUTPUT_TYPE=$(printf '%s\n' "${ISSUE_BODY}" | awk '
             BEGIN { found = 0 }
-            /^### Output Type/ { found = 1; next }
-            found && /^### / { exit }
+            /(^|[ \t])### Output Type/ { found = 1; next }
+            found && /(^|[ \t])### / { exit }
             found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
           ' | tr -d '\r')
 
@@ -679,7 +679,7 @@ jobs:
             }
       - name: Handle workflow failure
         if: failure()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
