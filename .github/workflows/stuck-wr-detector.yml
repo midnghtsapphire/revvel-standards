@@ -107,6 +107,21 @@ jobs:
                 labels: [`wr:retrigger-attempts-${n}`],
               });
             }
+            async function clearAttemptLabels(issue) {
+              for (const lbl of issue.labels || []) {
+                const name = typeof lbl === 'string' ? lbl : lbl.name;
+                if (name && name.startsWith('wr:retrigger-attempts-')) {
+                  try {
+                    await github.rest.issues.removeLabel({
+                      owner, repo, issue_number: issue.number, name,
+                    });
+                    core.info(`#${issue.number}: cleared retry label ${name}`);
+                  } catch (error) {
+                    core.notice(`#${issue.number}: could not clear retry label "${name}": ${error.message}`);
+                  }
+                }
+              }
+            }
             async function addLabelsBestEffort(issueNumber, labels) {
               for (const label of labels) {
                 try {
@@ -276,7 +291,7 @@ jobs:
                   `### Manual fallback if automation cannot patch it`,
                   ``,
                   `- Open the [latest \`WR PR Creation\` runs](${context.serverUrl}/${owner}/${repo}/actions/workflows/wr-pr-creation.yml) and inspect the failed step.`,
-                  `- Once the root cause is fixed, remove the \`wr:retrigger-attempts-${MAX_ATTEMPTS}\` label from #${issue.number}; the next detector run will retry the WR PR creation workflow.`,
+                  `- The detector clears exhausted retry labels during escalation and re-dispatches \`wr-pr-creation.yml\` so fixed WRs re-enter the normal path automatically.`,
                   ``,
                   `_Opened automatically by [\`stuck-wr-detector.yml\`](.github/workflows/stuck-wr-detector.yml). Closes when issue #${issue.number} gets a PR._`,
                 ].join('\n');
@@ -332,6 +347,10 @@ jobs:
                     })
                   : false;
                 const triageDispatchOk = await dispatchWorkflowBestEffort('openrouter-triage.yml');
+                await clearAttemptLabels(issue);
+                const wrRetryDispatchOk = await dispatchWorkflowBestEffort('wr-pr-creation.yml', {
+                  issue_number: String(issue.number),
+                });
 
                 await upsertEscalationComment(issue.number, [
                   `🧯 **Stuck-WR escalated to agent troubleshooting**`,
@@ -343,8 +362,9 @@ jobs:
                   `- Added \`wr-stuck\`, \`needs-action\`, \`agent-fallback\`, and \`auto-fix\` to this WR issue where labels exist.`,
                   `- Routed the tracking issue to \`agent-fallback.yml\` with OpenRouter preferred: ${agentDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
                   `- Nudged \`openrouter-triage.yml\`: ${triageDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
+                  `- Cleared the exhausted retry label and re-dispatched \`wr-pr-creation.yml\`: ${wrRetryDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
                   ``,
-                  `When the automation root cause is fixed, remove \`wr:retrigger-attempts-${MAX_ATTEMPTS}\` from this issue so the next detector run retries the normal WR PR creation path.`,
+                  `If this retry still fails, the detector will continue bounded retries and keep the agent troubleshooting issue updated.`,
                   ``,
                   `_Automated by \`.github/workflows/stuck-wr-detector.yml\`._`,
                 ].join('\n'));

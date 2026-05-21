@@ -272,8 +272,10 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
     "'agent-fallback.yml'",
     "prefer_agent: 'openrouter'",
     "'openrouter-triage.yml'",
+    "'wr-pr-creation.yml'",
     "'triage:new'",
     "'agent-fallback'",
+    'clearAttemptLabels',
     'upsertEscalationComment',
     'WR PR Creation failed',
   ];
