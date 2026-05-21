@@ -119,15 +119,19 @@ jobs:
               } catch (e) {
                 if (e.status === 404) {
                   const def = PRIORITY_DEFINITIONS.find((d) => d.name === name);
-                  await github.rest.issues.createLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    ...(def || {
-                      name,
-                      color: 'cfd3d7',
-                      description: `Auto-created priority label: ${name}`,
-                    }),
-                  });
+                  try {
+                    await github.rest.issues.createLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      ...(def || {
+                        name,
+                        color: 'cfd3d7',
+                        description: `Auto-created priority label: ${name}`,
+                      }),
+                    });
+                  } catch (createErr) {
+                    core.notice(`Could not create label "${name}": ${createErr.message}`);
+                  }
                   return;
                 }
                 core.notice(`Could not ensure label "${name}": ${e.message}`);
@@ -239,14 +243,18 @@ jobs:
 
               await ensureLabelExists(priorityLabel);
 
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: item.number,
-                labels: [priorityLabel],
-              });
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: item.number,
+                  labels: [priorityLabel],
+                });
+                core.info(`Set ${priorityLabel} on #${item.number}.`);
+              } catch (e) {
+                core.notice(`Could not add label "${priorityLabel}": ${e.message}`);
+              }
 
-              core.info(`Set ${priorityLabel} on #${item.number}.`);
               return true;
             };
 

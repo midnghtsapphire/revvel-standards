@@ -35,3 +35,6 @@ Thumbs.db
 pr-body.md
 .jules/
 *.egg-info/
+products/creator-payout-tracker/package-lock.json
+products/creator-payout-tracker/.next/
+products/creator-payout-tracker/node_modules/
