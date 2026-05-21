@@ -69,6 +69,25 @@ This WR is only valid if it supports the repository goal of reaching
 4. Any language that sounds like "there are other implementations" should be
    removed; this product is the implementation.
 
+### Project value and goal priority
+
+Graphify should be treated as a **high-priority revenue support product**
+because it can create value in all four goal stages:
+
+1. **$10k/month stage:** sell one-off repo audits, onboarding packs, and
+   architecture reviews to agencies, CTOs, and inherited-codebase teams.
+2. **$30k/month stage:** add standardized self-serve reports plus consulting
+   upsells for remediation and modernization work.
+3. **$100k/month stage:** expand into recurring monitoring, CI reevaluation, and
+   team plans for engineering organizations with multiple repos.
+4. **$10M total by year 3 stage:** use the evaluator as a repeatable product and
+   lead generator that feeds broader revvel consulting, automation, and
+   monetized code-intelligence offerings.
+
+That goal analysis is the reason this WR cannot stop at a generic research
+artifact. It needs to point directly at a product that can generate revenue,
+prove demand, and compound into higher-ticket services.
+
 ---
 
 ## Revvel-Standards Process Checklist
