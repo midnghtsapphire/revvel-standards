@@ -334,7 +334,7 @@ Every WR task follows this standard checklist:
 ### Artifact Engine Map
 
 | Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
 | PDF | [workflow/script/standard] | [exists/gap] | [action] |
 | PowerPoint | [workflow/script/standard] | [exists/gap] | [action] |

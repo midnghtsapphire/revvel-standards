@@ -469,12 +469,10 @@ removes any implication that there should be another implementation path.
 
 ---
 
-## Artifact Engine Map
-
 ## Product-Type & Engine Selection Matrix
 
 | Product Type / Output | Selection | Engine / Standard | Notes |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | API | ✅ Selected | Product route implementation in `products/graphify-evaluator` | Needed for report-generation and integrations |
 | CLI | ✅ Selected | Graphify upstream CLI + product wrapper conventions | Core execution path for graph/report generation |
 | MCP | ✅ Selected | `docs/orchestration/openrouter-execution-contract.md` | Use existing orchestration contract |
@@ -492,8 +490,10 @@ removes any implication that there should be another implementation path.
 
 ---
 
+## Artifact Engine Map
+
 | Artifact Shape | Existing engine / standard | Status | Required action for Graphify |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | Website / UI | `.github/workflows/ui-creation-engine.yml` + the existing Next.js product app | Exists | Expand the current app into the buyer-facing launch surface instead of creating another product |
 | PDF | `.github/workflows/pdf-work-request-router.yml` | Exists | Reuse the repo PDF path if Graphify ships downloadable audit or report artifacts |
 | PowerPoint | Product-type matrix requirement in WR process | Gap | Add a dedicated PPT artifact engine before launch if stakeholder output requires decks |
