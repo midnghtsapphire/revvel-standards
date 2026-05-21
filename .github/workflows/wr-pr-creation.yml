@@ -382,7 +382,7 @@ jobs:
           # Copy the canonical WR template. The old path, wr/WR_TEMPLATE.md,
           # was removed when the WR template set was split into BASIC/FULL.
           TEMPLATE_FILE=""
-          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_BASIC.md; do
+          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
             if [ -f "$candidate" ]; then
               TEMPLATE_FILE="$candidate"
               break
@@ -397,13 +397,35 @@ jobs:
           cp "${TEMPLATE_FILE}" "${WR_FILE}"
           echo "Using WR template: ${TEMPLATE_FILE}"
 
-          # Replace placeholders with actual values
-          sed -i "s#{REPO_NAME}#midnghtsapphire/revvel-standards#g" "${WR_FILE}"
-          sed -i "s#{REPO_URL}#https://github.com/midnghtsapphire/revvel-standards#g" "${WR_FILE}"
-          sed -i "s#{CREATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{UPDATED_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{RESEARCH_DATE}#$(date -u +%Y-%m-%d)#g" "${WR_FILE}"
-          sed -i "s#{PRIMARY_LANGUAGE}#JavaScript#g" "${WR_FILE}"
+          # Replace placeholders with actual values without depending on sed
+          # delimiter escaping for issue titles/bodies.
+          export WR_FILE ISSUE_TITLE ISSUE_BODY
+          python3 - <<'PY'
+          import datetime
+          import os
+          import pathlib
+          import re
+
+          wr_file = pathlib.Path(os.environ["WR_FILE"])
+          title = os.environ.get("ISSUE_TITLE", "")
+          body = os.environ.get("ISSUE_BODY", "")
+          clean_title = re.sub(r"^\[WR\]\s*", "", title, flags=re.IGNORECASE).strip() or title
+          today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+          replacements = {
+              "{REPO_NAME}": "midnghtsapphire/revvel-standards",
+              "{REPO_URL}": "https://github.com/midnghtsapphire/revvel-standards",
+              "{CREATED_DATE}": today,
+              "{UPDATED_DATE}": today,
+              "{RESEARCH_DATE}": today,
+              "{PRIMARY_LANGUAGE}": "JavaScript",
+              "{TITLE}": clean_title,
+              "{DESCRIPTION}": body,
+          }
+          text = wr_file.read_text(encoding="utf8")
+          for key, value in replacements.items():
+              text = text.replace(key, value)
+          wr_file.write_text(text, encoding="utf8")
+          PY
 
           # Insert issue information at the top
           cat > temp_header.md <<EOF
@@ -428,7 +450,7 @@ jobs:
             echo "" >> temp_header.md
           fi
 
-          # Append the rest of the template (skip first few lines to avoid duplication)
+          OUTPUT_TYPE=$(printf '%s\n' "$ISSUE_BODY" | awk '/^### Output Type$/ { found=1; next } found && NF { print; exit }' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
           tail -n +10 "${WR_FILE}" >> temp_header.md
 
           mv temp_header.md "${WR_FILE}"
@@ -666,16 +688,36 @@ jobs:
               labels: ['in-review'],
             });
 
-            // Remove wr:complete if present (since we're now in refinement phase)
-            try {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                name: 'wr:complete',
-              });
-            } catch (error) {
-              // Label might not exist, ignore
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+
+            // Remove completion and auto-healer labels once the PR exists so
+            // the issue no longer appears stuck after recovery.
+            const labelsToRemove = currentLabels
+              .map(label => label.name)
+              .filter(name =>
+                name === 'wr:complete' ||
+                name === 'lifecycle:stuck' ||
+                name === 'wr-stuck' ||
+                name.startsWith('wr:retrigger-attempts-')
+              );
+
+            for (const name of labelsToRemove) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name,
+                });
+                core.info(`Removed recovered WR label: ${name}`);
+              } catch (error) {
+                core.notice(`Could not remove label "${name}": ${error.message}`);
+              }
             }
       - name: Handle workflow failure
         if: failure()
