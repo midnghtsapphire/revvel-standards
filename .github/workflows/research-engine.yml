@@ -79,7 +79,9 @@ jobs:
             ]);
             const labelTriggered = labels.some(label => triggerLabels.has(label));
             const titleTriggered = /^\[WR\]/i.test(title) || /research|marketing|seo|competitor|audience|chatter/i.test(title);
-            const commentTriggered = /research engine|deep research|@copilot|@cursoragent|@openhands-agent|@imgbotapp|create a product/i.test(commentBody);
+            const hasAgentMention = /@copilot|@cursoragent|@openhands-agent|@imgbotapp/i.test(commentBody);
+            const hasResearchIntent = /research engine|deep research|create a product|ship to market|implement|research|wr/i.test(commentBody);
+            const commentTriggered = hasResearchIntent && (hasAgentMention || /research engine|deep research|wr/i.test(commentBody));
             const issueEventTriggered = labelTriggered || titleTriggered;
             const issueCommentTriggered = isIssueComment && !isPullRequestComment && (commentTriggered || issueEventTriggered);
             const shouldRun = dispatch || issueCommentTriggered || (!isIssueComment && issueEventTriggered);
