@@ -3,6 +3,9 @@ name: Morty Post Mortems
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   morty-post-mortems:
     runs-on: ubuntu-latest
