@@ -3,11 +3,11 @@
 MIDNGHTSAPPHIRE repositories use **two** issue templates that both feed the
 same Work Request pipeline:
 
-1. **`00-work-request.yml`** — the **primary, anti-under-scoping form**. Heavy
-   on explicit scope: required fields for Output Type, Research Mode, Delivery
-   Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle,
-   Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule,
-   plus a 4-checkbox Acknowledgements block.
+1. **`00-work-request.yml`** — the **primary, anti-under-scoping form**. Output
+   Type is the only required field. The scope/routing sections (Research Mode,
+   Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required
+   Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker
+   Rule) remain available but optional so research can backfill details.
 2. **`10-OpenHands-system-wr.yml`** — the **lightweight system form**. Output Type
    is the only required field; every other routing dropdown defaults to
    `auto-classify` and is filled in by the [auto-classifier workflow](../../.github/workflows/wr-auto-classify.yml).
@@ -173,4 +173,3 @@ a new repo" section above. The template lives in two places:
 
 Each repo needs its own copy of the template in its own
 `.github/ISSUE_TEMPLATE/` directory.
-

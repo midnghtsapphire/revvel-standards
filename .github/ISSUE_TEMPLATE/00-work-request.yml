@@ -57,7 +57,7 @@ body:
         - Autocreate 3
         - Autocreate 20
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: research_mode
@@ -68,7 +68,7 @@ body:
         - standard
         - deepresearch
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: delivery_mode
@@ -80,7 +80,7 @@ body:
         - build-with-brief-options
         - proposal-first
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: lifecycle_mode
@@ -92,7 +92,7 @@ body:
         - refresh-existing
         - audit-only
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: commercial_mode
@@ -107,7 +107,7 @@ body:
         - client-billable
         - internal-only
     validations:
-      required: true
+      required: false
 
   - type: markdown
     attributes:
@@ -124,7 +124,7 @@ body:
       description: One-line description of the requested work.
       placeholder: Add discoverability layers, REMINDERS.md scaffold, and dual-trigger bug fix for PDF workflow.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: objective
@@ -136,7 +136,7 @@ body:
         The repo should include the PDF in a durable location, surface it through multiple discoverability paths,
         add lightweight reminders scaffolding, and fix the dual-trigger bug in the same PR.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: required_bundle
@@ -151,7 +151,7 @@ body:
         - REMINDERS.md / runbook scaffold
         - Validation / tests / smoke-check
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: definition_of_done
@@ -166,7 +166,7 @@ body:
         - reminders/runbook scaffolding is included if requested
         - validation notes are included
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: do_not_under_scope
@@ -177,7 +177,7 @@ body:
         Do not treat README/docs/reminders/discoverability as optional if they are explicitly part of this WR.
         Do not split these into another PR unless there is a hard blocker.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: explicit_exclusions
@@ -202,7 +202,7 @@ body:
         - Proposal first
         - Multiple PRs intentionally planned
     validations:
-      required: true
+      required: false
 
   - type: input
     id: expected_scope
@@ -238,7 +238,7 @@ body:
         3. document deferred work explicitly,
         4. do not silently omit scope.
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: acknowledgements

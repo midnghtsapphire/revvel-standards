@@ -196,12 +196,11 @@ issue type and normalize missing labels. Numeric prefixes force the sort order p
 [GitHub's documented ordering rules][gh-template-order].
 
 - `.github/ISSUE_TEMPLATE/00-work-request.yml` — primary, anti-under-scoping
-  human form. The `00-` prefix sorts it first. Heavy on explicit scope: 12
-  required fields covering Output Type, the four routing modes (Research /
-  Delivery / Lifecycle / Commercial), Summary, Objective, Required Bundle,
-  Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule, plus
-  a 4-checkbox Acknowledgements block. The implementer's PR must mirror the
-  Required Bundle and not silently drop items.
+  human form. The `00-` prefix sorts it first. Output Type is the only
+  required field; routing/scope fields are optional so intake can stay fast and
+  research automation can backfill context. The anti-under-scoping fields still
+  exist (Summary, Objective, Required Bundle, Definition of Done, Do Not
+  Under-Scope, Delivery Shape, Blocker Rule) for explicit bundle contracts.
 - `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml` — lightweight system form.
   The `10-` prefix sorts it after the heavy form. Output Type is the only
   required routing decision; every other routing dropdown defaults to
