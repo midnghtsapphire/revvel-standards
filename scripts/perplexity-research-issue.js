@@ -2,15 +2,19 @@
 
 /**
  * Perplexity Research Script
- * Researches GitHub issues using Perplexity Sonar API
- * 
+ * Researches GitHub issues using Perplexity Sonar API (direct) or via
+ * OpenRouter's Perplexity models (no-API-key fallback when
+ * PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present).
+ *
  * Usage:
  *   PERPLEXITY_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
- * 
+ *   OPENROUTER_API_KEY=xxx ISSUE_NUMBER=123 REPO=owner/repo node scripts/perplexity-research-issue.js
+ *
  * Environment:
- *   PERPLEXITY_API_KEY - Perplexity API key (stored in secrets)
- *   ISSUE_NUMBER - GitHub issue number to research
- *   REPO - Repository in format owner/repo
+ *   PERPLEXITY_API_KEY  - Perplexity API key (direct lane; preferred)
+ *   OPENROUTER_API_KEY  - OpenRouter API key (no-API fallback via perplexity/sonar-pro)
+ *   ISSUE_NUMBER        - GitHub issue number to research
+ *   REPO                - Repository in format owner/repo
  */
 
 const fs = require('fs');
@@ -19,6 +23,7 @@ const { execFileSync } = require('child_process');
 // Configuration
 const CONFIG = {
   model: 'sonar-pro',
+  openrouterModel: 'perplexity/sonar-pro',
   fallbackModel: 'sonar-deep-research',
   outputFile: '/tmp/perplexity-research.md',
   maxTokens: 8000,
@@ -27,11 +32,15 @@ const CONFIG = {
 
 async function main() {
   const apiKey = process.env.PERPLEXITY_API_KEY;
+  const openrouterKey = process.env.OPENROUTER_API_KEY;
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
 
-  if (!apiKey) {
-    throw new Error('Missing PERPLEXITY_API_KEY secret. Add it to repo secrets.');
+  if (!apiKey && !openrouterKey) {
+    throw new Error(
+      'No research API key available. Set PERPLEXITY_API_KEY (direct Perplexity lane) ' +
+      'or OPENROUTER_API_KEY (no-key Perplexity lane via OpenRouter perplexity/sonar-pro).'
+    );
   }
   if (!issueNumber) {
     throw new Error('Missing ISSUE_NUMBER');
@@ -40,7 +49,8 @@ async function main() {
     throw new Error('Missing REPO (format: owner/repo)');
   }
 
-  console.log('🔍 Researching issue #' + issueNumber + ' in ' + repo + '...');
+  const lane = apiKey ? 'direct Perplexity API' : 'OpenRouter perplexity/sonar-pro (no-key lane)';
+  console.log(`🔍 Researching issue #${issueNumber} in ${repo} via ${lane}...`);
 
   // Fetch issue details using gh CLI
   const issue = await fetchGitHubIssue(repo, issueNumber);
@@ -50,8 +60,10 @@ async function main() {
 
   console.log('🤔 Asking Perplexity...');
 
-  // Call Perplexity API
-  const research = await callPerplexity(apiKey, prompt);
+  // Call Perplexity (direct) or OpenRouter (no-key fallback)
+  const research = apiKey
+    ? await callPerplexity(apiKey, prompt)
+    : await callPerplexityViaOpenRouter(openrouterKey, prompt);
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
@@ -147,6 +159,45 @@ async function callPerplexity(apiKey, prompt) {
   return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
 }
 
+/**
+ * No-key Perplexity lane: route through OpenRouter using perplexity/sonar-pro.
+ * Used when PERPLEXITY_API_KEY is absent but OPENROUTER_API_KEY is present.
+ */
+async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openrouterKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
+      'X-Title': 'revvel-standards mindmappr research'
+    },
+    body: JSON.stringify({
+      model: CONFIG.openrouterModel,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: CONFIG.maxTokens,
+      temperature: CONFIG.temperature
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenRouter/Perplexity API error (${response.status}): ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
+}
+
 async function fetchGitHubIssue(repo, issueNumber) {
   // Get issue details
   const issueData = JSON.parse(
@@ -204,4 +255,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { callPerplexity, buildResearchPrompt, fetchGitHubIssue };
+module.exports = { callPerplexity, callPerplexityViaOpenRouter, buildResearchPrompt, fetchGitHubIssue };
