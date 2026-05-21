@@ -52,13 +52,20 @@ gh api repos/midnghtsapphire/revvel-standards/branches/main/protection \
   --jq '.required_status_checks'
 ```
 
-When you replace the required list, keep it aligned with the table above:
+If you script the update, prefer the dedicated required-status-checks endpoint
+so you only change that list:
 
-- `semgrep`
-- `Analyze (javascript-typescript)`
-- `Analyze (actions)`
-- the CI test job name GitHub shows for the repo's test workflow
-- add `Jules PR Review` later, after the key/runtime issue above is fixed
+```bash
+gh api -X PATCH \
+  repos/midnghtsapphire/revvel-standards/branches/main/protection/required_status_checks \
+  -f strict=true \
+  -f 'contexts[]=semgrep' \
+  -f 'contexts[]=Analyze (javascript-typescript)' \
+  -f 'contexts[]=Analyze (actions)' \
+  -f 'contexts[]=<exact CI test job name>'
+```
+
+Add `Jules PR Review` later, after the key/runtime issue above is fixed.
 
 > A check name only becomes selectable after it has run on at least one PR, so
 > open one PR first, then add the names that appear.
