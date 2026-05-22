@@ -54,7 +54,10 @@ jobs:
         uses: zachkklein/WCAG_PR_Checker@v2
         with:
           APP_DIR: '.'
-          BUILD_DIR: 'public'
+          # Static site is served from the repository root, not a public/ build
+          # directory. Point the checker at '.' so it scans the real index.html
+          # (with title/lang/zoomable viewport) instead of a placeholder page.
+          BUILD_DIR: '.'
           URLS: '/'
         continue-on-error: true
 
