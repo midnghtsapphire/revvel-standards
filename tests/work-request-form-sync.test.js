@@ -321,6 +321,34 @@ test('Work Request Output Type options match wr-auto-classify DROPDOWN_FIELDS', 
   sortedEq(templateOpts, classifyOpts, 'Output Type option mismatch');
 });
 
+test('WR PR creation maps current WR output types to ship-to-market labels', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+
+  const expectedMappings = {
+    'production-app': 'deliver:app',
+    'desktop-tool': 'deliver:app',
+    'sellable-pdf': 'deliver:pdf',
+    'technical-documentation': 'deliver:docs',
+    'project-management-doc': 'deliver:docs',
+    'internal-script-automation': 'deliver:cli',
+    'cli-product': 'deliver:cli',
+    'mcp-product': 'deliver:mcp',
+    'api-product': 'deliver:api',
+    'client-code-task': 'deliver:package',
+    'invention-flow': 'deliver:docs',
+  };
+
+  for (const [outputType, deliverLabel] of Object.entries(expectedMappings)) {
+    assert(
+      wrPrCreation.includes(`'${outputType}': '${deliverLabel}'`),
+      `WR PR creation must map ${outputType} to ${deliverLabel}`
+    );
+  }
+});
+
 test('PDF pipeline batch dropdown exists with expected options', () => {
   const tmplPath = path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml');
   const tmpl = fs.readFileSync(tmplPath, 'utf8');
