@@ -54,7 +54,11 @@ jobs:
         uses: zachkklein/WCAG_PR_Checker@v2
         with:
           APP_DIR: '.'
-          BUILD_DIR: 'public'
+          # 2026-05-22 (Claude): the static site lives at the repo root, not in a
+          # public/ build dir. Point the checker at '.' so it scans the real
+          # index.html (which has title/lang/zoomable viewport) instead of an
+          # empty placeholder page.
+          BUILD_DIR: '.'
           URLS: '/'
         continue-on-error: true
 
