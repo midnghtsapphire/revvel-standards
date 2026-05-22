@@ -59,5 +59,17 @@ test("returns null when there is no persona trigger", () => {
   assert.strictEqual(parsePersonaCommand(null), null);
 });
 
+test("detects an action verb (execution mode)", () => {
+  assert.strictEqual(parsePersonaCommand("@oaudrey build a CSV exporter").action, "build");
+  assert.strictEqual(parsePersonaCommand("@openrouter implement X").action, "implement");
+  assert.strictEqual(parsePersonaCommand("/persona oaudrey create a landing page").action, "create");
+  assert.strictEqual(parsePersonaCommand("@OAUDREY Fix the parser").action, "fix");
+});
+
+test("a question is advisory (no action)", () => {
+  assert.strictEqual(parsePersonaCommand("@professor what is the TAM?").action, null);
+  assert.strictEqual(parsePersonaCommand("@oaudrey how should we route this?").action, null);
+});
+
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
