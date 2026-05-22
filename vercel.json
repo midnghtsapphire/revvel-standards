@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "echo 'static site — no build step'",
-  "outputDirectory": "."
+  "buildCommand": "rm -rf public && mkdir -p public && find . -maxdepth 1 -type f \\( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' -o -name '*.svg' -o -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.gif' -o -name '*.webp' -o -name '*.ico' -o -name '*.txt' -o -name '*.xml' -o -name '*.webmanifest' \\) -exec cp {} public/ \\; && for dir in assets static css js img images fonts; do if [ -d \"$dir\" ]; then cp -R \"$dir\" public/; fi; done",
+  "outputDirectory": "public"
 }
