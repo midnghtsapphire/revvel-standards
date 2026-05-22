@@ -140,4 +140,5 @@ comment (`@professor`, `@oaudrey`, `@mindmappr`, `@openrouter`, or
 - Delivery: `.github/workflows/ship-to-market.yml`
 - Review gates: `.github/workflows/semgrep.yml`, `codeql.yml`, `jules-pr-reviewer.yml`
 - Required-check setup: `docs/BRANCH_PROTECTION_REQUIRED_CHECKS.md`
+- Email errors → issues (planned): `docs/process/EMAIL_ERROR_INTAKE.md`
 - Full audit & roadmap: `docs/REVVEL_STANDARDS_AUDIT.md`
