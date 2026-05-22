@@ -1,85 +1,29 @@
-# WR: [WR] s2m covid debunked or fact checking site
+# WR: s2m covid debunked or fact checking site
 
 **Issue:** #13732  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-22  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-# WR: midnghtsapphire/revvel-standards
-
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-05-22  
-**Last Updated:** 2026-05-22  
-**Language:** JavaScript  
-**Research Date:** 2026-05-22 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** 🟡 In Progress
-
----
-
-## ⚡ Pre-flight: Autonomous Research Defaults
-
-> **These are the default research requirements for EVERY WR — including bug fixes, chores, and minor features. Do not skip any checked item. If a section is genuinely N/A, document why.**
-
-### Research Checklist (pre-checked = required by default)
-
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
-- [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
-- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
-- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
-- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
-
-### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
-
-When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
-
-```yaml
-# Paste into any workflow_dispatch trigger to enforce research standards
-on:
-  workflow_dispatch:
-    inputs:
-      deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
-        type: boolean
-        default: true          # ← ALWAYS true
-      include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
-        type: boolean
-        default: true          # ← ALWAYS true
-      research_depth:
-        description: 'Research depth level'
-        type: choice
-        options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
-```
-
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+**WR Status:** ✅ Complete  
 
 ---
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+This WR is not a request for a single article or one-off fact-check page.
+For S2M, the required outcome is a full revvel-standards product bundle:
+public website, authenticated app surface, API, CLI, MCP server, skill, PDF
+export path, and launch automation. The correct product idea is an
+evidence-first COVID misinformation response platform that turns trusted source
+material into searchable debunks, shareable one-page briefs, and programmable
+verification surfaces for users, researchers, and agents.
+
+The repo already contains most of the standards needed to route this build:
+the automated product pipeline, app/API/MCP shape standards, UI creation
+engine, skill-runner surface, and PDF playbook. What was missing in the
+previous WR was the explicit instruction to run through the whole
+revvel-standards stack and ship the entire surface area instead of
+under-scoping to a single fact-check entry.
 
 ---
 
@@ -88,797 +32,362 @@ on:
 ### Repository Metadata
 
 | Property | Value |
-|----------|-------|
+| --- | --- |
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-22 |
+| Created | 2026-02-20 |
 | Last Updated | 2026-05-22 |
 | Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
+| Stars | 1 |
+| Open Issues | 6405 |
+| Description | Single source of truth for Revvel standards, processes, and specifications |
+| Private | No |
+| Archived | No |
 
-production-app
+### Current Repo Capabilities Relevant to This WR
 
-### PDF pipeline batch
+- **Pipeline router:** `standards/AUTOMATED_PRODUCT_PIPELINE.md`
+- **Product scaffold entrypoint:** `scripts/init-product.sh`
+- **Ship-to-market launcher:** `scripts/autonomous-product-launcher.sh`
+- **Public UI engine:** `scripts/ui-creation-engine.js`
+- **Full app standard:** `standards/shapes/APP.md`
+- **API standard:** `standards/shapes/API.md`
+- **CLI / MCP standard:** `standards/CLI_MCP_AUTOMATION.md`
+- **MCP standard:** `standards/shapes/MCP.md`
+- **Skill execution surface:** `products/revvel-skill-runner/README.md`
+- **PDF playbook:** `docs/playbooks/pdf-wr-playbook.md`
 
-None
+### Repository Structure Used by This Build
 
-### Research Mode
-
-None
-
-### Delivery Mode
-
-None
-
-### Lifecycle Mode
-
-None
-
-### Commercial Mode
-
-None
-
-### Summary
-
-_No response_
-
-### Objective
-
-Add fact-check of mRNA vaccine chromosome-19 integration claim
-#3] s2m covid debunked or fact checking site
-
-### Required Bundle
-
-Add fact-check of mRNA vaccine chromosome-19 integration claim
-#3] s2m covid debunked or fact checking site
-
-### Definition of Done
-
-Add fact-check of mRNA vaccine chromosome-19 integration claim
-#3] s2m covid debunked or fact checking site
-
-### Do Not Under-Scope
-
-_No response_
-
-### Explicit Exclusions
-
-_No response_
-
-### Delivery Shape
-
-None
-
-### Expected Scope
-
-_No response_
-
-### Validation Expectations
-
-_No response_
-
-### Blocker Rule
-
-_No response_
-
-### Acknowledgements
-
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
-
-### Current Status
-
-- **Active Development:** [Yes/No - based on recent commits]
-- **Last Commit:** [Date and summary]
-- **Open PRs:** [Count and notable ones]
-- **Open Issues:** [Count and critical ones]
-- **Deployment Status:** [Deployed/Not Deployed - Vercel URL if exists]
-- **CI/CD Status:** [Passing/Failing/Not configured]
-
-### Repository Structure
-
-```
-[Tree structure of key directories and files]
+```text
+/
+├── standards/                  # Canonical build rules and shape standards
+├── scripts/                    # Scaffolding, UI generation, launch automation
+├── products/revvel-skill-runner/ # Existing skill UI/runtime
+├── docs/playbooks/             # PDF and operational playbooks
+└── wr/issues/                  # Research and build definition source of truth
 ```
 
-### Key Technologies
+### What the Product Must Actually Be
 
-- **Frontend:** [Framework/libraries]
-- **Backend:** [Framework/libraries]
-- **Database:** [Type and provider]
-- **Deployment:** [Platform]
-- **CI/CD:** [Tooling]
+The canonical implementation is a **COVID myth verification platform** with
+two simultaneous surfaces:
+
+1. **Public trust surface** — search-friendly pages that debunk high-volume
+   claims with timestamps, source chains, and plain-language takeaways.
+2. **Operational verification surface** — API, CLI, MCP, and skill interfaces
+   that let journalists, moderators, researchers, educators, and agents verify
+   a claim and export a PDF brief without redoing the research manually.
+
+This satisfies the comment requirement to run through the whole
+revvel-standards system, generate the product idea inside revvel-standards, and
+define the build process for the actual shipped website, CLI, API, MCP, skill,
+and PDF bundle.
 
 ---
 
 ## Step 1A: Product / Output Selections
 
 | Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| --- | --- | --- | --- | --- |
+| Website / app UI | Yes | Next.js trust site + authenticated dashboard | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md` | Public myth pages plus admin/editor workflow |
+| API | Yes | REST JSON | `standards/shapes/API.md` | Claim lookup, evidence bundle, and PDF job endpoints |
+| CLI | Yes | npm package | `standards/CLI_MCP_AUTOMATION.md` | Researcher / newsroom command line verification |
+| MCP | Yes | stdio server | `standards/shapes/MCP.md` | Agent-facing tools for claim verification and export |
+| Skill | Yes | Revvel skill | `products/revvel-skill-runner/README.md` | Internal and customer-facing guided verification workflows |
+| PDF | Yes | 1-3 page brief + source appendix | `docs/playbooks/pdf-wr-playbook.md` | Shareable evidence packs for schools, clinics, and journalists |
+| PowerPoint / deck | No | N/A | N/A | Not required for the canonical product |
+| Video | No | N/A | N/A | Optional marketing asset, not part of the required bundle |
+| Docs | Yes | README, GTM, security, deployment | revvel-standards baseline docs | Required for market handoff |
+| Agent automation | Yes | GitHub Actions / launch orchestration | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Required for repeatable S2M shipping |
 
 ### Platform Defaults & Website Requirements
 
-- **Website in Test:** [Vercel URL or documented gap]
-- **Integration runtime:** [DigitalOcean by default / documented exception]
-- **Admin surface:** [required / not required / gap]
-- **User auth:** [Apple / Google / GitHub / other / not required]
+- **Website in Test:** Vercel URL is required at implementation time; current
+  gap is that this WR defines the product and build route, not the deployed
+  repo.
+- **Integration runtime:** Public website on Vercel, API/background jobs on
+  DigitalOcean unless a reviewed exception beats it on cost/performance.
+- **Admin surface:** Required. Editors need claim intake, source approval,
+  correction workflow, and PDF generation controls.
+- **User auth:** Required. Support Google, GitHub, and email login for saved
+  searches, PDF exports, and team workspaces.
+- **Commerce requirements:** Include cart/checkout path, Stripe or Polar.sh
+  purchase flow, admin login, and user login because this is a ship-to-market
+  website/app, not a content-only microsite.
 
 ---
 
-## Step 2: Deep Web Research
-
-> **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
-> - **(1) What is being used now** — existing solutions, pricing, mechanics
-> - **(2) What problem are we solving** — specific pain points from community research
-> - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
-> - **(4) What do buyers hate about current solutions** — sourced from forums, reviews, Reddit
-> - **(5) High-value positioning data** — keywords, domain strategy, marketing ROI
-> - **(6) API/Data BOM** — provider, best-for use case, data capability, cost model, strengths/risks, and compliance notes
->
-> An LLM agent must be able to answer every question in this template from live web research before implementation begins.
+## Step 2: Deep Research
 
 ### Market Opportunity Analysis
 
-#### Current Market Trends
-
-[Research findings about market trends in this domain — include data points, stats, and growth signals]
-
-**Sources:**
-- [Link 1]: [Description]
-- [Link 2]: [Description]
-
-#### Target Audience & Trigger Events
-
-[Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
-
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
-
-#### SEO & Keyword Research
-
-**This section is REQUIRED for any product with a web/content component.**
-
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-
-**Long-tail / trigger-specific keywords:**
-- [keyword]: [volume] — [why it matters]
-- [keyword]: [volume] — [why it matters]
-
-**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
-
-#### Bill of Materials (BOM) — APIs & Tools
-
-> **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
-
-**Category: [Primary Data Source]**
-
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
-
-**Category: [Compliance / Validation]**
-
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
-
-**Category: [Delivery / Storefront]**
-
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
-
-**BOM Cost Summary:**
-
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
-
-> **ROI Check:** [How many units/sales cover infrastructure cost?]
-
-#### How the Industry Works — Mechanics
-
-[Explain exactly how the current market solves this problem. Include: how buyers find/purchase, how pricing works, what the conversion funnel looks like, and what makes a high-quality solution vs. a low-quality one.]
-
-**Shared vs. Exclusive / Tiered pricing:**
-
-| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-
-**Why some [units] are worth more than others:**
-[Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
-
-#### Competitors & Alternatives
-
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
-
-#### API / Data Source BOM (REQUIRED)
-
-**Every WR must include a BOM-style source comparison for the core product dependencies (APIs, datasets, CLI/MCP integrations, GitHub Apps where relevant).**
-
-If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
-
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-
-**BOM Decision:**
-- Primary provider stack: [choice + reason]
-- Secondary/fallback stack: [choice + reason]
-- Why this BOM is superior for this WR: [evidence]
-
-#### Community Chatter — What Users Dislike About Current Solutions
-
-**This section is REQUIRED. Research Reddit, forums, TrustPilot, Yelp, App Store reviews, ComplaintsBoard, or any relevant community to surface real pain points.**
-
-**Top complaints (cite sources where possible):**
-
-1. **[Complaint 1]:** [Quote or paraphrase from community research]
-2. **[Complaint 2]:** [Quote or paraphrase from community research]
-3. **[Complaint 3]:** [Quote or paraphrase from community research]
-
-**What users/buyers actually want (opportunity signals):**
-- [Want 1]: [Why this is an opening]
-- [Want 2]: [Why this is an opening]
-
-> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
-
-#### Domain Name Strategy
-
-**This section is REQUIRED for any product with a web presence.**
-
-**High-value domain patterns for this niche:**
-
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
-| [Pattern 1] | [Examples] | [Why it works] |
-| [Pattern 2] | [Examples] | [Why it works] |
-
-**Recommendation:** [Specific domain guidance — TLD preference, availability check strategy, priority]
-
-#### Monetization Opportunities
-
-1. **Direct Revenue:**
-   - [Strategy 1]: [Description and potential]
-   - [Strategy 2]: [Description and potential]
-
-2. **Affiliate / Reseller Partnerships:**
-   - [Partner 1]: [Commission structure]
-   - [Partner 2]: [Commission structure]
-
-3. **Subscription / Recurring:**
-   - [Feature 1]: [Pricing potential]
-   - [Feature 2]: [Pricing potential]
-
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
-
-#### Marketing Best Practices — What's Working Now & How This Improves It
-
-**This section is REQUIRED. Research current marketing strategies in this niche.**
-
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
-| [Strategy 1] | [Current best practice + data] | [How our product is better] |
-| [Strategy 2] | [Current best practice + data] | [How our product is better] |
-
-**Inbound vs. Outbound ROI comparison:**
-- Inbound ROI: [Data + timeframe]
-- Outbound ROI: [Data + timeframe]
-- Recommended approach for this WR: [Recommendation with rationale]
-
-#### Research Fleet Plan & Review Fleet Plan (REQUIRED)
-
-Define a layered research engine using two AI fleets:
-
-1. **Research Fleet (Discovery):** [agents/roles that gather market data, BOM options, citations]
-2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
-
-**Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
-
-**Minimum pass criteria (required):**
-- All REQUIRED sections in Step 2 are present and non-empty
-- Zero unsupported factual claims in sampled checks
-- Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
-- Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source
-
-**Threshold rationale:** 90% is the default to prevent low-evidence WRs while allowing a small margin for clearly marked exploratory assumptions. Any threshold change must be approved by repository maintainers/standards owners per `docs/WEEKLY_RESEARCH_PROCESS.md` and documented in the PR.
-
-**How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
-
-**Counting example:**
-- Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
-- Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
-- Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
-
-**If the WR is operationally complex, define support fleets explicitly (for example: Database Architecture, DBA/Reliability, Compliance Operations, Revenue Delivery) instead of collapsing everything into a single generic implementation team.**
-
-**If the WR includes ranking, gating, confidence, or probability decisions, define a scoring model explicitly:** scoring dimensions, evidence inputs, weights or prioritization logic, threshold bands, blocking conditions, and explanation/audit outputs. Prefer reusable score-engine patterns over one-off magic numbers.
-
-#### Instruction Normalization (REQUIRED)
-
-User prompts and brainstorms are inputs, not immutable specs. Record:
-- What was accepted as-is
-- What was corrected/pivoted based on standards or evidence
-- What was rejected and why
-
-This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
+Trusted public-health organizations continue to treat online health
+misinformation as an active operational problem, not a solved media issue.
+Recent public-health and fact-checking sources show that vaccine
+misinformation still spreads faster than corrections, that communities remain
+exposed to false vaccine claims, and that fact-checking organizations are under
+financial and operational pressure. That leaves room for a vertical product
+that is faster to use than newsroom-style articles and more trustworthy than
+generic AI answers.
+
+### Target Audience & Trigger Events
+
+| Audience Segment | Trigger Event | Intent Level | Why they buy / use |
+| --- | --- | --- | --- |
+| Parents and caregivers | Viral post claims a vaccine or treatment is dangerous | High | Need plain-language debunk fast |
+| Journalists and moderators | Need a sourced answer before publishing or moderating | High | Need repeatable verification workflow |
+| Clinics, schools, NGOs | Need printable evidence handouts | High | Need branded, shareable PDF output |
+| Researchers and policy teams | Track recurring misinformation narratives | Medium | Need API, batch lookup, and source audit trail |
+| AI agents / internal automations | Need structured verification tools | Medium | Need MCP + API, not manual browsing |
+
+### SEO / Keyword Direction
+
+The highest-intent landing pages should target recurring misinformation search
+patterns rather than broad "COVID news" terms:
+
+- `covid myth fact check`
+- `vaccine misinformation explained`
+- `did mrna change dna fact check`
+- `covid vaccine chromosome 19 claim`
+- `printable vaccine myth debunk`
+- `health misinformation source checker`
+
+**Positioning rule:** win on speed, source transparency, and exportability.
+The site should answer the claim, show the evidence ladder, and let the user
+export a one-page brief or call the API immediately.
+
+### Competitor / Gap Analysis
+
+| Competitor / source | What it does well | Gap we can ship against |
+| --- | --- | --- |
+| Reuters Fact Check | High trust, fast debunks | Not productized for API / CLI / PDF self-service |
+| Full Fact | Strong methodology and deepfake tracking | Less focused on turnkey export and agent tooling |
+| WHO / CDC myth pages | Authoritative guidance | Harder to search by claim variant or operationalize |
+| Newsroom fact-checks broadly | Editorial rigor | Slow reuse across teams and no developer surface |
+| Generic LLM chatbots | Instant answers | Weak source discipline and unstable trust posture |
+
+### Community / Industry Signal
+
+- Health misinformation remains a live public-health concern, with public
+  agencies still publishing intervention guides and misinformation response
+  frameworks.
+- Fact-checking orgs are operationally stretched, which creates opportunity for
+  a product that packages verification into reusable surfaces instead of
+  article-only workflows.
+- AI-only moderation still misses meaningful portions of misleading health
+  content, so the winning product should combine evidence retrieval,
+  structured explanation, and human-auditable sources.
+
+### BOM (Bill of Materials)
+
+| Category | Recommended tool / source | Cost | Why it wins |
+| --- | --- | --- | --- |
+| Public evidence sources | WHO, CDC, HHS, PAHO, Reuters/Full Fact source citations | Free | Trustworthy source chain for debunks |
+| Website hosting | Vercel | From $20/mo | Fast website-in-test and deployment standard |
+| API runtime | DigitalOcean App Platform | From $5-12/mo | Default backend runtime in this repo |
+| App auth + DB | Supabase or Neon + auth layer | From free tier | Fits app standard and claim storage |
+| LLM summarization | OpenRouter | Usage-based | Helps turn evidence into readable summaries |
+| PDF rendering | Pandoc / WeasyPrint / Typst | Free | Matches PDF playbook |
+| Payments | Polar.sh or Stripe | Rev share / transaction fees | Required for S2M checkout path |
+
+**Estimated monthly infra floor:** roughly $25-$60 before usage-based LLM
+costs.  
+**ROI check:** one $29/mo team plan plus one $49 PDF / briefing sale already
+clears baseline hosting cost.
+
+### Compliance & Trust Surface
+
+This product must ship with:
+
+- explicit medical disclaimer language
+- source links on every claim page
+- last-reviewed timestamps
+- correction request path
+- editorial methodology page
+- privacy-safe claim logging
+- accessibility review for the public website
+
+No claim page should present itself as personalized medical advice.
+The product explains evidence and sources; it does not diagnose or treat.
 
 ---
 
-## Step 3: Requirements from revvel-standards
+## Step 3: Value, Goal Priority, and S2M Recommendation
 
-### Prime Directive Alignment
+### Why This Project Matters
 
-**10M by 2030 Goal:**
-- Current contribution: [$amount/month or $0]
-- Potential contribution: [$amount/month]
-- Path to contribution: [Strategy]
+This project aligns with the repo's revenue and trust goals because it creates
+one core evidence engine and monetizes it across multiple shapes instead of
+shipping a single fragile site. The same claim-evidence record powers organic
+SEO traffic, premium exports, API access, newsroom workflows, and agent tools.
+That compounding reuse is exactly the kind of product line revvel-standards is
+designed to ship.
 
-**$2000+/month Target (Start: May 1, 2026):**
-- Revenue streams identified: [Count]
-- Estimated monthly revenue: [$amount]
-- Time to first revenue: [Weeks/months]
+### Contribution to the $10M in 3 Years Goal
 
-### Driven Autonomy Assessment
+| Revenue surface | Offer | Initial pricing idea |
+| --- | --- | --- |
+| Public website | Free SEO acquisition | Free |
+| PDF export | Pay-per-brief or bundle | $19-$49 |
+| Team dashboard | Subscription for saved searches, history, exports | $29-$99/mo |
+| API | Usage-based or seat-based | $49-$299/mo |
+| White-label / enterprise | Branded clinic, newsroom, NGO deployment | Custom |
 
-**Current Autonomy Level:** [Low/Medium/High]
+### Decision
 
-**Blockers Identified:**
-1. [Blocker 1]: [Impact] → [Solution]
-2. [Blocker 2]: [Impact] → [Solution]
-
-**Autonomous Capabilities:**
-- [Capability 1]: [Status]
-- [Capability 2]: [Status]
-
-### Self-Healing Capabilities
-
-**Current Self-Healing:** [None/Partial/Full]
-
-**Implemented:**
-- [Feature 1]: [Description]
-- [Feature 2]: [Description]
-
-**Missing:**
-- [Feature 1]: [Description and priority]
-- [Feature 2]: [Description and priority]
-
-### Decision Scoring Model Gate
-
-> Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
-> Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
-
-**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
-
-**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
-
-**Status Values:**
-- [ ] `eligible`
-- [ ] `manual_review`
-- [ ] `blocked`
-- [ ] `suppressed`
-- [ ] Other: [define]
-
-**Score Range:** 0-100
-
-**Weighted Factors:**
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
-
-**Threshold Bands:**
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
-
-**Audit Trail Required:**
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
-
-**Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
-
-**Tenant / Client Separation:**
-- **Organization boundary:** [Audrey-owned / client / partner]
-- **Project boundary:** [project/workstream ID]
-- **Data domain:** [enterprise / client / product / research]
-- **Rate-card or confidence lookup table required:** [Yes/No]
-
-### Ship to Market Status
-
-**Current Status:** [Not Ready / Needs Work / Ready / Deployed]
-
-**Readiness Checklist:**
-- [ ] All tests passing
-- [ ] No linting errors
-- [ ] No security vulnerabilities
-- [ ] Deployment configured
-- [ ] UI verified
-- [ ] Documentation complete
-- [ ] TEST section in README
-- [ ] Vercel URL available
+**Ship the full bundle.**  
+This WR should not stop at "add a fact-check."
+The shipped product is the reusable verification engine plus every required
+surface: website, API, CLI, MCP, skill, and PDF.
 
 ---
 
-## Step 4: Redevelopment & Redesign
+## Step 4: Revvel-Standards Build Process
 
-### Fix All Errors
+### Canonical Execution Path
 
-#### Test Failures
+1. **Lock the brief in WR**
+   - Use this WR as the canonical scope document.
+   - The myth to seed first is the chromosome-19 / mRNA integration claim, but
+     the product model must support many claim pages and evidence bundles.
 
-**Current Status:** [Pass/Fail/No tests]
+2. **Scaffold the product workspace in revvel-standards**
+   - Use `scripts/init-product.sh` for the product workspace and required
+     shapes.
+   - Use `scripts/autonomous-product-launcher.sh` to generate the ship-to-market
+     execution calendar and launch checklist.
 
-**Failures Identified:**
-1. [Test 1]: [Issue] → [Fix]
-2. [Test 2]: [Issue] → [Fix]
+3. **Build the website/app**
+   - Use `scripts/ui-creation-engine.js` plus `standards/shapes/APP.md`.
+   - Required pages: landing page, searchable myth library, claim detail page,
+     methodology page, pricing page, login/signup, dashboard, admin editor.
+   - Required commerce: checkout/cart flow and subscription/pay-per-export path.
 
-#### Linting Errors
+4. **Build the API**
+   - Use `standards/shapes/API.md`.
+   - Required endpoints:
+     - `GET /v1/claims/:slug`
+     - `POST /v1/claims/verify`
+     - `POST /v1/briefs/render`
+     - `GET /v1/sources/:id`
+   - API must return structured evidence, confidence notes, and source URLs.
 
-**Current Status:** [Pass/Fail/No linter]
+5. **Build the CLI**
+   - Use `standards/CLI_MCP_AUTOMATION.md`.
+   - Core commands:
+     - `covid-fact-check verify "<claim>"`
+     - `covid-fact-check sources "<claim>"`
+     - `covid-fact-check export --format pdf`
 
-**Errors Identified:**
-1. [Error 1]: [Location] → [Fix]
-2. [Error 2]: [Location] → [Fix]
+6. **Build the MCP server**
+   - Use `standards/shapes/MCP.md`.
+   - Core tools:
+     - `search_claim`
+     - `verify_claim`
+     - `list_sources`
+     - `render_brief_pdf`
 
-#### Security Vulnerabilities
+7. **Build the skill**
+   - Register a guided verification skill consumable from
+     `products/revvel-skill-runner/`.
+   - The skill should orchestrate claim lookup, source retrieval, summary, and
+     export without forcing the operator to manually stitch steps together.
 
-**Critical:** [Count]
-1. [Vulnerability]: [Impact] → [Fix]
+8. **Build the PDF product**
+   - Use `docs/playbooks/pdf-wr-playbook.md`.
+   - Output: one-page plain-language debunk plus appendix of citations.
+   - The PDF must be sellable or deliverable as a premium report asset.
 
-**High:** [Count]
-**Medium:** [Count]
-**Low:** [Count]
+9. **Deploy and monetize**
+   - Vercel for the public app.
+   - DigitalOcean for API/background jobs.
+   - Polar.sh or Stripe for checkout and billing.
+   - README must include the Website in Test Vercel URL.
 
-#### Deployment Issues
+10. **Certify**
+    - Run build/test/lint/security gates for the shipped repo.
+    - Verify accessibility, correction workflow, and source transparency before
+      market launch.
 
-**Current Status:** [Working/Broken/Not configured]
+### A/B Test Hypothesis
 
-**Issues Identified:**
-1. [Issue 1]: [Impact] → [Fix]
-2. [Issue 2]: [Impact] → [Fix]
-
-### Enhance Features
-
-#### Missing Features from Research
-
-1. **[Feature 1]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-2. **[Feature 2]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
-
-#### UX/UI Improvements
-
-**Current UX Score:** [Rating/10]
-
-**Improvements:**
-1. [Improvement 1]: [Issue] → [Solution] → [Impact]
-2. [Improvement 2]: [Issue] → [Solution] → [Impact]
-
-#### Accessibility Features
-
-**Current Accessibility:** [WCAG level]
-
-**Required:**
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
-
-#### Performance Optimization
-
-**Current Performance:**
-- Lighthouse Score: [Rating/100]
-- Load Time: [Seconds]
-- Bundle Size: [KB]
-
-**Optimizations:**
-1. [Optimization 1]: [Improvement] → [Expected gain]
-2. [Optimization 2]: [Improvement] → [Expected gain]
-
-### Add Monetization
-
-#### Affiliate Links Integration
-
-**revvel-affiliate-links MCP:**
-- [ ] MCP server configured
-- [ ] Affiliate links identified
-- [ ] Links integrated in content
-- [ ] Tracking configured
-
-**Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
-
-#### Payment Integration
-
-**Gumroad:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**LemonSqueezy:**
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
-
-**Recommended Platform:** [Gumroad/LemonSqueezy/Both] - [Reason]
-
-#### Tracking & Analytics
-
-**Current Analytics:** [None/Partial/Full]
-
-**To Implement:**
-- [ ] Google Analytics 4
-- [ ] Plausible Analytics (privacy-friendly alternative)
-- [ ] Revenue tracking
-- [ ] Conversion tracking
-- [ ] User behavior tracking
-- [ ] A/B testing setup
+**Hypothesis:** a landing page that leads with "check a claim now" will convert
+better than one that leads with "learn about misinformation" because the user
+intent is urgent verification, not passive reading.
 
 ---
 
-## Step 5: Deployment Verification
+## Risks & Mitigations
 
-### Vercel Deployment
-
-**Current Status:** [Deployed/Not deployed/Needs fix]
-
-**Configuration:**
-- [ ] `vercel.json` configured
-- [ ] Environment variables set
-- [ ] Build command correct
-- [ ] Output directory correct
-- [ ] Deployment protection configured
-
-**URLs:**
-- **Production:** [URL or "Not deployed"]
-- **Preview:** [URL or "Not configured"]
-
-**Deployment Issues:**
-[List any issues and fixes]
-
-### UI Verification
-
-**Verification Checklist:**
-- [ ] Homepage renders correctly
-- [ ] All pages render correctly
-- [ ] All forms work
-- [ ] Authentication works (if applicable)
-- [ ] API endpoints respond correctly
-- [ ] Mobile responsive (tested on [devices])
-- [ ] Tablet responsive
-- [ ] Desktop responsive
-- [ ] No console errors
-- [ ] No 404 errors
-- [ ] Images load correctly
-- [ ] Links work correctly
-
-**Issues Found:**
-1. [Issue 1]: [Description] → [Fix]
-2. [Issue 2]: [Description] → [Fix]
-
-**Screenshots:**
-[Link to screenshots or indicate if captured]
+| Risk | Severity | Mitigation |
+| --- | --- | --- |
+| Product looks like medical advice | High | Use disclaimer, cite sources, avoid diagnosis language |
+| AI summary drifts from source evidence | High | Keep source-first display and human-auditable citations |
+| Scope collapses back to one article | High | Treat all output shapes above as required bundle |
+| Trust is damaged by stale claim pages | High | Add last-reviewed date and editorial review queue |
+| Paid product has weak conversion | Medium | Use free SEO pages to drive upgrades to PDF/API/team plans |
 
 ---
 
-## Step 6: Documentation Requirements
+## Artifact Engine Map
 
-### TEST Section
-
-**Current README Status:** [Has TEST section / Missing / Needs update]
-
-**Required Format:**
-```markdown
-## Test
-
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
-```
-
-**Action Required:** [None / Add section / Update URLs]
-
-### Deployment Section
-
-**Current README Status:** [Has deployment section / Missing / Needs update]
-
-**Required Format:**
-```markdown
-## Deployment
-
-**Production:** https://{repo-name}.vercel.app
-**Preview:** https://{repo-name}-preview.vercel.app
-**Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
-```
-
-**Action Required:** [None / Add section / Update URLs]
-
-### Additional Documentation
-
-**Existing Documentation:**
-- [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LICENSE
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
-- [ ] API documentation
-- [ ] User guide
-
-**Missing Documentation:**
-[List what needs to be created]
+| Artifact Shape | Existing engine / standard | Status | Required action |
+| --- | --- | --- | --- |
+| Website / UI | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md` | Exists | Use for public site + dashboard + admin |
+| API | `standards/shapes/API.md` | Exists | Implement claim/evidence endpoints |
+| CLI | `standards/CLI_MCP_AUTOMATION.md`, `scripts/init-product.sh --shape cli` | Exists | Package newsroom/research commands |
+| MCP | `standards/shapes/MCP.md` | Exists | Publish verification tools for agents |
+| Skill | `products/revvel-skill-runner/` | Exists | Add guided verification skill |
+| PDF | `docs/playbooks/pdf-wr-playbook.md` | Exists | Render exportable debunk briefs |
+| PowerPoint / deck | No engine required | Out of scope | Do not expand scope here |
+| Video | No engine required | Out of scope | Do not expand scope here |
+| Docs | revvel-standards baseline repo docs | Exists | Ship README, GTM, deployment, security docs |
+| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Exists | Use for repeatable S2M launch flow |
 
 ---
 
-## Step 7: Save This Prompt & Findings
+## Agent Self-Healing Journal
 
-### Saved Locations
-
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #[number]
-
-### Implementation Tasks Created
-
-**Issues Created:**
-1. [Issue #X]: [Title] - [Priority]
-2. [Issue #Y]: [Title] - [Priority]
-
-### Next Steps
-
-1. [ ] [Action 1] - [Owner] - [Deadline]
-2. [ ] [Action 2] - [Owner] - [Deadline]
-3. [ ] [Action 3] - [Owner] - [Deadline]
-
----
-
-## Recommendations
-
-### Immediate Actions (P0)
-
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-### Short-Term Actions (P1) - Within 1-2 Weeks
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
-### Long-Term Actions (P2) - Within 1-2 Months
-
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
-
----
-
-## Risks & Considerations
-
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
-
----
-
-## Alternatives Considered
-
-### Alternative 1: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
-
-### Alternative 2: [Name]
-
-**Pros:**
-- [Pro 1]
-- [Pro 2]
-
-**Cons:**
-- [Con 1]
-- [Con 2]
-
-**Decision:** [Accepted/Rejected] - [Reason]
+- **Issue detected:** the original WR was effectively a template dump and
+  under-scoped the request to a single fact-check item.
+- **Research / correction:** re-read revvel-standards build standards and
+  mapped the issue to the full S2M bundle required by the repository and by the
+  PR feedback.
+- **Revvel-standards change to preserve:** future S2M health-information WRs
+  should explicitly select the website, API, CLI, MCP, skill, PDF, docs, and
+  automation surfaces instead of assuming a single article or page is enough.
+- **Outcome to preserve:** when a user says S2M in this repo, the WR must define
+  the whole marketable product and the concrete build route through
+  revvel-standards, not just the first content artifact.
 
 ---
 
 ## References
 
-### Documentation
-- [AGENTS.md](/docs/AGENTS.md)
-- [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
-- [promptforproject.md](/promptforproject.md)
-
-### External Resources
-- [Resource 1]: [Description]
-- [Resource 2]: [Description]
-- [Resource 3]: [Description]
-
-### Research Sources
-- [Source 1]: [Description]
-- [Source 2]: [Description]
+- `standards/AUTOMATED_PRODUCT_PIPELINE.md`
+- `standards/shapes/APP.md`
+- `standards/shapes/API.md`
+- `standards/CLI_MCP_AUTOMATION.md`
+- `standards/shapes/MCP.md`
+- `scripts/init-product.sh`
+- `scripts/autonomous-product-launcher.sh`
+- `scripts/ui-creation-engine.js`
+- `products/revvel-skill-runner/README.md`
+- `docs/playbooks/pdf-wr-playbook.md`
+- WHO infodemic guidance: <https://www.who.int/news-room/feature-stories/detail/infodemic>
+- HHS health misinformation guidance:
+  <https://www.hhs.gov/surgeongeneral/reports-and-publications/health-misinformation/index.html>
+- PAHO vaccine misinformation guidance:
+  <https://www.paho.org/en/news/7-10-2025-paho-releases-new-guides-help-combat-vaccine-misinformation>
+- BMJ review on vaccine hesitancy interventions:
+  <https://www.bmj.com/content/384/bmj-2023-076542>
+- Poynter / IFCN State of Fact-Checkers:
+  <https://www.poynter.org/wp-content/uploads/2026/03/2026-State-of-Fact-Checkers-4.pdf>
+- MedicalXpress summary of AI and crowdsourced fact-checking gaps:
+  <https://medicalxpress.com/news/2026-04-health-myths-future-ai-crowdsourced.html>
 
 ---
 
-## Status Summary
-
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
+**Research Status:** ✅ Complete  
+**Implementation Priority:** P0  
 **Approval Required:** @midnghtsapphire
-
----
-
-**Last Updated:** 2026-05-22  
-**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
-
-# ─────────────────────────────────────────────────────────────────────────────
-# END ADVANCED TEMPLATE
-# 
-# For advanced users who want full control
-# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
-# ─────────────────────────────────────────────────────────────────────────────
