@@ -79,7 +79,7 @@ on:
 
 ## Executive Summary
 
-`serumwriter/life-insurance-crm` is a life-insurance CRM scaffold targeting agents who need exclusive lead management, pipeline automation, and TCPA-compliant outreach workflows. The life insurance lead-gen market ($5–7 B USD, 73% digital channel share) is plagued by low-quality shared leads and zero-transparency vendor dashboards — creating a direct opening for a transparent, AI-scored, exclusive-lead CRM. The highest-value product wedge is a **SaaS lead-scoring + dialer CRM** that sources leads via EverQuote/MediaAlpha APIs, scores them with a contactability engine, and ships an admin + agent portal on Vercel backed by DigitalOcean — targeting $2 k/mo ARR within 90 days and scaling toward $30 k/mo through a reseller/IMO tier.
+`serumwriter/life-insurance-crm` is a life-insurance CRM scaffold targeting agents who need exclusive lead management, pipeline automation, and TCPA-compliant outreach workflows. The life insurance lead-gen market ($5–7B USD, 73% digital channel share) is plagued by low-quality shared leads and zero-transparency vendor dashboards — creating a direct opening for a transparent, AI-scored, exclusive-lead CRM. The highest-value product wedge is a **SaaS lead-scoring + dialer CRM** that sources leads via EverQuote/MediaAlpha APIs, scores them with a contactability engine, and ships an admin + agent portal on Vercel backed by DigitalOcean — targeting $2k/mo ARR within 90 days and scaling toward $30k/mo through a reseller/IMO tier.
 
 ---
 
@@ -270,7 +270,10 @@ _No response_
 
 **Implication for this WR:** Keywords with $35–$60 CPCs signal extremely high commercial value per click; targeting the long-tail compliance terms positions the CRM as a trust-differentiated tool compared to generic lead vendors. SEO content around "exclusive life insurance leads" and "TCPA compliant CRM" can generate organic leads at $5–$15 vs $35–$60 paid.
 
-**Sources:** GrindSuccess Insurance Keywords (grindsuccess.com/insurance-keywords), SmartLifeRadar Lead Gen 2025 Guide (smartliferadar.com)
+**Sources:**
+- GrindSuccess Insurance Keywords — https://grindsuccess.com/insurance-keywords/ (accessed 2026-05-23)
+- TheSeolabs Insurance Business Keywords — https://www.theseolabs.com/keywords-lists/insurance-business/ (accessed 2026-05-23)
+- SmartLifeRadar Lead Gen 2025 Guide — https://smartliferadar.com/blog/insurance-agent-lead-generation-life-insurance-leads-2025-guide (accessed 2026-05-23)
 
 #### Bill of Materials (BOM) — APIs & Tools
 
@@ -322,7 +325,12 @@ _No response_
 
 > **ROI Check:** Selling 3–5 lead packages at $500/mo each covers infrastructure at the low end. First SaaS agency subscriber at $149/mo (AgencyZoom market rate) pays for hosting alone.
 
-**Sources:** EverQuote lead pricing (listgiant.com, closrleads.com), MediaAlpha (mediaalpha.com/agents), ActiveProspect TrustedForm (activeprospect.com)
+**Sources:**
+- ListGiant — Best Lead Vendors for Life Insurance 2025 — https://listgiant.com/lead-vendors-for-life-insurance-37230/ (accessed 2026-05-23)
+- ClosrLeads — Best Life Insurance Lead Companies — https://closrleads.com/best-life-insurance-lead-companies/ (accessed 2026-05-23)
+- MediaAlpha Agents Page — https://mediaalpha.com/agents/ (accessed 2026-05-23)
+- LeadMaker — Best 30 Insurance Lead Generation Companies — https://leadmaker.agency/blog/best-30-insurance-lead-generation-companies (accessed 2026-05-23)
+- ActiveProspect TrustedForm — https://activeprospect.com/trustedform/ (accessed 2026-05-23)
 
 #### How the Industry Works — Mechanics
 
@@ -349,7 +357,11 @@ _No response_
 | AgencyBloc | Life/Health CRM | $79+/mo | Moderate | No real-time lead API integration; limited automation |
 | **This Engine** | AI Lead CRM SaaS | $149–$299/mo | High (exclusive + scored) | First-party exclusive lead ingestion + contactability scoring + TCPA cert = differentiated |
 
-**Sources:** SelectHub AgencyZoom vs Applied Epic comparison (selecthub.com), Forbes Advisor Best Insurance CRM 2025 (forbes.com/advisor), LavaAutomation CRM Guide (lavaautomation.com)
+**Sources:**
+- SelectHub — AgencyZoom vs Applied Epic — https://www.selecthub.com/insurance-agency-management-systems/agencyzoom-vs-applied-epic/ (accessed 2026-05-23)
+- Forbes Advisor — Best Insurance CRM Software 2025 — https://www.forbes.com/advisor/business/software/best-insurance-crm-software/ (accessed 2026-05-23)
+- LavaAutomation — Best CRMs for Insurance Agencies 2025 — https://www.lavaautomation.com/blog/best-crm-insurance-agencies (accessed 2026-05-23)
+- TheVenturer — 15 Best CRM for Insurance Agents 2025 — https://theventurer.co/crm/insurance-crm-software/ (accessed 2026-05-23)
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -386,7 +398,11 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 > **How this WR's solution addresses the top complaints:** (1) Exclusive-only lead ingestion via EverQuote/MediaAlpha APIs eliminates over-saturation; (2) TrustedForm cert attached to every lead resolves TCPA risk; (3) native API webhook replaces manual copy-paste; (4) contactability score surfaces highest-intent leads first.
 
-**Sources:** EliteRT "Why Low-Cost Leads Cost You" (elitert.com/blog), ActiveProspect (activeprospect.com), DeckLinks (decklinks.com), DIG Agency review (davidduford.com)
+**Sources:**
+- EliteRT — Why Low-Cost Life Insurance Leads Cost You — https://elitert.com/blog/why-low-cost-cheap-life-insurance-leads-cost-you (accessed 2026-05-23)
+- ActiveProspect — Is Buying Insurance Leads Worth It? — https://activeprospect.com/blog/is-buying-insurance-leads-worth-it/ (accessed 2026-05-23)
+- DeckLinks — Sick of Junk Leads? Life Insurance Lead Rankings — https://www.decklinks.com/sales-tips/life-insurance-leads/ (accessed 2026-05-23)
+- DIG Agency — No BS Review of Best Life Insurance Leads — https://davidduford.com/best-life-insurance-leads/ (accessed 2026-05-23)
 
 #### Domain Name Strategy
 
@@ -422,7 +438,12 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 - **Aggressive (Mo 12):** 120 subscribers avg $250 + IMO reseller tier = $30,000–$50,000/mo
 - **Aligns with Phase 1 $10k/mo target by Month 4–6**
 
-**Sources:** AgencyZoom pricing ($149/mo from selecthub.com), lead margin from EverQuote/MediaAlpha pricing vs market resale rates (listgiant.com, closrleads.com)
+**Sources:**
+- SmartLifeRadar — Insurance Agent Lead Generation 2025 — https://smartliferadar.com/blog/insurance-agent-lead-generation-life-insurance-leads-2025-guide (accessed 2026-05-23)
+- AgedLeadStore — IUL Leads vs Traditional Life Insurance Marketing ROI 2025 — https://agedleadstore.com/roi-calculator-iul-leads-vs-traditional-life-insurance-marketing-maximize-your-agencys-return-in-2025/ (accessed 2026-05-23)
+- Sonant.ai — Life Insurance Live Transfer Leads Complete 2025 Guide — https://www.sonant.ai/blog/mastering-life-insurance-live-transfer-leads-guide (accessed 2026-05-23)
+- AgencyZoom pricing — SelectHub comparison — https://www.selecthub.com/insurance-agency-management-systems/agencyzoom-vs-applied-epic/ (accessed 2026-05-23)
+- EverQuote lead pricing — ListGiant — https://listgiant.com/lead-vendors-for-life-insurance-37230/ (accessed 2026-05-23)
 
 #### Marketing Best Practices — What's Working Now & How This Improves It
 
@@ -947,8 +968,8 @@ Maps every selected output shape to the existing repo engine/standard that produ
 
 ### What Should Be Institutionalized in Revvel-Standards
 - **Rule confirmed:** Every WR must include a populated Artifact Engine Map before any implementation begins. Skeleton WRs with placeholder brackets are not "complete" — they are pre-research.
-- **New gap documented:** No existing PowerPoint/deck engine exists in the repo. A `deck-creation-engine.yml` workflow or Canva/Google Slides automation should be added to cover this output shape in future WRs.
-- **TCPA compliance gate:** Any WR involving outreach, messaging, or lead data must include TrustedForm + DNC scrub in its BOM as a non-negotiable compliance item. This should be added to the BOM checklist in `docs/WEEKLY_RESEARCH_PROCESS.md`.
+- **New gap documented:** No existing PowerPoint/deck engine exists in the repo. A `deck-creation-engine.yml` workflow or Canva/Google Slides automation should be added to cover this output shape in future WRs. **Owner: @midnghtsapphire. Priority: P2. Target: add to revvel-standards backlog by 2026-06-30.**
+- **TCPA compliance gate:** Any WR involving outreach, messaging, or lead data must include TrustedForm + DNC scrub in its BOM as a non-negotiable compliance item. **Owner: @midnghtsapphire. Action: add to BOM checklist in `docs/WEEKLY_RESEARCH_PROCESS.md`. Target: within next WR cycle.**
 
 ### Outcome to Preserve
 - Life insurance CRM is a **validated high-value product wedge**: $35–$60 CPCs, 10–30% exclusive lead conversion rates, and a clear pain point (shared leads + no TCPA audit) that existing SaaS tools don't fully solve.
