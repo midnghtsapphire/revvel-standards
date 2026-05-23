@@ -52,7 +52,11 @@ function ghAPI(endpoint, method = 'GET', body = null) {
   if (method !== 'GET') args.push('-X', method);
 
   if (body) args.push('-f', JSON.stringify(body));
-  return execSync(`gh ${args.join(' ')}`, { encoding: 'utf-8' });
+  const { spawnSync } = require('child_process');
+  const result = spawnSync('gh', args, { encoding: 'utf-8' });
+  if (result.error) throw result.error;
+  if (result.status !== 0) throw new Error(result.stderr);
+  return result.stdout;
 }
 
 // Main

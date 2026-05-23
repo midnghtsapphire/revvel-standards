@@ -18,7 +18,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ### Status Indicators
 
 | Icon | Status | Description |
-|------|--------|-------------|
+| --- | --- | --- |
 | ⭕ | Not Started | WR not yet initiated |
 | 🟡 | In Progress | WR actively being researched |
 | ✅ | Complete | WR finished, recommendations documented |
@@ -30,7 +30,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ### Priority Levels
 
 | Level | Description | Revenue Potential | Timeline |
-|-------|-------------|-------------------|----------|
+| --- | --- | --- | --- |
 | P0 | Critical - Immediate revenue impact | $500+/month | This week |
 | P1 | High - Near-term revenue opportunity | $100-500/month | 1-2 weeks |
 | P2 | Medium - Strategic growth | $50-100/month | 1-2 months |
@@ -42,7 +42,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ## Repository Status Table
 
 | # | Repository | Created | Last Updated | Status | Priority | Revenue Potential | WR Link | Notes |
-|---|------------|---------|--------------|--------|----------|-------------------|---------|-------|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY) | 2021-10-22 | 2026-04-28 | ⭕ | P2 | TBD | - | XPRIZE project |
 | 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-04-28 | ⭕ | P3 | TBD | - | Community site |
 | 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
@@ -103,7 +103,7 @@ cd wr
 ### Current State (as of 2026-05-02)
 
 | Category | Count | Est. Monthly Revenue | Notes |
-|----------|-------|---------------------|-------|
+| --- | --- | --- | --- |
 | Ship-Ready | 0 | $0 | Target: 5 repos by end of May |
 | In Progress | 1 | $0 (potential) | neurooz WR being completed |
 | Identified P0 | ~10 | $5000+ (potential) | High-value opportunities |
@@ -117,6 +117,7 @@ cd wr
 **Action Required:** URGENT - Deploy P0 repos immediately
 
 **10M by 2030 Goal:**
+
 - Years remaining: 3.58 years
 - Monthly target increase: ~$233/month
 - Weekly target increase: ~$54/week
@@ -158,6 +159,7 @@ These repositories have immediate revenue potential and should be addressed firs
 **Status:** ✅ Active
 
 **Triggers:**
+
 - ✅ Issue with `[WR]` prefix - automatically detected
 - ✅ Manual trigger with issue number via workflow_dispatch
 - ⏳ Scheduled weekly scan (can be configured)
