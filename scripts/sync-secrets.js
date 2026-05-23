@@ -47,12 +47,23 @@ function parseEnvTemplate() {
 }
 
 // Get GH CLI
+const { spawnSync } = require('child_process');
 function ghAPI(endpoint, method = 'GET', body = null) {
   const args = ['api', endpoint];
   if (method !== 'GET') args.push('-X', method);
 
-  if (body) args.push('-f', JSON.stringify(body));
-  return execSync(`gh ${args.join(' ')}`, { encoding: 'utf-8' });
+  if (body) {
+    args.push('--input', '-');
+  }
+
+  const options = { encoding: 'utf-8' };
+  if (body) {
+    options.input = JSON.stringify(body);
+  }
+
+  const result = spawnSync('gh', args, options);
+  if (result.error) throw result.error;
+  return result.stdout;
 }
 
 // Main

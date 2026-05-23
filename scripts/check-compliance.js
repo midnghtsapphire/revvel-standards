@@ -62,13 +62,16 @@ function dirHasFiles(dirPath, extension) {
   return files.some((f) => String(f).endsWith(extension));
 }
 
+const { spawnSync } = require('child_process');
 function codeContains(pattern) {
   try {
-    const result = execSync(
-      `grep -rl "${pattern}" "${repoRoot}/src" "${repoRoot}/server" "${repoRoot}/api" "${repoRoot}/app" 2>/dev/null || true`,
+    // Avoid shell expansion by using spawnSync instead of execSync with a template string
+    const result = spawnSync(
+      'grep',
+      ['-rl', pattern, `${repoRoot}/src`, `${repoRoot}/server`, `${repoRoot}/api`, `${repoRoot}/app`],
       { encoding: 'utf8', timeout: 5000 }
     );
-    return result.trim().length > 0;
+    return result.stdout && result.stdout.trim().length > 0;
   } catch {
     return false;
   }
