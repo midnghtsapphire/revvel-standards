@@ -31,7 +31,7 @@
 
 ### Executive Summary
 
-The requested repository (`serumwriter/life-insurance-crm`) is a basic, single-file FastAPI script (`crm.api.py`) with in-memory storage (lists) for leads and call logs. It is a starter template, not a production-ready application. Given our $10M revenue directive and EXRUP methodology, building a monetizable life insurance lead business requires a far more robust architecture (e.g., Supabase/Postgres, Next.js, Polar.sh for payments). The user's request is to research this repo "to use for life insurance leads." Our recommendation is to extract the simple data model (Leads, Call Logs) but reject the in-memory architecture, instead building a `production-app` that integrates with our existing `life-insurance-lead-saas` (BOM already defined) to manage and distribute leads securely.
+The requested repository (`serumwriter/life-insurance-crm`) is a basic, single-file FastAPI script (`crm.api.py`) with in-memory storage (lists) for leads and call logs. It is a starter template, not a production-ready application. Given our $10M revenue directive and EXRUP methodology, building a monetizable life insurance lead business requires a far more robust architecture (e.g., Supabase/Postgres, Next.js, Polar.sh for payments). The user's request is to research this repo "to use for life insurance leads." Our recommendation is to extract the simple data model (Leads, Call Logs) but reject the in-memory architecture, instead building a `production-app` that integrates with our existing `life-insurance-lead-saas` (BOM already defined) to manage and distribute leads securely through revvel-standards research engines, asset tracking, and artifact outputs.
 
 ---
 
@@ -61,7 +61,7 @@ Life insurance agents desperately need high-quality, exclusive leads and a simpl
 - Demand for simple, dialer-integrated CRMs.
 
 **Assessment:**
-A product that combines *exclusive* lead generation (which we already planned in `issue-13476`) with a lightweight, purpose-built CRM (inspired by the simplicity of `serumwriter/life-insurance-crm`) is a strong value proposition. Agents could buy lead packs via Polar.sh and instantly have them populated in a dedicated CRM dashboard.
+A product that combines _exclusive_ lead generation (which we already planned in `issue-13476`) with a lightweight, purpose-built CRM (inspired by the simplicity of `serumwriter/life-insurance-crm`) is a strong value proposition. Agents could buy lead packs via Polar.sh and instantly have them populated in a dedicated CRM dashboard.
 
 #### 3. Revvel-Standards Re-evaluation Pass
 
@@ -85,6 +85,23 @@ A product that combines *exclusive* lead generation (which we already planned in
 ---
 
 ### Recommendations
+
+#### Revvel-Standards Full Lead System Blueprint (requested)
+
+To satisfy the requested "full system to get leads curated and paid," the CRM scope should run as one end-to-end revvel-standards lane:
+
+1. **Research Engine Layer (traffic + intent):**
+   - Expand keyword/CPC research and channel-level demand scoring before acquisition spend.
+   - Track source performance by campaign, keyword cluster, and conversion cohort.
+2. **Curation Layer (lead quality):**
+   - Add lead scoring, duplicate detection, consent status, and disposition history in the Lead model.
+   - Route low-confidence leads to manual QA before they become saleable inventory.
+3. **Monetization Layer (paid inventory):**
+   - Package curated leads into sellable SKUs (exclusive, aged, callback-ready) with Polar.sh checkout.
+   - Support payout/revenue tracking by buyer account and affiliate/referrer channel.
+4. **Assets & Artifacts Layer (revvel compliance):**
+   - Store creative/offer assets, outbound scripts, and campaign configurations as versioned artifacts.
+   - Emit weekly artifacts: demand report, quality report, compliance exceptions, and revenue snapshot.
 
 #### Immediate Actions (P0)
 
@@ -132,6 +149,8 @@ A product that combines *exclusive* lead generation (which we already planned in
 1. [x] Research `serumwriter/life-insurance-crm` and assess production readiness.
 2. [ ] Scaffold `life-insurance-crm-app` production app using standard EXRUP methodology (Next.js + Supabase).
 3. [ ] Define the Supabase schema based on the extended Lead/CallLog models.
+4. [ ] Add research-engine artifacts for keyword/CPC demand modeling and source-level performance scoring.
+5. [ ] Add paid+curated lead packaging flow (SKU definitions + Polar.sh checkout + payout tracking).
 
 ---
 
