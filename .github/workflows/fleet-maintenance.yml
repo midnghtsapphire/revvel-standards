@@ -1,0 +1,54 @@
+name: Fleet Maintenance Sweep
+
+# Sweeps every repository in the owner account and, for a capped rotating subset
+# each run, opens a DRAFT pull request with refreshed docs + a Professor-researched
+# improvement plan. Nothing auto-merges. See scripts/fleet-maintenance.js.
+#
+# Rollout: weekly + manual, DRY_RUN-first. The scheduled run defaults to dry-run
+# (logs the plan only) until you flip dry_run=false. It no-ops if FLEET_TOKEN is
+# not set.
+#
+# Token: uses ADMIN_GITHUB_TOKEN (a PAT with repo access across the org). If your
+# full-access PAT has a different name, change the FLEET_TOKEN mapping below.
+
+on:
+  schedule:
+    # Mondays 09:00 UTC.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log the plan without cloning or opening PRs'
+        type: boolean
+        default: true
+      max_repos:
+        description: 'Max repos to sweep this run'
+        type: string
+        default: '5'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fleet-maintenance
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sweep repos and open draft PRs
+        env:
+          FLEET_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.PROJECTS_PAT }}
+          OWNER: ${{ github.repository_owner }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Scheduled runs go live (open draft PRs — safe, reviewable). Manual
+          # runs honor the dry_run input (default true) so you can preview first.
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          MAX_REPOS: ${{ inputs.max_repos }}
+        run: node scripts/fleet-maintenance.js
