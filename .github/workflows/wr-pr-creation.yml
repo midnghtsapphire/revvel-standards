@@ -180,15 +180,21 @@ jobs:
               return isWrSkeleton && refsThisIssue;
             });
 
-            if (existingPR) {
+            const resetRequested = labelSet.has('wr:reset');
+
+            if (existingPR && !resetRequested) {
               core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
               skip('existing_wr_pr');
               return;
+            }
+            if (existingPR && resetRequested) {
+              core.notice(`wr:reset present on issue #${issueNumber}; allowing fresh WR PR creation despite existing PR ${existingPR.html_url}`);
             }
 
             const isComplete =
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
+              resetRequested ||
               context.eventName === 'workflow_dispatch';
 
             // Treat both direct research findings and the research-engine handoff
@@ -212,6 +218,7 @@ jobs:
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
             core.info(`Is Complete: ${isComplete}`);
+            core.info(`Reset requested: ${resetRequested}`);
             core.info(`Research-ready comment: ${researchReadyComment}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
@@ -249,7 +256,7 @@ jobs:
               '- Issue is not a WR (missing `[WR]` prefix, `work-request` / `weekly-research` label, or BASIC WR issue type)',
               '- A WR-skeleton PR already exists for this issue',
               '- Issue is bot-created',
-              '- Trigger condition not met (no `wr:complete` / `research:complete` label, manual dispatch, or research-ready comment)',
+              '- Trigger condition not met (no `wr:complete` / `research:complete` / `wr:reset` label, manual dispatch, or research-ready comment)',
               '',
               `**Workflow run:** [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
               '',
@@ -728,6 +735,7 @@ jobs:
               .map(label => label.name)
               .filter(name =>
                 name === 'wr:complete' ||
+                name === 'wr:reset' ||
                 name === 'lifecycle:stuck' ||
                 name === 'wr-stuck' ||
                 name.startsWith('wr:retrigger-attempts-')

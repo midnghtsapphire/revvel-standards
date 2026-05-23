@@ -248,6 +248,10 @@ test('WR PR creation waits for research completion and ignores PR comments', () 
     'WR PR creation must treat research:complete as a creation signal'
   );
   assert(
+    wrPrCreation.includes("labelSet.has('wr:reset')"),
+    'WR PR creation must treat wr:reset as a force-regenerate signal'
+  );
+  assert(
     wrPrCreation.includes("commentBody.includes('Research packet:')"),
     'WR PR creation must treat research packet comments as research-ready signals'
   );
@@ -300,6 +304,7 @@ test('WR PR creation uses an existing template and clears recovered stuck labels
     'wr:retrigger-attempts-1',
     'wr:retrigger-attempts-2',
     'wr:retrigger-attempts-3',
+    'wr:reset',
     'wr-stuck',
   ]) {
     assertLabelDefinition(labelsYaml, label);

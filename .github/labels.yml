@@ -416,6 +416,10 @@ labels:
     color: "0e8a16"
     description: "WR task completed with findings documented"
 
+  - name: "wr:reset"
+    color: "0052cc"
+    description: "Force a fresh WR PR/artifact generation pass"
+
   - name: "wr:retrigger-attempts-1"
     color: "fef2c0"
     description: "WR PR auto-healer retry attempt 1"
