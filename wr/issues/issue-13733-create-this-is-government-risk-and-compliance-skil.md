@@ -1,6 +1,7 @@
 # WR: [WR] create this is government risk and compliance skill website, cli, mcp, api, skills and pdf
 
 **Issue:** #13733  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Host Repository:**
 [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Source Repository to Copy/Upgrade:**
