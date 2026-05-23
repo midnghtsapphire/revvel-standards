@@ -39,7 +39,7 @@ jobs:
       - name: Update lifecycle labels
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
             const pr     = context.payload.pull_request;
 
@@ -152,7 +152,7 @@ jobs:
       - name: Update labels on review submission
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
             const review = context.payload.review;
 
@@ -243,7 +243,7 @@ jobs:
       - name: Find open PRs for this SHA and update check labels
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
             const owner = context.repo.owner;
 
