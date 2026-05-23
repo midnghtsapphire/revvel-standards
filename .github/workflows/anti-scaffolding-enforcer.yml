@@ -238,11 +238,11 @@ jobs:
             body.push('*This check enforces autonomous, complete implementation. See `.github/workflows/anti-scaffolding-enforcer.yml`*');
             
             // Check if we already posted this comment
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
             
             const existingComment = comments.find(c => 
               c.user.type === 'Bot' && c.body.includes('🚫 Scaffolding Language Detected')
