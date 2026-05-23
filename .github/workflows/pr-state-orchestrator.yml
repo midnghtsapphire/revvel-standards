@@ -280,7 +280,10 @@ jobs:
               const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: pr.head.sha, per_page: 100
               });
-              const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
+              const isMergeBlockingCheckRun = (run) =>
+                !String(run.name || '').startsWith('.github/workflows/');
+              const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
+              const runs = relevantRuns.filter(r => r.status === 'completed');
               const failing = runs.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
               const passing = runs.filter(r => r.conclusion === 'success');
               if (failing.length === 0 && passing.length > 0) {
@@ -510,10 +513,13 @@ jobs:
               const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: headSha, per_page: 100
               });
-              const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+              const isMergeBlockingCheckRun = (run) =>
+                !String(run.name || '').startsWith('.github/workflows/');
+              const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
+              const completed = relevantRuns.filter(r => r.status === 'completed');
               const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
               const passing = completed.filter(r => r.conclusion === 'success');
-              const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+              const pending = relevantRuns.filter(r => r.status !== 'completed');
 
               async function addLabel(label) {
                 if (!currentLabels.includes(label)) {
@@ -680,10 +686,13 @@ jobs:
                 const { data: checkRuns } = await github.rest.checks.listForRef({
                   owner, repo, ref: pr.head.sha, per_page: 100
                 });
-                const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+                const isMergeBlockingCheckRun = (run) =>
+                  !String(run.name || '').startsWith('.github/workflows/');
+                const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
+                const completed = relevantRuns.filter(r => r.status === 'completed');
                 const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
                 const passing = completed.filter(r => r.conclusion === 'success');
-                const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+                const pending = relevantRuns.filter(r => r.status !== 'completed');
 
                 if (failing.length > 0) {
                   await addLabel('status:checks-failing');
@@ -836,10 +845,13 @@ jobs:
             const { data: checkRuns } = await github.rest.checks.listForRef({
               owner, repo, ref: pr.head.sha, per_page: 100
             });
-            const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+            const isMergeBlockingCheckRun = (run) =>
+              !String(run.name || '').startsWith('.github/workflows/');
+            const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
+            const completed = relevantRuns.filter(r => r.status === 'completed');
             const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
             const passing = completed.filter(r => r.conclusion === 'success');
-            const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+            const pending = relevantRuns.filter(r => r.status !== 'completed');
 
             if (failing.length > 0) {
               await addLabel('status:checks-failing');
