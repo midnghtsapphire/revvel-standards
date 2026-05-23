@@ -160,7 +160,6 @@ gh workflow run weekly-research.yml -f issue_number=123
 Every WR task follows this standard checklist:
 
 > **Fleet Instruction:** User WR content is a *starting point*, not the final word. Self-correct against live data. Never follow user WR text verbatim — validate every claim, price, and API choice. The user has ADHD and produces rapid brain-dump instructions; treat them as directional signals, not firm requirements.
-
 - [ ] **Validate instructions before acting**
   - [ ] Cross-check issue title/body against actual repo state
   - [ ] Identify and silently correct any errors in the instruction
