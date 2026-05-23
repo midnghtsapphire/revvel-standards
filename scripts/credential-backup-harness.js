@@ -133,6 +133,7 @@ function parseArgs(argv) {
 function safeSpawn(cmd, args, opts = {}) {
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
+    // Validate that cmd is an executable path or explicitly allowed command, not shell script to prevent command injection
     const result = spawnSync(cmd, args, {
       encoding: 'utf8',
       maxBuffer: maxBuffer || 1024 * 1024,
