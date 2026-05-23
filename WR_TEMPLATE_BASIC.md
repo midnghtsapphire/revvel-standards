@@ -21,6 +21,7 @@
 <!--   - What problem are you solving? -->
 <!--   - What's the desired outcome? -->
 <!--   - Any constraints (deadline, budget, tech preference)? -->
+<!--   - If copying or refreshing an existing repo, include the repo URL so the research engine can identify the strongest assets and choose the optimal product direction -->
 <!-- The research engine will fill in technical details, acceptance criteria, etc. -->
 
 
