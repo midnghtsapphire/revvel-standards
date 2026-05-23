@@ -58,6 +58,11 @@ things that matter commercially:
 | Current strengths | Expert prompt packs, framework depth, public credibility |
 | Current gap | Not yet productized as SaaS/API/CLI/MCP/PDF suite |
 
+The low star count does not change the recommendation. This is a niche compliance asset,
+not a mass-market front-end library, and its value comes from specialized framework depth,
+the packaged skill corpus, and the existing benchmark/evaluation proof rather than broad
+community adoption.
+
 ### What exists today in the source repo
 
 ```text
@@ -193,8 +198,8 @@ acquisition wedge, with broader product branding kept under `AuthorityPilot Gov`
 
 The broad GRC platform market is still growing quickly, with external market reporting
 projecting growth from roughly **$57.37B in 2025** to **$65.86B in 2026**, with a path to
-**$105.59B by 2030**. That is large enough to justify a focused product wedge rather than
-shipping the source repo as a passive reference site.
+**$105.59B by 2030**.[^market-size] That is large enough to justify a focused product wedge
+rather than shipping the source repo as a passive reference site.
 
 Government-facing automation is especially attractive because FedRAMP and adjacent
 frameworks are becoming more automation-oriented, while buyers still face expensive,
@@ -329,7 +334,7 @@ recurring, government-facing software and services offer.
 
 | Risk | Severity | Mitigation |
 | --- | --- | --- |
-| Over-claiming legal/compliance certainty | High | frame output as draft acceleration with human review |
+| Over-claiming legal/compliance certainty | High | require UI and PDF disclaimers that outputs are drafts, add ToS language that the product is not legal advice, and force a human-review step before any external submission |
 | Sensitive customer evidence handling | High | RBAC, audit logs, encryption, least privilege |
 | FedRAMP marketing without process rigor | High | keep claims scoped to readiness and workflow acceleration |
 | Multi-framework sprawl at launch | Medium | launch FedRAMP/NIST-first, upsell others after core works |
@@ -399,3 +404,7 @@ recurring, government-facing software and services offer.
 - **Durable lesson for revvel-standards:** when a WR says “copy this repo,” the research
   engine should first identify the repo’s proven asset, then choose the highest-value
   product wedge that asset can support, instead of criticizing the prompt.
+
+[^market-size]:
+    Research and Markets, "Governance Risk and Compliance Platform Market Report 2026" —
+    <https://www.researchandmarkets.com/reports/5983723/governance-risk-compliance-platform-market-report>
