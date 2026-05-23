@@ -121,9 +121,10 @@ security findings, a11y/SEO gaps).
 ## The agents (personas)
 
 `scripts/openrouter-personas.js` defines named lanes, summonable from a PR/issue
-comment with a **leading slash** (`/professor`, `/oaudrey`, `/mindmappr`,
-`/openrouter`, or `/persona <name>`). Do **not** use `@professor` — GitHub reads
-`@name` as a mention of the real user account with that username and emails them:
+comment with a **leading slash** (`/professor` or `/theprofessor`, `/oaudrey`,
+`/mindmappr`, `/openrouter`, or `/persona <name>`). Do **not** use `@professor` —
+GitHub reads `@name` as a mention of the real user account with that username and
+emails them:
 
 - **The Professor** — deep research via no-key Perplexity (free).
 - **oAudrey** — primary orchestrator / triage.
