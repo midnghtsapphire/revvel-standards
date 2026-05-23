@@ -164,7 +164,7 @@ Every WR task follows this standard checklist:
   - [ ] Cross-check issue title/body against actual repo state
   - [ ] Identify and silently correct any errors in the instruction
   - [ ] If the WR says to copy, fork, refresh, or rebuild an existing repo, inspect that repo first and identify the strongest proven asset it already contains
-  - [ ] Choose the highest-value product wedge that the referenced repo can credibly support; do not spend the WR criticizing sparse prompt detail when the repo itself provides the direction
+  - [ ] Choose the highest-value product wedge that the referenced repo can credibly support; avoid spending weekly research effort criticizing sparse prompt detail when the repo itself provides the direction
   - [ ] Document assumed corrections in findings
 
 - [ ] **Review repository documentation**
