@@ -252,6 +252,11 @@ test('WR PR creation waits for research completion and ignores PR comments', () 
     'WR PR creation must treat wr:reset as a force-regenerate signal'
   );
   assert(
+    wrPrCreation.includes('if (existingPR && !resetRequested)') &&
+      wrPrCreation.includes('if (existingPR && resetRequested)'),
+    'WR PR creation must bypass existing-PR dedup when wr:reset is present'
+  );
+  assert(
     wrPrCreation.includes("commentBody.includes('Research packet:')"),
     'WR PR creation must treat research packet comments as research-ready signals'
   );
@@ -296,7 +301,8 @@ test('WR PR creation uses an existing template and clears recovered stuck labels
   assert(
     wrPrCreation.includes("name.startsWith('wr:retrigger-attempts-')") &&
       wrPrCreation.includes("name === 'lifecycle:stuck'") &&
-      wrPrCreation.includes("name === 'wr-stuck'"),
+      wrPrCreation.includes("name === 'wr-stuck'") &&
+      wrPrCreation.includes("name === 'wr:reset'"),
     'WR PR creation must clear auto-healer stuck labels after a PR is created'
   );
 
