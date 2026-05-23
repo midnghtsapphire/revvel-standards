@@ -253,7 +253,9 @@ test('WR PR creation waits for research completion and ignores PR comments', () 
   );
   assert(
     wrPrCreation.includes('if (existingPR && !resetRequested)') &&
-      wrPrCreation.includes('if (existingPR && resetRequested)'),
+      wrPrCreation.includes('if (existingPR && resetRequested)') &&
+      wrPrCreation.includes('const forcedRegeneration = Boolean(existingPR && resetRequested)') &&
+      wrPrCreation.includes('const shouldCreate = isComplete || researchReadyComment || forcedRegeneration'),
     'WR PR creation must bypass existing-PR dedup when wr:reset is present'
   );
   assert(

@@ -190,11 +190,11 @@ jobs:
             if (existingPR && resetRequested) {
               core.notice(`wr:reset present on issue #${issueNumber}; allowing fresh WR PR creation despite existing PR ${existingPR.html_url}`);
             }
+            const forcedRegeneration = Boolean(existingPR && resetRequested);
 
             const isComplete =
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
-              resetRequested ||
               context.eventName === 'workflow_dispatch';
 
             // Treat both direct research findings and the research-engine handoff
@@ -213,12 +213,13 @@ jobs:
               }
             }
 
-            const shouldCreate = isComplete || researchReadyComment;
+            const shouldCreate = isComplete || researchReadyComment || forcedRegeneration;
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
             core.info(`Is Complete: ${isComplete}`);
             core.info(`Reset requested: ${resetRequested}`);
+            core.info(`Forced regeneration: ${forcedRegeneration}`);
             core.info(`Research-ready comment: ${researchReadyComment}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
