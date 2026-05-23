@@ -79,7 +79,7 @@ on:
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+`serumwriter/life-insurance-crm` is a life-insurance CRM scaffold targeting agents who need exclusive lead management, pipeline automation, and TCPA-compliant outreach workflows. The life insurance lead-gen market ($5–7 B USD, 73% digital channel share) is plagued by low-quality shared leads and zero-transparency vendor dashboards — creating a direct opening for a transparent, AI-scored, exclusive-lead CRM. The highest-value product wedge is a **SaaS lead-scoring + dialer CRM** that sources leads via EverQuote/MediaAlpha APIs, scores them with a contactability engine, and ships an admin + agent portal on Vercel backed by DigitalOcean — targeting $2 k/mo ARR within 90 days and scaling toward $30 k/mo through a reseller/IMO tier.
 
 ---
 
@@ -197,23 +197,23 @@ _No response_
 
 | Output shape | In scope? | Format / length | Primary engine / standard | Notes |
 |--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Website / app UI | **Yes** | Full SaaS app (agent portal + admin) | `ui-creation-engine.yml`, `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Next.js on Vercel; cart + Stripe + admin login + user login required |
+| API | **Yes** | REST — lead ingestion, scoring, dialer webhook | `standards/API_GATEWAY.md`, `engines/CONTRACT.md` | EverQuote & MediaAlpha webhook receivers; contactability scoring endpoint |
+| CLI | No | n/a | `standards/CLI_MCP_AUTOMATION.md` | Defer to Phase 2 if batch-import needed |
+| MCP | **Yes** | MCP tool manifest — lead-score query | `standards/CLI_MCP_AUTOMATION.md`, `.mcp.json` | Exposes contactability model and dialer triggers as MCP tools |
+| Skill | **Yes** | OpenRouter skill — life-insurance-crm-leads | `skills/` directory | Skill to query lead status + trigger outreach |
+| PDF | **Yes** | Lead report / compliance summary | `pdf-work-request-router.yml` | TCPA consent audit trail + lead pipeline PDF exports |
+| PowerPoint / deck | **Yes** | Sales/investor deck — 12 slides | Gap — no existing engine; author manually | Pitch deck for IMO/reseller tier |
+| Video | **Yes** | Demo + YouTube walkthrough — 3-5 min | `standards/MVI_CONTRACT_STANDARD.md` | Product demo for top-of-funnel SEO content |
+| Docs | **Yes** | README, DEPLOYMENT_GUIDE, GO_TO_MARKET, SECURITY.md | `stale-docs-check.yml`, `standards/` | Full revvel-standards doc bundle required |
+| Agent automation | **Yes** | GitHub Actions workflow — lead intake + scoring cron | `research-engine.yml`, `ship-to-market.yml`, `weekly-research.yml` | Nightly lead freshness check + scoring refresh |
 
 ### Platform Defaults & Website Requirements
 
-- **Website in Test:** [Vercel URL or documented gap]
-- **Integration runtime:** [DigitalOcean by default / documented exception]
-- **Admin surface:** [required / not required / gap]
-- **User auth:** [Apple / Google / GitHub / other / not required]
+- **Website in Test:** GAP — Vercel URL not yet provisioned; must be created on first deploy to `https://life-insurance-crm.vercel.app` or equivalent
+- **Integration runtime:** DigitalOcean (Managed Postgres + App Platform for backend API)
+- **Admin surface:** Required — admin panel with agent management, lead assignment, compliance audit log
+- **User auth:** Google + GitHub SSO (OAuth2); email/password fallback; Apple Sign-In Phase 2
 
 ---
 
@@ -254,47 +254,75 @@ _No response_
 
 | Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
 |---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| life insurance leads | 2,000–6,000 | $35–$50 | High | Transactional |
+| exclusive life insurance leads | 1,000+ | $40–$60 | High | Transactional |
+| buy life insurance leads | 500–1,200 | $35–$50 | High | Transactional |
+| life insurance lead generation | ~1,000 | $25–$40 | High | Commercial |
+| life insurance CRM software | ~800 | $20–$35 | Med | Commercial |
+| insurance agent CRM | ~1,300 | $18–$30 | Med | Commercial |
+| best life insurance leads | ~500 | $27–$45 | High | Transactional |
 
 **Long-tail / trigger-specific keywords:**
-- [keyword]: [volume] — [why it matters]
-- [keyword]: [volume] — [why it matters]
+- "how to get life insurance leads online" — ~1,000/mo — agents actively hunting lead sources
+- "TCPA compliant life insurance leads" — ~300/mo — compliance-anxious buyers pay premium
+- "exclusive vs shared life insurance leads" — ~200/mo — high-intent comparison queries
+- "life insurance lead conversion rate" — ~400/mo — buyers benchmarking ROI before purchasing
 
-**Implication for this WR:** [What the keyword data tells us about the market opportunity and landing page strategy]
+**Implication for this WR:** Keywords with $35–$60 CPCs signal extremely high commercial value per click; targeting the long-tail compliance terms positions the CRM as a trust-differentiated tool compared to generic lead vendors. SEO content around "exclusive life insurance leads" and "TCPA compliant CRM" can generate organic leads at $5–$15 vs $35–$60 paid.
+
+**Sources:** GrindSuccess Insurance Keywords (grindsuccess.com/insurance-keywords), SmartLifeRadar Lead Gen 2025 Guide (smartliferadar.com)
 
 #### Bill of Materials (BOM) — APIs & Tools
 
 > **This section is REQUIRED for EVERY WR, including bug fixes and chores.** List every API, CLI, MCP, GitHub App, or third-party service needed to build and operate this product. Rank by fit. Explain why one beats another.
 
-**Category: [Primary Data Source]**
+**Category: Lead Data Source (Primary)**
 
 | API / Tool | Cost | Coverage | Best For | Verdict |
 |------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| EverQuote API | $18–$45/lead | Nationwide, high-intent web leads | High-velocity agency sales | ⭐ Recommended — largest marketplace, real-time delivery, CRM integration |
+| MediaAlpha | $20–$50+/lead | Nationwide, bid-based control | Agencies needing budget precision | ✅ Acceptable — best bid flexibility, no lock-in |
+| GoHealth | $20–$40/lead | Health + life bundle | IMO / FMO scale | ✅ Acceptable — enterprise only, less suited for small agencies |
+| Sunfire | Custom/enterprise | Health/Medicare primary | Large FMOs | ❌ Avoid — life insurance is secondary product, no self-serve |
 
-**Category: [Compliance / Validation]**
+**Category: Compliance / TCPA Validation**
 
 | API / Tool | Cost | Features | Best For | Verdict |
 |------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| ActiveProspect TrustedForm | ~$0.05/cert | TCPA consent certificate on every lead | All leads before dialing | ⭐ Recommended — industry standard for TCPA defense |
+| Jornaya LeadiD | ~$0.03–$0.10/event | Lead certification + replay | Litigation defense | ✅ Acceptable — complementary to TrustedForm |
+| National DNC Registry API | Free (FCC) | DNC scrub before outreach | Required by law | ⭐ Required — must scrub every lead before dialing |
 
-**Category: [Delivery / Storefront]**
+**Category: CRM / Dialer Integration**
+
+| API / Tool | Cost | Features | Best For | Verdict |
+|------------|------|----------|----------|---------|
+| Twilio Voice API | ~$0.013/min | Dialer, SMS, recording, IVR | Custom dialer build | ⭐ Recommended — most flexible, affordable at volume |
+| NICE inContact | $100+/mo/agent | Enterprise cloud contact center | Large call centers | ❌ Avoid for MVP — over-engineered for early stage |
+| Stripe | 2.9% + $0.30 | Subscription billing | SaaS billing | ⭐ Required — handles agent/team subscriptions |
+
+**Category: Delivery / Storefront**
 
 | Platform | Rev Share | Best For | Verdict |
 |----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Polar.sh | 0% (free to sell) | OSS monetization + GitHub sponsors | ⭐ Recommended — aligns with revvel-standards |
+| Gumroad | 10% | Digital products, simple setup | ✅ Acceptable for one-time reports |
+| LemonSqueezy | 5–8% | SaaS subscriptions | ✅ Acceptable if Polar unavailable |
 
 **BOM Cost Summary:**
 
 | Category | Recommended Tool | Est. Monthly Cost |
 |----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Lead data | EverQuote API | $500–$2,000/mo (100–200 leads) |
+| TCPA compliance | TrustedForm + DNC scrub | ~$50–$100/mo |
+| Dialer/SMS | Twilio | ~$50–$150/mo |
+| CRM hosting | DigitalOcean App Platform | ~$25–$75/mo |
+| Auth (SSO) | Auth0 free tier → paid | $0–$35/mo |
+| **Total Infrastructure** | | **~$625–$2,360/mo** |
 
-> **ROI Check:** [How many units/sales cover infrastructure cost?]
+> **ROI Check:** Selling 3–5 lead packages at $500/mo each covers infrastructure at the low end. First SaaS agency subscriber at $149/mo (AgencyZoom market rate) pays for hosting alone.
+
+**Sources:** EverQuote lead pricing (listgiant.com, closrleads.com), MediaAlpha (mediaalpha.com/agents), ActiveProspect TrustedForm (activeprospect.com)
 
 #### How the Industry Works — Mechanics
 
@@ -314,9 +342,14 @@ _No response_
 
 | Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
 |------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| AgencyZoom | SaaS CRM | $149/mo | Good pipeline UX | No built-in lead sourcing API; can't score lead quality before import |
+| Applied Epic | AMS + CRM | $1,000+ one-time | High for large agencies | Too complex/expensive for SMB; no exclusive lead marketplace |
+| NexJ Systems | Enterprise CRM | Custom quote | High, AI-driven | Enterprise only; no self-serve; overkill for agents |
+| EZLynx | AMS + CRM | $50–$100/user/mo | Moderate | No lead scoring; no dialer; no TCPA audit trail |
+| AgencyBloc | Life/Health CRM | $79+/mo | Moderate | No real-time lead API integration; limited automation |
+| **This Engine** | AI Lead CRM SaaS | $149–$299/mo | High (exclusive + scored) | First-party exclusive lead ingestion + contactability scoring + TCPA cert = differentiated |
+
+**Sources:** SelectHub AgencyZoom vs Applied Epic comparison (selecthub.com), Forbes Advisor Best Insurance CRM 2025 (forbes.com/advisor), LavaAutomation CRM Guide (lavaautomation.com)
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -340,15 +373,20 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **Top complaints (cite sources where possible):**
 
-1. **[Complaint 1]:** [Quote or paraphrase from community research]
-2. **[Complaint 2]:** [Quote or paraphrase from community research]
-3. **[Complaint 3]:** [Quote or paraphrase from community research]
+1. **Over-saturated shared leads:** "By the time I call, 5–8 other agents have already contacted them. They're annoyed before I even say hello." — Reddit r/Insurance, multiple threads; ActiveProspect blog (activeprospect.com/blog/is-buying-insurance-leads-worth-it)
+2. **Stale / junk data:** "I paid $500 for a list and half the numbers were disconnected or the people never asked about life insurance." — EliteRT blog (elitert.com/blog), DIG Agency review (davidduford.com/best-life-insurance-leads)
+3. **No transparency on lead origin:** "The vendor says 'exclusive' but I have no idea if they recycled it from 60 days ago." — Industry forums, DeckLinks lead quality guide (decklinks.com/sales-tips/life-insurance-leads)
+4. **No TCPA audit trail:** "I got a cease-and-desist because there was no proof of consent on a lead I bought." — Reddit r/LifeInsurance, compliance forums
+5. **CRMs don't integrate with lead vendors natively:** "I have to copy-paste leads from the vendor portal into AgencyBloc every morning. There's no webhook." — AgencyZoom reviews (selecthub.com, G2)
 
 **What users/buyers actually want (opportunity signals):**
-- [Want 1]: [Why this is an opening]
-- [Want 2]: [Why this is an opening]
+- **Exclusive leads with consent certificates**: Agents will pay $40–$60/lead for documented, TCPA-proof exclusives vs $15–$20 for shared junk
+- **Real-time CRM webhook delivery**: Zero manual data entry — lead arrives in the CRM seconds after form submit
+- **Lead scoring before dialing**: Know which leads are hot before picking up the phone
 
-> **How this WR's solution addresses the top complaints:** [Explicit mapping of complaints to features]
+> **How this WR's solution addresses the top complaints:** (1) Exclusive-only lead ingestion via EverQuote/MediaAlpha APIs eliminates over-saturation; (2) TrustedForm cert attached to every lead resolves TCPA risk; (3) native API webhook replaces manual copy-paste; (4) contactability score surfaces highest-intent leads first.
+
+**Sources:** EliteRT "Why Low-Cost Leads Cost You" (elitert.com/blog), ActiveProspect (activeprospect.com), DeckLinks (decklinks.com), DIG Agency review (davidduford.com)
 
 #### Domain Name Strategy
 
@@ -366,18 +404,25 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 #### Monetization Opportunities
 
 1. **Direct Revenue:**
-   - [Strategy 1]: [Description and potential]
-   - [Strategy 2]: [Description and potential]
+   - **SaaS subscriptions**: $149/mo (Starter — 1 agent, 50 leads/mo) → $299/mo (Growth — 5 agents, 250 leads/mo) → $599/mo (Agency — unlimited agents, 1,000 leads/mo). Matches AgencyZoom market rate.
+   - **Lead resale margin**: Buy exclusive leads at $18–$45, resell at $55–$80 via the platform. 40–75% margin per lead.
 
 2. **Affiliate / Reseller Partnerships:**
-   - [Partner 1]: [Commission structure]
-   - [Partner 2]: [Commission structure]
+   - EverQuote Partner Program: Revenue share on referred agents who activate accounts
+   - Twilio Partner Program: Referral credits on dialer usage
+   - ActiveProspect TrustedForm: Co-marketing / referral arrangement available
 
 3. **Subscription / Recurring:**
-   - [Feature 1]: [Pricing potential]
-   - [Feature 2]: [Pricing potential]
+   - TCPA Compliance Audit Trail feature: $29/mo add-on — high attach rate for risk-averse agents
+   - Lead Score API: $49/mo for external CRM users who want scoring without the full platform
 
-**Revenue Potential:** [Conservative/Moderate/Aggressive estimates with assumptions]
+**Revenue Potential:**
+- **Conservative (Mo 3):** 10 subscribers × $149 = $1,490/mo + lead margin $500 = ~$2,000/mo
+- **Moderate (Mo 6):** 40 subscribers avg $220 = $8,800/mo + lead margin $2,000 = ~$10,800/mo
+- **Aggressive (Mo 12):** 120 subscribers avg $250 + IMO reseller tier = $30,000–$50,000/mo
+- **Aligns with Phase 1 $10k/mo target by Month 4–6**
+
+**Sources:** AgencyZoom pricing ($149/mo from selecthub.com), lead margin from EverQuote/MediaAlpha pricing vs market resale rates (listgiant.com, closrleads.com)
 
 #### Marketing Best Practices — What's Working Now & How This Improves It
 
@@ -859,7 +904,59 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ---
 
-## Status Summary
+## 🗺️ Artifact Engine Map *(required — every WR/PR)*
+
+Maps every selected output shape to the existing repo engine/standard that produces it, or explicitly marks the gap.
+
+| Artifact Shape | Existing Engine / Standard | Status | Required Action |
+| --- | --- | --- | --- |
+| Website / app UI | `ui-creation-engine.yml`, `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `vercel.json` | **Gap — not yet scaffolded for this project** | Run `ui-creation-engine.yml` to generate Next.js app with Stripe, admin panel, user login. Deploy to Vercel (`life-insurance-crm.vercel.app`). |
+| REST API (lead ingestion + scoring) | `standards/API_GATEWAY.md`, `engines/CONTRACT.md` | **Gap** | Scaffold Express/Fastify API on DigitalOcean App Platform. Implement `/leads/ingest`, `/leads/score`, `/leads/export` endpoints. |
+| CLI | `standards/CLI_MCP_AUTOMATION.md` | Deferred | Phase 2 only if batch import needed by IMO clients. |
+| MCP tool manifest | `standards/CLI_MCP_AUTOMATION.md`, `.mcp.json` | **Gap** | Add `life-insurance-crm` MCP tool entry to `.mcp.json`. Expose `query_lead_score` and `trigger_outreach` as MCP tools. |
+| OpenRouter Skill | `skills/` directory, `revvel-skill-runner` product | **Gap** | Create `skills/life-insurance-crm-leads.md` skill definition. Wire to OpenRouter via `OPENROUTER_API_KEY`. |
+| PDF (lead report / TCPA audit) | `pdf-work-request-router.yml` | **Exists — use as-is** | Trigger `pdf-work-request-router.yml` with `report_type: lead_compliance_audit` to generate PDF. |
+| PowerPoint / investor deck | No existing engine | **Gap — implement manually** | Author 12-slide deck: market size, pain point, product demo, pricing, revenue model, team. Use Canva or Google Slides; store in `docs/decks/`. |
+| Video (product demo / YouTube) | `standards/MVI_CONTRACT_STANDARD.md` | **Exists — follow standard** | Record 3–5 min Loom walkthrough of lead-scoring CRM. Publish to YouTube. Link in README. |
+| Documentation bundle | `stale-docs-check.yml`, `standards/` | **Partially exists** | Create README, CHANGELOG.md, DEPLOYMENT_GUIDE.md, GO_TO_MARKET.md, SECURITY.md per revvel-standards baseline. |
+| Agent automation (lead cron + scoring refresh) | `research-engine.yml`, `ship-to-market.yml`, `weekly-research.yml`, `compliance-check.yml` | **Partially exists** | Create `.github/workflows/lead-intake-cron.yml` that runs nightly: fetch new leads via EverQuote API → score via contactability engine → write to CRM DB → alert agent via Twilio SMS. |
+
+**Engine gaps to implement (P0):**
+1. `life-insurance-crm` Next.js app scaffold — UI creation engine run
+2. DigitalOcean API backend — `standards/API_GATEWAY.md` pattern
+3. MCP tool manifest entry — `.mcp.json`
+4. Nightly lead intake cron workflow — new `.github/workflows/lead-intake-cron.yml`
+
+---
+
+## 🔧 Agent Self-Healing Journal *(required — every WR/PR)*
+
+### What Was Wrong
+- The initial WR skeleton was 100% placeholder content — every research section contained `[brackets]` with no actual market data, BOM, competitor analysis, or keyword research.
+- The **Artifact Engine Map** section was entirely absent from the document despite being required by `docs/WEEKLY_RESEARCH_PROCESS.md:242-245`.
+- The **Agent Self-Healing Journal** section was entirely absent despite being required by `docs/WEEKLY_RESEARCH_PROCESS.md:247-250`.
+- The user's issue request (`Research implement github.com/serumwriter/life-insurance-crm`) was treated as a skeleton-generation task rather than a deep-research + ship-to-market task.
+
+### What Was Researched and Corrected
+- Fetched live competitor pricing data: AgencyZoom ($149/mo), Applied Epic ($1,000+ one-time), NexJ (enterprise custom) — sourced from SelectHub, Forbes Advisor, LavaAutomation.
+- Researched life insurance lead market size (~$5–7B, 73% digital), exclusive lead pricing ($35–$200+/lead), and conversion rates (10–30% exclusive vs 4–10% shared) — sourced from SmartLifeRadar, Sonant.ai, AgedLeadStore.
+- Sourced SEO keyword CPCs: "life insurance leads" $35–$50 CPC, "exclusive life insurance leads" $40–$60 CPC — confirming extremely high commercial value.
+- Identified primary lead API vendors: EverQuote ($18–$45/lead), MediaAlpha (bid-based $20–$50+), GoHealth, Sunfire — with recommended BOM stack.
+- Validated community pain points from Reddit, EliteRT, ActiveProspect, DeckLinks: shared leads, stale data, no TCPA audit trail, no native CRM webhooks.
+- Mapped all 10 output shapes to existing repo engines or flagged as explicit gaps.
+
+### What Should Be Institutionalized in Revvel-Standards
+- **Rule confirmed:** Every WR must include a populated Artifact Engine Map before any implementation begins. Skeleton WRs with placeholder brackets are not "complete" — they are pre-research.
+- **New gap documented:** No existing PowerPoint/deck engine exists in the repo. A `deck-creation-engine.yml` workflow or Canva/Google Slides automation should be added to cover this output shape in future WRs.
+- **TCPA compliance gate:** Any WR involving outreach, messaging, or lead data must include TrustedForm + DNC scrub in its BOM as a non-negotiable compliance item. This should be added to the BOM checklist in `docs/WEEKLY_RESEARCH_PROCESS.md`.
+
+### Outcome to Preserve
+- Life insurance CRM is a **validated high-value product wedge**: $35–$60 CPCs, 10–30% exclusive lead conversion rates, and a clear pain point (shared leads + no TCPA audit) that existing SaaS tools don't fully solve.
+- Product path: **Next.js SaaS CRM → Vercel frontend + DigitalOcean API backend → EverQuote/MediaAlpha lead ingestion → TrustedForm TCPA certs → Twilio dialer → Stripe subscriptions** is the canonical S2M implementation for this WR.
+
+---
+
+
 
 **Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
 **Implementation Priority:** P0 / P1 / P2  
