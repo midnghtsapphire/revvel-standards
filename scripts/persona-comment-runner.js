@@ -5,8 +5,13 @@
  * Persona Comment Runner
  *
  * Lets a new issue/PR comment summon a persona on demand:
- *   - "@professor <task>"  / "@oaudrey ..." / "@mindmappr ..." / "@openrouter ..."
+ *   - "/professor <task>" / "/oaudrey ..." / "/mindmappr ..." / "/openrouter ..."
  *   - "/persona <name> <task>"
+ *
+ * NOTE: triggers use a leading slash, NOT "@name". GitHub treats "@name" as a
+ * mention of the real user account with that username and emails them — so the
+ * old "@professor" syntax pinged a stranger who owns the @professor handle on
+ * every comment. The slash form never notifies anyone.
  *
  * Two modes:
  *   - ADVISORY (a question): instantiates the persona and posts a text reply.
@@ -19,6 +24,8 @@
  * 2026-05-21 (Claude): created for the comment-trigger persona lane.
  * 2026-05-22 (Claude): added EXECUTION mode so action comments produce a real
  * artifact (a Work Request that the pipeline implements), not just a reply.
+ * 2026-05-23 (Claude): switched triggers from "@name" to "/name" so summoning a
+ * persona no longer notifies the real GitHub user with that username.
  *
  * Env: COMMENT_BODY, ISSUE_NUMBER, REPO (owner/repo), OPENROUTER_API_KEY, GH_TOKEN
  */
@@ -38,6 +45,10 @@ function detectAction(task) {
 /**
  * Parse a persona trigger out of a comment body.
  *
+ * Accepts "/persona <name> <task>" or the "/<name> <task>" shortcut. The "@name"
+ * form is intentionally NOT accepted — it would notify the real GitHub user with
+ * that username.
+ *
  * @param {string} body - The comment body.
  * @returns {{handle: string, task: string, action: (string|null)} | null}
  */
@@ -55,11 +66,11 @@ function parsePersonaCommand(body) {
     }
   }
 
-  // "@<handle> <task...>"
+  // "/<name> <task...>" shortcut (leading slash, so it never pings a real user).
   for (const handle of handles) {
-    const mention = new RegExp(`@${handle}\\b`, "i");
-    if (mention.test(body)) {
-      const rest = body.replace(mention, "").trim();
+    const shortcut = new RegExp(`(?:^|\\s)/${handle}\\b`, "i");
+    if (shortcut.test(body)) {
+      const rest = body.replace(shortcut, " ").trim();
       return { handle, task: rest || body.trim(), action: detectAction(rest) };
     }
   }
