@@ -52,7 +52,7 @@ function ghAPI(endpoint, method = 'GET', body = null) {
   if (method !== 'GET') args.push('-X', method);
 
   if (body) args.push('-f', JSON.stringify(body));
-  return execSync(`gh ${args.join(' ')}`, { encoding: 'utf-8' });
+  return execFileSync('gh', args, { encoding: 'utf-8' });
 }
 
 // Main
