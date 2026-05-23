@@ -61,11 +61,15 @@ jobs:
 
             // ─ helpers ────────────────────────────────────────────
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num });
+                return data.map(l => l.name);
+              } catch (e) {
+                core.warning(`Error fetching labels: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -170,11 +174,15 @@ jobs:
             core.info(`PR #${num} review state: ${state}`);
 
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num });
+                return data.map(l => l.name);
+              } catch (e) {
+                core.warning(`Error fetching labels: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -286,11 +294,15 @@ jobs:
               const num = pr.number;
               core.info(`Updating PR #${num}`);
 
-              const currentLabels = async () => (
-                await github.rest.issues.listLabelsOnIssue({
-                  owner, repo, issue_number: num
-                })
-              ).data.map(l => l.name);
+              const currentLabels = async () => {
+                try {
+                  const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num });
+                  return data.map(l => l.name);
+                } catch (e) {
+                  core.warning(`Error fetching labels: ${e.message}`);
+                  return [];
+                }
+              };
 
               const add = async (...labels) => {
                 for (const l of labels) {

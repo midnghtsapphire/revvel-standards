@@ -48,10 +48,13 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: prNumber
-            });
-            let currentLabels = labelData.map(l => l.name);
+            let currentLabels = [];
+            try {
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
@@ -203,8 +206,13 @@ jobs:
 
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-            let currentLabels = labelData.map(l => l.name);
+            let currentLabels = [];
+            try {
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
             async function addLabel(label) {
               if (!currentLabels.includes(label)) {
@@ -387,8 +395,13 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
+              let currentLabels = [];
+            try {
               const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              let currentLabels = labelData.map(l => l.name);
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
               async function addLabel(label) {
                 if (!currentLabels.includes(label)) {
@@ -503,8 +516,13 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
+              let currentLabels = [];
+            try {
               const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              let currentLabels = labelData.map(l => l.name);
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
               // Get full picture of ALL checks for this SHA before deciding
               const { data: checkRuns } = await github.rest.checks.listForRef({
@@ -625,8 +643,13 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-                let currentLabels = labelData.map(l => l.name);
+                let currentLabels = [];
+            try {
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
                 async function addLabel(label) {
                   if (!currentLabels.includes(label)) {
@@ -728,8 +751,13 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-            let currentLabels = labelData.map(l => l.name);
+            let currentLabels = [];
+            try {
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              currentLabels = labelData.map(l => l.name);
+            } catch(e) {
+              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            }
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
