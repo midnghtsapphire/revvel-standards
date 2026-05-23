@@ -64,6 +64,34 @@ The AI engineering community is moving away from monolithic agents (where the LL
 **Assessment:**
 A commercial product that frames agent execution as "deploying virtual microcontrollers" that connect back to a central Revvel Controller is a strong B2B wedge. It solves the enterprise security problem of agents running amok by isolating execution in dedicated "microcontrollers."
 
+#### 3. Revvel-Standards Re-evaluation Pass
+
+To address the "run this through revvel-standards again" feedback, this WR was re-checked against `docs/WEEKLY_RESEARCH_PROCESS.md` mandatory research gates:
+
+- **Primary SEO keywords (controller runtime wedge):**
+  - distributed agent runtime
+  - agent orchestration framework
+  - event-sourced agent execution
+  - agent fleet management
+  - ai agent controller platform
+- **Long-tail keywords:**
+  - google ax controller architecture
+  - controller microcontroller agent runtime
+  - agent execution resumption protocol
+  - fleet management for ai agents
+  - secure isolated tool execution for agents
+- **Competitive GitHub traction (2026-05-23 snapshot):**
+  - `google/ax` — 708 stars
+  - `langchain-ai/langgraph` — 32.7k stars
+  - `microsoft/autogen` — 58.3k stars
+- **Monetization path (explicit):**
+  - Ship open-core Controller + paid Fleet Management SaaS per managed MCU node
+  - Upsell enterprise controls (audit trails, policy packs, SSO, compliance exports)
+- **Distribution channel:**
+  - Organic SEO + GitHub developer discovery + content demos for Controller/MCU deployment flows
+- **Website in Test requirement status:**
+  - Vercel is required by revvel-standards; this WR currently documents a **gap** (no test URL yet) until `revvel-mcu-node` and dashboard implementation ship
+
 ---
 
 ### Recommendations
@@ -136,7 +164,7 @@ A commercial product that frames agent execution as "deploying virtual microcont
 
 ### Platform Defaults & Website Requirements
 
-- **Website in Test:** Vercel (for the Fleet Management Dashboard)
+- **Website in Test:** Vercel (for the Fleet Management Dashboard); **URL gap currently open until implementation ships**
 - **Integration runtime:** DigitalOcean App Platform (for the Controller) / User's local machine or cloud (for the Microcontrollers)
 - **Admin surface:** Required (Fleet Management UI)
 - **User auth:** GitHub / Google OAuth
@@ -170,8 +198,11 @@ A commercial product that frames agent execution as "deploying virtual microcont
 ### References
 
 - [Google AX GitHub Repository](https://github.com/google/ax)
+- [LangGraph GitHub Repository](https://github.com/langchain-ai/langgraph)
+- [AutoGen GitHub Repository](https://github.com/microsoft/autogen)
 - `engines/CONTRACT.md` (Revvel Orchestrator and Runners)
 - `standards/RUNNER_TARGETS.md`
+- `docs/WEEKLY_RESEARCH_PROCESS.md`
 
 ---
 
