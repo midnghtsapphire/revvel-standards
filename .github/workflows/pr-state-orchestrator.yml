@@ -280,6 +280,8 @@ jobs:
               const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: pr.head.sha, per_page: 100
               });
+              // Ignore workflow-file runner checks (named as .github/workflows/*.yml)
+              // because they are repo automation health signals, not PR merge blockers.
               const isMergeBlockingCheckRun = (run) =>
                 !String(run.name || '').startsWith('.github/workflows/');
               const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
@@ -513,6 +515,8 @@ jobs:
               const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: headSha, per_page: 100
               });
+              // Ignore workflow-file runner checks (named as .github/workflows/*.yml)
+              // because they are repo automation health signals, not PR merge blockers.
               const isMergeBlockingCheckRun = (run) =>
                 !String(run.name || '').startsWith('.github/workflows/');
               const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
@@ -686,6 +690,8 @@ jobs:
                 const { data: checkRuns } = await github.rest.checks.listForRef({
                   owner, repo, ref: pr.head.sha, per_page: 100
                 });
+                // Ignore workflow-file runner checks (named as .github/workflows/*.yml)
+                // because they are repo automation health signals, not PR merge blockers.
                 const isMergeBlockingCheckRun = (run) =>
                   !String(run.name || '').startsWith('.github/workflows/');
                 const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
@@ -845,6 +851,8 @@ jobs:
             const { data: checkRuns } = await github.rest.checks.listForRef({
               owner, repo, ref: pr.head.sha, per_page: 100
             });
+            // Ignore workflow-file runner checks (named as .github/workflows/*.yml)
+            // because they are repo automation health signals, not PR merge blockers.
             const isMergeBlockingCheckRun = (run) =>
               !String(run.name || '').startsWith('.github/workflows/');
             const relevantRuns = checkRuns.check_runs.filter(isMergeBlockingCheckRun);
