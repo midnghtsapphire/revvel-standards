@@ -44,6 +44,8 @@
 - **Product / Output Selections:** _(auto)_
 - **Platform Defaults & Website Requirements:** _(auto)_
 - **Artifact Engine Map:** _(auto)_
+- **Scaffolding & Delivery Evidence:** _(auto)_  
+  _(for each selected output, include scaffolded + implemented + build/test status + commit/PR evidence; add follow-up PRs on the same WR if anything remains incomplete)_
 - **Agent Self-Healing Journal:** _(auto)_
 
 ---

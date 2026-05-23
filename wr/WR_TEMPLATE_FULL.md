@@ -145,6 +145,21 @@ on:
 - **Admin surface:** [required / not required / gap]
 - **User auth:** [Apple / Google / GitHub / other / not required]
 
+### Scaffolding & Delivery Evidence
+
+| Output shape | Scaffolded | Implemented | Build | Test | Commit / PR evidence |
+|--------------|------------|-------------|-------|------|----------------------|
+| Website / UI | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| API | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| CLI | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| MCP | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| Skill | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| PDF | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| Docs | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+| Agent automation | [Yes/No] | [Yes/No] | [Pass/Fail/Not run] | [Pass/Fail/Not run] | [hash/PR] |
+
+- If any selected output shape is incomplete, list focused follow-up PRs under this same WR until all selected assets/artifacts are complete.
+
 ---
 
 ## Step 2: Deep Web Research

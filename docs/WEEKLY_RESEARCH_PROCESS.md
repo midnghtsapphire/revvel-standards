@@ -232,7 +232,9 @@ Every WR task follows this standard checklist:
 - [ ] **Product / Output Selections** *(required for every WR/PR)*
   - [ ] Explicitly select which artifact shapes are in scope: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video/demo/training/YouTube, docs, and agent automation
   - [ ] For any selected video output, state the intended format and target length
+  - [ ] Include a delivery status line for each selected shape: scaffolded, implemented, build status, test status, and commit evidence
   - [ ] For any enhanced feature or new requirement that should apply globally, update both the current WR and revvel-standards so future WRs inherit it
+  - [ ] If all selected shapes are not done in one PR, explicitly queue focused follow-up PRs under the same WR until all assets/artifacts are complete
 
 - [ ] **Platform defaults & website requirements** *(required when a website/app surface is in scope)*
   - [ ] Website in Test must name the Vercel URL or explicitly mark the gap
@@ -374,6 +376,21 @@ Every WR task follows this standard checklist:
 | Video | [workflow/script/standard] | [exists/gap] | [action] |
 | Docs | [workflow/script/standard] | [exists/gap] | [action] |
 | Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
+
+### Scaffolding & Delivery Evidence
+
+| Output shape | Scaffolded | Implemented | Build | Test | Commit / PR evidence |
+| --- | --- | --- | --- | --- | --- |
+| Website / UI | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| API | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| CLI | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| MCP | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| Skill | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| PDF | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| Docs | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+| Agent automation | [yes/no] | [yes/no] | [pass/fail/not run] | [pass/fail/not run] | [hash/PR] |
+
+- If any selected output is not complete, include a named follow-up PR plan tied to the same WR.
 
 ---
 

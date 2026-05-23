@@ -190,6 +190,24 @@ acquisition wedge, with broader product branding kept under `AuthorityPilot Gov`
   billing visibility, and evidence review.
 - **User auth:** required; support Apple, Google, and GitHub sign-in, plus admin login.
 
+### Scaffolding & delivery status for this WR
+
+This PR is a **research WR artifact**, not the implementation repository. The product
+surfaces below are selected and required, but none are generated/implemented in this
+document-only PR yet.
+
+| Output shape | Scaffolded | Implemented | Build | Test | Commit / PR evidence |
+| --- | --- | --- | --- | --- | --- |
+| Website / UI | No | No | Not run | Not run | follow-up PR required |
+| API | No | No | Not run | Not run | follow-up PR required |
+| CLI | No | No | Not run | Not run | follow-up PR required |
+| MCP | No | No | Not run | Not run | follow-up PR required |
+| Skill refresh | No | No | Not run | Not run | follow-up PR required |
+| PDF export | No | No | Not run | Not run | follow-up PR required |
+
+Focused implementation PRs on this same WR should be opened until all selected outputs are
+scaffolded, implemented, built, tested, and committed.
+
 ---
 
 ## Step 2: Deep Market Research
