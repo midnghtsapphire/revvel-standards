@@ -4,7 +4,7 @@
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
 **Research Date:** 2026-05-23
 **Researcher:** Jules
-**WR Status:** ✅ Complete
+**WR Status:** ⚠️ Partial
 
 ---
 
@@ -14,14 +14,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing _(pending sourced keyword volume/CPC data)_
+- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another _(pending ranked BOM comparison table with sourcing)_
 - [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
 - [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
 - [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing _(pending factual citations for legal/compliance assertions)_
 - [x] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [x] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -193,6 +193,6 @@ A product that combines *exclusive* lead generation (which we already planned in
 
 ---
 
-**Research Status:** ✅ Complete
+**Research Status:** ⚠️ Partial
 **Implementation Priority:** P1
 **Approval Required:** @midnghtsapphire
