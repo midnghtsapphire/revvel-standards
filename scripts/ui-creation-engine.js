@@ -427,15 +427,13 @@ Use actual keywords from the competitive analysis.`;
 // UI Design Recommendations: Phase 5
 // ---------------------------------------------------------------------------
 
-async function generateUIRecommendations(synthesis, args) {
-  console.log("\n🎨 Phase 5: UI Design Recommendations");
-  console.log("=" .repeat(60));
+function shouldIncludeMCPPromptPack(args) {
+  const context = `${args.business || ""} ${args.industry || ""} ${args.services || ""}`;
+  return /(?:\bmcp\b|model[\s-]*context[\s-]*protocol)/i.test(context);
+}
 
-  const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
-  const isMCPContext = /\bmcp\b|model context protocol/i.test(
-    `${args.business} ${args.industry} ${args.services || ""}`
-  );
-  const mcpPromptPack = isMCPContext
+function buildUIRecommendationsUserPrompt(synthesis, args) {
+  const mcpPromptPack = shouldIncludeMCPPromptPack(args)
     ? `
 
 ## 6. MCP Landing Page Visual Prompt Pack
@@ -452,7 +450,7 @@ A close-up cinematic shot of a developer landing page for an advanced MCP host e
 - To change the visual hierarchy: If you want a more abstract layout representing the "protocol" flow, use terms like a central core with radial glass nodes stretching outward to shift it away from a standard rectangular layout.`
     : "";
 
-  const userPrompt = `Based on this competitive analysis for ${args.business}:
+  return `Based on this competitive analysis for ${args.business}:
 
 ${synthesis}
 
@@ -498,6 +496,14 @@ Detailed wireframes for:
 3-5 UI features that would make ${args.business} stand out from all competitors.
 
 Be specific, actionable, and modern. Reference Tailwind CSS utility classes where appropriate.${mcpPromptPack}`;
+}
+
+async function generateUIRecommendations(synthesis, args) {
+  console.log("\n🎨 Phase 5: UI Design Recommendations");
+  console.log("=" .repeat(60));
+
+  const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
+  const userPrompt = buildUIRecommendationsUserPrompt(synthesis, args);
 
   console.log("  → [Pixel: UI Designer] Generating recommendations...");
   const uiDesign = await callOpenRouter(MODELS.design, systemPrompt, userPrompt);
@@ -713,4 +719,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main };
+module.exports = { main, shouldIncludeMCPPromptPack, buildUIRecommendationsUserPrompt };

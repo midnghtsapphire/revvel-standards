@@ -1,8 +1,10 @@
 // UI Creation Engine Tests
 
 const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
+const {
+  shouldIncludeMCPPromptPack,
+  buildUIRecommendationsUserPrompt,
+} = require("../scripts/ui-creation-engine.js");
 
 // Test helper
 function test(description, fn) {
@@ -203,24 +205,52 @@ test("Estimated cost per project is within budget", () => {
 });
 
 test("MCP projects inject the MCP landing page prompt pack into UI recommendations", () => {
-  const scriptPath = path.join(__dirname, "..", "scripts", "ui-creation-engine.js");
-  const script = fs.readFileSync(scriptPath, "utf8");
+  const prompt = buildUIRecommendationsUserPrompt("competitive analysis", {
+    business: "MCP Host",
+    industry: "Developer tools",
+    services: "MCP integration",
+  });
 
   assert.ok(
-    script.includes("const isMCPContext = /\\bmcp\\b|model context protocol/i.test("),
-    "UI engine should detect MCP context from business/industry/services fields"
+    shouldIncludeMCPPromptPack({
+      business: "Model-Context-Protocol Platform",
+      industry: "AI tools",
+      services: "",
+    }),
+    "UI engine should detect MCP context from business/industry/services fields, including hyphenated terms"
   );
   assert.ok(
-    script.includes("## 6. MCP Landing Page Visual Prompt Pack"),
+    prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
     "UI engine should include MCP landing page visual prompt section"
   );
   assert.ok(
-    script.includes("Prompt 1: The MCP Server Node & Context Stream"),
+    prompt.includes("Prompt 1: The MCP Server Node & Context Stream"),
     "UI engine should include MCP Prompt 1"
   );
   assert.ok(
-    script.includes("Prompt 2: The MCP Host Hub & File/Tool Execution"),
+    prompt.includes("Prompt 2: The MCP Host Hub & File/Tool Execution"),
     "UI engine should include MCP Prompt 2"
+  );
+});
+
+test("Non-MCP projects do not inject MCP prompt pack", () => {
+  const prompt = buildUIRecommendationsUserPrompt("competitive analysis", {
+    business: "Soul2Bowl",
+    industry: "Catering",
+    services: "Meal prep",
+  });
+
+  assert.ok(
+    !shouldIncludeMCPPromptPack({
+      business: "Soul2Bowl",
+      industry: "Catering",
+      services: "Meal prep",
+    }),
+    "MCP detector should be false for non-MCP context"
+  );
+  assert.ok(
+    !prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
+    "UI engine should not add MCP prompt pack for non-MCP contexts"
   );
 });
 
