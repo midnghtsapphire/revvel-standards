@@ -138,20 +138,9 @@ const PERSONA_REGISTRY = {
   },
 };
 
-// Extra summon aliases that resolve to a canonical persona. Kept OUT of
-// PERSONA_REGISTRY so fleet iteration never double-runs the same persona.
-const PERSONA_ALIASES = {
-  theprofessor: "professor",
-};
-
 /** @returns {Object} The full persona registry. */
 function getPersonas() {
   return PERSONA_REGISTRY;
-}
-
-/** @returns {string[]} All summonable handles, including aliases. */
-function getPersonaHandles() {
-  return [...Object.keys(PERSONA_REGISTRY), ...Object.keys(PERSONA_ALIASES)];
 }
 
 /**
@@ -164,8 +153,7 @@ function getPersona(handle) {
   if (!handle || typeof handle !== "string") {
     throw new Error("Persona handle is required");
   }
-  const raw = handle.trim().toLowerCase().replace(/^@/, "");
-  const key = PERSONA_ALIASES[raw] || raw;
+  const key = handle.trim().toLowerCase().replace(/^@/, "");
   const persona = PERSONA_REGISTRY[key];
   if (!persona) {
     const available = Object.keys(PERSONA_REGISTRY).join(", ");
@@ -313,10 +301,8 @@ async function instantiateFleet(handles, options = {}) {
 
 module.exports = {
   PERSONA_REGISTRY,
-  PERSONA_ALIASES,
   INSTANTIATION_MODES,
   getPersonas,
-  getPersonaHandles,
   getPersona,
   normalizeMode,
   buildMessages,

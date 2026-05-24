@@ -48,15 +48,9 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
               owner, repo, issue_number: prNumber
             });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
@@ -209,13 +203,7 @@ jobs:
 
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
             let currentLabels = labelData.map(l => l.name);
 
             async function addLabel(label) {
@@ -399,13 +387,7 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
-              let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
               let currentLabels = labelData.map(l => l.name);
 
               async function addLabel(label) {
@@ -521,13 +503,7 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
               let currentLabels = labelData.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
@@ -649,13 +625,7 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
+                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
                 let currentLabels = labelData.map(l => l.name);
 
                 async function addLabel(label) {
@@ -758,13 +728,7 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            let labelData = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              labelData = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [

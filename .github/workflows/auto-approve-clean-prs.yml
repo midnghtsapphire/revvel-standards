@@ -22,15 +22,9 @@ jobs:
             const prNumber = pr.number;
 
             // Verify Bito actually reviewed this PR (bito-ai:review label present)
-            let labels = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner, repo, issue_number: prNumber,
             });
-              labels = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
             const labelNames = labels.map(l => l.name);
 
             if (labelNames.includes('bito-ai:changes-needed')) {

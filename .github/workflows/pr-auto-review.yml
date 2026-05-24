@@ -91,17 +91,11 @@ jobs:
             }
 
             // Check if PR has awaiting-approval label or no review labels
-            let labels = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-              labels = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
 
             const labelNames = labels.map(l => l.name);
             const hasNoTriage = labelNames.includes('no-triage');
