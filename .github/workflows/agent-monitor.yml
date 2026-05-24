@@ -11,6 +11,9 @@ on:
     - cron: '*/15 * * * *'
   # Can also be triggered manually
   workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
 
 env:
   CHECK_INTERVAL_MINUTES: 15
@@ -22,13 +25,14 @@ jobs:
     timeout-minutes: 10
     outputs:
       agents_status: ${{ steps.health.outputs.status }}
+      issues: ${{ steps.health.outputs.issues }}
     steps:
       - name: Check OpenRouter agent
         id: openrouter
         run: |
           # Test if OpenRouter is accessible
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://openrouter.ai/api/v1/models" \
-            -H "Authorization: Bearer $OPENROUTER_API_KEY" 2>&1 || echo "000")
+            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" 2>&1 || echo "000")
           
           if [[ "$response" == "200" ]]; then
             echo "openrouter=healthy" >> $GITHUB_OUTPUT
@@ -84,9 +88,10 @@ jobs:
           # Output overall status
           if [[ ${#UNHEALTHY[@]} -eq 0 ]]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
+            echo "issues=" >> $GITHUB_OUTPUT
           else
             echo "status=unhealthy" >> $GITHUB_OUTPUT
-            echo "issues=$(printf '; %s' "${UNHEALTHY[@]}")" >> $GITHUB_OUTPUT
+            echo "issues=$(printf '%s; ' "${UNHEALTHY[@]}" | sed 's/; $//')" >> $GITHUB_OUTPUT
           fi
 
   # Create WR if agents unhealthy
@@ -96,13 +101,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
       - name: Check for existing WR
         id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Search for recent unhandled agent failure WR
-          EXISTING=$(gh rep search issues --repo ${{ github.repository }} \
-            --state open --json number \
-            -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null | head -1 || echo "")
+          EXISTING=$(gh issue list --repo midnghtsapphire/revvel-standards \
+            --state open \
+            --search "[AGENT-FAILURE] in:title" \
+            --json number \
+            --jq '.[0].number // ""' 2>/dev/null || echo "")
           
           if [[ -n "$EXISTING" ]]; then
             echo "existing_wr=$EXISTING" >> $GITHUB_OUTPUT
@@ -113,6 +125,8 @@ jobs:
 
       - name: Create WR if no existing
         if: steps.existing.outputs.existing_wr == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
 
@@ -139,6 +153,7 @@ jobs:
           )
 
           gh issue create \
+            --repo midnghtsapphire/revvel-standards \
             --title "[AGENT-FAILURE] Agent health check failed" \
             --body "$BODY" \
             --label "needs-human,agent-failure,automation-failure"
@@ -147,10 +162,27 @@ jobs:
 
       - name: Update existing WR
         if: steps.existing.outputs.existing_wr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXISTING="${{ steps.existing.outputs.existing_wr }}"
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
           
-          gh issue comment "$EXISTING" --body "⚠️ Agent health check still failing: $ISSUES"
+          gh issue comment "$EXISTING" \
+            --repo midnghtsapphire/revvel-standards \
+            --body "⚠️ Agent health check still failing: $ISSUES"
           
           echo "✅ Updated existing WR #$EXISTING"
+
+      - name: Emit self-heal contract
+        if: always()
+        run: |
+          node scripts/self-heal-contract.js \
+            --component "agent-monitor/health-check" \
+            --error "${{ needs.check-agent-health.outputs.issues }}" \
+            --repo "${{ github.repository }}" \
+            --workflow "agent-monitor.yml" \
+            --run-id "${{ github.run_id }}" \
+            --action "create-or-update-agent-failure-wr" \
+            --verification "issue-open-or-comment" \
+            --output "/tmp/agent-monitor-self-heal-contract.json"

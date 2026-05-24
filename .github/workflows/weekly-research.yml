@@ -102,17 +102,17 @@ jobs:
               }
             }
 
-            // Assign @Copilot as the expert code assistant (mindmappr persona)
+            // Assign @oaudrey as the OpenRouter-first orchestrator account
             try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
-                assignees: ['Copilot'],
+                assignees: ['oaudrey'],
               });
-              core.info('✅ Assigned @Copilot (mindmappr expert assistant) to WR issue');
+              core.info('✅ Assigned @oaudrey (OpenRouter orchestrator) to WR issue');
             } catch (error) {
-              core.notice(`Could not assign @Copilot to WR issue (non-fatal): ${error.message}`);
+              core.notice(`Could not assign @oaudrey to WR issue (non-fatal): ${error.message}`);
             }
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
@@ -127,13 +127,13 @@ jobs:
 
             **Automation applied:**
             - ✅ Labeled as \`weekly-research\` + \`deep-research\` + \`mindmappr\`
-            - ✅ Assigned to **@Copilot** — mindmappr expert code assistant
+            - ✅ Assigned to **@oaudrey** — OpenRouter orchestrator account
             - ✅ Routed to OpenRouter orchestrator
             - ✅ Progress tracking enabled (\`wr:in-progress\` → \`wr:complete\`)
 
             **What happens next:**
             1. OpenRouter triage will analyze the research scope
-            2. **@Copilot (mindmappr)** will act as expert code assistant throughout this WR
+            2. **@oaudrey (OpenRouter-first lane)** will act as orchestrator throughout this WR
             3. Perplexity research will run (direct API or no-key OpenRouter lane)
             4. Findings will be documented in this issue
             5. When complete, the \`wr:complete\` label will be applied
@@ -187,11 +187,21 @@ jobs:
           if ! node scripts/openrouter-triage.js; then
             echo "OpenRouter triage failed; creating self-heal packet and routing fallback labels."
             node scripts/agent-self-heal.js \
+              --agent "openrouter" \
+              --context "weekly-research" \
+              --failure "OpenRouter triage failed during WR research automation. Continue via fallback labels and no-key/local research lanes." \
+              --issue "${{ needs.detect-wr.outputs.issue_number }}" \
+              --output "/tmp/weekly-research-self-heal-packet.json"
+            node scripts/self-heal-contract.js \
               --component "weekly-research/openrouter-triage" \
-              --error "OpenRouter triage failed during WR research automation. Continue via fallback labels and no-key/local research lanes." \
+              --error "OpenRouter triage failed during WR research automation" \
               --issue "${{ needs.detect-wr.outputs.issue_number }}" \
               --repo "${{ github.repository }}" \
-              --apply
+              --workflow "weekly-research.yml" \
+              --run-id "${{ github.run_id }}" \
+              --action "fallback-label-route" \
+              --verification "manual" \
+              --output "/tmp/weekly-research-self-heal-contract.json"
           fi
       - name: Trigger 49Agents research (if configured)
         if: env.AGENT_HQ_TOKEN != ''

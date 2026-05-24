@@ -75,7 +75,7 @@ jobs:
             core.setOutput('dry_run', String(dryRun));
             core.setOutput('has_openrouter', String(hasOpenRouter));
             core.setOutput('has_assignee', String(assignees.length > 0));
-      - name: Assign to Copilot (OpenRouter orchestrator)
+      - name: Assign to oAudrey (OpenRouter orchestrator)
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.has_assignee != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
         with:
@@ -88,11 +88,11 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
-                assignees: ['Copilot'],
+                assignees: ['oaudrey'],
               });
-              core.info(`✅ Assigned ${itemKind} #${issueNumber} to @Copilot`);
+              core.info(`✅ Assigned ${itemKind} #${issueNumber} to @oaudrey`);
             } catch (error) {
-              core.warning(`Could not assign to @Copilot: ${error.message}`);
+              core.warning(`Could not assign to @oaudrey: ${error.message}`);
               core.warning('This is non-fatal; routing labels will still be applied');
             }
       - name: Apply routing labels
@@ -198,7 +198,7 @@ jobs:
               '',
               '### How this works:',
               '',
-              '**OpenRouter** is not a GitHub user — it\'s a service that routes work through the `OPENROUTER_API_KEY` secret. The GitHub assignee `@Copilot` represents the orchestrator in the UI as your "first line of sight." All automation in this repository routes through OpenRouter, not the paid GitHub Copilot service.',
+              '**OpenRouter** is not a GitHub user — it\'s a service that routes work through the `OPENROUTER_API_KEY` secret. The GitHub assignee `@oaudrey` represents the orchestrator in the UI as your "first line of sight." All automation in this repository routes through OpenRouter.',
               '',
               '### References:',
               '',
@@ -234,7 +234,7 @@ jobs:
             core.notice('DRY RUN — No changes were made');
             core.notice('═══════════════════════════════════════════════════════');
             core.notice(`Would route ${displayKind} #${issueNumber} to OpenRouter:`);
-            core.notice('  - Assign to @Copilot');
+            core.notice('  - Assign to @oaudrey');
             core.notice('  - Add labels: openrouter, auto-fix, copilot, role:orchestrator');
             core.notice('  - Remove label: needs-action');
             core.notice('  - Post routing comment');
@@ -257,7 +257,7 @@ jobs:
               '',
               '## Actions Taken:',
               '',
-              dryRun ? '- ℹ️ Would assign to @Copilot' : '- ✅ Assigned to @Copilot',
+              dryRun ? '- ℹ️ Would assign to @oaudrey' : '- ✅ Assigned to @oaudrey',
               dryRun ? '- ℹ️ Would apply routing labels' : '- ✅ Applied routing labels (openrouter, auto-fix, copilot, role:orchestrator)',
               dryRun ? '- ℹ️ Would remove needs-action label' : '- ✅ Removed needs-action label',
               dryRun ? '- ℹ️ Would post routing comment' : '- ✅ Posted routing comment',

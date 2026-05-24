@@ -415,6 +415,68 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
 });
 
+test('weekly-research.yml uses OpenRouter-first oAudrey assignment and emits self-heal contracts', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'weekly-research.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  if (!content.includes("assignees: ['oaudrey']")) {
+    throw new Error('weekly-research must assign @oaudrey');
+  }
+  if (content.includes("assignees: ['Copilot']")) {
+    throw new Error('weekly-research must not assign @Copilot');
+  }
+  if (!content.includes('scripts/self-heal-contract.js')) {
+    throw new Error('weekly-research fallback must emit a self-heal contract artifact');
+  }
+});
+
+test('agent-monitor.yml uses valid issue search command and exports unhealthy issue details', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'agent-monitor.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  if ((doc.permissions || {}).issues !== 'write') {
+    throw new Error('agent-monitor must request issues: write permission');
+  }
+
+  const healthOutputs = doc.jobs['check-agent-health'].outputs || {};
+  if (!healthOutputs.issues) {
+    throw new Error('check-agent-health must export unhealthy issue details');
+  }
+
+  const existingStep = doc.jobs['create-failure-wr'].steps.find((step) => step.name === 'Check for existing WR');
+  if (!existingStep || !(existingStep.run || '').includes('gh issue list')) {
+    throw new Error('agent-monitor must use gh issue list for existing WR lookup');
+  }
+  if ((existingStep.run || '').includes('gh rep search issues')) {
+    throw new Error('agent-monitor still contains invalid "gh rep search issues" command');
+  }
+});
+
+test('workflow-monitor.yml listens to workflow_run events and verifies rerun startup', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'workflow-monitor.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true;
+  const workflowRunTypes = on.workflow_run?.types || [];
+
+  if (!on.workflow_run) {
+    throw new Error('workflow-monitor must listen on workflow_run events');
+  }
+  for (const expected of ['requested', 'in_progress', 'completed']) {
+    if (!workflowRunTypes.includes(expected)) {
+      throw new Error(`workflow-monitor missing workflow_run type: ${expected}`);
+    }
+  }
+
+  const monitorStep = doc.jobs.monitor.steps.find((step) => step.name === 'Monitor workflow');
+  const script = monitorStep?.with?.script || '';
+  if (!script.includes('verifyNewRunStarted')) {
+    throw new Error('workflow-monitor must verify rerun startup with backoff');
+  }
+  if (!script.includes('scripts/self-heal-contract.js')) {
+    throw new Error('workflow-monitor must emit self-heal contract when verification fails');
+  }
+});
+
 test('morty-post-mortems.yml stays automated with required write scopes', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'morty-post-mortems.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

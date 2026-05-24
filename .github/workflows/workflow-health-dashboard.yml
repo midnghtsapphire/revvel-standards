@@ -6,6 +6,7 @@ on:
 permissions:
   actions: read
   contents: read
+  issues: read
 jobs:
   dashboard:
     name: Generate workflow health report
@@ -50,10 +51,91 @@ jobs:
               rows.push(`| ${icon} | \`${wf.name}\` | ${status} | ${date} |`);
             }
 
+            const now = Date.now();
+            const sevenDaysAgo = new Date(now - (7 * 24 * 60 * 60 * 1000)).toISOString();
+            const { data: recentRepoRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+              created: `>=${sevenDaysAgo}`,
+            });
+            const recentRuns = recentRepoRuns.workflow_runs || [];
+            const failures = recentRuns.filter((r) => r.conclusion === 'failure');
+
+            const runsByWorkflow = new Map();
+            for (const run of recentRuns) {
+              const key = `${run.workflow_id}`;
+              if (!runsByWorkflow.has(key)) runsByWorkflow.set(key, []);
+              runsByWorkflow.get(key).push(run);
+            }
+            for (const list of runsByWorkflow.values()) {
+              list.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+            }
+
+            let recoveredFailures = 0;
+            const mttrSamples = [];
+            for (const [workflowId, list] of runsByWorkflow.entries()) {
+              for (let i = 0; i < list.length; i += 1) {
+                const run = list[i];
+                if (run.conclusion !== 'failure') continue;
+                const failTime = new Date(run.updated_at || run.created_at || 0).getTime();
+                for (let j = i + 1; j < list.length; j += 1) {
+                  const candidate = list[j];
+                  if (candidate.conclusion !== 'success') continue;
+                  const successTime = new Date(candidate.updated_at || candidate.created_at || 0).getTime();
+                  if (successTime <= failTime) continue;
+                  recoveredFailures += 1;
+                  mttrSamples.push((successTime - failTime) / 60000);
+                  break;
+                }
+              }
+            }
+
+            const retrySuccessRate = failures.length === 0
+              ? 100
+              : Number(((recoveredFailures / failures.length) * 100).toFixed(1));
+            const mttrMinutes = mttrSamples.length === 0
+              ? 0
+              : Number((mttrSamples.reduce((sum, value) => sum + value, 0) / mttrSamples.length).toFixed(1));
+
+            const failureCounts = {};
+            for (const run of failures) {
+              const key = run.name || `workflow-${run.workflow_id}`;
+              failureCounts[key] = (failureCounts[key] || 0) + 1;
+            }
+            const repeatedFailureSignatures = Object.entries(failureCounts)
+              .filter(([, count]) => count >= 2)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5);
+
+            const { data: stuckIssuesSearch } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open (label:"workflow-stuck" OR label:"wr-stuck" OR label:"lifecycle:stuck")`,
+              per_page: 100,
+            });
+            const maxStuckAgeHours = (stuckIssuesSearch.items || []).reduce((max, issue) => {
+              const ageHours = (now - new Date(issue.created_at).getTime()) / (60 * 60 * 1000);
+              return Math.max(max, ageHours);
+            }, 0);
+
             const header = [
               '## Workflow Health Dashboard',
               '',
               `_Generated: ${new Date().toISOString().split('T')[0]}_`,
+              '',
+              '## Self-Heal SLOs (Last 7 Days)',
+              '',
+              `- **MTTR:** ${mttrMinutes} minutes`,
+              `- **Retry success rate:** ${retrySuccessRate}%`,
+              `- **Repeated failure signatures:** ${repeatedFailureSignatures.length}`,
+              `- **Oldest stuck-item age:** ${Number(maxStuckAgeHours.toFixed(1))} hours`,
+              '',
+              repeatedFailureSignatures.length > 0
+                ? [
+                    '### Top repeated failures',
+                    ...repeatedFailureSignatures.map(([name, count]) => `- ${name}: ${count} failures`),
+                    '',
+                  ].join('\n')
+                : '### Top repeated failures\n- none in the last 7 days\n',
               '',
               '| | Workflow | Last Status | Last Run |',
               '|---|---|---|---|',

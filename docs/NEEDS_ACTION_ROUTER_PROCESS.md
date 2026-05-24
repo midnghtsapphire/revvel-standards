@@ -21,7 +21,7 @@ When an item is tagged with `needs-action`, it signals that:
 - The item should be escalated to automated agents
 
 The Needs Action Router immediately:
-1. Assigns the item to `@Copilot` (representing the OpenRouter orchestrator)
+1. Assigns the item to `@oaudrey` (GitHub-visible OpenRouter orchestrator account)
 2. Applies routing labels for automated processing
 3. Posts an informative comment explaining the routing
 4. Removes the `needs-action` label (routing complete)
@@ -45,8 +45,8 @@ The workflow triggers when:
 - Checks if item already has `openrouter` label (skip if yes)
 
 **Step 2: Assignment**
-- Assigns the item to `@Copilot` (if not already assigned)
-- Note: `@Copilot` is a GitHub user account representing the OpenRouter orchestrator
+- Assigns the item to `@oaudrey` (if not already assigned)
+- Note: `@oaudrey` is the GitHub-visible account for the OpenRouter orchestrator
 
 **Step 3: Label Management**
 - Applies routing labels:
@@ -103,7 +103,7 @@ gh issue edit 123 --add-label "needs-action"
 
 **Result:**
 - Workflow triggers automatically
-- Issue is assigned to `@Copilot`
+- Issue is assigned to `@oaudrey`
 - Routing labels applied
 - Comment posted explaining next steps
 - `needs-action` label removed
@@ -146,7 +146,7 @@ gh workflow run needs-action-router.yml -f issue_number=123
 - **Relationship:** Complementary workflows
 - **OpenRouter Assignee:** Runs hourly cron sweep for *all* unassigned items
 - **Needs Action Router:** Immediate response to `needs-action` label
-- **Overlap:** Both assign to `@Copilot` and apply routing labels
+- **Overlap:** Both assign to `@oaudrey` and apply routing labels
 - **Conflict Prevention:** Both check for existing assignment/labels before acting
 
 ### Stuck Label Automation
@@ -226,8 +226,8 @@ gh run view <run-id> --log
 - **Check:** Permissions configured correctly
 
 **Issue:** Workflow triggered but assignment failed
-- **Cause:** `@Copilot` user doesn't exist or lacks permissions
-- **Solution:** Verify `@Copilot` account exists and is a repo collaborator
+- **Cause:** `@oaudrey` doesn't exist or lacks repository access
+- **Solution:** Verify `@oaudrey` exists and is a repo collaborator
 
 **Issue:** Routing labels not applied
 - **Cause:** Labels don't exist in the repository
@@ -320,7 +320,7 @@ This will:
    ```
 
 3. **Verify routing:**
-   - Check issue is assigned to `@Copilot`
+   - Check issue is assigned to `@oaudrey`
    - Verify routing labels applied
    - Confirm `needs-action` label removed
    - Check routing comment posted
@@ -340,7 +340,7 @@ Add to CI pipeline:
     gh issue edit $ISSUE --add-label "needs-action"
     sleep 60  # Wait for workflow
     ASSIGNEES=$(gh issue view $ISSUE --json assignees -q '.assignees[].login')
-    [[ "$ASSIGNEES" == *"Copilot"* ]] || exit 1
+    [[ "$ASSIGNEES" == *"oaudrey"* ]] || exit 1
     gh issue close $ISSUE
 ```
 
