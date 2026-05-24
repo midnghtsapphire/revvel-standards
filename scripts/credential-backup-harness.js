@@ -131,6 +131,8 @@ function parseArgs(argv) {
 }
 
 function safeSpawn(cmd, args, opts = {}) {
+  const allowedCmds = ['gh', 'git', 'mkdir', 'tar', 'rm', 'doppler', 'op', 'node', 'sh', 'bash'];
+  if (!allowedCmds.includes(cmd) && !cmd.endsWith('node') && !cmd.endsWith('doppler')) throw new Error('Unsafe command: ' + cmd);
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
     const result = spawnSync(cmd, args, {

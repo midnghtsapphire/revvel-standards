@@ -164,6 +164,7 @@ MCP servers are invisible to end users, but still need:
 ```
 
 Must include:
+
 - What agents can do with this server (capability list)
 - Install command: `npx -y <package-name>`
 - Config snippets for top 5 agent platforms
@@ -206,3 +207,20 @@ Must include:
 - [ ] Landing page deployed
 - [ ] Stripe Product created (even if free)
 - [ ] `state.json` step = `deployed`, `certified = true`
+
+## MCP Image Prompts
+
+For marketing and landing pages for MCP servers, the following image generation prompts have proven effective:
+
+### Prompt 1: The MCP Server Node & Context Stream (Connected & Real-time)
+
+> A cinematic hero shot of an ultra-modern landing page for a Model Context Protocol (MCP) server integration engine. The interface features a central glassmorphic terminal hub floating over a deep charcoal and navy background. Radiant, glowing circuit lines and translucent data pipelines extend outwards from the terminal, connecting to smaller, semi-transparent frosted glass modules representing diverse data sources and enterprise tools. Crisp, glowing neon-blue and amber monospaced text streams display real-time context exchanges and tool-calling scripts. Soft atmospheric haze drifts between the floating UI layers, catching sharp, brilliant rim lighting on the refractive, glossy glass edges. Photorealistic, 8k resolution, elegant 3D realism, hyper-detailed cloud architecture visualization.
+
+### Prompt 2: The MCP Host Hub & File/Tool Execution (Sleek Developer View)
+
+> A close-up cinematic shot of a developer landing page for an advanced MCP host ecosystem. The central focus is a layered, thick-cut frosted glass workspace hovering over a dark, minimalist gradient background. The top glass layer displays a sharp, glowing code block executing a context handshake or tool-definition script. Overlapping it is a beautifully rendered, semi-transparent glass module illustrating active database and API connections, with sharp caustics and realistic light leaks rippling across the physical surfaces. Elegant, physical depth is created by soft shadows falling realistically between the floating UI cards. Hyper-realistic, 8k, ray-traced reflections, premium developer tool UX visualization, 3D glossy realism.
+
+💡 **Tips for Fine-Tuning the MCP Vibe:**
+
+- **To emphasize tool-calling or security:** Add phrases like *showing secure API authorization badges* or *displaying sandboxed tool execution logs* to make the functional purpose clearer.
+- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like *a central core with radial glass nodes stretching outward* to shift it away from a standard rectangular layout.
