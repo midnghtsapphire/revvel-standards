@@ -55,7 +55,10 @@ function ghAPI(endpoint, method = 'GET', body = null) {
   const { spawnSync } = require('child_process');
   const result = spawnSync('gh', args, { encoding: 'utf-8' });
   if (result.error) throw result.error;
-  if (result.status !== 0) throw new Error(result.stderr);
+  if (result.status !== 0) {
+    const output = (result.stderr && result.stderr.trim()) || (result.stdout && result.stdout.trim()) || 'No output from gh';
+    throw new Error(`gh ${args.join(' ')} failed with exit code ${result.status}: ${output}`);
+  }
   return result.stdout;
 }
 
