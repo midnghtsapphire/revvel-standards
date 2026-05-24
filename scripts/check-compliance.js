@@ -22,7 +22,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 // ─── Configuration ────────────────────────────────────────
 const TARGET_DIR = process.argv[2] || '.';
@@ -64,8 +64,15 @@ function dirHasFiles(dirPath, extension) {
 
 function codeContains(pattern) {
   try {
-    const result = execSync(
-      `grep -rl "${pattern}" "${repoRoot}/src" "${repoRoot}/server" "${repoRoot}/api" "${repoRoot}/app" 2>/dev/null || true`,
+    // Only search directories that actually exist to prevent grep errors
+    const dirsToSearch = [`${repoRoot}/src`, `${repoRoot}/server`, `${repoRoot}/api`, `${repoRoot}/app`]
+      .filter(dir => fs.existsSync(dir));
+
+    if (dirsToSearch.length === 0) return false;
+
+    const result = execFileSync(
+      'grep',
+      ['-rl', pattern, ...dirsToSearch],
       { encoding: 'utf8', timeout: 5000 }
     );
     return result.trim().length > 0;

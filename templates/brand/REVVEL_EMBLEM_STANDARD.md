@@ -23,7 +23,7 @@ The **Revvel Emblem** is a highly detailed, skeuomorphic-yet-digital shield. It 
 
 Every design element must trace back through this chain. Start at the top, derive each level before moving to the next.
 
-```
+```text
 Project Topic
     ↓
 User Metaphor (the "feeling" the user describes — e.g., "digital growl")
@@ -38,7 +38,7 @@ Color Conversion (apply project palette using the Revvel Emblem Color Conversion
 ### GrowlingEyes — Full Derivation Chain Example
 
 | Chain Level | Value |
-|---|---|
+| --- | --- |
 | **Topic** | Knowledge Discovery vs. Obscuration — finding hidden truths vs. those who hide them |
 | **User Metaphor** | "The more we find out, the more our eyes narrow into a digital growl" |
 | **Visual Translators** | Eye → iris texture; Focus narrows → dramatic central lighting; Growling → defensive fangs (adversarial detail); Finding out → golden crystal in pupil (data production); Technology → circuit board pattern; News/Access → megaphone, charts, OSINT, avatar icons; Access Denied → protective, intense overall feeling |
@@ -58,6 +58,7 @@ Build the emblem in these layers, bottom to top.
 **What it is:** The outer protective structure of the emblem. This is the first thing you see — the frame that says "this is a serious machine."
 
 **Texture requirements:**
+
 - Thick frosted glass dome, semi-transparent (you can see the layers beneath)
 - Soft cold blue and gold internal glow emanating from within the dome
 - Frame: Thick outlined metal shell — **burnished brass by default**; use project-specific material when derived (see Per-Project Icon Derivation Guide)
@@ -66,7 +67,7 @@ Build the emblem in these layers, bottom to top.
 This layer must include a defensive/adversarial detail derived from the project's core tension. The detail represents the "shield" aspect — what the system is protecting against or fighting.
 
 | Project Type | Derived Defensive Detail |
-|---|---|
+| --- | --- |
 | Surveillance / OSINT | Fangs, sharp angular protrusions |
 | Finance / Payments | Vault door segments, thick bolt locks |
 | Agriculture / Nature | Stylized roots or grain stalks as structural reinforcement |
@@ -80,6 +81,7 @@ This layer must include a defensive/adversarial detail derived from the project'
 **What it is:** The heart of the emblem. The organic element that grounds the entire design in something human and real.
 
 **Texture requirements:**
+
 - High-resolution organic texture derived from topic (examples: human iris, water droplet, DNA strand cross-section, soil cross-section, vinyl record groove)
 - **REQUIRED:** Crystal-clear deep-domed glass lens covering the core — the lens must sit visibly above the organic layer
 - **CRITICAL:** The lens surface MUST have a unique ripple/wave pattern — specular highlights that appear to actively ripple and distort as if the lens is alive
@@ -93,14 +95,15 @@ This layer must include a defensive/adversarial detail derived from the project'
 **What it is:** Visible through the rippling glass lens — the computational process happening inside the system.
 
 **Requirements:**
+
 - Detailed circuit board pattern integrated into the central core, visible through the glass lens of Layer B
 - **CRITICAL:** At the very center of the circuit board, a single complex **golden digital cluster** or **crystalline data solution** — the output of the system represented as a physical object
 - The crystal/cluster must appear to be generating light (it is the source of the internal glow)
 
-**The golden crystal is the visual answer to the question: "What does this system produce?"**
+### The golden crystal is the visual answer to the question: "What does this system produce?"
 
 | Project | Central Crystal Represents |
-|---|---|
+| --- | --- |
 | GrowlingEyes | Uncovered truth — gold crystal of knowledge |
 | Finance app | Accurate financial insight — geometric gold coin-crystal |
 | Music app | Perfect sound wave — crystalline audio frequency visualization |
@@ -113,6 +116,7 @@ This layer must include a defensive/adversarial detail derived from the project'
 **What it is:** The outer layer of the glass dome, etched with circuit line patterns and functional icons that represent what the system does.
 
 **Requirements:**
+
 - Frosted glass circuit line patterns, etched INTO the outer shell (not floating above it)
 - Softly lit from within (the internal glow from Layer C passes through these etchings)
 - **4–6 topic-derived functional icons** positioned at key circuit nodes (see Section 6 for derivation guide)
@@ -127,6 +131,7 @@ This layer must include a defensive/adversarial detail derived from the project'
 **What it is:** The layer that makes the emblem feel like a real machine connected to the world.
 
 **Requirements:**
+
 - **Multiple text blocks:** Main header banner with project name (repeated or wrapped around the emblem) + definitive solution statement at the base
 - **Physical cables** with multi-material connections: red/silver/gold/fiber optic — at least 3 cable types
 - **Large complex data-structure at the base:** A wire grid, circuit traces, or data visualization that grounds the floating machine into "infrastructure"
@@ -141,6 +146,7 @@ Steps to apply any 4-color palette to the Revvel Emblem system:
 ### Step 1: Define User Colors
 
 The project defines exactly 4 brand colors:
+
 - **Primary** — the dominant brand color (often a dark or rich tone)
 - **Secondary** — the most intense/contrasting color
 - **Accent** — the highlight/glow color
@@ -149,7 +155,7 @@ The project defines exactly 4 brand colors:
 ### Step 2: Assign to Revvel Emblem Roles
 
 | Revvel Emblem Role | Color Assignment | Material Effect |
-|---|---|---|
+| --- | --- | --- |
 | Primary Casing (frosted dome + outline) | User **Primary** | Apply frosted glass effect — slightly translucent, not solid |
 | Adversarial/Defensive Accent (sharp details, intensity points) | User **Secondary** (most intense) | Hard edge, high contrast, almost aggressive |
 | Organic/Textural Core | User **Primary + Accent** gradient | Smooth gradient, natural feel |
@@ -170,7 +176,7 @@ The depth gradient (dark at the edges, bright at the center) must always be main
 ### GrowlingEyes Example
 
 | Revvel Emblem Role | GrowlingEyes Color |
-|---|---|
+| --- | --- |
 | Primary Casing | Teal — `#0D9488` (frosted teal dome) |
 | Adversarial Accent | Red — `#DC2626` (fang outlines, intensity points) |
 | Organic Core | Teal + Red gradient (iris base transitions from teal to red near edge) |
@@ -181,7 +187,7 @@ The depth gradient (dark at the edges, bright at the center) must always be main
 
 ## Section 5: The Golden Formula
 
-```
+```text
 Revvel Emblem = (Derivation × Metaphor Stack) + Integrated Logic
 ```
 
@@ -204,6 +210,32 @@ Every Revvel Emblem commission or generation must complete all items:
 
 ---
 
+### The Master Logo Generator Prompt: The Glassmorphic Node Canvas
+
+**Prompt:** A professional 1:1 square grid composition presenting multiple distinct logo designs, each for a different brand. The overall visual style is that of a premium, modern high-tech interface utilizing layered, semi-transparent frosted glass modules floating gracefully over a dark, moody charcoal gradient background with swirling atmospheric haze. Delicate light leaks and sharp caustics ripple across the physical surfaces, casting realistic shadows between the floating UI layers.
+
+**The Layout:**
+
+- The composition is a symmetrical grid, with each logo presented in its own dedicated glassmorphic circular or square panel.
+- Each logo uses a distinct but cohesive color palette optimized for a premium digital brand.
+- Each panel includes the brand name in a clean, modern font directly below the stylized icon.
+
+**The Designs:**
+
+- Logo 1: [Symbol-Based Global Eye for 'GEN-Z OSINT'. Geometric, orbital rings with integrated beaming eye.]
+- Logo 2: [Text-Based Lettermark for 'WARCHECKER'. Monospaced font with integrated arrow and radar sweep.]
+- Logo 3: [Combination Mark for 'MILITARY SHIP TRACKING'. Profile of a modern destroyer integrated into a hexagon network.]
+
+Hyper-realistic, 8k resolution, ray-traced reflections, pristine vector aesthetics, professional brand showcase layout.
+
+💡 **Why this is a powerful, generic blueprint for your agents:**
+
+- **Adaptable for Any Brand:** You are never locked into "ship tracking." Your agents just replace the bracketed [Design] text with a new concept. If you want a logo for an automation app, change it to [Symbol-Based Gear and Rocket for 'AUTO-PILOT'. Dynamic icon showing an autonomous engine.].
+- **Maintains the Core "Vibe":** The specific descriptive words for the atmosphere (glassmorphic, frosted glass, atmospheric haze, caustics, and dark charcoal) ensure that every logo your agent generates will possess the exact same premium, professional, and on-trend aesthetic.
+- **Guarantees Multi-Shot Consistency:** The prompt forces the generation to produce multiple separate logos simultaneously. This is critical for showing a range of options quickly on a landing page or ad campaign.
+
+This prompt has been refined to capture the detailed elements that make the provided reference so effective: the use of distinct logo types, cohesive technical colors, and the atmospheric depth.
+
 ## Section 6: Per-Project Icon Derivation Guide
 
 The 4–6 functional icons in Layer D must be derived from the project's core functions.
@@ -217,7 +249,7 @@ The 4–6 functional icons in Layer D must be derived from the project's core fu
 ### Examples by Project Type
 
 | Project Type | Core Functions | Derived Icons |
-|---|---|---|
+| --- | --- | --- |
 | OSINT / Surveillance | Monitor public data, analyze patterns, identify actors, deny access, alert | megaphone, bar chart, avatar+, microchip, lock, globe |
 | Finance / Payments | Process payments, track balances, transfer funds, secure accounts, report | dollar sign, chart-up, shield, wallet, transfer arrows, report |
 | Health / Medical | Track vitals, analyze data, prescribe/recommend, monitor progress | heartbeat, microscope, pill/capsule, DNA strand, clipboard |
@@ -228,7 +260,7 @@ The 4–6 functional icons in Layer D must be derived from the project's core fu
 ### GrowlingEyes Icon Set (reference)
 
 | Icon | Function It Represents |
-|---|---|
+| --- | --- |
 | Megaphone | Public data broadcast — monitoring public communications |
 | Bar chart | Pattern analysis — visualizing data trends |
 | Avatar+ | Actor identification — identifying people in data |

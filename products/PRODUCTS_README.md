@@ -80,3 +80,7 @@ npm test
 ## Deployment
 
 See [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+
+## UGC Review Generator
+**Location:** `products/ugc-review-generator/`
+**Description:** A viral TikTok-style Amazon Product Review video prompt generator for avatar platforms like HeyGen.
