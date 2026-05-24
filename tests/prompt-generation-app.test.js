@@ -82,3 +82,17 @@ run('adds Spotify visual-link prompts for music embedding requests', () => {
   assert.ok(joined.includes('open.spotify.com/track'));
   assert.ok(p.implementationPrompts.length > 3);
 });
+
+run('does not add music-link prompts for non-music social requests', () => {
+  const baseline = generatePromptPacket({
+    idea: 'Build a B2B invoice reconciliation dashboard',
+    audience: 'finance teams'
+  });
+  const nonMusicPacket = generatePromptPacket({
+    idea: 'Build a TikTok analytics dashboard for agencies',
+    audience: 'marketers'
+  });
+  const joined = nonMusicPacket.implementationPrompts.join('\n');
+  assert.equal(nonMusicPacket.implementationPrompts.length, baseline.implementationPrompts.length);
+  assert.ok(!joined.includes('cannot contain clickable hyperlinks'));
+});

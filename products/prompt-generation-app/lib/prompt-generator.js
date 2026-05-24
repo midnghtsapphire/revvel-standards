@@ -72,29 +72,38 @@ function legalBoundaries(idea) {
   ];
 }
 
+const KEYWORD_SIGNALS = {
+  music: ['spotify', 'music platform', 'track', 'song', 'album'],
+  embedding: ['embed', 'embedding', 'link in bio', 'link', 'uri', 'scan'],
+};
+
+const MUSIC_VISUAL_LINK_PROMPT_TEMPLATE =
+  'Create a vertical 9:16 visual-link workflow for "{idea}" that acknowledges videos cannot contain clickable hyperlinks. Generate a glassmorphic CTA anchor area labeled "Scan to Listen" or "Link in Bio", and reserve a safe zone for native TikTok/Instagram link stickers in post-edit.';
+const MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE =
+  'Add a music-platform conversion layer for "{idea}": render album art plus a readable open.spotify.com/track (or equivalent platform track URL) text anchor, include a Spotify scan-code placement spec, and provide export specs for image + video posts so users can screenshot/scan or tap native platform stickers.';
+
+function shouldAddMusicLinkPrompts(idea) {
+  const lower = idea.toLowerCase();
+  const hasMusicSignal = KEYWORD_SIGNALS.music.some((keyword) => lower.includes(keyword));
+  const hasEmbeddingSignal = KEYWORD_SIGNALS.embedding.some((keyword) => lower.includes(keyword));
+  return hasMusicSignal && hasEmbeddingSignal;
+}
+
 function implementationPrompts(idea, audience) {
-  const prompts = [
+  const corePrompts = [
     `You are a senior full-stack engineer. Build an MVP for: "${idea}". Audience: ${audience}. Stack: Next.js static export, TypeScript, Tailwind. Ship in <2 days. Include tests.`,
     `Write the data model + API surface for "${idea}" using only zero-cost infra (Vercel free tier, SQLite or KV).`,
     `Produce the landing page copy for "${idea}" targeting ${audience}: headline, sub, 3 bullets, CTA, FAQ x5.`,
   ];
 
-  const lower = idea.toLowerCase();
-  const isMusicLinkEmbeddingRequest =
-    lower.includes("spotify") ||
-    lower.includes("music platform") ||
-    lower.includes("tiktok") ||
-    lower.includes("instagram") ||
-    lower.includes("link in bio");
-
-  if (isMusicLinkEmbeddingRequest) {
-    prompts.push(
-      `Create a vertical 9:16 visual-link workflow for "${idea}" that acknowledges videos cannot contain clickable hyperlinks. Generate a glassmorphic CTA anchor area labeled "Scan to Listen" or "Link in Bio", and reserve a safe zone for native TikTok/Instagram link stickers in post-edit.`,
-      `Add a Spotify-ready conversion layer for "${idea}": render album art plus a readable open.spotify.com/track text anchor, include a Spotify scan-code placement spec, and provide export specs for image + video posts so users can screenshot/scan or tap native platform stickers.`
+  if (shouldAddMusicLinkPrompts(idea)) {
+    corePrompts.push(
+      MUSIC_VISUAL_LINK_PROMPT_TEMPLATE.replace('{idea}', idea),
+      MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE.replace('{idea}', idea)
     );
   }
 
-  return prompts;
+  return corePrompts;
 }
 
 function reviewerPrompts(idea) {
