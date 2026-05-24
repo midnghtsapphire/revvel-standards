@@ -61,11 +61,18 @@ jobs:
 
             // ─ helpers ────────────────────────────────────────────
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                return (
+                  await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  })
+                ).data.map(l => l.name);
+              } catch (e) {
+                core.warning(`listLabelsOnIssue failed: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -170,11 +177,18 @@ jobs:
             core.info(`PR #${num} review state: ${state}`);
 
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                return (
+                  await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  })
+                ).data.map(l => l.name);
+              } catch (e) {
+                core.warning(`listLabelsOnIssue failed: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
