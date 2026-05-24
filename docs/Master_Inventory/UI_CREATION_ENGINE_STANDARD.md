@@ -43,9 +43,9 @@ Invoke the UI Creation Engine whenever:
 - Any product that represents the Revvel/MIDNGHTSAPPHIRE brand
 - Any API, MCP, CLI, or skill (a website is required to see how they work or if they are working)
 
-You MAY skip it for:
+You MAY skip the full UI Creation Engine workflow for:
 
-- Internal developer tools (non-customer-facing)
+- Internal developer tools (non-customer-facing), but they are **not exempt** from the universal website requirement and must still ship at least a minimal website or demo UI
 - Proof-of-concept prototypes (but run it before production)
 - Documentation sites (use simpler templates)
 
