@@ -1,0 +1,23 @@
+name: Verify Security Fix
+
+on:
+  pull_request:
+    paths:
+      - "penny-sovereign-yield-scout/**"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          pip install -r penny-sovereign-yield-scout/requirements.txt
+          pip install -r penny-sovereign-yield-scout/requirements-dev.txt
+      - name: Run tests
+        run: |
+          python3 -m pytest penny-sovereign-yield-scout/tests/test_auto_compounder_api.py
