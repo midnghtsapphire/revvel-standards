@@ -1,7 +1,5 @@
 # Automation Doctor Report
 
-Generated: 2026-05-23T21:35:19.955Z
-
 ## Workflow Validation
 
 - Valid workflows: 131
