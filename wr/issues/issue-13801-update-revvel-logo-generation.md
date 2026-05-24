@@ -4,7 +4,7 @@
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
 **Research Date:** 2026-05-23
 **Researcher:** Jules (Google) + OpenRouter
-**WR Status:** ✅ Complete
+**WR Status:** ⚠️ Incomplete (research checklist pending)
 
 ---
 
@@ -14,14 +14,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **Deep market research** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **BOM (Bill of Materials)** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Community chatter** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Competitor analysis** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Domain name strategy** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Marketing best practices** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Revenue / monetization model** — Not included in this WR revision; pending dedicated research pass.
+- [ ] **Compliance & legal surface** — Not included in this WR revision; pending dedicated research pass.
 - [x] **A/B test hypothesis** — N/A
 - [x] **Affiliate / reseller program** — N/A
 
@@ -161,6 +161,6 @@ We should map this prompt into the existing EXRUP pipeline by proposing a "Brand
 
 ---
 
-**Research Status:** ✅ Complete
+**Research Status:** ⚠️ Incomplete (default research checklist items pending)
 **Implementation Priority:** P1
 **Approval Required:** @midnghtsapphire
