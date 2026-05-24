@@ -1,50 +1,23 @@
 name: Needs Action Router — Auto-Assign to OpenRouter
-
-# Automatically routes issues/PRs with the 'needs-action' label to OpenRouter.
-# When an item is tagged as needing action, this workflow:
-#   1. Assigns it to @Copilot (OpenRouter orchestrator)
-#   2. Applies routing labels (openrouter, auto-fix, copilot, role:orchestrator)
-#   3. Posts a routing comment explaining the assignment
-#   4. Removes the needs-action label after routing completes
-#
-# This ensures items requiring action are immediately picked up by the
-# autonomous agent system without manual intervention.
-#
-# Trigger: When 'needs-action' label is applied to an issue or PR
-#
-# Reference: docs/OPENROUTER_ASSIGNEE_PROCESS.md
-
 on:
-  # OpenHands-RESTRUCTURE 2026-05-04: Issue/PR triggers disabled — they raced with
-  # openrouter-coder, jules-invoke, and wr-pr-creation on every newly-labeled
-  # issue. The new pipeline routes through openrouter-coder. Re-enable only if
-  # you want this workflow to act on a SEPARATE label that no other orchestrator
-  # listens to.
-  # issues:
-  #   types: [labeled]
-  # pull_request_target:
-  #   types: [labeled]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue/PR number to route"
+        description: Issue/PR number to route
         required: true
         type: number
       dry_run:
-        description: "Dry run (log what would be changed without making changes)"
+        description: Dry run (log what would be changed without making changes)
         required: false
         type: boolean
         default: false
-
 permissions:
   issues: write
   pull-requests: write
   contents: read
-
 concurrency:
   group: needs-action-router-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.issue_number }}
   cancel-in-progress: false
-
 jobs:
   route-needs-action:
     name: Route needs-action item to OpenRouter
@@ -52,7 +25,7 @@ jobs:
     steps:
       - name: Resolve issue/PR number and check label
         id: resolve
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             // Get issue/PR number from event or workflow_dispatch input
@@ -64,47 +37,37 @@ jobs:
                             'issue';  // Default to issue for workflow_dispatch
             const displayKind = itemKind === 'pull_request' ? 'pull request' : 'issue';
             const dryRun = context.payload.inputs?.dry_run === 'true' || context.payload.inputs?.dry_run === true;
-            
+
             if (!issueNumber) {
               core.notice('No issue/PR number found; skipping.');
               core.setOutput('skip', 'true');
               return;
             }
-            
+
             core.info(`Processing ${displayKind} #${issueNumber} (dry_run: ${dryRun})`);
-            
+
             // Get the item details
-            const { data: item } = itemKind === 'issue' 
-              ? await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                })
-              : await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: issueNumber,
-                });
-            
+            let item = { labels: [] }; try { const { data } = itemKind === 'issue' ? await github.rest.issues.get({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber }) : await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number: issueNumber }); item = data; } catch (e) { console.log(`⚠️ error getting item: ${e.message}`); core.setOutput('skip', 'true'); return; }
+
             const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
-            
+
             // Check if needs-action label is present
             if (!labels.includes('needs-action')) {
               core.notice(`${displayKind} #${issueNumber} does not have 'needs-action' label; skipping.`);
               core.setOutput('skip', 'true');
               return;
             }
-            
+
             // Check if already assigned
             const assignees = item.assignees || [];
             if (assignees.length > 0) {
               core.notice(`${displayKind} #${issueNumber} already has assignee(s): ${assignees.map(a => a.login).join(', ')}`);
               core.notice('Will still apply routing labels and remove needs-action label');
             }
-            
+
             // Check if already has openrouter label
             const hasOpenRouter = labels.includes('openrouter');
-            
+
             core.setOutput('skip', 'false');
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('item_kind', itemKind);
@@ -112,15 +75,14 @@ jobs:
             core.setOutput('dry_run', String(dryRun));
             core.setOutput('has_openrouter', String(hasOpenRouter));
             core.setOutput('has_assignee', String(assignees.length > 0));
-
       - name: Assign to Copilot (OpenRouter orchestrator)
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.has_assignee != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const itemKind = '${{ steps.resolve.outputs.item_kind }}';
-            
+
             try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -133,27 +95,26 @@ jobs:
               core.warning(`Could not assign to @Copilot: ${error.message}`);
               core.warning('This is non-fatal; routing labels will still be applied');
             }
-
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const hasOpenRouter = '${{ steps.resolve.outputs.has_openrouter }}' === 'true';
-            
+
             const routingLabels = [
               'openrouter',
               'auto-fix',
               'copilot',
               'role:orchestrator'
             ];
-            
+
             // Only add labels that aren't already present
             const labelsToAdd = hasOpenRouter 
               ? routingLabels.filter(l => l !== 'openrouter')
               : routingLabels;
-            
+
             if (labelsToAdd.length > 0) {
               try {
                 await github.rest.issues.addLabels({
@@ -170,14 +131,13 @@ jobs:
             } else {
               core.info('All routing labels already present');
             }
-
       - name: Remove needs-action label
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            
+
             try {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
@@ -190,15 +150,14 @@ jobs:
               // Label might have been removed already by another process
               core.notice(`Could not remove needs-action label: ${error.message}`);
             }
-
       - name: Post routing comment
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const displayKind = '${{ steps.resolve.outputs.display_kind }}';
-            
+
             // Check if we've already posted a routing comment
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -206,17 +165,17 @@ jobs:
               issue_number: issueNumber,
               per_page: 100,
             });
-            
+
             const hasRoutingComment = comments.data.some(c => 
               c.user.type === 'Bot' && 
               c.body.includes('🤖 Needs Action → Routed to OpenRouter')
             );
-            
+
             if (hasRoutingComment) {
               core.info('Routing comment already exists; skipping duplicate');
               return;
             }
-            
+
             const comment = [
               '## 🤖 Needs Action → Routed to OpenRouter',
               '',
@@ -251,7 +210,7 @@ jobs:
               '',
               '*Automated by the Needs Action Router workflow. Remove the `openrouter` label to opt out of automated processing.*'
             ].join('\n');
-            
+
             try {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -263,15 +222,14 @@ jobs:
             } catch (error) {
               core.warning(`Could not post comment: ${error.message}`);
             }
-
       - name: Log dry run results
         if: steps.resolve.outputs.dry_run == 'true' && steps.resolve.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
             const displayKind = '${{ steps.resolve.outputs.display_kind }}';
-            
+
             core.notice('═══════════════════════════════════════════════════════');
             core.notice('DRY RUN — No changes were made');
             core.notice('═══════════════════════════════════════════════════════');
@@ -281,16 +239,15 @@ jobs:
             core.notice('  - Remove label: needs-action');
             core.notice('  - Post routing comment');
             core.notice('═══════════════════════════════════════════════════════');
-
       - name: Summary
         if: steps.resolve.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
             const displayKind = '${{ steps.resolve.outputs.display_kind }}';
             const dryRun = '${{ steps.resolve.outputs.dry_run }}' === 'true';
-            
+
             const summary = [
               '# Needs Action Router Results',
               '',
@@ -315,5 +272,8 @@ jobs:
               '',
               '*For more information, see [docs/OPENROUTER_ASSIGNEE_PROCESS.md](../blob/main/docs/OPENROUTER_ASSIGNEE_PROCESS.md)*'
             ].join('\n');
-            
+
             await core.summary.addRaw(summary).write();
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

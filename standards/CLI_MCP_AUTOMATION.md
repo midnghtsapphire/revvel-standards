@@ -6,6 +6,48 @@ Based on research of GitHub Marketplace and MCP ecosystem.
 
 ---
 
+## Marketplace-First Selection Policy
+
+When a workflow, extension, CLI, or MCP-adjacent tool is needed:
+
+1. **Check GitHub Marketplace first** for a maintained GitHub App or Action.
+2. Prefer listings that are:
+   - actively maintained
+   - installable without bespoke infra
+   - usable on a free tier or with a credible open-source path
+3. If no Marketplace option is a fit, prefer a **GitHub-hosted FOSS repository** or CLI with clear docs and recent maintenance.
+4. For **MCP tools**, prefer GitHub-hosted/open-source servers first because GitHub Marketplace coverage is still limited.
+5. Always record a **BOM** with:
+   - category
+   - recommended tool
+   - free/paid status
+   - open-source fallback
+   - why it won
+
+## Marketplace-First BOM
+
+| Category | Marketplace-first choice | Free/Paid | Open-source / GitHub fallback | Why this is the default |
+| -------- | ------------------------ | ---------- | ----------------------------- | ----------------------- |
+| Accessibility PR checks | AccessLint | Free | axe-core, Pa11y, Storybook a11y addon | Fast PR feedback through GitHub-native installation; FOSS fallbacks cover CI and local audits |
+| AI PR/code review | CodeRabbit or Bito AI | Paid/free tier | OpenCode, Cline, OpenRouter review workflows | Marketplace apps are quickest to install; OSS fallback remains available when budget or policy blocks SaaS |
+| Workflow / repo linting | Super Linter | Free | `actionlint`, `yamllint`, `act`, Danger | Marketplace listing is easy to adopt; FOSS CLIs are stronger for local enforcement and custom checks |
+| GitHub automation / dispatch | `peter-evans/*` Actions | Free | native GitHub Actions + `gh` CLI | Mature ecosystem standard with minimal setup friction |
+| MCP / agent automation | No single Marketplace winner yet | N/A | Cline, OpenCode, GitHub MCP servers, custom MCP servers | Marketplace coverage is immature; GitHub-hosted OSS is the safer default today |
+| Prompt / LLM evaluation | Promptfoo Action | Free / paid cloud optional | local `promptfoo`, OpenRouter workflows | GitHub Action is straightforward in CI; local CLI remains available with no vendor lock-in |
+
+### Decision Notes
+
+- **Accessibility claim threshold:**
+  - Do not claim full WCAG AAA conformance unless the shipped artifact has automated accessibility checks (e.g., axe-core or Pa11y).
+  - It must also have a documented manual WCAG 2.2 AAA review for the relevant success criteria.
+  - That manual review should be performed by a qualified accessibility reviewer, such as an IAAP-certified specialist, a professional accessibility auditor with industry-recognized certification, or someone with documented WCAG audit experience verified through third-party audits.
+  - Record that evidence in the repo README, WR, or a dedicated accessibility statement/checklist so auditors can verify the claim later.
+  - If that evidence does not exist, use wording like `A/AA-oriented`, `enhanced contrast`, or `high-contrast mode`.
+- **Marketplace pricing:** Verify pricing at adoption time because Marketplace plans and free tiers can change. Record the selected tier when adopting the tool and review pricing again during regular maintenance or before renewal.
+- **MCP policy:** Because GitHub Marketplace has limited MCP coverage, a GitHub-hosted OSS repo is an acceptable first-choice equivalent for MCP servers.
+
+---
+
 ## GitHub Marketplace CLI Tools
 
 ### Must-Have GitHub Actions
@@ -232,4 +274,3 @@ Scenario: GitHub PR → Deploy
 | AI Agents | High | OpenHands, Claude |
 | Scheduling | High | GitHub Actions cron |
 | Code Review | Medium | AI + MCP |
-

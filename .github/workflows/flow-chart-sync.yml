@@ -1,24 +1,4 @@
-# Flow Chart Sync Workflow
-#
-# Automatically keeps "docs/Master Revvel-Standards Flow Charts/" up-to-date.
-#
-# Triggers:
-#   - Every push to main (when .md or .yml files change)
-#   - Manual dispatch (for immediate sync)
-#
-# What it does:
-#   1. Runs scripts/sync-flow-charts.js
-#      - Scans the whole repo for .md files
-#      - Updates metadata blocks (date, doc count) in all flow chart files
-#      - Patches any broken file references (if docs were moved or renamed)
-#   2. Commits and pushes any changes back to the branch
-#
-# Required secrets: none (uses built-in GITHUB_TOKEN)
-#
-# See: docs/Master Revvel-Standards Flow Charts/README.md
-
 name: Flow Chart Sync
-
 on:
   push:
     branches:
@@ -26,48 +6,41 @@ on:
     paths:
       - "**.md"
       - "**.yml"
-      - "docs/**"
-      - "scripts/**"
+      - docs/**
+      - scripts/**
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Dry run (print changes without writing files)"
+        description: Dry run (print changes without writing files)
         required: false
         default: "false"
         type: choice
         options:
           - "false"
           - "true"
-
 concurrency:
   group: flow-chart-sync-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   sync:
     name: Sync Flow Charts
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
-          # Fetch full history so we can detect renames
           fetch-depth: 0
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-
       - name: Run flow chart sync script
         env:
           REPO_ROOT: ${{ github.workspace }}
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
         run: node scripts/sync-flow-charts.js
-
       - name: Commit and push updated flow charts
         if: ${{ inputs.dry_run != 'true' }}
         env:
@@ -120,3 +93,6 @@ jobs:
 
           echo "❌ Failed to push flow-chart auto-sync after $attempts attempts."
           exit 1
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

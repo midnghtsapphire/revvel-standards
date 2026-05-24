@@ -1,115 +1,45 @@
-# AGENT_STACK_SETUP
+# AI Agent Stack Setup
 
-> AI agent stack setup guide for shipping WR (Working Release) artifacts.
+## What this does
+When you open a WR issue:
+1. **auto-route.yml** reads the body, applies labels (`fix-me`, `swe-fix`, routing profile, model tags), assigns bot.
+2. **openhands-resolver.yml** triggers on `fix-me` → calls OpenRouter (claude-3.7-sonnet → deepseek-v3.2 fallback) → attempts a PR.
+3. **swe-agent.yml** triggers on `swe-fix` → runs SWE-agent with OpenRouter backend → attempts a PR.
+4. **augment-check.yml** checks every new PR for Augment Code review — prompts you to install the App if missing.
+5. If any agent fails, it comments on the issue with a direct workflow log link.
 
-## Purpose
+## Setup checklist
 
-Agent stacks (Claude, OpenHands, Cursor, etc.) handle code generation well but leave the **delivery layer** unaddressed. This document defines the standard setup for wiring an agent stack into a delivery-capable pipeline.
+### 1. Bot account
+- [ ] Create GitHub account: `yourorg-openrouter-bot`
+- [ ] Enable 2FA on it
+- [ ] Add to this repo with **Write** access
+- [ ] Generate a PAT with `repo` + `workflow` scope on that account
 
-## Who/When/Why
+### 2. Repo secrets (Settings → Secrets → Actions)
+| Secret | Value |
+|---|---|
+| `BOT_GITHUB_TOKEN` | PAT from bot account |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key |
 
-- **Who:** Claude (openhands)
-- **When:** 2026-05-06
-- **Why:** Complete the delivery layer for AI agent stacks
+### 3. Repo variables (Settings → Variables → Actions)
+| Variable | Value |
+|---|---|
+| `BOT_USERNAME` | e.g. `yourorg-openrouter-bot` |
 
----
+### 4. Repo Actions permissions (Settings → Actions → General)
+- [x] Read and write permissions
+- [x] Allow GitHub Actions to create and approve pull requests
 
-## 1. Core Components
+### 5. Augment Code GitHub App (manual install)
+👉 https://app.augmentcode.com/settings/code-review
+- Click Install GitHub App
+- Select this repo
+- Done — Augment Code will auto-review every PR
 
-Every agent stack setup MUST include:
+## Usage
+Open an issue using the WR template. Everything else is automatic.
 
-| Component | Purpose |
-|-----------|---------|
-| **Agent runtime** | Code generation (Claude Code, OpenHands, Cursor, etc.) |
-| **Repo host** | Source of truth (GitHub, GitLab) |
-| **CI runner** | Automated build/test (GitHub Actions, etc.) |
-| **Artifact store** | Hosts WR outputs (Releases, S3, registry) |
-| **Delivery matrix** | See `DELIVERY_MATRIX.md` |
-
----
-
-## 2. Trigger Labels
-
-Agents respond to issue/PR labels to route work:
-
-| Label | Meaning | Handler |
-|-------|---------|---------|
-| `agent:build` | Generate code | Agent runtime |
-| `agent:ship` | Produce WR artifact | Delivery matrix |
-| `agent:test` | Run verification | CI runner |
-| `agent:docs` | Update documentation | Agent runtime |
-| `agent:review` | Human review needed | Handoff |
-| `agent:blocked` | Failure, needs human | Handoff protocol |
-
----
-
-## 3. Toolchain Recommendations
-
-### Minimum viable stack
-
-- **Agent:** Claude Code or OpenHands
-- **Repo:** GitHub
-- **CI:** GitHub Actions
-- **Artifacts:** GitHub Releases
-
-### Recommended stack
-
-- Add: container registry (GHCR), PDF renderer (Pandoc/Typst), MCP server host, video pipeline (ffmpeg + CI).
-
----
-
-## 4. Workflow Patterns
-
-### Pattern A: Issue → PR → WR
-
-1. Human opens issue with `agent:build` label.
-2. Agent creates branch, commits, opens PR.
-3. CI runs tests.
-4. On merge, `agent:ship` triggers delivery matrix.
-5. Artifact published to appropriate channel.
-
-### Pattern B: Scheduled delivery
-
-1. Cron triggers agent with a manifest of pending WRs.
-2. Agent batches and ships via delivery matrix.
-
-### Pattern C: Human-in-the-loop
-
-1. Agent produces draft with `agent:review` label.
-2. Human approves, agent promotes to WR.
-
----
-
-## 5. Failure Handoff Protocol
-
-When an agent cannot complete a task:
-
-1. Apply `agent:blocked` label.
-2. Post a comment containing:
-   - What was attempted
-   - Exact error/blocker
-   - Proposed next step
-   - Files touched
-3. Do NOT force-push or discard work.
-4. Assign to a human reviewer.
-
----
-
-## 6. Minimum Repo Layout
-
-```
-/standards/
-  AGENT_STACK_SETUP.md
-  DELIVERY_MATRIX.md
-/.github/
-  workflows/
-    ship.yml
-/agents/
-  manifest.yml
-```
-
----
-
-## See Also
-
-- `standards/DELIVERY_MATRIX.md`
+## Failure path
+Agent fails → comments on issue with log link → you jump in.
+No silent failures.

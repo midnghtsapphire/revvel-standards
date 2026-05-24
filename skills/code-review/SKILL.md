@@ -9,27 +9,29 @@ Enforce Revvel code review standards including security, accessibility, test cov
 1. **Bito AI** — Primary AI PR reviewer (assigned automatically via workflow labels)
 2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture  
 3. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
-4. **PromptFoo** — Skill/LLM testing with Claude 3.7 Sonnet (replaces PandaOps)
+4. **PromptFoo** — Skill/LLM testing with Claude Sonnet 4 (replaces PandaOps)
 
-### Primary Model Configuration (Claude 3.7 Sonnet via OpenRouter)
+### Primary Model Configuration (Claude Sonnet 4 via OpenRouter)
 ```yaml
 # promptfooconfig.yaml
 providers:
-  - id: anthropic/claude-3.7-sonnet  # Primary - default in OpenRouter
+  - id: anthropic/claude-sonnet-4  # Primary - Claude Sonnet 4
     config:
       api_key: ${OPENROUTER_API_KEY}
       base_url: https://openrouter.ai/api/v1
       temperature: 0
 
-# Fallback: Claude 4.5 Sonnet
-  - id: anthropic/claude-sonnet-4-5-20255112
+# Fallback: Claude Sonnet 4.5
+  - id: anthropic/claude-sonnet-4.5
     config:
       api_key: ${OPENROUTER_API_KEY}
+      base_url: https://openrouter.ai/api/v1
+      temperature: 0
 ```
 
 ### Fallback Model Chain
 ```
-Bito AI → Claude 3.7 Sonnet (OpenRouter) → Claude 4.5 Sonnet (fallback)
+Bito AI → Claude Sonnet 4 (OpenRouter) → Claude Sonnet 4.5 (fallback)
 ```
 
 ### Integration (How to Enable)
@@ -48,7 +50,7 @@ cp templates/cicd/prompt-eval.yml .github/workflows/
 
 ### Skill Testing with PromptFoo
 
-For testing Revvel skills (ephemeral agents), use PromptFoo with Claude 3.7 Sonnet:
+For testing Revvel skills (ephemeral agents), use PromptFoo with Claude Sonnet 4:
 
 ```bash
 # Run skill tests
@@ -60,7 +62,7 @@ promptfoo eval --config skills/my-skill/tests/promptfoo.yml
 
 **Why PromptFoo over PandaOps:**
 - Tests actual skill/prompt outputs, not code diffs
-- Claude 3.7 Sonnet via OpenRouter as primary
+- Claude Sonnet 4 via OpenRouter as primary
 - Red-teaming security built-in
 - GitHub Action for CI automation
 

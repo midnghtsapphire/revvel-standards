@@ -97,7 +97,41 @@ labels:
   - name: blocked
     color: "e4e669"
     description: "Blocked by external dependency"
-  
+
+  # ── PR Lifecycle (managed by pr-lifecycle.yml) ─────────────────────────────────
+  - name: awaiting-review
+    color: "0075ca"
+    description: "Waiting for reviewer feedback"
+
+  - name: checks-failing
+    color: "d73a4a"
+    description: "CI checks are failing"
+
+  - name: checks-passing
+    color: "a2eeef"
+    description: "All CI checks pass"
+
+  - name: ready-to-merge
+    color: "008672"
+    description: "Approved + checks pass — ready to merge"
+
+  # ── Issue Lifecycle (managed by issue-lifecycle.yml) ──────────────────────────
+  - name: "issue:in-progress"
+    color: "0075ca"
+    description: "Issue has a linked PR in progress"
+
+  - name: "issue:done"
+    color: "0e8a16"
+    description: "Issue resolved — linked PR merged"
+
+  - name: "issue:stale"
+    color: "e4e669"
+    description: "No activity for 7+ days — needs attention"
+
+  - name: "lifecycle:stuck"
+    color: "d93f0b"
+    description: "Label watchdog detected a stuck state"
+
   # ── Third-Party / External Contributions ──────────────────────────────────────
   - name: third-party
     color: "bfdadc"
@@ -115,6 +149,10 @@ labels:
   - name: "awaiting-approval"
     color: "fbca04"
     description: "PR is awaiting review and approval"
+
+  - name: "awaiting-review"
+    color: "0075ca"
+    description: "PR is ready and awaiting reviewer"
 
   - name: "changes-requested"
     color: "d93f0b"
@@ -168,6 +206,10 @@ labels:
     color: "7057ff"
     description: "Assigned to GitHub Copilot for fixing"
 
+  - name: mindmappr
+    color: "0075ca"
+    description: "Expert code assistant (mindmappr) assigned as WR agent"
+
   - name: ralph-loop
     color: "ff6b35"
     description: "Managed by the Ralph Loop self-healing workflow"
@@ -175,6 +217,10 @@ labels:
   - name: openrouter
     color: "6f42c1"
     description: "Routed to the OpenRouter orchestrator (first line of sight)"
+
+  - name: agent-fallback
+    color: "6f42c1"
+    description: "Route issue or PR to the OpenHands → Cursor → OpenRouter fallback chain"
 
   # ── OpenRouter instantiation lifecycle (visibility into the instantiate dance)
   - name: "openrouter:instantiating"
@@ -233,6 +279,10 @@ labels:
   - name: codex
     color: "5319e7"
     description: "Routed to Codex (via OpenRouter) for code execution"
+
+  - name: rex
+    color: "1f6feb"
+    description: "Routed to Rex — the oAudrey Agent Factory / no-key Perplexity lane"
 
   - name: jules
     color: "4285f4"
@@ -342,9 +392,21 @@ labels:
     description: "Visible on 49Agents monitoring dashboard"
 
   # ── Weekly Research (WR) workflow ──────────────────────────────────────────
+  - name: work-request
+    color: "1d76db"
+    description: "Work Request intake issue"
+
   - name: weekly-research
     color: "fbca04"
     description: "Weekly research task requiring deep investigation"
+
+  - name: quick
+    color: "c2e0c6"
+    description: "Lightweight quick/internal WR"
+
+  - name: OpenHands
+    color: "5319e7"
+    description: "Route to OpenHands-capable automation"
 
   - name: "wr:in-progress"
     color: "f9d71c"
@@ -353,6 +415,91 @@ labels:
   - name: "wr:complete"
     color: "0e8a16"
     description: "WR task completed with findings documented"
+
+  - name: "wr:retrigger-attempts-1"
+    color: "fef2c0"
+    description: "WR PR auto-healer retry attempt 1"
+
+  - name: "wr:retrigger-attempts-2"
+    color: "f9d71c"
+    description: "WR PR auto-healer retry attempt 2"
+
+  - name: "wr:retrigger-attempts-3"
+    color: "d93f0b"
+    description: "WR PR auto-healer retry attempt 3"
+
+  - name: wr-stuck
+    color: "b60205"
+    description: "WR auto-healer escalation tracking"
+
+  # -- Research Engine Orchestrator --------------------------------------------
+  - name: research-engine
+    color: "6f42c1"
+    description: "Route to layered research engine"
+
+  - name: "research:orchestrating"
+    color: "fbca04"
+    description: "Research engine is coordinating lanes"
+
+  - name: "research:blocked"
+    color: "b60205"
+    description: "Research engine blocked by missing input"
+
+  - name: "research:complete"
+    color: "0e8a16"
+    description: "Research packet generated"
+
+  - name: "research:review-needed"
+    color: "0075ca"
+    description: "Research needs code-review agents"
+
+  - name: "research:marketing"
+    color: "ff6b6b"
+    description: "Marketing lane assigned"
+
+  - name: "research:seo"
+    color: "3ddcff"
+    description: "SEO demand lane assigned"
+
+  - name: "research:competitors"
+    color: "1a73e8"
+    description: "Competitor intelligence lane"
+
+  - name: "research:chatter"
+    color: "f7c948"
+    description: "Audience chatter lane"
+
+  - name: "research:facts"
+    color: "5319e7"
+    description: "Factual validation lane"
+
+  - name: "research:technical"
+    color: "8b5cf6"
+    description: "Technical delivery lane"
+
+  - name: "research:revenue"
+    color: "22c55e"
+    description: "Revenue mechanics lane"
+
+  - name: "research:reviewer"
+    color: "d93f0b"
+    description: "Research review and auto-fix lane"
+
+  - name: competitor-research
+    color: "1a73e8"
+    description: "Trigger competitor research lane"
+
+  - name: audience-research
+    color: "f7c948"
+    description: "Trigger audience research lane"
+
+  - name: chatter-research
+    color: "f59e0b"
+    description: "Trigger social chatter research lane"
+
+  - name: code-review
+    color: "0b6fff"
+    description: "Route to code-review agents"
 
   # ── Agent HQ / Desktop Agent ───────────────────────────────────────────────
   - name: agent-hq
@@ -480,3 +627,156 @@ labels:
   - name: resolved
     color: "0e8a16"
     description: "Issue resolved — workflow recovered or fixed"
+
+  # ── PR Status (for lifecycle automation) ────────────────────────────
+  - name: checks-passing
+    color: "16a34a"
+    description: "All CI checks pass"
+
+  - name: checks-failing
+    color: "dc2626"
+    description: "One or more CI checks failed"
+
+  - name: ready-to-merge
+    color: "8b5cf6"
+    description: "Approved + checks passing — ready to merge"
+
+  # ── WR Lifecycle Labels (for automation) ────────────────────────────
+  - name: "wr:new"
+    color: "6b7280"
+    description: "New issue — needs triage"
+
+  - name: "wr:research"
+    color: "f59e0b"
+    description: "Research in progress"
+
+  - name: "wr:research-complete"
+    color: "10b981"
+    description: "Research complete — ready for code"
+
+  - name: "wr:code"
+    color: "8b5cf6"
+    description: "Code in progress"
+
+  - name: "wr:jules"
+    color: "7c3aed"
+    description: "Jules AI coding agent"
+
+  - name: "wr:pr-open"
+    color: "ec4899"
+    description: "PR open — awaiting review"
+
+  - name: "wr:checking"
+    color: "06b6d4"
+    description: "Checks running"
+
+  - name: "wr:check-failed"
+    color: "ef4444"
+    description: "Checks failed — needs fix"
+
+  - name: "wr:review"
+    color: "f97316"
+    description: "PR under review"
+
+  - name: "wr:merge-ready"
+    color: "22c55e"
+    description: "Approved + passing — ready to merge"
+
+  - name: "wr:done"
+    color: "16a34a"
+    description: "Completed"
+
+  - name: "lifecycle:stuck"
+    color: "dc2626"
+    description: "Issue stuck — needs human help"
+
+  - name: "needs-human"
+    color: "dc2626"
+    description: "Requires human intervention"
+
+  # ── UI Creation Engine ───────────────────────────────────────────────────────
+  - name: "ui-creation"
+    color: "ec4899"
+    description: "UI creation engine — competitive research + design"
+
+  - name: "ui-creation-complete"
+    color: "10b981"
+    description: "UI creation complete — artifacts ready"
+
+  # ── Ship-to-Market Delivery Channels ─────────────────────────────────────────
+  # These labels trigger matching delivery jobs in ship-to-market.yml on PR merge.
+  - name: "deliver:all"
+    color: "0e8a16"
+    description: "Trigger all delivery channels on merge"
+
+  - name: "deliver:api"
+    color: "1d76db"
+    description: "Deploy REST/GraphQL API (Railway / Fly / Render)"
+
+  - name: "deliver:app"
+    color: "0075ca"
+    description: "Deploy web app (Vercel / Netlify / Cloudflare)"
+
+  - name: "deliver:mobile"
+    color: "5319e7"
+    description: "Deploy to iOS App Store + Google Play Store"
+
+  - name: "deliver:android"
+    color: "3ddc84"
+    description: "Deploy Android app to Google Play Store"
+
+  - name: "deliver:ios"
+    color: "555555"
+    description: "Deploy iOS app to Apple App Store / TestFlight"
+
+  - name: "deliver:pdf"
+    color: "e4e669"
+    description: "Render and upload PDF artifact"
+
+  - name: "deliver:cli"
+    color: "006b75"
+    description: "Publish CLI binary to npm / PyPI / Homebrew"
+
+  - name: "deliver:package"
+    color: "0075ca"
+    description: "Publish package to npm / PyPI"
+
+  - name: "deliver:docker"
+    color: "2496ed"
+    description: "Build and push Docker image to registry"
+
+  - name: "deliver:mcp"
+    color: "6f42c1"
+    description: "Package and deploy MCP server"
+
+  - name: "deliver:docs"
+    color: "0075ca"
+    description: "Build and deploy documentation site"
+
+  - name: "deliver:video"
+    color: "d93f0b"
+    description: "Record or render demo video"
+
+  - name: "deliver:extension"
+    color: "fbca04"
+    description: "Build and upload Chrome / VS Code extension"
+
+  - name: "deliver:vscode"
+    color: "007acc"
+    description: "Publish VS Code extension to Marketplace"
+
+  - name: "deliver:action"
+    color: "24292f"
+    description: "Publish GitHub Action to Marketplace"
+
+  - name: "deliver:openapi"
+    color: "85ea2d"
+    description: "Publish / validate OpenAPI spec"
+
+  - name: "deliver:migration"
+    color: "fbca04"
+    description: "Run and validate database migration"
+
+  - name: "deliver:marketplace"
+    color: "e4e669"
+    description: "Draft app store listing (human review required)"

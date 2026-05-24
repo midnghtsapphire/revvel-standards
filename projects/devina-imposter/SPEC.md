@@ -226,7 +226,7 @@ Configure:
 
 This repository follows:
 - `wr/NORTH_STAR.md` — Revenue first (consulting potential)
-- `docs/AGENTS.md` — Obsessive autonomy in testing
+- `docs/AGENTS.md` — Driven autonomy in testing
 - `standards/TESTING.md` — Comprehensive test coverage
 - `standards/ZERO_HUMAN_FRAMEWORK.md` — Automated benchmarking
 - `docs/BRAND_ARCHITECTURE.md` — Clear value proposition

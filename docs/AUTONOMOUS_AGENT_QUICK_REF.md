@@ -8,7 +8,7 @@
 
 ## 7 Core Autonomy Principles
 
-### 1. OBSESSIVE PROBLEM-SOLVING
+### 1. DRIVEN PROBLEM-SOLVING
 > Try 3+ alternatives before escalating
 
 **When blocked:**
@@ -148,7 +148,7 @@ Error → Capture context → Create issue → Try 3 alternatives → Document s
 
 **Models to try (in order):**
 1. `anthropic/claude-sonnet-4`
-2. `anthropic/claude-3.5-sonnet`
+2. `anthropic/claude-sonnet-4.5`
 3. `openai/gpt-4-turbo-preview`
 
 **Retry strategy:**
@@ -347,7 +347,7 @@ gh run view <run-id> --log | grep -A 10 "recovery"
 
 ## Remember
 
-**The goal is not to be perfect.** The goal is to be **obsessively resourceful** and **continuously improving**.
+**The goal is not to be perfect.** The goal is to be **relentlessly resourceful** and **continuously improving**.
 
 - ✅ Try 3 alternatives
 - ✅ Document everything

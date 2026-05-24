@@ -1,35 +1,21 @@
 name: Gatekeeper — Registry Drift Check
-
-# Daily check that every active registry entry with a Doppler path is
-# actually present in Doppler. Entries outside the token's project/config
-# scope are skipped (logged as INFO).
-#
-# Note: DOPPLER_TOKEN is a service token scoped to a single project/config.
-# Entries from other Doppler projects are skipped (logged as INFO).
-# For cross-project drift detection, use a workplace-scoped token.
-
 on:
   schedule:
-    - cron: '0 4 * * *'  # Daily 04:00 UTC
-  workflow_dispatch:
-
+    - cron: 0 4 * * *
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   drift-check:
     name: Detect registry vs Doppler drift
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v6.0.2
       - name: Install jq
-        # ubuntu-latest includes jq; this step is a safety net for self-hosted or custom runners.
         run: |
           if ! command -v jq >/dev/null 2>&1; then
             sudo apt-get update -q && sudo apt-get install -y -q jq
           fi
-
       - name: Compare registry to Doppler
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY || secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
@@ -115,3 +101,6 @@ jobs:
             echo -e "\n## Drift Report\n$REPORT"
             exit 1
           fi
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

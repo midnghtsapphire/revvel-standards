@@ -1,54 +1,35 @@
 name: Augment Code App Check
-
-# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack):
-# Detects whether the Augment Code GitHub App is installed on this repo and
-# leaves a one-time reminder comment on PRs if it isn't. This is purely
-# informational — it never blocks a merge or modifies code.
-#
-# How "installed" is detected: the Augment Code App leaves a marker comment
-# on every PR within ~30 seconds of opening (signature: author begins with
-# `augment-` and a stable HTML tag in the comment body). We poll for that
-# signature once after the PR opens. If it's absent after ~5 minutes, post
-# a single reminder comment with the install link.
-#
-# Idempotency: the reminder uses an HTML marker so it's never posted twice
-# on the same PR.
-#
-# Fail-soft: if the API rate-limits or throws, we just exit. Never blocks.
-
 on:
   pull_request_target:
-    types: [opened, reopened, ready_for_review]
+    types:
+      - opened
+      - reopened
+      - ready_for_review
   workflow_dispatch:
     inputs:
       pr_number:
-        description: "PR number to check"
+        description: PR number to check
         required: true
         type: number
-
 permissions:
   contents: read
   issues: write
   pull-requests: write
-
 concurrency:
   group: augment-check-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   detect-and-remind:
     name: Detect Augment Code App and remind once if missing
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false)
     steps:
       - name: Wait briefly so Augment can post its marker
         run: sleep 60
-
       - name: Check for Augment marker, comment if missing
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const prNumber =
@@ -59,23 +40,99 @@ jobs:
               return;
             }
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              per_page: 100,
-            });
+            let comments = [];
+            let reviews = [];
+            let reviewComments = [];
+            let checks = { check_runs: [] };
+            let pullRequest;
+
+            try {
+              const [commentsRes, reviewsRes, reviewCommentsRes, prRes] = await Promise.all([
+                github.rest.issues.listComments({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  per_page: 100,
+                }),
+                github.rest.pulls.listReviews({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                }),
+                github.rest.pulls.listReviewComments({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                }),
+                github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                })
+              ]);
+              comments = commentsRes.data;
+              reviews = reviewsRes.data;
+              reviewComments = reviewCommentsRes.data;
+              pullRequest = prRes.data;
+
+              const checksRes = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: pullRequest.head.sha,
+                per_page: 100,
+              });
+              checks = checksRes.data;
+            } catch (e) {
+              core.warning(`API limit or error fetching PR data: ${e.message}`);
+              return;
+            }
 
             // Augment Code's app posts comments authored by users matching
             // /^augment-/i (per their public-marketplace docs). We also
             // accept their stable HTML marker if they ever change the bot
             // username.
             const augmentMarker = /<!--\s*augment-code:/i;
-            const augmentInstalled = comments.some(c => {
+            const augmentAuthorPatterns = [
+              /^augment-/i,
+              /^augment(?:-code)?\[bot\]$/i,
+              /^augment(?:-code)?$/i,
+              /^augmentcodeai$/i,
+            ];
+            const authoredByAugment = (actor) =>
+              augmentAuthorPatterns.some(pattern => pattern.test((actor || '').trim()));
+            const hasAugmentMarker = (body) => body && augmentMarker.test(body);
+
+            const augmentInstalledFromIssueComments = comments.some(c => {
               const author = (c.user?.login || '').toLowerCase();
-              return /^augment-/.test(author) ||
-                     (c.body && augmentMarker.test(c.body));
+              return authoredByAugment(author) || hasAugmentMarker(c.body);
             });
+            const augmentInstalledFromReviews = reviews.some(r => {
+              const author = (r.user?.login || '').toLowerCase();
+              return authoredByAugment(author) || hasAugmentMarker(r.body);
+            });
+            const augmentInstalledFromReviewComments = reviewComments.some(c => {
+              const author = (c.user?.login || '').toLowerCase();
+              return authoredByAugment(author) || hasAugmentMarker(c.body);
+            });
+            const augmentCheckRunPattern = /^augment(?:[-\s]?code)?(?::|$)/i;
+            const checkRuns = Array.isArray(checks?.check_runs) ? checks.check_runs : [];
+            const augmentInstalledFromChecks = checkRuns.some(run => {
+              const appSlug = (run.app?.slug || '').toLowerCase();
+              const appName = (run.app?.name || '').toLowerCase();
+              const runName = (run.name || '').trim();
+              return appSlug === 'augment' ||
+                     appSlug === 'augment-code' ||
+                     appName === 'augment' ||
+                     appName === 'augment code' ||
+                     augmentCheckRunPattern.test(runName);
+            });
+            const augmentInstalled =
+              augmentInstalledFromIssueComments ||
+              augmentInstalledFromReviews ||
+              augmentInstalledFromReviewComments ||
+              augmentInstalledFromChecks;
 
             if (augmentInstalled) {
               core.info('Augment Code App detected on this PR; nothing to do.');
@@ -121,3 +178,6 @@ jobs:
             } catch (e) {
               core.warning(`Failed to post reminder: ${e.message}. Skipping.`);
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

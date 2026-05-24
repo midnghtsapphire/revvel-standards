@@ -1,213 +1,214 @@
-# DELIVERY_MATRIX
+# Ship to Market: Full Delivery Matrix for AI Agent Stacks
 
-> Full delivery matrix for shipping WR (Working Release) artifacts across API, PDF, CLI, MCP, video, and other channels.
+## Overview
 
-## Purpose
-
-Agent stacks generate code; the delivery matrix defines **how that code becomes a consumable artifact** in each target channel.
-
-## Who/When/Why
-
-- **Who:** Claude (openhands)
-- **When:** 2026-05-06
-- **Why:** Complete the delivery layer for AI agent stacks
+Every work request (WR) produces an artifact that needs to ship somewhere. Most agent stacks handle code generation but leave the delivery layer — PDF, API, CLI, video, MCP server, app bundle, marketplace listing — completely unaddressed. This document maps every major output type to the correct toolchain, GitHub workflow trigger, agent action, and failure handoff so that "done" means shipped, not just merged.
 
 ---
 
-## Matrix Overview
+## The Core Problem
 
-| Channel | Trigger Label | Toolchain | Output | Verification |
-|---------|---------------|-----------|--------|--------------|
-| API | `ship:api` | OpenAPI + server framework | Running endpoint | Contract test |
-| PDF | `ship:pdf` | Pandoc / Typst / LaTeX | `.pdf` in Release | Checksum + render check |
-| CLI | `ship:cli` | Language toolchain + packager | Binary / package | `--version` + smoke test |
-| MCP | `ship:mcp` | MCP SDK | MCP server manifest | Handshake test |
-| Video | `ship:video` | ffmpeg / remotion / CI | `.mp4` / stream URL | Duration + codec check |
-| Library | `ship:lib` | Language package manager | Published package | Install + import test |
-| Container | `ship:image` | Docker / buildx | Registry image | Pull + run test |
-| Site | `ship:site` | Static generator + host | Deployed URL | HTTP 200 + lighthouse |
-| Dataset | `ship:data` | Data pipeline | Versioned dataset | Schema + row count |
+When Copilot, OpenHands, or SWE-agent closes a WR by opening a PR, that PR contains code. What it does not contain is:
 
----
+- a deployed endpoint,
+- a packaged CLI binary,
+- a rendered PDF or documentation artifact,
+- a published npm/PyPI package,
+- a video demo,
+- a registered MCP server,
+- an app store submission, or
+- a working API with auth and rate limits.
 
-## 1. API Delivery
-
-**Trigger:** `ship:api`
-
-**Toolchain:**
-- OpenAPI spec (`openapi.yaml`)
-- Server framework (FastAPI, Express, etc.)
-- Deploy target (Fly.io, Render, AWS, etc.)
-
-**Workflow:**
-1. Validate OpenAPI spec.
-2. Build server.
-3. Deploy to target.
-4. Run contract tests against live endpoint.
-5. Publish endpoint URL to release notes.
-
-**Failure handoff:** If deploy fails, capture logs, label `agent:blocked`.
+Each of those requires a separate delivery workflow wired to the same WR trigger. The table below maps every output type to what needs to happen after the agent merges code.
 
 ---
 
-## 2. PDF Delivery
+## Delivery Matrix
 
-**Trigger:** `ship:pdf`
-
-**Toolchain:**
-- Source: Markdown / Typst / LaTeX
-- Renderer: Pandoc, Typst, or TeX
-- Output: GitHub Release asset or S3
-
-**Workflow:**
-1. Render source to PDF in CI.
-2. Compute SHA256 checksum.
-3. Attach PDF + checksum to Release.
-4. Verify render (page count > 0, no render errors).
-
----
-
-## 3. CLI Delivery
-
-**Trigger:** `ship:cli`
-
-**Toolchain:**
-- Language-appropriate packager (cargo, go build, pyinstaller, pkg, etc.)
-- Multi-arch build matrix
-
-**Workflow:**
-1. Build binaries for target platforms.
-2. Sign (if applicable).
-3. Attach to Release.
-4. Smoke test: `binary --version` on each platform.
+| Output type | Trigger label | Agent action | Key toolchain | Auto or manual | Failure signal |
+|---|---|---|---|---|---|
+| **PDF / Report** | `deliver:pdf` | Render markdown/HTML to PDF, attach to PR or release | `pandoc`, `weasyprint`, `puppeteer`, GitHub Release asset | Auto | Missing release asset → comment on PR |
+| **API (REST/GraphQL)** | `deliver:api` | Deploy to cloud, run smoke test, return live URL | Vercel, Railway, Render, Fly.io, AWS Lambda | Auto | Health check fails → comment + block merge |
+| **App (web)** | `deliver:app` | Build bundle, deploy to CDN or hosting, return preview URL | Vercel, Netlify, Cloudflare Pages, Firebase Hosting | Auto | Deploy fails or build errors → comment on PR |
+| **App (mobile)** | `deliver:mobile` | Build iOS/Android, upload to TestFlight / Play internal | Fastlane, Expo EAS, Bitrise | Semi-auto | Build failure → comment, human submits to store |
+| **CLI tool** | `deliver:cli` | Build binary, publish to npm/PyPI/Homebrew, or attach to GitHub Release | `pkg`, `pyinstaller`, `ncc`, `oclif`, npm publish | Auto | Publish fails → comment with error |
+| **npm / PyPI package** | `deliver:package` | Bump version, tag release, publish to registry | `semantic-release`, `release-please`, `twine`, `npm publish` | Auto | Registry auth fails → comment, human publishes |
+| **PowerPoint / Deck** | `deliver:deck` | Generate PPTX/slide deck, export PDF if needed, attach artifact or publish deck link | `pptxgenjs`, Google Slides API, Marp/Reveal export | Auto | Deck render/export fails → comment with artifact gap |
+| **Video / Demo** | `deliver:video` | Record screen or render from script, upload to YouTube/S3 | `ffmpeg`, `playwright` screen recording, `remotion`, `manim` | Semi-auto | Render fails → comment, human records |
+| **MCP server** | `deliver:mcp` | Package server, register with MCP registry or deploy as endpoint, update manifest | Docker, Fly.io, MCP SDK, `mcp.json` manifest | Auto | Registration fails → comment with manifest diff |
+| **Chrome extension** | `deliver:extension` | Zip, validate manifest, upload to Chrome Web Store draft | `web-ext`, CWS Upload API | Semi-auto | Validation fails → comment with lint output |
+| **VS Code extension** | `deliver:vscode` | Build VSIX, publish to VS Marketplace | `vsce`, `@vscode/vsce` | Auto | Publish fails → comment with VSCE output |
+| **GitHub Action** | `deliver:action` | Tag release, update `action.yml`, publish to GitHub Marketplace | `release-please`, GitHub Release | Auto | Missing `action.yml` → comment |
+| **Docker image** | `deliver:docker` | Build image, push to registry (GHCR, Docker Hub, ECR) | `docker buildx`, `ghcr.io`, `docker push` | Auto | Push fails → comment with build log |
+| **Documentation site** | `deliver:docs` | Build from markdown/JSDoc/OpenAPI spec, deploy to GitHub Pages or Vercel | `docusaurus`, `mintlify`, `nextra`, `mkdocs` | Auto | Build fails or broken links → comment |
+| **OpenAPI spec** | `deliver:openapi` | Generate/validate spec, publish to API gateway or docs | `swagger-ui`, `redoc`, `zod-to-openapi`, `openapi-generator` | Auto | Spec validation errors → comment |
+| **Database migration** | `deliver:migration` | Run migration in staging, validate schema, await human approval for prod | `prisma migrate`, `alembic`, `flyway` | Semi-auto | Migration fails → block deploy, comment |
+| **Marketplace listing** | `deliver:marketplace` | Draft listing copy, screenshots, metadata — human reviews and publishes | Notion/Linear draft, store-specific tools | Manual | N/A — human always reviews before submit |
 
 ---
 
-## 4. MCP Delivery
+## GitHub Workflow Pattern
 
-**Trigger:** `ship:mcp`
+Every delivery type follows the same three-step wiring pattern inside `.github/workflows/`:
 
-**Toolchain:**
-- MCP SDK (TypeScript or Python)
-- Transport: stdio or HTTP
-- Manifest: `mcp.json`
+### Step 1 — Detect label on PR merge
 
-**Workflow:**
-1. Build MCP server.
-2. Validate manifest schema.
-3. Run handshake test (initialize + list_tools).
-4. Publish to MCP registry or release.
+```yaml
+on:
+  pull_request:
+    types: [closed]
 
----
+jobs:
+  deliver:
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'deliver:api')
+```
 
-## 5. Video Delivery
+### Step 2 — Run delivery action
 
-**Trigger:** `ship:video`
+Each delivery type has its own job. They can be in the same workflow file with different `if` conditions, or split into separate files per output type for clarity.
 
-**Toolchain:**
-- ffmpeg, Remotion, or Manim
-- CI with GPU (optional)
-- CDN or YouTube upload
+### Step 3 — Report result to the originating issue
 
-**Workflow:**
-1. Render video from source (code, script, assets).
-2. Verify duration and codec with ffprobe.
-3. Upload to target (CDN / YouTube / S3).
-4. Publish URL to release notes.
+Every delivery job ends with a success or failure comment on the originating issue, not just the PR, so the WR is fully closed or flagged in the place you opened it:
 
----
-
-## 6. Library Delivery
-
-**Trigger:** `ship:lib`
-
-**Toolchain:**
-- Language package manager (npm, PyPI, crates.io, etc.)
-- Signing keys in CI secrets
-
-**Workflow:**
-1. Bump version.
-2. Build package.
-3. Publish to registry.
-4. Verify: install in fresh env + import smoke test.
+```yaml
+- name: Report delivery result
+  uses: actions/github-script@v7
+  with:
+    script: |
+      const success = process.env.DELIVERY_STATUS === 'success';
+      github.rest.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: context.payload.pull_request.number,
+        body: success
+          ? "✅ **Shipped.** Live URL: " + process.env.DEPLOY_URL
+          : "⚠️ **Delivery failed.** [View logs](" + process.env.LOG_URL + ") — human review needed."
+      });
+```
 
 ---
 
-## 7. Container Delivery
+## MCP Server Delivery (Detail)
 
-**Trigger:** `ship:image`
+MCP (Model Context Protocol) is the most underspecified delivery type in most agent stacks. A WR that produces an MCP server needs to:
 
-**Toolchain:**
-- Docker buildx (multi-arch)
-- Registry: GHCR / Docker Hub
+1. Package the server using the MCP SDK (TypeScript or Python).
+2. Generate or update `mcp.json` with the correct tool manifest, schema, and endpoint.
+3. Deploy to a persistent runtime (Fly.io, Railway, or a Lambda with a public URL).
+4. Register the endpoint with any MCP router or client config in the consuming application.
+5. Run a smoke test: call one tool, verify the response schema.
+6. Comment on the WR with the live endpoint, manifest diff, and tool list.
 
-**Workflow:**
-1. Build multi-arch image.
-2. Tag: `:latest`, `:<semver>`, `:<sha>`.
-3. Push to registry.
-4. Verify: pull + run + healthcheck.
-
----
-
-## 8. Site Delivery
-
-**Trigger:** `ship:site`
-
-**Toolchain:**
-- Static generator (Hugo, Astro, Next.js, etc.)
-- Host: Pages / Netlify / Vercel / Cloudflare
-
-**Workflow:**
-1. Build site.
-2. Deploy.
-3. Verify HTTP 200 on key routes.
-4. Run Lighthouse (optional).
+Label: `deliver:mcp`. If the smoke test fails, the workflow comments on the issue and does not complete the delivery — human jumps in.
 
 ---
 
-## 9. Dataset Delivery
+## PDF / Documentation Delivery (Detail)
 
-**Trigger:** `ship:data`
+For WRs that produce research outputs, specs, or reports:
 
-**Toolchain:**
-- Data pipeline (dbt, Airflow, custom)
-- Versioning (DVC, LakeFS, or dated S3 paths)
+1. Agent writes output as markdown in `/docs/` or as a PR artifact.
+2. `pandoc` or `puppeteer`/`weasyprint` renders to PDF.
+3. PDF is attached to the GitHub Release for that version, or uploaded as a PR artifact.
+4. A comment on the WR includes a direct download link.
 
-**Workflow:**
-1. Run pipeline.
-2. Validate schema + row counts.
-3. Publish versioned artifact.
-4. Update dataset manifest.
+For API documentation specifically, the preferred path is: OpenAPI spec → `redoc` or `swagger-ui` static build → deploy to GitHub Pages or docs subdomain.
+
+---
+
+## Video / Demo Delivery (Detail)
+
+Video is the hardest to fully automate but is achievable for structured demos:
+
+- **Playwright screen recording**: works for web app demos. The agent runs the app in headless Chromium, records the key user flow, and uploads the `.webm` to S3 or GitHub Release.
+- **`remotion` or `manim`**: for programmatic video (code walkthroughs, animated diagrams). The agent writes the script, renders to MP4, uploads.
+- **Manual recording**: if neither works, the workflow comments on the WR with a Loom or OBS recording checklist so the human knows exactly what to record.
+
+Label: `deliver:video`. Failure path: workflow comments with recording checklist + draft YouTube metadata.
+
+---
+
+## Routing Profile to Delivery Type
+
+Most WR routing profiles map naturally to one or more delivery types:
+
+| Routing profile | Most likely delivery types |
+|---|---|
+| `repo_surgery` | `deliver:api`, `deliver:docker`, `deliver:migration` |
+| `cheap_batch_edits` | `deliver:package`, `deliver:docs`, `deliver:openapi` |
+| `hard_debug` | `deliver:api` (re-deploy after fix), `deliver:pdf` (incident report) |
+| New feature | `deliver:app`, `deliver:api`, `deliver:docs`, `deliver:video` |
+| CLI tool | `deliver:cli`, `deliver:package`, `deliver:docs` |
+| MCP integration | `deliver:mcp`, `deliver:docs`, `deliver:openapi` |
+
+---
+
+## Updated WR Template (Delivery Extension)
+
+Add this section to the existing WR template to capture delivery intent at the time the WR is opened, so the agent and workflow know what "done" looks like before they start:
+
+```markdown
+## Delivery targets
+<!-- Check all that apply — these labels will trigger the matching delivery workflows after merge -->
+- [ ] `deliver:api` — deploy live endpoint, return URL
+- [ ] `deliver:app` — deploy web app, return preview URL
+- [ ] `deliver:cli` — publish binary or npm/PyPI package
+- [ ] `deliver:pdf` — render and attach PDF artifact
+- [ ] `deliver:docs` — build and deploy documentation
+- [ ] `deliver:openapi` — publish/update API spec
+- [ ] `deliver:docker` — build and push Docker image
+- [ ] `deliver:mcp` — package and deploy MCP server
+- [ ] `deliver:video` — record or render demo video
+- [ ] `deliver:package` — publish to npm / PyPI / Homebrew
+- [ ] `deliver:deck` — generate PowerPoint / review / training deck artifact
+- [ ] `deliver:extension` — build and upload Chrome / VS Code extension
+- [ ] `deliver:action` — publish GitHub Action to Marketplace
+- [ ] `deliver:marketplace` — draft store listing (human review required)
+- [ ] `deliver:migration` — run and validate database migration
+
+**If `deliver:video` is selected:**
+- format: demo / training / review / YouTube / news-brand
+- target length: <60s / 1–5 min / 5–15 min / 15+ min
+
+**Definition of done for this WR:**
+<!-- One sentence: what does "shipped" look like? -->
+```
 
 ---
 
 ## Failure Handoff Protocol
 
-Each channel MUST:
+No silent failures. Every delivery workflow follows the same protocol:
 
-1. Capture full logs on failure.
-2. Apply `agent:blocked` label.
-3. Comment with:
-   - Channel attempted
-   - Command/step that failed
-   - Error output (trimmed to relevant lines)
-   - Suggested remediation
-4. Preserve partial artifacts for inspection.
+1. **Attempt delivery** — automated, no human needed.
+2. **On success** — comment on originating issue with live URL, artifact link, or confirmation.
+3. **On failure** — comment on originating issue with:
+   - what was attempted,
+   - the error summary,
+   - a direct link to the workflow log,
+   - the exact manual step needed to unblock.
+4. **Label the issue** `needs-human` so it surfaces in triage.
+5. **Never close the issue automatically on failure** — only close on confirmed successful delivery.
 
----
-
-## Verification Checklist
-
-Before marking a WR as shipped, confirm:
-
-- [ ] Artifact exists at published location
-- [ ] Checksum / signature recorded
-- [ ] Smoke test passed
-- [ ] Release notes updated
-- [ ] Trigger label removed, `shipped` label applied
+This protocol means you always know the state of every WR: delivered, failed with log, or waiting for human input. No guessing.
 
 ---
 
-## See Also
+## What Was Missing Before
 
-- `standards/AGENT_STACK_SETUP.md`
+The original agent stack handled:
+
+- ✅ Issue routing (labels, auto-assign)
+- ✅ Code generation (OpenHands, SWE-agent)
+- ✅ PR opening
+- ✅ Code review (Augment Code)
+- ❌ Deployment
+- ❌ Packaging / publishing
+- ❌ Documentation generation
+- ❌ MCP registration
+- ❌ Demo / video
+- ❌ Marketplace submission
+- ❌ Delivery confirmation back to originating issue
+
+This document fills all of those gaps. Each `deliver:*` label added to a WR activates the matching post-merge workflow, and every outcome — success or failure — closes the loop on the originating issue.

@@ -1,32 +1,38 @@
 #!/usr/bin/env bash
-# gatekeeper-sync.sh — Auto-provision GitHub Actions secrets from Doppler.
+# gatekeeper-sync.sh — Auto-provision GitHub Actions secrets from backup sources.
 #
 # This is the "POST half" of the Credential Gatekeeper: given a list of
 # required secret names (the BOM produced by credential-gatekeeper.yml),
-# fetch each value from the Doppler API and PUT it into the target repo's
-# Actions secrets via `gh secret set`. The intent is to remove the manual
-# step of provisioning credentials whenever a new automation lands.
+# resolve each value from the credential backup harness and PUT it into the
+# target repo's Actions secrets via `gh secret set`. Doppler is one optional
+# source, not a hard dependency.
 #
 # Inputs:
 #   --secrets   Comma-separated list of secret names to sync (required).
 #   --repo      owner/repo target for `gh secret set` (default: $GITHUB_REPOSITORY).
-#   --project   Doppler project (default: revvel-standards).
-#   --config    Doppler config (default: prd).
+#   --project   Doppler project metadata in summaries (default: revvel-standards).
+#   --config    Doppler config metadata in summaries (default: prd).
 #   --json      Emit a JSON summary on stdout (machine-readable).
 #
 # Environment:
-#   DOPPLER_TOKEN  Service token with read access to the project/config.
+#   DOPPLER_TOKEN  Optional service token with read access to the project/config.
 #   GITHUB_TOKEN   Token used by `gh` (already set on Actions runners).
 #   DRY_RUN=1      Print actions; do not call `gh secret set`.
 #
-# Exits non-zero only on a hard failure (missing tooling, no DOPPLER_TOKEN,
-# malformed args). Per-secret failures are reported but do not abort the run
-# so a partial sync is still useful.
+# Backup sources:
+#   SECRET_NAME environment variables, CREDENTIAL_BACKUP_JSON(_FILE),
+#   CREDENTIAL_BACKUP_SOPS_FILE, pass, Bitwarden CLI, 1Password CLI,
+#   Infisical, Vault, GitHub Actions secrets already present in the target
+#   repo, and Doppler.
+#
+# Exits non-zero only on a hard failure (malformed args or harness failure).
+# Per-secret misses are reported in JSON but do not abort the run so a partial
+# sync is still useful.
 
 set -euo pipefail
 
 usage() {
-  sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'
   exit "${1:-0}"
 }
 
@@ -72,117 +78,29 @@ done
 [[ -z "$REPO" ]] && { echo "error: --repo (or \$GITHUB_REPOSITORY) is required" >&2; exit 2; }
 [[ "$REPO" == */* ]] || { echo "error: --repo must be owner/repo" >&2; exit 2; }
 
-DRY_RUN="${DRY_RUN:-0}"
-case "$DRY_RUN" in 1|true|TRUE|yes|YES) DRY_RUN=1 ;; *) DRY_RUN=0 ;; esac
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+HARNESS="${REPO_ROOT}/scripts/credential-backup-harness.js"
 
-DOPPLER_TOKEN_CANDIDATES=()
-for _candidate_var in DOPPLER_AGENT_TOKEN DOPPLER_TOKEN DOPPLER_LOCAL_TOKEN \
-                      DOPPLER_API_KEY DOPPLER_AGENT_ODIC DOPPLER_CIRCLECI_OIDC; do
-  [[ -n "${!_candidate_var:-}" ]] && DOPPLER_TOKEN_CANDIDATES+=("${!_candidate_var}")
-done
-unset _candidate_var
-
-DOPPLER_TOKEN="${DOPPLER_TOKEN_CANDIDATES[0]:-}"
-
-if [[ "$JSON_OUT" -eq 1 || "$DRY_RUN" -ne 1 ]]; then
-  command -v jq >/dev/null || { echo "error: jq not found" >&2; exit 3; }
+if ! command -v node >/dev/null 2>&1; then
+  echo "[gatekeeper-sync] node is required" >&2
+  exit 1
 fi
 
-if [[ "$DRY_RUN" -ne 1 ]]; then
-  command -v jq   >/dev/null || { echo "error: jq not found" >&2; exit 3; }
-  command -v gh   >/dev/null || { echo "error: gh CLI not found" >&2; exit 3; }
-  command -v curl >/dev/null || { echo "error: curl not found" >&2; exit 3; }
-  [[ ${#DOPPLER_TOKEN_CANDIDATES[@]} -gt 0 ]] || { echo "error: no Doppler token set (tried DOPPLER_AGENT_TOKEN, DOPPLER_TOKEN, DOPPLER_LOCAL_TOKEN, DOPPLER_API_KEY, DOPPLER_AGENT_ODIC, DOPPLER_CIRCLECI_OIDC)" >&2; exit 4; }
+if [[ ! -f "${HARNESS}" ]]; then
+  echo "[gatekeeper-sync] missing harness at ${HARNESS}" >&2
+  exit 1
 fi
 
-# Normalize the comma-separated list, deduplicate, drop empties.
-IFS=',' read -r -a RAW <<<"$SECRETS_CSV"
-declare -A SEEN=()
-SECRETS=()
-for n in "${RAW[@]}"; do
-  n="${n//[[:space:]]/}"
-  [[ -z "$n" ]] && continue
-  if [[ -z "${SEEN[$n]:-}" ]]; then
-    SEEN[$n]=1
-    SECRETS+=("$n")
-  fi
-done
-[[ ${#SECRETS[@]} -gt 0 ]] || { echo "error: no valid secret names parsed from --secrets" >&2; exit 2; }
-
-DOPPLER_API="https://api.doppler.com/v3/configs/config/secret"
-
-synced=()
-missing_in_doppler=()
-failed=()
-
-# Exit codes: 0 = success (value on stdout), 1 = not found/other error, 2 = unauthorized
-fetch_doppler_value() {
-  local name="$1" token="$2"
-  local resp http_code body
-  resp="$(curl -sS -w '\n%{http_code}' \
-    --get "$DOPPLER_API" \
-    --data-urlencode "project=$PROJECT" \
-    --data-urlencode "config=$CONFIG" \
-    --data-urlencode "name=$name" \
-    -H "Authorization: Bearer $token" \
-    -H "Accept: application/json" || true)"
-  http_code="${resp##*$'\n'}"
-  body="${resp%$'\n'*}"
-  if [[ "$http_code" == "401" || "$http_code" == "403" ]]; then
-    return 2
-  fi
-  if [[ "$http_code" != "200" ]]; then
-    return 1
-  fi
-  jq -r '.value.raw // empty' <<<"$body"
-}
-
-fetch_with_fallback() {
-  local name="$1"
-  local rc
-  for token in "${DOPPLER_TOKEN_CANDIDATES[@]}"; do
-    rc=0
-    fetch_doppler_value "$name" "$token" && return 0 || rc=$?
-    if [[ $rc -ne 2 ]]; then
-      return $rc
-    fi
-  done
-  return 2
-}
-
-for name in "${SECRETS[@]}"; do
-  if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "  [dry-run] would fetch $name from Doppler($PROJECT/$CONFIG) and set on $REPO"
-    synced+=("$name")
-    continue
-  fi
-
-  value="$(fetch_with_fallback "$name" || true)"
-  if [[ -z "$value" ]]; then
-    echo "  ⚠️  $name — not present in Doppler $PROJECT/$CONFIG" >&2
-    missing_in_doppler+=("$name")
-    continue
-  fi
-
-  if printf '%s' "$value" | gh secret set "$name" --repo "$REPO" >/dev/null 2>&1; then
-    echo "  ✅ $name — synced to $REPO" >&2
-    synced+=("$name")
-  else
-    echo "  ❌ $name — gh secret set failed" >&2
-    failed+=("$name")
-  fi
-  unset value
-done
-
-if [[ "$JSON_OUT" -eq 1 ]]; then
-  jq -nc \
-    --argjson synced "$(printf '%s\n' "${synced[@]:-}"             | jq -R . | jq -s 'map(select(length>0))')" \
-    --argjson missing "$(printf '%s\n' "${missing_in_doppler[@]:-}" | jq -R . | jq -s 'map(select(length>0))')" \
-    --argjson failed "$(printf '%s\n' "${failed[@]:-}"             | jq -R . | jq -s 'map(select(length>0))')" \
-    --arg repo "$REPO" --arg project "$PROJECT" --arg config "$CONFIG" \
-    '{repo:$repo, project:$project, config:$config, synced:$synced, missing_in_doppler:$missing, failed:$failed}'
+HARNESS_ARGS=(
+  "${HARNESS}"
+  --secrets "${SECRETS_CSV}"
+  --repo "${REPO}"
+  --project "${PROJECT}"
+  --config "${CONFIG}"
+)
+if [[ "${JSON_OUT}" -eq 1 ]]; then
+  HARNESS_ARGS+=(--json)
 fi
 
-# Exit zero even with per-secret misses — the caller (workflow) decides how
-# strict to be and uses the JSON summary to surface the state on the issue.
-exit 0
+node "${HARNESS_ARGS[@]}"

@@ -35,13 +35,13 @@ The system does **not** auto-build every idea. It researches first, scores it, a
 
 ## 1. Intake
 
-Work requests are filed through one of two issue templates. Both apply the `work-request` label so the auto-classifier and downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat them identically. Downstream automation keys off the `[WR]` title prefix; both templates use it.
+Work requests are filed through one of two issue templates. Both apply the `work-request` and `weekly-research` labels so the auto-classifier and downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat them identically. Downstream automation also accepts the `[WR]` title prefix and the BASIC WR issue type as WR signals so GitHub UI label drift cannot strand the request.
 
 ### Two templates: when to use which
 
 The New Issue chooser shows two cards, sorted by filename:
 
-1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Heavy on explicit scope: required fields for Output Type, Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode, Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, and Blocker Rule, plus a 4-checkbox Acknowledgements block. Anti-under-scoping is baked into the form itself: every WR carries its own bundle contract into the implementer's context, so README updates, REMINDERS scaffolds, and discoverability work cannot be silently dropped from the resulting PR.
+1. **[`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml)** (`00-work-request.yml`) — the **primary human form**. Anti-under-scoping fields are still present (Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule), but they are now optional so you can file quickly and let research/triage backfill detail from your prose when needed.
 
 2. **[`OpenHands System WR (Quick / Internal)`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml)** (`10-OpenHands-system-wr.yml`) — the **lightweight system form**. Output Type is the only required field; every other routing dropdown defaults to `auto-classify` and is filled in from your description by the [auto-classifier workflow](../.github/workflows/wr-auto-classify.yml). Use this for low-risk, internal, or agent-driven work where the heavy bundle contract would be overkill (small follow-up fixes, internal scripts, agent-routed automation).
 
@@ -49,20 +49,16 @@ The lightweight form additionally applies the `quick` and `OpenHands` labels so 
 
 ### Required fields
 
-**Heavy form (`00-work-request.yml`)** — intake rejects the form if any of these are blank:
+**Heavy form (`00-work-request.yml`)** — only one field is required now:
 
 - **Output Type** — the hard constraint on the deliverable (production-app, cli-product, api-product, sellable-pdf, etc.)
-- **Research Mode** — `standard` or `deepresearch`
-- **Delivery Mode** — `build-direct`, `build-with-brief-options`, or `proposal-first`
-- **Lifecycle Mode** — `new-build`, `refresh-existing`, or `audit-only`
-- **Commercial Mode** — `digital-product`, `saas-app`, `api-usage`, `license`, `client-billable`, or `internal-only`
-- **Summary** — one-line description
-- **Objective** — what should be true after this work is done
-- **Required Bundle** — everything that must be included in the same PR unless there is a hard blocker
-- **Definition of Done** — what makes this WR complete
-- **Do Not Under-Scope** — explicit statement of what must not be silently deferred
-- **Delivery Shape** — `One PR`, `One PR preferred, split only if blocked`, `Proposal first`, or `Multiple PRs intentionally planned`
-- **Blocker Rule** — what should happen if one part cannot be completed
+
+Optional in the heavy form (recommended when you already know them):
+
+- PDF pipeline batch
+- Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode
+- Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Explicit Exclusions
+- Delivery Shape, Expected Scope, Validation Expectations, Blocker Rule
 
 **Lightweight form (`10-OpenHands-system-wr.yml`)** — only two are required:
 
@@ -98,7 +94,7 @@ Field semantics:
 
 ### Heavy-form fields the classifier does not auto-fill
 
-The heavy form intentionally captures bundled-scope expectations (`Summary`, `Objective`, `Required Bundle`, `Definition of Done`, `Do Not Under-Scope`, `Explicit Exclusions`, `Expected Scope`, `Validation Expectations`, `Blocker Rule`, `Acknowledgements`) as free-text in the issue body. These are read by the implementer (and downstream review automation) but are NOT mapped to Project v2 fields today. A future WR will map a subset of them (Summary -> "Owner Notes", Required Bundle -> a new "Required Bundle" text field, Definition of Done -> a new "Definition of Done" text field) once the Project v2 schema is updated.
+The heavy form intentionally captures bundled-scope expectations (`Summary`, `Objective`, `Required Bundle`, `Definition of Done`, `Do Not Under-Scope`, `Explicit Exclusions`, `Expected Scope`, `Validation Expectations`, `Blocker Rule`, `Acknowledgements`) as free-text in the issue body when you provide them. These are read by the implementer (and downstream review automation) but are NOT mapped to Project v2 fields today. A future WR will map a subset of them (Summary -> "Owner Notes", Required Bundle -> a new "Required Bundle" text field, Definition of Done -> a new "Definition of Done" text field) once the Project v2 schema is updated.
 
 ---
 
@@ -158,7 +154,7 @@ Inbox → Researching → Scored → { Hold | Archived | Approved → In Build �
 
 The expected end-to-end flow once the operating model is wired:
 
-1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`OpenHands System WR`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` label so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) fires on either; the lightweight form additionally applies `quick` + `OpenHands`.
+1. **File a WR.** Open a new issue using either the heavy [`Work Request`](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (the first card; required for anything that bundles docs/discoverability/REMINDERS scaffolding) or the lightweight [`OpenHands System WR`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form (second card; for low-risk internal/agent-driven work). Both apply the `work-request` and `weekly-research` labels so [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml) and WR PR creation fire on either; the lightweight form additionally applies `quick` + `OpenHands`.
 2. **Default-fields workflow fires.** The `issues.opened` event triggers [`.github/workflows/default-project-v2-fields-pat.yml`](../.github/workflows/default-project-v2-fields-pat.yml). The preflight job checks for `PROJECTS_PAT`; the main job adds the issue to the Project board and writes three default fields: `Priority = medium`, `Status = Inbox`, `Research Mode = standard`. The companion App workflow ([`set-default-project-v2-fields.yml`](../.github/workflows/set-default-project-v2-fields.yml)) detects no App credentials and skips cleanly.
 3. **Researcher / scorer picks it up.** Whoever owns scoring transitions `Status` → `Researching`, runs [`templates/viability-gate-template.md`](../templates/viability-gate-template.md), populates the six 1–5 number fields and the `Viability Score` total, then sets `Status` → `Scored` and `Decision` ∈ {`BUILD`, `HOLD`, `ARCHIVE`}.
 4. **Builder picks up `BUILD` items.** `Decision = BUILD` advances `Status` → `Approved` → `In Build`. Implementation begins per the routing rules in [`promptforproject.md`](../promptforproject.md) Step 0 (`Output Type` is the hard constraint on the deliverable).
@@ -168,6 +164,8 @@ The expected end-to-end flow once the operating model is wired:
 8. **Measuring.** Once metrics start arriving, `Status` → `Measuring`. The portfolio review loop (Stage F) re-evaluates measuring items monthly.
 
 The operator-facing setup walkthrough — auth path, repo variable wiring, ID discovery, validation evidence — lives in [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md).
+
+*Note: The auto-classifier also adds an `output-type:<type>` label so automation workflows can adapt to the requested deliverable (e.g., `wr-pr-creation.yml` skips deployment scaffolding when creating the WR document if the output type is PDF/documentation).*
 
 ---
 

@@ -3,6 +3,11 @@ description: Lightweight WR for low-risk, internal, or agent-driven work. The au
 title: "[WR] "
 labels:
   - work-request
+  - weekly-research
+  - wr:in-progress
+  - deep-research
+  - openrouter
+  - role:orchestrator
   - quick
   - OpenHands
 body:
@@ -16,14 +21,15 @@ body:
         chooser) would be overkill — e.g. small internal scripts, follow-up
         fixes, agent-routed automation tasks.
 
-        Output Type is the only routing decision you must make. Every other
-        routing dropdown defaults to `auto-classify` and is filled in from
-        your description by [`wr-auto-classify.yml`](../workflows/wr-auto-classify.yml).
+        Title-only intake is allowed. If you only have a title, submit it and let
+        research / the orchestrator fill the routing fields from there.
+        Every routing dropdown can be inferred by
+        [`wr-auto-classify.yml`](../workflows/wr-auto-classify.yml).
 
   - type: dropdown
     id: output_type
     attributes:
-      label: Output Type (required)
+      label: Output Type (optional)
       description: What are you asking OpenHands to create or change?
       options:
         - production-app
@@ -38,7 +44,7 @@ body:
         - api-product
         - invention-flow
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: research_mode
@@ -147,7 +153,7 @@ body:
         Refresh an MCP I built 6 months ago, check if it is still commercially viable,
         and only rebuild it if the market and tooling still support it.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: problem_to_solve

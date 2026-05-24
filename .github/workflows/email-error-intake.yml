@@ -1,0 +1,52 @@
+name: Email Error Intake
+
+# Reads UNREAD "error" emails from an inbox and opens one GitHub issue per error,
+# so the existing route -> research -> fix -> heal pipeline can handle them.
+# See docs/process/EMAIL_ERROR_INTAKE.md.
+#
+# Rollout: manual + dry-run first. Run it once with dry_run=true to confirm it
+# connects and catches the right mail (it creates nothing). Once verified, run
+# with dry_run=false, then a schedule can be enabled.
+#
+# Required repo secrets:
+#   ERROR_INBOX_ADDRESS       inbox to read (e.g. you@gmail.com)
+#   ERROR_INBOX_APP_PASSWORD  Gmail App Password (not the login password)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log what would be filed without creating issues'
+        type: boolean
+        default: true
+      max_issues:
+        description: 'Max issues to open this run'
+        type: string
+        default: '5'
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: email-error-intake
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read inbox and open issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ERROR_INBOX_ADDRESS: ${{ secrets.ERROR_INBOX_ADDRESS }}
+          ERROR_INBOX_APP_PASSWORD: ${{ secrets.ERROR_INBOX_APP_PASSWORD }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_ISSUES: ${{ inputs.max_issues }}
+        run: python3 scripts/email_error_intake.py

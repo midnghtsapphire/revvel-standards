@@ -1,62 +1,44 @@
-# Test BITO AI Integration
-#
-# This workflow validates that BITO AI is properly configured and functional.
-# It runs on:
-# - Push to main (to catch configuration drift)
-# - Pull requests that modify BITO-related files
-# - Manual trigger for on-demand testing
-#
-# The test does NOT require BITO_API_KEY to be set — it validates the
-# configuration files, labels, and workflow setup. API connectivity tests
-# run only if the key is available.
-
 name: Test BITO AI Integration
-
 on:
   push:
     branches:
       - main
     paths:
-      - '.github/workflows/bito-ai.yml'
-      - '.github/workflows/test-bito-integration.yml'
-      - 'scripts/test-bito-api.sh'
-      - 'scripts/bito-api-helper.sh'
-      - 'docs/BITO_AI_INTEGRATION.md'
-      - 'standards/BITO_AI_INTEGRATION_STANDARD.md'
-      - 'skills/bito-ai/**'
-      - '.github/labels.yml'
+      - .github/workflows/bito-ai.yml
+      - .github/workflows/test-bito-integration.yml
+      - scripts/test-bito-api.sh
+      - scripts/bito-api-helper.sh
+      - docs/BITO_AI_INTEGRATION.md
+      - standards/BITO_AI_INTEGRATION_STANDARD.md
+      - skills/bito-ai/**
+      - .github/labels.yml
   pull_request:
     paths:
-      - '.github/workflows/bito-ai.yml'
-      - '.github/workflows/test-bito-integration.yml'
-      - 'scripts/test-bito-api.sh'
-      - 'scripts/bito-api-helper.sh'
-      - 'docs/BITO_AI_INTEGRATION.md'
-      - 'standards/BITO_AI_INTEGRATION_STANDARD.md'
-      - 'skills/bito-ai/**'
-      - '.github/labels.yml'
-  workflow_dispatch:
-
-# P1 - Important workflow: test configuration changes
+      - .github/workflows/bito-ai.yml
+      - .github/workflows/test-bito-integration.yml
+      - scripts/test-bito-api.sh
+      - scripts/bito-api-helper.sh
+      - docs/BITO_AI_INTEGRATION.md
+      - standards/BITO_AI_INTEGRATION_STANDARD.md
+      - skills/bito-ai/**
+      - .github/labels.yml
+  workflow_dispatch: null
 concurrency:
   group: test-bito-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
-
 jobs:
   test-bito-configuration:
     name: Validate BITO AI configuration
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Check required files exist
         run: |
           echo "Checking for required BITO AI files..."
-          
+
           REQUIRED_FILES=(
             ".github/workflows/bito-ai.yml"
             "docs/BITO_AI_INTEGRATION.md"
@@ -67,9 +49,9 @@ jobs:
             "scripts/test-bito-api.sh"
             "scripts/bito-api-helper.sh"
           )
-          
+
           MISSING_FILES=()
-          
+
           for file in "${REQUIRED_FILES[@]}"; do
             if [ -f "${file}" ]; then
               echo "  ✅ ${file}"
@@ -78,54 +60,52 @@ jobs:
               MISSING_FILES+=("${file}")
             fi
           done
-          
+
           if [ ${#MISSING_FILES[@]} -gt 0 ]; then
             echo ""
             echo "Error: Missing required files:"
             printf '  - %s\n' "${MISSING_FILES[@]}"
             exit 1
           fi
-          
+
           echo ""
           echo "✅ All required files present"
-
       - name: Validate workflow syntax
         run: |
           echo "Validating bito-ai.yml workflow..."
-          
+
           # Check for required workflow elements
           WORKFLOW=".github/workflows/bito-ai.yml"
-          
-          if ! grep -q "bito-core/bito-github-action" "${WORKFLOW}"; then
-            echo "❌ Workflow does not use bito-core/bito-github-action"
+
+          if ! grep -Eq "bito-core/bito-github-action|gitbito/codereviewagent" "${WORKFLOW}"; then
+            echo "❌ Workflow does not use a recognized BITO action"
             exit 1
           fi
-          
-          if ! grep -q "BITO_API_KEY" "${WORKFLOW}"; then
-            echo "❌ Workflow does not reference BITO_API_KEY"
+
+          if ! grep -Eq "BITO_API_KEY|BITO_ACCESS_KEY" "${WORKFLOW}"; then
+            echo "❌ Workflow does not reference BITO_API_KEY/BITO_ACCESS_KEY"
             exit 1
           fi
-          
+
           if ! grep -q "permissions:" "${WORKFLOW}"; then
             echo "❌ Workflow does not define permissions"
             exit 1
           fi
-          
+
           if ! grep -q "pull-requests: write" "${WORKFLOW}"; then
             echo "❌ Workflow missing pull-requests: write permission"
             exit 1
           fi
-          
-          echo "✅ Workflow syntax is valid"
 
+          echo "✅ Workflow syntax is valid"
       - name: Validate required labels exist
         run: |
           echo "Checking for required BITO AI labels..."
-          
+
           LABELS_FILE=".github/labels.yml"
           REQUIRED_LABELS=("bito-ai" "bito-ai:review" "bito-ai:changes-needed")
           MISSING_LABELS=()
-          
+
           for label in "${REQUIRED_LABELS[@]}"; do
             # Check with both quoted and unquoted variants
             if grep -q "name: [\"']${label}[\"']" "${LABELS_FILE}" || \
@@ -136,32 +116,30 @@ jobs:
               MISSING_LABELS+=("${label}")
             fi
           done
-          
+
           if [ ${#MISSING_LABELS[@]} -gt 0 ]; then
             echo ""
             echo "Error: Missing required labels:"
             printf '  - %s\n' "${MISSING_LABELS[@]}"
             exit 1
           fi
-          
+
           echo ""
           echo "✅ All required labels defined"
-
       - name: Validate .env.example includes BITO_API_KEY
         run: |
           echo "Checking .env.example for BITO_API_KEY..."
-          
+
           if grep -q "BITO_API_KEY" .env.example; then
             echo "✅ BITO_API_KEY is documented in .env.example"
           else
             echo "❌ BITO_API_KEY is missing from .env.example"
             exit 1
           fi
-
       - name: Check documentation completeness
         run: |
           echo "Validating documentation..."
-          
+
           # Check BITO_AI_INTEGRATION.md has required sections
           DOC="docs/BITO_AI_INTEGRATION.md"
           REQUIRED_SECTIONS=(
@@ -170,7 +148,7 @@ jobs:
             "How it integrates"
             "Secrets and configuration"
           )
-          
+
           for section in "${REQUIRED_SECTIONS[@]}"; do
             if grep -qi "${section}" "${DOC}"; then
               echo "  ✅ ${section}"
@@ -178,62 +156,57 @@ jobs:
               echo "  ⚠️  Missing section: ${section}"
             fi
           done
-          
+
           echo ""
           echo "✅ Documentation validation complete"
-
       - name: Test helper scripts are executable
         run: |
           echo "Checking script permissions..."
-          
+
           if [ -x "scripts/test-bito-api.sh" ]; then
             echo "✅ test-bito-api.sh is executable"
           else
             echo "❌ test-bito-api.sh is not executable"
             exit 1
           fi
-          
+
           if [ -x "scripts/bito-api-helper.sh" ]; then
             echo "✅ bito-api-helper.sh is executable"
           else
             echo "❌ bito-api-helper.sh is not executable"
             exit 1
           fi
-
       - name: Run bito-api-helper.sh status
         run: |
           echo "Running configuration status check..."
           ./scripts/bito-api-helper.sh status || true
           echo ""
           echo "✅ Status check completed"
-
       - name: Test script help output
         run: |
           echo "Testing help output..."
           ./scripts/bito-api-helper.sh help
           echo ""
           echo "✅ Help output works"
-
       - name: Validate skill metadata
         run: |
           echo "Checking skill metadata..."
-          
+
           SKILL="skills/bito-ai/SKILL.md"
-          
+
           if ! grep -q "Platform.*BITO AI" "${SKILL}"; then
             echo "⚠️  Skill may be missing platform information"
           fi
-          
+
           if ! grep -q "Standard.*BITO_AI_INTEGRATION_STANDARD" "${SKILL}"; then
             echo "⚠️  Skill may be missing standard reference"
           fi
-          
+
           if ! grep -q "Workflow.*bito-ai.yml" "${SKILL}"; then
             echo "⚠️  Skill may be missing workflow reference"
           fi
-          
-          echo "✅ Skill metadata validated"
 
+          echo "✅ Skill metadata validated"
       - name: Summary
         if: success()
         run: |
@@ -245,18 +218,18 @@ jobs:
           echo "All configuration checks passed!"
           echo ""
           echo "Next steps to enable BITO AI:"
-          echo "  1. Get API key from https://bito.ai → Settings → API Keys"
-          echo "  2. Add as GitHub secret: BITO_API_KEY"
+          echo "  1. Get access key from https://bito.ai → Settings → Access Keys"
+          echo "  2. Add as GitHub secrets: BITO_ACCESS_KEY and GIT_ACCESS_TOKEN"
           echo "  3. Open a test PR to trigger the workflow"
           echo "  4. Verify BITO posts a review comment"
           echo ""
-
       - name: API connectivity test (if key available)
-        # Only run if BITO_API_KEY secret is configured
-        # Note: This step will be skipped in most cases as the secret is not required for basic tests
         if: ${{ secrets.BITO_API_KEY != '' }}
         env:
           BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
         run: |
           echo "BITO_API_KEY is available — running API tests..."
           ./scripts/test-bito-api.sh
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

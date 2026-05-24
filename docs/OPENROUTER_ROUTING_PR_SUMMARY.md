@@ -61,11 +61,11 @@ This PR implements task-based model routing with automatic fallback for OpenRout
 
 **Model fallback chain:**
 ```
-anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
+anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
 ```
 
 **Rationale:**
-- Prioritizes Claude 3.7 Sonnet for independent, high-quality reasoning
+- Prioritizes Claude Sonnet 4 for independent, high-quality reasoning
 - Falls back to DeepSeek for cost-effective strong coding
 - GPT-5.2 Codex as final fallback for debugging expertise
 
@@ -74,7 +74,7 @@ anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
 
 **Model fallback chain:**
 ```
-deepseek/deepseek-v3.2 → anthropic/claude-3.7-sonnet
+deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 ```
 
 **Rationale:**
@@ -87,7 +87,7 @@ deepseek/deepseek-v3.2 → anthropic/claude-3.7-sonnet
 
 **Model fallback chain:**
 ```
-openai/gpt-5.2-codex → anthropic/claude-3.7-sonnet → deepseek/deepseek-v3.2
+openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 ```
 
 **Rationale:**
@@ -167,7 +167,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 node scripts/openrouter-routing-example.js repo_surgery "Hello, world!"
 
 # Output will show:
-# ✅ Model used: anthropic/claude-3.7-sonnet
+# ✅ Model used: anthropic/claude-sonnet-4
 ```
 
 ## OpenRouter Fallback Behavior Caveats
@@ -271,7 +271,7 @@ For existing OpenRouter callsites in the codebase:
 **Before:**
 ```javascript
 const result = await callOpenRouter(
-  'anthropic/claude-3.7-sonnet',
+  'anthropic/claude-sonnet-4',
   messages,
   4000
 );

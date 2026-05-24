@@ -1,0 +1,628 @@
+name: 📱 Auto Deploy to Stores
+# Deploys mobile apps to the Apple App Store and Google Play Store.
+#
+# This workflow enforces the full WR revvel-standards lifecycle:
+#   1. Deep research gate — the originating WR issue must have deep-research
+#      + research:complete (or wr:research-complete / wr:complete) before
+#      any store deployment is attempted. If research is missing, the workflow
+#      dispatches research-engine.yml and stops; re-run this workflow after
+#      research completes.
+#   2. Android deployment — Expo EAS → Fastlane → Bubblewrap TWA (priority order)
+#   3. iOS deployment      — Expo EAS → Fastlane → Capacitor (on macos-latest)
+#   4. Result reporting    — posts a summary to the originating WR issue and
+#      applies wr:done when all requested platforms deployed successfully.
+#
+# Triggers
+# ────────
+# A) PR merge — any PR with deliver:mobile / deliver:android / deliver:ios label
+# B) Issue labeled — deliver:mobile / deliver:android / deliver:ios on a WR issue
+# C) Manual workflow_dispatch — useful for re-running a specific issue/platform
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Originating WR issue number"
+        required: true
+        type: string
+      platform:
+        description: "Target platform(s)"
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      android_track:
+        description: "Google Play track (android)"
+        required: false
+        default: internal
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+      ios_environment:
+        description: "App Store environment (ios)"
+        required: false
+        default: testflight
+        type: choice
+        options:
+          - testflight
+          - app-store
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: auto-deploy-stores-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Decide whether this run is relevant and resolve inputs
+  # ─────────────────────────────────────────────────────────────────────────────
+  gate:
+    name: 🚦 Event Gate
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+      issue_number: ${{ steps.decide.outputs.issue_number }}
+      platform: ${{ steps.decide.outputs.platform }}
+      android_track: ${{ steps.decide.outputs.android_track }}
+      ios_environment: ${{ steps.decide.outputs.ios_environment }}
+      run_android: ${{ steps.decide.outputs.run_android }}
+      run_ios: ${{ steps.decide.outputs.run_ios }}
+    steps:
+      - name: Resolve trigger and parameters
+        id: decide
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const dispatch = context.eventName === 'workflow_dispatch';
+            const inputs   = context.payload.inputs || {};
+
+            // ── Label sets that activate this workflow ────────────────────────
+            const STORE_LABELS = new Set(['deliver:mobile', 'deliver:android', 'deliver:ios']);
+
+            let issueNumber = '';
+            let labelNames  = [];
+
+            if (dispatch) {
+              issueNumber = inputs.issue_number || '';
+              labelNames  = ['deliver:' + (inputs.platform === 'both' ? 'mobile' : inputs.platform)];
+            } else if (context.eventName === 'issues') {
+              const added = context.payload.label?.name || '';
+              if (!STORE_LABELS.has(added)) {
+                core.info(`Label "${added}" is not a store-delivery label — skipping`);
+                core.setOutput('should_run', 'false');
+                return;
+              }
+              issueNumber = String(context.payload.issue.number);
+              labelNames  = (context.payload.issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            } else if (context.eventName === 'pull_request') {
+              if (!context.payload.pull_request?.merged) {
+                core.info('PR not merged — skipping');
+                core.setOutput('should_run', 'false');
+                return;
+              }
+              labelNames = (context.payload.pull_request.labels || []).map(l => typeof l === 'string' ? l : l.name);
+              if (!labelNames.some(l => STORE_LABELS.has(l))) {
+                core.info('PR has no store-delivery labels — skipping');
+                core.setOutput('should_run', 'false');
+                return;
+              }
+              // Extract linked WR issue from PR body
+              const body = context.payload.pull_request.body || '';
+              const m = body.match(/(?:Closes|Fixes|Resolves)\s+#(\d+)/i);
+              issueNumber = m ? m[1] : '';
+            }
+
+            const wantsAndroid = dispatch
+              ? (inputs.platform === 'android' || inputs.platform === 'both')
+              : labelNames.some(l => l === 'deliver:mobile' || l === 'deliver:android');
+            const wantsIos = dispatch
+              ? (inputs.platform === 'ios' || inputs.platform === 'both')
+              : labelNames.some(l => l === 'deliver:mobile' || l === 'deliver:ios');
+
+            const androidTrack  = inputs.android_track  || 'internal';
+            const iosEnv        = inputs.ios_environment || 'testflight';
+
+            core.setOutput('should_run',      'true');
+            core.setOutput('issue_number',    issueNumber);
+            core.setOutput('platform',        wantsAndroid && wantsIos ? 'both' : wantsAndroid ? 'android' : 'ios');
+            core.setOutput('android_track',   androidTrack);
+            core.setOutput('ios_environment', iosEnv);
+            core.setOutput('run_android',     String(wantsAndroid));
+            core.setOutput('run_ios',         String(wantsIos));
+    timeout-minutes: 5
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Deep Research Gate (revvel-standards mandatory for all WRs)
+  #
+  # Passes when the originating WR issue has BOTH:
+  #   • deep-research label
+  #   • research:complete OR wr:research-complete OR wr:complete label
+  # OR a research packet exists in docs/research-engine/
+  #
+  # If research is incomplete, this job dispatches research-engine.yml and
+  # fails so the whole workflow re-runs once the research label is applied.
+  # ─────────────────────────────────────────────────────────────────────────────
+  research-gate:
+    name: 🔬 Deep Research Gate
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      research_ok: ${{ steps.check.outputs.research_ok }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          sparse-checkout: docs/research-engine
+          sparse-checkout-cone-mode: false
+      - name: Verify deep research completion
+        id: check
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+
+            // No linked issue — hard fail: a WR issue is mandatory for store deploys
+            if (!issueNumber) {
+              core.setOutput('research_ok', 'false');
+              core.setFailed(
+                'No originating WR issue found. A linked Work Request issue is required for all store deployments.\n' +
+                'Add "Closes #<issue_number>" to the PR body, or supply the issue_number input when triggering manually.\n' +
+                'Per revvel-standards, every store deploy must be backed by a WR issue with completed deep research.'
+              );
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(issueNumber),
+            }).catch(() => ({ data: null }));
+
+            if (!issue) {
+              core.setOutput('research_ok', 'false');
+              core.setFailed(
+                `Issue #${issueNumber} not found in this repository. ` +
+                'Verify the issue number in the PR body ("Closes #N") or workflow input and re-run.'
+              );
+              return;
+            }
+
+            const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            const labelSet = new Set(labels);
+
+            const hasDeepResearch = labelSet.has('deep-research');
+            const hasResearchComplete =
+              labelSet.has('research:complete') ||
+              labelSet.has('wr:research-complete') ||
+              labelSet.has('wr:complete');
+
+            // Also accept: a committed research packet in docs/research-engine/
+            const fs = require('fs');
+            const path = require('path');
+            const researchDir = path.join(process.env.GITHUB_WORKSPACE, 'docs', 'research-engine');
+            const hasResearchPacket = fs.existsSync(researchDir) &&
+              fs.readdirSync(researchDir).some(f => f.endsWith('.md'));
+
+            const researchOk = (hasDeepResearch && hasResearchComplete) || hasResearchPacket;
+
+            if (!researchOk) {
+              // Dispatch research-engine.yml to unblock automatically
+              core.warning(`Issue #${issueNumber} has not completed deep research. Dispatching research-engine.yml...`);
+
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: 'research-engine.yml',
+                  ref: 'main',
+                  inputs: {
+                    issue_number: issueNumber,
+                    research_depth: 'triangulated',
+                  },
+                });
+              } catch (e) {
+                core.warning('Could not dispatch research-engine.yml: ' + e.message);
+              }
+
+              // Post a blocking comment on the WR issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(issueNumber),
+                body: [
+                  '## 🔬 Deep Research Required Before Store Deployment',
+                  '',
+                  'Per **revvel-standards**, all bug fixes, enhancements, and new products must complete deep research before deploying to app stores.',
+                  '',
+                  '**Missing on this issue:**',
+                  !hasDeepResearch    ? '- `deep-research` label' : '',
+                  !hasResearchComplete ? '- `research:complete` or `wr:research-complete` label' : '',
+                  !hasResearchPacket  ? '- Research packet in `docs/research-engine/`' : '',
+                  '',
+                  '`research-engine.yml` has been dispatched automatically. Once it completes and applies `research:complete`, re-run this workflow:',
+                  '',
+                  `> [Re-run Auto Deploy to Stores](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/auto-deploy-to-stores.yml)`,
+                ].filter(l => l !== undefined && l !== '').join('\n'),
+              });
+
+              // Apply deep-research label if missing
+              if (!hasDeepResearch) {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: parseInt(issueNumber),
+                  labels: ['deep-research'],
+                }).catch(() => {});
+              }
+
+              core.setOutput('research_ok', 'false');
+              core.setFailed('Deep research not complete. research-engine.yml has been dispatched. Re-run this workflow after research completes.');
+              return;
+            }
+
+            core.info(`Research gate passed for issue #${issueNumber} ✅`);
+            core.setOutput('research_ok', 'true');
+    timeout-minutes: 10
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Job 3 — Deploy to Google Play Store (ubuntu-latest)
+  #
+  # Toolchain priority:
+  #   1. Expo EAS         — if eas.json or expo.json present
+  #   2. Fastlane supply  — if fastlane/Fastfile present
+  #   3. Bubblewrap TWA   — if manifest.json present (PWA → Play Store)
+  #   4. Gradle direct    — if android/gradlew present
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy-android:
+    name: 🤖 Deploy → Google Play Store
+    needs:
+      - gate
+      - research-gate
+    if: >
+      needs.gate.outputs.run_android == 'true' &&
+      needs.research-gate.outputs.research_ok == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.deploy.outputs.result }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --if-present
+      - name: Build web assets (if needed)
+        run: npm run build --if-present
+      - name: Detect toolchain and deploy
+        id: deploy
+        run: |
+          TRACK="${{ needs.gate.outputs.android_track }}"
+          [[ "$TRACK" == "internal" || "$TRACK" == "alpha" || "$TRACK" == "beta" || "$TRACK" == "production" ]] || TRACK="internal"
+
+          # ── 1. Expo EAS ─────────────────────────────────────────────────────
+          if [[ -f eas.json || -f expo.json ]]; then
+            echo "Detected Expo project — using EAS Build + Submit"
+            if [[ -z "$EXPO_TOKEN" ]]; then
+              echo "result=SKIPPED — add EXPO_TOKEN secret for Expo EAS deployment" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            npm install -g eas-cli@latest
+            eas build --platform android --non-interactive --auto-submit \
+              --profile "$TRACK" || {
+              # Fall back to build-only without auto-submit if submit fails
+              eas build --platform android --non-interactive --profile "$TRACK"
+              echo "result=EAS build queued (track: $TRACK). Submission may require manual review in Expo dashboard." >> $GITHUB_OUTPUT
+              exit 0
+            }
+            echo "result=EAS build submitted to Play Store (track: $TRACK)" >> $GITHUB_OUTPUT
+            echo "url=https://expo.dev" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # ── 2. Fastlane ──────────────────────────────────────────────────────
+          if [[ -f Gemfile && (-f Fastfile || -f fastlane/Fastfile) ]]; then
+            echo "Detected Fastlane — running fastlane android $TRACK"
+            if [[ -z "$GOOGLE_PLAY_JSON_KEY" ]]; then
+              echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "$GOOGLE_PLAY_JSON_KEY" > /tmp/play-store-key.json
+            bundle install --jobs 4 --retry 3
+            SUPPLY_JSON_KEY=/tmp/play-store-key.json bundle exec fastlane android "$TRACK"
+            PKG=$(grep 'package_name\|applicationId' android/app/build.gradle 2>/dev/null | head -1 | grep -oP '"[^"]+"' | head -1 | tr -d '"' || echo "app")
+            echo "result=Fastlane deployed $PKG to Play Store (track: $TRACK)" >> $GITHUB_OUTPUT
+            echo "url=https://play.google.com/console" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # ── 3. Bubblewrap TWA (PWA → Play Store) ─────────────────────────────
+          if [[ -f manifest.json || -f public/manifest.json ]]; then
+            echo "Detected PWA manifest — using Bubblewrap to build TWA"
+            if [[ -z "$GOOGLE_PLAY_JSON_KEY" ]]; then
+              echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            sudo apt-get update
+            sudo apt-get install -y default-jdk 2>/dev/null
+            npm install -g @bubblewrap/cli
+            bubblewrap build
+            echo "result=Bubblewrap TWA built. Upload app-release-signed.apk to Play Store (track: $TRACK) manually or via Fastlane." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # ── 4. Gradle direct ─────────────────────────────────────────────────
+          if [[ -f android/gradlew ]]; then
+            echo "Detected Gradle project — building release AAB"
+            if [[ -z "$GOOGLE_PLAY_JSON_KEY" ]]; then
+              echo "result=SKIPPED — add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            cd android
+            chmod +x gradlew
+            ./gradlew bundleRelease
+            echo "result=Release AAB built. Add Fastlane or use Google Play API to upload to track: $TRACK." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "result=SKIPPED — no Android toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, manifest.json for TWA, or android/ for Gradle)" >> $GITHUB_OUTPUT
+      - name: Upload Android artifact
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: android-build-${{ github.run_id }}
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/apk/release/*.apk
+            *.apk
+            *.aab
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.deploy.outputs.result }}';
+            const url    = '${{ steps.deploy.outputs.url }}';
+            const run    = '${{ github.run_id }}';
+            const ok     = result && !result.includes('SKIPPED');
+            const prNum  = context.payload.pull_request?.number;
+            if (!prNum) return;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNum,
+              body: ok
+                ? `🤖 **Android → Google Play** ✅\n\n${result}${url ? `\n\n[Open Play Console](${url})` : ''}`
+                : `🤖 **Android deploy skipped** ⚠️\n\n${result}\n\n[View run logs](https://github.com/${{ github.repository }}/actions/runs/${run})`
+            });
+    timeout-minutes: 60
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Job 4 — Deploy to Apple App Store / TestFlight (macos-latest required)
+  #
+  # Toolchain priority:
+  #   1. Expo EAS         — if eas.json or expo.json present
+  #   2. Fastlane deliver — if fastlane/Fastfile present
+  #   3. Capacitor        — if capacitor.config.ts/json present
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy-ios:
+    name: 🍎 Deploy → Apple App Store
+    needs:
+      - gate
+      - research-gate
+    if: >
+      needs.gate.outputs.run_ios == 'true' &&
+      needs.research-gate.outputs.research_ok == 'true'
+    runs-on: macos-latest
+    outputs:
+      result: ${{ steps.deploy.outputs.result }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install dependencies
+        run: npm ci --if-present
+      - name: Build web assets (if needed)
+        run: npm run build --if-present
+      - name: Detect toolchain and deploy
+        id: deploy
+        run: |
+          IOS_ENV="${{ needs.gate.outputs.ios_environment }}"
+          [[ "$IOS_ENV" == "testflight" || "$IOS_ENV" == "app-store" ]] || IOS_ENV="testflight"
+
+          # ── 1. Expo EAS ─────────────────────────────────────────────────────
+          if [[ -f eas.json || -f expo.json ]]; then
+            echo "Detected Expo project — using EAS Build + Submit"
+            if [[ -z "$EXPO_TOKEN" ]]; then
+              echo "result=SKIPPED — add EXPO_TOKEN secret for Expo EAS deployment" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            npm install -g eas-cli@latest
+            EAS_PROFILE="$IOS_ENV"
+            eas build --platform ios --non-interactive --auto-submit \
+              --profile "$EAS_PROFILE" || {
+              eas build --platform ios --non-interactive --profile "$EAS_PROFILE"
+              echo "result=EAS iOS build queued ($IOS_ENV). Submission may require manual review in Expo dashboard." >> $GITHUB_OUTPUT
+              exit 0
+            }
+            echo "result=EAS iOS build submitted to $IOS_ENV" >> $GITHUB_OUTPUT
+            echo "url=https://expo.dev" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # ── 2. Fastlane ──────────────────────────────────────────────────────
+          if [[ -f Gemfile && (-f Fastfile || -f fastlane/Fastfile) ]]; then
+            echo "Detected Fastlane — running fastlane ios $IOS_ENV"
+            if [[ -z "$APP_STORE_CONNECT_API_KEY_ID" ]]; then
+              echo "result=SKIPPED — add APP_STORE_CONNECT_API_KEY_ID, APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_API_KEY_CONTENT secrets" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            bundle install --quiet
+            bundle exec fastlane ios "$IOS_ENV"
+            echo "result=Fastlane deployed to $IOS_ENV" >> $GITHUB_OUTPUT
+            echo "url=https://appstoreconnect.apple.com" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # ── 3. Capacitor (web → native iOS) ──────────────────────────────────
+          if [[ -f capacitor.config.ts || -f capacitor.config.json ]]; then
+            echo "Detected Capacitor project"
+            if [[ -z "$APP_STORE_CONNECT_API_KEY_ID" ]]; then
+              echo "result=SKIPPED — add APP_STORE_CONNECT_API_KEY_ID secret for Capacitor iOS deployment" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            npm install @capacitor/core @capacitor/ios --save-exact
+            npx cap sync ios
+            xcodebuild -workspace ios/App/App.xcworkspace \
+              -scheme App \
+              -configuration Release \
+              -archivePath /tmp/App.xcarchive \
+              archive -allowProvisioningUpdates \
+              CODE_SIGN_STYLE=Automatic || {
+              echo "result=SKIPPED — Capacitor xcodebuild requires provisioning profile and signing certificate configured in Xcode. See docs/MOBILE_DEPLOYMENT.md." >> $GITHUB_OUTPUT
+              exit 0
+            }
+            echo "result=Capacitor iOS archive built. Run Fastlane or Xcode Organizer to upload to $IOS_ENV." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "result=SKIPPED — no iOS toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, or capacitor.config.ts for Capacitor)" >> $GITHUB_OUTPUT
+      - name: Upload iOS artifact
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ios-build-${{ github.run_id }}
+          path: |
+            /tmp/App.xcarchive
+            *.ipa
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const result = '${{ steps.deploy.outputs.result }}';
+            const url    = '${{ steps.deploy.outputs.url }}';
+            const run    = '${{ github.run_id }}';
+            const ok     = result && !result.includes('SKIPPED');
+            const prNum  = context.payload.pull_request?.number;
+            if (!prNum) return;
+            github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNum,
+              body: ok
+                ? `🍎 **iOS → App Store** ✅\n\n${result}${url ? `\n\n[Open App Store Connect](${url})` : ''}`
+                : `🍎 **iOS deploy skipped** ⚠️\n\n${result}\n\n[View run logs](https://github.com/${{ github.repository }}/actions/runs/${run})`
+            });
+    timeout-minutes: 90
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Job 5 — Report final results to the originating WR issue
+  # ─────────────────────────────────────────────────────────────────────────────
+  store-report:
+    name: 📊 Report Results to WR Issue
+    needs:
+      - gate
+      - research-gate
+      - deploy-android
+      - deploy-ios
+    if: always() && needs.gate.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post deployment summary to WR issue
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+            if (!issueNumber) return;
+
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${{ github.run_id }}`;
+
+            const androidResult = `${{ needs.deploy-android.outputs.result }}`;
+            const iosResult     = `${{ needs.deploy-ios.outputs.result }}`;
+            const androidUrl    = `${{ needs.deploy-android.outputs.url }}`;
+            const iosUrl        = `${{ needs.deploy-ios.outputs.url }}`;
+
+            const androidRan = '${{ needs.deploy-android.result }}' !== 'skipped';
+            const iosRan     = '${{ needs.deploy-ios.result }}'     !== 'skipped';
+
+            const androidOk = androidRan && androidResult && !androidResult.includes('SKIPPED') && !androidResult.includes('FAILED');
+            const iosOk     = iosRan     && iosResult     && !iosResult.includes('SKIPPED')     && !iosResult.includes('FAILED');
+
+            const lines = ['## 📱 Auto Deploy to Stores — Results', ''];
+
+            if (androidRan) {
+              lines.push(androidOk
+                ? `### ✅ Android → Google Play Store\n\n${androidResult}${androidUrl ? `\n\n[View in Play Console](${androidUrl})` : ''}`
+                : `### ⚠️ Android — Skipped or Failed\n\n${androidResult || 'No result captured'}`);
+              lines.push('');
+            }
+
+            if (iosRan) {
+              lines.push(iosOk
+                ? `### ✅ iOS → App Store Connect\n\n${iosResult}${iosUrl ? `\n\n[View in App Store Connect](${iosUrl})` : ''}`
+                : `### ⚠️ iOS — Skipped or Failed\n\n${iosResult || 'No result captured'}`);
+              lines.push('');
+            }
+
+            lines.push(`---\n[View full workflow logs](${runUrl})`);
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(issueNumber),
+              body: lines.join('\n'),
+            });
+
+            // Apply wr:done when all requested platforms succeeded
+            const allSucceeded = (!androidRan || androidOk) && (!iosRan || iosOk);
+            if (allSucceeded && (androidRan || iosRan)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(issueNumber),
+                labels: ['wr:done'],
+              }).catch(() => {});
+            } else if (!allSucceeded) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(issueNumber),
+                labels: ['needs-human'],
+              }).catch(() => {});
+            }
+    timeout-minutes: 10

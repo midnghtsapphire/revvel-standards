@@ -79,7 +79,7 @@ For each repository identified, perform deep web research:
 Follow ALL requirements in `revvel-standards/docs/AGENTS.md`:
 
 1. **Prime Directive** - 10M by 2030, $2000+/month
-2. **Obsessive Autonomy** - Never stop at blockers
+2. **Driven Autonomy** - Never stop at blockers
 3. **Self-Healing** - Fix errors autonomously
 4. **Ship to Market** - Working code, not plans
 

@@ -166,6 +166,9 @@ Behavior:
    `auto:default-fallback` so a human can spot-check.
 4. **Posts a comment** on the issue summarizing each field's value AND its
    source (`explicit` / `classifier` / `fallback`).
+5. **Applies an `output-type:<type>` label** to the issue so downstream
+   automation can easily read the routing decision (e.g. `wr-pr-creation.yml`
+   skipping app scaffolding for PDF/docs).
 
 Required credentials (both already configured for `revvel-standards`):
 
@@ -186,18 +189,18 @@ behavior differs by which credential is missing:
 ## Issue template structure
 
 The `New Issue` chooser shows two cards, both of which apply the
-`work-request` label so the auto-classifier and downstream automation
-(`wr-pr-creation.yml`, `jules-invoke.yml`, the Project v2 board sync) treat
-them identically. Numeric prefixes force the sort order per
+`work-request` and `weekly-research` labels so the auto-classifier and
+downstream automation (`wr-pr-creation.yml`, `jules-invoke.yml`, the Project
+v2 board sync) treat them identically. WR workflows also accept the BASIC WR
+issue type and normalize missing labels. Numeric prefixes force the sort order per
 [GitHub's documented ordering rules][gh-template-order].
 
 - `.github/ISSUE_TEMPLATE/00-work-request.yml` — primary, anti-under-scoping
-  human form. The `00-` prefix sorts it first. Heavy on explicit scope: 12
-  required fields covering Output Type, the four routing modes (Research /
-  Delivery / Lifecycle / Commercial), Summary, Objective, Required Bundle,
-  Definition of Done, Do Not Under-Scope, Delivery Shape, Blocker Rule, plus
-  a 4-checkbox Acknowledgements block. The implementer's PR must mirror the
-  Required Bundle and not silently drop items.
+  human form. The `00-` prefix sorts it first. Output Type is the only
+  required field; routing/scope fields are optional so intake can stay fast and
+  research automation can backfill context. The anti-under-scoping fields still
+  exist (Summary, Objective, Required Bundle, Definition of Done, Do Not
+  Under-Scope, Delivery Shape, Blocker Rule) for explicit bundle contracts.
 - `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml` — lightweight system form.
   The `10-` prefix sorts it after the heavy form. Output Type is the only
   required routing decision; every other routing dropdown defaults to

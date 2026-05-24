@@ -3,18 +3,41 @@
   "version": "2.0.0",
   "private": true,
   "description": "SSOT standards, templates, and automation for MIDNGHTSAPPHIRE projects",
+  "type": "commonjs",
+  "packageManager": "npm@10.9.7",
+  "engines": {
+    "node": ">=22 <25"
+  },
   "scripts": {
-    "test": "node tests/openrouter-triage.test.js && node tests/pr-review-scan.test.js && node tests/amplitude-to-notion.test.js && node tests/workflow-yaml-validation.test.js && node tests/gatekeeper-sync.test.js && node tests/sync-dns-records.test.js && node tests/schema-rich-results-checker.test.js && node tests/revvel-rosette-automation-harness.test.js && node tests/generate-daily-summary.test.js && node tests/scripts/check-compliance.test.js && node tests/scripts/sync-flow-charts.test.js && node tests/verify-bito-installation.test.js && node tests/wr-control-plane.test.js && node tests/aggregate-project-dashboard.test.js && node tests/openrouter-routing.test.js",
+    "test": "node --test tests && bash tests/social_post_formatter.test.sh",
+    "test:all": "node --test tests",
+    "engine": "node engines/runner-orchestrator/orchestrate.js",
+    "test:cov": "c8 --reporter=text --reporter=lcov node --test tests",
+    "test:sh": "bash tests/social_post_formatter.test.sh",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "npm run typecheck",
     "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\"",
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
     "dashboard": "node scripts/dashboard-cli.js",
-    "dashboard:generate": "node scripts/aggregate-project-dashboard.js"
+    "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
+    "automation:doctor": "node scripts/automation-doctor.js",
+    "workflows:validate": "node scripts/automation-doctor.js --validate",
+    "labels:check": "node scripts/automation-doctor.js --labels",
+    "deploy:vercel": "node scripts/deploy-vercel.js",
+    "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
+    "ui-engine": "node scripts/ui-creation-engine.js",
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
   },
   "devDependencies": {
+    "@types/node": "^22",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "c8": "^10.1.3",
     "markdownlint-cli2": "^0.22.1",
-    "yaml": "^2.7.0"
+    "typescript": "^5.7.0",
+    "yaml": "^2.9.0"
   }
 }

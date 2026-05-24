@@ -1,46 +1,27 @@
 name: OpenHands Resolver
-
-# DEVIN-RESTRUCTURE 2026-05-06 (Audrey ask: openrouter-agent-stack):
-# When an issue is labeled `fix-me`, hand it to the All-Hands-AI/OpenHands
-# resolver running through OpenRouter. The resolver reads the issue, makes
-# code changes against `main`, and opens a PR.
-#
-# Trigger model:
-#   - issues: [labeled]   when label == fix-me
-#   - workflow_dispatch   manual
-#
-# Fail-soft: if neither `OPENROUTER_API_KEY` nor `OPENHANDS_API_KEY` is set,
-# the workflow exits clean with a one-time issue comment so the WR isn't
-# silently stalled. Same pattern as bito-ai.yml + agent-fallback.yml.
-#
-# Docs: docs/agent-stack/AGENT_STACK_SETUP.md
-
 on:
   issues:
-    types: [labeled]
+    types:
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
-        description: "Issue number to resolve"
+        description: Issue number to resolve
         required: true
         type: number
-
 permissions:
   contents: write
   issues: write
   pull-requests: write
-
 concurrency:
   group: openhands-resolver-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   preflight:
     name: Check OpenHands credentials
     runs-on: ubuntu-latest
-    if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' &&
+    if: |-
+      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
        github.event.label.name == 'fix-me' &&
        github.event.issue.user.login != 'github-actions[bot]')
     outputs:
@@ -63,7 +44,7 @@ jobs:
             echo "configured=true" >> "$GITHUB_OUTPUT"
             echo "OpenHands resolver is configured."
           fi
-
+    timeout-minutes: 30
   notify-missing-creds:
     name: Notify when credentials are missing
     needs: preflight
@@ -71,7 +52,7 @@ jobs:
     if: needs.preflight.outputs.configured == 'false'
     steps:
       - name: Post one-time setup-needed notice
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt(
@@ -82,12 +63,12 @@ jobs:
 
             // Don't repeat the notice on every label-fire; check for an
             // existing notice first.
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
             const marker = '<!-- openhands-resolver:setup-needed -->';
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
@@ -129,7 +110,7 @@ jobs:
             } catch (e) {
               core.warning(`Could not add credentials-missing label: ${e.message}`);
             }
-
+    timeout-minutes: 30
   resolve:
     name: Run OpenHands resolver
     needs: preflight
@@ -142,16 +123,14 @@ jobs:
       LLM_MODEL: ${{ vars.OPENHANDS_MODEL || 'anthropic/claude-sonnet-4.5' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: main
-
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
-
       - name: Install OpenHands CLI
         run: |
           pip install --upgrade pip
@@ -159,12 +138,8 @@ jobs:
           # ships breaking minor bumps; track the latest stable from the docs.
           # See: https://docs.all-hands.dev/usage/installation
           pip install "openhands-ai>=0.21,<0.22"
-
       - name: Run resolver against the issue
         id: resolve
-        # Fail-soft. If the resolver can't run for any reason (rate limit,
-        # network blip, model error), we still want to surface that to the
-        # WR rather than blocking it.
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -178,10 +153,9 @@ jobs:
             --repo "$GH_REPO" \
             --output-pr-branch "openhands/issue-$ISSUE_NUMBER" \
             --max-iterations 30
-
       - name: Post resolver outcome to the issue
         if: always()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
         with:
@@ -203,3 +177,6 @@ jobs:
                 `_Triggered by label \`fix-me\` on issue #${issueNumber}._`,
               ].join('\n'),
             });
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

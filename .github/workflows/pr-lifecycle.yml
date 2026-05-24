@@ -1,0 +1,362 @@
+name: PR Lifecycle
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - converted_to_draft
+      - review_requested
+      - synchronize
+      - closed
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  workflow_run:
+    workflows:
+      - "*"
+    types:
+      - completed
+permissions:
+  pull-requests: write
+  issues: write
+  checks: read
+  contents: read
+env:
+  LIFECYCLE_LABELS: awaiting-review awaiting-approval approved changes-requested
+    review-started checks-failing checks-passing ready-to-merge needs-action
+jobs:
+  pr-state:
+    name: PR State — ${{ github.event.action }}
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Update lifecycle labels
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: >
+            const pr     = context.payload.pull_request;
+
+            const action = context.payload.action;
+
+            const owner  = context.repo.owner;
+
+            const repo   = context.repo.repo;
+
+            const num    = pr.number;
+
+
+            const ALL = [
+              'awaiting-review', 'awaiting-approval', 'approved',
+              'changes-requested', 'review-started', 'checks-failing',
+              'checks-passing', 'ready-to-merge', 'needs-action'
+            ];
+
+
+            // ─ helpers ────────────────────────────────────────────
+
+            const currentLabels = async () => (
+              await github.rest.issues.listLabelsOnIssue({
+                owner, repo, issue_number: num
+              })
+            ).data.map(l => l.name);
+
+
+            const add = async (...labels) => {
+              for (const l of labels) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner, repo, issue_number: num, labels: [l]
+                  });
+                  core.info(`  + ${l}`);
+                } catch (e) { core.warning(`add ${l}: ${e.message}`); }
+              }
+            };
+
+
+            const remove = async (...labels) => {
+              const cur = await currentLabels();
+              for (const l of labels) {
+                if (!cur.includes(l)) continue;
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner, repo, issue_number: num, name: l
+                  });
+                  core.info(`  - ${l}`);
+                } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
+              }
+            };
+
+
+            core.info(`PR #${num} event: ${action}`);
+
+
+            // ─ state machine ──────────────────────────────────────
+
+
+            switch (action) {
+
+              case 'closed':
+                await remove(...ALL);
+                break;
+
+              case 'converted_to_draft':
+                await remove(...ALL);
+                break;
+
+              case 'opened':
+              case 'reopened':
+                await remove(...ALL);
+                if (!pr.draft) await add('awaiting-review');
+                break;
+
+              case 'ready_for_review':
+                await remove('awaiting-approval', 'approved',
+                             'changes-requested', 'review-started',
+                             'ready-to-merge', 'needs-action');
+                await add('awaiting-review');
+                break;
+
+              case 'synchronize': {
+                // New commits: drop approval state; keep CI labels
+                await remove('approved', 'ready-to-merge', 'review-started',
+                             'changes-requested', 'needs-action');
+                const cur = await currentLabels();
+                if (!cur.includes('awaiting-review')) await add('awaiting-review');
+                break;
+              }
+
+              case 'review_requested': {
+                const cur = await currentLabels();
+                if (!cur.includes('awaiting-review')) await add('awaiting-review');
+                break;
+              }
+
+              default:
+                core.info(`No label change for action: ${action}`);
+            }
+    timeout-minutes: 15
+  review-state:
+    name: Review State — ${{ github.event.review.state }}
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'pull_request_review'
+    steps:
+      - name: Update labels on review submission
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: >
+            const review = context.payload.review;
+
+            const pr     = context.payload.pull_request;
+
+            const owner  = context.repo.owner;
+
+            const repo   = context.repo.repo;
+
+            const num    = pr.number;
+
+            const state  = review.state.toLowerCase();
+
+
+            core.info(`PR #${num} review state: ${state}`);
+
+
+            const currentLabels = async () => (
+              await github.rest.issues.listLabelsOnIssue({
+                owner, repo, issue_number: num
+              })
+            ).data.map(l => l.name);
+
+
+            const add = async (...labels) => {
+              for (const l of labels) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner, repo, issue_number: num, labels: [l]
+                  });
+                  core.info(`  + ${l}`);
+                } catch (e) { core.warning(`add ${l}: ${e.message}`); }
+              }
+            };
+
+
+            const remove = async (...labels) => {
+              const cur = await currentLabels();
+              for (const l of labels) {
+                if (!cur.includes(l)) continue;
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner, repo, issue_number: num, name: l
+                  });
+                  core.info(`  - ${l}`);
+                } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
+              }
+            };
+
+
+            if (state === 'commented') {
+              const cur = await currentLabels();
+              if (!cur.includes('review-started')) await add('review-started');
+              return;
+            }
+
+
+            if (state === 'approved') {
+              await remove('awaiting-review', 'awaiting-approval',
+                           'changes-requested', 'needs-action');
+              await add('approved');
+
+              // Gate: checks-passing already? → ready-to-merge
+              const cur = await currentLabels();
+              if (cur.includes('checks-passing')) {
+                await add('ready-to-merge');
+                core.info(`PR #${num} → ready-to-merge (approved + checks-passing)`);
+              } else {
+                core.info(`PR #${num} approved — awaiting checks.`);
+              }
+            }
+
+
+            if (state === 'changes_requested') {
+              await remove('awaiting-review', 'awaiting-approval',
+                           'approved', 'ready-to-merge');
+              await add('changes-requested', 'needs-action');
+            }
+    timeout-minutes: 15
+  check-state:
+    name: Check State — ${{ github.event.check_suite.conclusion ||
+      github.event.workflow_run.conclusion }}
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
+    steps:
+      - name: Find open PRs for this SHA and update check labels
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: >
+            const owner = context.repo.owner;
+
+            const repo  = context.repo.repo;
+
+
+            let headSha, conclusion;
+
+            if (context.eventName === 'check_suite') {
+              headSha    = context.payload.check_suite.head_sha;
+              conclusion = context.payload.check_suite.conclusion;
+            } else {
+              headSha    = context.payload.workflow_run.head_sha;
+              conclusion = context.payload.workflow_run.conclusion;
+            }
+
+
+            if (!conclusion) {
+              core.info('No conclusion yet — skipping.');
+              return;
+            }
+
+
+            // Find open PRs matching this head SHA
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner, repo, state: 'open', per_page: 100
+            });
+
+            const targets = prs.filter(p => p.head.sha === headSha);
+
+
+            if (targets.length === 0) {
+              core.info(`No open PRs for SHA ${headSha.slice(0,7)}.`);
+              return;
+            }
+
+
+            for (const pr of targets) {
+              const num = pr.number;
+              core.info(`Updating PR #${num}`);
+
+              const currentLabels = async () => {
+                try {
+                  const res = await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  });
+                  return res.data.map(l => l.name);
+                } catch (e) {
+                  core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
+                  return [];
+                }
+              };
+
+              const add = async (...labels) => {
+                for (const l of labels) {
+                  try {
+                    await github.rest.issues.addLabels({
+                      owner, repo, issue_number: num, labels: [l]
+                    });
+                    core.info(`  PR #${num} + ${l}`);
+                  } catch (e) { core.warning(`add ${l}: ${e.message}`); }
+                }
+              };
+
+              const remove = async (...labels) => {
+                const cur = await currentLabels();
+                for (const l of labels) {
+                  if (!cur.includes(l)) continue;
+                  try {
+                    await github.rest.issues.removeLabel({
+                      owner, repo, issue_number: num, name: l
+                    });
+                    core.info(`  PR #${num} - ${l}`);
+                  } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
+                }
+              };
+
+              // Aggregate all check suites for this SHA
+              let allPass = false;
+              try {
+                const { data: suites } = await github.rest.checks.listSuitesForRef({
+                  owner, repo, ref: headSha, per_page: 100
+                });
+                const done = suites.check_suites.filter(s => s.status === 'completed');
+                const pending = suites.check_suites.filter(s => s.status !== 'completed');
+
+                if (pending.length > 0) {
+                  core.info(`PR #${num}: ${pending.length} suite(s) still pending — skipping.`);
+                  continue;
+                }
+
+                const PASS = new Set(['success', 'neutral', 'skipped']);
+                allPass = done.length > 0 && done.every(s => PASS.has(s.conclusion));
+              } catch (e) {
+                core.warning(`Could not list check suites: ${e.message}`);
+                // Fall back to single-event conclusion
+                const PASS = new Set(['success', 'neutral', 'skipped']);
+                allPass = PASS.has(conclusion);
+              }
+
+              if (allPass) {
+                await remove('checks-failing', 'needs-action');
+                await add('checks-passing');
+
+                const cur = await currentLabels();
+                if (cur.includes('approved')) {
+                  await add('ready-to-merge');
+                  core.info(`PR #${num} → ready-to-merge`);
+                }
+              } else {
+                await remove('checks-passing', 'ready-to-merge');
+                await add('checks-failing', 'needs-action');
+              }
+            }
+    timeout-minutes: 15

@@ -1,55 +1,34 @@
 name: Amplitude — Repo Event Telemetry
-
-# Sends repository activity events to Amplitude Analytics via the HTTP V2 API.
-#
-# Why: revvel-standards is the canonical standards/governance repo for the
-# MIDNGHTSAPPHIRE org. Tracking issue / PR / release activity lets us measure
-# governance throughput (time-to-merge, issue volume, release cadence) the same
-# way our products track product analytics.
-#
-# Disambiguation: This is **Amplitude Analytics** (amplitude.com — product
-# analytics; HTTP V2 events API). It is NOT the Sparky Studios "Amplitude
-# Audio SDK" (a C++ game audio engine), which is out of scope for a
-# standards/governance repo. See standards/AMPLITUDE_INTEGRATION_STANDARD.md.
-#
-# Required secret:
-#   AMPLITUDE_API_KEY  — Amplitude project API key (Settings → Projects → API Key)
-#
-# Optional repo variables (Settings → Variables → Actions):
-#   AMPLITUDE_REGION   — "us" (default) or "eu"
-#   AMPLITUDE_ENABLED  — "true" (default) or "false" to disable without removing
-#
-# Endpoints:
-#   US: https://api2.amplitude.com/2/httpapi
-#   EU: https://api.eu.amplitude.com/2/httpapi
-#
-# Doc: standards/AMPLITUDE_INTEGRATION_STANDARD.md
-# Registry: docs/Universal-BOM_List/API_REGISTRY_BOM.md (row: Amplitude)
-
 on:
   issues:
-    types: [opened, closed, reopened]
+    types:
+      - opened
+      - closed
+      - reopened
   pull_request:
-    types: [opened, closed, reopened, ready_for_review]
+    types:
+      - opened
+      - closed
+      - reopened
+      - ready_for_review
   release:
-    types: [published]
+    types:
+      - published
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       event_type:
-        description: "Event name to send (verification ping)"
+        description: Event name to send (verification ping)
         type: string
         required: false
-        default: "amplitude_workflow_verify"
-
+        default: amplitude_workflow_verify
 permissions:
   contents: read
-
 concurrency:
   group: amplitude-events-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.event.release.id || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   send:
     name: Send event to Amplitude
@@ -85,11 +64,10 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "endpoint=${endpoint}" >> "$GITHUB_OUTPUT"
           echo "region=${region}" >> "$GITHUB_OUTPUT"
-
       - name: Build event payload
         if: steps.verify.outputs.skip != 'true'
         id: payload
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           DISPATCH_EVENT_TYPE: ${{ github.event.inputs.event_type }}
         with:
@@ -170,7 +148,6 @@ jobs:
               .addRaw(`Repo: \`${repo}\``).addBreak()
               .addCodeBlock(JSON.stringify(event, null, 2), 'json');
             await core.summary.write();
-
       - name: POST event to Amplitude HTTP V2
         if: steps.verify.outputs.skip != 'true'
         env:
@@ -199,3 +176,6 @@ jobs:
             2*) echo "✅ Sent to Amplitude (HTTP ${http_code})." ;;
             *)  echo "::error::Amplitude rejected the event (HTTP ${http_code})."; exit 1 ;;
           esac
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

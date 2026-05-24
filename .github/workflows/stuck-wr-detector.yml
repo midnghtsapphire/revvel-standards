@@ -1,83 +1,47 @@
-# Stuck Work Request Detector & Auto-Healer
-#
-# Periodically scans open Work Request issues that look stuck (i.e. labeled
-# `work-request` and `wr:in-progress`, but no PR was ever created from them)
-# and either:
-#   1. Re-triggers the `WR PR Creation` workflow on the issue, OR
-#   2. Escalates by opening a tracking issue with the diagnostic logs.
-#
-# A WR is considered "stuck" if all of:
-#   - The issue is `open`.
-#   - The issue carries the `work-request` label.
-#   - The issue does NOT have an associated PR (searched by title prefix
-#     `[WR] <title>` and by body cross-reference).
-#   - The issue was created more than 15 minutes ago (give wr-pr-creation
-#     time to run normally on fresh issues).
-#
-# What this workflow does NOT do:
-#   - Modify the issue body (it might be in active editing).
-#   - Create a PR directly (that's the job of `wr-pr-creation.yml`).
-#   - Retry indefinitely. After 3 retrigger attempts (tracked via a
-#     dedicated `wr:retrigger-attempts-N` label), it escalates instead.
-#
-# Triggers:
-#   - schedule (every 30 min) — primary
-#   - workflow_dispatch       — manual sweep
-#
-# Why this exists:
-#   GitHub Actions resolves every `uses:` ref upfront. If `wr-pr-creation.yml`
-#   has even one bad ref (see workflow-action-ref-audit.yml), the entire job
-#   aborts at "Set up job" before the issue gets a PR. Without this
-#   detector, the issue sits in `wr:in-progress` indefinitely with no
-#   visible alarm. This workflow detects that condition and either fixes
-#   it (retrigger) or surfaces it (escalate).
-
 name: Stuck WR Detector & Auto-Healer
-
 on:
   schedule:
-    # Every 30 minutes.
-    - cron: '*/30 * * * *'
+    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       max_age_hours:
-        description: "Only consider WRs created within the last N hours (default 168 = 7 days)."
+        description: Only consider WRs created within the last N hours (default 168 = 7 days).
         required: false
         type: number
         default: 168
       dry_run:
-        description: "If true, log what would be done but don't retrigger or escalate."
+        description: If true, log what would be done but don't retrigger or escalate.
         required: false
         type: boolean
         default: false
-
 permissions:
   contents: read
   issues: write
   pull-requests: read
-  actions: write   # required to dispatch wr-pr-creation.yml
-
+  actions: write
 concurrency:
   group: stuck-wr-detector
   cancel-in-progress: false
-
 jobs:
   scan:
     name: Scan & heal stuck Work Requests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Detect stuck WRs and heal
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
           DRY_RUN: ${{ inputs.dry_run || false }}
         with:
-          # The default GITHUB_TOKEN can dispatch reusable workflows in the
-          # same repo and is what we use here.
           script: |
+            const path = require('path');
+            const {
+              findAssociatedPr,
+              getIssueBaseTitle,
+            } = require(path.join(process.env.GITHUB_WORKSPACE, 'scripts', 'stuck-wr-detector.js'));
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
@@ -103,16 +67,14 @@ jobs:
               if (ageMs < minStuckAgeMs) continue;     // give it time to run normally
               if (ageMs > maxAgeMs) continue;          // ignore ancient WRs
 
-              // Look for an associated PR by title prefix.
-              const baseTitle = (issue.title || '').replace(/^\[WR\]\s*/i, '').trim();
+              // Look for an associated PR using deterministic workflow signals:
+              // the issue-specific branch name, a body reference to this issue,
+              // or the PR number posted by wr-pr-creation.yml on the issue.
+              const baseTitle = getIssueBaseTitle(issue);
               if (!baseTitle) continue;
-              const search = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:pr "${baseTitle.slice(0, 80)}" in:title`,
-                per_page: 5,
-              });
-              const hasPr = search.data.items.some(item => item.pull_request);
-              if (hasPr) {
-                core.info(`#${issue.number}: PR exists for "${baseTitle.slice(0, 60)}"; not stuck.`);
+              const associatedPr = await findAssociatedPr({ github, owner, repo, issue, core });
+              if (associatedPr) {
+                core.info(`#${issue.number}: PR exists (${associatedPr.html_url || associatedPr.url}); not stuck.`);
                 continue;
               }
 
@@ -145,6 +107,70 @@ jobs:
                 labels: [`wr:retrigger-attempts-${n}`],
               });
             }
+            async function addLabelsBestEffort(issueNumber, labels) {
+              if (!labels || labels.length === 0) return;
+              try {
+                await github.rest.issues.addLabels({
+                  owner, repo, issue_number: issueNumber, labels,
+                });
+                core.info(`#${issueNumber}: added labels ${labels.join(', ')}`);
+                return;
+              } catch (error) {
+                core.notice(`#${issueNumber}: bulk label add failed, retrying per-label: ${error.message}`);
+              }
+              for (const label of labels) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner, repo, issue_number: issueNumber, labels: [label],
+                  });
+                  core.info(`#${issueNumber}: added label ${label}`);
+                } catch (error) {
+                  core.notice(`#${issueNumber}: could not add label "${label}": ${error.message}`);
+                }
+              }
+            }
+            async function dispatchWorkflowBestEffort(workflowId, inputs = {}) {
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo,
+                  workflow_id: workflowId,
+                  ref: 'main',
+                  inputs,
+                });
+                core.notice(`Dispatched ${workflowId}${inputs.issue_number ? ` for #${inputs.issue_number}` : ''}.`);
+                return true;
+              } catch (error) {
+                core.warning(`Could not dispatch ${workflowId}: ${error.message}`);
+                return false;
+              }
+            }
+            async function upsertEscalationComment(issueNumber, body) {
+              const marker = `<!-- stuck-wr-agent-escalation:${issueNumber} -->`;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: issueNumber, per_page: 100,
+              });
+              const existing = comments.find(comment => comment.body && comment.body.includes(marker));
+              const markedBody = `${marker}\n${body}`;
+
+              if (existing) {
+                try {
+                  await github.rest.issues.updateComment({
+                    owner, repo, comment_id: existing.id, body: markedBody,
+                  });
+                } catch (error) {
+                  core.warning(`#${issueNumber}: failed to update escalation comment: ${error.message}`);
+                }
+                return;
+              }
+
+              try {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: issueNumber, body: markedBody,
+                });
+              } catch (error) {
+                core.warning(`#${issueNumber}: failed to create escalation comment: ${error.message}`);
+              }
+            }
 
             const MAX_ATTEMPTS = 3;
             for (const issue of stuck) {
@@ -165,12 +191,50 @@ jobs:
                     inputs: { issue_number: String(issue.number) },
                   });
                   await setAttemptLabel(issue, attempts + 1);
+                  
+                  // Poll for workflow run with exponential backoff (5s, 10s, 20s, 30s - 40s capped at 30s)
+                  let workflowStarted = false;
+                  let statusNote = '';
+                  
+                  for (let attempt = 0; attempt < 4; attempt++) {
+                    const delay = Math.min(5000 * Math.pow(2, attempt), 30000);  // 5s, 10s, 20s, 30s (40s capped)
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    
+                    // Check if workflow run was created for this specific issue
+                    const recentRuns = await github.rest.actions.listWorkflowRuns({
+                      owner, repo,
+                      workflow_id: 'wr-pr-creation.yml',
+                      per_page: 10,
+                    });
+                    
+                    const justTriggered = recentRuns.data.workflow_runs.find(run => {
+                      const runAge = Date.now() - new Date(run.created_at).getTime();
+                      return runAge < 60000;  // Within last minute
+                    });
+                    
+                    if (justTriggered) {
+                      workflowStarted = true;
+                      statusNote = `\n\n**Workflow Status:** Started (run #${justTriggered.run_number}, status: ${justTriggered.status})`;
+                      core.info(`Workflow detected after ${delay/1000}s`);
+                      break;
+                    }
+                    
+                    if (attempt < 3) {
+                      core.info(`Workflow not detected, checking again in ${delay/1000}s...`);
+                    }
+                  }
+                  
+                  if (!workflowStarted) {
+                    statusNote = '\n\n**⚠️ Warning:** No workflow run detected within 60 seconds. The workflow may have failed to start due to:\n- Invalid workflow syntax\n- Missing permissions\n- GitHub Actions API issues';
+                  }
+                  
                   await github.rest.issues.createComment({
                     owner, repo, issue_number: issue.number,
                     body: [
                       `🔁 **Stuck-WR auto-healer:** retriggering WR PR Creation (attempt ${attempts + 1}/${MAX_ATTEMPTS}).`,
                       ``,
                       `This issue has the \`work-request\` label but no associated PR was found. The detector dispatched \`.github/workflows/wr-pr-creation.yml\` against this issue.`,
+                      statusNote,
                       ``,
                       `If after ${MAX_ATTEMPTS} retriggers no PR appears, the detector will escalate by opening a tracking issue with diagnostic info.`,
                       ``,
@@ -184,6 +248,22 @@ jobs:
               } else {
                 // Escalate.
                 const trackingTitle = `[AUTO-ERROR] WR #${issue.number} stuck after ${MAX_ATTEMPTS} retriggers — no PR created`;
+                const originalComments = await github.paginate(github.rest.issues.listComments, {
+                  owner, repo, issue_number: issue.number, per_page: 100, sort: 'created', direction: 'desc',
+                });
+                const recentFailureComments = originalComments
+                  .filter(comment => comment.body && comment.body.includes('WR PR Creation Failed'))
+                  .slice(0, 3)
+                  .reverse()
+                  .map(comment => {
+                    const runMatch = comment.body.match(/actions\/runs\/(\d+)/);
+                    const runId = runMatch ? runMatch[1] : 'unknown';
+                    return `- ${comment.created_at}: WR PR Creation failed (run ${runId})`;
+                  });
+                const failureEvidence = recentFailureComments.length
+                  ? recentFailureComments.join('\n')
+                  : '- No failure notification comments were found on the original issue.';
+
                 const trackingBody = [
                   `## Stuck Work Request`,
                   ``,
@@ -196,16 +276,26 @@ jobs:
                   ``,
                   `The stuck-WR detector dispatched \`wr-pr-creation.yml\` on this issue ${MAX_ATTEMPTS} times via \`workflow_dispatch\`, but no PR was created.`,
                   ``,
+                  `### Recent failure evidence`,
+                  ``,
+                  failureEvidence,
+                  ``,
                   `### Likely root causes (in order)`,
                   ``,
-                  `1. **Broken \`uses:\` ref in \`wr-pr-creation.yml\`** — see [\`workflow-action-ref-audit.yml\`](.github/workflows/workflow-action-ref-audit.yml) for the auditor that catches this. Check its latest run.`,
-                  `2. **Missing required secret** — \`PROJECTS_PAT\`, \`JULES_API_KEY\`, etc.`,
-                  `3. **Required-Bundle / classifier parsing error** — check \`wr-auto-classify\` logs for the issue.`,
+                  `1. **WR template path drift** — \`wr-pr-creation.yml\` must point at an existing template such as \`wr/WR_TEMPLATE_FULL.md\`.`,
+                  `2. **Branch or PR creation collision** — a retry may be reusing an existing branch after a partial failure.`,
+                  `3. **Missing required secret or GitHub permission** — \`JULES_API_KEY\`, pull-request write, or contents write.`,
+                  `4. **Required-Bundle / classifier parsing error** — check \`wr-auto-classify\` logs for the issue.`,
                   ``,
-                  `### Next steps`,
+                  `### Automatic handling now routed`,
                   ``,
-                  `- Open the [latest \`WR PR Creation\` runs](${context.serverUrl}/${owner}/${repo}/actions/workflows/wr-pr-creation.yml) and look for a job that aborts at "Set up job".`,
-                  `- Once the root cause is fixed, remove the \`wr:retrigger-attempts-${MAX_ATTEMPTS}\` label and the next detector run will retry.`,
+                  `This tracking issue is labelled for agent troubleshooting: \`agent-fallback\`, \`auto-fix\`, and \`triage:new\`.`,
+                  `The detector also dispatches \`agent-fallback.yml\` with \`prefer_agent=openrouter\` so OpenRouter can diagnose and patch the automation failure.`,
+                  ``,
+                  `### Manual fallback if automation cannot patch it`,
+                  ``,
+                  `- Open the [latest \`WR PR Creation\` runs](${context.serverUrl}/${owner}/${repo}/actions/workflows/wr-pr-creation.yml) and inspect the failed step.`,
+                  `- The detector keeps the exhausted retry label to prevent retry-loop resets and re-dispatches \`wr-pr-creation.yml\` once so fixed WRs can recover.`,
                   ``,
                   `_Opened automatically by [\`stuck-wr-detector.yml\`](.github/workflows/stuck-wr-detector.yml). Closes when issue #${issue.number} gets a PR._`,
                 ].join('\n');
@@ -215,6 +305,7 @@ jobs:
                   q: `repo:${owner}/${repo} is:issue is:open label:auto-error label:wr-stuck "WR #${issue.number} stuck" in:title`,
                   per_page: 1,
                 });
+                let trackingIssueNumber;
                 if (search.data.items.length > 0) {
                   await github.rest.issues.update({
                     owner, repo,
@@ -222,7 +313,8 @@ jobs:
                     title: trackingTitle,
                     body: trackingBody,
                   });
-                  core.notice(`Updated tracking issue #${search.data.items[0].number}.`);
+                  trackingIssueNumber = search.data.items[0].number;
+                  core.notice(`Updated tracking issue #${trackingIssueNumber}.`);
                 } else {
                   const created = await github.rest.issues.create({
                     owner, repo,
@@ -230,7 +322,57 @@ jobs:
                     body: trackingBody,
                     labels: ['auto-error', 'wr-stuck', 'priority-p0'],
                   });
-                  core.notice(`Opened tracking issue #${created.data.number} for stuck WR #${issue.number}.`);
+                  trackingIssueNumber = created.data.number;
+                  core.notice(`Opened tracking issue #${trackingIssueNumber} for stuck WR #${issue.number}.`);
                 }
+
+                if (trackingIssueNumber) {
+                  await addLabelsBestEffort(trackingIssueNumber, [
+                    'auto-error',
+                    'wr-stuck',
+                    'priority-p0',
+                    'triage:new',
+                    'agent-fallback',
+                    'auto-fix',
+                  ]);
+                }
+
+                await addLabelsBestEffort(issue.number, [
+                  'wr-stuck',
+                  'needs-action',
+                  'agent-fallback',
+                  'auto-fix',
+                ]);
+
+                const agentDispatchOk = trackingIssueNumber
+                  ? await dispatchWorkflowBestEffort('agent-fallback.yml', {
+                      issue_number: String(trackingIssueNumber),
+                      prefer_agent: 'openrouter',
+                    })
+                  : false;
+                const triageDispatchOk = await dispatchWorkflowBestEffort('openrouter-triage.yml');
+                const wrRetryDispatchOk = await dispatchWorkflowBestEffort('wr-pr-creation.yml', {
+                  issue_number: String(issue.number),
+                });
+
+                await upsertEscalationComment(issue.number, [
+                  `🧯 **Stuck-WR escalated to agent troubleshooting**`,
+                  ``,
+                  `The detector exhausted ${MAX_ATTEMPTS}/${MAX_ATTEMPTS} WR PR Creation retriggers and found no associated PR.`,
+                  trackingIssueNumber ? `**Tracking issue:** #${trackingIssueNumber}` : `**Tracking issue:** unavailable; issue creation/update failed.`,
+                  ``,
+                  `**Automatic routing performed:**`,
+                  `- Added \`wr-stuck\`, \`needs-action\`, \`agent-fallback\`, and \`auto-fix\` to this WR issue where labels exist.`,
+                  `- Routed the tracking issue to \`agent-fallback.yml\` with OpenRouter preferred: ${agentDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
+                  `- Nudged \`openrouter-triage.yml\`: ${triageDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
+                  `- Kept the exhausted retry label to avoid infinite retry loops and re-dispatched \`wr-pr-creation.yml\`: ${wrRetryDispatchOk ? 'dispatched' : 'dispatch failed or unavailable'}.`,
+                  ``,
+                  `If this retry still fails, the detector will keep the issue in escalated handling and continue updating the troubleshooting issue.`,
+                  ``,
+                  `_Automated by \`.github/workflows/stuck-wr-detector.yml\`._`,
+                ].join('\n'));
               }
             }
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

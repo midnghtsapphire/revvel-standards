@@ -1,64 +1,32 @@
 name: Amplitude → Notion Agent
-
-# Pulls a daily snapshot from Amplitude (Dashboard REST API) and appends a row
-# to a Notion database so governance metrics (issues, PRs, releases) tracked in
-# Amplitude are visible alongside Audrey's other Notion dashboards without
-# leaving Notion.
-#
-# This is the read-side complement to .github/workflows/amplitude-events.yml
-# (which sends GitHub events INTO Amplitude).
-#
-# Required secrets (Settings → Secrets and variables → Actions → Secrets):
-#   AMPLITUDE_API_KEY              Amplitude project API key
-#   AMPLITUDE_SECRET_KEY           Amplitude project secret key (Dashboard API uses Basic auth)
-#   NOTION_API_KEY                 Notion internal integration token (secret_...)
-#   NOTION_AMPLITUDE_DATABASE_ID   Target Notion database ID (the integration must be shared with it)
-#
-# Required repo variable (Settings → Variables → Actions):
-#   AMPLITUDE_CHART_ID             Saved Amplitude chart ID to query
-#
-# Optional repo variables:
-#   AMPLITUDE_REGION               "us" (default) or "eu"
-#   NOTION_VERSION                 Notion API version header (default 2022-06-28)
-#
-# If any required secret/var is missing the agent logs a ::warning:: and exits
-# cleanly (no failed runs), matching the convention in amplitude-events.yml.
-#
-# Doc: standards/AMPLITUDE_NOTION_AGENT_STANDARD.md
-# Skill: skills/amplitude-notion-agent/SKILL.md
-
 on:
   schedule:
-    # 13:07 UTC daily — off the top-of-hour to dodge GitHub cron contention.
-    - cron: "7 13 * * *"
+    - cron: 7 13 * * *
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "If 'true', log the Notion payload but do not POST."
+        description: If 'true', log the Notion payload but do not POST.
         type: choice
-        options: ["false", "true"]
+        options:
+          - "false"
+          - "true"
         default: "false"
-
 permissions:
   contents: read
-
 concurrency:
   group: amplitude-to-notion-${{ github.event_name }}
   cancel-in-progress: false
-
 jobs:
   sync:
     name: Sync Amplitude snapshot to Notion
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-
+          node-version: "24"
       - name: Run Amplitude → Notion agent
         env:
           AMPLITUDE_API_KEY: ${{ secrets.AMPLITUDE_API_KEY }}
@@ -71,3 +39,6 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: node scripts/amplitude-to-notion.js
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

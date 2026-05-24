@@ -1,59 +1,39 @@
 name: Proof of Life — app-review revvel-standards-run
-
-# Proof-of-life process for the new app-review `revvel-standards-run` pipeline.
-#
-# Per the originating issue:
-#   "I need OpenRouter as the orchestrator or fixer and a choice in `assigned to`
-#    and work independently of Copilot or use Copilot or Codex within OpenRouter."
-#
-# This workflow is the manually-triggered "is it alive?" check for that pipeline.
-# It verifies the OpenRouter plumbing, lets the operator pick the role the
-# OpenRouter agent plays (orchestrator or fixer), and lets them pick who the
-# work is assigned to — so it can run independently of Copilot, or delegate to
-# Copilot / Codex via OpenRouter.
-#
-# Secret:   OPENROUTER_API_KEY  (Vault path: revvel/shared/llm/openrouter)
-# Doc:      docs/PROOF_OF_LIFE_PROCESS.md
-# Related:  .github/workflows/openrouter-assignee.yml  (event-driven routing)
-#           .github/workflows/ralph-loop.yml           (CI self-healing)
-
 on:
   workflow_dispatch:
     inputs:
       role:
-        description: "Role the OpenRouter agent plays for this run"
+        description: Role the OpenRouter agent plays for this run
         type: choice
         default: orchestrator
         options:
           - orchestrator
           - fixer
       assignee:
-        description: "Who does the work get assigned to? (independent = OpenRouter only)"
+        description: Who does the work get assigned to? (independent = OpenRouter only)
         type: choice
         default: openrouter
         options:
           - openrouter
           - Copilot
           - codex
+          - Rex
       target_issue:
-        description: "Optional issue or PR number to post the proof-of-life onto (leave blank to only log)"
+        description: Optional issue or PR number to post the proof-of-life onto (leave blank to only log)
         type: string
         required: false
         default: ""
       dry_run:
-        description: "Log the actions without assigning / labelling / commenting"
+        description: Log the actions without assigning / labelling / commenting
         type: boolean
         default: false
-
 permissions:
   issues: write
   pull-requests: write
   contents: read
-
 concurrency:
   group: proof-of-life-${{ github.event.inputs.target_issue || 'log-only' }}
   cancel-in-progress: false
-
 jobs:
   proof-of-life:
     name: Proof of Life (${{ github.event.inputs.role }} → ${{ github.event.inputs.assignee }})
@@ -71,9 +51,8 @@ jobs:
             echo "has_key=true" >> "$GITHUB_OUTPUT"
             echo "OPENROUTER_API_KEY is configured."
           fi
-
       - name: Run proof of life
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ROLE: ${{ github.event.inputs.role }}
@@ -108,6 +87,7 @@ jobs:
             const labels = ['openrouter', 'proof-of-life', `role-${role}`];
             if (assignee === 'Copilot') labels.push('copilot');
             if (assignee === 'codex')   labels.push('codex');
+            if (assignee === 'Rex')     labels.push('rex');
 
             // ── Summary line used in both the comment and the run summary ──────
             const summary =
@@ -157,11 +137,13 @@ jobs:
                   `🫀 **Proof of Life — app-review \`revvel-standards-run\`**\n\n` +
                   `${summary}\n\n` +
                   (assignee === 'openrouter'
-                    ? `Running **independently of Copilot** — OpenRouter owns this run end-to-end.\n`
-                    : assignee === 'Copilot'
-                      ? `Routed through **GitHub Copilot** (assignee: \`@Copilot\`), orchestrated by OpenRouter.\n`
-                      : `Routed through **Codex via OpenRouter** (model: \`openai/codex-5.1\`), label-only.\n`) +
-                  `\n` +
+                   ? `Running **independently of Copilot** — OpenRouter owns this run end-to-end.\n`
+                     : assignee === 'Copilot'
+                       ? `Routed through **GitHub Copilot** (assignee: \`@Copilot\`), orchestrated by OpenRouter.\n`
+                       : assignee === 'codex'
+                         ? `Routed through **Codex via OpenRouter** (model: \`openai/codex-5.1\`), label-only.\n`
+                         : `Routed through **Rex** — the oAudrey Agent Factory assignee for no-key Perplexity and research-first runs. Label-only, no GitHub user.\n`) +
+                   `\n` +
                   `- Secret: \`OPENROUTER_API_KEY\` ${hasKey ? '✅ configured' : '⚠️ **not configured** — add it in repo Settings → Secrets'}\n` +
                   `- Role: \`${role}\` (${role === 'orchestrator'
                       ? 'plans, routes, and delegates the run'
@@ -199,3 +181,6 @@ jobs:
                 ['Dry run',             String(dryRun)],
               ])
               .write();
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

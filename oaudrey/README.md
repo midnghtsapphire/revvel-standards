@@ -69,6 +69,21 @@ hub landing page.
 
 ---
 
+## Agent Factory lane
+
+The oAudrey **Agent Factory** now reserves a named **Rex** assignee lane for
+research-first automation that should use the repo's **no-key Perplexity**
+path. In practice that means:
+
+- **Rex** = label-first assignee for oAudrey agent-factory work
+- **Perplexity no-key** = use the `helallao/perplexity-ai` bridge, not a
+  required `PERPLEXITY_API_KEY`
+- **Proof of Life** = choose `Rex` in
+  [`docs/PROOF_OF_LIFE_PROCESS.md`](../docs/PROOF_OF_LIFE_PROCESS.md) when the
+  run should stay in the oAudrey / Agent Factory lane
+
+---
+
 ## Project Layout
 
 ```
@@ -211,6 +226,7 @@ respected.
 - [x] Multi-registrar DNS sync (`scripts/sync-dns-records.js` — Namecheap, GoDaddy, Porkbun)
 - [x] DNS sync workflow (`.github/workflows/sync-oaudrey-dns.yml`)
 - [x] Credential Gatekeeper detects GoDaddy + Porkbun keys
+- [x] Rex assignee lane documented for Agent Factory + no-key Perplexity research
 - [ ] Provision `DIGITALOCEAN_API_TOKEN` secret in repo settings
 - [ ] Provision a registrar credential set (Namecheap / GoDaddy / Porkbun) via the Gatekeeper
 - [ ] Verify `oaudrey.com` apex resolves to App Platform

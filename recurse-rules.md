@@ -222,7 +222,7 @@ conservative depth limit (≤20). Validate input structure before processing. Se
 **Pattern:** Code comments, TODO items, or workflow steps that create labels like `needs-investigation`,
 `escalate`, `blocked`, `waiting-for-human` without first attempting automatic resolution.
 
-**Why:** MIDNGHTSAPPHIRE agents are obsessively autonomous. Escalation is a last resort after
+**Why:** MIDNGHTSAPPHIRE agents are relentlessly autonomous. Escalation is a last resort after
 exhausting all self-healing options. Creating escalation labels prematurely indicates a lack of
 resourcefulness.
 
@@ -233,7 +233,7 @@ resourcefulness.
 4. Only escalate if genuinely impossible to resolve autonomously
 5. When escalating, document everything attempted
 
-See `docs/AGENTS.md` Section "Obsessive Autonomy".
+See `docs/AGENTS.md` Section "Driven Autonomy".
 
 ---
 

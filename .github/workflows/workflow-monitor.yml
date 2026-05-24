@@ -1,70 +1,49 @@
 name: Workflow Monitor (Real-Time)
-
-# Real-time monitoring of all workflows with instant alerts for stuck or failed runs.
-# Automatically retries transient failures and creates issues for persistent problems.
-#
-# OpenHands-RESTRUCTURE 2026-05-04 (Audrey ask: "WR/PR doesnt work, restructure"):
-# The `workflow_run: workflows: ["*"]` trigger created a feedback loop with
-# Agent Audit Logger and Ralph Loop, saturating the Actions queue and causing
-# every real workflow (jules-invoke, wr-pr-creation, openrouter-coder) to fail
-# with `startup_failure`. Trigger is disabled below; workflow remains available
-# via `workflow_dispatch` so monitoring can still be invoked manually or by an
-# explicit caller. Re-enable with care once a clear, scoped allowlist exists.
-
 on:
-  # workflow_run:
-  #   workflows: ["*"]  # Monitor all workflows  -- DISABLED, feedback loop
-  #   types: [completed, requested, in_progress]
-
   workflow_dispatch:
     inputs:
       workflow_run_id:
-        description: "Specific workflow run ID to monitor"
+        description: Specific workflow run ID to monitor
         type: string
         required: false
-
 permissions:
   actions: write
   issues: write
   contents: read
-
 jobs:
   monitor:
     name: Monitor workflow health
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v6.0.2
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "24"
+          cache: npm
       - name: Install dependencies
         run: npm ci
-      
       - name: Monitor workflow
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const run = context.payload.workflow_run;
-            
+
             // Configuration
             const MAX_DURATION_MS = 15 * 60 * 1000; // 15 minutes
             const ALERT_LABEL = 'workflow-stuck';
             const AUTO_FIX_LABEL = 'auto-fix';
             const NEEDS_HUMAN_LABEL = 'needs-human';
-            
+
             if (!run) {
               core.info('No workflow run in payload, skipping monitoring');
               return;
             }
-            
+
             const runId = run.id;
             const runName = run.name;
             const runStatus = run.status;
@@ -74,11 +53,20 @@ jobs:
             const createdAt = new Date(run.created_at);
             const duration = Date.now() - createdAt.getTime();
             const maxDuration = MAX_DURATION_MS;
-            
+
             core.info(`Monitoring: ${runName} (ID: ${runId})`);
             core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
             
+            const safeApiCall = async (operationDescription, apiOperation, fallback = null) => {
+              try {
+                return await apiOperation();
+              } catch (error) {
+                core.warning(`⚠️ ${operationDescription} failed: ${error.message}`);
+                return fallback;
+              }
+            };
+
             // ──────────────────────────────────────────────────────────────
             // Case 1: Workflow stuck (running too long)
             // ──────────────────────────────────────────────────────────────
@@ -86,13 +74,18 @@ jobs:
               core.warning(`⚠️ Workflow stuck: ${runName} running for ${Math.round(duration / 60000)} minutes`);
               
               // Check if alert already exists
-              const existingAlerts = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-              });
+              const existingAlerts = await safeApiCall(
+                'Search for existing stuck workflow alerts',
+                () => github.rest.search.issuesAndPullRequests({
+                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+                })
+              );
               
-              if (existingAlerts.data.total_count === 0) {
+              if (existingAlerts && existingAlerts.data.total_count === 0) {
                 // Create alert issue
-                const issue = await github.rest.issues.create({
+                const issue = await safeApiCall(
+                  'Create stuck workflow alert issue',
+                  () => github.rest.issues.create({
                   owner,
                   repo,
                   title: `[ALERT] Workflow stuck: ${runName}`,
@@ -132,9 +125,13 @@ jobs:
                     AUTO_FIX_LABEL,
                     'priority-p0',
                   ],
-                });
+                }));
                 
-                core.info(`✅ Created alert issue #${issue.data.number}`);
+                if (issue) {
+                  core.info(`✅ Created alert issue #${issue.data.number}`);
+                }
+              } else if (!existingAlerts) {
+                core.info('ℹ️ Skipping alert creation because existing-alert lookup failed');
               } else {
                 core.info(`ℹ️ Alert issue already exists, skipping creation`);
               }
@@ -163,7 +160,7 @@ jobs:
                 core.warning(`⚠️ Could not cancel/retry workflow: ${error.message}`);
               }
             }
-            
+
             // ──────────────────────────────────────────────────────────────
             // Case 2: Workflow failed
             // ──────────────────────────────────────────────────────────────
@@ -219,7 +216,9 @@ jobs:
                   core.warning(`⚠️ Retry script failed: ${error.message}`);
                   
                   // Fallback: create issue for manual intervention
-                  await github.rest.issues.create({
+                  await safeApiCall(
+                    'Create manual intervention issue after failed auto-retry',
+                    () => github.rest.issues.create({
                     owner,
                     repo,
                     title: `[FAILURE] ${runName} failed (auto-retry failed)`,
@@ -247,13 +246,15 @@ jobs:
                       NEEDS_HUMAN_LABEL,
                       'priority-p1',
                     ],
-                  });
+                  }));
                 }
               } else {
                 core.info('❌ Non-transient failure, creating issue for human review');
                 
                 // Create issue for manual review
-                await github.rest.issues.create({
+                await safeApiCall(
+                  'Create manual review issue for non-transient failure',
+                  () => github.rest.issues.create({
                   owner,
                   repo,
                   title: `[FAILURE] ${runName} failed`,
@@ -287,10 +288,10 @@ jobs:
                     NEEDS_HUMAN_LABEL,
                     'priority-p2',
                   ],
-                });
+                }));
               }
             }
-            
+
             // ──────────────────────────────────────────────────────────────
             // Case 3: Workflow succeeded (close any open alerts)
             // ──────────────────────────────────────────────────────────────
@@ -298,13 +299,19 @@ jobs:
               core.info('✅ Workflow succeeded');
               
               // Check for open alert issues for this workflow
-              const openAlerts = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-              });
+              const openAlerts = await safeApiCall(
+                'Search open alerts for recovered workflow',
+                () => github.rest.search.issuesAndPullRequests({
+                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+                })
+              );
               
-              for (const alert of openAlerts.data.items) {
+              const recoveredAlerts = openAlerts?.data?.items || [];
+              for (const alert of recoveredAlerts) {
                 // Post recovery comment
-                await github.rest.issues.createComment({
+                const comment = await safeApiCall(
+                  `Add recovery comment to alert #${alert.number}`,
+                  () => github.rest.issues.createComment({
                   owner,
                   repo,
                   issue_number: alert.number,
@@ -324,32 +331,42 @@ jobs:
                     '',
                     `_Auto-generated by workflow-monitor.yml at ${new Date().toISOString()}_`,
                   ].join('\n'),
-                });
+                }));
+                
+                if (!comment) {
+                  core.warning(`⚠️ Recovery comment failed for #${alert.number}; attempting to close alert anyway`);
+                }
+                const existingLabelNames = Array.isArray(alert.labels)
+                  ? alert.labels.map(l => l?.name).filter(Boolean)
+                  : [];
                 
                 // Close alert
-                await github.rest.issues.update({
+                const updated = await safeApiCall(
+                  `Close recovered alert #${alert.number}`,
+                  () => github.rest.issues.update({
                   owner,
                   repo,
                   issue_number: alert.number,
                   state: 'closed',
                   labels: [
-                    ...alert.labels.map(l => l.name),
+                    ...existingLabelNames,
                     'resolved',
                   ].filter(l => l !== ALERT_LABEL),
-                });
+                }));
                 
-                core.info(`✅ Closed alert issue #${alert.number}`);
+                if (updated) {
+                  core.info(`✅ Closed alert issue #${alert.number}`);
+                }
               }
             }
-      
       - name: Update summary
         if: always()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const run = context.payload.workflow_run;
             if (!run) return;
-            
+
             core.summary
               .addHeading('Workflow Monitor Report')
               .addTable([
@@ -362,5 +379,8 @@ jobs:
                 ['Duration', `${Math.round((Date.now() - new Date(run.created_at).getTime()) / 60000)} min`],
                 ['URL', run.html_url],
               ]);
-            
+
             await core.summary.write();
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

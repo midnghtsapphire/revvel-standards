@@ -1,54 +1,35 @@
-# Jules Invoke
-#
-# Marketplace: https://github.com/marketplace/actions/jules-invoke
-# Action repo: https://github.com/BeksOmega/jules-action
-#
-# Invoke Jules, Google's AI-powered coding agent, to perform tasks on the
-# codebase. This workflow supports three entry points:
-#
-#   1. `workflow_dispatch`         — an operator supplies an ad-hoc prompt.
-#   2. `issues: [opened,reopened]` — auto-assign Jules to every new WR
-#      (any issue carrying `jules` or `deep-research` labels).
-#   3. `issues: [closed]`          — when an issue is closed, run Jules
-#      against any issues that become "unblocked"
-#      (per BeksOmega/on-unblocked).
-#
-# Secret required: JULES_API_KEY
-# Copy this file to: .github/workflows/jules-invoke.yml
-
 name: Jules Invoke
-
 on:
   workflow_dispatch:
     inputs:
       prompt:
-        description: "The prompt for Jules"
+        description: The prompt for Jules
         required: true
         type: string
       starting_branch:
-        description: "Branch for Jules to start from"
+        description: Branch for Jules to start from
         required: false
         type: string
         default: main
       include_last_commit:
-        description: "Pass the content of the last commit to Jules"
+        description: Pass the content of the last commit to Jules
         required: false
         type: boolean
         default: false
       include_commit_log:
-        description: "Pass the commit history to Jules"
+        description: Pass the commit history to Jules
         required: false
         type: boolean
         default: false
   issues:
-    types: [opened, reopened, closed]
-
+    types:
+      - opened
+      - reopened
+      - closed
 concurrency:
   group: jules-invoke-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
-  # ─── Ad-hoc invocation via workflow_dispatch ────────────────────────────────
   dispatch:
     name: Invoke Jules (dispatch)
     if: github.event_name == 'workflow_dispatch'
@@ -65,13 +46,8 @@ jobs:
           else
             echo "JULES_API_KEY is configured."
           fi
-
       - name: Invoke Jules
         if: env.JULES_API_KEY != ''
-        # NOTE: pin to a real published tag. The action repo does not have a
-        # floating `@v1` ref — only versioned tags (`@v1.0.0`, `@v0.1.x`).
-        # `@v1` fails the entire job at "Set up job" before any step runs.
-        # The other two invocations below already use `@v1.0.0`.
         uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: ${{ github.event.inputs.prompt }}
@@ -79,8 +55,7 @@ jobs:
           starting_branch: ${{ github.event.inputs.starting_branch }}
           include_last_commit: ${{ github.event.inputs.include_last_commit }}
           include_commit_log: ${{ github.event.inputs.include_commit_log }}
-
-  # ─── Run Jules on issues that become unblocked when another closes ─────────
+    timeout-minutes: 30
   detect-unblocked:
     name: Detect unblocked issues
     if: github.event_name == 'issues' && github.event.action == 'closed'
@@ -94,7 +69,7 @@ jobs:
       - name: Find Unblocked Issues
         id: finder
         uses: BeksOmega/on-unblocked@v1.0.0
-
+    timeout-minutes: 30
   invoke-on-unblocked:
     name: Invoke Jules on unblocked issue
     needs: detect-unblocked
@@ -116,11 +91,10 @@ jobs:
           else
             echo "JULES_API_KEY is configured."
           fi
-
       - name: Get issue details
         if: env.JULES_API_KEY != ''
         id: get_issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issue = await github.rest.issues.get({
@@ -129,33 +103,17 @@ jobs:
               issue_number: ${{ matrix.issue-number }}
             });
             return issue.data;
-
       - name: Invoke Jules on Unblocked Issue
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-action@v1.0.0
         with:
-          prompt: "${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}"
+          prompt: ${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
-
-  # ─── Auto-assign Jules to every new WR (opened / reopened) ─────────────────
-  # Audrey's rule: every new work request gets a deep-research pass before any
-  # code is written.
-  #
-  # OpenHands-RESTRUCTURE 2026-05-04: Originally this required a `jules` or
-  # `deep-research` label, but those labels are stripped when issues are opened
-  # via API / Copilot UI (the [WR] issue template's `labels:` defaults only fire
-  # on the GitHub form). We now ALSO fire on title prefix `[WR]` so Jules runs
-  # on every WR regardless of label. Bot-created `[FAILURE]/[ALERT]` issues are
-  # explicitly excluded.
+    timeout-minutes: 30
   invoke-on-opened:
     name: Invoke Jules on new WR
-    if: >-
-      github.event_name == 'issues' &&
-      (github.event.action == 'opened' || github.event.action == 'reopened') &&
-      github.event.issue.user.login != 'github-actions[bot]' &&
-      !startsWith(github.event.issue.title, '[FAILURE]') &&
-      !startsWith(github.event.issue.title, '[ALERT]') &&
-      (
+    if: |-
+      github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && github.event.issue.user.login != 'github-actions[bot]' && !startsWith(github.event.issue.title, '[FAILURE]') && !startsWith(github.event.issue.title, '[ALERT]') && (
         startsWith(github.event.issue.title, '[WR]') ||
         contains(github.event.issue.labels.*.name, 'deep-research') ||
         contains(github.event.issue.labels.*.name, 'jules') ||
@@ -175,10 +133,12 @@ jobs:
           else
             echo "JULES_API_KEY is configured."
           fi
-
       - name: Invoke Jules on New WR
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-action@v1.0.0
         with:
-          prompt: "${{ github.event.issue.title }}. ${{ github.event.issue.body }}"
+          prompt: ${{ github.event.issue.title }}. ${{ github.event.issue.body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

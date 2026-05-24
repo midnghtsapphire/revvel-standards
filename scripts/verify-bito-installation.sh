@@ -134,16 +134,27 @@ check_workflow_configuration() {
     return
   fi
   
-  if grep -q "bito-core/bito-github-action" "${workflow_file}"; then
+  if grep -q "gitbito/codereviewagent" "${workflow_file}"; then
+    check_pass "Uses gitbito/codereviewagent (current Bito CodeReviewAgent action; bito-core/bito-github-action legacy-compatible)"
+  elif grep -q "bito-core/bito-github-action" "${workflow_file}"; then
     check_pass "Uses bito-core/bito-github-action"
   else
-    check_fail "Does not use bito-core/bito-github-action"
+    check_fail "Does not use a recognized Bito GitHub Action (gitbito/codereviewagent or bito-core/bito-github-action)"
   fi
   
-  if grep -q "BITO_API_KEY" "${workflow_file}"; then
+  if grep -q "BITO_ACCESS_KEY" "${workflow_file}"; then
+    check_pass "References BITO_ACCESS_KEY secret (Bito CodeReviewAgent; BITO_API_KEY is the legacy docs alias)"
+  elif grep -q "BITO_API_KEY" "${workflow_file}"; then
     check_pass "References BITO_API_KEY secret"
   else
-    check_fail "Does not reference BITO_API_KEY secret"
+    check_fail "Does not reference a Bito API/access key secret"
+  fi
+
+  if grep -q "GIT_ACCESS_TOKEN" "${workflow_file}" || \
+     grep -q "GITHUB_TOKEN" "${workflow_file}"; then
+    check_pass "References Git access token for PR review"
+  else
+    check_fail "Does not reference a Git access token"
   fi
   
   if grep -q "permissions:" "${workflow_file}"; then
@@ -224,11 +235,11 @@ check_github_secret() {
   
   # Try to list secrets (requires admin/maintain access)
   if gh secret list --repo "${REPO_OWNER}/${REPO_NAME}" &> /dev/null; then
-    if gh secret list --repo "${REPO_OWNER}/${REPO_NAME}" | grep -q "BITO_API_KEY"; then
-      check_pass "BITO_API_KEY secret is configured"
+    if gh secret list --repo "${REPO_OWNER}/${REPO_NAME}" | grep -Eq "BITO_API_KEY|BITO_ACCESS_KEY"; then
+      check_pass "BITO_API_KEY/BITO_ACCESS_KEY secret is configured"
     else
-      check_fail "BITO_API_KEY secret is NOT configured"
-      check_info "Add it at: https://github.com/${REPO_OWNER}/${REPO_NAME}/settings/secrets/actions"
+      check_warn "BITO_API_KEY/BITO_ACCESS_KEY secret is NOT visible to this token"
+      check_info "Add or verify it at: https://github.com/${REPO_OWNER}/${REPO_NAME}/settings/secrets/actions"
     fi
   else
     check_warn "Cannot access repository secrets (may need admin permissions)"

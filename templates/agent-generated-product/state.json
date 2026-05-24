@@ -1,5 +1,10 @@
 {
   "product_slug": "TEMPLATE",
+  "intake_id": "TEMPLATE",
+  "revenue_target_monthly_usd": 0,
+  "goal_phase": 1,
+  "status": "new",
+  "steps": [],
   "shape": "TEMPLATE",
   "step": 0,
   "step_name": "scaffolded",

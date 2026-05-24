@@ -127,7 +127,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Status:** Fully defined (`GOAP.md`, `GOAP_AGENT_PROMPT.md`). Implementation pending.
 
 **Capabilities:**
-- Obsessively autonomous goal-oriented action planner
+- Relentlessly autonomous goal-oriented action planner
 - Revenue-focused task execution
 - Self-healing with `learnings.md` loop
 - Gatekeeper for Reese-Reviews system

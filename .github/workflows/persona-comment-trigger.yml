@@ -1,0 +1,58 @@
+name: Persona Comment Trigger
+
+# Summon a persona on demand from an issue/PR comment:
+#   /professor <task> | /oaudrey ... | /mindmappr ... | /openrouter ...
+#   /persona <name> <task>
+# Triggers use a leading slash, NOT "@name": GitHub turns "@name" into a mention
+# of the real user account with that username and emails them, so "@professor"
+# spammed a stranger on every comment. The slash form notifies no one.
+# The Professor (no-key Perplexity research) is the headline lane. See
+# scripts/openrouter-personas.js and docs/OPENROUTER_ASSIGNEE_PROCESS.md.
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: persona-comment-${{ github.event.issue.number }}-${{ github.event.comment.id }}
+  cancel-in-progress: false
+
+jobs:
+  summon-persona:
+    name: Summon persona from comment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Skip bot comments (avoid loops) and only run when a persona trigger is present.
+    if: >-
+      github.event.comment.user.type != 'Bot' &&
+      (contains(github.event.comment.body, '/professor') ||
+       contains(github.event.comment.body, '/oaudrey') ||
+       contains(github.event.comment.body, '/mindmappr') ||
+       contains(github.event.comment.body, '/openrouter') ||
+       contains(github.event.comment.body, '/persona'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Summon persona and reply
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY not set — persona reply skipped (no-key bridge handles The Professor; other personas need the key)."
+          fi
+          node scripts/persona-comment-runner.js

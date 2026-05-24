@@ -1,11 +1,19 @@
-# Products Directory
+# Revvel Products Directory
 
-**Ship-to-Market Revenue-Generating Products**
+Live product portfolio targeting **$10k/month → $10M in 3 years**.
 
-This directory contains production-ready web applications created from research findings. Each product is a fully functional Next.js application designed to generate revenue.
+## Active Products
 
-## 🚀 Live Products
+| Product | Port | Domain | Status | Tier |
+|---------|------|--------|--------|------|
+| prompt-generation-app | 3006 | promptforge.revvel.co | Shipped | $29 / $99mo / $499 |
 
+## Local Development
+
+```bash
+cd products/<product-name>
+npm install
+npm run dev
 ### 1. High-Ticket Affiliate Hub
 **Location:** `affiliate-hub/`  
 **Port:** 3001  
@@ -27,10 +35,17 @@ This directory contains production-ready web applications created from research 
 **Revenue Model:** Affiliate commissions, sponsored placements, comparison reports  
 **Status:** ✅ Production Ready
 
+### 4. Revvel PromptForge
+**Location:** `prompt-generation-app/`  
+**Port:** 3006  
+**Description:** Research-backed prompt packet generator with source logs, competitor gaps, blue/red-ocean scoring, and code-review prompts  
+**Revenue Model:** $29 prompt packets, $99/month workspace, $499 setup service  
+**Status:** ✅ Production Ready
+
 ## 🛠️ Tech Stack
 
 All products use:
-- **Framework:** Next.js 14 with App Router
+- **Framework:** Next.js with App Router
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **Deployment:** Vercel (static export)
@@ -45,83 +60,23 @@ Run all products locally:
 cd affiliate-hub && npm install && cd ..
 cd ai-video-toolkit && npm install && cd ..
 cd screen-recorder-finder && npm install && cd ..
+cd prompt-generation-app && npm install && cd ..
 
 # Run development servers (in separate terminals)
 cd affiliate-hub && npm run dev &       # Port 3001
 cd ai-video-toolkit && npm run dev &    # Port 3002
 cd screen-recorder-finder && npm run dev &  # Port 3003
+cd prompt-generation-app && npm run dev &   # Port 3006
 ```
 
-## 📦 Deployment
+## Testing
 
-Each product is configured for Vercel deployment:
+From repo root:
 
 ```bash
-cd [product-name]
-npm run build
-# Deploy the 'out' directory to Vercel
+npm test
 ```
 
-Or use the Vercel deploy buttons in each product's README.
+## Deployment
 
-## 💰 Revenue Targets
-
-Based on `revenue/REVENUE_PLAN.md`:
-
-| Week | Target | Products |
-|------|--------|----------|
-| 1 | $500 | Launch affiliate hub + video toolkit |
-| 2 | $500 | Launch screen recorder finder |
-| 3 | $500 | Optimize all products |
-| 4 | $1,500 | Add premium features |
-| **Total** | **$3,000** | **First month goal** |
-
-## 📊 Metrics
-
-Each product tracks:
-- Page views
-- Affiliate click-throughs
-- Lead captures
-- Conversion rates
-- Revenue per visitor
-
-## 🎯 Growth Strategy
-
-1. **SEO Optimization** - Target high-value keywords
-2. **Content Marketing** - Blog posts, tutorials, guides
-3. **Social Media** - Twitter/X, LinkedIn, Reddit
-4. **Paid Ads** - Google Ads, Facebook Ads (when profitable)
-5. **Email Marketing** - Build and nurture email lists
-6. **Partnerships** - Collaborate with influencers and affiliates
-
-## 📝 License
-
-All products are proprietary software:
-© 2026 MIDNGHTSAPPHIRE / GlowStarLabs  
-All Rights Reserved
-
-## 🤝 Contributing
-
-These are commercial products. Internal team only.
-
-## 📞 Support
-
-Issues and questions: [revvel-standards/issues](https://github.com/midnghtsapphire/revvel-standards/issues)
-
----
-
-**Ship Date:** May 2, 2026  
-**Author:** Audrey Evans (@midnghtsapphire)  
-**Status:** 🟢 All Products Live
-
-## 🔒 Security
-
-**Last Security Audit:** May 2, 2026
-
-All products have been updated to patch critical Next.js vulnerabilities:
-- ✅ DoS vulnerabilities patched (Next.js 15.5.15)
-- ✅ Authorization bypass fixed
-- ✅ Cache poisoning resolved
-- ✅ All dependencies updated
-
-See [SECURITY_UPDATE.md](SECURITY_UPDATE.md) for details.
+See [`DEPLOYMENT.md`](./DEPLOYMENT.md).

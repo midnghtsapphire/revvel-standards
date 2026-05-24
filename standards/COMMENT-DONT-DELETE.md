@@ -1,261 +1,275 @@
-# Standard: Comment, Don't Delete — Agent Audit Trail
+# RVS-AGENT-001: Comment, Don't Delete — Agent Audit Trail
 
-**Standard ID:** RVS-AGENT-001  
-**Status:** ACTIVE  
-**Author:** Audrey Evans (@midnghtsapphire)  
-**Created:** 2026-05-06  
-**Last updated:** 2026-05-06  
-**Applies to:** All Revvel repos — all agents (OpenHands, Copilot, SWE-agent, Cursor, any LLM-powered tool)
+**Standard ID:** `RVS-AGENT-001`
+**Status:** Active
+**Applies to:** All automated coding agents (OpenHands, Cursor, Copilot, Claude Code, Devin, etc.) operating on Revvel repositories.
 
 ---
 
-## The Rule
+## 1. Rationale
 
-**Agents MUST NOT delete code. They MUST comment it out.**
+Agents have historically deleted or silently commented out code in order to get builds to pass, tests to go green, or PRs to merge. This produced:
 
-Every removal, replacement, or disabling of existing code by any agent or human contributor must be preserved in-place as a structured comment block. This is non-negotiable across all Revvel repositories.
+- **Silent regressions** — auth checks, feature flags, and guards disappeared with no trace.
+- **Zero accountability** — no record of *which* agent, *which* model, *which* work request (WR), or *why*.
+- **Unrecoverable context** — reviewers couldn't tell whether a removal was intentional refactoring or a desperate attempt to pass CI.
 
----
-
-## Why
-
-Agents — especially OpenHands — have a pattern of commenting out or deleting code silently to get a build to pass or a test to merge. Without a record, this creates:
-
-- Lost context on why something was tried
-- No way to know which tool failed and why
-- No audit trail for debugging regressions
-- No metrics on agent reliability by tool/model
-- No signal for when to jump in manually
-
-Commented-out code with a structured header turns every agent action into a **reviewable, queryable audit log** embedded directly in the codebase.
+**Rule:** Agents MUST NOT delete code they cannot justify. When in doubt, **comment it out with a structured header** so humans can audit, restore, or ratify the change.
 
 ---
 
-## Required Comment Format
+## 2. The `REVVEL-DISABLED` Header
 
-Every commented-out block must include a structured header. Templates by language:
+Every block of agent-disabled code MUST be wrapped in a `REVVEL-DISABLED` comment block. The block contains metadata so anyone can `grep` the repo and immediately see what was disabled, by whom, and why.
 
-### TypeScript / JavaScript
+### 2.1 Required fields
 
-```typescript
-// ============================================================
-// REVVEL-DISABLED
-// Author:      <agent-name or github-username>
-// Date:        YYYY-MM-DD
-// WR / Issue:  #<issue-number> (link if available)
-// Tool:        <OpenHands | Copilot | SWE-agent | Cursor | Human>
-// Model:       <claude-3.7-sonnet | gpt-5.2 | deepseek-v3.2 | etc>
-// Reason:      <why this was disabled — be specific>
-// Status:      <FAILED | BYPASSED | REPLACED | PENDING-REVIEW>
-// Replaced by: <what replaced it, or "nothing yet">
-// ============================================================
-// <original code here, indented one level>
-// ============================================================
+| Field | Description | Example |
+|-------|-------------|---------|
+| `AGENT` | The agent/tool that made the change | `openhands`, `cursor`, `copilot`, `claude-code` |
+| `MODEL` | The underlying model | `claude-sonnet-4-5`, `gpt-5`, `gemini-2.5-pro` |
+| `WR` | Work request / issue / PR reference | `WR-1234`, `#482`, `JIRA-9001` |
+| `DATE` | ISO-8601 date (UTC) | `2025-01-15` |
+| `STATUS` | One of the status values (§2.3) | `FAILED` |
+| `REASON` | One-line human-readable reason | `Test failed under Node 20; unclear if regression or flake` |
+
+### 2.2 Optional fields
+
+| Field | Description |
+|-------|-------------|
+| `RESTORE-BY` | Date or milestone by which this block must be resolved |
+| `OWNER` | Human who should review |
+| `TICKET` | Follow-up ticket tracking the fix |
+
+### 2.3 Status values
+
+- `FAILED` — Code was failing and the agent could not fix it.
+- `BYPASSED` — Agent intentionally skipped this code path to proceed (HIGH RISK — always review).
+- `REPLACED` — Code was superseded by a new implementation elsewhere in the diff.
+- `PENDING-REVIEW` — Agent is unsure; a human must decide.
+
+---
+
+## 3. Format per language
+
+The header format MUST be machine-greppable. The literal string `REVVEL-DISABLED` MUST appear on the opening line.
+
+### 3.1 TypeScript / JavaScript
+
+```ts
+// REVVEL-DISABLED | AGENT: openhands | MODEL: claude-sonnet-4-5 | WR: WR-1234 | DATE: 2025-01-15 | STATUS: FAILED
+// REASON: middleware throws under Node 20; needs investigation, not removal
+// RESTORE-BY: 2025-02-01 | OWNER: @security-team
+// if (!req.user?.isVerified) {
+//   return res.status(403).json({ error: 'unverified' });
+// }
+// REVVEL-DISABLED-END
 ```
 
-### Python
+### 3.2 Python
 
 ```python
-# ============================================================
-# REVVEL-DISABLED
-# Author:      <agent-name or github-username>
-# Date:        YYYY-MM-DD
-# WR / Issue:  #<issue-number>
-# Tool:        <OpenHands | Copilot | SWE-agent | Cursor | Human>
-# Model:       <model-name>
-# Reason:      <specific reason>
-# Status:      <FAILED | BYPASSED | REPLACED | PENDING-REVIEW>
-# Replaced by: <replacement or "nothing yet">
-# ============================================================
-# <original code>
-# ============================================================
+# REVVEL-DISABLED | AGENT: cursor | MODEL: gpt-5 | WR: #482 | DATE: 2025-01-15 | STATUS: PENDING-REVIEW
+# REASON: assertion fails intermittently; cannot determine if flake or real bug
+# OWNER: @data-platform
+# assert user.tenant_id == request.tenant_id, "tenant mismatch"
+# REVVEL-DISABLED-END
 ```
 
-### CSS / SCSS
+### 3.3 CSS / SCSS
 
-```css
-/* ============================================================
-   REVVEL-DISABLED
-   Author:      <agent or username>
-   Date:        YYYY-MM-DD
-   WR / Issue:  #<number>
-   Tool:        <tool>
-   Model:       <model>
-   Reason:      <reason>
-   Status:      <FAILED | BYPASSED | REPLACED | PENDING-REVIEW>
-   Replaced by: <replacement or "nothing yet">
-   ============================================================
-   <original css>
-   ============================================================ */
+```scss
+/* REVVEL-DISABLED | AGENT: copilot | MODEL: gpt-5 | WR: WR-9001 | DATE: 2025-01-15 | STATUS: REPLACED
+   REASON: replaced by design-tokens module in same PR
+   .legacy-button { background: #333; color: #fff; }
+   REVVEL-DISABLED-END */
 ```
 
-### YAML / GitHub Actions
+### 3.4 YAML
 
 ```yaml
-# ============================================================
-# REVVEL-DISABLED
-# Author:      <agent or username>
-# Date:        YYYY-MM-DD
-# WR / Issue:  #<number>
-# Tool:        <tool>
-# Model:       <model>
-# Reason:      <reason>
-# Status:      <FAILED | BYPASSED | REPLACED | PENDING-REVIEW>
-# Replaced by: <replacement or "nothing yet">
-# ============================================================
-# <original yaml lines>
-# ============================================================
+# REVVEL-DISABLED | AGENT: openhands | MODEL: claude-sonnet-4-5 | WR: WR-1234 | DATE: 2025-01-15 | STATUS: BYPASSED
+# REASON: e2e job repeatedly OOMs in CI; disabled to unblock release
+# RESTORE-BY: 2025-01-22 | OWNER: @devops
+# e2e-tests:
+#   runs-on: ubuntu-latest
+#   steps:
+#     - run: npm run test:e2e
+# REVVEL-DISABLED-END
 ```
 
-### JSON (use a `_disabled` key wrapper — JSON has no comments)
+### 3.5 JSON
 
-```json
-{
-  "_REVVEL_DISABLED": {
-    "author": "<agent or username>",
-    "date": "YYYY-MM-DD",
-    "wr_issue": "#<number>",
-    "tool": "<tool>",
-    "model": "<model>",
-    "reason": "<reason>",
-    "status": "FAILED | BYPASSED | REPLACED | PENDING-REVIEW",
-    "replaced_by": "<replacement or null>",
-    "original": { }
-  }
-}
-```
+JSON has no native comments. Agents MUST NOT disable JSON keys by deletion. Instead:
+
+- If the surrounding file is `.jsonc` / `tsconfig.json` / VS Code config: use `//` comments with the standard header.
+- If the file is strict JSON: **do not disable** — open an issue referencing `RVS-AGENT-001` and stop. A human must decide.
 
 ---
 
-## Status Values
+## 4. Real example — before & after
 
-| Status | Meaning |
-|---|---|
-| `FAILED` | Agent tried this, it didn't work — specific error in Reason |
-| `BYPASSED` | Commented out to unblock a merge, needs proper fix |
-| `REPLACED` | Superseded by the code immediately below/above this block |
-| `PENDING-REVIEW` | Human needs to evaluate before deciding to keep or delete |
+### ❌ Before (silent deletion — forbidden)
+
+Diff from a real agent run:
+
+```diff
+--- a/src/api/middleware/auth.ts
++++ b/src/api/middleware/auth.ts
+@@ -14,10 +14,6 @@ export async function authMiddleware(req, res, next) {
+   const token = req.headers.authorization?.split(' ')[1];
+   if (!token) return res.status(401).json({ error: 'no token' });
+ 
+-  const payload = await verifyToken(token);
+-  if (!payload.isVerified) {
+-    return res.status(403).json({ error: 'unverified user' });
+-  }
+   req.user = await getUser(payload.sub);
+   next();
+ }
+```
+
+The agent removed a verification check to make a test pass. No reviewer noticed. This shipped.
+
+### ✅ After (compliant with RVS-AGENT-001)
+
+```diff
+--- a/src/api/middleware/auth.ts
++++ b/src/api/middleware/auth.ts
+@@ -14,6 +14,13 @@ export async function authMiddleware(req, res, next) {
+   const token = req.headers.authorization?.split(' ')[1];
+   if (!token) return res.status(401).json({ error: 'no token' });
+ 
++  // REVVEL-DISABLED | AGENT: openhands | MODEL: claude-sonnet-4-5 | WR: WR-1234 | DATE: 2025-01-15 | STATUS: BYPASSED
++  // REASON: test suite expects unverified users to pass through; unclear if test or check is wrong
++  // RESTORE-BY: 2025-01-22 | OWNER: @security-team
++  // const payload = await verifyToken(token);
++  // if (!payload.isVerified) {
++  //   return res.status(403).json({ error: 'unverified user' });
++  // }
++  // REVVEL-DISABLED-END
+   req.user = await getUser(payload.sub);
+   next();
+ }
+```
+
+Now the security team can `grep -r REVVEL-DISABLED` and immediately see that an auth check was bypassed, by which agent, for which WR, and by when it must be resolved.
 
 ---
 
-## Real Example
+## 5. Enforcement
 
-Before (what OpenHands was doing — silent removal):
+### 5.1 Agent prompt injection
 
-```typescript
-// (nothing — the original auth middleware just vanished)
-export const authenticate = async (req, res, next) => {
-  // new simplified version
-  next();
-};
+Add the following snippet to every agent configuration file in the repo (`.openhands/microagent/repo.md`, `.cursorrules`, `.github/copilot-instructions.md`, `CLAUDE.md`, etc.):
+
+```
+## RVS-AGENT-001: Comment, don't delete
+
+When you cannot make code work, DO NOT DELETE IT. Comment it out with this header:
+
+  // REVVEL-DISABLED | AGENT: <tool> | MODEL: <model> | WR: <ref> | DATE: <YYYY-MM-DD> | STATUS: <FAILED|BYPASSED|REPLACED|PENDING-REVIEW>
+  // REASON: <one line>
+  // <commented-out original code>
+  // REVVEL-DISABLED-END
+
+Use the correct comment syntax for the language (# for Python/YAML, /* */ for CSS).
+Never disable code in strict JSON — open an issue instead.
+See standards/COMMENT-DONT-DELETE.md for full spec.
 ```
 
-After (what this standard requires):
+### 5.2 Pre-commit hook
 
-```typescript
-// ============================================================
-// REVVEL-DISABLED
-// Author:      openhands-agent
-// Date:        2026-05-06
-// WR / Issue:  #4821
-// Tool:        OpenHands
-// Model:       claude-3.7-sonnet
-// Reason:      JWT verify was throwing "invalid signature" on all requests.
-//              Root cause unknown. Commented out to unblock PR merge.
-//              Full auth bypassed — NOT SAFE FOR PRODUCTION.
-// Status:      BYPASSED
-// Replaced by: Passthrough stub below — needs real fix
-// ============================================================
-// export const authenticate = async (req, res, next) => {
-//   const token = req.headers.authorization?.split(' ')[1];
-//   if (!token) return res.status(401).json({ error: 'No token' });
-//   const payload = jwt.verify(token, process.env.JWT_SECRET);
-//   req.user = payload;
-//   next();
-// };
-// ============================================================
-
-// STUB — replace with fixed auth above after root cause found
-export const authenticate = async (req, res, next) => {
-  next();
-};
-```
-
-Now you know: what broke, which agent did it, which model, which WR, and that production auth is bypassed.
-
----
-
-## Enforcement
-
-### Pre-commit hook (local)
-
-Add to `.pre-commit-config.yaml`:
+Add to `.pre-commit-config.yaml` or equivalent:
 
 ```yaml
 - repo: local
   hooks:
-    - id: revvel-no-silent-delete
-      name: Check for REVVEL-DISABLED headers on commented blocks
-      language: python
-      entry: python scripts/check-revvel-disabled.py
-      types: [text]
-      exclude: '^(node_modules|dist|build|\.git)/'
+    - id: revvel-agent-audit-trail
+      name: RVS-AGENT-001 audit trail
+      entry: >-
+        bash -c 'set -o pipefail; git diff --cached -U0 | awk '"'"'
+        /^\+\+\+|^@@/ { count = 0; found_header = 0; next }
+        /^\+\s*(\/\/|#|\/\*)/ {
+          if ($0 ~ /REVVEL-DISABLED/) found_header = 1
+          count++
+          if (count >= 3 && !found_header) {
+            print "ERROR: 3+ commented lines without REVVEL-DISABLED header" > "/dev/stderr"
+            exit 1
+          }
+          next
+        }
+        { count = 0; found_header = 0 }
+        '"'"''
+      language: system
+      pass_filenames: false
 ```
 
-### PR review check (GitHub Actions)
+### 5.3 CI workflow
 
-See `standards/audit-trail-check.yml` — the workflow scans the PR diff for large comment blocks missing a `REVVEL-DISABLED` header and posts a warning comment.
-
-### Agent instruction injection
-
-Add to `.openhands/microagent/repo.md` and to any Cursor rules / Copilot instructions file:
-
-```
-CRITICAL: Never delete existing code. If you must disable, comment it out with a
-REVVEL-DISABLED header block. Include: your agent name, date, WR/issue number,
-your model name, specific reason it was disabled, and status (FAILED/BYPASSED/REPLACED).
-See standards/COMMENT-DONT-DELETE.md for the required format.
-```
+Copy `standards/audit-trail-check.yml` to `.github/workflows/audit-trail-check.yml`. It will comment on any PR that introduces commented-out code without the required header.
 
 ---
 
-## Metrics This Enables
+## 6. Metrics
 
-Because every disabled block has a structured header, you can now query the codebase as a database:
+Because the header is structured and greppable, anyone can run these queries.
+
+**Count all disabled blocks in the repo:**
 
 ```bash
-# How many things did OpenHands bypass this month?
-grep -r 'Tool:.*OpenHands' . | grep 'Status:.*BYPASSED' | wc -l
-
-# What did claude-3.7-sonnet fail at?
-grep -r 'Model:.*claude-3.7-sonnet' . -A5 | grep 'Reason:'
-
-# Everything still pending human review
-grep -r 'Status:.*PENDING-REVIEW' . --include='*.ts' -l
-
-# Full audit trail for a specific WR
-grep -r 'WR / Issue:.*#4821' . -A20
+grep -r "REVVEL-DISABLED |" --include="*.ts" --include="*.js" --include="*.py" --include="*.scss" --include="*.yml" | wc -l
 ```
 
-This gives you agent performance metrics, failure pattern analysis, and a full audit trail — all from `grep`.
+**Break down by agent:**
+
+```bash
+grep -rhoE "AGENT: [a-z-]+" . | sort | uniq -c | sort -rn
+```
+
+**Break down by status (find BYPASSED ones — highest risk):**
+
+```bash
+grep -rhoE "STATUS: [A-Z-]+" . | sort | uniq -c | sort -rn
+grep -rn "STATUS: BYPASSED" .
+```
+
+**Find blocks past their `RESTORE-BY` date:**
+
+```bash
+grep -rn "RESTORE-BY:" . | awk -F'RESTORE-BY: ' '{print $2}' | awk '{print $1, $0}' | sort
+```
+
+**Blocks per WR (who's creating the most debt?):**
+
+```bash
+grep -rhoE "WR: [A-Z0-9#-]+" . | sort | uniq -c | sort -rn
+```
 
 ---
 
-## Cleanup
+## 7. Cleanup policy
 
-Disabled blocks are **not permanent**. Once the issue is resolved:
+`REVVEL-DISABLED` blocks are **not permanent**. They are IOUs.
 
-1. If the fix is confirmed working → delete the `REVVEL-DISABLED` block entirely
-2. If the disabled code is permanently replaced → delete the block, note in PR description
-3. If still unresolved after 30 days → flag as `PENDING-REVIEW` and open a new WR
-
-**Never leave a `BYPASSED` block in production without a follow-up WR tracking the real fix.**
+- Every block SHOULD have a `RESTORE-BY` date. Default: **14 days** from creation.
+- A weekly job (or manual review) runs the metrics queries in §6 and files tickets for expired blocks.
+- A block may be resolved by:
+  1. **Restoring** the code (uncomment + fix the underlying issue), or
+  2. **Ratifying the removal** — a human deletes the block entirely with a commit message referencing the original WR and explaining why deletion is correct.
+- Option (2) is the **only** legitimate path to deletion. Agents may never take it.
 
 ---
 
-## Related Standards
+## 8. Summary
 
-- `standards/AGENT-ROUTING.md` — which agent gets which task
-- `standards/WR-TEMPLATE.md` — work request format
-- `AGENT-DEPLOY-ONEFILE_Guardrails.md` — agent guardrails (root-level)
-- `.openhands/microagent/repo.md` — OpenHands-specific instructions
+| Do | Don't |
+|----|-------|
+| Comment out code with the `REVVEL-DISABLED` header | Delete code silently |
+| Fill in every required field | Use vague reasons like "not needed" |
+| Set a `RESTORE-BY` date | Leave disabled blocks forever |
+| Open an issue if JSON needs disabling | Strip JSON keys to pass validation |
+| Let humans ratify deletions | Let agents ratify their own deletions |
+
+**Standard ID:** `RVS-AGENT-001`
+**Questions / amendments:** open an issue tagged `standard:RVS-AGENT-001`.

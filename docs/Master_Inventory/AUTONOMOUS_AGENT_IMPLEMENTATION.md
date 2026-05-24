@@ -9,9 +9,9 @@
 
 ## Purpose
 
-This guide provides the complete implementation of **obsessively autonomous, self-healing agents** as requested in issue [WR] Evaluate strongDM or others then implement. It addresses:
+This guide provides the complete implementation of **relentlessly autonomous, self-healing agents** as requested in issue [WR] Evaluate strongDM or others then implement. It addresses:
 
-1. Making agents more autonomous and obsessive in problem-solving
+1. Making agents more autonomous and driven in problem-solving
 2. Implementing automatic error handling and recovery
 3. Creating visible error tracking with auto-issue creation
 4. Enhancing OpenRouter failure handling
@@ -26,7 +26,7 @@ This guide provides the complete implementation of **obsessively autonomous, sel
 **Location:** `docs/AGENTS.md`
 
 **Changes:**
-- Added "Agent Autonomy — Obsessive Self-Sufficiency" section
+- Added "Agent Autonomy — Driven Self-Sufficiency" section
 - Defined 7 core autonomy principles
 - Implemented "FIND SOLUTIONS, DON'T ASK QUESTIONS" mandate
 - Added deep research mandate (GitHub, GitLab, Gitee, non-English sources)
@@ -34,7 +34,7 @@ This guide provides the complete implementation of **obsessively autonomous, sel
 - Created self-healing workflow pattern
 
 **Key Principles:**
-1. **OBSESSIVE PROBLEM-SOLVING** — Try 3+ alternatives before escalating
+1. **DRIVEN PROBLEM-SOLVING** — Try 3+ alternatives before escalating
 2. **SELF-HEALING BY DEFAULT** — Every error triggers automatic recovery
 3. **FIND SOLUTIONS, DON'T ASK** — Research and unblock autonomously
 4. **AUTONOMOUS ERROR RECOVERY** — Auto-create issues, retry, document
@@ -47,7 +47,7 @@ This guide provides the complete implementation of **obsessively autonomous, sel
 **Location:** `docs/Master_Inventory/GOAP_AGENT_STANDARD.md`
 
 **Changes:**
-- Added "OBSESSIVE AUTONOMY" as first operational rule
+- Added "DRIVEN AUTONOMY" as first operational rule
 - Enhanced self-healing loop with auto-issue creation
 - Added deep research requirements
 - Implemented 3-retry minimum for failures
@@ -191,7 +191,7 @@ Trigger Auto-Error Workflow
     ↓
 Attempt Recovery:
     1. Try anthropic/claude-sonnet-4
-    2. Try anthropic/claude-3.5-sonnet
+    2. Try anthropic/claude-sonnet-4.5
     3. Try openai/gpt-4-turbo-preview
     ↓
 If Still Failing:
@@ -259,7 +259,7 @@ try {
 // Auto-recovery with alternatives
 const attemptedFixes = [];
 
-for (const model of ["claude-sonnet-4", "claude-3.5-sonnet", "gpt-4-turbo"]) {
+for (const model of ["claude-sonnet-4", "claude-sonnet-4.5", "gpt-4-turbo"]) {
   try {
     const result = await callOpenRouter(prompt, { model });
     return result;
@@ -513,7 +513,7 @@ Track in GitHub Projects:
 - Created comprehensive implementation guide
 
 ✅ **Agent Enhancements:**
-- Added "obsessive autonomy" to agent purpose
+- Added "driven autonomy" to agent purpose
 - Implemented self-healing protocols
 - Added deep research requirements
 - Documented 3-retry minimum

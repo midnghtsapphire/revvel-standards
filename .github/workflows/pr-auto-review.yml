@@ -1,68 +1,30 @@
 name: PR Auto Review via OpenRouter
-
-# Automated PR code review submission when PR needs review
-#
-# What this workflow does:
-#   1. Triggers when PR has "awaiting-approval" label (needs review)
-#   2. Calls OpenRouter to perform automated code review
-#   3. Creates review comments on specific lines
-#   4. Submits a formal GitHub review (APPROVE, COMMENT, or REQUEST_CHANGES)
-#
-# This complements pr-review-request-handler.yml which handles "changes requested" scenarios.
-# This workflow proactively SUBMITS reviews when a PR needs one.
-#
-# Automation Routing Policy: Uses OpenRouter via OPENROUTER_API_KEY (not GitHub Copilot)
-#
-# Related workflows:
-#   • pr-review-status.yml — Applies review status labels
-#   • pr-review-request-handler.yml — Handles changes-requested reviews
-#   • openrouter-triage.yml — General issue/PR triage
-#
-# Documentation: docs/PR_AUTO_REVIEW_AUTOMATION.md
-
-# OpenHands-RESTRUCTURE 2026-05-04: BITO AI is the sole assigned PR reviewer.
-# pr-auto-review duplicated that work via OpenRouter. Disabled live trigger;
-# manual dispatch retained for emergency / experimentation.
 on:
-  # # DISABLED — see header
-  # pull_request:
-  #   types: [labeled, opened, reopened, ready_for_review, synchronize]
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   contents: read
   pull-requests: write
   issues: write
-
-# Serialize runs per PR to avoid duplicate reviews or race conditions
 concurrency:
   group: pr-auto-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 jobs:
   auto-review:
     name: Submit Automated Review
     runs-on: ubuntu-latest
-    # Only run when:
-    # 1. PR has "awaiting-approval" label, OR
-    # 2. PR is opened/ready for review and doesn't have any review labels yet
-    # 3. PR is from same repository (not from untrusted fork)
     if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
       (
         (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'awaiting-approval') ||
         (github.event_name == 'pull_request' && github.event.pull_request.draft == false && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || github.event.action == 'synchronize'))
       )
-
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v6.0.2
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-
+          node-version: "24"
       - name: Verify OPENROUTER_API_KEY
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -73,38 +35,37 @@ jobs:
           else
             echo "OPENROUTER_API_KEY is configured."
           fi
-
       - name: Check if PR needs review
         id: check-needs-review
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
             const pr = context.payload.pull_request;
-            
+
             // Security: Validate PR is from same repository (not fork)
             if (pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.repo) {
               core.notice('Skipping auto-review - PR is from untrusted fork');
               core.setOutput('needs_review', 'false');
               return;
             }
-            
+
             // Cost management: Check PR size before proceeding
             const { data: prDetails } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber,
             });
-            
+
             const additions = prDetails.additions || 0;
             const deletions = prDetails.deletions || 0;
             const totalChanges = additions + deletions;
             const changedFiles = prDetails.changed_files || 0;
-            
+
             // Skip extremely large PRs to prevent excessive API costs
             const MAX_CHANGES = 5000;
             const MAX_FILES = 100;
-            
+
             if (totalChanges > MAX_CHANGES) {
               core.warning(`PR has ${totalChanges} changes (>${MAX_CHANGES}). Skipping auto-review to control costs.`);
               await github.rest.issues.createComment({
@@ -116,7 +77,7 @@ jobs:
               core.setOutput('needs_review', 'false');
               return;
             }
-            
+
             if (changedFiles > MAX_FILES) {
               core.warning(`PR has ${changedFiles} files (>${MAX_FILES}). Skipping auto-review to control costs.`);
               await github.rest.issues.createComment({
@@ -128,7 +89,7 @@ jobs:
               core.setOutput('needs_review', 'false');
               return;
             }
-            
+
             // Check if PR has awaiting-approval label or no review labels
             const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
@@ -187,7 +148,6 @@ jobs:
               core.notice('PR does not need automated review');
               core.setOutput('needs_review', 'false');
             }
-
       - name: Run OpenRouter auto-review
         if: steps.check-needs-review.outputs.needs_review == 'true'
         timeout-minutes: 5
@@ -201,3 +161,6 @@ jobs:
           MAX_DIFF_SIZE: 30000
           MAX_FILES_TO_FETCH: 100
         run: node scripts/pr-auto-review.js
+    timeout-minutes: 30
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

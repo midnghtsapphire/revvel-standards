@@ -1,9 +1,24 @@
 # Weekly Research (WR) Process
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Status:** Active  
 **Owner:** @midnghtsapphire  
-**Last Updated:** April 30, 2026
+**Last Updated:** May 17, 2026
+
+---
+
+## Core Principle: Instruction Resilience
+
+> **User instructions are research starting points, NOT firm rules.**
+
+Instructions, issue titles, and descriptions may contain errors, imprecise language, or incomplete context. The research engine and all agents MUST:
+
+1. **Never fail because an instruction is wrong.** Research the intent behind the instruction and pursue it.
+2. **Validate before acting.** Cross-reference instructions against current facts, documentation, and external sources.
+3. **Self-correct silently.** If an instruction is incorrect or contradictory, find the correct interpretation and proceed — document the correction in the findings.
+4. **Assume good intent.** When language is imprecise, infer the most productive interpretation and execute it.
+
+Agents that halt or error-out because of a bad instruction violate the Driven Autonomy mandate. Research your way through it.
 
 ---
 
@@ -144,6 +159,14 @@ gh workflow run weekly-research.yml -f issue_number=123
 
 Every WR task follows this standard checklist:
 
+> **Fleet Instruction:** User WR content is a *starting point*, not the final word. Self-correct against live data. Never follow user WR text verbatim — validate every claim, price, and API choice. The user has ADHD and produces rapid brain-dump instructions; treat them as directional signals, not firm requirements.
+- [ ] **Validate instructions before acting**
+  - [ ] Cross-check issue title/body against actual repo state
+  - [ ] Identify and silently correct any errors in the instruction
+  - [ ] If the WR says to copy, fork, refresh, or rebuild an existing repo, inspect that repo first and identify the strongest proven asset it already contains
+  - [ ] Choose the highest-value product wedge that the referenced repo can credibly support; avoid spending weekly research effort criticizing sparse prompt detail when the repo itself provides the direction
+  - [ ] Document assumed corrections in findings
+
 - [ ] **Review repository documentation**
   - [ ] `AGENTS.md` — Agent rules and protocols
   - [ ] `skills/` — Relevant skills in the vault
@@ -165,6 +188,23 @@ Every WR task follows this standard checklist:
   - [ ] `recurse-rules.md` — Code quality rules
   - [ ] `docs/AGENTS.md` — Agent operating principles
 
+- [ ] **Deep Market Research** ← REQUIRED for EVERY WR (including bug fixes, chores, minor features)
+  - [ ] Top keywords with search volumes + CPCs for this domain
+  - [ ] How the industry/market currently works (mechanics, pricing, conversion rates)
+  - [ ] Why some solutions cost more than others (value driver analysis)
+  - [ ] Community chatter — Reddit, TrustPilot, forums: top complaints about existing solutions
+  - [ ] Domain name strategy — high-value patterns, TLD recommendations
+  - [ ] Marketing best practices in this niche — what's working now + how our approach improves it
+  - [ ] Monetization model — specific pricing, channels, subscription vs. one-time
+
+- [ ] **BOM (Bill of Materials)** ← REQUIRED for EVERY WR
+  - [ ] List every API, CLI, MCP, GitHub App, or service needed
+  - [ ] Rank each option: which is best, what it costs, why it beats alternatives
+  - [ ] Property/data APIs compared (if applicable)
+  - [ ] Compliance APIs compared (TCPA, DNC, verification — if applicable)
+  - [ ] Delivery/storefront options compared (if applicable)
+  - [ ] Compute BOM cost summary with ROI break-even check
+
 - [ ] **Research external developments**
   - [ ] New tools and extensions released today
   - [ ] Upstream project updates
@@ -180,6 +220,34 @@ Every WR task follows this standard checklist:
   - [ ] Ensure recommendations result in working, tested code
   - [ ] Not just plans or proposals
   - [ ] Actionable implementation steps
+
+- [ ] **Marketing, SEO & competitive signals** *(required for every WR)*
+  - [ ] Identify 3–5 primary SEO keywords relevant to the topic
+  - [ ] Identify 3–5 long-tail keywords
+  - [ ] Check GitHub stars for any tools/repos referenced (competitive traction)
+  - [ ] Document at least one monetization path (Gumroad, Polar.sh, affiliate, SaaS)
+  - [ ] Assess distribution channel (organic search, social, community, API)
+  - [ ] Verify all market claims with factual citations — no hallucinated stats
+
+- [ ] **Product / Output Selections** *(required for every WR/PR)*
+  - [ ] Explicitly select which artifact shapes are in scope: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video/demo/training/YouTube, docs, and agent automation
+  - [ ] For any selected video output, state the intended format and target length
+  - [ ] For any enhanced feature or new requirement that should apply globally, update both the current WR and revvel-standards so future WRs inherit it
+
+- [ ] **Platform defaults & website requirements** *(required when a website/app surface is in scope)*
+  - [ ] Website in Test must name the Vercel URL or explicitly mark the gap
+  - [ ] Backend/integration/runtime defaults must use DigitalOcean unless the WR documents a reviewed exception
+  - [ ] Customer-facing websites must document admin access plus user login requirements, including Apple, Google, and GitHub sign-in when auth is in scope
+
+- [ ] **Artifact Engine Map** *(required for every WR/PR)*
+  - [ ] End with a map for every required output shape: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video, docs, and agent automation
+  - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
+  - [ ] Reuse existing repo engines where available (for example delivery matrix, PDF routing, UI creation, video standards, orchestration/MCP contracts) instead of inventing duplicate systems
+
+- [ ] **Agent Self-Healing Journal** *(required at the end of every WR/PR)*
+  - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
+  - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable
+  - [ ] Preserve required credential, security, and compliance gates unless a reviewed standard explicitly replaces them
 
 ---
 
@@ -265,6 +333,56 @@ Every WR task follows this standard checklist:
 1. [ ] [Action item 1]
 2. [ ] [Action item 2]
 3. [ ] [Action item 3]
+
+---
+
+### Product / Output Selections
+
+| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
+| --- | --- | --- | --- | --- |
+| Website / app UI | [yes/no] | [site/app] | [workflow/script/standard] | [notes] |
+| API | [yes/no] | [REST/GraphQL/etc.] | [workflow/script/standard] | [notes] |
+| CLI | [yes/no] | [binary/package] | [workflow/script/standard] | [notes] |
+| MCP | [yes/no] | [server/router/tool manifest] | [workflow/script/standard] | [notes] |
+| Skill | [yes/no] | [skill type] | [workflow/script/standard] | [notes] |
+| PDF | [yes/no] | [report/guide/etc.] | [workflow/script/standard] | [notes] |
+| PowerPoint / deck | [yes/no] | [sales/training/review deck] | [workflow/script/standard] | [notes] |
+| Video | [yes/no] | [demo/training/review/YouTube + target length] | [workflow/script/standard] | [notes] |
+| Docs | [yes/no] | [site/spec/readme] | [workflow/script/standard] | [notes] |
+| Agent automation | [yes/no] | [workflow/agent/service] | [workflow/script/standard] | [notes] |
+
+---
+
+### Platform Defaults & Website Requirements
+
+- **Website in Test:** [Vercel URL or documented gap]
+- **Integration runtime:** [DigitalOcean by default / documented exception]
+- **Admin surface:** [required / not required / gap]
+- **User auth:** [Apple / Google / GitHub / other / not required]
+
+### Artifact Engine Map
+
+| Artifact Shape | Existing engine / standard | Status | Required action |
+| --- | --- | --- | --- |
+| Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
+| API | [workflow/script/standard] | [exists/gap] | [action] |
+| CLI | [workflow/script/standard] | [exists/gap] | [action] |
+| MCP | [workflow/script/standard] | [exists/gap] | [action] |
+| Skill | [workflow/script/standard] | [exists/gap] | [action] |
+| PDF | [workflow/script/standard] | [exists/gap] | [action] |
+| PowerPoint / deck | [workflow/script/standard] | [exists/gap] | [action] |
+| Video | [workflow/script/standard] | [exists/gap] | [action] |
+| Docs | [workflow/script/standard] | [exists/gap] | [action] |
+| Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
+
+---
+
+### Agent Self-Healing Journal
+
+- **Issue detected:** [what was missing or wrong]
+- **Research / correction:** [what the agent verified and changed]
+- **Revvel-standards change:** [what standard/template/workflow/checklist was updated]
+- **Outcome to preserve:** [durable learning for future WR/PR work]
 
 ---
 
@@ -476,6 +594,13 @@ A WR task is successful if:
 ---
 
 ## Changelog
+
+### 2026-05-17 — v1.1.0
+- Added **Instruction Resilience** core principle (instructions are research seeds, not firm rules)
+- Added instruction-validation step to Research Checklist
+- Added mandatory Marketing, SEO & competitive signals to Research Checklist (keywords, stars, monetization, citations)
+- Updated `buildSystemPrompt` in `scripts/openrouter-triage.js` to enforce instruction resilience and marketing/SEO mandate
+- Version bump 1.0.0 → 1.1.0
 
 ### 2026-04-30 — v1.0.0
 - Initial WR process documentation

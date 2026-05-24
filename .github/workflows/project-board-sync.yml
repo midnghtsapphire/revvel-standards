@@ -1,23 +1,22 @@
 name: Project Board Sync
-
-# Syncs issues and PRs to the GitHub Projects v2 board based on label changes.
-# Adds items to the project and moves them between status columns.
-#
-# Requirements:
-#   - A GitHub Projects v2 board must exist for the org or repo
-#   - Set PROJECT_NUMBER below to match your board
-#   - ADMIN_GITHUB_TOKEN must have project:read and project:write scopes
-
 on:
   issues:
-    types: [opened, labeled, unlabeled, closed, reopened]
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - closed
+      - reopened
   pull_request:
-    types: [opened, labeled, unlabeled, closed, reopened]
-
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - closed
+      - reopened
 permissions:
   issues: read
   pull-requests: read
-
 jobs:
   sync:
     name: Sync to project board
@@ -34,10 +33,9 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
         id: check
-
       - name: Sync item to project board
         if: steps.check.outputs.skip != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
         with:
@@ -172,3 +170,6 @@ jobs:
             } catch (err) {
               core.warning(`Failed to update status: ${err.message}`);
             }
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

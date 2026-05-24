@@ -1,0 +1,140 @@
+# Agent Models Configuration
+# Defines routing profiles for different agent types
+# Used by workflows to reference models without hardcoding names
+
+# NOTE: Do NOT use Claude Sonnet 3.7 - it was retired Feb 2026
+# Use Claude Sonnet 4.6+ or GPT-5.5/GPT-5.1 class models
+
+profiles:
+  # === OPENROUTER ORCHESTRATOR ===
+  # OpenRouter decides best model per task - recommended default
+  orchestrator:
+    description: "Let OpenRouter pick best model for the task - recommended for general use"
+    provider: openrouter
+    strategy: "auto"  # Let OpenRouter pick best model
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 15000
+    temperature: 0.4
+
+  # === TASK-SPECIFIC PROFILES ===
+  
+  # Code patch profile - explicit task-routed coding profile for GitHub/VS Code automation
+  code_patch:
+    description: "Best available coder - Claude Sonnet 4 or GPT-4o for complex code"
+    provider: openrouter
+    # OpenRouter will use best reasoning model
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 20000
+    temperature: 0.4
+    use_for: ["code", "file-edit", "refactor", "implement"]
+
+  # Backward-compatible alias for older workflow references
+  best_coder:
+    description: "Alias of code_patch for legacy workflow compatibility"
+    provider: openrouter
+    primary: "anthropic/claude-sonnet-4-20250514"
+    fallback: "openai/gpt-4o"
+    max_tokens: 20000
+    temperature: 0.4
+    use_for: ["code", "file-edit", "refactor", "implement"]
+
+  # Best researcher - web-grounded with citations
+  research:
+    description: "Deep research using Perplexity Sonar for web-grounded answers"
+    provider: perplexity
+    primary: "sonar-pro"
+    fallback: "sonar-deep-research"
+    max_tokens: 10000
+    temperature: 0.4
+
+  # Review profile - explicit task-routed review profile for GitHub/VS Code automation
+  review:
+    description: "Best available reviewer - GPT-4o or Claude for quality checks"
+    provider: openrouter
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 8000
+    temperature: 0.2
+    use_for: ["review", "pr-review", "code-review"]
+
+  # Backward-compatible alias for older workflow references
+  best_reviewer:
+    description: "Alias of review profile (GPT-4o or Claude) for legacy workflow compatibility"
+    provider: openrouter
+    primary: "openai/gpt-4o"
+    fallback: "anthropic/claude-sonnet-4-20250514"
+    max_tokens: 8000
+    temperature: 0.2
+    use_for: ["review", "pr-review", "code-review"]
+
+  # Triage - quick classification, cheap
+  triage:
+    description: "Quick issue classification and routing - use cheap model"
+    provider: openrouter
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 4000
+    temperature: 0.3
+    use_for: ["triage", "classify", "route", "label"]
+
+  # Cheap summary - lightweight tasks only
+  cheap_summary:
+    description: "Quick summaries and simple responses"
+    provider: openrouter
+    primary: "openai/gpt-4o-mini"
+    fallback: "anthropic/claude-haiku-3.5"
+    max_tokens: 2000
+    temperature: 0.1
+    use_for: ["summarize", "simple", "quick"]
+
+  # Jules - Google's CI Fixer agent
+  jules:
+    description: "Jules coding agent with CI Fixer - PR creation and CI self-repair"
+    provider: google-jules
+    enabled: true
+    max_tokens: 15000
+
+  # Devin - AI coding agent for code review and implementation
+  devin:
+    description: "Devin AI coding agent - for code review and implementation tasks"
+    provider: devin
+    enabled: ${{ vars.DEVIN_ENABLED || 'false' }}
+    max_tokens: 20000
+    use_for: ["code-review", "implementation", "debug", "refactor"]
+
+  # CircleCI - CI/CD pipeline agent
+  circleci:
+    description: "CircleCI agent for CI/CD tasks"
+    provider: circleci
+    enabled: ${{ vars.CIRCLECI_ENABLED || 'false' }}
+    use_for: ["ci-cd", "deploy", "test"]
+
+#Orchestration flow:
+#  # Task-based routing:
+#  #   code/triage -> orchestrator (auto-select best model)
+#  #   file-edit/code -> code_patch (Claude Sonnet 4 or GPT-4o)
+#  #   research -> Perplexity Sonar (web-grounded)
+#  #   review -> review (quality focus)
+#  #   simple/quick -> cheap_summary (gpt-4o-mini)
+#
+#  wr:research -> Perplexity (research + WR handoff)
+#  wr:jules -> Jules (PR creation + CI Fixer)
+#  wr:code -> Direct LLM (file edits)
+#  wr:checking -> GitHub Actions
+#  lifecycle:stuck -> Perplexity diagnosis + requeue
+
+# Model selection logic:
+# 1. Check use_for match in task context
+# 2. Fall back to orchestrator (auto-select)
+# 3. Specific profiles override auto
+
+# For GitHub Actions usage:
+#   - ${{ fromJson(inputs.model_profile || 'orchestrator') }}
+
+# Model selection helpers for GitHub Actions
+env:
+  DEFAULT_TIMEOUT_MINUTES: 30
+  MAX_RERUNS: 1
+  # Set FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' for Node.js 24
