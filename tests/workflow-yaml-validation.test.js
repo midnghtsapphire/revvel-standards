@@ -419,7 +419,15 @@ test('weekly-research.yml uses OpenRouter-first oAudrey assignment and emits sel
   const filePath = path.join(WORKFLOWS_DIR, 'weekly-research.yml');
   const content = fs.readFileSync(filePath, 'utf8');
   const doc = yaml.parse(content);
-  const assignStep = doc.jobs['detect-wr'].steps.find((step) => step.name === 'Apply WR labels');
+  const detectWrJob = doc.jobs?.['detect-wr'];
+  if (!detectWrJob) {
+    throw new Error('weekly-research.yml must include a detect-wr job');
+  }
+  const detectWrSteps = detectWrJob.steps;
+  if (!Array.isArray(detectWrSteps)) {
+    throw new Error('weekly-research.yml detect-wr job must include steps');
+  }
+  const assignStep = detectWrSteps.find((step) => step.name === 'Apply WR labels');
   const assignScript = assignStep?.with?.script || '';
   const assignMatch = assignScript.match(/assignees:\s*\[([^\]]+)\]/);
   const assignees = assignMatch

@@ -73,12 +73,11 @@ jobs:
             const duration = Date.now() - createdAt.getTime();
             const maxDuration = MAX_DURATION_MS;
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-            const { execSync } = require('child_process');
+            const { execFileSync } = require('child_process');
 
             function emitSelfHealContract(component, errorMessage, actionName) {
               const outputPath = `/tmp/workflow-monitor-self-heal-contract-${runId}.json`;
               const args = [
-                'node',
                 'scripts/self-heal-contract.js',
                 '--component', component,
                 '--error', errorMessage,
@@ -89,9 +88,49 @@ jobs:
                 '--verification', 'workflow-run-detection',
                 '--output', outputPath,
               ];
-              execSync(args.map((value) => `"${String(value).replace(/"/g, '\\"')}"`).join(' '), {
+              execFileSync('node', args, {
                 stdio: 'inherit',
+                env: process.env,
               });
+            }
+
+            async function upsertFailureIssue({ title, body, labels, reasonLabel }) {
+              const signature = `workflow:${run.workflow_id}|branch:${headBranch || 'unknown'}|sha:${headSha || 'unknown'}|reason:${reasonLabel}`;
+              const bodyWithSignature = `${body}\n\nFailure Signature: \`${signature}\``;
+              const existing = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue is:open label:"workflow-failure" label:"${NEEDS_HUMAN_LABEL}" "${signature}" in:body`,
+              });
+
+              if (existing.data.total_count > 0) {
+                const issue = existing.data.items[0];
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: [
+                    '## ♻️ Repeated self-heal verification failure',
+                    '',
+                    `Workflow: ${runName}`,
+                    `Run ID: ${runId}`,
+                    `Branch: ${headBranch}`,
+                    `Reason: ${reasonLabel}`,
+                    '',
+                    `[View Workflow Run](${runUrl})`,
+                    '',
+                    `_Updated by workflow-monitor.yml at ${new Date().toISOString()}_`,
+                  ].join('\n'),
+                });
+                return { number: issue.number, created: false };
+              }
+
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body: bodyWithSignature,
+                labels,
+              });
+              return { number: created.data.number, created: true };
             }
 
             async function verifyNewRunStarted(reasonLabel) {
@@ -122,9 +161,7 @@ jobs:
 
               const verifyError = `${reasonLabel} rerun could not be verified after exponential backoff checks`;
               core.warning(`⚠️ ${verifyError}`);
-              await github.rest.issues.create({
-                owner,
-                repo,
+              const issueResult = await upsertFailureIssue({
                 title: `[FAILURE] ${runName} rerun verification failed`,
                 body: [
                   '## ⚠️ Self-heal verification failed',
@@ -147,7 +184,11 @@ jobs:
                   NEEDS_HUMAN_LABEL,
                   'priority-p1',
                 ],
+                reasonLabel: verifyError,
               });
+              core.info(issueResult.created
+                ? `📝 Created workflow failure issue #${issueResult.number}`
+                : `📝 Updated existing workflow failure issue #${issueResult.number}`);
               return { ok: false, runUrl: null };
             }
 

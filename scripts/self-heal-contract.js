@@ -36,6 +36,7 @@ function parseArgs(argv) {
 }
 
 function buildContract(args) {
+  const hasError = Boolean(args.error && String(args.error).trim());
   return {
     schema_version: '2026-05-24',
     generated_at: new Date().toISOString(),
@@ -45,9 +46,11 @@ function buildContract(args) {
     workflow: args.workflow || null,
     run_id: args.runId || null,
     incident: {
-      error: args.error || 'unspecified error',
+      error: hasError ? args.error : null,
       action_taken: args.action || 'fallback-route',
-      labels: ['openrouter', 'auto-fix', 'needs-human'],
+      labels: hasError
+        ? ['openrouter', 'auto-fix', 'needs-human']
+        : ['openrouter', 'auto-fix'],
     },
     verification: {
       status: 'pending',
@@ -70,13 +73,18 @@ function emit(contract, outputPath) {
   process.stdout.write(payload);
 
   if (process.env.GITHUB_OUTPUT) {
-    const lines = [
-      `self_heal_component=${contract.component}`,
-      `self_heal_issue=${contract.issue_number || ''}`,
-      `self_heal_verification=${contract.verification.method}`,
-      `self_heal_output=${outputPath || ''}`,
-    ];
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join('\n')}\n`);
+    const delimiter = 'SELF_HEAL_EOF';
+    const writeOutput = (name, value) => {
+      fs.appendFileSync(
+        process.env.GITHUB_OUTPUT,
+        `${name}<<${delimiter}\n${value || ''}\n${delimiter}\n`
+      );
+    };
+
+    writeOutput('self_heal_component', contract.component);
+    writeOutput('self_heal_issue', contract.issue_number || '');
+    writeOutput('self_heal_verification', contract.verification.method);
+    writeOutput('self_heal_output', outputPath || '');
   }
 }
 

@@ -17,6 +17,7 @@ permissions:
 
 env:
   CHECK_INTERVAL_MINUTES: 15
+  REPO: ${{ github.repository }}
 
 jobs:
   # Check agent instantiation status
@@ -110,7 +111,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Search for recent unhandled agent failure WR
-          EXISTING=$(gh issue list --repo midnghtsapphire/revvel-standards \
+          EXISTING=$(gh issue list --repo "$REPO" \
             --state open \
             --search "[AGENT-FAILURE] in:title" \
             --json number \
@@ -153,7 +154,7 @@ jobs:
           )
 
           gh issue create \
-            --repo midnghtsapphire/revvel-standards \
+            --repo "$REPO" \
             --title "[AGENT-FAILURE] Agent health check failed" \
             --body "$BODY" \
             --label "needs-human,agent-failure,automation-failure"
@@ -169,13 +170,13 @@ jobs:
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
           
           gh issue comment "$EXISTING" \
-            --repo midnghtsapphire/revvel-standards \
+            --repo "$REPO" \
             --body "⚠️ Agent health check still failing: $ISSUES"
           
           echo "✅ Updated existing WR #$EXISTING"
 
       - name: Emit self-heal contract
-        if: always()
+        if: always() && needs.check-agent-health.outputs.agents_status == 'unhealthy' && needs.check-agent-health.outputs.issues != ''
         run: |
           node scripts/self-heal-contract.js \
             --component "agent-monitor/health-check" \
