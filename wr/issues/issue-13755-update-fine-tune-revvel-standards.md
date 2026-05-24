@@ -22,8 +22,8 @@
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
 - [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [x] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [x] **Affiliate / reseller program** — only if a distribution network is in scope
+- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped *(N/A: no dedicated A/B test hypothesis is documented in this WR.)*
+- [ ] **Affiliate / reseller program** — only if a distribution network is in scope *(N/A: no affiliate, reseller, or distribution network scope is documented in this WR.)*
 
 ---
 
