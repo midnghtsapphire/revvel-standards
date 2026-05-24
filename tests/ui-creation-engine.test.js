@@ -205,7 +205,11 @@ test("Estimated cost per project is within budget", () => {
 });
 
 test("MCP projects inject the MCP landing page prompt pack into UI recommendations", () => {
-  const prompt = buildUIRecommendationsUserPrompt("competitive analysis", {
+  const synthesisFixture = `# Competitive Analysis: MCP Host
+
+## Executive Summary
+Strong demand for MCP integrations in developer workflows.`;
+  const prompt = buildUIRecommendationsUserPrompt(synthesisFixture, {
     business: "MCP Host",
     industry: "Developer tools",
     services: "MCP integration",
@@ -217,7 +221,7 @@ test("MCP projects inject the MCP landing page prompt pack into UI recommendatio
       industry: "AI tools",
       services: "",
     }),
-    "UI engine should detect MCP context from business/industry/services fields, including hyphenated terms"
+    "UI engine should detect MCP context from business/industry/services fields, including hyphenated terms."
   );
   assert.ok(
     prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
@@ -234,7 +238,11 @@ test("MCP projects inject the MCP landing page prompt pack into UI recommendatio
 });
 
 test("Non-MCP projects do not inject MCP prompt pack", () => {
-  const prompt = buildUIRecommendationsUserPrompt("competitive analysis", {
+  const synthesisFixture = `# Competitive Analysis: Soul2Bowl
+
+## Executive Summary
+Strong local catering demand in target market.`;
+  const prompt = buildUIRecommendationsUserPrompt(synthesisFixture, {
     business: "Soul2Bowl",
     industry: "Catering",
     services: "Meal prep",

@@ -429,7 +429,7 @@ Use actual keywords from the competitive analysis.`;
 
 function shouldIncludeMCPPromptPack(args) {
   const context = `${args.business || ""} ${args.industry || ""} ${args.services || ""}`;
-  return /(?:\bmcp\b|model[\s-]*context[\s-]*protocol)/i.test(context);
+  return /\b(?:mcp|model[\s-]+context[\s-]+protocol)\b/i.test(context);
 }
 
 function buildUIRecommendationsUserPrompt(synthesis, args) {
