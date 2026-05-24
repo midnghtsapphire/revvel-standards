@@ -58,11 +58,11 @@ jobs:
             core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
             
-            const safeApiCall = async (label, apiOperation, fallback = null) => {
+            const safeApiCall = async (operationDescription, apiOperation, fallback = null) => {
               try {
                 return await apiOperation();
               } catch (error) {
-                core.warning(`⚠️ ${label} failed: ${error.message}`);
+                core.warning(`⚠️ ${operationDescription} failed: ${error.message}`);
                 return fallback;
               }
             };
@@ -336,6 +336,9 @@ jobs:
                 if (!comment) {
                   core.warning(`⚠️ Recovery comment failed for #${alert.number}; attempting to close alert anyway`);
                 }
+                const existingLabelNames = Array.isArray(alert.labels)
+                  ? alert.labels.map(l => l?.name).filter(Boolean)
+                  : [];
                 
                 // Close alert
                 const updated = await safeApiCall(
@@ -346,7 +349,7 @@ jobs:
                   issue_number: alert.number,
                   state: 'closed',
                   labels: [
-                    ...(Array.isArray(alert.labels) ? alert.labels.map(l => l?.name).filter(Boolean) : []),
+                    ...existingLabelNames,
                     'resolved',
                   ].filter(l => l !== ALERT_LABEL),
                 }));
