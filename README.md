@@ -35,6 +35,7 @@ Curated reading list — sorted by *when you'll need it*, not by topic. Open the
 | Filing a new Work Request (intake → score → route) | [`docs/operating-model.md`](docs/operating-model.md) + [`templates/viability-gate-template.md`](templates/viability-gate-template.md) | Spec + rubric |
 | Evaluating an invention idea before committing to a build | [`templates/invention-flow-template.md`](templates/invention-flow-template.md) | Template |
 | Refreshing or rebuilding an existing legacy project | [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md) | Checklist |
+| Building a full website + mobile UI artifact (glassmorphic, S2M quality) | [`templates/website-mobile-ui/README.md`](templates/website-mobile-ui/README.md) | Template |
 | Designing project delivery orchestration and completion gates | [`docs/orchestration/project-orchestration-standard.md`](docs/orchestration/project-orchestration-standard.md) | Standard |
 | Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
 | Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
@@ -620,6 +621,11 @@ Every app must have a deep About section with multiple sub-pages:
 - **INVESTORS_PACK.md:** Business case, budget, and ROI analysis.
 - **CHANGELOG.md:** Auto-updated on every push. No undocumented changes ever.
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
+
+### Website + Mobile UI Artifact System (Required)
+- Use [`templates/website-mobile-ui/README.md`](templates/website-mobile-ui/README.md) as the required system artifact for website and mobile app UI work.
+- Includes the three glassmorphic master design prompts, logo/icon size requirements, domain check + buy flow, deep-research outputs, and quality gates.
+- Requires website + Capacitor mobile parity, store-publish paths, and test harness checks to prevent overlapping fonts, dead visuals, and broken cart/checkout flows.
 
 ### Required Deployment Environments
 - **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
