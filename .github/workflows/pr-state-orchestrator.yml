@@ -48,13 +48,27 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            let currentLabels = [];
-            try {
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              currentLabels = labelData.map(l => l.name);
-            } catch(e) {
-              console.log(`⚠️ Could not fetch labels for PR #${prNumber}: ${e.message}`);
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            async function fetchCurrentLabelsOrThrow(retries = 3, delayMs = 1000) {
+              let lastError;
+              for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                  const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                  return labelData.map(l => l.name);
+                } catch (e) {
+                  lastError = e;
+                  console.log(`⚠️ Could not fetch labels for PR #${prNumber} (attempt ${attempt}/${retries}): ${e.message}`);
+                  if (attempt < retries) {
+                    await delay(delayMs);
+                  }
+                }
+              }
+
+              throw new Error(`Failed to fetch current labels for PR #${prNumber} after ${retries} attempts: ${lastError.message}`);
             }
+
+            const currentLabels = await fetchCurrentLabelsOrThrow();
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
