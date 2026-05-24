@@ -135,6 +135,7 @@ function safeSpawn(cmd, args, opts = {}) {
     'where',
     'sh',
     'bash',
+    'node',
     'sops',
     'pass',
     'bw',
@@ -149,13 +150,13 @@ function safeSpawn(cmd, args, opts = {}) {
     'rm',
     process.execPath,
   ];
-  if (!allowedCommands.includes(cmd) && !String(cmd).endsWith('node') && !String(cmd).endsWith('doppler')) {
+  if (!allowedCommands.includes(cmd)) {
     return { ok: false, error: 'Command not allowed' };
   }
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
-    // Validate that cmd is an executable path or explicitly allowed command, not shell script to prevent command injection
+    // Validate command against explicit allowlist before invoking spawnSync.
     const result = spawnSync(cmd, args, {
       encoding: 'utf8',
       maxBuffer: maxBuffer || 1024 * 1024,
