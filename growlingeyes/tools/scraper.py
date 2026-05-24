@@ -24,7 +24,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import defusedxml.ElementTree as ET
+try:
+    import defusedxml.ElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
