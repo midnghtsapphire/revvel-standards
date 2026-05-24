@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const REVVEL_STANDARDS = path.join(__dirname, '..');
 const SECRETS_DOC = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MANAGEMENT.md');
