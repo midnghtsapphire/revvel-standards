@@ -8,6 +8,7 @@
   - MindMappr Bot (systemd: mindmappr) — port 8080
   - meetaudreyevans.com Dashboard — port 80
 - **Bot Token**: [REDACTED]
+- **Bot Token**: [REDACTED — see vault]
 - **Telegram Group**: RISINGALOHA (chat ID: -1003735305867)
 - **Bot Username**: @googlieeyes_bot
 

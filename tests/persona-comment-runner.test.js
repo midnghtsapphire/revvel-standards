@@ -35,6 +35,12 @@ test("parses other persona shortcuts", () => {
   assert.strictEqual(parsePersonaCommand("/openrouter route this").handle, "openrouter");
 });
 
+test("/theprofessor alias resolves to The Professor", () => {
+  const cmd = parsePersonaCommand("/theprofessor research the OSINT market");
+  assert.strictEqual(cmd.handle, "theprofessor");
+  assert.strictEqual(cmd.task, "research the OSINT market");
+});
+
 test("parses the /persona <name> <task> form", () => {
   const cmd = parsePersonaCommand("/persona professor research the OSINT market");
   assert.strictEqual(cmd.handle, "professor");

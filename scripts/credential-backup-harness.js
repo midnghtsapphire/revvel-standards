@@ -140,6 +140,7 @@ function safeSpawn(cmd, args, opts = {}) {
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
+    // Validate that cmd is an executable path or explicitly allowed command, not shell script to prevent command injection
     const result = spawnSync(cmd, args, {
       encoding: 'utf8',
       maxBuffer: maxBuffer || 1024 * 1024,
