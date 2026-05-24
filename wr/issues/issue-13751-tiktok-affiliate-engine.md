@@ -1,4 +1,4 @@
-# WR: [WR] create tiktok affliate link engine part of what? Research generate, implement s2m.
+# WR: [WR] create tiktok affiliate link engine part of what? Research generate, implement s2m.
 
 **Issue:** #13751
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
