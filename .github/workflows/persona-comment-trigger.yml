@@ -30,7 +30,8 @@ jobs:
     # Skip bot comments (avoid loops) and only run when a persona trigger is present.
     if: >-
       github.event.comment.user.type != 'Bot' &&
-      (contains(github.event.comment.body, '/professor') ||
+      (contains(github.event.comment.body, '/theprofessor') ||
+       contains(github.event.comment.body, '/professor') ||
        contains(github.event.comment.body, '/oaudrey') ||
        contains(github.event.comment.body, '/mindmappr') ||
        contains(github.event.comment.body, '/openrouter') ||
