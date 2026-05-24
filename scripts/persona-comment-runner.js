@@ -78,9 +78,20 @@ function parsePersonaCommand(body) {
   return null;
 }
 
+/**
+ * Neutralize @mentions in any text a bot posts, so a persona reply can never
+ * notify a real GitHub user (the persona's LLM output sometimes writes "@Name").
+ * Inserts a zero-width space after the "@": it still renders as "@name" but is
+ * no longer a valid mention, so GitHub sends no notification. Leaves emails
+ * (foo@bar) effectively unchanged in appearance.
+ */
+function sanitizeMentions(text) {
+  return String(text == null ? "" : text).replace(/@(?=[A-Za-z0-9_-])/g, "@​");
+}
+
 function postComment(repo, issueNumber, markdown) {
   const tmpFile = "/tmp/persona-comment-reply.md";
-  fs.writeFileSync(tmpFile, markdown);
+  fs.writeFileSync(tmpFile, sanitizeMentions(markdown));
   execFileSync(
     "gh",
     ["issue", "comment", String(issueNumber), "--repo", repo, "--body-file", tmpFile],
@@ -170,4 +181,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parsePersonaCommand };
+module.exports = { parsePersonaCommand, sanitizeMentions };
