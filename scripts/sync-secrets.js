@@ -49,12 +49,9 @@ function parseEnvTemplate() {
 // Get GH CLI
 function ghAPI(endpoint, method = 'GET', body = null) {
   const args = ['api', endpoint];
-  if (method !== 'GET') {
-    args.push('-X', method);
-  }
-  if (body) {
-    args.push('-f', JSON.stringify(body));
-  }
+  if (method !== 'GET') args.push('-X', method);
+
+  if (body) args.push('-f', JSON.stringify(body));
   return execFileSync('gh', args, { encoding: 'utf-8' });
 }
 

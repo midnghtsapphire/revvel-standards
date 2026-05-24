@@ -722,12 +722,18 @@ jobs:
               labels: ['in-review'],
             });
 
-            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+            let currentLabels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
             });
+              currentLabels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
 
             // Remove completion and auto-healer labels once the PR exists so
             // the issue no longer appears stuck after recovery.

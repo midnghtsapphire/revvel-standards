@@ -115,7 +115,13 @@ jobs:
 
             for (const pr of pulls) {
               const prNumber = pr.number;
-              const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
               const labelNames = labels.map(l => l.name);
               const updatedAt = new Date(pr.updated_at);
               const age = now - updatedAt;

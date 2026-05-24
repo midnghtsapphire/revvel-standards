@@ -22,7 +22,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawnSync } = require("child_process");
+const { execSync, execFileSync } = require('child_process');
 
 // ─── Configuration ────────────────────────────────────────
 const TARGET_DIR = process.argv[2] || '.';
@@ -64,25 +64,19 @@ function dirHasFiles(dirPath, extension) {
 
 function codeContains(pattern) {
   try {
-    const pathsToCheck = [];
-    if (fs.existsSync(path.join(repoRoot, 'src'))) pathsToCheck.push(path.join(repoRoot, 'src'));
-    if (fs.existsSync(path.join(repoRoot, 'server'))) pathsToCheck.push(path.join(repoRoot, 'server'));
-    if (fs.existsSync(path.join(repoRoot, 'api'))) pathsToCheck.push(path.join(repoRoot, 'api'));
-    if (fs.existsSync(path.join(repoRoot, 'app'))) pathsToCheck.push(path.join(repoRoot, 'app'));
+    // Only search directories that actually exist to prevent grep errors
+    const dirsToSearch = [`${repoRoot}/src`, `${repoRoot}/server`, `${repoRoot}/api`, `${repoRoot}/app`]
+      .filter(dir => fs.existsSync(dir));
 
-    if (pathsToCheck.length === 0) return false;
+    if (dirsToSearch.length === 0) return false;
 
-    const result = spawnSync('grep', ['-rl', pattern, ...pathsToCheck], {
-      encoding: 'utf8',
-      timeout: 5000,
-    });
-
-    // grep returns 0 on match, 1 on no match, 2 on error
-    if (result.status === 0 && result.stdout) {
-        return result.stdout.trim().length > 0;
-    }
-    return false;
-  } catch (err) {
+    const result = execFileSync(
+      'grep',
+      ['-rl', pattern, ...dirsToSearch],
+      { encoding: 'utf8', timeout: 5000 }
+    );
+    return result.trim().length > 0;
+  } catch {
     return false;
   }
 }
