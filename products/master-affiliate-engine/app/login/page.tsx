@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // TODO: wire to auth provider (NextAuth / Supabase)
-    window.location.href = "/dashboard";
+    router.push("/dashboard");
   }
 
   return (

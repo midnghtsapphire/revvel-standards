@@ -13,11 +13,12 @@ export default function CheckoutPage() {
   const [selected, setSelected] = useState("scale");
   const [email, setEmail] = useState("");
   const [cardName, setCardName] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // TODO: wire to Stripe Checkout session via /api/checkout-session
-    alert("Stripe Checkout integration — connect NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY and create /api/checkout-session route.");
+    setNotice("Connect NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY and create the /api/checkout-session route to activate live payments.");
   }
 
   const activePlan = plans.find((p) => p.id === selected)!;
@@ -100,6 +101,12 @@ export default function CheckoutPage() {
           <p className="text-center text-xs text-slate-500">
             Selected: <span className="font-semibold text-emerald-300">{activePlan.name} — {activePlan.price}</span>
           </p>
+
+          {notice && (
+            <div role="status" className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+              ⚠️ {notice}
+            </div>
+          )}
 
           <button
             type="submit"

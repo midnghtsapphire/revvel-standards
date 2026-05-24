@@ -135,7 +135,7 @@ function safeSpawn(cmd, args, opts = {}) {
   if (!allowedCmds.includes(cmd) && !cmd.endsWith('node') && !cmd.endsWith('doppler')) throw new Error('Unsafe command: ' + cmd);
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
-    const result = spawnSync(cmd, args, {
+    const result = spawnSync(cmd, args, { // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
       encoding: 'utf8',
       maxBuffer: maxBuffer || 1024 * 1024,
       stdio: stdio || (Object.prototype.hasOwnProperty.call(rest, 'input')
