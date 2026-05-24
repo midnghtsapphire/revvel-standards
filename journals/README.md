@@ -15,7 +15,7 @@ persona is summoned from an issue or PR comment.
 
 ## Format
 
-Each entry is appended in reverse-chronological order:
+Each entry is prepended (inserted at the top, below the `---` separator) in reverse-chronological order:
 
 ```
 ### YYYY-MM-DD — Issue/PR #N

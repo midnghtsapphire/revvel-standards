@@ -50,18 +50,27 @@ const { instantiate, getPersonas } = require("./openrouter-personas");
 
 const JOURNAL_DIR = path.join(__dirname, "..", "journals");
 const JOURNAL_CONTEXT_LINES = 120; // max lines of journal history to inject as context
+// A journal shorter than this (bytes) is just the header — skip injecting it as context.
+const MIN_JOURNAL_CONTEXT_LENGTH = 50;
 
 /**
- * Read the most recent N lines from a persona's journal file.
+ * Read the most recent journal entries for a persona.
+ * Entries are prepended below the header `---` separator, so the newest entries
+ * appear immediately after the separator. We skip the header block (everything up
+ * to and including the first `---` line) and then take JOURNAL_CONTEXT_LINES lines
+ * of actual entries so the LLM receives recent memory, not boilerplate.
  * Returns empty string if the journal doesn't exist yet.
  */
 function readJournal(handle) {
   const journalPath = path.join(JOURNAL_DIR, `${handle}.md`);
   if (!fs.existsSync(journalPath)) return "";
-  const lines = fs.readFileSync(journalPath, "utf8").split("\n");
-  // Take the last JOURNAL_CONTEXT_LINES lines (most recent entries are at top after header)
-  const recent = lines.slice(0, JOURNAL_CONTEXT_LINES).join("\n");
-  return recent;
+  const content = fs.readFileSync(journalPath, "utf8");
+  // Skip everything up to (and including) the first `---` separator so we only
+  // inject actual entries, not the static header block.
+  const sepIdx = content.indexOf("\n---\n");
+  const entries = sepIdx === -1 ? content : content.slice(sepIdx + 5);
+  const lines = entries.split("\n");
+  return lines.slice(0, JOURNAL_CONTEXT_LINES).join("\n");
 }
 
 /**
@@ -115,7 +124,7 @@ function commitJournals() {
  */
 function buildJournalContext(handle) {
   const content = readJournal(handle);
-  if (!content || content.trim().length < 50) return "";
+  if (!content || content.trim().length < MIN_JOURNAL_CONTEXT_LENGTH) return "";
   return (
     "## Your Persistent Memory (recent journal entries)\n\n" +
     content +
