@@ -58,9 +58,9 @@ jobs:
             core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
             
-            const safeApiCall = async (label, fn, fallback = null) => {
+            const safeApiCall = async (label, apiOperation, fallback = null) => {
               try {
-                return await fn();
+                return await apiOperation();
               } catch (error) {
                 core.warning(`⚠️ ${label} failed: ${error.message}`);
                 return fallback;
@@ -303,11 +303,11 @@ jobs:
                 'Search open alerts for recovered workflow',
                 () => github.rest.search.issuesAndPullRequests({
                   q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-                }),
-                { data: { items: [] } }
+                })
               );
               
-              for (const alert of openAlerts.data.items) {
+              const recoveredAlerts = openAlerts?.data?.items || [];
+              for (const alert of recoveredAlerts) {
                 // Post recovery comment
                 const comment = await safeApiCall(
                   `Add recovery comment to alert #${alert.number}`,
@@ -334,7 +334,7 @@ jobs:
                 }));
                 
                 if (!comment) {
-                  continue;
+                  core.warning(`⚠️ Recovery comment failed for #${alert.number}; attempting to close alert anyway`);
                 }
                 
                 // Close alert
@@ -346,7 +346,7 @@ jobs:
                   issue_number: alert.number,
                   state: 'closed',
                   labels: [
-                    ...alert.labels.map(l => l.name),
+                    ...(Array.isArray(alert.labels) ? alert.labels.map(l => l?.name).filter(Boolean) : []),
                     'resolved',
                   ].filter(l => l !== ALERT_LABEL),
                 }));
