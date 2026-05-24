@@ -114,6 +114,7 @@ jobs:
                     `Run ID: ${runId}`,
                     `Branch: ${headBranch}`,
                     `Reason: ${reasonLabel}`,
+                    `Details: ${reasonLabel} rerun verification failed`,
                     '',
                     `[View Workflow Run](${runUrl})`,
                     '',
@@ -184,7 +185,7 @@ jobs:
                   NEEDS_HUMAN_LABEL,
                   'priority-p1',
                 ],
-                reasonLabel: verifyError,
+                reasonLabel,
               });
               core.info(issueResult.created
                 ? `📝 Created workflow failure issue #${issueResult.number}`

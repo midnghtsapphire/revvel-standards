@@ -36,7 +36,7 @@ function parseArgs(argv) {
 }
 
 function buildContract(args) {
-  const hasError = Boolean(args.error && String(args.error).trim());
+  const hasError = Boolean(args.error?.trim());
   return {
     schema_version: '2026-05-24',
     generated_at: new Date().toISOString(),
