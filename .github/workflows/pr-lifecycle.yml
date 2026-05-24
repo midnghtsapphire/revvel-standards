@@ -67,7 +67,7 @@ jobs:
                 return data.map(l => l.name);
               } catch (e) {
                 core.warning(`Error fetching labels: ${e.message}`);
-                return [];
+                throw e;
               }
             };
 
