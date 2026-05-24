@@ -92,7 +92,7 @@ Our ecosystem (Revvel Execution OS) already acts as an Orchestrator. We need to 
    - *Owner:* @midnghtsapphire
 2. **Scaffold the Revvel MCU Node App**
    - Scaffold a new `production-app` named `revvel-mcu-node` using `scripts/init-product.sh`.
-   - *Owner:* Copilot / Agents
+   - *Owner:* OpenRouter automation
 
 #### Short-Term Actions (P1)
 
