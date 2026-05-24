@@ -1,6 +1,8 @@
 // UI Creation Engine Tests
 
 const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 
 // Test helper
 function test(description, fn) {
@@ -198,6 +200,28 @@ test("Estimated cost per project is within budget", () => {
   const maxBudget = 15;
   
   assert.ok(estimatedCost <= maxBudget, "Estimated cost should be within budget");
+});
+
+test("MCP projects inject the MCP landing page prompt pack into UI recommendations", () => {
+  const scriptPath = path.join(__dirname, "..", "scripts", "ui-creation-engine.js");
+  const script = fs.readFileSync(scriptPath, "utf8");
+
+  assert.ok(
+    script.includes("const isMCPContext = /\\bmcp\\b|model context protocol/i.test("),
+    "UI engine should detect MCP context from business/industry/services fields"
+  );
+  assert.ok(
+    script.includes("## 6. MCP Landing Page Visual Prompt Pack"),
+    "UI engine should include MCP landing page visual prompt section"
+  );
+  assert.ok(
+    script.includes("Prompt 1: The MCP Server Node & Context Stream"),
+    "UI engine should include MCP Prompt 1"
+  );
+  assert.ok(
+    script.includes("Prompt 2: The MCP Host Hub & File/Tool Execution"),
+    "UI engine should include MCP Prompt 2"
+  );
 });
 
 // ---------------------------------------------------------------------------
