@@ -273,18 +273,12 @@ jobs:
 
 
             const runSweep = async () => {
-              let items = [];
-              try {
-                items = await github.paginate(github.rest.issues.listForRepo, {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  state: 'open',
-                  per_page: 100,
-                });
-              } catch (e) {
-                core.warning(`Failed to list issues: ${e.message}`);
-                // Proceed with an empty array on rate limits or API errors
-              }
+              const items = await github.paginate(github.rest.issues.listForRepo, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100,
+              });
 
               let routed = 0;
               let skipped = 0;

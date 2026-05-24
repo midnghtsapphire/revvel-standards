@@ -98,17 +98,11 @@ jobs:
                 });
 
                 // Check if also has "approved" label - if so, mark ready-to-merge
-                let prLabels = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+                const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: prNumber,
                 });
-              prLabels = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
                 const labelNames = prLabels.map(l => l.name);
 
                 if (labelNames.includes('approved')) {

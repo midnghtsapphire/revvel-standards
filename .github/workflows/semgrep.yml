@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
-        with:
-          fetch-depth: ${{ github.event_name != 'pull_request' && 1 || 0 }}
       - name: Mark workspace safe (avoid 'dubious ownership' from container UID mismatch)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Run Semgrep scan (OSS rule packs)
@@ -44,30 +42,21 @@ jobs:
       - name: Upload SARIF to GitHub Code Scanning
         if: hashFiles('semgrep.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v3.28.1
         with:
           sarif_file: semgrep.sarif
           category: semgrep
-      - name: Semgrep blocking gate (ERROR severity, diff-aware)
+      - name: Semgrep blocking gate (ERROR severity)
         # 2026-05-21 (Claude): the SARIF upload above is advisory; this step
-        # blocks on high-severity security + secret findings that the PR
-        # INTRODUCES. It is diff-aware (--baseline-commit) so the existing
-        # backlog across the repo does not block unrelated PRs — only
-        # ERROR-severity findings new to the branch fail the job. Runs on PRs
-        # only (push/schedule have no base to diff against).
-        if: github.event_name == 'pull_request'
-        env:
-          # Map the PR base SHA to an env var instead of inlining the
-          # ${{ }} expression in the shell (repo command-injection rule).
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # actually blocks the merge on high-severity security + secret findings.
+        # Only ERROR-severity findings fail the job; warnings stay advisory.
         run: |
           semgrep scan \
             --config=p/secrets \
             --config=p/security-audit \
             --severity=ERROR \
             --error \
-            --metrics=off \
-            --baseline-commit "$BASE_SHA"
+            --metrics=off
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
