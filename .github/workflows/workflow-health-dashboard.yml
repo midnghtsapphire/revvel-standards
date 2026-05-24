@@ -124,7 +124,7 @@ jobs:
               '',
               '## Self-Heal SLOs (Last 7 Days)',
               '',
-              `- **MTTR:** ${mttrMinutes} minutes`,
+              `- **MTTR (Mean Time To Recovery):** ${mttrMinutes} minutes`,
               `- **Retry success rate:** ${retrySuccessRate}%`,
               `- **Repeated failure signatures:** ${repeatedFailureSignatures.length}`,
               `- **Oldest stuck-item age:** ${Number(maxStuckAgeHours.toFixed(1))} hours`,

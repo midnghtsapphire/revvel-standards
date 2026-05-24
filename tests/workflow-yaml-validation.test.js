@@ -418,11 +418,21 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
 test('weekly-research.yml uses OpenRouter-first oAudrey assignment and emits self-heal contracts', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'weekly-research.yml');
   const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+  const assignStep = doc.jobs['detect-wr'].steps.find((step) => step.name === 'Apply WR labels');
+  const assignScript = assignStep?.with?.script || '';
+  const assignMatch = assignScript.match(/assignees:\s*\[([^\]]+)\]/);
+  const assignees = assignMatch
+    ? assignMatch[1]
+        .split(',')
+        .map((value) => value.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean)
+    : [];
 
-  if (!content.includes("assignees: ['oaudrey']")) {
+  if (!assignees.includes('oaudrey')) {
     throw new Error('weekly-research must assign @oaudrey');
   }
-  if (content.includes("assignees: ['Copilot']")) {
+  if (assignees.includes('Copilot')) {
     throw new Error('weekly-research must not assign @Copilot');
   }
   if (!content.includes('scripts/self-heal-contract.js')) {

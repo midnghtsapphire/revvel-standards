@@ -73,6 +73,26 @@ jobs:
             const duration = Date.now() - createdAt.getTime();
             const maxDuration = MAX_DURATION_MS;
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            const { execSync } = require('child_process');
+
+            function emitSelfHealContract(component, errorMessage, actionName) {
+              const outputPath = `/tmp/workflow-monitor-self-heal-contract-${runId}.json`;
+              const args = [
+                'node',
+                'scripts/self-heal-contract.js',
+                '--component', component,
+                '--error', errorMessage,
+                '--repo', `${owner}/${repo}`,
+                '--workflow', 'workflow-monitor.yml',
+                '--run-id', `${runId}`,
+                '--action', actionName,
+                '--verification', 'workflow-run-detection',
+                '--output', outputPath,
+              ];
+              execSync(args.map((value) => `"${String(value).replace(/"/g, '\\"')}"`).join(' '), {
+                stdio: 'inherit',
+              });
+            }
 
             async function verifyNewRunStarted(reasonLabel) {
               const delays = [5000, 10000, 20000, 30000];
@@ -91,6 +111,7 @@ jobs:
                   if (candidate.id === runId) return false;
                   if ((candidate.head_sha || '') !== (headSha || '')) return false;
                   const candidateCreatedAt = new Date(candidate.created_at || 0).getTime();
+                  // 120000ms = 2 minutes of clock-skew tolerance around rerun request time.
                   return Number.isFinite(candidateCreatedAt) && candidateCreatedAt >= (rerunRequestTime - 120000);
                 });
                 if (found) {
@@ -215,10 +236,10 @@ jobs:
                 
                 const verifyResult = await verifyNewRunStarted('stuck-workflow');
                 if (!verifyResult.ok) {
-                  const { execSync } = require('child_process');
-                  execSync(
-                    `node scripts/self-heal-contract.js --component workflow-monitor/stuck-rerun --error "Rerun verification failed after stuck workflow cancel+rerun" --repo "${owner}/${repo}" --workflow "workflow-monitor.yml" --run-id "${runId}" --action "cancel-and-rerun" --verification "workflow-run-detection" --output "/tmp/workflow-monitor-self-heal-contract-${runId}.json"`,
-                    { stdio: 'inherit' }
+                  emitSelfHealContract(
+                    'workflow-monitor/stuck-rerun',
+                    'Rerun verification failed after stuck workflow cancel+rerun',
+                    'cancel-and-rerun'
                   );
                 }
                 core.info('✅ Workflow cancelled and re-run triggered with verification');
@@ -271,10 +292,10 @@ jobs:
                   });
                   const verifyResult = await verifyNewRunStarted('transient-failure');
                   if (!verifyResult.ok) {
-                    const { execSync } = require('child_process');
-                    execSync(
-                      `node scripts/self-heal-contract.js --component workflow-monitor/transient-retry --error "Transient retry dispatched but run start verification failed" --repo "${owner}/${repo}" --workflow "workflow-monitor.yml" --run-id "${runId}" --action "rerun-on-transient-failure" --verification "workflow-run-detection" --output "/tmp/workflow-monitor-self-heal-contract-${runId}.json"`,
-                      { stdio: 'inherit' }
+                    emitSelfHealContract(
+                      'workflow-monitor/transient-retry',
+                      'Transient retry dispatched but run start verification failed',
+                      'rerun-on-transient-failure'
                     );
                   } else {
                     core.info(`✅ Transient retry verified: ${verifyResult.runUrl}`);
