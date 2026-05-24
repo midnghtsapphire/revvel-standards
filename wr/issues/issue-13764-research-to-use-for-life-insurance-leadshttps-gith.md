@@ -1,4 +1,4 @@
-# WR: [WR] Research to use for life insurance leadshttps://github.com/serumwriter/life-insurance-crm
+# WR: [WR] Research to use for life insurance leads (serumwriter/life-insurance-crm)
 
 **Issue:** #13764  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
