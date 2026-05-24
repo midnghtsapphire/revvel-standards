@@ -8,7 +8,7 @@
 
 ---
 
-# WR: midnghtsapphire/revvel-standards
+## WR: midnghtsapphire/revvel-standards
 
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Created:** 2026-05-24  
@@ -95,7 +95,15 @@ on:
 | Primary Language | JavaScript |
 | Stars | {STARS} |
 | Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
+| Description | Issue #13798 intake captured below: TikTok/Amazon review generation prompts, scripts, and ad-format direction. |
+| Private | {IS_PRIVATE} |
+| Archived | {IS_ARCHIVED} |
+
+### Issue Intake Details
+
+The following intake was copied from issue #13798 to preserve source requirements context:
+
+### Output Type (required)
 
 production-app
 
@@ -259,9 +267,7 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
    > **Hook:** "Stop building your workflows from scratch. I spent years perfecting this architecture so you don’t have to."
    > **Value:** "Import my exact master engine into your account in one click. Fully automated multi-agent pipelines, smart integrations, and flawless reporting."
    > **CTA:** "Tap 'Learn More' to deploy the snapshot instantly. 🚀"
-   > |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+   >
 
 ### Current Status
 
