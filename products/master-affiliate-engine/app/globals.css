@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030712;
+  --foreground: #f1f5f9;
+  --emerald: #10b981;
+  --cyan: #06b6d4;
+  --gold: #f59e0b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@keyframes fog-drift {
+  0%   { transform: translateX(-5%) translateY(0); opacity: 0.18; }
+  50%  { transform: translateX(5%) translateY(-10px); opacity: 0.28; }
+  100% { transform: translateX(-5%) translateY(0); opacity: 0.18; }
+}
+
+@keyframes pipeline-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+@keyframes glow-cta {
+  0%, 100% { box-shadow: 0 0 24px 4px rgba(16, 185, 129, 0.45); }
+  50%       { box-shadow: 0 0 48px 12px rgba(6, 182, 212, 0.65); }
+}
+
+.fog-layer {
+  animation: fog-drift 12s ease-in-out infinite;
+}
+
+.pipeline-line {
+  animation: pipeline-pulse 2.5s ease-in-out infinite;
+}
+
+.cta-glow {
+  animation: glow-cta 3s ease-in-out infinite;
+}
