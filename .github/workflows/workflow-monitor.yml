@@ -57,6 +57,15 @@ jobs:
             core.info(`Monitoring: ${runName} (ID: ${runId})`);
             core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
+            
+            const safeApiCall = async (label, fn, fallback = null) => {
+              try {
+                return await fn();
+              } catch (error) {
+                core.warning(`⚠️ ${label} failed: ${error.message}`);
+                return fallback;
+              }
+            };
 
             // ──────────────────────────────────────────────────────────────
             // Case 1: Workflow stuck (running too long)
@@ -65,13 +74,18 @@ jobs:
               core.warning(`⚠️ Workflow stuck: ${runName} running for ${Math.round(duration / 60000)} minutes`);
               
               // Check if alert already exists
-              const existingAlerts = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-              });
+              const existingAlerts = await safeApiCall(
+                'Search for existing stuck workflow alerts',
+                () => github.rest.search.issuesAndPullRequests({
+                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+                })
+              );
               
-              if (existingAlerts.data.total_count === 0) {
+              if (existingAlerts && existingAlerts.data.total_count === 0) {
                 // Create alert issue
-                const issue = await github.rest.issues.create({
+                const issue = await safeApiCall(
+                  'Create stuck workflow alert issue',
+                  () => github.rest.issues.create({
                   owner,
                   repo,
                   title: `[ALERT] Workflow stuck: ${runName}`,
@@ -111,9 +125,13 @@ jobs:
                     AUTO_FIX_LABEL,
                     'priority-p0',
                   ],
-                });
+                }));
                 
-                core.info(`✅ Created alert issue #${issue.data.number}`);
+                if (issue) {
+                  core.info(`✅ Created alert issue #${issue.data.number}`);
+                }
+              } else if (!existingAlerts) {
+                core.info('ℹ️ Skipping alert creation because existing-alert lookup failed');
               } else {
                 core.info(`ℹ️ Alert issue already exists, skipping creation`);
               }
@@ -198,7 +216,9 @@ jobs:
                   core.warning(`⚠️ Retry script failed: ${error.message}`);
                   
                   // Fallback: create issue for manual intervention
-                  await github.rest.issues.create({
+                  await safeApiCall(
+                    'Create manual intervention issue after failed auto-retry',
+                    () => github.rest.issues.create({
                     owner,
                     repo,
                     title: `[FAILURE] ${runName} failed (auto-retry failed)`,
@@ -226,13 +246,15 @@ jobs:
                       NEEDS_HUMAN_LABEL,
                       'priority-p1',
                     ],
-                  });
+                  }));
                 }
               } else {
                 core.info('❌ Non-transient failure, creating issue for human review');
                 
                 // Create issue for manual review
-                await github.rest.issues.create({
+                await safeApiCall(
+                  'Create manual review issue for non-transient failure',
+                  () => github.rest.issues.create({
                   owner,
                   repo,
                   title: `[FAILURE] ${runName} failed`,
@@ -266,7 +288,7 @@ jobs:
                     NEEDS_HUMAN_LABEL,
                     'priority-p2',
                   ],
-                });
+                }));
               }
             }
 
@@ -277,13 +299,19 @@ jobs:
               core.info('✅ Workflow succeeded');
               
               // Check for open alert issues for this workflow
-              const openAlerts = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-              });
+              const openAlerts = await safeApiCall(
+                'Search open alerts for recovered workflow',
+                () => github.rest.search.issuesAndPullRequests({
+                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+                }),
+                { data: { items: [] } }
+              );
               
               for (const alert of openAlerts.data.items) {
                 // Post recovery comment
-                await github.rest.issues.createComment({
+                const comment = await safeApiCall(
+                  `Add recovery comment to alert #${alert.number}`,
+                  () => github.rest.issues.createComment({
                   owner,
                   repo,
                   issue_number: alert.number,
@@ -303,10 +331,16 @@ jobs:
                     '',
                     `_Auto-generated by workflow-monitor.yml at ${new Date().toISOString()}_`,
                   ].join('\n'),
-                });
+                }));
+                
+                if (!comment) {
+                  continue;
+                }
                 
                 // Close alert
-                await github.rest.issues.update({
+                const updated = await safeApiCall(
+                  `Close recovered alert #${alert.number}`,
+                  () => github.rest.issues.update({
                   owner,
                   repo,
                   issue_number: alert.number,
@@ -315,9 +349,11 @@ jobs:
                     ...alert.labels.map(l => l.name),
                     'resolved',
                   ].filter(l => l !== ALERT_LABEL),
-                });
+                }));
                 
-                core.info(`✅ Closed alert issue #${alert.number}`);
+                if (updated) {
+                  core.info(`✅ Closed alert issue #${alert.number}`);
+                }
               }
             }
       - name: Update summary
