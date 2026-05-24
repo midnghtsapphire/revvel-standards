@@ -32,7 +32,7 @@
 
 const fs = require("fs");
 const { execFileSync } = require("child_process");
-const { instantiate, getPersonas } = require("./openrouter-personas");
+const { instantiate, getPersonaHandles } = require("./openrouter-personas");
 
 // Verbs that mean "do the thing" rather than "tell me about it".
 const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add"];
@@ -54,7 +54,7 @@ function detectAction(task) {
  */
 function parsePersonaCommand(body) {
   if (!body || typeof body !== "string") return null;
-  const handles = Object.keys(getPersonas()); // openrouter, oaudrey, mindmappr, professor
+  const handles = getPersonaHandles(); // openrouter, oaudrey, mindmappr, professor, theprofessor
 
   // "/persona <name> <task...>"
   const slash = body.match(/\/persona\s+([a-z0-9_-]+)\s*([\s\S]*)/i);
