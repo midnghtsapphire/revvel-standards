@@ -72,6 +72,10 @@ run('deterministic output for same input', () => {
 });
 
 run('adds Spotify visual-link prompts for music embedding requests', () => {
+  const baseline = generatePromptPacket({
+    idea: 'Build a product analytics dashboard for agencies',
+    audience: 'operators'
+  });
   const p = generatePromptPacket({
     idea: 'Generate Spotify music platform embedding link visuals for TikTok video',
     audience: 'artists'
@@ -80,7 +84,7 @@ run('adds Spotify visual-link prompts for music embedding requests', () => {
   assert.ok(joined.includes('cannot contain clickable hyperlinks'));
   assert.ok(joined.includes('native TikTok/Instagram link stickers'));
   assert.ok(joined.includes('open.spotify.com/track'));
-  assert.ok(p.implementationPrompts.length > 3);
+  assert.equal(p.implementationPrompts.length, baseline.implementationPrompts.length + 2);
 });
 
 run('does not add music-link prompts for non-music social requests', () => {

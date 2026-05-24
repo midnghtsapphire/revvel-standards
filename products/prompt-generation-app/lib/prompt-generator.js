@@ -74,7 +74,7 @@ function legalBoundaries(idea) {
 
 const KEYWORD_SIGNALS = {
   music: ['spotify', 'music platform', 'track', 'song', 'album'],
-  embedding: ['embed', 'embedding', 'link in bio', 'link', 'uri', 'scan'],
+  embedding: ['embed', 'embedding', 'link in bio', 'social link', 'track url', 'spotify url', 'uri', 'scan'],
 };
 
 const MUSIC_VISUAL_LINK_PROMPT_TEMPLATE =
@@ -89,6 +89,14 @@ function shouldAddMusicLinkPrompts(idea) {
   return hasMusicSignal && hasEmbeddingSignal;
 }
 
+function normalizeIdeaForPrompt(idea) {
+  const normalized = idea.replace(/\s+/g, ' ').trim();
+  if (normalized.length <= 180) {
+    return normalized;
+  }
+  return `${normalized.slice(0, 177)}...`;
+}
+
 function implementationPrompts(idea, audience) {
   const corePrompts = [
     `You are a senior full-stack engineer. Build an MVP for: "${idea}". Audience: ${audience}. Stack: Next.js static export, TypeScript, Tailwind. Ship in <2 days. Include tests.`,
@@ -97,9 +105,10 @@ function implementationPrompts(idea, audience) {
   ];
 
   if (shouldAddMusicLinkPrompts(idea)) {
+    const promptIdea = normalizeIdeaForPrompt(idea);
     corePrompts.push(
-      MUSIC_VISUAL_LINK_PROMPT_TEMPLATE.replace('{idea}', idea),
-      MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE.replace('{idea}', idea)
+      MUSIC_VISUAL_LINK_PROMPT_TEMPLATE.replace('{idea}', promptIdea),
+      MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE.replace('{idea}', promptIdea)
     );
   }
 
