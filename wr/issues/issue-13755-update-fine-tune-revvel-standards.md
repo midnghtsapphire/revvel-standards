@@ -112,6 +112,7 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 | ------ | ---------- | ------------ |
 | Missing real-time data | High | Use mock data streams initially for the "Live Ticker" to validate the UX, then integrate real OSINT APIs. |
 | Meta Ad rejection | Medium | Ensure the "Live Breaking Alert" overlay complies with Meta's ad policies on simulated news. |
+| OSINT data-source ToS/licensing + CAN-SPAM exposure | High | Review each OSINT source's terms of service, licensing, attribution, rate-limit, and redistribution rules before ingestion; avoid scraping or reuse that violates provider terms; and for the Meta campaign + mandatory newsletter module, implement explicit consent capture, sender identification, unsubscribe links, suppression handling, and truthful subject/content practices to satisfy CAN-SPAM requirements. |
 | UX complexity | Medium | Ensure accessibility controls (mandatory) balance the high-contrast "hacker" aesthetic. |
 
 ---
