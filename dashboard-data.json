@@ -1186,6 +1186,12 @@
   },
   "urls": [
     {
+      "url": "https://soul2bowl.vercel.app",
+      "project": "Soul2Bowl",
+      "type": "vercel",
+      "source": "/docs/Soul2Bowl/README.md"
+    },
+    {
       "url": "http://localhost:3007>",
       "project": "graphify-evaluator",
       "type": "test",
@@ -1196,12 +1202,6 @@
       "project": "graphify-evaluator",
       "type": "test",
       "source": "/products/graphify-evaluator/README.md"
-    },
-    {
-      "url": "https://soul2bowl.vercel.app",
-      "project": "Soul2Bowl",
-      "type": "vercel",
-      "source": "/docs/Soul2Bowl/README.md"
     },
     {
       "url": "https://vitest.dev",
@@ -1442,13 +1442,10 @@
   ],
   "projectStatus": [
     {
-      "project": "app",
+      "project": "revvel-standards",
       "file": "/SYSTEM_STATE.md",
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-23T22:01:33.131Z"
-  "lastUpdated": "2026-05-21T23:18:34.922Z"
-  "lastUpdated": "2026-05-23T21:06:11.289Z"
-  "lastUpdated": "2026-05-23T08:14:47.235Z"
+  "lastUpdated": "2026-05-24T02:33:19.998Z"
 }
