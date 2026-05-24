@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { spawnSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const REVVEL_STANDARDS = path.join(__dirname, '..');
 const SECRETS_DOC = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MANAGEMENT.md');
@@ -47,32 +47,12 @@ function parseEnvTemplate() {
 }
 
 // Get GH CLI
-const { spawnSync } = require('child_process');
 function ghAPI(endpoint, method = 'GET', body = null) {
   const args = ['api', endpoint];
-  if (method !== 'GET') {
-    args.push('-X', method);
-  }
-  if (body) {
-    args.push('-f', JSON.stringify(body));
-  }
-  const result = spawnSync('gh', args, { encoding: 'utf-8' });
-  if (result.error) throw result.error;
-  if (result.status !== 0) throw new Error(`gh api failed: ${result.stderr}`);
   if (method !== 'GET') args.push('-X', method);
 
-  if (body) {
-    args.push('--input', '-');
-  }
-
-  const options = { encoding: 'utf-8' };
-  if (body) {
-    options.input = JSON.stringify(body);
-  }
-
-  const result = spawnSync('gh', args, options);
-  if (result.error) throw result.error;
-  return result.stdout;
+  if (body) args.push('-f', JSON.stringify(body));
+  return execFileSync('gh', args, { encoding: 'utf-8' });
 }
 
 // Main
