@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 const REVVEL_STANDARDS = path.join(__dirname, '..');
 const SECRETS_DOC = path.join(REVVEL_STANDARDS, 'docs/SECRETS_MANAGEMENT.md');
@@ -51,8 +51,25 @@ function ghAPI(endpoint, method = 'GET', body = null) {
   const args = ['api', endpoint];
   if (method !== 'GET') args.push('-X', method);
 
-  if (body) args.push('-f', JSON.stringify(body));
-  return execSync(`gh ${args.join(' ')}`, { encoding: 'utf-8' });
+  if (body) {
+    args.push('--input', '-');
+  }
+
+  const options = { encoding: 'utf-8' };
+  if (body) {
+    options.input = JSON.stringify(body);
+  }
+
+  const result = spawnSync('gh', args, options);
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    const output =
+      (result.stderr && result.stderr.trim()) ||
+      (result.stdout && result.stdout.trim()) ||
+      'No output from gh';
+    throw new Error(`gh ${args.join(' ')} failed with exit code ${result.status}: ${output}`);
+  }
+  return result.stdout;
 }
 
 // Main

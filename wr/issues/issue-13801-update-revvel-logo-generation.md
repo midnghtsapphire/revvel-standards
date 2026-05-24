@@ -1,28 +1,20 @@
-# WR_TEMPLATE_FULL.md
+# WR: [WR] update revvel logo generation
 
-#
+**Issue:** #13801  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Research Date:** 2026-05-23  
+**Researcher:** Jules (Google) + OpenRouter  
+**WR Status:** 🟡 In Progress
 
-# **ADVANCED TEMPLATE** - For users who are very specific about outcomes
+---
 
-#
+# WR: midnghtsapphire/revvel-standards
 
-# Use this if you want complete control over every detail
-
-# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
-
-#
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-#
-
-# WR: {REPO_NAME}
-
-**Repository:** [{REPO_NAME}]({REPO_URL})  
-**Created:** {CREATED_DATE}  
-**Last Updated:** {UPDATED_DATE}  
-**Language:** {PRIMARY_LANGUAGE}  
-**Research Date:** {RESEARCH_DATE} <!-- Use YYYY-MM-DD format -->  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Created:** 2026-05-23  
+**Last Updated:** 2026-05-23  
+**Language:** JavaScript  
+**Research Date:** 2026-05-23 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
 **WR Status:** 🟡 In Progress
 
@@ -97,13 +89,102 @@ on:
 
 | Property | Value |
 |----------|-------|
-| Repository | [{REPO_NAME}]({REPO_URL}) |
-| Created | {CREATED_DATE} |
-| Last Updated | {UPDATED_DATE} |
-| Primary Language | {PRIMARY_LANGUAGE} |
+| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created | 2026-05-23 |
+| Last Updated | 2026-05-23 |
+| Primary Language | JavaScript |
 | Stars | {STARS} |
 | Open Issues | {OPEN_ISSUES} |
-| Description | {DESCRIPTION} |
+| Description | ### Output Type (required)
+
+production-app
+
+### PDF pipeline batch
+
+None
+
+### Research Mode
+
+None
+
+### Delivery Mode
+
+None
+
+### Lifecycle Mode
+
+None
+
+### Commercial Mode
+
+None
+
+### Summary
+
+_No response_
+
+### Objective
+
+The Master Logo Generator Prompt: The Glassmorphic Node Canvas
+​Prompt: A professional 1:1 square grid composition presenting multiple distinct logo designs, each for a different brand. The overall visual style is that of a premium, modern high-tech interface utilizing layered, semi-transparent frosted glass modules floating gracefully over a dark, moody charcoal gradient background with swirling atmospheric haze. Delicate light leaks and sharp caustics ripple across the physical surfaces, casting realistic shadows between the floating UI layers.
+​The Layout:
+​The composition is a symmetrical grid, with each logo presented in its own dedicated glassmorphic circular or square panel.
+​Each logo uses a distinct but cohesive color palette (e.g.,) optimized for a premium digital brand.
+​Each panel includes the brand name in a clean, modern font directly below the stylized icon.
+​The Designs:
+​Logo 1: [Symbol-Based Global Eye for 'GEN-Z OSINT'. Geometric, orbital rings with integrated beaming eye.]
+​Logo 2: [Text-Based Lettermark for 'WARCHECKER'. Monospaced font with integrated arrow and radar sweep.]
+​Logo 3: [Combination Mark for 'MILITARY SHIP TRACKING'. Profile of a modern destroyer integrated into a hexagon network.]
+​Hyper-realistic, 8k resolution, ray-traced reflections, pristine vector aesthetics, professional brand showcase layout.
+​💡 Why this is a powerful, generic blueprint for your agents:
+​Adaptable for Any Brand: You are never locked into "ship tracking." Your agents just replace the bracketed [Design] text with a new concept. If you want a logo for an automation app, change it to [Symbol-Based Gear and Rocket for 'AUTO-PILOT'. Dynamic icon showing an autonomous engine.].
+​Maintains the Core "Vibe": The specific descriptive words for the atmosphere (glassmorphic, frosted glass, atmospheric haze, caustics, and dark charcoal) ensure that every logo your agent generates will possess the exact same premium, professional, and on-trend aesthetic.
+​Guarantees Multi-Shot Consistency: The prompt forces the generation to produce multiple separate logos simultaneously. This is critical for showing a range of options quickly on a landing page or ad campaign.
+​This prompt has been refined to capture the detailed elements that make the provided reference so effective: the use of distinct logo types, cohesive technical colors, and the atmospheric depth.
+
+<img width="1408" height="768" alt="Image" src="https://github.com/user-attachments/assets/ca97a23a-ede3-4c02-8ef3-8624dd200d5d" />
+<img width="1408" height="768" alt="Image" src="https://github.com/user-attachments/assets/7359f7cc-270b-4a3b-a2a4-b56d3fec61b3" />
+<img width="1408" height="768" alt="Image" src="https://github.com/user-attachments/assets/8b5bd542-5a81-44e9-9b88-24583c36368f" />
+<img width="1408" height="768" alt="Image" src="https://github.com/user-attachments/assets/e2295630-cde9-40e8-a17a-7106dd9f3c48" />
+
+### Required Bundle
+
+_No response_
+
+### Definition of Done
+
+_No response_
+
+### Do Not Under-Scope
+
+_No response_
+
+### Explicit Exclusions
+
+_No response_
+
+### Delivery Shape
+
+None
+
+### Expected Scope
+
+_No response_
+
+### Validation Expectations
+
+_No response_
+
+### Blocker Rule
+
+_No response_
+
+### Acknowledgements
+
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done. |
 | Private | {IS_PRIVATE} |
 | Archived | {IS_ARCHIVED} |
 
@@ -159,7 +240,6 @@ on:
 ## Step 2: Deep Web Research
 
 > **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
->
 > - **(1) What is being used now** — existing solutions, pricing, mechanics
 > - **(2) What problem are we solving** — specific pain points from community research
 > - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
@@ -176,6 +256,8 @@ on:
 [Research findings about market trends in this domain — include data points, stats, and growth signals]
 
 **Sources:**
+- [Link 1]: [Description]
+- [Link 2]: [Description]
 
 #### Target Audience & Trigger Events
 
@@ -196,7 +278,6 @@ on:
 | [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
-
 - [keyword]: [volume] — [why it matters]
 - [keyword]: [volume] — [why it matters]
 
@@ -269,7 +350,6 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 | [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
 
 **BOM Decision:**
-
 - Primary provider stack: [choice + reason]
 - Secondary/fallback stack: [choice + reason]
 - Why this BOM is superior for this WR: [evidence]
@@ -285,7 +365,6 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 3. **[Complaint 3]:** [Quote or paraphrase from community research]
 
 **What users/buyers actually want (opportunity signals):**
-
 - [Want 1]: [Why this is an opening]
 - [Want 2]: [Why this is an opening]
 
@@ -330,7 +409,6 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
 **Inbound vs. Outbound ROI comparison:**
-
 - Inbound ROI: [Data + timeframe]
 - Outbound ROI: [Data + timeframe]
 - Recommended approach for this WR: [Recommendation with rationale]
@@ -345,7 +423,6 @@ Define a layered research engine using two AI fleets:
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
 
 **Minimum pass criteria (required):**
-
 - All REQUIRED sections in Step 2 are present and non-empty
 - Zero unsupported factual claims in sampled checks
 - Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
@@ -356,7 +433,6 @@ Define a layered research engine using two AI fleets:
 **How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
 
 **Counting example:**
-
 - Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
 - Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
 - Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
@@ -368,7 +444,6 @@ Define a layered research engine using two AI fleets:
 #### Instruction Normalization (REQUIRED)
 
 User prompts and brainstorms are inputs, not immutable specs. Record:
-
 - What was accepted as-is
 - What was corrected/pivoted based on standards or evidence
 - What was rejected and why
@@ -382,13 +457,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
-
 - Current contribution: [$amount/month or $0]
 - Potential contribution: [$amount/month]
 - Path to contribution: [Strategy]
 
 **$2000+/month Target (Start: May 1, 2026):**
-
 - Revenue streams identified: [Count]
 - Estimated monthly revenue: [$amount]
 - Time to first revenue: [Weeks/months]
@@ -398,23 +471,22 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Autonomy Level:** [Low/Medium/High]
 
 **Blockers Identified:**
-
 1. [Blocker 1]: [Impact] → [Solution]
 2. [Blocker 2]: [Impact] → [Solution]
 
 **Autonomous Capabilities:**
+- [Capability 1]: [Status]
+- [Capability 2]: [Status]
 
 ### Self-Healing Capabilities
 
 **Current Self-Healing:** [None/Partial/Full]
 
 **Implemented:**
-
 - [Feature 1]: [Description]
 - [Feature 2]: [Description]
 
 **Missing:**
-
 - [Feature 1]: [Description and priority]
 - [Feature 2]: [Description and priority]
 
@@ -428,7 +500,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
 
 **Status Values:**
-
 - [ ] `eligible`
 - [ ] `manual_review`
 - [ ] `blocked`
@@ -438,13 +509,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Score Range:** 0-100
 
 **Weighted Factors:**
-
 | Factor | Weight | Source | Why it matters |
 |---|---:|---|---|
 | [factor] | [0.00] | [input/source] | [reason] |
 
 **Threshold Bands:**
-
 | Score Range | Status | Action |
 |---|---|---|
 | 80-100 | eligible | [export/route/approve] |
@@ -452,7 +521,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 | 0-49 | blocked | [suppress/reject] |
 
 **Audit Trail Required:**
-
 - [ ] Model version recorded
 - [ ] Factor values recorded
 - [ ] Explanation trail recorded
@@ -462,7 +530,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
 
 **Tenant / Client Separation:**
-
 - **Organization boundary:** [Audrey-owned / client / partner]
 - **Project boundary:** [project/workstream ID]
 - **Data domain:** [enterprise / client / product / research]
@@ -473,7 +540,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Not Ready / Needs Work / Ready / Deployed]
 
 **Readiness Checklist:**
-
 - [ ] All tests passing
 - [ ] No linting errors
 - [ ] No security vulnerabilities
@@ -494,7 +560,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Pass/Fail/No tests]
 
 **Failures Identified:**
-
 1. [Test 1]: [Issue] → [Fix]
 2. [Test 2]: [Issue] → [Fix]
 
@@ -503,14 +568,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Pass/Fail/No linter]
 
 **Errors Identified:**
-
 1. [Error 1]: [Location] → [Fix]
 2. [Error 2]: [Location] → [Fix]
 
 #### Security Vulnerabilities
 
 **Critical:** [Count]
-
 1. [Vulnerability]: [Impact] → [Fix]
 
 **High:** [Count]
@@ -522,7 +585,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Working/Broken/Not configured]
 
 **Issues Identified:**
-
 1. [Issue 1]: [Impact] → [Fix]
 2. [Issue 2]: [Impact] → [Fix]
 
@@ -545,7 +607,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current UX Score:** [Rating/10]
 
 **Improvements:**
-
 1. [Improvement 1]: [Issue] → [Solution] → [Impact]
 2. [Improvement 2]: [Issue] → [Solution] → [Impact]
 
@@ -554,7 +615,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Accessibility:** [WCAG level]
 
 **Required:**
-
 - [ ] Keyboard navigation
 - [ ] Screen reader support
 - [ ] Color contrast (WCAG AA)
@@ -565,13 +625,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 #### Performance Optimization
 
 **Current Performance:**
-
 - Lighthouse Score: [Rating/100]
 - Load Time: [Seconds]
 - Bundle Size: [KB]
 
 **Optimizations:**
-
 1. [Optimization 1]: [Improvement] → [Expected gain]
 2. [Optimization 2]: [Improvement] → [Expected gain]
 
@@ -580,14 +638,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 #### Affiliate Links Integration
 
 **revvel-affiliate-links MCP:**
-
 - [ ] MCP server configured
 - [ ] Affiliate links identified
 - [ ] Links integrated in content
 - [ ] Tracking configured
 
 **Links to Add:**
-
 | Product/Service | Affiliate Program | Commission | Location |
 |----------------|-------------------|------------|----------|
 | [Name] | [Program] | [Rate] | [Where to add] |
@@ -595,14 +651,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 #### Payment Integration
 
 **Gumroad:**
-
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
 - [ ] Checkout tested
 
 **LemonSqueezy:**
-
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
@@ -615,7 +669,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Analytics:** [None/Partial/Full]
 
 **To Implement:**
-
 - [ ] Google Analytics 4
 - [ ] Plausible Analytics (privacy-friendly alternative)
 - [ ] Revenue tracking
@@ -632,7 +685,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Deployed/Not deployed/Needs fix]
 
 **Configuration:**
-
 - [ ] `vercel.json` configured
 - [ ] Environment variables set
 - [ ] Build command correct
@@ -640,7 +692,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] Deployment protection configured
 
 **URLs:**
-
 - **Production:** [URL or "Not deployed"]
 - **Preview:** [URL or "Not configured"]
 
@@ -650,7 +701,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### UI Verification
 
 **Verification Checklist:**
-
 - [ ] Homepage renders correctly
 - [ ] All pages render correctly
 - [ ] All forms work
@@ -665,7 +715,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] Links work correctly
 
 **Issues Found:**
-
 1. [Issue 1]: [Description] → [Fix]
 2. [Issue 2]: [Description] → [Fix]
 
@@ -681,7 +730,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current README Status:** [Has TEST section / Missing / Needs update]
 
 **Required Format:**
-
 ```markdown
 ## Test
 
@@ -699,7 +747,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current README Status:** [Has deployment section / Missing / Needs update]
 
 **Required Format:**
-
 ```markdown
 ## Deployment
 
@@ -713,7 +760,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Additional Documentation
 
 **Existing Documentation:**
-
 - [ ] README.md
 - [ ] CONTRIBUTING.md
 - [ ] LICENSE
@@ -731,7 +777,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/{REPO_NAME}.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]
@@ -739,7 +785,6 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Implementation Tasks Created
 
 **Issues Created:**
-
 1. [Issue #X]: [Title] - [Priority]
 2. [Issue #Y]: [Title] - [Priority]
 
@@ -793,12 +838,10 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Alternative 1: [Name]
 
 **Pros:**
-
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
-
 - [Con 1]
 - [Con 2]
 
@@ -807,12 +850,10 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Alternative 2: [Name]
 
 **Pros:**
-
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
-
 - [Con 1]
 - [Con 2]
 
@@ -823,14 +864,18 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ## References
 
 ### Documentation
-
 - [AGENTS.md](/docs/AGENTS.md)
 - [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
 - [promptforproject.md](/promptforproject.md)
 
 ### External Resources
+- [Resource 1]: [Description]
+- [Resource 2]: [Description]
+- [Resource 3]: [Description]
 
 ### Research Sources
+- [Source 1]: [Description]
+- [Source 2]: [Description]
 
 ---
 
@@ -845,17 +890,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ---
 
-**Last Updated:** {RESEARCH_DATE}  
+**Last Updated:** 2026-05-23  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-
 # END ADVANCED TEMPLATE
-
-#
-
+# 
 # For advanced users who want full control
-
 # Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
-
 # ─────────────────────────────────────────────────────────────────────────────

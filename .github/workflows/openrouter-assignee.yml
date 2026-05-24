@@ -79,18 +79,26 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            let item;
 
-            const { data: item } = itemKind === 'issue'
-              ? await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                })
-              : await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: issueNumber,
-                });
+            try {
+              const res = itemKind === 'issue'
+                ? await github.rest.issues.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                  })
+                : await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: issueNumber,
+                  });
+              item = res.data;
+            } catch (e) {
+              core.warning(`Failed to fetch item metadata: ${e.message}`);
+              core.setOutput('skip', 'true');
+              return;
+            }
 
             const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
 
