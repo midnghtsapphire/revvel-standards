@@ -1,13 +1,20 @@
 name: Persona Comment Trigger
 
 # Summon a persona on demand from an issue/PR comment:
-#   /professor <task> | /oaudrey ... | /mindmappr ... | /openrouter ...
+#   /professor <task> | /oaudrey ... | /mindmappr ... | /radiochaser ... | /openrouter ...
 #   /persona <name> <task>
 # Triggers use a leading slash, NOT "@name": GitHub turns "@name" into a mention
 # of the real user account with that username and emails them, so "@professor"
 # spammed a stranger on every comment. The slash form notifies no one.
 # The Professor (no-key Perplexity research) is the headline lane. See
 # scripts/openrouter-personas.js and docs/OPENROUTER_ASSIGNEE_PROCESS.md.
+#
+# Personas: oaudrey (orchestrator), professor (research), mindmappr (ideation),
+#           radiochaser (signals/trends), openrouter (model router)
+#
+# Persistent memory: each persona has a journal at journals/<handle>.md that is
+# read before each run (context injection) and updated after (memory commit).
+# Requires contents:write for journal commits.
 
 on:
   issue_comment:
@@ -16,7 +23,7 @@ on:
 permissions:
   issues: write
   pull-requests: write
-  contents: read
+  contents: write
 
 concurrency:
   group: persona-comment-${{ github.event.issue.number }}-${{ github.event.comment.id }}
@@ -33,6 +40,7 @@ jobs:
       (contains(github.event.comment.body, '/professor') ||
        contains(github.event.comment.body, '/oaudrey') ||
        contains(github.event.comment.body, '/mindmappr') ||
+       contains(github.event.comment.body, '/radiochaser') ||
        contains(github.event.comment.body, '/openrouter') ||
        contains(github.event.comment.body, '/persona'))
     steps:

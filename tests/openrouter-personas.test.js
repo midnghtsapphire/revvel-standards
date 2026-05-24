@@ -74,8 +74,8 @@ async function runTests() {
   console.log("Test Group: Persona Registry");
   assertEqual(
     Object.keys(getPersonas()).sort(),
-    ["mindmappr", "oaudrey", "openrouter", "professor"],
-    "Should register exactly the four named personas"
+    ["mindmappr", "oaudrey", "openrouter", "professor", "radiochaser"],
+    "Should register exactly the five named personas"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
@@ -134,7 +134,7 @@ async function runTests() {
   // Fleet registration (deferred, no API calls)
   console.log("\nTest Group: instantiateFleet (deferred)");
   const fleet = await instantiateFleet(undefined, { silent: true });
-  assertEqual(fleet.length, 4, "Fleet registers all four personas by default");
+  assertEqual(fleet.length, 5, "Fleet registers all five personas by default");
   assertTrue(
     fleet.every((f) => f.instantiated === false && typeof f.assign === "function"),
     "Each fleet member is a deferred handle"
