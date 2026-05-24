@@ -133,6 +133,10 @@ jobs:
                 name: 'in-review',
               });
             } catch (e) {
+              if (e.status !== 404) {
+                core.warning(`Failed to get label: ${e.message}`);
+                return;
+              }
               if (e.status === 404) {
                 await github.rest.issues.createLabel({
                   owner: context.repo.owner,
@@ -290,12 +294,16 @@ jobs:
               '_Reviewer bots that are not yet installed in this repo will silently no-op; add them via their GitHub App / Action when available._',
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body,
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body,
+              });
+            } catch (e) {
+              core.warning(`Failed to create comment: ${e.message}`);
+            }
     timeout-minutes: 15
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
