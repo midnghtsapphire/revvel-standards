@@ -19,7 +19,7 @@ A cinematic, angled hero shot of a fluid, interactive web application featuring 
 ## 2) Brand and domain checklist (required)
 
 - [ ] Logo pack delivered (full logo, mark, dark/light variants)
-- [ ] Full icon and logo-size set delivered (see `templates/brand/ICON_SIZE_SPEC.md`)
+- [ ] Full icon and logo-size set delivered (see `../brand/ICON_SIZE_SPEC.md`)
 - [ ] Domain checks completed (exact, high-relevance alternates, social handle parity)
 - [ ] Domain purchase path captured in deployment notes
 - [ ] OG image and social preview assets exported
@@ -27,7 +27,7 @@ A cinematic, angled hero shot of a fluid, interactive web application featuring 
 ## 3) Product surface requirements (required)
 
 - [ ] Website shipped with premium UI quality (no overlapping typography, no crowded spacing)
-- [ ] Mobile companion generated from the same product using Capacitor (`templates/mobile/MOBILE_DEPLOYMENT.md`)
+- [ ] Mobile companion generated from the same product using Capacitor (`../mobile/MOBILE_DEPLOYMENT.md`)
 - [ ] iOS + Android store submission path wired with Fastlane templates
 - [ ] Cart + checkout + Stripe + admin login + user login flows included when commerce exists
 - [ ] API / CLI / MCP / skill requests include a visible website status surface for testing
@@ -38,7 +38,7 @@ A cinematic, angled hero shot of a fluid, interactive web application featuring 
 - [ ] Competitor research with top competitors and structure patterns
 - [ ] Top trending category keywords + product searches + sub-searches
 - [ ] Monetization notes and implementation suggestions
-- [ ] Skills test harness coverage (`templates/mobile/testing/` and `templates/testing/`)
+- [ ] Skills test harness coverage (`../mobile/testing/` and `../testing/`)
 
 ## 5) Quality gates before release
 
