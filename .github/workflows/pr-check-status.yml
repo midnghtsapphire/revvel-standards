@@ -103,7 +103,7 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: prNumber,
                 }); prLabels = data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
-                const labelNames = prLabels.map(l => l.name);
+                const labelNames = prLabels;
 
                 if (labelNames.includes('approved')) {
                   // Remove ready-to-merge from any other PRs first
