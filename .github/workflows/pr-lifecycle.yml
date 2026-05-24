@@ -61,9 +61,18 @@ jobs:
 
             // ─ helpers ────────────────────────────────────────────
 
-            const currentLabels = async () => { try { const { data } = await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              }); return data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); return []; } };
+            const currentLabels = async () => {
+              try {
+                return (
+                  await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  })
+                ).data.map(l => l.name);
+              } catch (e) {
+                core.warning(`listLabelsOnIssue failed: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -168,9 +177,18 @@ jobs:
             core.info(`PR #${num} review state: ${state}`);
 
 
-            const currentLabels = async () => { try { const { data } = await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              }); return data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); return []; } };
+            const currentLabels = async () => {
+              try {
+                return (
+                  await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  })
+                ).data.map(l => l.name);
+              } catch (e) {
+                core.warning(`listLabelsOnIssue failed: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -282,9 +300,11 @@ jobs:
               const num = pr.number;
               core.info(`Updating PR #${num}`);
 
-              const currentLabels = async () => { try { const { data } = await github.rest.issues.listLabelsOnIssue({
+              const currentLabels = async () => (
+                await github.rest.issues.listLabelsOnIssue({
                   owner, repo, issue_number: num
-                }); return data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); return []; } };
+                })
+              ).data.map(l => l.name);
 
               const add = async (...labels) => {
                 for (const l of labels) {

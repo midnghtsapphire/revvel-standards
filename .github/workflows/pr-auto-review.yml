@@ -91,11 +91,17 @@ jobs:
             }
 
             // Check if PR has awaiting-approval label or no review labels
-            let labels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
+            let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-            }); labels = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
 
             const labelNames = labels.map(l => l.name);
             const hasNoTriage = labelNames.includes('no-triage');

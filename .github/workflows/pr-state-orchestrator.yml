@@ -48,9 +48,15 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
               owner, repo, issue_number: prNumber
-            }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
@@ -68,7 +74,7 @@ jobs:
                 'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
                 'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
               };
-              let repoLabels = []; try { const { data } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }); repoLabels = data; } catch (e) { console.log(`⚠️ error getting repo labels: ${e.message}`); }
+              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
               const existing = new Set(repoLabels.map(l => l.name));
               for (const label of labels) {
                 if (!existing.has(label) && palette[label]) {
@@ -120,9 +126,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -203,7 +209,13 @@ jobs:
 
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
             let currentLabels = labelData.map(l => l.name);
 
             async function addLabel(label) {
@@ -241,9 +253,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -277,9 +289,9 @@ jobs:
               await addLabel('status:approved');
               for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
               // Re-check live CI status to immediately promote to ready-to-merge if checks already passed
-              let checkRuns = { check_runs: [] }; try { const { data } = await github.rest.checks.listForRef({
+              const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: pr.head.sha, per_page: 100
-              }); checkRuns = data; } catch (e) { console.log(`⚠️ error getting checks: ${e.message}`); }
+              });
               const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
               const failing = runs.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
               const passing = runs.filter(r => r.conclusion === 'success');
@@ -353,9 +365,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -387,7 +399,13 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
-              let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+              let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
               let currentLabels = labelData.map(l => l.name);
 
               async function addLabel(label) {
@@ -467,9 +485,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -503,13 +521,19 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+              let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
               let currentLabels = labelData.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
-              let checkRuns = { check_runs: [] }; try { const { data } = await github.rest.checks.listForRef({
+              const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: headSha, per_page: 100
-              }); checkRuns = data; } catch (e) { console.log(`⚠️ error getting checks: ${e.message}`); }
+              });
               const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
               const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
               const passing = completed.filter(r => r.conclusion === 'success');
@@ -590,9 +614,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -625,7 +649,13 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+                let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
                 let currentLabels = labelData.map(l => l.name);
 
                 async function addLabel(label) {
@@ -677,9 +707,9 @@ jobs:
                 }
 
                 // 3. CI state — full picture from check runs
-                let checkRuns = { check_runs: [] }; try { const { data } = await github.rest.checks.listForRef({
+                const { data: checkRuns } = await github.rest.checks.listForRef({
                   owner, repo, ref: pr.head.sha, per_page: 100
-                }); checkRuns = data; } catch (e) { console.log(`⚠️ error getting checks: ${e.message}`); }
+                });
                 const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
                 const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
                 const passing = completed.filter(r => r.conclusion === 'success');
@@ -728,7 +758,13 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            let labelData = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labelData = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
@@ -773,9 +809,9 @@ jobs:
               if (!activeStatus) return;
               const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
               try {
-                let comments = []; try { const { data } = await github.rest.issues.listComments({
+                const { data: comments } = await github.rest.issues.listComments({
                   owner, repo, issue_number: prNum, per_page: 100
-                }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+                });
                 const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
                 if (existing) {
                   if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
@@ -833,9 +869,9 @@ jobs:
             }
 
             // Determine CI state from check runs
-            let checkRuns = { check_runs: [] }; try { const { data } = await github.rest.checks.listForRef({
+            const { data: checkRuns } = await github.rest.checks.listForRef({
               owner, repo, ref: pr.head.sha, per_page: 100
-            }); checkRuns = data; } catch (e) { console.log(`⚠️ error getting checks: ${e.message}`); }
+            });
             const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
             const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
             const passing = completed.filter(r => r.conclusion === 'success');

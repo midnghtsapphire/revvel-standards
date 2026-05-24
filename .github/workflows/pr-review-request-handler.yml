@@ -42,11 +42,17 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            let labels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
+            let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-            }); labels = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
 
             const hasNoTriage = labels.some(l => l.name === 'no-triage');
             if (hasNoTriage) {
@@ -79,11 +85,17 @@ jobs:
             const prNumber = context.payload.pull_request.number;
 
             // Fetch current labels to determine status
-            let labels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
+            let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-            }); labels = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+            });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
 
             const labelNames = labels.map(l => l.name);
 
@@ -106,12 +118,12 @@ jobs:
             const marker = '<!-- pr-review-fix-status -->';
 
             // Check if status comment exists
-            let comments = []; try { const { data } = await github.rest.issues.listComments({
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               per_page: 100,
-            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+            });
 
             const existingComment = comments.find(c => c.body && c.body.includes(marker));
 

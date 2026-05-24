@@ -30,7 +30,7 @@ jobs:
                 'bug': { color: 'd73a4a', description: 'Something is broken' },
               };
               if (!routingLabelSet) {
-                let repoLabels = []; try { const { data } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }); repoLabels = data; } catch (e) { console.log(`⚠️ error getting repo labels: ${e.message}`); }
+                const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
                 routingLabelSet = new Set(repoLabels.map(l => l.name));
               }
               for (const label of labels) {
@@ -115,7 +115,13 @@ jobs:
 
             for (const pr of pulls) {
               const prNumber = pr.number;
-              let labels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }); labels = data; } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+              let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed: ${e.message}`);
+            }
               const labelNames = labels.map(l => l.name);
               const updatedAt = new Date(pr.updated_at);
               const age = now - updatedAt;
@@ -143,9 +149,9 @@ jobs:
               // Fix conflicting labels: checks-passing + checks-failing — check actual CI
               if (labelNames.includes('checks-passing') && labelNames.includes('checks-failing')) {
                 // Query actual CI status to decide which label to keep
-                let checkRuns = { check_runs: [] }; try { const { data } = await github.rest.checks.listForRef({
+                const { data: checkRuns } = await github.rest.checks.listForRef({
                   owner, repo, ref: pr.head.sha, per_page: 100,
-                }); checkRuns = data; } catch (e) { console.log(`⚠️ error getting checks: ${e.message}`); }
+                });
                 const hasFailure = checkRuns.check_runs.some(r => r.conclusion === 'failure' || r.conclusion === 'timed_out');
                 const removeLabel = hasFailure ? 'checks-passing' : 'checks-failing';
                 const keepLabel = hasFailure ? 'checks-failing' : 'checks-passing';

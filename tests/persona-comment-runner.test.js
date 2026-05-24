@@ -7,7 +7,7 @@
  */
 
 const assert = require("assert");
-const { parsePersonaCommand } = require("../scripts/persona-comment-runner");
+const { parsePersonaCommand, sanitizeMentions } = require("../scripts/persona-comment-runner");
 
 let passed = 0;
 let failed = 0;
@@ -33,6 +33,12 @@ test("parses other persona shortcuts", () => {
   assert.strictEqual(parsePersonaCommand("/oaudrey triage this").handle, "oaudrey");
   assert.strictEqual(parsePersonaCommand("/mindmappr outline a plan").handle, "mindmappr");
   assert.strictEqual(parsePersonaCommand("/openrouter route this").handle, "openrouter");
+});
+
+test("/theprofessor alias resolves to The Professor", () => {
+  const cmd = parsePersonaCommand("/theprofessor research the OSINT market");
+  assert.strictEqual(cmd.handle, "theprofessor");
+  assert.strictEqual(cmd.task, "research the OSINT market");
 });
 
 test("parses the /persona <name> <task> form", () => {
@@ -74,6 +80,14 @@ test("detects an action verb (execution mode)", () => {
 test("a question is advisory (no action)", () => {
   assert.strictEqual(parsePersonaCommand("/professor what is the TAM?").action, null);
   assert.strictEqual(parsePersonaCommand("/oaudrey how should we route this?").action, null);
+});
+
+test("sanitizeMentions defangs @mentions so a reply never pings a real user", () => {
+  const out = sanitizeMentions("cc @TheProfessor and @mindmappr please");
+  assert.ok(!/@[A-Za-z]/.test(out), "no bare @name should remain");
+  assert.ok(out.includes("@​TheProfessor"), "mention is defanged with a zero-width space");
+  // Visible text is unchanged once the zero-width space is stripped.
+  assert.strictEqual(out.replace(/​/g, ""), "cc @TheProfessor and @mindmappr please");
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
