@@ -98,12 +98,12 @@ jobs:
                 });
 
                 // Check if also has "approved" label - if so, mark ready-to-merge
-                const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+                let prLabels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: prNumber,
-                });
-                const labelNames = prLabels.map(l => l.name);
+                }); prLabels = data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
+                const labelNames = prLabels;
 
                 if (labelNames.includes('approved')) {
                   // Remove ready-to-merge from any other PRs first

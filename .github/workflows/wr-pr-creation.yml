@@ -299,11 +299,11 @@ jobs:
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
 
             function findLatestComment(predicate) {
               for (let index = comments.length - 1; index >= 0; index -= 1) {
@@ -722,12 +722,12 @@ jobs:
               labels: ['in-review'],
             });
 
-            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+            let currentLabels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
-            });
+            }); currentLabels = data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
 
             // Remove completion and auto-healer labels once the PR exists so
             // the issue no longer appears stuck after recovery.

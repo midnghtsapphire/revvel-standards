@@ -67,11 +67,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // Check if PR already has review labels
-            const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+            let prLabels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-            });
+            }); prLabels = data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
 
             const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
             const hasReviewLabel = prLabels.some(l => reviewLabels.includes(l.name));
@@ -93,12 +93,12 @@ jobs:
             const marker = '<!-- pr-review-status-badge -->';
 
             // Check if status comment already exists
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
               per_page: 100,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
 
             const existingComment = comments.find(c => c.body && c.body.includes(marker));
 
@@ -198,11 +198,11 @@ jobs:
 
             // Remove old review status labels
             const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
-            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+            let currentLabels = []; try { const { data } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-            });
+            }); currentLabels = data.map(l => l.name); } catch (e) { console.log(`⚠️ error getting labels: ${e.message}`); }
 
             for (const label of currentLabels) {
               if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
@@ -247,12 +247,12 @@ jobs:
 
             // Update status comment
             const marker = '<!-- pr-review-status-badge -->';
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               per_page: 100,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
 
             const existingComment = comments.find(c => c.body && c.body.includes(marker));
 

@@ -61,12 +61,12 @@ jobs:
             );
             if (!issueNumber) return;
 
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
             const marker = '<!-- swe-agent:setup-needed -->';
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
