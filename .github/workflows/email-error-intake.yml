@@ -4,19 +4,15 @@ name: Email Error Intake
 # so the existing route -> research -> fix -> heal pipeline can handle them.
 # See docs/process/EMAIL_ERROR_INTAKE.md.
 #
-# Rollout: scheduled every 30 min (live) + manual. The scheduled run files real
-# issues (capped, labeled needs-triage). It no-ops cleanly if the ERROR_INBOX_*
-# secrets are not set, so it is safe to enable before the inbox is configured.
-# Tip: run it once manually with dry_run=true first to confirm it connects.
+# Rollout: manual + dry-run first. Run it once with dry_run=true to confirm it
+# connects and catches the right mail (it creates nothing). Once verified, run
+# with dry_run=false, then a schedule can be enabled.
 #
 # Required repo secrets:
 #   ERROR_INBOX_ADDRESS       inbox to read (e.g. you@gmail.com)
 #   ERROR_INBOX_APP_PASSWORD  Gmail App Password (not the login password)
 
 on:
-  schedule:
-    # Every 30 minutes — read the inbox and open issues for new error emails.
-    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       dry_run:

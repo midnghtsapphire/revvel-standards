@@ -67,17 +67,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // Check if PR already has review labels
-            let prLabels = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+            const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
             });
-              prLabels = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
 
             const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
             const hasReviewLabel = prLabels.some(l => reviewLabels.includes(l.name));
@@ -204,17 +198,11 @@ jobs:
 
             // Remove old review status labels
             const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
-            let currentLabels = [];
-            try {
-              const res = await github.rest.issues.listLabelsOnIssue({
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-              currentLabels = res.data;
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed: ${e.message}`);
-            }
 
             for (const label of currentLabels) {
               if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
