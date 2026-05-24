@@ -1,8 +1,11 @@
 name: Persona Comment Trigger
 
 # Summon a persona on demand from an issue/PR comment:
-#   @professor <task> | @oaudrey ... | @mindmappr ... | @openrouter ...
+#   /professor <task> | /oaudrey ... | /mindmappr ... | /openrouter ...
 #   /persona <name> <task>
+# Triggers use a leading slash, NOT "@name": GitHub turns "@name" into a mention
+# of the real user account with that username and emails them, so "@professor"
+# spammed a stranger on every comment. The slash form notifies no one.
 # The Professor (no-key Perplexity research) is the headline lane. See
 # scripts/openrouter-personas.js and docs/OPENROUTER_ASSIGNEE_PROCESS.md.
 
@@ -27,10 +30,11 @@ jobs:
     # Skip bot comments (avoid loops) and only run when a persona trigger is present.
     if: >-
       github.event.comment.user.type != 'Bot' &&
-      (contains(github.event.comment.body, '@professor') ||
-       contains(github.event.comment.body, '@oaudrey') ||
-       contains(github.event.comment.body, '@mindmappr') ||
-       contains(github.event.comment.body, '@openrouter') ||
+      (contains(github.event.comment.body, '/theprofessor') ||
+       contains(github.event.comment.body, '/professor') ||
+       contains(github.event.comment.body, '/oaudrey') ||
+       contains(github.event.comment.body, '/mindmappr') ||
+       contains(github.event.comment.body, '/openrouter') ||
        contains(github.event.comment.body, '/persona'))
     steps:
       - name: Checkout
