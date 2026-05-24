@@ -70,3 +70,15 @@ run('deterministic output for same input', () => {
   const b = generatePromptPacket({ idea: 'same idea', audience: 'agencies' });
   assert.deepEqual(a, b);
 });
+
+run('adds Spotify visual-link prompts for music embedding requests', () => {
+  const p = generatePromptPacket({
+    idea: 'Generate Spotify music platform embedding link visuals for TikTok video',
+    audience: 'artists'
+  });
+  const joined = p.implementationPrompts.join('\n');
+  assert.ok(joined.includes('cannot contain clickable hyperlinks'));
+  assert.ok(joined.includes('native TikTok/Instagram link stickers'));
+  assert.ok(joined.includes('open.spotify.com/track'));
+  assert.ok(p.implementationPrompts.length > 3);
+});

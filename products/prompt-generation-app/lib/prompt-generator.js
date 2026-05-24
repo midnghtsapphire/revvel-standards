@@ -73,11 +73,28 @@ function legalBoundaries(idea) {
 }
 
 function implementationPrompts(idea, audience) {
-  return [
+  const prompts = [
     `You are a senior full-stack engineer. Build an MVP for: "${idea}". Audience: ${audience}. Stack: Next.js static export, TypeScript, Tailwind. Ship in <2 days. Include tests.`,
     `Write the data model + API surface for "${idea}" using only zero-cost infra (Vercel free tier, SQLite or KV).`,
     `Produce the landing page copy for "${idea}" targeting ${audience}: headline, sub, 3 bullets, CTA, FAQ x5.`,
   ];
+
+  const lower = idea.toLowerCase();
+  const isMusicLinkEmbeddingRequest =
+    lower.includes("spotify") ||
+    lower.includes("music platform") ||
+    lower.includes("tiktok") ||
+    lower.includes("instagram") ||
+    lower.includes("link in bio");
+
+  if (isMusicLinkEmbeddingRequest) {
+    prompts.push(
+      `Create a vertical 9:16 visual-link workflow for "${idea}" that acknowledges videos cannot contain clickable hyperlinks. Generate a glassmorphic CTA anchor area labeled "Scan to Listen" or "Link in Bio", and reserve a safe zone for native TikTok/Instagram link stickers in post-edit.`,
+      `Add a Spotify-ready conversion layer for "${idea}": render album art plus a readable open.spotify.com/track text anchor, include a Spotify scan-code placement spec, and provide export specs for image + video posts so users can screenshot/scan or tap native platform stickers.`
+    );
+  }
+
+  return prompts;
 }
 
 function reviewerPrompts(idea) {
