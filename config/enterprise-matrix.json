@@ -1,0 +1,41 @@
+{
+  "enterprises": [
+    {
+      "id": 1,
+      "name": "oAudrey",
+      "type": "orchestrator",
+      "participants": [
+        {
+          "id": 1,
+          "name": "Notion",
+          "type": "platform",
+          "capabilities": ["wiki", "database"]
+        },
+        {
+          "id": 2,
+          "name": "Slack",
+          "type": "communication",
+          "capabilities": ["chat", "alerts"]
+        },
+        {
+          "id": 3,
+          "name": "GitHub",
+          "type": "code",
+          "capabilities": ["repo", "actions"]
+        },
+        {
+          "id": 4,
+          "name": "Supabase",
+          "type": "database",
+          "capabilities": ["auth", "postgres"]
+        },
+        {
+          "id": 5,
+          "name": "OpenRouter",
+          "type": "ai",
+          "capabilities": ["llm_routing"]
+        }
+      ]
+    }
+  ]
+}

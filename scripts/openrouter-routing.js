@@ -14,41 +14,69 @@
  */
 
 const https = require("https");
+const fs = require('fs');
+const path = require('path');
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
 
-/**
- * Routing profiles with model fallback chains
- * 
- * Note: Model IDs updated May 6, 2026 to use valid OpenRouter model identifiers.
- * Previous invalid "anthropic/claude-3.7-sonnet" replaced with "anthropic/claude-sonnet-4"
- */
-const ROUTING_PROFILES = {
-  repo_surgery: {
-    description: "Multi-file edits, bug fixing, refactors, and 'take initiative' tasks",
-    models: [
-      "anthropic/claude-sonnet-4",
-      "deepseek/deepseek-v3.2",
-      "openai/gpt-5.2-codex"
-    ]
-  },
-  cheap_batch_edits: {
-    description: "Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes",
-    models: [
-      "deepseek/deepseek-v3.2",
-      "anthropic/claude-sonnet-4"
-    ]
-  },
-  hard_debug: {
-    description: "Difficult failures, ambiguous root-cause analysis, and second-opinion patches",
-    models: [
-      "openai/gpt-5.2-codex",
-      "anthropic/claude-sonnet-4",
-      "deepseek/deepseek-v3.2"
-    ]
+function loadModelLookup() {
+  try {
+    const lookupPath = path.join(__dirname, '../config/model-lookup.json');
+    if (fs.existsSync(lookupPath)) {
+      return JSON.parse(fs.readFileSync(lookupPath, 'utf8'));
+    }
+  } catch (err) {
+    console.warn("Could not load model-lookup.json, falling back to defaults", err.message);
   }
-};
+  return null;
+}
+
+const lookupData = loadModelLookup();
+
+let ROUTING_PROFILES = {};
+
+if (lookupData && lookupData.profiles && lookupData.models) {
+  for (const [key, profile] of Object.entries(lookupData.profiles)) {
+    const resolvedModels = profile.models.map(modelId => {
+      const model = lookupData.models.find(m => m.id === modelId);
+      return model ? `${model.provider}/${model.name}` : null;
+    }).filter(m => m !== null);
+
+    ROUTING_PROFILES[key] = {
+      description: profile.description,
+      models: resolvedModels
+    };
+  }
+} else {
+  // Fallback if config is missing
+  ROUTING_PROFILES = {
+    repo_surgery: {
+      description: "Multi-file edits, bug fixing, refactors, and 'take initiative' tasks",
+      models: [
+        "anthropic/claude-sonnet-4",
+        "deepseek/deepseek-v3.2",
+        "openai/gpt-5.2-codex"
+      ]
+    },
+    cheap_batch_edits: {
+      description: "Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes",
+      models: [
+        "deepseek/deepseek-v3.2",
+        "anthropic/claude-sonnet-4"
+      ]
+    },
+    hard_debug: {
+      description: "Difficult failures, ambiguous root-cause analysis, and second-opinion patches",
+      models: [
+        "openai/gpt-5.2-codex",
+        "anthropic/claude-sonnet-4",
+        "deepseek/deepseek-v3.2"
+      ]
+    }
+  };
+}
+
 
 /**
  * Call OpenRouter API with model fallback support

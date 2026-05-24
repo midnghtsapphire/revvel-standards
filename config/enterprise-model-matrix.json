@@ -1,0 +1,120 @@
+{
+  "enterprises": [
+    {
+      "id": 1,
+      "name": "oAudrey",
+      "type": "orchestrator",
+      "participants": [
+        {
+          "id": 1,
+          "name": "Notion",
+          "type": "platform",
+          "capabilities": ["wiki", "database"]
+        },
+        {
+          "id": 2,
+          "name": "Slack",
+          "type": "communication",
+          "capabilities": ["chat", "alerts"]
+        },
+        {
+          "id": 3,
+          "name": "GitHub",
+          "type": "code",
+          "capabilities": ["repo", "actions"]
+        },
+        {
+          "id": 4,
+          "name": "Supabase",
+          "type": "database",
+          "capabilities": ["auth", "postgres"]
+        },
+        {
+          "id": 5,
+          "name": "OpenRouter",
+          "type": "ai",
+          "capabilities": ["llm_routing"]
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": 1,
+      "provider": "perplexity",
+      "name": "sonar-pro",
+      "strengths": ["search", "grounded_facts", "real_time"],
+      "enabled": true
+    },
+    {
+      "id": 2,
+      "provider": "anthropic",
+      "name": "claude-sonnet-4",
+      "strengths": ["coding", "reasoning", "instruction_following"],
+      "enabled": true
+    },
+    {
+      "id": 3,
+      "provider": "deepseek",
+      "name": "deepseek-v3.2",
+      "strengths": ["math", "logic", "coding"],
+      "enabled": true
+    },
+    {
+      "id": 4,
+      "provider": "google",
+      "name": "gemini-1.5-pro",
+      "strengths": ["long_context", "multimodal"],
+      "enabled": true
+    },
+    {
+      "id": 5,
+      "provider": "meta",
+      "name": "llama-3-70b-instruct",
+      "strengths": ["open_source", "uncensored", "creative_writing"],
+      "enabled": true
+    },
+    {
+      "id": 6,
+      "provider": "openai",
+      "name": "gpt-4o",
+      "strengths": ["general_purpose", "vision", "speed"],
+      "enabled": true
+    },
+    {
+      "id": 7,
+      "provider": "mistral",
+      "name": "mistral-large",
+      "strengths": ["multilingual", "code", "reasoning"],
+      "enabled": true
+    },
+    {
+      "id": 8,
+      "provider": "cohere",
+      "name": "command-r-plus",
+      "strengths": ["rag", "tool_use", "enterprise"],
+      "enabled": true
+    },
+    {
+      "id": 9,
+      "provider": "x-ai",
+      "name": "grok-1.5",
+      "strengths": ["uncensored", "real_time", "twitter_data"],
+      "enabled": true
+    },
+    {
+      "id": 10,
+      "provider": "anthropic",
+      "name": "claude-opus-3",
+      "strengths": ["complex_reasoning", "nuance", "legal", "patents"],
+      "enabled": true
+    },
+    {
+      "id": 11,
+      "provider": "ollama",
+      "name": "llama3",
+      "strengths": ["local", "privacy", "offline"],
+      "enabled": true
+    }
+  ]
+}

@@ -15,15 +15,36 @@
  * 2026-05-21 (Claude): created to centralize the no-key-first lane.
  */
 
+const fs = require('fs');
+const path = require('path');
 const { callPerplexityNoKey } = require("./perplexity-research-issue");
 const { callOpenRouter } = require("./openrouter-routing");
 
+function loadFallbackModels() {
+  try {
+    const lookupPath = path.join(__dirname, '../config/model-lookup.json');
+    if (fs.existsSync(lookupPath)) {
+      const data = JSON.parse(fs.readFileSync(lookupPath, 'utf8'));
+      if (data.fallback_chain && data.models) {
+        return data.fallback_chain.map(id => {
+          const model = data.models.find(m => m.id === id);
+          return model ? `${model.provider}/${model.name}` : null;
+        }).filter(m => m !== null);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load model-lookup.json, falling back to defaults", err.message);
+  }
+  return [
+    "perplexity/sonar-pro",
+    "anthropic/claude-sonnet-4",
+    "deepseek/deepseek-v3.2",
+    "ollama/llama3"
+  ];
+}
+
 // Backup model chain (Perplexity Sonar first so the answer style stays grounded).
-const DEFAULT_FALLBACK_MODELS = [
-  "perplexity/sonar-pro",
-  "anthropic/claude-sonnet-4",
-  "deepseek/deepseek-v3.2",
-];
+const DEFAULT_FALLBACK_MODELS = loadFallbackModels();
 
 /**
  * Ask the default LLM lane a question.
