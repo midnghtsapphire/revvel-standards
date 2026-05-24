@@ -286,11 +286,17 @@ jobs:
               const num = pr.number;
               core.info(`Updating PR #${num}`);
 
-              const currentLabels = async () => (
-                await github.rest.issues.listLabelsOnIssue({
-                  owner, repo, issue_number: num
-                })
-              ).data.map(l => l.name);
+              const currentLabels = async () => {
+                try {
+                  const res = await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  });
+                  return res.data.map(l => l.name);
+                } catch (e) {
+                  core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
+                  return [];
+                }
+              };
 
               const add = async (...labels) => {
                 for (const l of labels) {

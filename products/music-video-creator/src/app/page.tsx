@@ -79,9 +79,33 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const THEMES = [
+  {
+    id: 'none',
+    label: 'None (Default)',
+    prompt: '',
+  },
+  {
+    id: 'gen-z',
+    label: 'Gen Z (Cyber-Grunge / Phonk)',
+    prompt: 'A fast-paced, kinetic cinematic music video shot with an edgy fish-eye lens. A group of stylish Gen Z individuals in oversized tactical streetwear, metallic chains, and tinted futuristic sunglasses are dancing rhythmically in an underground concrete bunker. The space is illuminated by flashing, strobing neon purple and toxic green laser lights. The camera moves with chaotic, high-energy handheld whip-pans and sudden zooms, synchronized perfectly to a heavy, distorted bass beat. Thick, atmospheric smoke and digital glitch overlays distort the frame occasionally. Hyper-realistic, 4k resolution, industrial rave aesthetic, dramatic neon lighting, chaotic camera movement, viral music video style.',
+  },
+  {
+    id: 'gen-x',
+    label: 'Gen X (80s Synthwave / Cyberpunk)',
+    prompt: 'A cinematic, moody music video shot with the warm texture and faint scanlines of 35mm retro film. A sleek, retro-futuristic sports car drives down a lonely, rain-slicked highway at midnight, reflecting a massive, glowing pink neon sun on the horizon. The camera slowly glides alongside the car in a smooth, sweeping tracking shot, capturing the driver silhouetted against a futuristic, sprawling cyberpunk cityscape in the background. Hues of deep magenta, electric blue, and warm amber bleed across the lens. Atmospheric low fog rolls across the asphalt. Photorealistic, 8k resolution, retro-wave aesthetic, cinematic lighting, nostalgic synthwave atmosphere, slow and smooth motion.',
+  },
+  {
+    id: 'glassmorphic',
+    label: 'Glassmorphic Tech-Core (Sleek & Modern)',
+    prompt: 'A medium cinematic shot of a solo artist performing inside an abstract, floating glassmorphic cube structure suspended in a dark, infinite void. The walls of the cube are made of thick, semi-transparent frosted glass that subtly blurs and refracts giant, glowing holographic equalizer bars pulsing in the background. The artist’s slow-vibe, fluid movements are tracked by a smooth, orbiting camera that glides seamlessly around the structure. Sharp caustics and light leaks ripple across the glossy surfaces, catching faint beams of cool cyan and warm violet ambient light. Cinematic lighting, photorealistic, 8k resolution, ultra-detailed 3D realism, smooth and hypnotic rhythm.',
+  },
+];
+
 export default function Home() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<string>(THEMES[0].id);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const [job, setJob] = useState<JobStatus | null>(null);
@@ -133,6 +157,10 @@ export default function Home() {
       const formData = new FormData();
       formData.append('audio', audioFile);
       formData.append('avatar', avatarFile);
+      const theme = THEMES.find(t => t.id === selectedTheme);
+      if (theme && theme.prompt) {
+        formData.append('theme_prompt', theme.prompt);
+      }
 
       const response = await fetch('/api/video', { method: 'POST', body: formData });
 
@@ -267,6 +295,24 @@ export default function Home() {
                       onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} required />
                   </label>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  <Video className="w-4 h-4" />
+                  Video Theme Style
+                </label>
+                <select
+                  value={selectedTheme}
+                  onChange={(e) => setSelectedTheme(e.target.value)}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-2.5 px-3"
+                >
+                  {THEMES.map((theme) => (
+                    <option key={theme.id} value={theme.id}>
+                      {theme.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <button type="submit" disabled={!audioFile || !avatarFile || isGenerating}
