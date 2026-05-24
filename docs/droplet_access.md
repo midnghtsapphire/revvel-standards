@@ -3,7 +3,7 @@
 ## MindMappr Droplet (Primary)
 - **IP**: 164.90.148.7
 - **SSH**: `ssh root@164.90.148.7`
-- **Password**: `+j2swyCE.*B6kdg`
+- **Password**: [REDACTED — stored in vault]
 - **Services Running**:
   - MindMappr Bot (systemd: mindmappr) — port 8080
   - meetaudreyevans.com Dashboard — port 80
@@ -48,7 +48,7 @@
 
 ## Namecheap (Domain Registrar)
 - **Username**: uprisinghope
-- **Password**: Church#123
+- **Password**: [REDACTED — stored in vault]
 - **Login URL**: https://www.namecheap.com/myaccount/login/
 - **Note**: Account requires email 2FA verification on new device logins
 - **Domains Managed**:

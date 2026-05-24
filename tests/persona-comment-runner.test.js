@@ -7,7 +7,7 @@
  */
 
 const assert = require("assert");
-const { parsePersonaCommand } = require("../scripts/persona-comment-runner");
+const { parsePersonaCommand, sanitizeMentions } = require("../scripts/persona-comment-runner");
 
 let passed = 0;
 let failed = 0;
@@ -74,6 +74,14 @@ test("detects an action verb (execution mode)", () => {
 test("a question is advisory (no action)", () => {
   assert.strictEqual(parsePersonaCommand("/professor what is the TAM?").action, null);
   assert.strictEqual(parsePersonaCommand("/oaudrey how should we route this?").action, null);
+});
+
+test("sanitizeMentions defangs @mentions so a reply never pings a real user", () => {
+  const out = sanitizeMentions("cc @TheProfessor and @mindmappr please");
+  assert.ok(!/@[A-Za-z]/.test(out), "no bare @name should remain");
+  assert.ok(out.includes("@​TheProfessor"), "mention is defanged with a zero-width space");
+  // Visible text is unchanged once the zero-width space is stripped.
+  assert.strictEqual(out.replace(/​/g, ""), "cc @TheProfessor and @mindmappr please");
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

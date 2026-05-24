@@ -22,7 +22,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 
 // ─── Configuration ────────────────────────────────────────
 const TARGET_DIR = process.argv[2] || '.';
@@ -64,8 +64,7 @@ function dirHasFiles(dirPath, extension) {
 
 function codeContains(pattern) {
   try {
-    const { spawnSync } = require('child_process');
-    const dirs = ["src", "server", "api", "app"].map(d => path.join(repoRoot, d)).filter(d => fs.existsSync(d));
+    const dirs = ['src', 'server', 'api', 'app'].map(d => path.join(repoRoot, d)).filter(d => fs.existsSync(d));
     if (dirs.length === 0) return false;
     const result = spawnSync('grep', ['-rl', pattern, ...dirs], { encoding: 'utf8', timeout: 5000 });
     return result.stdout && result.stdout.trim().length > 0;

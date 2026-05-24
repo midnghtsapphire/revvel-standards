@@ -134,14 +134,20 @@ jobs:
               });
             } catch (e) {
               if (e.status === 404) {
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'in-review',
-                  color: 'fbca04',
-                  description: 'Linked PR is open and ready for review',
-                });
-                core.info('Created label: in-review');
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: 'in-review',
+                    color: 'fbca04',
+                    description: 'Linked PR is open and ready for review',
+                  });
+                  core.info('Created label: in-review');
+                } catch (ce) {
+                  core.warning(`Failed to create label: ${ce.message}`);
+                }
+              } else {
+                core.warning(`Failed to get label: ${e.message}`);
               }
             }
       - name: Find linked issues and apply `in-review` label
