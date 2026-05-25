@@ -1,23 +1,6 @@
-# WR: [WR] Incorrect product timeline 30 days needs to be removed.
+# WR: Incorrect product timeline 30 days needs to be removed
 
-**Issue:** #13873  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-05-24  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-
-# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
-
-#
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-#
-
-# WR: midnghtsapphire/revvel-standards
+**Issue:** #13873
 
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Created:** 2026-05-24  
@@ -25,7 +8,7 @@
 **Language:** JavaScript  
 **Research Date:** 2026-05-24 <!-- Use YYYY-MM-DD format -->  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
@@ -88,7 +71,7 @@ on:
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+The revvel-standards repository currently documents a 30-day product timeline which is incorrect and obsolete. With approximately 50 agents and thousands of skills running autonomously 24/7, products should be shipped to market (s2m) in a single iteration WR/PR cycle. This WR outlines the necessary changes to remove the 30-day launch language, transition to a one-iteration autonomous build methodology, and adopt the new ax system and MCP.
 
 ---
 
@@ -96,114 +79,17 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-24 |
-| Last Updated | 2026-05-24 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
-
-production-app
-
-### PDF pipeline batch
-
-None
-
-### Research Mode
-
-None
-
-### Delivery Mode
-
-None
-
-### Lifecycle Mode
-
-None
-
-### Commercial Mode
-
-None
-
-### Summary
-
-_No response_
-
-### Objective
-
-This is incorrect. The goals should be here in length. We do one iteration WR. Any project that is s2m is one WR. You can create multiple PRs but those are one iteration PRs too. There are about 50 agents, thousands of skills there is no need for 30 days because of it. Everything runs autonomously 24/7. Everything needs runners or engines to perform the coding, researching, implementing or building. Switching to ax system with a new mcp.
-
-Wrong:30-Day Autonomous Product Launch (NEW!)
-Ship products to market in 30 days — simplified, autonomous, metrics-driven, no Shopify required.
-
-Quick Start
-./scripts/autonomous-product-launcher.sh "your-product-name" \
-  --shape app \
-  --days 30 \
-  --payment lemonsqueezy
-Features:
-
-✅ Simplified MVP approach — Focus on one core feature
-✅ Metrics-driven — Track what matters from day 1
-✅ Resilient & changeable — Self-healing, quick pivots
-✅ No complex platforms — LemonSqueezy/Gumroad/Stripe instead of Shopify
-✅ Autonomous execution — Minimal human intervention
-📖 Documentation:
-
-[docs/QUICKSTART_30DAY_LAUNCH.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/QUICKSTART_30DAY_LAUNCH.md) — Quick start guide
-[docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md) — Complete 30-day framework
-[docs/30_DAY_INTEGRATION_GUIDE.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/30_DAY_INTEGRATION_GUIDE.md) — Integration with existing pipeline
-[projects/agent-generated/_examples/](https://github.com/midnghtsapphire/revvel-standards/blob/main/projects/agent-generated/_examples) — Example projects
-Timeline:
-
-Week 1: Research, validate, build waitlist (30-50 signups)
-Week 2: Build MVP, integrate payment, setup analytics
-Week 3: Beta launch, iterate, polish (10+ beta users)
-Week 4: Launch, scale, measure (25+ customers, $500+ revenue)
-
-### Required Bundle
-
-_No response_
-
-### Definition of Done
-
-_No response_
-
-### Do Not Under-Scope
-
-_No response_
-
-### Explicit Exclusions
-
-_No response_
-
-### Delivery Shape
-
-None
-
-### Expected Scope
-
-_No response_
-
-### Validation Expectations
-
-_No response_
-
-### Blocker Rule
-
-_No response_
-
-### Acknowledgements
-
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-24                                                                              |
+| Last Updated     | 2026-05-24                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | N/A                                                                                     |
+| Open Issues      | N/A                                                                                     |
+| Description      | {DESCRIPTION}                                                                           |
+| Private          | No                                                                                      |
+| Archived         | No                                                                                      |
 
 ### Current Status
 
@@ -216,7 +102,7 @@ _No response_
 
 ### Repository Structure
 
-```
+```text
 [Tree structure of key directories and files]
 ```
 
@@ -232,18 +118,18 @@ _No response_
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope?   | Format / length                              | Primary engine / standard   | Notes   |
+| ----------------- | ----------- | -------------------------------------------- | --------------------------- | ------- |
+| Website / app UI  | Yes/No      | site/app                                     | engine                      | notes   |
+| API               | Yes/No      | REST/GraphQL/etc.                            | engine                      | notes   |
+| CLI               | Yes/No      | binary/package                               | engine                      | notes   |
+| MCP               | Yes/No      | server/router/tool manifest                  | engine                      | notes   |
+| Skill             | Yes/No      | skill type                                   | engine                      | notes   |
+| PDF               | Yes/No      | report/guide/etc.                            | engine                      | notes   |
+| PowerPoint / deck | Yes/No      | sales/training/review deck                   | engine                      | notes   |
+| Video             | Yes/No      | demo/training/review/YouTube + target length | engine                      | notes   |
+| Docs              | Yes/No      | site/spec/readme                             | engine                      | notes   |
+| Agent automation  | Yes/No      | workflow/agent/service                       | engine                      | notes   |
 
 ### Platform Defaults & Website Requirements
 
@@ -279,19 +165,19 @@ _No response_
 
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| Audience Segment  | Trigger Event   | Intent Level   | Est. Market Size  |
+| ----------------- | --------------- | -------------- | ----------------- |
+| [Segment 1]       | [Trigger]       | High/Med/Low   | [Size]            |
+| [Segment 2]       | [Trigger]       | High/Med/Low   | [Size]            |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US)   | Avg CPC   | Competition   | Intent                      |
+| ------------------- | --------------------- | --------- | ------------- | --------------------------- |
+| [primary keyword 1] | [volume]              | [$CPC]    | High/Med/Low  | Transactional/Informational |
+| [primary keyword 2] | [volume]              | [$CPC]    | High/Med/Low  | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -307,29 +193,29 @@ _No response_
 **Category: [Primary Data Source]**
 
 | API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
+| --- | --- | --- | --- | --- |
 | [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
 | [Option 2] | [$] | [Coverage] | [Use case] | |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool   | Cost   | Features   | Best For   | Verdict   |
+| ------------ | ------ | ---------- | ---------- | --------- |
+| [Option 1]   | [$]    | [Features] | [Use case] |           |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share   | Best For   | Verdict   |
+| ---------- | ----------- | ---------- | --------- |
+| [Option 1] | [%]         | [Use case] |           |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool  | Est. Monthly Cost   |
+| ------------------------ | ----------------- | ------------------- |
+| [Category 1]             | [Tool]            | $[X]                |
+| [Category 2]             | [Tool]            | $[X]                |
+| **Total Infrastructure** |                   | **$[Total]/mo**     |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -339,21 +225,21 @@ _No response_
 
 **Shared vs. Exclusive / Tiered pricing:**
 
-| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| Solution Type  | How It Works  | Cost   | Conversion Rate  | Why Some Are Worth More  |
+| -------------- | ------------- | ------ | ---------------- | ------------------------ |
+| [Type 1]       | [Mechanics]   | [$]    | [Rate]           | [Value drivers]          |
+| [Type 2]       | [Mechanics]   | [$]    | [Rate]           | [Value drivers]          |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality  | Gap / What They Don't Do   |
+| --------------- | ------ | --------- | ------------------- | -------------------------- |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]      | [Gap]                      |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]      | [Gap]                      |
+| **This Engine** | [Type] | [Pricing] | [Expected]          | [Our advantage]            |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -361,10 +247,10 @@ _No response_
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API   | Best For         | Data/Capability   | Cost Model   | Strengths   | Weaknesses/Risks   | Compliance Notes   |
+| -------------- | ---------------- | ----------------- | ------------ | ----------- | ------------------ | ------------------ |
+| [Provider 1]   | [Job-to-be-done] | [Output]          | [Pricing]    | [Strength]  | [Risk]             | [ToS/legal notes]  |
+| [Provider 2]   | [Job-to-be-done] | [Output]          | [Pricing]    | [Strength]  | [Risk]             | [ToS/legal notes]  |
 
 **BOM Decision:**
 
@@ -395,8 +281,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -422,8 +308,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -537,17 +423,17 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Weighted Factors:**
 
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
 
@@ -686,9 +572,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| Product/Service  | Affiliate Program   | Commission   | Location       |
+| ---------------- | ------------------- | ------------ | -------------- |
+| [Name]           | [Program]           | [Rate]       | [Where to add] |
 
 #### Payment Integration
 
@@ -783,11 +669,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status    | URL                                       |
+| --------- | --------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -853,17 +739,23 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Immediate Actions (P0)
 
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
+1. **Remove 30-Day Timeline Documentation**
+   - **Why:** The 30-day timeline contradicts the repository's autonomous 24/7 capabilities and creates artificial delays.
+   - **How:** Delete or archive `docs/QUICKSTART_30DAY_LAUNCH.md`, `docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`, and `docs/30_DAY_INTEGRATION_GUIDE.md`. Update any remaining references to use "one-iteration WR" language.
+   - **Effort:** 1-2 hours
+   - **Revenue Impact:** Accelerated time-to-market allows for immediate monetization upon WR completion.
 
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
+2. **Transition to One-Iteration Methodology**
+   - **Why:** To align with the capabilities of ~50 agents and thousands of skills.
+   - **How:** Update `docs/WEEKLY_RESEARCH_PROCESS.md` and related standard operating procedures to define s2m (ship to market) projects as single-iteration WR/PRs.
+   - **Effort:** 2-4 hours
+   - **Revenue Impact:** Streamlined processes reduce overhead and increase product throughput.
+
+3. **Integrate ax System with new MCP**
+   - **Why:** The system is transitioning to this new architecture for improved routing and execution.
+   - **How:** Update engine definitions and runner configurations to default to the ax system and the newly generated MCPs.
+   - **Effort:** 1-2 days
+   - **Revenue Impact:** Increased execution reliability and capabilities.
 
 ### Short-Term Actions (P1) - Within 1-2 Weeks
 
@@ -879,10 +771,10 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
+| Risk     | Severity     | Probability   | Mitigation        |
+| -------- | ------------ | ------------- | ----------------- |
+| [Risk 1] | High/Med/Low | High/Med/Low  | [How to mitigate] |
+| [Risk 2] | High/Med/Low | High/Med/Low  | [How to mitigate] |
 
 ---
 
@@ -934,7 +826,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Status Summary
 
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
+**Research Status:** ✅ Complete
 **Implementation Priority:** P0 / P1 / P2  
 **Revenue Potential:** $[amount]/month  
 **Effort Required:** [Hours/days/weeks]  
@@ -945,15 +837,3 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Last Updated:** 2026-05-24  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-# END ADVANCED TEMPLATE
-
-#
-
-# For advanced users who want full control
-
-# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
-
-# ─────────────────────────────────────────────────────────────────────────────
