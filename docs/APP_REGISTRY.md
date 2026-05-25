@@ -70,6 +70,32 @@ template-ready apps)**, a new app of that type takes the **fast path**.
 | Review / content gen | graphify, ugc-review-generator | near | reuse graphify modules |
 | OSINT | prompt-generation-app (+ osint-hub) | ❌ not yet | build in detail → becomes the template |
 
+---
+
+## Cross-repo reuse clusters (existing apps that span repos)
+
+Many apps live in **separate repos / Replit**, which is why "reuse the existing
+one" gets ignored — agents can't see them. List them here so reuse has real
+targets. Building a new app in a saturated cluster from scratch is prohibited
+without owner approval.
+
+### 🛡️ Insurance-lead cluster — **SATURATED (4 apps). REUSE, do not rebuild.**
+
+| App | Where it lives | Reusable assets |
+| --- | --- | --- |
+| `life-insurance-lead-engine` | this repo | LeadGenerator, Dedupe, Newsletter, Affiliate, Accessibility (**richest — start here**) |
+| `life-insurance-lead-saas` | this repo | Newsletter, Affiliate, Accessibility |
+| `GodsofInsurance` (InsuranceoftheGods) | separate repo → Replit `InsuranceLeadPro` | Zeus theme, lead gen, AI phone answering, 24/7 AI agent, multi-carrier quote comparison |
+| `drive-easy-insure` | separate repo | insurance app |
+
+**Rule for any new insurance / lead-gen WR:** start from `life-insurance-lead-engine`,
+pull AI-agent / quote-comparison features from `GodsofInsurance`, and only build
+net-new what none of the four already have. Do **not** create a 5th from scratch.
+
+> ⚠️ **Risk:** `docs/Walter-Evans-GitHub-Repo-Inventory.md` contains a
+> `delete_repo "GodsofInsurance"` line. That would destroy the richest insurance
+> repo — neutralize it before running any inventory cleanup.
+
 ### The reuse-first rule (for the coder / pipeline)
 
 When a Work Request asks for a new app:
