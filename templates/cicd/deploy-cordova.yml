@@ -1,5 +1,5 @@
 # Copy to .github/workflows/deploy-cordova.yml in your app repo
-# See templates/mobile/CORDOVA_STANDARD.md for full activation instructions
+# See standards/cordova.md for full activation instructions
 # This workflow is inactive until platform accounts and signing keys are set up
 
 name: Deploy Cordova (Android + iOS)
@@ -51,7 +51,7 @@ jobs:
           distribution: "temurin"
 
       # TODO: Activate when Google Play Developer account is ready ($25 one-time)
-      # See templates/mobile/CORDOVA_STANDARD.md — "Android Deployment"
+      # See standards/cordova.md — "Android Deployment"
       - name: Placeholder — Android deployment not yet active
         run: |
           echo "⚠️  Cordova Android deployment not yet configured."
@@ -59,11 +59,11 @@ jobs:
           echo "  1. Create Google Play Developer account (\$25 one-time)"
           echo "  2. Install Cordova CLI: npm install -g cordova"
           echo "  3. Add the Android platform: cordova platform add android"
-          echo "  4. Generate signing keystore (see CORDOVA_STANDARD.md)"
+          echo "  4. Generate signing keystore (see standards/cordova.md)"
           echo "  5. Add KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD secrets"
           echo "  6. Add GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret"
           echo "  7. Replace this step with the TODO steps below"
-          echo "See templates/mobile/CORDOVA_STANDARD.md for full instructions"
+          echo "See standards/cordova.md for full instructions"
         # TODO: Replace with actual Cordova + Fastlane steps when accounts are ready:
         #
         # - name: Install dependencies
@@ -108,7 +108,7 @@ jobs:
           cache: "npm"
 
       # TODO: Activate when Apple Developer account is ready ($99/year)
-      # See templates/mobile/CORDOVA_STANDARD.md — "iOS Deployment"
+      # See standards/cordova.md — "iOS Deployment"
       - name: Placeholder — iOS deployment not yet active
         run: |
           echo "⚠️  Cordova iOS deployment not yet configured."
@@ -119,7 +119,7 @@ jobs:
           echo "  4. Configure signing via Fastlane Match"
           echo "  5. Add APP_STORE_CONNECT_API_KEY_* secrets"
           echo "  6. Replace this step with the TODO steps below"
-          echo "See templates/mobile/CORDOVA_STANDARD.md for full instructions"
+          echo "See standards/cordova.md for full instructions"
         # TODO: Replace with actual Cordova + Fastlane steps when accounts are ready:
         #
         # - name: Install dependencies

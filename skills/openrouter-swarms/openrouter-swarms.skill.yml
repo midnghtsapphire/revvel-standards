@@ -104,7 +104,7 @@ implementation:
   skill_file: "skills/openrouter-swarms/SKILL.md"
 
 references:
-  - path: "AGENTIC_METHODOLOGY_STANDARD.md"
+  - path: "standards/agentic-methodology.md"
     description: "Revvel agentic framework"
   - path: "skills/model-router/SKILL.md"
     description: "Single-agent model selection"

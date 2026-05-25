@@ -107,7 +107,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 ```
 [ ] Audrey approves §3.1–§3.5 on the issue thread (👍 + reply)
 [ ] All 50 files in this repo updated to the approved identity (see §6)
-[ ] templates/brand/REVVEL_EMBLEM_STANDARD.md re-derives the new emblem
+[ ] standards/revvel-emblem.md re-derives the new emblem
 [ ] docs/growlingeyes/BRAND.md is the canonical brand sheet, palette tokens defined
 [ ] Companion PR opened in midnghtsapphire/growlingeyes that:
       [ ] swaps emblem assets (favicon set, PWA icons, apple-touch, OG image)
@@ -144,7 +144,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `docs/growlingeyes/BRAND.md`
 - `docs/GROWLINGEYES_MASTER_SPEC.md`
 - `templates/agent-handoff/GROWLINGEYES_BUILD_SPEC.md`
-- `templates/brand/REVVEL_EMBLEM_STANDARD.md`
+- `standards/revvel-emblem.md`
 - `README.md` (project list section)
 
 #### Sprint / state / inventory (string-level updates)
@@ -160,13 +160,13 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `CHANGELOG.md` *(add rebrand entry)*
 
 #### Master inventory / standards (cross-references)
-- `docs/Master_Inventory/AUTOMATED_AUDIT_AGENT_STANDARD.md`
+- `standards/automated-audit-agent.md`
 - `docs/Master_Inventory/INFRASTRUCTURE_MAP.md`
-- `docs/Master_Inventory/ODOO_INTEGRATION_STANDARD.md`
-- `docs/Master_Inventory/OSINT_STANDARD.md`
-- `docs/Master_Inventory/TESTING_STANDARD.md`
-- `docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`
-- `docs/Master_Inventory/VAULT_AGENT_STANDARD.md`
+- `standards/odoo-integration.md`
+- `standards/osint.md`
+- `standards/testing.md`
+- `standards/test-environments.md`
+- `standards/vault-agent.md`
 - `docs/REVVEL_MASTER_STANDARDS.md`
 - `docs/Universal-BOM_List/API_REGISTRY_BOM.md`
 - `docs/Universal-BOM_List/FOLDER_STRUCTURE_RECOMMENDATIONS.md`
@@ -187,8 +187,8 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 
 #### Templates (consumed by agent-handoff)
 - `templates/agent-handoff/README.md`
-- `templates/agent-handoff/SHIFT_TESTING_STANDARD.md`
-- `templates/agent-handoff/TACTICAL_MAP_PARSING_STANDARD.md`
+- `standards/shift-testing.md`
+- `standards/tactical-map-parsing.md`
 - `templates/agent-handoff/WOZ_METHOD_EXPLAINED.md`
 - `templates/agent-handoff/WOZ_SYSTEM_PROMPT_TEMPLATE.md`
 - `templates/cicd/README.md`

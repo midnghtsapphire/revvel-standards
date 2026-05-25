@@ -2,7 +2,7 @@
 
 **For:** Agents, developers, and contributors  
 **Updated:** 2026-04-29  
-**Related:** AGENTS.md, GOAP_AGENT_STANDARD.md, AUTONOMOUS_AGENT_IMPLEMENTATION.md
+**Related:** AGENTS.md, standards/goap-agent.md, AUTONOMOUS_AGENT_IMPLEMENTATION.md
 
 ---
 

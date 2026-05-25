@@ -271,7 +271,7 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Task Attempted:** Implement the whole WR research/search engine requested from GitHub context.
 
-**Outcome:** Success - added `scripts/research-engine.js`, `.github/workflows/research-engine.yml`, `docs/RESEARCH_ENGINE_STANDARD.md`, canonical research-engine labels, dynamic label sync from `.github/labels.yml`, and `tests/research-engine.test.js`. Focused tests, workflow validation, and root `npm test` pass.
+**Outcome:** Success - added `scripts/research-engine.js`, `.github/workflows/research-engine.yml`, `standards/research-engine.md`, canonical research-engine labels, dynamic label sync from `.github/labels.yml`, and `tests/research-engine.test.js`. Focused tests, workflow validation, and root `npm test` pass.
 
 **Root Cause of Failure (If any):** The previous research module was a manual six-agent script and did not own the full WR lifecycle: no lane labels, no master checklist, no per-agent checklist, no OpenRouter three-model triangulation contract, no durable code-review handoff, and no automatic-fix prompt for reviewers. Validation also surfaced three existing workflow jobs without `timeout-minutes`.
 

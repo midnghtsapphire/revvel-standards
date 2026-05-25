@@ -1062,7 +1062,7 @@ skills:
     skill_file: "skills/ui-creation-engine/SKILL.md"
     category: "Product Development"
     script: "scripts/ui-creation-engine.js"
-    standard: "docs/Master_Inventory/UI_CREATION_ENGINE_STANDARD.md"
+    standard: "standards/ui-creation-engine.md"
     access: all
     persona: pixel
     triggers:

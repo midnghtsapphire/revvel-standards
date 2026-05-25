@@ -14,7 +14,7 @@
 #   - iam.workforcePools.viewer
 #   - serviceusage.services.list
 #
-# See docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md for full context
+# See standards/google-cloud-identity.md for full context
 
 name: Google Cloud Identity Verification
 
@@ -358,4 +358,4 @@ jobs:
           echo "| Provider Configuration | ${{ steps.verify-providers.outputs.providers_status == 'success' && '✅ Valid' || (steps.discover-pools.outputs.pool_count == '0' && 'N/A' || '❌ Failed') }} |" >> $GITHUB_STEP_SUMMARY
           echo "| SCIM Provisioning | ${{ steps.check-scim.outputs.scim_status == 'enabled' && '✅ Enabled' || (steps.check-scim.outputs.scim_status == 'not_enabled' && 'ℹ️ Not Enabled' || 'N/A') }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "See [Google Cloud Identity Standard](docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md) for more information." >> $GITHUB_STEP_SUMMARY
+          echo "See [Google Cloud Identity Standard](standards/google-cloud-identity.md) for more information." >> $GITHUB_STEP_SUMMARY

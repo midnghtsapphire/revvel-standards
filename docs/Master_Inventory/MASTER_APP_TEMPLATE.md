@@ -126,4 +126,4 @@ bash ../revvel-standards/scripts/setup-mcp.sh web
 
 ### Full Documentation
 
-See **[`MCP_STANDARD.md`](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Master_Inventory/MCP_STANDARD.md)** for the complete standard including all 32 community servers, the FastMCP custom server guide, and the full Revvel Custom MCP catalog.
+See **[`standards/mcp.md`](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Master_Inventory/MCP_STANDARD.md)** for the complete standard including all 32 community servers, the FastMCP custom server guide, and the full Revvel Custom MCP catalog.

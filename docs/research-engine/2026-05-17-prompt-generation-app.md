@@ -95,7 +95,7 @@ Searched this repository for prompt-related assets and checked public midnghtsap
 ### Internal assets found
 
 - `promptforproject.md` - routing, viability scoring, ship-to-market requirements, deployment/test URL rules.
-- `docs/RESEARCH_ENGINE_STANDARD.md` - required research lanes: market, SEO, competitors, chatter, facts, technical, revenue, review.
+- `standards/research-engine.md` - required research lanes: market, SEO, competitors, chatter, facts, technical, revenue, review.
 - `scripts/research-engine.js` - implementation of lane prompts and synthesis prompt.
 - `.github/agent-prompts.yml` - workflow prompt templates.
 - `docs/AGENT_PROMPT_CONVENTION.md` and `docs/AGENT_PROMPT_EXECUTION_EVALUATION.md` - prompt governance docs.

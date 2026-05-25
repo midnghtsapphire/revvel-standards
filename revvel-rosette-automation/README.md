@@ -298,9 +298,9 @@ Task queue for asynchronous operations:
 
 ### 7.2. Compliance
 
-- Follows `REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`
-- Implements `API_GATEKEEPER_STANDARD.md`
-- Adheres to `AUTOMATED_AUDIT_AGENT_STANDARD.md`
+- Follows `standards/repository-privacy-migration.md`
+- Implements `standards/api-gatekeeper.md`
+- Adheres to `standards/automated-audit-agent.md`
 
 ---
 
@@ -340,8 +340,8 @@ See main repository [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 ## 10. Related Documentation
 
 - [`docs/AGENTS.md`](../docs/AGENTS.md) — AI agent instructions
-- [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) — S.H.I.F.T. framework
-- [`docs/Master_Inventory/API_GATEKEEPER_STANDARD.md`](../docs/Master_Inventory/API_GATEKEEPER_STANDARD.md) — Gatekeeper specification
+- [`standards/test-environments.md`](standards/test-environments.md) — S.H.I.F.T. framework
+- [`standards/api-gatekeeper.md`](standards/api-gatekeeper.md) — Gatekeeper specification
 - [`gatekeeper-cli/README.md`](../gatekeeper-cli/README.md) — CLI tool
 - [`docs/revvel-standards/TEST_HARNESS_RESEARCH.md`](../docs/revvel-standards/TEST_HARNESS_RESEARCH.md) — Test harness research
 

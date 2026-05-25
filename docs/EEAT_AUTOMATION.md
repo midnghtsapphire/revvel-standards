@@ -429,7 +429,7 @@ TrustForge integrates with:
 - **Skill Documentation:** `skills/eeat-trust-authority/SKILL.md`
 - **Workflow:** `.github/workflows/eeat-trust-cron.yml`
 - **Entity Hierarchy:** `docs/Master_Inventory/ENTITY_HIERARCHY.md`
-- **SEO Metadata:** `docs/Master_Inventory/SEO_METADATA_STANDARD.md`
+- **SEO Metadata:** `standards/seo-metadata.md`
 - **Brand Identity:** `templates/brand/BRAND_IDENTITY_TEMPLATE.md`
 - **Google E-E-A-T Guide:** [Google Search Central](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
 - **Schema.org Docs:** [schema.org](https://schema.org/)

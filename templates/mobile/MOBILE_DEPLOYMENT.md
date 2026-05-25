@@ -170,7 +170,7 @@ Then follow the TODO comments in the workflow to activate Android and iOS deploy
 
 ### Full Documentation
 
-See **`templates/mobile/CORDOVA_STANDARD.md`** for:
+See **`standards/cordova.md`** for:
 - Complete setup instructions (Java, Android SDK, Xcode, CocoaPods)
 - `config.xml` reference and plugin management
 - Android keystore generation and Play Store signing

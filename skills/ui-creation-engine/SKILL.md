@@ -547,8 +547,8 @@ npx lhci autorun --config=lighthouserc.json
 
 ## Related Standards
 
-- [`SEO_METADATA_STANDARD.md`](../../docs/Master_Inventory/SEO_METADATA_STANDARD.md)
-- [`AI_RESEARCH_MODULE_STANDARD.md`](../../docs/Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md)
+- [`standards/seo-metadata.md`](standards/seo-metadata.md)
+- [`standards/ai-research-module.md`](standards/ai-research-module.md)
 - [`openrouter-swarms/SKILL.md`](../openrouter-swarms/SKILL.md)
 - [`seo-metadata/SKILL.md`](../seo-metadata/SKILL.md)
 

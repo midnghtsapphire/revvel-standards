@@ -50,7 +50,7 @@ lifecycle_steps:
     action: "Identify what to test: unit, integration, E2E, LLM assertion"
   - step: 4
     name: GENERATE
-    action: "Write test files following TESTING_STANDARD.md"
+    action: "Write test files following standards/testing.md"
   - step: 5
     name: VERIFY
     action: "Dry-run or syntax-check generated tests"
@@ -73,7 +73,7 @@ coverage_thresholds:
   branches: 75
 
 rules:
-  - "Follow TESTING_STANDARD.md exactly"
+  - "Follow standards/testing.md exactly"
   - "For skill tests, always use PromptFoo with claude-sonnet-4 provider"
   - "Never mock the thing being tested"
   - "Never mock Zod schemas"
@@ -105,9 +105,9 @@ implementation:
   skill_file: "skills/testing-agent/SKILL.md"
 
 references:
-  - path: "TESTING_STANDARD.md"
+  - path: "standards/testing.md"
     description: "Revvel testing standard"
-  - path: "AGENT_FACTORY_STANDARD.md"
+  - path: "standards/agent-factory.md"
     description: "Agent factory — how to spawn ephemeral agents"
   - path: "skills/testing/SKILL.md"
     description: "Testing skill (human-facing guidance)"

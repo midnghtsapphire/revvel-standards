@@ -179,7 +179,7 @@ No. PromptFoo runs in advisory mode. Review the artifacts and decide whether to 
 
 ## Related Documentation
 
-- [CODE_REVIEW_STANDARD.md](Master_Inventory/CODE_REVIEW_STANDARD.md) - Full code review policy
+- [standards/code-review.md](standards/code-review.md) - Full code review policy
 - [skills/code-review/SKILL.md](../skills/code-review/SKILL.md) - Code review skill documentation
 - [AGENTS.md](AGENTS.md) - Prime Directive and anti-scaffolding rules
 - [BITO_AI_INTEGRATION.md](BITO_AI_INTEGRATION.md) - BITO AI setup guide

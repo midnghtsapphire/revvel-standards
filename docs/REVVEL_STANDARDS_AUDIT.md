@@ -137,7 +137,7 @@ Fastlane) exists but is unproven and secret-gated.
 ### Finding 6 — No executable per-repo SEO engine
 
 "Reimagined SEO per repo" appears **nowhere in code**. What exists: a markdown
-standard (`skills/seo-metadata`, `docs/Master_Inventory/SEO_METADATA_STANDARD.md`),
+standard (`skills/seo-metadata`, `standards/seo-metadata.md`),
 one executable validator (`scripts/schema-rich-results-checker.js`, JSON-LD only),
 and the research engine's SEO lane. No script ingests a repo and emits SEO.
 
@@ -230,5 +230,5 @@ implementation PR without manual steps.
 - Pipeline: `.github/workflows/openrouter-coder.yml`, `.github/scripts/openrouter_coder.py`, `.github/workflows/research-engine.yml`, `scripts/research-engine.js`, `.github/workflows/wr-pr-creation.yml`, `.github/workflows/jules-coding-agent.yml`, `.github/workflows/issue-state-machine.yml`, `.github/workflows/ship-to-market.yml`
 - Engine: `engines/CONTRACT.md`, `engines/runner-orchestrator/README.md`, `state.json`, `schemas/state.schema.json`, `agent-factory/`
 - Research/jury: `scripts/openrouter-routing.js`, `scripts/openrouter-personas.js`, `scripts/perplexity-research-issue.js` (broken), `skills/openrouter-swarms/`, `.github/workflows/ready-for-review.yml`, `semgrep.yml`, `codeql.yml`, `jules-pr-reviewer.yml`, `ai-pr-review-openrouter.yml`, `panda-ops.yml`
-- SEO: `skills/seo-metadata/`, `docs/Master_Inventory/SEO_METADATA_STANDARD.md`, `scripts/schema-rich-results-checker.js`
+- SEO: `skills/seo-metadata/`, `standards/seo-metadata.md`, `scripts/schema-rich-results-checker.js`
 - Tooling: `docs/TOOLING_STANDARDIZATION_RESEARCH.md`

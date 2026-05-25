@@ -5,7 +5,7 @@
  * All network calls go to api.github.com only. Token, if supplied,
  * is persisted in localStorage and never sent elsewhere.
  *
- * Reference: docs/Master_Inventory/ACCESSIBILITY_STANDARD.md,
+ * Reference: standards/accessibility.md,
  *            docs/Master_Inventory/COMPLIANCE_RUBRIC.md,
  *            docs/REPO_CATALOG.md
  * ============================================================ */

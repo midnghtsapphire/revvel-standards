@@ -1309,7 +1309,7 @@ jq '.triggers[] | select(.score >= 90)' /tmp/triggers.json
 
 4. **GrowlingEyes Internal Docs**
    - `/docs/GROWLINGEYES_MASTER_SPEC.md`
-   - `/docs/Master_Inventory/OSINT_STANDARD.md`
+   - `standards/osint.md`
    - `/growlingeyes/README.md`
 
 ---

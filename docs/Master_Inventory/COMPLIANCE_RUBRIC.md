@@ -120,7 +120,7 @@ The automated checker (`scripts/check-compliance.js`) evaluates each item below.
 
 ### Category G: Pre-commit Hooks & Syntax Checks (10 points)
 
-> G1–G4 are bonus points. G5–G8 are required and scored. See `SYNTAX_ERROR_PREVENTION_STANDARD.md` for full details.
+> G1–G4 are bonus points. G5–G8 are required and scored. See `standards/syntax-error-prevention.md` for full details.
 
 | ID | Requirement | Points | Tier | Check Type |
 |---|---|---|---|---|
@@ -131,7 +131,7 @@ The automated checker (`scripts/check-compliance.js`) evaluates each item below.
 | G5 | Secret scanning configured (gitleaks or detect-secrets) | 1 | P1 | MANUAL |
 | G6 | `.github/workflows/syntax-check.yml` exists | 3 | P1 | AUTO |
 | G7 | `.pre-commit-config.yaml` exists at repo root | 2 | P2 | AUTO |
-| G8 | `SYNTAX_ERROR_PREVENTION_STANDARD.md` present (standards repo) or referenced in `AGENTS.md` | 1 | P1 | AUTO |
+| G8 | `standards/syntax-error-prevention.md` present (standards repo) or referenced in `AGENTS.md` | 1 | P1 | AUTO |
 
 ---
 
@@ -184,7 +184,7 @@ The `scripts/check-compliance.js` checker reads this embedded JSON to score repo
     { "id": "G2", "description": "lint-staged config exists", "points": 1, "tier": "P2", "auto": true, "check": "file_exists_any", "targets": [".lintstagedrc", ".lintstagedrc.json", ".lintstagedrc.js"] },
     { "id": "G6", "description": "syntax-check.yml workflow exists", "points": 3, "tier": "P1", "auto": true, "check": "file_exists", "target": ".github/workflows/syntax-check.yml" },
     { "id": "G7", "description": ".pre-commit-config.yaml exists", "points": 2, "tier": "P2", "auto": true, "check": "file_exists", "target": ".pre-commit-config.yaml" },
-    { "id": "G8", "description": "SYNTAX_ERROR_PREVENTION_STANDARD.md exists or referenced in AGENTS.md", "points": 1, "tier": "P1", "auto": true, "check": "file_exists_any", "targets": ["SYNTAX_ERROR_PREVENTION_STANDARD.md"] }
+    { "id": "G8", "description": "standards/syntax-error-prevention.md exists or referenced in AGENTS.md", "points": 1, "tier": "P1", "auto": true, "check": "file_exists_any", "targets": ["standards/syntax-error-prevention.md"] }
   ]
 }
 ```
@@ -220,4 +220,4 @@ Any change to this rubric requires a PR. The PR must:
 3. Update `scripts/check-compliance.js` to reflect any new check logic
 4. Bump the version number at the top of this file
 
-Related standards: see `SYNTAX_ERROR_PREVENTION_STANDARD.md` for the full four-layer syntax error prevention policy.
+Related standards: see `standards/syntax-error-prevention.md` for the full four-layer syntax error prevention policy.

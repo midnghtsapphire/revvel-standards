@@ -96,4 +96,4 @@ Code review must reject any PR that adds a new cron job, worker, or webhook hand
 ## Related Standards
 
 - `templates/cicd/auto-fix.yml` — auto-fix loop for CI failures
-- `SECURITY_STANDARD.md` — secret management for Resend API key + GitHub token
+- `standards/security.md` — secret management for Resend API key + GitHub token

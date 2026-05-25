@@ -118,12 +118,12 @@ This script pulls all `BOM.md` files from `docs/*/BOM.md`, extracts outstanding 
 
 | Standard | Location |
 |---|---|
-| Testing Standard | [`TESTING_STANDARD.md`](../Master_Inventory/TESTING_STANDARD.md) |
-| Agent Factory Standard | [`AGENT_FACTORY_STANDARD.md`](../Master_Inventory/AGENT_FACTORY_STANDARD.md) |
-| Deployment Standard | [`DEPLOYMENT_STANDARD.md`](../Master_Inventory/DEPLOYMENT_STANDARD.md) |
-| MCP Standard | [`MCP_STANDARD.md`](../Master_Inventory/MCP_STANDARD.md) |
-| Security Standard | [`SECURITY_STANDARD.md`](../Master_Inventory/SECURITY_STANDARD.md) |
-| Vault Agent Standard | [`VAULT_AGENT_STANDARD.md`](../Master_Inventory/VAULT_AGENT_STANDARD.md) |
+| Testing Standard | [`standards/testing.md`](standards/testing.md) |
+| Agent Factory Standard | [`standards/agent-factory.md`](standards/agent-factory.md) |
+| Deployment Standard | [`standards/deployment.md`](standards/deployment.md) |
+| MCP Standard | [`standards/mcp.md`](standards/mcp.md) |
+| Security Standard | [`standards/security.md`](standards/security.md) |
+| Vault Agent Standard | [`standards/vault-agent.md`](standards/vault-agent.md) |
 | Master Inventory | [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md) |
 
 ---

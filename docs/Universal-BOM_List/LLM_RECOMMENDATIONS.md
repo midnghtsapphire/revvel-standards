@@ -44,7 +44,7 @@ After exhaustive research and direct evaluation across Claude 3.7 Sonnet, GPT-4o
 
 **Key reasons Claude wins for Revvel:**
 
-1. **MCP (Model Context Protocol) is Claude-native.** The entire Revvel MCP standard (`MCP_STANDARD.md`) was designed around Claude. Switching to another LLM would require significant rework.
+1. **MCP (Model Context Protocol) is Claude-native.** The entire Revvel MCP standard (`standards/mcp.md`) was designed around Claude. Switching to another LLM would require significant rework.
 2. **Best at following long, structured instructions** — critical for Revvel's detailed standards documents.
 3. **Superior TypeScript/React code generation** — exactly Revvel's stack.
 4. **200K context window** — can read entire codebases in one pass for self-healing audits.

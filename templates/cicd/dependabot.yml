@@ -1,6 +1,6 @@
 # Copy to .github/dependabot.yml in your app repo
 # Replace OWNER_USERNAME with your GitHub username
-# See DEPENDABOT_STANDARD.md for full documentation
+# See standards/dependabot.md for full documentation
 
 version: 2
 

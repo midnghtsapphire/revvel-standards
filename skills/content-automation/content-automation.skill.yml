@@ -153,5 +153,5 @@ standards:
 
 documentation:
   - "skills/content-automation/SKILL.md"
-  - "docs/Master_Inventory/CONTENT_STANDARD.md"
-  - "docs/Master_Inventory/MARKETING_AUTOMATION_STANDARD.md"
+  - "standards/content.md"
+  - "standards/marketing-automation.md"

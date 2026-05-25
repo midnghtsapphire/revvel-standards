@@ -737,13 +737,13 @@
           "name": "Wave Accounting",
           "description": "Free invoicing, bookkeeping, and income/expense tracking for small businesses",
           "status": "🟡 Research Topic",
-          "usedBy": "Superseded by Odoo CE for consolidated books — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md)"
+          "usedBy": "Superseded by Odoo CE for consolidated books — see [`standards/odoo-integration.md`](standards/odoo-integration.md)"
         },
         {
           "name": "Odoo Community Edition (self-hosted)",
           "description": "Multi-company ERP + CRM + free accounting; authoritative back-office for Vine House Capital ledger",
           "status": "🟡 Research Topic",
-          "usedBy": "Planned default — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md)"
+          "usedBy": "Planned default — see [`standards/odoo-integration.md`](standards/odoo-integration.md)"
         },
         {
           "name": "QuickBooks Online",
@@ -1447,5 +1447,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-05-24T20:41:36.835Z"
+  "lastUpdated": "2026-05-25T03:31:15.198Z"
 }

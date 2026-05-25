@@ -4,7 +4,7 @@
 **Date:** April 30, 2026  
 **Status:** Mandatory for all production deployments  
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)  
-**Implements:** `API_GATEKEEPER_STANDARD.md` Layer 2 (API Gateway / Proxy)
+**Implements:** `standards/api-gatekeeper.md` Layer 2 (API Gateway / Proxy)
 
 ---
 
@@ -376,12 +376,12 @@ bash bootstrap.sh
 
 | Standard | Relationship |
 |----------|-------------|
-| `API_GATEKEEPER_STANDARD.md` | Kong implements Layer 2 of the Gatekeeper architecture |
-| `SECURITY_STANDARD.md` | Kong enforces security policies at the edge |
+| `standards/api-gatekeeper.md` | Kong implements Layer 2 of the Gatekeeper architecture |
+| `standards/security.md` | Kong enforces security policies at the edge |
 | `DOCKER.md` | Kong follows Docker container standards |
 | `08_SECRETS_MANAGEMENT_STANDARD.md` | Kong pulls secrets from Doppler |
 | `MONITORING.md` | Kong feeds metrics into monitoring pipeline |
-| `DEPLOYMENT_STANDARD.md` | Kong deployment follows the standard deploy process |
+| `standards/deployment.md` | Kong deployment follows the standard deploy process |
 
 ---
 

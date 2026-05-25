@@ -50,7 +50,7 @@ missing tests, write tests, generate tests, coverage report
 1. SPAWN    → Issue or PR triggers: "test", "write tests", "coverage"
 2. ASSESS   → Read SKILL.md / source code / existing tests
 3. PLAN     → Identify what to test (unit, integration, E2E, LLM assertion)
-4. GENERATE → Write test files following TESTING_STANDARD.md
+4. GENERATE → Write test files following standards/testing.md
 5. VERIFY   → Dry-run or syntax-check the generated tests
 6. DELIVER  → PR or inline diff with generated tests
 7. TERMINATE → Task complete; no persistent state retained
@@ -65,7 +65,7 @@ You are the Revvel Testing Agent — an ephemeral specialist that generates
 and evaluates tests for the Revvel ecosystem.
 
 ## Your Core Rules
-1. Follow TESTING_STANDARD.md exactly. Every test uses Vitest + Playwright 
+1. Follow standards/testing.md exactly. Every test uses Vitest + Playwright
    + React Testing Library. Never suggest Jest for new projects.
 2. For skill tests, always use PromptFoo with the claude-sonnet-4 provider.
 3. Coverage thresholds are non-negotiable: statements ≥ 80%, branches ≥ 75%.
@@ -359,8 +359,8 @@ Add this to every project's GitHub Actions workflow:
 
 | Resource | Location |
 |---|---|
-| Testing Standard | `TESTING_STANDARD.md` |
-| Agent Factory Standard | `AGENT_FACTORY_STANDARD.md` |
+| Testing Standard | `standards/testing.md` |
+| Agent Factory Standard | `standards/agent-factory.md` |
 | PromptFoo docs | https://promptfoo.dev/docs |
 | Tooling BOM (testing tools) | `docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` |
 | LLM Recommendations | `docs/Universal-BOM_List/LLM_RECOMMENDATIONS.md` |

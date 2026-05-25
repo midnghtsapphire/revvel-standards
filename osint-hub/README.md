@@ -177,7 +177,7 @@ Neon Yellow: #ffbe0b  /* Warnings */
 ## 📖 Documentation
 
 For detailed implementation guides, see:
-- [OSINT Integration Standard](../docs/Master_Inventory/OSINT_STANDARD.md)
+- [OSINT Integration Standard](standards/osint.md)
 - [GROWLINGEYES MASTER SPEC](../docs/GROWLINGEYES_MASTER_SPEC.md)
 - [AGENTS.md](../docs/AGENTS.md) — Universal agent instructions
 - [Skills Registry](../skills/REGISTRY.md)

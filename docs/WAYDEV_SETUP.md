@@ -30,11 +30,11 @@ Waydev is a **developer productivity analytics platform** that connects to GitHu
 
 | Revvel Standard | Waydev Role |
 |---|---|
-| **CODE_REVIEW_STANDARD.md** | Tracks PR review latency, cycle time; confirms Coderabbit/Venice reviews are happening regularly |
-| **DEPLOYMENT_STANDARD.md** | Monitors deployment frequency (commits to `main`) |
-| **CONCURRENT_DEVELOPMENT_STANDARD.md** | Detects long-lived branches and stale PRs that violate the no-force-push + fast-merge policy |
-| **TESTING_STANDARD.md** | Tracks the ratio of test-related commits vs feature commits over time |
-| **SECURITY_STANDARD.md** | Identifies contributors with unusually high direct-to-`main` commit rates (audit flag) |
+| **standards/code-review.md** | Tracks PR review latency, cycle time; confirms Coderabbit/Venice reviews are happening regularly |
+| **standards/deployment.md** | Monitors deployment frequency (commits to `main`) |
+| **standards/concurrent-development.md** | Detects long-lived branches and stale PRs that violate the no-force-push + fast-merge policy |
+| **standards/testing.md** | Tracks the ratio of test-related commits vs feature commits over time |
+| **standards/security.md** | Identifies contributors with unusually high direct-to-`main` commit rates (audit flag) |
 
 Waydev operates as a **passive observer** — it requires no changes to workflows, no GitHub Actions steps, and no code modifications. Installing the GitHub App at the organisation level is sufficient to begin collecting data from all repositories under `midnghtsapphire`.
 

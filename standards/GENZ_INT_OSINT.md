@@ -3,7 +3,7 @@
 **Status:** Active
 **Owner:** @midnghtsapphire
 **Target repo:** `midnghtsapphire/growlingeyes`
-**Related:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`MCP_STANDARD.md`](../docs/Master_Inventory/MCP_STANDARD.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md)
+**Related:** [`AUTOMATED_PRODUCT_PIPELINE.md`](AUTOMATED_PRODUCT_PIPELINE.md), [`standards/mcp.md`](standards/mcp.md), [`KONG_GATEWAY.md`](KONG_GATEWAY.md)
 
 ---
 

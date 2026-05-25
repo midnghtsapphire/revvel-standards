@@ -6,7 +6,7 @@
 **Status:** Research Document
 **Author:** Revvel AI Research Module (synthesized from multi-agent analysis)
 **Confidence:** High
-**Related Standard:** `GITHUB_APP_INTEGRATION_STANDARD.md`
+**Related Standard:** `standards/github-app-integration.md`
 
 ---
 
@@ -215,7 +215,7 @@ permissions:
 - **Auditability:** Actions taken by the app may not appear in org audit logs
 
 **Mitigations:**
-- Store private key in HashiCorp Vault (see `VAULT_AGENT_STANDARD.md`)
+- Store private key in HashiCorp Vault (see `standards/vault-agent.md`)
 - Enable GitHub audit log streaming to external SIEM if needed
 - Document the app registration in org runbooks
 
@@ -225,7 +225,7 @@ permissions:
 - **Slightly higher setup complexity:** Must coordinate with org admin
 
 **Mitigations:**
-- Document the app in `RUNBOOK_STANDARD.md`
+- Document the app in `standards/runbook.md`
 - Give midnghtsapphire org admin role on FAC
 
 ### Risks: GitHub EMU (Option D)
@@ -235,7 +235,7 @@ permissions:
 
 ### Universal Security Requirements (All Options)
 
-- Webhook signature validation using HMAC-SHA256 (see `GITHUB_APP_INTEGRATION_STANDARD.md §5.2`)
+- Webhook signature validation using HMAC-SHA256 (see `standards/github-app-integration.md §5.2`)
 - Private key rotation every 90 days or on personnel changes
 - App permissions scoped to minimum necessary
 - All credentials stored in HashiCorp Vault
@@ -273,7 +273,7 @@ For completeness, here are non-GitHub alternatives if the GitHub ecosystem were 
 
 - [ ] Deploy webhook server (Node.js + Octokit) to DigitalOcean droplet or Cloudflare Worker
 - [ ] Wire webhook server to receive GitHub events and route to appropriate handlers
-- [ ] Implement AI Research Module workflow (`AI_RESEARCH_MODULE_STANDARD.md`)
+- [ ] Implement AI Research Module workflow (`standards/ai-research-module.md`)
 - [ ] Test cross-account API access from both FAC and midnghtsapphire contexts
 
 ### Phase 3 — Medium Term (Next Month)
@@ -281,7 +281,7 @@ For completeness, here are non-GitHub alternatives if the GitHub ecosystem were 
 - [ ] Evaluate GitHub Team plan for FAC if team grows
 - [ ] Set up OpenRouter integration for AI research automation
 - [ ] Wire research module to GitHub Actions workflow dispatch trigger
-- [ ] Document all automation flows in `RUNBOOK_STANDARD.md`
+- [ ] Document all automation flows in `standards/runbook.md`
 
 ### Phase 4 — Long Term (When Required)
 
@@ -317,8 +317,8 @@ These items require human decision before implementation:
 
 ## 11. Related Documents
 
-- `GITHUB_APP_INTEGRATION_STANDARD.md` — Implementation guide
-- `AI_RESEARCH_MODULE_STANDARD.md` — How this research was structured
-- `VAULT_AGENT_STANDARD.md` — Secret management for app credentials
-- `SECURITY_STANDARD.md` — Overall security policy
-- `RUNBOOK_STANDARD.md` — Operational runbooks for the app
+- `standards/github-app-integration.md` — Implementation guide
+- `standards/ai-research-module.md` — How this research was structured
+- `standards/vault-agent.md` — Secret management for app credentials
+- `standards/security.md` — Overall security policy
+- `standards/runbook.md` — Operational runbooks for the app

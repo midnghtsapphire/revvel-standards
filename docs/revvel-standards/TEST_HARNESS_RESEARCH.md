@@ -5,13 +5,13 @@
 **Status:** Requirements / Recommendation (awaiting adoption sign-off)
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 **Scope:** `midnghtsapphire/revvel-standards` only (the docs/standards/skills repository)
-**Related:** [`docs/Master_Inventory/TESTING_STANDARD.md`](../Master_Inventory/TESTING_STANDARD.md) · [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) · [`skills/testing/`](../../skills/testing/) · [`skills/testing-agent/`](../../skills/testing-agent/) · [`skills/shift-testing/`](../../skills/shift-testing/)
+**Related:** [`standards/testing.md`](standards/testing.md) · [`standards/test-environments.md`](standards/test-environments.md) · [`skills/testing/`](../../skills/testing/) · [`skills/testing-agent/`](../../skills/testing-agent/) · [`skills/shift-testing/`](../../skills/shift-testing/)
 
 ---
 
 ## 1. Introduction
 
-The `revvel-standards` repository is **not** a runtime application — it is a documentation, standards, skill-vault, and template repository. The existing `TESTING_STANDARD.md` targets Revvel *applications* (Vitest, Playwright, coverage gates). It does not prescribe what to run against this repo's artifacts (markdown, YAML, `.skill.yml`, `.bat`/`.command` installers, GitHub Actions workflows, JSON schemas).
+The `revvel-standards` repository is **not** a runtime application — it is a documentation, standards, skill-vault, and template repository. The existing `standards/testing.md` targets Revvel *applications* (Vitest, Playwright, coverage gates). It does not prescribe what to run against this repo's artifacts (markdown, YAML, `.skill.yml`, `.bat`/`.command` installers, GitHub Actions workflows, JSON schemas).
 
 This document:
 
@@ -90,7 +90,7 @@ Each row above is a **test suite**. The goal is a single `npm test` (or `make te
 | **remark-lint** | Good Node-native markdown linter, but `markdownlint-cli2` has wider adoption and matches GitHub's own tooling. |
 | **mabl / BrowserStack / Percy** | Paid; no UI to test in this repo. Already tracked as `P1` in `BOM.md` for *application* repos, not this one. |
 | **Codemagic / CircleCI / Buildkite** | Paid above free tier; GitHub Actions is sufficient and free for public repos. |
-| **Dependabot** | Already configured per `DEPENDABOT_STANDARD.md`; it's a complementary dependency updater, not a test harness. |
+| **Dependabot** | Already configured per `standards/dependabot.md`; it's a complementary dependency updater, not a test harness. |
 
 ### 4.4. Total cost of ownership
 
@@ -193,8 +193,8 @@ Total expected engineering time: **~1 day** across the 8 PRs, assuming a single 
 
 ## 9. Related documents
 
-- [`docs/Master_Inventory/TESTING_STANDARD.md`](../Master_Inventory/TESTING_STANDARD.md) — application-level testing standard (Vitest/Playwright).
-- [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) — four-stage pipeline (dev → staging → live-test → prod).
+- [`standards/testing.md`](standards/testing.md) — application-level testing standard (Vitest/Playwright).
+- [`standards/test-environments.md`](standards/test-environments.md) — four-stage pipeline (dev → staging → live-test → prod).
 - [`skills/testing/SKILL.md`](../../skills/testing/SKILL.md) — developer-facing testing skill.
 - [`skills/testing-agent/SKILL.md`](../../skills/testing-agent/SKILL.md) — ephemeral test-generation agent.
 - [`skills/shift-testing/SKILL.md`](../../skills/shift-testing/SKILL.md) — S.H.I.F.T. self-healing test framework.

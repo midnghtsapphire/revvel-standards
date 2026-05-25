@@ -337,7 +337,7 @@ jobs:
 - 49Agents Cloud: https://app.49agents.com
 - OpenRouter API: https://openrouter.ai/docs
 - Revvel Skills Vault: skills/REGISTRY.md
-- Agent Factory Standard: docs/Master_Inventory/AGENT_FACTORY_STANDARD.md
+- Agent Factory Standard: standards/agent-factory.md
 - OpenRouter Swarms Skill: skills/openrouter-swarms/SKILL.md
 
 ---

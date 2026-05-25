@@ -71,7 +71,7 @@ implementation:
   skill_file: "skills/vault-agent/SKILL.md"
 
 references:
-  - path: "VAULT_AGENT_STANDARD.md"
+  - path: "standards/vault-agent.md"
     description: "Full standard document"
   - path: "templates/agent-factory/VAULT_AGENT_TEMPLATE.md"
     description: "Drop-in agent template"
@@ -79,9 +79,9 @@ references:
     description: "GitHub Actions provisioning workflow"
   - path: "templates/cicd/ralph-loop.yml"
     description: "Ralph Loop CI error retry workflow"
-  - path: "SECURITY_STANDARD.md"
+  - path: "standards/security.md"
     description: "Broader secret management policy"
-  - path: "MCP_STANDARD.md"
+  - path: "standards/mcp.md"
     description: "MCP credential requirements"
 
 schema_version: "1.0"

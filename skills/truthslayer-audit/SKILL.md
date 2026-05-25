@@ -60,7 +60,7 @@ TruthSlayerScore = round(raw * 10)   // 0–100
 ### Confidence Level (required)
 
 Every audit must declare an overall **confidence level** alongside the score,
-matching the Revvel-standard research convention (`AI_RESEARCH_MODULE_STANDARD.md §8`):
+matching the Revvel-standard research convention (`standards/ai-research-module.md §8`):
 
 | Confidence | When to use |
 |---|---|
@@ -340,5 +340,5 @@ Produce the report.
 
 ## Changelog
 
-- **1.1.0 (2026-04-20):** Added required overall `confidence` level (`high | medium | low`) matching the Revvel research convention in `AI_RESEARCH_MODULE_STANDARD.md §8`; added optional per-factor `evidence_confidence` map; added `publication` block referencing the new `trust-community/` area; bumped output schema to `truthslayer-audit/v1.1` (backward-compatible: `v1` consumers can ignore the new fields).
+- **1.1.0 (2026-04-20):** Added required overall `confidence` level (`high | medium | low`) matching the Revvel research convention in `standards/ai-research-module.md §8`; added optional per-factor `evidence_confidence` map; added `publication` block referencing the new `trust-community/` area; bumped output schema to `truthslayer-audit/v1.1` (backward-compatible: `v1` consumers can ignore the new fields).
 - **1.0.0 (2026-04-20):** Initial release. Eight-factor weighted rubric, grade bands, output schema v1, Gemini-ready system prompt.

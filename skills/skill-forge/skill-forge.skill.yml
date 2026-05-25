@@ -105,4 +105,4 @@ tests:
 
 documentation:
   skill_file: "skills/skill-forge/SKILL.md"
-  standard: "AGENTIC_METHODOLOGY_STANDARD.md"
+  standard: "standards/agentic-methodology.md"

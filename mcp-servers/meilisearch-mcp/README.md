@@ -67,4 +67,4 @@ MEILI_KEY=yourMasterKey
 ## References
 
 - [MeiliSearch Docs](https://www.meilisearch.com/docs)
-- [revvel-standards MCP_STANDARD.md](../docs/Master_Inventory/MCP_STANDARD.md)
+- [revvel-standards standards/mcp.md](standards/mcp.md)

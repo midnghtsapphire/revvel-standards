@@ -100,5 +100,5 @@ Contributors are encouraged to add tests for these skills using the template abo
 ## References
 
 - [PromptFoo documentation](https://www.promptfoo.dev/docs/intro/)
-- [CODE_REVIEW_STANDARD.md](../CODE_REVIEW_STANDARD.md)
+- [standards/code-review.md](standards/code-review.md)
 - [AGENTS.md](../AGENTS.md)

@@ -4,7 +4,7 @@
 **Date:** April 2026  
 **ORM:** Drizzle ORM  
 **Database:** PostgreSQL (DigitalOcean Managed)  
-**Standards Reference:** [`DATA_MODEL_STANDARD.md`](../Master_Inventory/DATA_MODEL_STANDARD.md)
+**Standards Reference:** [`standards/data-model.md`](standards/data-model.md)
 
 ---
 

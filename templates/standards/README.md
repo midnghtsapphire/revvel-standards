@@ -21,8 +21,8 @@ Copy this entire `standards/` folder into the root of every new app repo. Fill i
 | [`google-cloud-identity-quick-ref.md`](google-cloud-identity-quick-ref.md) | Quick reference card for Google Cloud identity configuration |
 
 **Related Standards:**
-- [Google Cloud Identity & Workforce Identity Federation Standard](../../docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md)
-- [SSO & SAML Identity Standard](../../docs/Master_Inventory/SSO_SAML_STANDARD.md)
+- [Google Cloud Identity & Workforce Identity Federation Standard](standards/google-cloud-identity.md)
+- [SSO & SAML Identity Standard](standards/sso-saml.md)
 
 **Related Workflows:**
 - [google-cloud-identity-verify.yml](../cicd/google-cloud-identity-verify.yml) - CI/CD verification workflow

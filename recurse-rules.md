@@ -175,7 +175,7 @@ Functions that call themselves without tracking how deep the recursion has gone.
 Revvel projects must prevent production crashes from recursive functions.
 
 **Fix:** Add a `depth` parameter (default 0) and check against a maximum (typically 50-100).
-Throw an error when the limit is exceeded. See `RECURSION_STANDARD.md` for full guidance.
+Throw an error when the limit is exceeded. See `standards/recursion.md` for full guidance.
 
 **Example:**
 ```typescript
@@ -213,7 +213,7 @@ malicious.
 
 **Fix:** Either convert to iteration with an explicit stack, or use recursion with a very
 conservative depth limit (≤20). Validate input structure before processing. See
-`RECURSION_STANDARD.md` Section 5.1.
+`standards/recursion.md` Section 5.1.
 
 ---
 

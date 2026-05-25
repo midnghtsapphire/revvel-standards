@@ -157,7 +157,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 - [ ] Logs (for audit)
 
 ### Required Standards
-- [ ] ERROR_REPORTING_STANDARD.md
+- [ ] standards/error-reporting.md
 - [ ] MONITORING.md
 - [ ] CRON_SYSTEM.md
 - [ ] ZERO_HUMAN_FRAMEWORK.md
@@ -178,7 +178,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 
 ## Error Handling
 
-Per ERROR_REPORTING_STANDARD.md:
+Per standards/error-reporting.md:
 - [ ] All errors logged with severity
 - [ ] RED verdict = halt + alert
 - [ ] Stack traces captured
@@ -200,7 +200,7 @@ Per MONITORING.md:
 
 - `ZERO_HUMAN_FRAMEWORK.md` - Autonomous execution
 - `CRON_SYSTEM.md` - Scheduling
-- `ERROR_REPORTING_STANDARD.md` - Error handling
+- `standards/error-reporting.md` - Error handling
 - `MONITORING.md` - Observability
 - `AI_TAX_INTEGRATION.md` - Tax decisions
 

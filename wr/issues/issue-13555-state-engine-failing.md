@@ -55,7 +55,7 @@ The safest fix is to treat deep research as the default gate for WR PR creation:
 .github/workflows/weekly-research.yml
 .github/workflows/wr-pr-creation.yml
 docs/WEEKLY_RESEARCH_PROCESS.md
-docs/RESEARCH_ENGINE_STANDARD.md
+standards/research-engine.md
 scripts/research-engine.js
 tests/work-request-form-sync.test.js
 ```

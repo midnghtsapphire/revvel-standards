@@ -13,10 +13,10 @@ This document is the master policy document. For detailed implementation specifi
 ### Core Architecture
 | Document | What It Covers |
 |---|---|
-| [`DATABASE_ARCHITECTURE_STANDARD.md`](Master_Inventory/DATABASE_ARCHITECTURE_STANDARD.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
-| [`DATA_MODEL_STANDARD.md`](Master_Inventory/DATA_MODEL_STANDARD.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
-| [`SECURITY_STANDARD.md`](Master_Inventory/SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting |
-| [`DEPLOYMENT_STANDARD.md`](Master_Inventory/DEPLOYMENT_STANDARD.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD |
+| [`standards/database-architecture.md`](standards/database-architecture.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
+| [`standards/data-model.md`](standards/data-model.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
+| [`standards/security.md`](standards/security.md) | Vault, Helmet, CSP, OWASP, rate limiting |
+| [`standards/deployment.md`](standards/deployment.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD |
 
 ### Field Maps (Database → UI → API — every column mapped)
 | Document | What It Covers |
@@ -29,34 +29,34 @@ This document is the master policy document. For detailed implementation specifi
 ### Content & Marketing
 | Document | What It Covers |
 |---|---|
-| [`CONTENT_STANDARD.md`](Master_Inventory/CONTENT_STANDARD.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases |
-| [`SEO_METADATA_STANDARD.md`](Master_Inventory/SEO_METADATA_STANDARD.md) | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
-| [`MARKETING_AUTOMATION_STANDARD.md`](Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels |
-| [`AFFILIATE_MARKETING_STANDARD.md`](Master_Inventory/AFFILIATE_MARKETING_STANDARD.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
+| [`standards/content.md`](standards/content.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases |
+| [`standards/seo-metadata.md`](standards/seo-metadata.md) | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
+| [`standards/marketing-automation.md`](standards/marketing-automation.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels |
+| [`standards/affiliate-marketing.md`](standards/affiliate-marketing.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
 
 ### Leads & Insurance
 | Document | What It Covers |
 |---|---|
-| [`LEADS_STANDARD.md`](Master_Inventory/LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up cadence, state licensing gate |
+| [`standards/leads.md`](standards/leads.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up cadence, state licensing gate |
 
 ### Accessibility & Compliance
 | Document | What It Covers |
 |---|---|
-| [`ACCESSIBILITY_STANDARD.md`](Master_Inventory/ACCESSIBILITY_STANDARD.md) | WCAG 2.2 AA/AAA, **TTY/TDD** (confirmed line), 7 UI modes, screen reader testing, ADA for insurance |
+| [`standards/accessibility.md`](standards/accessibility.md) | WCAG 2.2 AA/AAA, **TTY/TDD** (confirmed line), 7 UI modes, screen reader testing, ADA for insurance |
 | [`COMPLIANCE_RUBRIC.md`](Master_Inventory/COMPLIANCE_RUBRIC.md) | P0/P1/P2 compliance tiers, scoring rubric, automated check |
-| [`TESTING_STANDARD.md`](Master_Inventory/TESTING_STANDARD.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
+| [`standards/testing.md`](standards/testing.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
 
 ### EDI & Tax
 | Document | What It Covers |
 |---|---|
 | [`docs/edi-maps/IRS_TAX_FORM_FIELD_MAP.md`](edi-maps/IRS_TAX_FORM_FIELD_MAP.md) | W-9, 1099-NEC, 1099-K DB→IRS field maps; TTY/phone filing for deaf users |
-| [`docs/edi-maps/EDI_INTEGRATION_STANDARD.md`](edi-maps/EDI_INTEGRATION_STANDARD.md) | How to hand field maps to any partner (IRS, carrier, bank) |
+| [`standards/edi-integration.md`](standards/edi-integration.md) | How to hand field maps to any partner (IRS, carrier, bank) |
 | [`docs/edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md`](edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md) | Blank template for any external integration |
 
 ### MCP Servers & AI Tool Integration
 | Document | What It Covers |
 |---|---|
-| [`MCP_STANDARD.md`](Master_Inventory/MCP_STANDARD.md) | **Mandatory.** All 32 standard MCP servers + FastMCP custom server standard. Every project must have `.mcp.json`. |
+| [`standards/mcp.md`](standards/mcp.md) | **Mandatory.** All 32 standard MCP servers + FastMCP custom server standard. Every project must have `.mcp.json`. |
 | [`docs/MCP_REVVEL_CATALOG.md`](MCP_REVVEL_CATALOG.md) | Deep audit of all 22 MIDNGHTSAPPHIRE custom MCP repos — tools, databases, wiring instructions |
 | [`templates/mcp/mcp.full.json`](../templates/mcp/mcp.full.json) | Full 34-server config (32 standard + 2 mandatory custom) |
 | [`templates/mcp/mcp.web.json`](../templates/mcp/mcp.web.json) | Web project config (18 standard servers) |
@@ -517,7 +517,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
 
 ### Required Deployment Environments
-- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
+- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`standards/test-environments.md`](standards/test-environments.md) for details.
 
 ### Design & Prototyping Tools
 

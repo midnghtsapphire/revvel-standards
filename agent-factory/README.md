@@ -4,7 +4,7 @@ This factory mirrors the AITMPL / Claude Code template stack (agents, commands, 
 
 ## Flow
 1. **Select base profile**: pick a settings profile and core hooks (pre-task lint, failure capture).
-2. **Detect triggers**: watch task text, filenames, and CI output for keywords (see the trigger matrix in `AGENT_FACTORY_STANDARD.md`).
+2. **Detect triggers**: watch task text, filenames, and CI output for keywords (see the trigger matrix in `standards/agent-factory.md`).
 3. **Swap agent**: load the target agent frontmatter (from `templates/agent-factory/AGENT_TEMPLATE.md`) and replay the context kit.
 4. **Run command stack**: attach the mapped `/` commands for that agent (see `agent-factory/commands/README.md`).
 5. **Self-heal**: if a command fails, hooks route to the recovery agent, capture logs, and re-run with a stricter checklist.

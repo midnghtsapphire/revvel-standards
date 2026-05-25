@@ -61,11 +61,11 @@ implementation:
   skill_file: "skills/gbrain/SKILL.md"
 
 references:
-  - path: "AGENT_FACTORY_STANDARD.md"
+  - path: "standards/agent-factory.md"
     description: "Use GBrain as the agent memory layer"
-  - path: "AUDREY_AUTONOMOUS_AGENT_STANDARD.md"
+  - path: "standards/audrey-autonomous-agent.md"
     description: "Brain-agent loop is the core pattern"
-  - path: "MCP_STANDARD.md"
+  - path: "standards/mcp.md"
     description: "Add gbrain to project .mcp.json"
   - path: "skills/context-management/SKILL.md"
     description: "GBrain preserves context between sessions"

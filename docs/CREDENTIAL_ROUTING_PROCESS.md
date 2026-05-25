@@ -412,7 +412,7 @@ doppler secrets
 ## Skills & Standards
 
 - **Skill:** `skills/vault-agent/SKILL.md` — Vault Agent provisioning instructions
-- **Standard:** `docs/Master_Inventory/VAULT_AGENT_STANDARD.md` — Credential provisioning standard
+- **Standard:** `standards/vault-agent.md` — Credential provisioning standard
 - **Standard:** `standards/CREDENTIAL_AUDIT_SYSTEM.md` — Credential audit and rotation
 - **Standard:** `standards/GATEKEEPER.md` — Gatekeeper system overview
 - **Doc:** `docs/SECRETS_MANAGEMENT.md` — Comprehensive secrets management guide

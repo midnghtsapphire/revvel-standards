@@ -110,7 +110,7 @@
 
 | API | Provider | Free Tier | Cost | Priority | Status | Projects | Notes |
 |---|---|---|---|---|---|---|---|
-| **Clerk** | Clerk | 🆓 Free (10k MAU) | $25+/mo | P0 | 🔵 Recommended | All apps needing auth | Best-in-class auth DX; built-in Next.js integration; cited in `TESTING_STANDARD.md` |
+| **Clerk** | Clerk | 🆓 Free (10k MAU) | $25+/mo | P0 | 🔵 Recommended | All apps needing auth | Best-in-class auth DX; built-in Next.js integration; cited in `standards/testing.md` |
 | **Google OAuth 2.0** | Google | ✅ Free | $0 | P0 | ✅ Active | GrowlingEyes | **Already in Revvel stack.** |
 | **Auth0** | Okta | 🆓 Free (7,500 MAU) | $23+/mo | P1 | 🟡 Evaluate | Enterprise apps | Enterprise-grade; more complex than Clerk |
 | **Supabase Auth** | Supabase | 🆓 Free (50k MAU) | $25+/mo | P1 | 🟡 Evaluate | Apps using Supabase DB | Auth built into Supabase; good if already on Supabase |
@@ -280,7 +280,7 @@
 
 ## Revvel API Credentials — Vault Storage Standard
 
-All API keys MUST be stored in the Revvel Vault (see `VAULT_AGENT_STANDARD.md`), never in `.env` files committed to git, and never hardcoded. The naming convention:
+All API keys MUST be stored in the Revvel Vault (see `standards/vault-agent.md`), never in `.env` files committed to git, and never hardcoded. The naming convention:
 
 ```
 ANTHROPIC_API_KEY          → /revvel/shared/llm/anthropic

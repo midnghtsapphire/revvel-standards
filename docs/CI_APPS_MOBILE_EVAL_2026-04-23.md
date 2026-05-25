@@ -3,7 +3,7 @@
 **Owner:** Audrey Evans (MIDNGHTSAPPHIRE)
 **Status:** Evaluation (awaiting adoption decision)
 **Scope:** 20 GitHub Marketplace apps under the "Continuous integration" / "Review apps" categories, scored specifically for their ability to automate **Google Play Store** and **Apple App Store** shipping on top of the current Revvel mobile stack (PWA → Bubblewrap/TWA + Apache Cordova + Fastlane).
-**Related:** [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) · [`_MASTER_BOM.md`](./_MASTER_BOM.md) · [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](./CODE_QUALITY_APPS_EVAL_2026-04-23.md) · [`STARRED_REPOS_EVAL_2026-04-20.md`](./STARRED_REPOS_EVAL_2026-04-20.md) · [`OPENROUTER_MARKETPLACE_ACTIONS.md`](./OPENROUTER_MARKETPLACE_ACTIONS.md) · [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) · [`../templates/mobile/MOBILE_DEPLOYMENT.md`](../templates/mobile/MOBILE_DEPLOYMENT.md) · [`../templates/mobile/CORDOVA_STANDARD.md`](../templates/mobile/CORDOVA_STANDARD.md)
+**Related:** [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) · [`_MASTER_BOM.md`](./_MASTER_BOM.md) · [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](./CODE_QUALITY_APPS_EVAL_2026-04-23.md) · [`STARRED_REPOS_EVAL_2026-04-20.md`](./STARRED_REPOS_EVAL_2026-04-20.md) · [`OPENROUTER_MARKETPLACE_ACTIONS.md`](./OPENROUTER_MARKETPLACE_ACTIONS.md) · [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) · [`../templates/mobile/MOBILE_DEPLOYMENT.md`](../templates/mobile/MOBILE_DEPLOYMENT.md) · [`standards/cordova.md`](standards/cordova.md)
 
 ---
 

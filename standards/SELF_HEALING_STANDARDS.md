@@ -118,7 +118,7 @@ fix(workflow-name): [one-line summary]
 |----------|----------------|
 | `.github/workflows/*.yml` | Any workflow change |
 | `AGENTS.md` | New skills, tools, or processes |
-| `CODE_REVIEW_STANDARD.md` | New code review tools |
+| `standards/code-review.md` | New code review tools |
 | `CREDENTIAL_AUDIT_SYSTEM.md` | New credentials or rotation |
 | `AUTOMATED_PRODUCT_PIPELINE.md` | New output types or deployment |
 | `standards/*.md` | Any integration or process change |

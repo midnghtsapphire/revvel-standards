@@ -165,7 +165,7 @@
 
 ### 1.14 Back-Office: ERP, CRM & Accounting (Cross-Entity)
 
-> Single shared system for every MIDNGHTSAPPHIRE legal entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews, and future brands). Authoritative specification: [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md).
+> Single shared system for every MIDNGHTSAPPHIRE legal entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews, and future brands). Authoritative specification: [`standards/odoo-integration.md`](standards/odoo-integration.md).
 
 | Service | What It Does | Provider | Free Tier Limit | Est. Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Used By |
 |---|---|---|---|---|---|---|---|
@@ -228,8 +228,8 @@
 
 | Service | What It Does | Provider | Free Tier Limit | Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Notes |
 |---|---|---|---|---|---|---|---|
-| Wave Accounting | Free invoicing, bookkeeping, and income/expense tracking for small businesses | Wave | Unlimited (free) | $0 | Needs payroll or credit card payments feature | 🟡 Research Topic | Superseded by Odoo CE for consolidated books — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md) |
-| Odoo Community Edition (self-hosted) | Multi-company ERP + CRM + free accounting; authoritative back-office for Vine House Capital ledger | Odoo S.A. (LGPL-3.0) | Unlimited users, unlimited companies (self-hosted) | $0 licence + shared droplet/Postgres | Needs Enterprise-only module (e.g. advanced payroll) — evaluate against OCA first | 🟡 Research Topic | Planned default — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md) |
+| Wave Accounting | Free invoicing, bookkeeping, and income/expense tracking for small businesses | Wave | Unlimited (free) | $0 | Needs payroll or credit card payments feature | 🟡 Research Topic | Superseded by Odoo CE for consolidated books — see [`standards/odoo-integration.md`](standards/odoo-integration.md) |
+| Odoo Community Edition (self-hosted) | Multi-company ERP + CRM + free accounting; authoritative back-office for Vine House Capital ledger | Odoo S.A. (LGPL-3.0) | Unlimited users, unlimited companies (self-hosted) | $0 licence + shared droplet/Postgres | Needs Enterprise-only module (e.g. advanced payroll) — evaluate against OCA first | 🟡 Research Topic | Planned default — see [`standards/odoo-integration.md`](standards/odoo-integration.md) |
 | QuickBooks Online | Full accounting, bank sync, tax reports; rental-specific features available | Intuit | No free tier | $30+/mo | First use (no free tier) | 🟡 Research Topic | Deferred in favor of Odoo CE |
 | FreshBooks | Invoicing and expense tracking focused on service businesses | FreshBooks | No free tier | $19+/mo | First use (no free tier) | 🟡 Research Topic | Evaluate vs Wave |
 

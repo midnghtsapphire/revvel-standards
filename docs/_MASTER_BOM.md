@@ -169,7 +169,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 | Tool | Category | Cost | Fit | Priority |
 |---|---|---|---|---|
-| **Odoo Community Edition** (self-hosted) | Multi-company ERP + CRM + free accounting in one database | $0 licence + shared infra | ⭐⭐⭐ Shared back office for every MIDNGHTSAPPHIRE entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews) — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md) | P1 |
+| **Odoo Community Edition** (self-hosted) | Multi-company ERP + CRM + free accounting in one database | $0 licence + shared infra | ⭐⭐⭐ Shared back office for every MIDNGHTSAPPHIRE entity (Vine House, Vine House Capital, Revvel Tech, reese-reviews) — see [`standards/odoo-integration.md`](standards/odoo-integration.md) | P1 |
 | **OCA `account_financial_report`** | FOSS replacement for Odoo Enterprise advanced financial reports | $0 | ⭐⭐⭐ Required to stay on CE-only | P1 |
 | **OCA `mis_builder`** | Consolidated KPI dashboards inside Odoo | $0 | ⭐⭐ Phase 3 rollout | P2 |
 | **`revvel_odoo_bridge`** (custom addon, this org) | Revvel-owned Odoo addon: external-ID fields + inbound webhook handler | $0 | ⭐⭐⭐ Only supported Odoo ↔ Revvel integration path | P1 |

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
   the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
   memory loop instructions, and a complete file map linking all SSOT documents 
-  (`GOAL.md`, `learnings.md`, `GOAP_AGENT_PROMPT.md`, `GOAP_AGENT_STANDARD.md`, 
+  (`GOAL.md`, `learnings.md`, `GOAP_AGENT_PROMPT.md`, `standards/goap-agent.md`,
   `wr/NORTH_STAR.md`, `SYSTEM_STATE.md`, `docs/AGENTS.md`). This is the new entry point 
   for all agents. Resolves issue: "[Deep Research] Create a goal.md and learning.md and 
   more and all one source of truth points to these."
@@ -29,13 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GOAP_AGENT_PROMPT.md` — Updated References section to include `GOAP.md` 
   (Goap hub), `GOAL.md` (mission), and `learnings.md` (self-healing log) 
   as the three primary SSOT files.
-- `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Updated References section to add 
+- `standards/goap-agent.md` — Updated References section to add
   `GOAP.md`, `GOAL.md`, and `learnings.md` as labeled SSOT entries at the top of the list.
 
 
 
 ### Added
-- `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 
+- `standards/goap-agent.md` — Goap Agent Standard:
   goal-oriented action planner (Goap) specialized autonomous agent under 
   the AUDREY umbrella. Core mission: build fully autonomous systems within 
   3 years that run 24/7 without human intervention. High-level goals include 
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the same error twice.
 
 ### Changed
-- `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` — Added 
+- `standards/audrey-autonomous-agent.md` — Added
   section "[2026-04-29] Goap Specialized Agent" documenting Goap as one 
   specialized member of the AUDREY agent conglomerate. Clarifies that 
   AUDREY agents operate as a **conglomerate** (organizational structure) 
@@ -205,7 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `skills/truthslayer-audit/` — schema bumped to `truthslayer-audit/v1.1`
   (skill `1.1.0`). Adds required overall `confidence` level
   (`high | medium | low`) matching the Revvel research convention in
-  `AI_RESEARCH_MODULE_STANDARD.md §8`, optional per-factor
+  `standards/ai-research-module.md §8`, optional per-factor
   `evidence_confidence` map, and a `publication` block linking audits to
   the new trust-community area. `skills/SKILLS_INDEX.yml` updated to the
   new version. Backward-compatible with `v1` consumers.
@@ -213,7 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inventory and Revvel Standards audit dashboard. Zero-dependency
   (HTML/CSS/vanilla JS), read-only against the GitHub REST API, and
   implements all 7 accessibility modes mandated by
-  `ACCESSIBILITY_STANDARD.md` §4 (Standard, WCAG AAA, Dyslexia-Friendly,
+  `standards/accessibility.md` §4 (Standard, WCAG AAA, Dyslexia-Friendly,
   ADHD Focus, Sensory Safe, Large Print, ECO/Low-Power). Runs from
   `file://`, localhost, or GitHub Pages. Enables non-technical family
   members to audit the full MIDNGHTSAPPHIRE inventory against the
@@ -222,7 +222,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   XRP master system prompt that converts any third-party agent
   (OpenRouter, Grok, Claude, GPT, DeepSeek, Kimi, etc.) into a
   Revvel-Standards-compliant agent. Copy of the prompt appended to
-  `AGENT_FACTORY_STANDARD.md` and `AUDREY_AUTONOMOUS_AGENT_STANDARD.md`.
+  `standards/agent-factory.md` and `standards/audrey-autonomous-agent.md`.
 - `ui/freedom-angel-repo-manager/README.md` — usage guide, GitHub
   Pages deployment instructions, and a 10-step bootstrap verification
   checklist for manual and automated verification.
@@ -230,9 +230,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `README.md` — appended dated section linking to the new UI and
   master prompt.
-- `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md` — appended reusable
+- `standards/agent-factory.md` — appended reusable
   master prompt section.
-- `docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md` —
+- `standards/audrey-autonomous-agent.md` —
   appended reusable master prompt section.
 - `docs/SPRINT_STATE.md` — appended dated sprint entry for this task.
 - `docs/REPO_CATALOG.md` — appended note pointing at the audit UI.
@@ -247,18 +247,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-15
 
 ### Added
-- `UI_FIELD_TESTING_DBA_STANDARD.md` — Mandatory DBA process module for UI-to-database field testing and mapping. Covers: field-to-column mapping verification, data type consistency, schema validation, full CRUD validation workflow (CREATE/READ/UPDATE/DELETE), ACID property testing, constraint testing (NOT NULL, UNIQUE, CHECK, FK), trigger and stored procedure testing, Playwright + PostgreSQL automated test patterns, test evidence log templates, CI/CD integration guide, and compliance checks DBA-001 through DBA-006.
+- `standards/ui-field-testing-dba.md` — Mandatory DBA process module for UI-to-database field testing and mapping. Covers: field-to-column mapping verification, data type consistency, schema validation, full CRUD validation workflow (CREATE/READ/UPDATE/DELETE), ACID property testing, constraint testing (NOT NULL, UNIQUE, CHECK, FK), trigger and stored procedure testing, Playwright + PostgreSQL automated test patterns, test evidence log templates, CI/CD integration guide, and compliance checks DBA-001 through DBA-006.
 - `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md` — Bill of materials for all UI field testing tools. Covers automated testing (Playwright, Vitest, mabl), SQL-native testing (pgTAP, pg_prove), GUI DB clients (Supabase, Beekeeper Studio, DBeaver), no-code CRUD generators (Budibase, Appsmith, NocoDB), schema validation tools (drizzle-kit, schemalint), test data management (Faker.js, @snaplet/seed), and ACID/load testing tools. Minimum viable stack documented at $0 cost.
 
 ### Changed
-- `DATABASE_ARCHITECTURE_STANDARD.md` — Section 7 expanded with subsection 7.1 linking to the new `UI_FIELD_TESTING_DBA_STANDARD.md` module. Field mapping section now includes the DBA testing requirement alongside the existing field map document references.
-- `TESTING_STANDARD.md` — Section 10 expanded with subsection 10.5 documenting the UI-to-database field test requirement and linking to `UI_FIELD_TESTING_DBA_STANDARD.md` and the UI field testing BOM.
+- `standards/database-architecture.md` — Section 7 expanded with subsection 7.1 linking to the new `standards/ui-field-testing-dba.md` module. Field mapping section now includes the DBA testing requirement alongside the existing field map document references.
+- `standards/testing.md` — Section 10 expanded with subsection 10.5 documenting the UI-to-database field test requirement and linking to `standards/ui-field-testing-dba.md` and the UI field testing BOM.
 - `docs/Universal-BOM_List/README.md` — Added `UI_FIELD_TESTING_BOM.md` to the Files table.
 
 
 
 ### Added
-- `SYNTAX_ERROR_PREVENTION_STANDARD.md` — mandatory four-layer standard for preventing syntax errors before they reach CI or become issues/PRs. Covers Git pre-commit hooks, pre-commit framework, Husky + lint-staged, and GitHub Actions CI checks.
+- `standards/syntax-error-prevention.md` — mandatory four-layer standard for preventing syntax errors before they reach CI or become issues/PRs. Covers Git pre-commit hooks, pre-commit framework, Husky + lint-staged, and GitHub Actions CI checks.
 - `templates/cicd/syntax-check.yml` — GitHub Actions workflow template for automated syntax and lint validation on every push and PR (TypeScript, ESLint, Prettier, JSON, YAML, Shell).
 - `templates/hooks/pre-commit` — Native git pre-commit hook script template that checks shell, JS, TypeScript, JSON, Python, and YAML syntax before every commit.
 - `templates/hooks/.pre-commit-config.yaml` — Pre-commit framework config template with hooks for YAML/JSON validation, shellcheck, secret detection, and file hygiene.
@@ -277,17 +277,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-04-03
 ### Added
-- `DEPLOYMENT_STANDARD.md` establishing the mandatory deploy agent pattern: multiple teams work on feature branches and merge to main, but ONE final deploy agent handles the actual production deployment. No individual team deploys.
+- `standards/deployment.md` establishing the mandatory deploy agent pattern: multiple teams work on feature branches and merge to main, but ONE final deploy agent handles the actual production deployment. No individual team deploys.
 
 ### Context
 - This version was prompted by the reese-reviews deployment on April 3, 2026, where 4 teams (A, B, C, D) merged their work to main but the live site showed a blank page due to Dockerfile misconfiguration. The deploy agent model was formalized to prevent similar issues by centralizing deployment verification and ensuring all merged code is validated before going live.
 
 ## [1.2.0] - 2026-04-03
 ### Added
-- `CONCURRENT_DEVELOPMENT_STANDARD.md` establishing mandatory branch protection rules, multi-team coordination workflow, and no-force-push policy across all repos.
+- `standards/concurrent-development.md` establishing mandatory branch protection rules, multi-team coordination workflow, and no-force-push policy across all repos.
 
 ### Changed
-- `CODE_REVIEW_STANDARD.md` updated with a "No Force Push" policy section and a reference to the new concurrent development standard.
+- `standards/code-review.md` updated with a "No Force Push" policy section and a reference to the new concurrent development standard.
 
 ### Context
 - This version was prompted by an April 3, 2026 incident in which a force-push to master on the MindMappr repo overwrote commits from two other teams working concurrently.
@@ -295,8 +295,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-04-03
 ### Added
 - `CHANGELOG.md` created to track all future changes.
-- `CODE_REVIEW_STANDARD.md` documenting mandatory code review pipeline and CI/CD rules.
-- `AUTO_DOCUMENTATION_STANDARD.md` establishing auto-generation rules for docs and changelogs.
+- `standards/code-review.md` documenting mandatory code review pipeline and CI/CD rules.
+- `standards/auto-documentation.md` establishing auto-generation rules for docs and changelogs.
 - `MASTER_APP_TEMPLATE.md` established as the single source of truth for new applications.
 
 ### Changed

@@ -144,9 +144,9 @@ Agent terminated.
 
 ## Related Resources
 
-- Full standard: `VAULT_AGENT_STANDARD.md`
+- Full standard: `standards/vault-agent.md`
 - Agent template: `templates/agent-factory/VAULT_AGENT_TEMPLATE.md`
 - CI workflow: `templates/cicd/vault-provisioning.yml`
 - Ralph Loop: `templates/cicd/ralph-loop.yml`
-- Security standard: `SECURITY_STANDARD.md`
-- MCP standard: `MCP_STANDARD.md`
+- Security standard: `standards/security.md`
+- MCP standard: `standards/mcp.md`

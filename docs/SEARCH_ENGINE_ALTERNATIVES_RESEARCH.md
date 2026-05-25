@@ -5,7 +5,7 @@
 **Status:** Research Document
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 **Confidence:** High
-**Related Standard:** `AI_RESEARCH_MODULE_STANDARD.md`
+**Related Standard:** `standards/ai-research-module.md`
 
 ---
 
@@ -449,7 +449,7 @@ User Query → MeiliSearch (instant search, typo tolerance)
 
 ## 11. Related Revvel Standards
 
-- `AI_RESEARCH_MODULE_STANDARD.md` - Research methodology used for this analysis
+- `standards/ai-research-module.md` - Research methodology used for this analysis
 - `DEPLOYMENT_GUIDE.md` - Deployment procedures
 
 ---

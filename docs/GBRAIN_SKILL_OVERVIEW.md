@@ -149,10 +149,10 @@ GBrain is the memory layer that makes the EXRUP methodology sustainable over tim
 
 | Standard | GBrain Role |
 |---|---|
-| `AGENT_FACTORY_STANDARD.md` | GBrain is the memory backend for agent factories |
-| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the persistence mechanism for autonomous agents |
-| `MCP_STANDARD.md` | GBrain registers as an MCP server in `.mcp.json` |
-| `CONCURRENT_DEVELOPMENT_STANDARD.md` | Shared brain enables context sharing across parallel agent instances |
+| `standards/agent-factory.md` | GBrain is the memory backend for agent factories |
+| `standards/audrey-autonomous-agent.md` | Brain-agent loop is the persistence mechanism for autonomous agents |
+| `standards/mcp.md` | GBrain registers as an MCP server in `.mcp.json` |
+| `standards/concurrent-development.md` | Shared brain enables context sharing across parallel agent instances |
 
 ---
 

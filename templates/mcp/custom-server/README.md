@@ -2,7 +2,7 @@
 
 Built with [FastMCP](https://gofastmcp.com) — the Pythonic way to build MCP servers.
 
-See [MCP_STANDARD.md](../../../docs/Master_Inventory/MCP_STANDARD.md) Section 11 for the full FastMCP guide.
+See [standards/mcp.md](standards/mcp.md) Section 11 for the full FastMCP guide.
 
 ## Structure
 

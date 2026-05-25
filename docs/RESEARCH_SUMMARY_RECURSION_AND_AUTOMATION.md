@@ -78,7 +78,7 @@ Based on the Reddit research and repository analysis, the following gaps were fo
 
 ## 3. Implemented Solutions
 
-### 3.1. RECURSION_STANDARD.md (15KB)
+### 3.1. standards/recursion.md (15KB)
 
 **Purpose:** Comprehensive recursion safety guidelines
 
@@ -128,7 +128,7 @@ function processNested(data: any, depth = 0, maxDepth = 50): any {
 - **Pattern:** Recursive processing of user uploads, API responses, external data
 - **Why:** DoS attack vector - attackers can craft deeply nested payloads
 - **Fix:** Convert to iteration or use very conservative depth limit (≤20)
-- **Reference:** Links to RECURSION_STANDARD.md Section 5.1
+- **Reference:** Links to standards/recursion.md Section 5.1
 
 **Impact:** These rules will now be enforced automatically by RecurseML on every PR.
 
@@ -183,7 +183,7 @@ jobs:
 Added references to both new standards in the "Key Standards" section:
 ```markdown
 **Key Standards**
-- `RECURSION_STANDARD.md` — safe recursion guidelines with depth tracking 
+- `standards/recursion.md` — safe recursion guidelines with depth tracking
   and stack overflow prevention (NEW: 2026-04-15)
 - `AUTOMATION_CHECKLIST.md` — comprehensive roadmap for full CI/CD automation 
   and human-free development suite (NEW: 2026-04-15)
@@ -235,12 +235,12 @@ The new standards integrate seamlessly with existing Revvel documentation:
 
 | New Standard | Complements Existing | Integration Point |
 |--------------|---------------------|-------------------|
-| RECURSION_STANDARD.md | TESTING_STANDARD.md | Requires depth tests for recursive functions |
-| RECURSION_STANDARD.md | CODE_REVIEW_STANDARD.md | Adds recursion to review checklist |
-| RECURSION_STANDARD.md | SYNTAX_ERROR_PREVENTION_STANDARD.md | Depth guards prevent runtime crashes |
-| AUTOMATION_CHECKLIST.md | CODE_REVIEW_STANDARD.md | References Venice AI + Claude + DeepSeek |
-| AUTOMATION_CHECKLIST.md | TESTING_STANDARD.md | Expands on Vitest + Playwright |
-| AUTOMATION_CHECKLIST.md | SECURITY_STANDARD.md | Adds Trivy, Semgrep, secret scanning |
+| standards/recursion.md | standards/testing.md | Requires depth tests for recursive functions |
+| standards/recursion.md | standards/code-review.md | Adds recursion to review checklist |
+| standards/recursion.md | standards/syntax-error-prevention.md | Depth guards prevent runtime crashes |
+| AUTOMATION_CHECKLIST.md | standards/code-review.md | References Venice AI + Claude + DeepSeek |
+| AUTOMATION_CHECKLIST.md | standards/testing.md | Expands on Vitest + Playwright |
+| AUTOMATION_CHECKLIST.md | standards/security.md | Adds Trivy, Semgrep, secret scanning |
 
 **No conflicts identified.** All new content extends rather than contradicts existing standards.
 
@@ -268,7 +268,7 @@ The new standards align with established industry practices:
 ## 7. Recommendations for Next Steps
 
 ### Immediate Actions (This Week)
-1. ✅ **Standards Created** - RECURSION_STANDARD.md and AUTOMATION_CHECKLIST.md
+1. ✅ **Standards Created** - standards/recursion.md and AUTOMATION_CHECKLIST.md
 2. ✅ **RecurseML Updated** - New recursion rules added to recurse-rules.md
 3. ✅ **README Updated** - New standards documented
 4. 🔲 **Team Review** - Share with development team for feedback
@@ -291,7 +291,7 @@ The new standards align with established industry practices:
 
 | File | Status | Size | Description |
 |------|--------|------|-------------|
-| `RECURSION_STANDARD.md` | ✅ Created | 15 KB | Complete recursion safety guidelines |
+| `standards/recursion.md` | ✅ Created | 15 KB | Complete recursion safety guidelines |
 | `AUTOMATION_CHECKLIST.md` | ✅ Created | 18 KB | Full automation roadmap |
 | `recurse-rules.md` | ✅ Updated | +40 lines | Added 2 recursion safety rules |
 | `README.md` | ✅ Updated | +2 lines | Referenced new standards |

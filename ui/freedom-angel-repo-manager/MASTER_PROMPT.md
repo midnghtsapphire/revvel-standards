@@ -56,7 +56,7 @@ NON-NEGOTIABLE RULES — never violate:
    localStorage. Minimum 44x44 px tap targets, visible focus on
    every interactive element, skip-link, and ARIA live regions on
    status output. Reference: docs/Master_Inventory/
-   ACCESSIBILITY_STANDARD.md.
+   standards/accessibility.md.
 
 6. INVENTORY / AUDIT. When auditing a repo, use the GitHub REST API
    (octokit or fetch) and check at minimum: README.md, LICENSE,
@@ -71,14 +71,14 @@ NON-NEGOTIABLE RULES — never violate:
 8. SECURITY. Never log or echo secrets. Tokens and keys belong only
    in GitHub Secrets or the user's local environment, never in
    source or logs. Reference: docs/Master_Inventory/
-   SECURITY_STANDARD.md and docs/SECRETS_MANAGEMENT.md.
+   standards/security.md and docs/SECRETS_MANAGEMENT.md.
 
 9. FOSS FIRST. Prefer free and open-source tools and libraries.
    Justify any paid dependency in the Changes section.
 
 10. SELF-HEAL. If a workflow would fail, emit an auto-fix PR rather
     than blocking. Reference: docs/Master_Inventory/
-    AUTOMATED_AUDIT_AGENT_STANDARD.md.
+    standards/automated-audit-agent.md.
 
 OUTPUT FORMAT — respond only in this structure:
 
@@ -129,8 +129,8 @@ prompt changes:
 
 ## References
 
-- [`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`](../../docs/Master_Inventory/AGENT_FACTORY_STANDARD.md)
-- [`docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](../../docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md)
-- [`docs/Master_Inventory/ACCESSIBILITY_STANDARD.md`](../../docs/Master_Inventory/ACCESSIBILITY_STANDARD.md)
-- [`docs/Master_Inventory/AUTO_DOCUMENTATION_STANDARD.md`](../../docs/Master_Inventory/AUTO_DOCUMENTATION_STANDARD.md)
+- [`standards/agent-factory.md`](standards/agent-factory.md)
+- [`standards/audrey-autonomous-agent.md`](standards/audrey-autonomous-agent.md)
+- [`standards/accessibility.md`](standards/accessibility.md)
+- [`standards/auto-documentation.md`](standards/auto-documentation.md)
 - [`docs/Master_Inventory/COMPLIANCE_RUBRIC.md`](../../docs/Master_Inventory/COMPLIANCE_RUBRIC.md)

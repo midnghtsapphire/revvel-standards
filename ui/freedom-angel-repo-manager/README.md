@@ -3,7 +3,7 @@
 **Location:** `ui/freedom-angel-repo-manager/`  
 **Status:** Production, append-only (no pre-existing files deleted or renamed)  
 **Owner:** Freedom Angel Corps · Audrey Evans (MIDNGHTSAPPHIRE)  
-**Inherits from:** [`docs/Master_Inventory/ACCESSIBILITY_STANDARD.md`](../../docs/Master_Inventory/ACCESSIBILITY_STANDARD.md), [`docs/Master_Inventory/COMPLIANCE_RUBRIC.md`](../../docs/Master_Inventory/COMPLIANCE_RUBRIC.md), [`docs/REPO_CATALOG.md`](../../docs/REPO_CATALOG.md)
+**Inherits from:** [`standards/accessibility.md`](standards/accessibility.md), [`docs/Master_Inventory/COMPLIANCE_RUBRIC.md`](../../docs/Master_Inventory/COMPLIANCE_RUBRIC.md), [`docs/REPO_CATALOG.md`](../../docs/REPO_CATALOG.md)
 
 A zero-dependency, GitHub-wired dashboard that lists every repository
 owned by a user or organization and audits each one against the Revvel

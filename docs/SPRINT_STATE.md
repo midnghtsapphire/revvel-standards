@@ -222,7 +222,7 @@ Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 
 ### Completed
 - Deep review of the entire `revvel-standards` repository.
-- Shipped the reusable **Revvel Master Prompt** (`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`) and appended it to `AGENT_FACTORY_STANDARD.md` and `AUDREY_AUTONOMOUS_AGENT_STANDARD.md`.
+- Shipped the reusable **Revvel Master Prompt** (`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`) and appended it to `standards/agent-factory.md` and `standards/audrey-autonomous-agent.md`.
 - Shipped the **Freedom Angel Corps Repo Manager** UI at `ui/freedom-angel-repo-manager/` — zero-dependency, GitHub-wired inventory and standards audit with all 7 accessibility modes.
 - Appended dated entries to `README.md`, `CHANGELOG.md`, `docs/REPO_CATALOG.md`, and `docs/Master_Inventory/INFRASTRUCTURE_MAP.md`. No files deleted or renamed (append-only policy honoured).
 

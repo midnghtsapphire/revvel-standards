@@ -26,7 +26,7 @@ User reported multiple concerns:
 - `docs/49AGENTS_EVALUATION.md` (Phase 1-4 adoption roadmap)
 - `skills/grant-mgmt-agent/SKILL.md` (Phase 1-6 implementation roadmap)
 - `skills/grant-mgmt-agent/IMPLEMENTATION_GUIDE.md` (phased checklist)
-- `docs/Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md` (Phase 1-4)
+- `standards/agentic-methodology.md` (Phase 1-4)
 
 **Analysis:** These are **planning documents** describing future work across multiple PRs/tasks, NOT instructions to agents to implement code incrementally. The "no phases" rule applies to CODE IMPLEMENTATION, not to documentation planning.
 
@@ -85,7 +85,7 @@ OpenHands (paid, ~$50/task) → Cursor → OpenRouter (affordable)
 - `docs/49AGENTS_EVALUATION.md`
 - `skills/grant-mgmt-agent/SKILL.md`
 - `skills/grant-mgmt-agent/IMPLEMENTATION_GUIDE.md`
-- `docs/Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md`
+- `standards/agentic-methodology.md`
 
 **Added disclaimer:**
 ```markdown
@@ -185,7 +185,7 @@ OpenRouter (affordable) → Cursor → OpenHands (opt-in only)
 | `docs/49AGENTS_EVALUATION.md` | Added planning document disclaimer | Prevent confusion |
 | `skills/grant-mgmt-agent/SKILL.md` | Added planning document disclaimer | Prevent confusion |
 | `skills/grant-mgmt-agent/IMPLEMENTATION_GUIDE.md` | Added planning document disclaimer | Prevent confusion |
-| `docs/Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md` | Added planning document disclaimer | Prevent confusion |
+| `standards/agentic-methodology.md` | Added planning document disclaimer | Prevent confusion |
 | `.circleci/config.yml` | Re-enabled with OpenRouter integration | Enable CircleCI reviews |
 | `.github/workflows/agent-fallback.yml` | Reordered to OpenRouter → Cursor → OpenHands | Minimize costs |
 | `docs/AGENT_ROUTING_POLICY.md` | **NEW** comprehensive routing policy | Document standards |

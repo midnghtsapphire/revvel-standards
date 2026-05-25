@@ -2,7 +2,7 @@
 
 > **DARE Log** = Decision, Action, Result, Evidence
 > This file records every vault provisioning event. Log the credential name, vault path, and rotation due date ONLY — never log actual secret values.
-> See `VAULT_AGENT_STANDARD.md` for the full standard.
+> See `standards/vault-agent.md` for the full standard.
 
 ---
 

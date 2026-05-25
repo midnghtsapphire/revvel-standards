@@ -4,9 +4,9 @@
 **Date:** April 15, 2026  
 **Status:** Living Document  
 **Scope:** All Revvel Projects  
-**Related Standard:** `UI_FIELD_TESTING_DBA_STANDARD.md`
+**Related Standard:** `standards/ui-field-testing-dba.md`
 
-> This document catalogues every tool, platform, library, and service relevant to UI-to-database field testing and mapping validation. It is the shopping list and decision log for the DBA testing process defined in `UI_FIELD_TESTING_DBA_STANDARD.md`.
+> This document catalogues every tool, platform, library, and service relevant to UI-to-database field testing and mapping validation. It is the shopping list and decision log for the DBA testing process defined in `standards/ui-field-testing-dba.md`.
 
 ---
 
@@ -27,7 +27,7 @@
 
 ## 1. UI-to-Database Automated Testing
 
-**Current Standard:** Playwright + `pg` client (see `UI_FIELD_TESTING_DBA_STANDARD.md`, Section 8)
+**Current Standard:** Playwright + `pg` client (see `standards/ui-field-testing-dba.md`, Section 8)
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -131,7 +131,7 @@ These platforms auto-generate CRUD interfaces directly from a database schema, r
 
 ## 9. Compliance Check Reference
 
-All tools in this BOM map to compliance checks in `UI_FIELD_TESTING_DBA_STANDARD.md` Section 10:
+All tools in this BOM map to compliance checks in `standards/ui-field-testing-dba.md` Section 10:
 
 | BOM Category | Compliance Check |
 |---|---|

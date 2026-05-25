@@ -26,7 +26,7 @@
 
 ## 1. Unit & Integration Testing
 
-**Current Standard:** Vitest + Supertest (see `TESTING_STANDARD.md`)
+**Current Standard:** Vitest + Supertest (see `standards/testing.md`)
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@
 
 ## 2. End-to-End (E2E) Testing
 
-**Current Standard:** Playwright (see `TESTING_STANDARD.md`)
+**Current Standard:** Playwright (see `standards/testing.md`)
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -56,7 +56,7 @@
 
 ## 3. Component Testing (React/UI)
 
-**Current Standard:** Vitest + React Testing Library (see `TESTING_STANDARD.md`)
+**Current Standard:** Vitest + React Testing Library (see `standards/testing.md`)
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -172,7 +172,7 @@
 
 ## 11. Accessibility Testing
 
-**Current Standard:** Lighthouse CI (covers basic a11y), target score ≥ 95 (see `TESTING_STANDARD.md`)
+**Current Standard:** Lighthouse CI (covers basic a11y), target score ≥ 95 (see `standards/testing.md`)
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -202,7 +202,7 @@
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
-| **better-sqlite3** (in-memory) | MIT ✅ FOSS | ✅ Free | $0 | P0 | 🟢 In Use | In-memory SQLite for fast integration tests; cited in `TESTING_STANDARD.md` |
+| **better-sqlite3** (in-memory) | MIT ✅ FOSS | ✅ Free | $0 | P0 | 🟢 In Use | In-memory SQLite for fast integration tests; cited in `standards/testing.md` |
 | **Testcontainers** | MIT ✅ FOSS | ✅ Free | $0 | P1 | 🔵 Recommended | Spin up real MySQL/Postgres in Docker for integration tests; disposable and reproducible |
 | **PGlite** | Apache 2.0 ✅ FOSS | ✅ Free | $0 | P1 | 🔵 Recommended | In-process Postgres via WASM; no Docker needed; ideal for unit tests against Drizzle |
 | **db-migrate** | MIT ✅ FOSS | ✅ Free | $0 | P2 | 🟡 Evaluate | Database migration testing; validate migration scripts in CI |
@@ -245,7 +245,7 @@
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
-| **Ralph Loop** (Revvel internal) | Internal | ✅ Free | $0 | P0 | 🟢 In Use | Revvel's own CI self-healing loop; see `AGENT_FACTORY_STANDARD.md` |
+| **Ralph Loop** (Revvel internal) | Internal | ✅ Free | $0 | P0 | 🟢 In Use | Revvel's own CI self-healing loop; see `standards/agent-factory.md` |
 | **GitHub Copilot Autofix** | Proprietary | 🆓 Free Tier | Included with Copilot ($10+/mo) | P0 | 🔵 Recommended | Automatically suggests fixes for CodeQL findings |
 | **Renovate** | MIT ✅ FOSS | ✅ Free | $0 | P0 | 🔵 Recommended | Automated dependency updates; more configurable than Dependabot; creates grouped PRs |
 | **Mend Renovate** | Proprietary | 🆓 Free Tier | Free (open-source) / $free for GitHub App | P0 | 🔵 Recommended | Hosted Renovate — no self-hosting required; free GitHub App |
@@ -276,7 +276,7 @@
 
 | Tool | License | Free? | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
-| **MSW (Mock Service Worker)** | MIT ✅ FOSS | ✅ Free | $0 | P0 | 🟢 In Use | Network-level HTTP mocking. Standard for Revvel (see `TESTING_STANDARD.md`) |
+| **MSW (Mock Service Worker)** | MIT ✅ FOSS | ✅ Free | $0 | P0 | 🟢 In Use | Network-level HTTP mocking. Standard for Revvel (see `standards/testing.md`) |
 | **Faker.js** | MIT ✅ FOSS | ✅ Free | $0 | P1 | 🔵 Recommended | Generate realistic fake data for tests |
 | **Factory.ts** | MIT ✅ FOSS | ✅ Free | $0 | P2 | 🟡 Evaluate | TypeScript-typed test object factories; pairs with Drizzle schema |
 | **Nock** | MIT ✅ FOSS | ✅ Free | $0 | P2 | 🟡 Evaluate | HTTP mocking for Node.js; MSW preferred for new projects |

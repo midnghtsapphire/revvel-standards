@@ -55,7 +55,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 2. `skills/code-review/SKILL.md` - Primary/fallback configuration
 3. `skills/testing-agent/SKILL.md` - Test template examples
 4. `skills/testing/SKILL.md` - Test configuration
-5. `docs/Master_Inventory/CODE_REVIEW_STANDARD.md` - Standard documentation
+5. `standards/code-review.md` - Standard documentation
 6. `docs/OPENROUTER_MODEL_ROUTING.md` - Routing documentation
 7. `docs/OPENROUTER_ROUTING_PR_SUMMARY.md` - Implementation summary
 8. `docs/OPENROUTER_ROUTING_VALIDATION.md` - Validation examples
@@ -156,7 +156,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### Documentation (10 files)
 - `docs/CODE_REVIEW_WORKFLOW_STATUS.md` ➕ NEW (185 lines)
 - `docs/SECRETS_VS_GOVERNANCE_CLARIFICATION.md` ➕ NEW (250 lines)
-- `docs/Master_Inventory/CODE_REVIEW_STANDARD.md` ✏️ Updated
+- `standards/code-review.md` ✏️ Updated
 - `docs/OPENROUTER_MODEL_ROUTING.md` ✏️ Updated
 - `docs/OPENROUTER_ROUTING_PR_SUMMARY.md` ✏️ Updated
 - `docs/OPENROUTER_ROUTING_VALIDATION.md` ✏️ Updated

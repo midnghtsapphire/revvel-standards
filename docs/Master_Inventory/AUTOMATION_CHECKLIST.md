@@ -26,11 +26,11 @@ The Revvel Standards repository already includes:
 | **Research Module** | AI Research Workflow | ✅ Active | `.github/workflows/research-module.yml` |
 | **Issue Triage** | Automatic Issue GH Action | ✅ Active | `.github/workflows/issue-automation.yml` |
 | **Human Testing API** | S.H.I.F.T. AI behavioral testing | ✅ Active | `.github/workflows/run-human-testing-api.yml` |
-| **Syntax Checking** | Pre-commit hooks + CI | ✅ Documented | `SYNTAX_ERROR_PREVENTION_STANDARD.md` |
-| **Testing Standards** | Vitest + Playwright | ✅ Documented | `TESTING_STANDARD.md` |
-| **Code Review Standards** | Venice AI + Claude + DeepSeek | ✅ Documented | `CODE_REVIEW_STANDARD.md` |
-| **Security Standards** | OWASP, Snyk, Semgrep | ✅ Documented | `SECURITY_STANDARD.md` |
-| **Deployment Standards** | GitHub Actions + CodeMagic | ✅ Documented | `CODE_REVIEW_STANDARD.md` |
+| **Syntax Checking** | Pre-commit hooks + CI | ✅ Documented | `standards/syntax-error-prevention.md` |
+| **Testing Standards** | Vitest + Playwright | ✅ Documented | `standards/testing.md` |
+| **Code Review Standards** | Venice AI + Claude + DeepSeek | ✅ Documented | `standards/code-review.md` |
+| **Security Standards** | OWASP, Snyk, Semgrep | ✅ Documented | `standards/security.md` |
+| **Deployment Standards** | GitHub Actions + CodeMagic | ✅ Documented | `standards/code-review.md` |
 
 ### ⚠️ Gaps Identified
 
@@ -603,11 +603,11 @@ To achieve full automation:
 
 ## 8. References
 
-- `CODE_REVIEW_STANDARD.md` - AI-powered code review setup
-- `TESTING_STANDARD.md` - Test coverage requirements
-- `SECURITY_STANDARD.md` - Security automation tools
-- `SYNTAX_ERROR_PREVENTION_STANDARD.md` - Pre-commit hooks
-- `RECURSION_STANDARD.md` - Safe recursion guidelines
+- `standards/code-review.md` - AI-powered code review setup
+- `standards/testing.md` - Test coverage requirements
+- `standards/security.md` - Security automation tools
+- `standards/syntax-error-prevention.md` - Pre-commit hooks
+- `standards/recursion.md` - Safe recursion guidelines
 - `.github/workflows/` - Existing CI/CD workflows
 
 ---
