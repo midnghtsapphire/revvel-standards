@@ -15,15 +15,49 @@
  * 2026-05-21 (Claude): created to centralize the no-key-first lane.
  */
 
+const fs = require('fs');
+const path = require('path');
 const { callPerplexityNoKey } = require("./perplexity-research-issue");
 const { callOpenRouter } = require("./openrouter-routing");
+const { SCRIPT_EXECUTABLE_MODES } = require('../src/lib/model-routing-modes');
+
+function loadFallbackModels() {
+  try {
+    const lookupPath = path.join(__dirname, '../config/model-lookup.json');
+    if (fs.existsSync(lookupPath)) {
+      const data = JSON.parse(fs.readFileSync(lookupPath, 'utf8'));
+      if (data.fallback_chain && data.models) {
+        const supportedModes = new Set(SCRIPT_EXECUTABLE_MODES);
+        const resolvedModels = data.fallback_chain
+          .map(id => data.models.find(m => m.id === id))
+          .filter(model => model !== undefined);
+        const excludedModels = resolvedModels.filter(model => !supportedModes.has(model.mode));
+        if (excludedModels.length > 0) {
+          console.warn(
+            `Ignoring non-executable fallback models for script execution: ${excludedModels.map(model => `${model.provider}/${model.name} (${model.mode || 'unknown'})`).join(', ')}`
+          );
+        }
+        const resolved = resolvedModels
+          .filter(model => supportedModes.has(model.mode))
+          .map(model => `${model.provider}/${model.name}`);
+
+        if (resolved.length > 0) {
+          return resolved;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load model-lookup.json, falling back to defaults", err.message);
+  }
+  return [
+    "perplexity/sonar-pro",
+    "anthropic/claude-sonnet-4",
+    "deepseek/deepseek-v3.2"
+  ];
+}
 
 // Backup model chain (Perplexity Sonar first so the answer style stays grounded).
-const DEFAULT_FALLBACK_MODELS = [
-  "perplexity/sonar-pro",
-  "anthropic/claude-sonnet-4",
-  "deepseek/deepseek-v3.2",
-];
+const DEFAULT_FALLBACK_MODELS = loadFallbackModels();
 
 /**
  * Ask the default LLM lane a question.
