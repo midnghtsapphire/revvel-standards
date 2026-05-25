@@ -26,10 +26,15 @@ function loadFallbackModels() {
     if (fs.existsSync(lookupPath)) {
       const data = JSON.parse(fs.readFileSync(lookupPath, 'utf8'));
       if (data.fallback_chain && data.models) {
-        return data.fallback_chain.map(id => {
-          const model = data.models.find(m => m.id === id);
-          return model ? `${model.provider}/${model.name}` : null;
-        }).filter(m => m !== null);
+        const supportedModes = new Set(['no-key', 'openrouter']);
+        const resolved = data.fallback_chain
+          .map(id => data.models.find(m => m.id === id))
+          .filter(model => model && supportedModes.has(model.mode))
+          .map(model => `${model.provider}/${model.name}`);
+
+        if (resolved.length > 0) {
+          return resolved;
+        }
       }
     }
   } catch (err) {
@@ -38,8 +43,7 @@ function loadFallbackModels() {
   return [
     "perplexity/sonar-pro",
     "anthropic/claude-sonnet-4",
-    "deepseek/deepseek-v3.2",
-    "ollama/llama3"
+    "deepseek/deepseek-v3.2"
   ];
 }
 

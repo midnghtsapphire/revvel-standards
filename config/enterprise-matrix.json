@@ -1,4 +1,6 @@
 {
+  "matrix_role": "enterprise-architecture",
+  "models_source": "enterprise-model-matrix.json",
   "enterprises": [
     {
       "id": 1,

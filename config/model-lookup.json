@@ -5,7 +5,7 @@
       "provider": "perplexity",
       "name": "sonar-pro",
       "mode": "no-key",
-      "description": "Perplexity no api"
+      "description": "Perplexity no API key"
     },
     {
       "id": 2,
