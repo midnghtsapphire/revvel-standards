@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const { callPerplexityNoKey } = require("./perplexity-research-issue");
 const { callOpenRouter } = require("./openrouter-routing");
+const { SCRIPT_EXECUTABLE_MODES } = require('../src/lib/model-routing-modes');
 
 function loadFallbackModels() {
   try {
@@ -26,10 +27,18 @@ function loadFallbackModels() {
     if (fs.existsSync(lookupPath)) {
       const data = JSON.parse(fs.readFileSync(lookupPath, 'utf8'));
       if (data.fallback_chain && data.models) {
-        const supportedModes = new Set(['no-key', 'openrouter']);
-        const resolved = data.fallback_chain
+        const supportedModes = new Set(SCRIPT_EXECUTABLE_MODES);
+        const resolvedModels = data.fallback_chain
           .map(id => data.models.find(m => m.id === id))
-          .filter(model => model && supportedModes.has(model.mode))
+          .filter(model => model !== undefined);
+        const excludedModels = resolvedModels.filter(model => !supportedModes.has(model.mode));
+        if (excludedModels.length > 0) {
+          console.warn(
+            `Ignoring non-executable fallback models for script execution: ${excludedModels.map(model => `${model.provider}/${model.name} (${model.mode || 'unknown'})`).join(', ')}`
+          );
+        }
+        const resolved = resolvedModels
+          .filter(model => supportedModes.has(model.mode))
           .map(model => `${model.provider}/${model.name}`);
 
         if (resolved.length > 0) {

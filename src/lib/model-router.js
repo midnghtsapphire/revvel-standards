@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { MODE_ORDER } = require('./model-routing-modes');
 
 const enterpriseMatrixPath = path.join(__dirname, '../../config/enterprise-matrix.json');
 const enterpriseModelMatrixPath = path.join(__dirname, '../../config/enterprise-model-matrix.json');
@@ -23,14 +24,12 @@ function getEnterpriseMatrix() {
     return enterpriseMatrixCache;
   }
 
-  const enterpriseMatrix = loadMatrix(enterpriseMatrixPath) || {};
-  const enterpriseModelMatrix = loadMatrix(enterpriseModelMatrixPath) || {};
+  const architectureMatrix = loadMatrix(enterpriseMatrixPath) || {};
+  const modelCatalog = loadMatrix(enterpriseModelMatrixPath) || {};
 
   enterpriseMatrixCache = {
-    ...enterpriseMatrix,
-    models: Array.isArray(enterpriseMatrix.models)
-      ? enterpriseMatrix.models
-      : (Array.isArray(enterpriseModelMatrix.models) ? enterpriseModelMatrix.models : []),
+    ...architectureMatrix,
+    models: Array.isArray(modelCatalog.models) ? modelCatalog.models : [],
   };
 
   return enterpriseMatrixCache;
@@ -42,12 +41,6 @@ function getDomainMatrix() {
   }
   domainMatrixCache = loadMatrix(domainMatrixPath);
   return domainMatrixCache;
-}
-
-function inferModeFromProvider(provider) {
-  if (provider === 'perplexity') return 'no-key';
-  if (provider === 'ollama') return 'ollama';
-  return 'openrouter';
 }
 
 function getModelById(modelId) {
@@ -72,13 +65,23 @@ function getFallbackChain() {
   const enterpriseMatrix = getEnterpriseMatrix();
   if (!enterpriseMatrix || !Array.isArray(enterpriseMatrix.models)) return [];
 
-  const enabledModels = enterpriseMatrix.models.filter((m) => m.enabled);
-  const chain = [];
-  const buckets = ['no-key', 'openrouter', 'ollama'];
+  const invalidModeModels = enterpriseMatrix.models.filter(
+    (m) => m.enabled && (typeof m.mode !== 'string' || !MODE_ORDER.includes(m.mode))
+  );
+  if (invalidModeModels.length > 0) {
+    console.warn(
+      `Ignoring enabled models with invalid mode: ${invalidModeModels.map((model) => `${model.provider}/${model.name} (${model.mode || 'missing'})`).join(', ')}`
+    );
+  }
 
-  for (const bucket of buckets) {
+  const enabledModels = enterpriseMatrix.models.filter(
+    (m) => m.enabled && typeof m.mode === 'string' && MODE_ORDER.includes(m.mode)
+  );
+  const chain = [];
+
+  for (const bucket of MODE_ORDER) {
     enabledModels
-      .filter((model) => (model.mode || inferModeFromProvider(model.provider)) === bucket)
+      .filter((model) => model.mode === bucket)
       .forEach((model) => {
         chain.push({
           type: bucket === 'no-key' ? 'no-key-perplexity' : bucket,
