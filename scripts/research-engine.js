@@ -731,24 +731,26 @@ async function findAndRequestLinkedPrReviews(context) {
   if (!context.githubToken || !context.issueNumber || context.prNumber) return;
   try {
     const prs = await listPullRequestsForIssue(context);
-    for (const pr of prs.slice(0, 3)) {
-      await addLabels({
-        githubToken: context.githubToken,
-        repository: context.repository,
-        number: pr.number,
-        labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
-      });
-      await postComment({
-        githubToken: context.githubToken,
-        repository: context.repository,
-        number: pr.number,
-        body: buildReviewRequestComment({
-          outputFile: context.outputFile,
-          laneReports: LANE_DEFINITIONS,
-          includeCoderTrigger: true,
-        }),
-      });
-    }
+    await Promise.all(
+      prs.slice(0, 3).map(async (pr) => {
+        await addLabels({
+          githubToken: context.githubToken,
+          repository: context.repository,
+          number: pr.number,
+          labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
+        });
+        await postComment({
+          githubToken: context.githubToken,
+          repository: context.repository,
+          number: pr.number,
+          body: buildReviewRequestComment({
+            outputFile: context.outputFile,
+            laneReports: LANE_DEFINITIONS,
+            includeCoderTrigger: true,
+          }),
+        });
+      }),
+    );
   } catch (error) {
     console.log(`::warning::Could not request reviews for linked PRs: ${error.message}`);
   }
