@@ -15,6 +15,15 @@ Open http://localhost:3000
 npm run build && npm start
 ```
 
-## Deploy
+## Live Deployment
 
-Click "Deploy to Vercel" or run `vercel --prod`.
+<!-- live-deployment -->
+**Live:** _not deployed yet — set this once the Vercel project is created._
+
+**To deploy (≈2 min, no secrets needed — uses the free public NPPES API):**
+1. Vercel → Add New… → Project → import `midnghtsapphire/revvel-standards`.
+2. **Root Directory** = `products/life-insurance-lead-engine/build`.
+3. Framework auto-detects **Next.js**. No environment variables.
+4. **Deploy** → paste the live URL into the **Live:** line above.
+
+Per `docs/DEFINITION_OF_DONE.md`: not done until the live URL is here.
