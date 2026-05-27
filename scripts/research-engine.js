@@ -729,30 +729,36 @@ async function requestPrReviews(context) {
 
 async function findAndRequestLinkedPrReviews(context) {
   if (!context.githubToken || !context.issueNumber || context.prNumber) return;
-  try {
-    const prs = await listPullRequestsForIssue(context);
-    await Promise.all(
-      prs.slice(0, 3).map(async (pr) => {
-        await addLabels({
-          githubToken: context.githubToken,
-          repository: context.repository,
-          number: pr.number,
-          labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
-        });
-        await postComment({
-          githubToken: context.githubToken,
-          repository: context.repository,
-          number: pr.number,
-          body: buildReviewRequestComment({
-            outputFile: context.outputFile,
-            laneReports: LANE_DEFINITIONS,
-            includeCoderTrigger: true,
-          }),
-        });
-      }),
-    );
-  } catch (error) {
-    console.log(`::warning::Could not request reviews for linked PRs: ${error.message}`);
+  const prs = await listPullRequestsForIssue(context).catch((error) => {
+    console.log(`::warning::Could not list linked PRs: ${error.message}`);
+    return [];
+  });
+  const results = await Promise.allSettled(
+    prs.slice(0, 3).map(async (pr) => {
+      await addLabels({
+        githubToken: context.githubToken,
+        repository: context.repository,
+        number: pr.number,
+        labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
+      });
+      await postComment({
+        githubToken: context.githubToken,
+        repository: context.repository,
+        number: pr.number,
+        body: buildReviewRequestComment({
+          outputFile: context.outputFile,
+          laneReports: LANE_DEFINITIONS,
+          includeCoderTrigger: true,
+        }),
+      });
+    }),
+  );
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].status === "rejected") {
+      console.log(
+        `::warning::Could not request review for linked PR #${prs[i].number}: ${results[i].reason?.message ?? results[i].reason}`,
+      );
+    }
   }
 }
 
