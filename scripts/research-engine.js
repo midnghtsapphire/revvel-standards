@@ -727,21 +727,28 @@ async function requestPrReviews(context) {
   }
 }
 
-async function findAndRequestLinkedPrReviews(context) {
+async function findAndRequestLinkedPrReviews(
+  context,
+  {
+    listPrs = listPullRequestsForIssue,
+    applyLabels = addLabels,
+    applyComment = postComment,
+  } = {},
+) {
   if (!context.githubToken || !context.issueNumber || context.prNumber) return;
-  const prs = await listPullRequestsForIssue(context).catch((error) => {
+  const prs = await listPrs(context).catch((error) => {
     console.log(`::warning::Could not list linked PRs: ${error.message}`);
     return [];
   });
   const results = await Promise.allSettled(
     prs.slice(0, 3).map(async (pr) => {
-      await addLabels({
+      await applyLabels({
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
         labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
       });
-      await postComment({
+      await applyComment({
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
@@ -837,6 +844,7 @@ module.exports = {
   buildReviewRequestComment,
   buildSynthesisPrompt,
   defaultOutputFile,
+  findAndRequestLinkedPrReviews,
   formatDocument,
   getOptionsFromEnv,
   parseDepth,
