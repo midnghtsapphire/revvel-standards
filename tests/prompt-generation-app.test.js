@@ -70,3 +70,25 @@ run('deterministic output for same input', () => {
   const b = generatePromptPacket({ idea: 'same idea', audience: 'agencies' });
   assert.deepEqual(a, b);
 });
+
+run('red-ocean base score is 30', () => {
+  const p = generatePromptPacket({ idea: 'unique innovative idea' });
+  assert.equal(p.scores.redOcean, 30);
+});
+
+run('red-ocean score boosts on keywords', () => {
+  const p = generatePromptPacket({ idea: 'social chat app' });
+  // 30 + 10 (social) + 10 (chat) = 50
+  assert.equal(p.scores.redOcean, 50);
+});
+
+run('red-ocean scoring is case-insensitive', () => {
+  const p = generatePromptPacket({ idea: 'SOCIAL CHAT' });
+  assert.equal(p.scores.redOcean, 50);
+});
+
+run('red-ocean score is capped at 100', () => {
+  // All 7 keywords: social, chat, todo, note, crm, generic, crypto
+  const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
+  assert.equal(p.scores.redOcean, 100);
+});
