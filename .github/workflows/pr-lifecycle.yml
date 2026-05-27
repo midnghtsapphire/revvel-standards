@@ -134,7 +134,10 @@ jobs:
 
               case 'review_requested': {
                 const cur = await currentLabels();
-                if (!cur.includes('awaiting-review')) await add('awaiting-review');
+                // Do not override an already approved PR unless a new commit/reopen resets it.
+                if (!cur.includes('approved') && !cur.includes('awaiting-review')) {
+                  await add('awaiting-review');
+                }
                 break;
               }
 
