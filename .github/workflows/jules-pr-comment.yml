@@ -31,7 +31,7 @@ jobs:
           fi
       - name: Checkout
         if: env.JULES_API_KEY != ''
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
       - name: Post Jules Comment
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-publish@v1.0.0

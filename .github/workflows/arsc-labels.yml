@@ -34,7 +34,7 @@ jobs:
       - name: Manage Labels (ARSC)
         uses: wagner-cotta/arsc-label@v1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           object-id: ${{ github.event.inputs['object-id'] }}
           operation: ${{ github.event.inputs.operation }}
           labels: ${{ github.event.inputs.labels }}
@@ -47,7 +47,7 @@ jobs:
       - name: Ensure `triage` label exists
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             try {
               await github.rest.issues.getLabel({
@@ -71,7 +71,7 @@ jobs:
         if: toJSON(github.event.issue.labels) == '[]'
         uses: wagner-cotta/arsc-label@v1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           object-id: ${{ github.event.issue.number }}
           operation: add
           labels: triage

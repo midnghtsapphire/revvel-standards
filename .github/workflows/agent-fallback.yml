@@ -87,7 +87,7 @@ jobs:
       recommended_agent: ${{ steps.check.outputs.recommended_agent }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
       - name: Check agent availability
         id: check
         env:
@@ -152,7 +152,7 @@ jobs:
       pr_url: ${{ steps.pr-url.outputs.pr_url }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -308,7 +308,7 @@ jobs:
       - name: Create pull request (if changes were made)
         id: cpr
         if: steps.result.outputs.success == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}

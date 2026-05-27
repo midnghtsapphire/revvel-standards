@@ -10,7 +10,7 @@ jobs:
     name: Detect registry vs Doppler drift
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v4
       - name: Install jq
         run: |
           if ! command -v jq >/dev/null 2>&1; then

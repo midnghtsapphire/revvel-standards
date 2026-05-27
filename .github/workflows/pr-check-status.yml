@@ -24,7 +24,7 @@ jobs:
       - name: Ensure check status labels exist
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const labels = [
               { name: 'checks-passing', color: '16a34a', description: 'All CI checks pass' },
@@ -54,7 +54,7 @@ jobs:
       - name: Update PR status based on check suite
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const suite = context.payload.check_suite;
             const conclusion = suite.conclusion;
@@ -160,7 +160,7 @@ jobs:
       - name: Update PR status based on workflow run
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const run = context.payload.workflow_run;
             const conclusion = run.conclusion;
