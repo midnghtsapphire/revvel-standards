@@ -38,6 +38,7 @@ jobs:
         with:
           pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           pr_description: ${{ github.event.pull_request.body }}
     timeout-minutes: 30
 env:
