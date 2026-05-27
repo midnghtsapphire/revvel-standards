@@ -87,8 +87,9 @@ run('red-ocean scoring is case-insensitive', () => {
   assert.equal(p.scores.redOcean, 50);
 });
 
-run('red-ocean score is capped at 100', () => {
+run('red-ocean score reaches 100 with all known keywords', () => {
   // All 7 keywords: social, chat, todo, note, crm, generic, crypto
+  // This verifies the current upper boundary exposed by generatePromptPacket.
   const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
   assert.equal(p.scores.redOcean, 100);
 });
