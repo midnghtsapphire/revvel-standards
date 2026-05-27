@@ -1,0 +1,32 @@
+name: SEO + A11y Guard
+
+# Fails any product PR that ships obvious SEO/a11y debt:
+#   - <img>/<Image> missing alt or with empty alt
+#   - junk image filenames (IMG_1234.jpg, screenshot, etc.)
+#   - page/layout files missing a <meta name="description">
+# Override with the `allow-seo-debt` label. See scripts/seo-a11y-guard.js
+# and docs/SEO_STANDARDS.md (refresh quarterly — Google + schema.org evolve).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Scan changed app files for SEO / a11y debt
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          ALLOW_SEO_DEBT: ${{ contains(github.event.pull_request.labels.*.name, 'allow-seo-debt') }}
+        run: node scripts/seo-a11y-guard.js

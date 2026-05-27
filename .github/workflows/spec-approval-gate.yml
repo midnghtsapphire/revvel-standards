@@ -1,0 +1,62 @@
+name: Spec Approval Gate
+
+# Two-phase pipeline:
+#   research-engine → applies wr:research-complete  (Phase A finished)
+#   THIS gate      → applies needs-spec-approval + posts a "ready for owner approval" comment
+#   owner          → adds the `spec-approved` label
+#   openrouter-coder fires (Phase B starts)
+#
+# Encodes the law: a bad spec wastes an entire iteration's PRs. The owner
+# approves the spec FIRST, then the coder fans out builds. See
+# docs/DEFINITION_OF_DONE.md.
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  gate:
+    if: github.event.label.name == 'wr:research-complete'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.issue.number;
+            const labelNames = (context.payload.issue.labels || []).map((l) => l.name);
+
+            // Idempotent: don't re-post if already gated or already approved.
+            if (labelNames.includes('spec-approved') || labelNames.includes('needs-spec-approval')) {
+              core.info('Already gated or approved — nothing to do.');
+              return;
+            }
+
+            try {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number, labels: ['needs-spec-approval'],
+              });
+            } catch (e) {
+              core.warning(`Could not add needs-spec-approval label: ${e.message}`);
+            }
+
+            const body = [
+              '🔬 **Research complete — spec is ready for your approval.**',
+              '',
+              'Per the two-phase pipeline (`docs/DEFINITION_OF_DONE.md`), the coder',
+              'does NOT auto-fire on `wr:research-complete` anymore. A bad spec wastes',
+              'a whole iteration of PRs.',
+              '',
+              '**Owner action:**',
+              '- Read the research / spec above.',
+              '- If it\'s right → add the **`spec-approved`** label. The coder will start',
+              '  building (fan-out PRs for app / cli / api / pdf / etc. as scoped).',
+              '- If it needs changes → comment what to fix; do **not** add `spec-approved`.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            core.notice(`Posted spec-approval gate notice on issue #${issue_number}`);
