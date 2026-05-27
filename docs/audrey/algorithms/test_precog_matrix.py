@@ -1,4 +1,3 @@
-import pytest
 from docs.audrey.algorithms.precog_matrix import PrecognitiveMatrix
 
 def test_pattern_recognition_empty_data():
