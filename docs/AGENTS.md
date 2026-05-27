@@ -556,7 +556,7 @@ Every artifact in this repo is tracked in `SHIP_STATUS.md` at the root. Before d
 Issues labeled `proposal` automatically trigger an adversarial prosecution review via `.github/workflows/proposal-prosecution.yml`. The prosecution's job is to find flaws, not to approve. Proposal authors must address prosecution findings in a rebuttal before approval.
 
 ### Agent Factory Usage
-- Route tasks via trigger words to the Agent Factory (`standards/agent-factory.md`) instead of ad-hoc personas.
+- Route tasks via trigger words to the Agent Factory (`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
 - When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
 - On any non-zero exit, run the self-heal loop: `/diagnose` → `/patch` → rerun targeted checks.
 - For complex tasks requiring GOAP planning or swarm coordination, see `docs/AGENT_AUTONOMY_PROTOCOLS.md`.

@@ -210,7 +210,7 @@ export default async function handler(req, res) {
 ## 📚 Full Documentation
 
 - **Integration Guide:** `docs/MEILISEARCH_INTEGRATION_GUIDE.md`
-- **MCP Standard:** `standards/mcp.md`
+- **MCP Standard:** `docs/Master_Inventory/MCP_STANDARD.md`
 - **Server README:** `mcp-servers/meilisearch-mcp/README.md`
 - **Official Docs:** https://www.meilisearch.com/docs
 

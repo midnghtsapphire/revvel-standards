@@ -179,7 +179,7 @@ For now, metrics tracking and reminders are manual processes.
 - `SAAS_PRODUCTS.md` — SaaS-specific guidance
 - `PRICING.md` — Pricing strategies
 - `GATEKEEPER.md` — BOM validation
-- `standards/oaudrey-deployment.md` — Deployment
+- `OAUDREY_DEPLOYMENT_STANDARD.md` — Deployment
 
 ### New Standards
 - `docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md` — This blueprint

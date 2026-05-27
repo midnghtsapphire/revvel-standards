@@ -156,4 +156,4 @@ All errors include:
 
 - [Doppler API Docs](https://docs.doppler.com/docs/api)
 - [MCP Protocol](https://modelcontextprotocol.io)
-- [revvel-standards standards/mcp.md](standards/mcp.md)
+- [revvel-standards MCP_STANDARD.md](../docs/Master_Inventory/MCP_STANDARD.md)

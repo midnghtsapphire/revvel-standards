@@ -84,7 +84,7 @@ Raise Amazon Vine review completion rate from **47% → 90%+** within 4–6 week
 | **[`GOAL.md`](GOAL.md)** | Mission, financial targets, project roadmap, rules | ⭐ SSOT |
 | **[`learnings.md`](learnings.md)** | Self-healing log — failures, root causes, fixes | ⭐ SSOT |
 | **[`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md)** | Full canonical system prompt (copy-paste for AI agents) | Deployment |
-| **[`standards/goap-agent.md`](standards/goap-agent.md)** | Technical operational standard | Reference |
+| **[`docs/Master_Inventory/GOAP_AGENT_STANDARD.md`](docs/Master_Inventory/GOAP_AGENT_STANDARD.md)** | Technical operational standard | Reference |
 | **[`wr/NORTH_STAR.md`](wr/NORTH_STAR.md)** | Overriding rules — above all other rules | Rules |
 | **[`SYSTEM_STATE.md`](SYSTEM_STATE.md)** | Current production state | State |
 | **[`docs/AGENTS.md`](docs/AGENTS.md)** | Universal agent instructions for all agents | Instructions |

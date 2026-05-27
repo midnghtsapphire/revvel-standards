@@ -5,7 +5,7 @@
 **Date:** April 28, 2026
 **Scope:** Score 20 Gradle-adjacent items (19 GitHub Actions + 1 marketplace App) listed in the triggering Jules issue against the actual Revvel stack and decide which — if any — earn a permanent slot in `templates/cicd/`.
 **Source issue:** Jules EVALUATE — *"Evaluate many Gradle GitHub extensions for revvel-standards"*.
-**Related:** [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) · [`_MASTER_BOM.md`](./_MASTER_BOM.md) · [`STACK.md`](./STACK.md) · [`CI_APPS_MOBILE_EVAL_2026-04-23.md`](./CI_APPS_MOBILE_EVAL_2026-04-23.md) · [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](./CODE_QUALITY_APPS_EVAL_2026-04-23.md) · [`STARRED_REPOS_EVAL_2026-04-20.md`](./STARRED_REPOS_EVAL_2026-04-20.md) · [`LEMONTREE_AUTOMATION_EVAL_2026-04-28.md`](./LEMONTREE_AUTOMATION_EVAL_2026-04-28.md) · [`standards/dependabot.md`](standards/dependabot.md) · [`standards/cordova.md`](standards/cordova.md) · [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml)
+**Related:** [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) · [`_MASTER_BOM.md`](./_MASTER_BOM.md) · [`STACK.md`](./STACK.md) · [`CI_APPS_MOBILE_EVAL_2026-04-23.md`](./CI_APPS_MOBILE_EVAL_2026-04-23.md) · [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](./CODE_QUALITY_APPS_EVAL_2026-04-23.md) · [`STARRED_REPOS_EVAL_2026-04-20.md`](./STARRED_REPOS_EVAL_2026-04-20.md) · [`LEMONTREE_AUTOMATION_EVAL_2026-04-28.md`](./LEMONTREE_AUTOMATION_EVAL_2026-04-28.md) · [`Master_Inventory/DEPENDABOT_STANDARD.md`](./Master_Inventory/DEPENDABOT_STANDARD.md) · [`../templates/mobile/CORDOVA_STANDARD.md`](../templates/mobile/CORDOVA_STANDARD.md) · [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml)
 
 ---
 
@@ -25,7 +25,7 @@ This document is the receipt for that decision and is logged in [`_MASTER_INVENT
 
 Revvel does **not** ship any standalone Gradle/JVM project today. A `find . -name 'build.gradle*' -o -name 'settings.gradle*' -o -name 'gradlew'` across this repo returns zero matches. The only Gradle exposure in the entire ecosystem is **transitive**:
 
-- [`standards/cordova.md`](standards/cordova.md) §3 lists Gradle as an Android Studio-bundled toolchain dependency.
+- [`../templates/mobile/CORDOVA_STANDARD.md`](../templates/mobile/CORDOVA_STANDARD.md) §3 lists Gradle as an Android Studio-bundled toolchain dependency.
 - [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml) runs `cordova build android --release`, which internally generates `platforms/android/` (with its own `gradlew` + `build.gradle`) on every CI run and then drives Gradle to produce the `.aab`.
 - [`../templates/mobile/fastlane/Fastfile`](../templates/mobile/fastlane/Fastfile) line 17 contains a commented-out `gradle(...)` lane left from the Fastlane scaffold.
 
@@ -56,7 +56,7 @@ Legend: Fit = ⭐ (poor) … ⭐⭐⭐⭐ (excellent), scored against the Cordov
 | 15 | [Gradle Dependency Submission](https://github.com/marketplace/actions/gradle-dependency-submission) | Action (community fork — `mikepenz/gradle-dependency-submission`) | Free | Calculates Gradle dependency graph and submits to the GitHub Dependency Submission API | High — `gradle/actions/dependency-submission@v4` (item #1) covers this officially | ⭐⭐ | **Skip** — pick the official sibling in #1; the community fork was useful before Gradle Inc. shipped the official one in 2024 and is now superseded. |
 | 16 | [Gradle Self Updater](https://github.com/marketplace/actions/gradle-self-updater) | Action (community) | Free | Self-updates the local Gradle wrapper via `./gradlew wrapper --gradle-version <latest>` | High — duplicates #2 with worse PR ergonomics | ⭐ | **Skip** — same conclusion as #2 (defer until standalone Gradle project exists), and worse than #2 when that day comes. |
 | 17 | [Update Gradle Wrapper](https://github.com/marketplace/actions/update-gradle-wrapper) | Action (community) | Free | **Same listing slug as #2 in slightly different wording.** Marketplace lists both. | High — duplicate of #2 | ⭐ | **Skip** — pick at most one; #2 (`gradle-update/update-gradle-wrapper-action`) is the canonical one if/when adopted. |
-| 18 | [gradle update checker](https://github.com/marketplace/actions/gradle-update-checker) | Action (community) | Free | Checks whether dependencies in `build.gradle` have newer Maven Central versions | High — Dependabot's `gradle` ecosystem ([`standards/dependabot.md`](standards/dependabot.md)) does this with PR auto-creation | ⭐ | **Skip** — Dependabot covers it and is the org-wide standard. |
+| 18 | [gradle update checker](https://github.com/marketplace/actions/gradle-update-checker) | Action (community) | Free | Checks whether dependencies in `build.gradle` have newer Maven Central versions | High — Dependabot's `gradle` ecosystem ([`Master_Inventory/DEPENDABOT_STANDARD.md`](./Master_Inventory/DEPENDABOT_STANDARD.md)) does this with PR auto-creation | ⭐ | **Skip** — Dependabot covers it and is the org-wide standard. |
 | 19 | [Gradle Version Incrementer](https://github.com/marketplace/actions/gradle-version-incrementer) | Action (community) | Free | Increments `version=` in `build.gradle` and optionally commits | None today (no `build.gradle` to increment) | ⭐ | **Skip** — release versioning is owned by `semantic-release`/`changesets` in the Node stack; revisit only with a JVM library. |
 | 20 | [davidkhala/setup-gradle](https://github.com/marketplace/actions/davidkhala-setup-gradle) | Action (community, single-maintainer) | Free | Sets up Java + Gradle in one step | High — `actions/setup-java@v4` + `gradle/actions/setup-gradle@v4` is the supported pair | ⭐ | **Skip** — single-maintainer reskin; supply-chain risk vs. the two upstream actions it bundles. |
 
@@ -104,7 +104,7 @@ Optional companion step (push a Dependency Graph for Dependabot once the Cordova
 
 ### 3.3 Pinning policy
 
-Pin to the **major tag** `@v4` per the existing convention in [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml) (`actions/checkout@v4`, `actions/setup-node@v4`, `actions/setup-java@v4`). Do **not** pin to `@main`. Do **not** pin to a SHA unless [`standards/dependabot.md`](standards/dependabot.md) is amended to require SHA pins for *all* `actions/*` steps (it currently does not).
+Pin to the **major tag** `@v4` per the existing convention in [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml) (`actions/checkout@v4`, `actions/setup-node@v4`, `actions/setup-java@v4`). Do **not** pin to `@main`. Do **not** pin to a SHA unless [`Master_Inventory/DEPENDABOT_STANDARD.md`](./Master_Inventory/DEPENDABOT_STANDARD.md) is amended to require SHA pins for *all* `actions/*` steps (it currently does not).
 
 ### 3.4 Permissions
 
@@ -125,7 +125,7 @@ That is consistent with the permission pattern already documented in [`OPENROUTE
 |---|---|
 | Cordova regenerates `platforms/android/` per run, so the cache key (`hashFiles('**/gradle-wrapper.properties')`) flips whenever a Cordova plugin bumps its bundled Android targets, invalidating the cache. | Acceptable — even occasional cache misses are no worse than the status quo (zero caching). |
 | `gradle/actions/setup-gradle` writes to `$RUNNER_TEMP` and `~/.gradle`, both of which are runner-local; no cross-tenant data is exposed on `ubuntu-latest`. | Documented; matches [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) "secrets are read-only inputs" invariant. |
-| Gradle Inc. retires `@v4` in the future. | Standard `actions/*` major-version churn; covered by Dependabot's `actions` ecosystem in [`standards/dependabot.md`](standards/dependabot.md). |
+| Gradle Inc. retires `@v4` in the future. | Standard `actions/*` major-version churn; covered by Dependabot's `actions` ecosystem in [`Master_Inventory/DEPENDABOT_STANDARD.md`](./Master_Inventory/DEPENDABOT_STANDARD.md). |
 | Buildless (item #3) emails sales after a marketplace install. | We do not install it. |
 | Mis-listed item #11 ("Gradle Metadata action") is actually a Docker Buildx Bake helper. | Flagged here so it is not re-evaluated as a Gradle tool on the next sweep. |
 

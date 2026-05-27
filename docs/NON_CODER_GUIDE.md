@@ -297,6 +297,6 @@ The compliance rubric (`COMPLIANCE_RUBRIC.md`) is a scored checklist of everythi
 | What are all the rules for this app? | `MASTER_APP_TEMPLATE.md` |
 | How do I report a bug? | Section 9 of this document |
 | How do I audit this app for compliance? | `COMPLIANCE_RUBRIC.md` |
-| What tests exist? | `tests/` directory, `standards/testing.md` |
-| What security rules apply? | `standards/security.md` |
-| How is the database structured? | `standards/data-model.md`, `db/schema.ts` |
+| What tests exist? | `tests/` directory, `TESTING_STANDARD.md` |
+| What security rules apply? | `SECURITY_STANDARD.md` |
+| How is the database structured? | `DATA_MODEL_STANDARD.md`, `db/schema.ts` |

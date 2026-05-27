@@ -62,7 +62,7 @@ output-dir/
 ## Documentation
 
 - **Full Skill Documentation**: [`SKILL.md`](./SKILL.md)
-- **Standard**: [`standards/ui-creation-engine.md`](standards/ui-creation-engine.md)
+- **Standard**: [`docs/Master_Inventory/UI_CREATION_ENGINE_STANDARD.md`](../../docs/Master_Inventory/UI_CREATION_ENGINE_STANDARD.md)
 - **Script**: [`scripts/ui-creation-engine.js`](../../scripts/ui-creation-engine.js)
 
 ---

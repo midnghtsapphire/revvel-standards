@@ -48,7 +48,7 @@ Non-Profit, Good Standing).
 
 ## Subdomain Model
 
-Per [`standards/test-environments.md`](standards/test-environments.md),
+Per [`docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`](../docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md),
 every Freedom Angel Corp product ships to an `<app>.oaudrey.com` subdomain
 during the **live-test** stage, and is surfaced as a **tab** in the oAudrey
 hub landing page.

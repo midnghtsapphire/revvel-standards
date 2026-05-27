@@ -117,7 +117,7 @@ implementation:
     ## Related Standards
     
     - `templates/cicd/auto-fix.yml` — auto-fix loop for CI failures
-    - `standards/security.md` — secret management for Resend API key + GitHub token
+    - `SECURITY_STANDARD.md` — secret management for Resend API key + GitHub token
     
 
 examples: []

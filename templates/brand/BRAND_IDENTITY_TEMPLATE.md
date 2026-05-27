@@ -1,7 +1,7 @@
 # Brand Identity — [PROJECT_NAME]
 
 > Fill in every field marked [PLACEHOLDER] before your first design session.
-> Derive all Revvel Emblem values from `standards/revvel-emblem.md`.
+> Derive all Revvel Emblem values from `REVVEL_EMBLEM_STANDARD.md`.
 > Commit the filled version to `docs/[project-name]/BRAND.md` in revvel-standards.
 
 ---

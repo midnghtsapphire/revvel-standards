@@ -38,19 +38,19 @@ After auditing the full `revvel-standards` repository, the current structure is 
 CURRENT ROOT                          RECOMMENDED ROOT
 ─────────────────────────────────     ─────────────────────────────────
 revvel-standards/                     revvel-standards/
-├── standards/accessibility.md         ├── .github/
-├── standards/affiliate-marketing.md   │   ├── ISSUE_TEMPLATE/
-├── standards/agent-factory.md         │   │   ├── bom-gap.md
+├── ACCESSIBILITY_STANDARD.md         ├── .github/
+├── AFFILIATE_MARKETING_STANDARD.md   │   ├── ISSUE_TEMPLATE/
+├── AGENT_FACTORY_STANDARD.md         │   │   ├── bom-gap.md
 ├── AUDREY_AUTONOMOUS_AGENT_STANDARD  │   │   ├── bug-report.md
-├── standards/auto-documentation.md    │   │   └── feature-request.md
+├── AUTO_DOCUMENTATION_STANDARD.md    │   │   └── feature-request.md
 ├── CHANGELOG.md                      │   ├── PULL_REQUEST_TEMPLATE.md
-├── standards/code-review.md           │   └── CODEOWNERS
+├── CODE_REVIEW_STANDARD.md           │   └── CODEOWNERS
 ├── COMPLIANCE_RUBRIC.md              │
 ├── CONCURRENT_DEVELOPMENT_STANDARD   ├── standards/           ← MOVE ALL *_STANDARD.md here
-├── standards/content.md               │   ├── ACCESSIBILITY.md
+├── CONTENT_STANDARD.md               │   ├── ACCESSIBILITY.md
 ├── DATABASE_ARCHITECTURE_STANDARD    │   ├── AGENT_FACTORY.md
-├── standards/data-model.md            │   ├── CODE_REVIEW.md
-├── standards/deployment.md            │   ├── DEPLOYMENT.md
+├── DATA_MODEL_STANDARD.md            │   ├── CODE_REVIEW.md
+├── DEPLOYMENT_STANDARD.md            │   ├── DEPLOYMENT.md
 ├── ...20+ more standards...           │   ├── SECURITY.md
 │                                     │   ├── TESTING.md
 ├── README.md                         │   └── ...
@@ -106,8 +106,8 @@ revvel-standards/                     revvel-standards/
 ```
 standards/
 ├── README.md              # Index of all standards
-├── accessibility.md       # was standards/accessibility.md
-├── agent-factory.md       # was standards/agent-factory.md
+├── accessibility.md       # was ACCESSIBILITY_STANDARD.md
+├── agent-factory.md       # was AGENT_FACTORY_STANDARD.md
 ├── affiliate-marketing.md
 ├── audrey-agent.md
 ├── auto-documentation.md
@@ -372,7 +372,7 @@ This file provides instructions for AI coding agents working in this repository.
 Audrey Evans' coding agent for the Revvel ecosystem. You follow Revvel Standards.
 
 ## Before Making Any Change
-1. Read standards/testing.md
+1. Read TESTING_STANDARD.md
 2. Check docs/Universal-BOM_List/README.md for BOM requirements
 3. Check docs/Universal-BOM_List/API_REGISTRY_BOM.md before adding any new API
 4. Run the Self-Healing Checklist in docs/Universal-BOM_List/SELF_HEALING_BOM_TEMPLATE.md

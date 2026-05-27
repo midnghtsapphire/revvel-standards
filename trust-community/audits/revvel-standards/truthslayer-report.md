@@ -50,7 +50,7 @@ Security, Maintainability, Tests & CI, and Documentation.
 ### Top 3 Strengths
 1. **Exceptional documentation surface.** `docs/AGENTS.md`, `CHANGELOG.md`,
    `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml`, per-skill `SKILL.md`
-   files, `recurse-rules.md`, and `standards/ai-research-module.md` together
+   files, `recurse-rules.md`, and `AI_RESEARCH_MODULE_STANDARD.md` together
    constitute a coherent, cross-linked standards library — not a dump.
 2. **Deliberate reusability by design.** The AGENTS.md symlink block and the
    `.skill.yml` manifests let any repo load a subset (e.g., `security` +

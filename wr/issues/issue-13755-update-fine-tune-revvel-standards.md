@@ -187,7 +187,7 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 ### References
 
 - `docs/WEEKLY_RESEARCH_PROCESS.md`
-- `standards/ui-creation-engine.md`
+- `docs/Master_Inventory/UI_CREATION_ENGINE_STANDARD.md`
 - EXRUP Methodology (Create -> Ship -> Monetize -> Scale)
 
 ---

@@ -408,9 +408,9 @@ npm run ui-engine -- \
 ## Related Documentation
 
 - **Full Skill Documentation**: [`skills/ui-creation-engine/SKILL.md`](../../skills/ui-creation-engine/SKILL.md)
-- **Standard**: [`standards/ui-creation-engine.md`](standards/ui-creation-engine.md)
-- **SEO Standard**: [`standards/seo-metadata.md`](standards/seo-metadata.md)
-- **Research Module**: [`standards/ai-research-module.md`](standards/ai-research-module.md)
+- **Standard**: [`docs/Master_Inventory/UI_CREATION_ENGINE_STANDARD.md`](../Master_Inventory/UI_CREATION_ENGINE_STANDARD.md)
+- **SEO Standard**: [`docs/Master_Inventory/SEO_METADATA_STANDARD.md`](../Master_Inventory/SEO_METADATA_STANDARD.md)
+- **Research Module**: [`docs/Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md`](../Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md)
 - **OpenRouter Swarms**: [`skills/openrouter-swarms/SKILL.md`](../../skills/openrouter-swarms/SKILL.md)
 
 ---

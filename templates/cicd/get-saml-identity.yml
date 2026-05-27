@@ -7,7 +7,7 @@
 #   A GitHub PAT or App installation token with `admin:org` scope.
 #   GitHub → Settings → Secrets and variables → Actions → New repository secret
 #
-# See standards/sso-saml.md for full context and Clerk/app-level SSO setup.
+# See SSO_SAML_STANDARD.md for full context and Clerk/app-level SSO setup.
 
 name: Resolve SAML Identity
 

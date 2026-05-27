@@ -44,7 +44,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 
 ### 2. Updated GOAP Agent Standard
 
-**Location:** `standards/goap-agent.md`
+**Location:** `docs/Master_Inventory/GOAP_AGENT_STANDARD.md`
 
 **Changes:**
 - Added "DRIVEN AUTONOMY" as first operational rule
@@ -121,7 +121,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 
 ### 5. Secret Management Standard
 
-**Location:** `standards/secret-management.md`
+**Location:** `docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md`
 
 **Purpose:** Complete evaluation and implementation guide for strongDM alternatives
 
@@ -497,9 +497,9 @@ Track in GitHub Projects:
 ## References
 
 - [AGENTS.md](../AGENTS.md) — Universal agent instructions
-- [standards/goap-agent.md](standards/goap-agent.md) — Goal-oriented agent standard
-- [standards/secret-management.md](standards/secret-management.md) — strongDM evaluation
-- [standards/agent-factory.md](standards/agent-factory.md) — Agent factory patterns
+- [GOAP_AGENT_STANDARD.md](./GOAP_AGENT_STANDARD.md) — Goal-oriented agent standard
+- [SECRET_MANAGEMENT_STANDARD.md](./SECRET_MANAGEMENT_STANDARD.md) — strongDM evaluation
+- [AGENT_FACTORY_STANDARD.md](./AGENT_FACTORY_STANDARD.md) — Agent factory patterns
 - [Ralph Loop Skill](../../skills/ralph-loop/SKILL.md) — Self-healing CI pattern
 
 ---
@@ -526,9 +526,9 @@ Track in GitHub Projects:
 - Added recovery strategies
 
 ✅ **Documentation:**
-- standards/secret-management.md (complete evaluation)
+- SECRET_MANAGEMENT_STANDARD.md (complete evaluation)
 - Updated AGENTS.md (autonomy principles)
-- Updated standards/goap-agent.md (self-healing)
+- Updated GOAP_AGENT_STANDARD.md (self-healing)
 - This implementation guide
 
 ✅ **Prime Directive Compliance:**
@@ -543,8 +543,8 @@ Track in GitHub Projects:
 
 1. **Read the updated standards:**
    - `docs/AGENTS.md` — Core autonomy principles
-   - `standards/goap-agent.md` — Self-healing loop
-   - `standards/secret-management.md` — strongDM evaluation
+   - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Self-healing loop
+   - `docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md` — strongDM evaluation
 
 2. **Test the auto-error workflow:**
    ```bash

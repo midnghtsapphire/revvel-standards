@@ -3,7 +3,7 @@
 **Status:** Active
 **Owner:** @midnghtsapphire
 **Related skills:** [`skills/product-pipeline/`](../skills/product-pipeline/SKILL.md)
-**Related standards:** [`SAAS_PRODUCTS.md`](SAAS_PRODUCTS.md), [`ZERO_HUMAN_FRAMEWORK.md`](ZERO_HUMAN_FRAMEWORK.md), [`PRICING.md`](PRICING.md), [`CRON_SYSTEM.md`](CRON_SYSTEM.md), [`standards/oaudrey-deployment.md`](standards/oaudrey-deployment.md), [`standards/mvi-contract.md`](standards/mvi-contract.md)
+**Related standards:** [`SAAS_PRODUCTS.md`](SAAS_PRODUCTS.md), [`ZERO_HUMAN_FRAMEWORK.md`](ZERO_HUMAN_FRAMEWORK.md), [`PRICING.md`](PRICING.md), [`CRON_SYSTEM.md`](CRON_SYSTEM.md), [`OAUDREY_DEPLOYMENT_STANDARD.md`](OAUDREY_DEPLOYMENT_STANDARD.md), [`MVI_CONTRACT_STANDARD.md`](MVI_CONTRACT_STANDARD.md)
 
 ---
 
@@ -230,7 +230,7 @@ Deploy targets are **researched per shape** (the listening pipeline tracks where
 | Shape | Primary store(s) | Secondary |
 |---|---|---|
 | PDF / booklet | Gumroad, Etsy (digital), own site (Stripe) | Payhip, LemonSqueezy |
-| One-button web app | own domain on DigitalOcean App Platform (`standards/oaudrey-deployment.md`) | ProductHunt launch |
+| One-button web app | own domain on DigitalOcean App Platform (`OAUDREY_DEPLOYMENT_STANDARD.md`) | ProductHunt launch |
 | One-button mobile app | Apple App Store + Google Play (Expo EAS) | — |
 | Extension | Chrome Web Store, Firefox Add-ons, Edge Add-ons | — |
 | Alexa skill | Alexa Skills Store | Google Actions |
@@ -336,7 +336,7 @@ All cron jobs comply with [`CRON_REQUIREMENTS.md`](CRON_REQUIREMENTS.md) and [`C
 
 ## What This Standard Replaces
 
-Nothing. This standard composes existing standards (`SAAS_PRODUCTS.md`, `ZERO_HUMAN_FRAMEWORK.md`, `PRICING.md`, `CRON_SYSTEM.md`, `standards/oaudrey-deployment.md`, `standards/mvi-contract.md`) and existing skills (`product-pipeline`, `vault-agent`, `code-review`, `security`, `accessibility`, `seo-metadata`, `tax-legal-agent`, `error-reporting`, `deployment`, `mvi-contract`) into a single, named pipeline so every agent in every Revvel repo executes it the same way.
+Nothing. This standard composes existing standards (`SAAS_PRODUCTS.md`, `ZERO_HUMAN_FRAMEWORK.md`, `PRICING.md`, `CRON_SYSTEM.md`, `OAUDREY_DEPLOYMENT_STANDARD.md`, `MVI_CONTRACT_STANDARD.md`) and existing skills (`product-pipeline`, `vault-agent`, `code-review`, `security`, `accessibility`, `seo-metadata`, `tax-legal-agent`, `error-reporting`, `deployment`, `mvi-contract`) into a single, named pipeline so every agent in every Revvel repo executes it the same way.
 
 ---
 

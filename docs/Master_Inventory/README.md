@@ -10,44 +10,44 @@
 
 | File | Description |
 |---|---|
-| [`standards/accessibility.md`](standards/accessibility.md) | WCAG 2.2 AA/AAA, TTY/TDD, 7 UI modes, screen reader testing |
-| [`standards/affiliate-marketing.md`](standards/affiliate-marketing.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
-| [`standards/agent-factory.md`](standards/agent-factory.md) | Trigger-driven agent factory: commands, settings, hooks, plugins, self-healing |
-| [`standards/agentic-methodology.md`](standards/agentic-methodology.md) | Full agentic development methodology and skill building framework |
-| [`standards/ai-research-module.md`](standards/ai-research-module.md) | AI-powered research modules and multi-agent research pipelines |
-| [`standards/api-gatekeeper.md`](standards/api-gatekeeper.md) | API security control plane: validation, tokens, RBAC/ABAC, rate limiting |
-| [`standards/audrey-autonomous-agent.md`](standards/audrey-autonomous-agent.md) | Audrey autonomous agent architecture and capabilities |
-| [`standards/goap-agent.md`](standards/goap-agent.md) | Goap goal-oriented action planner — revenue-focused autonomous agent with self-healing |
-| [`standards/automated-audit-agent.md`](standards/automated-audit-agent.md) | 24/7 autonomous code review, security audit, and self-healing agents |
-| [`standards/auto-documentation.md`](standards/auto-documentation.md) | Automatic documentation generation and maintenance standards |
-| [`standards/code-review.md`](standards/code-review.md) | Code review process, checklist, and automated gate criteria |
+| [`ACCESSIBILITY_STANDARD.md`](ACCESSIBILITY_STANDARD.md) | WCAG 2.2 AA/AAA, TTY/TDD, 7 UI modes, screen reader testing |
+| [`AFFILIATE_MARKETING_STANDARD.md`](AFFILIATE_MARKETING_STANDARD.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
+| [`AGENT_FACTORY_STANDARD.md`](AGENT_FACTORY_STANDARD.md) | Trigger-driven agent factory: commands, settings, hooks, plugins, self-healing |
+| [`AGENTIC_METHODOLOGY_STANDARD.md`](AGENTIC_METHODOLOGY_STANDARD.md) | Full agentic development methodology and skill building framework |
+| [`AI_RESEARCH_MODULE_STANDARD.md`](AI_RESEARCH_MODULE_STANDARD.md) | AI-powered research modules and multi-agent research pipelines |
+| [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md) | API security control plane: validation, tokens, RBAC/ABAC, rate limiting |
+| [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](AUDREY_AUTONOMOUS_AGENT_STANDARD.md) | Audrey autonomous agent architecture and capabilities |
+| [`GOAP_AGENT_STANDARD.md`](GOAP_AGENT_STANDARD.md) | Goap goal-oriented action planner — revenue-focused autonomous agent with self-healing |
+| [`AUTOMATED_AUDIT_AGENT_STANDARD.md`](AUTOMATED_AUDIT_AGENT_STANDARD.md) | 24/7 autonomous code review, security audit, and self-healing agents |
+| [`AUTO_DOCUMENTATION_STANDARD.md`](AUTO_DOCUMENTATION_STANDARD.md) | Automatic documentation generation and maintenance standards |
+| [`CODE_REVIEW_STANDARD.md`](CODE_REVIEW_STANDARD.md) | Code review process, checklist, and automated gate criteria |
 | [`COMPLIANCE_RUBRIC.md`](COMPLIANCE_RUBRIC.md) | P0/P1/P2 compliance tiers, scoring rubric, automated check |
-| [`standards/concurrent-development.md`](standards/concurrent-development.md) | Multi-team coordination workflow and branch protection rules |
-| [`standards/content.md`](standards/content.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter, CAN-SPAM |
-| [`standards/database-architecture.md`](standards/database-architecture.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
-| [`standards/data-model.md`](standards/data-model.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
-| [`standards/dependabot.md`](standards/dependabot.md) | Dependabot configuration, auto-merge rules, security update policy |
-| [`standards/deployment.md`](standards/deployment.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD pipeline |
-| [`standards/field-mapping.md`](standards/field-mapping.md) | Field mapping conventions for database-to-UI data flow |
-| [`standards/github-app-integration.md`](standards/github-app-integration.md) | GitHub App integration patterns and standards |
-| [`standards/google-cloud-identity.md`](standards/google-cloud-identity.md) | Google Cloud Identity & Workforce Identity Federation configuration, attribute mappings, SCIM provisioning |
-| [`standards/leads.md`](standards/leads.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up |
+| [`CONCURRENT_DEVELOPMENT_STANDARD.md`](CONCURRENT_DEVELOPMENT_STANDARD.md) | Multi-team coordination workflow and branch protection rules |
+| [`CONTENT_STANDARD.md`](CONTENT_STANDARD.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter, CAN-SPAM |
+| [`DATABASE_ARCHITECTURE_STANDARD.md`](DATABASE_ARCHITECTURE_STANDARD.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
+| [`DATA_MODEL_STANDARD.md`](DATA_MODEL_STANDARD.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
+| [`DEPENDABOT_STANDARD.md`](DEPENDABOT_STANDARD.md) | Dependabot configuration, auto-merge rules, security update policy |
+| [`DEPLOYMENT_STANDARD.md`](DEPLOYMENT_STANDARD.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD pipeline |
+| [`FIELD_MAPPING_STANDARD.md`](FIELD_MAPPING_STANDARD.md) | Field mapping conventions for database-to-UI data flow |
+| [`GITHUB_APP_INTEGRATION_STANDARD.md`](GITHUB_APP_INTEGRATION_STANDARD.md) | GitHub App integration patterns and standards |
+| [`GOOGLE_CLOUD_IDENTITY_STANDARD.md`](GOOGLE_CLOUD_IDENTITY_STANDARD.md) | Google Cloud Identity & Workforce Identity Federation configuration, attribute mappings, SCIM provisioning |
+| [`LEADS_STANDARD.md`](LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up |
 | [`GITHUB_PROJECTS_SETUP.md`](../GITHUB_PROJECTS_SETUP.md) | Full guide: labels, milestones, project boards, CI/CD automation |
-| [`standards/marketing-automation.md`](standards/marketing-automation.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, funnels |
+| [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, funnels |
 | [`MASTER_APP_TEMPLATE.md`](MASTER_APP_TEMPLATE.md) | Master template for all Revvel application projects |
-| [`standards/mcp.md`](standards/mcp.md) | All 32 standard MCP servers + FastMCP custom server standard |
-| [`standards/odoo-integration.md`](standards/odoo-integration.md) | Multi-company Odoo CE as shared ERP + CRM + free accounting across all MIDNGHTSAPPHIRE entities; ERD, module matrix, bridge service, rollout plan |
-| [`standards/osint.md`](standards/osint.md) | Automated OSINT pipelines, threat intelligence, dark web monitoring |
-| [`standards/public-identity.md`](standards/public-identity.md) | Public-facing GitHub trust & integrity: profile README, pinned repos, collaboration, tool integrations, numerical User ID, no-reply email |
-| [`standards/recursion.md`](standards/recursion.md) | Recursion patterns, depth limits, and performance guidelines |
-| [`standards/runbook.md`](standards/runbook.md) | Operational runbooks: incident response, deployment, rollback |
-| [`standards/secret-management.md`](standards/secret-management.md) | Infisical (primary), Vault/OpenBao, SOPS — secret lifecycle, rotation, CI/CD injection |
-| [`standards/security.md`](standards/security.md) | Vault, Helmet, CSP, OWASP, rate limiting, secrets management |
-| [`standards/seo-metadata.md`](standards/seo-metadata.md) | Mandatory Google metadata, alt text, Open Graph, JSON-LD, Lighthouse 90+ |
-| [`standards/strongdm-api-control.md`](standards/strongdm-api-control.md) | StrongDM evaluation (rejected) — FOSS replacement stack: Kong Gateway + Infisical for API control management |
-| [`standards/syntax-error-prevention.md`](standards/syntax-error-prevention.md) | Syntax error prevention rules, linting config, pre-commit hooks |
-| [`standards/testing.md`](standards/testing.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
-| [`standards/vault-agent.md`](standards/vault-agent.md) | HashiCorp Vault integration for secrets management |
+| [`MCP_STANDARD.md`](MCP_STANDARD.md) | All 32 standard MCP servers + FastMCP custom server standard |
+| [`ODOO_INTEGRATION_STANDARD.md`](ODOO_INTEGRATION_STANDARD.md) | Multi-company Odoo CE as shared ERP + CRM + free accounting across all MIDNGHTSAPPHIRE entities; ERD, module matrix, bridge service, rollout plan |
+| [`OSINT_STANDARD.md`](OSINT_STANDARD.md) | Automated OSINT pipelines, threat intelligence, dark web monitoring |
+| [`PUBLIC_IDENTITY_STANDARD.md`](PUBLIC_IDENTITY_STANDARD.md) | Public-facing GitHub trust & integrity: profile README, pinned repos, collaboration, tool integrations, numerical User ID, no-reply email |
+| [`RECURSION_STANDARD.md`](RECURSION_STANDARD.md) | Recursion patterns, depth limits, and performance guidelines |
+| [`RUNBOOK_STANDARD.md`](RUNBOOK_STANDARD.md) | Operational runbooks: incident response, deployment, rollback |
+| [`SECRET_MANAGEMENT_STANDARD.md`](SECRET_MANAGEMENT_STANDARD.md) | Infisical (primary), Vault/OpenBao, SOPS — secret lifecycle, rotation, CI/CD injection |
+| [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting, secrets management |
+| [`SEO_METADATA_STANDARD.md`](SEO_METADATA_STANDARD.md) | Mandatory Google metadata, alt text, Open Graph, JSON-LD, Lighthouse 90+ |
+| [`STRONGDM_API_CONTROL_STANDARD.md`](STRONGDM_API_CONTROL_STANDARD.md) | StrongDM evaluation (rejected) — FOSS replacement stack: Kong Gateway + Infisical for API control management |
+| [`SYNTAX_ERROR_PREVENTION_STANDARD.md`](SYNTAX_ERROR_PREVENTION_STANDARD.md) | Syntax error prevention rules, linting config, pre-commit hooks |
+| [`TESTING_STANDARD.md`](TESTING_STANDARD.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
+| [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md) | HashiCorp Vault integration for secrets management |
 
 ---
 
@@ -62,10 +62,10 @@
 | [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md) | Business entity hierarchy: LLCs, non-profits, brand relationships |
 | [`INFRASTRUCTURE_MAP.md`](INFRASTRUCTURE_MAP.md) | DigitalOcean droplets, domains, services, and infrastructure topology |
 | [`CHANGELOG_v2.0.md`](CHANGELOG_v2.0.md) | Standards v2.0 changelog — major update history |
-| [`standards/repository-privacy-migration.md`](standards/repository-privacy-migration.md) | Mandatory process for making repositories private and migrating to Freedom Angel Corps enterprise org |
-| [`standards/test-environments.md`](standards/test-environments.md) | Four-stage test pipeline (dev → staging → live-test → production) and the S.H.I.F.T. test harness |
-| [`standards/sso-saml.md`](standards/sso-saml.md) | SSO/SAML authentication integration standard |
-| [`standards/ui-field-testing-dba.md`](standards/ui-field-testing-dba.md) | UI-to-database field testing and DBA process standard |
+| [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) | Mandatory process for making repositories private and migrating to Freedom Angel Corps enterprise org |
+| [`TEST_ENVIRONMENTS_STANDARD.md`](TEST_ENVIRONMENTS_STANDARD.md) | Four-stage test pipeline (dev → staging → live-test → production) and the S.H.I.F.T. test harness |
+| [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md) | SSO/SAML authentication integration standard |
+| [`UI_FIELD_TESTING_DBA_STANDARD.md`](UI_FIELD_TESTING_DBA_STANDARD.md) | UI-to-database field testing and DBA process standard |
 
 ---
 

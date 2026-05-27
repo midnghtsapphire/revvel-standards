@@ -11,7 +11,7 @@
 [`docs/ANTIGRAVITY_INTEGRATION.md`](./ANTIGRAVITY_INTEGRATION.md) ·
 [`docs/OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIGNEE_PROCESS.md) ·
 [`docs/SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) ·
-[`standards/marketing-automation.md`](standards/marketing-automation.md) ·
+[`docs/Master_Inventory/MARKETING_AUTOMATION_STANDARD.md`](./Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) ·
 [`docs/revvel-standards/BOM.md`](./revvel-standards/BOM.md) ·
 [`.github/labels.yml`](../.github/labels.yml)
 
@@ -22,7 +22,7 @@
 The originating issue (`automation-app-bot and n8n and make are ready to be put into revvel-standards`) flags three automation tools that are already provisioned and ready to connect via the owner's GitHub **extensions** / Marketplace surface:
 
 1. **`automation-app-bot`** ([`ammar-knowledge/automation-app-bot`](https://github.com/ammar-knowledge/automation-app-bot)) — a FOSS [Probot](https://probot.github.io/) GitHub App, topic `github-app` / `probot`. Provides reusable, event-driven repo automation (issues/PRs/comments).
-2. **Make.com** ([make.com](https://www.make.com)) — SaaS visual automation platform. Already referenced as the default scheduler in [`standards/marketing-automation.md`](standards/marketing-automation.md) §5.4 and as an affiliate platform in [`docs/affiliate_links.md`](./affiliate_links.md).
+2. **Make.com** ([make.com](https://www.make.com)) — SaaS visual automation platform. Already referenced as the default scheduler in [`docs/Master_Inventory/MARKETING_AUTOMATION_STANDARD.md`](./Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) §5.4 and as an affiliate platform in [`docs/affiliate_links.md`](./affiliate_links.md).
 3. **n8n** ([n8n.io](https://n8n.io)) — open-source, self-hostable workflow automation. Already referenced alongside Make.com in the Marketing Automation Standard.
 
 Today these tools are referenced *inside* a single standard (marketing) and in the master BOM list, but there is **no canonical integration doc** that:
@@ -71,7 +71,7 @@ The extensions are **downstream** of the OpenRouter hand-off. They consume the s
 Because `revvel-standards` owns:
 
 - The canonical label set (`.github/labels.yml`) synced to every repo via `sync-labels.yml`.
-- The Marketing Automation Standard that already names Make.com + n8n as the scheduler layer ([`standards/marketing-automation.md`](standards/marketing-automation.md) §5.4).
+- The Marketing Automation Standard that already names Make.com + n8n as the scheduler layer ([`MARKETING_AUTOMATION_STANDARD.md`](./Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) §5.4).
 - The master BOM list (`docs/_MASTER_BOM.md`) and repo BOM (`docs/revvel-standards/BOM.md`).
 - The vault / secrets guidance every downstream repo inherits.
 
@@ -108,7 +108,7 @@ Evaluated against the same criteria as the other integrations in this repo:
 
 ## 4. Relationship to the Marketing Automation Standard
 
-[`standards/marketing-automation.md`](standards/marketing-automation.md) §5.4 already specifies Make.com as the default scheduler and names n8n as the FOSS alternative. This integration doc is the **connection layer** that turns those references into a live, labelled, BOM-tracked lane:
+[`MARKETING_AUTOMATION_STANDARD.md`](./Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) §5.4 already specifies Make.com as the default scheduler and names n8n as the FOSS alternative. This integration doc is the **connection layer** that turns those references into a live, labelled, BOM-tracked lane:
 
 - The scheduler requirements in §5.4 of the Marketing Automation Standard stay unchanged.
 - The labels / BOM / rollout plan in this doc add the connective tissue around those requirements.
@@ -207,7 +207,7 @@ Total expected engineering time: **≤ 1 day** across PR-2..PR-3, plus the obser
 - [`docs/GITKRAKEN_INTEGRATION.md`](./GITKRAKEN_INTEGRATION.md) — contributor-side GUI whose Launchpad surfaces the new `automation-ext*` labels alongside existing ones.
 - [`docs/ANTIGRAVITY_INTEGRATION.md`](./ANTIGRAVITY_INTEGRATION.md) — contributor-local agent IDE; composes cleanly with the new lane (PRs authored there still traverse the OpenRouter hand-off before extensions fire).
 - [`docs/OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIGNEE_PROCESS.md) — the PR → OpenRouter hand-off that remains the upstream source of truth.
-- [`standards/marketing-automation.md`](standards/marketing-automation.md) — already names Make.com + n8n as the scheduler layer; this doc is the connector.
+- [`docs/Master_Inventory/MARKETING_AUTOMATION_STANDARD.md`](./Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) — already names Make.com + n8n as the scheduler layer; this doc is the connector.
 - [`docs/SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) — the vault path every extension credential must flow through.
 - [`docs/revvel-standards/BOM.md`](./revvel-standards/BOM.md) — Bill of Materials; the automation-extensions row is added in this PR.
 - `skills/vault-agent/SKILL.md` — how to provision tokens / App private keys for Make.com / n8n / Probot.

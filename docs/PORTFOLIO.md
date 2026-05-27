@@ -469,7 +469,7 @@ Regenerate the master BOM: `bash scripts/sync-bom.sh`
 
 Every Revvel project derives its visual identity from the **Revvel Emblem Standard**.
 
-- **Revvel Emblem Standard:** [`standards/revvel-emblem.md`](standards/revvel-emblem.md)
+- **Revvel Emblem Standard:** [`templates/brand/REVVEL_EMBLEM_STANDARD.md`](../templates/brand/REVVEL_EMBLEM_STANDARD.md)
 - **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](../templates/brand/BRAND_IDENTITY_TEMPLATE.md)
 - **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](../templates/brand/ICON_SIZE_SPEC.md)
 - **How to use brand templates:** [`templates/brand/README.md`](../templates/brand/README.md)
@@ -552,9 +552,9 @@ Standard milestones map to the 8 EXRUP phases (Phase 0: Inception through Phase 
 
 ## 10. [2026-04-15] Freedom Angel Corps Repo Manager UI + Reusable Master Prompt
 
-**New UI:** [`ui/freedom-angel-repo-manager/`](../ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`standards/accessibility.md`](standards/accessibility.md).
+**New UI:** [`ui/freedom-angel-repo-manager/`](../ui/freedom-angel-repo-manager/) — a zero-dependency, GitHub-wired inventory and audit dashboard. Enables non-technical family members to audit any MIDNGHTSAPPHIRE owner/organization against the Revvel Standards via a personal access token (or no token for public repos). Implements all 7 mandatory accessibility modes from [`ACCESSIBILITY_STANDARD.md`](Master_Inventory/ACCESSIBILITY_STANDARD.md).
 
-**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`standards/agent-factory.md`](standards/agent-factory.md) and [`standards/audrey-autonomous-agent.md`](standards/audrey-autonomous-agent.md).
+**Reusable Master Prompt:** [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](../ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — the copy-paste prompt that converts any OpenRouter / Grok / Claude / GPT / DeepSeek / Kimi agent into an EXRUP-compliant Revvel Standards agent. Also appended verbatim to [`AGENT_FACTORY_STANDARD.md`](Master_Inventory/AGENT_FACTORY_STANDARD.md) and [`AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md).
 
 **Bootstrap verification:** open `ui/freedom-angel-repo-manager/index.html` locally, load repositories for `midnghtsapphire`, run **Audit all repositories**, and export the JSON report. Full 10-step verification checklist is in the UI's [`README.md`](../ui/freedom-angel-repo-manager/README.md#4-bootstrap-verification-steps).
 

@@ -169,7 +169,7 @@ repository at [`ui/freedom-angel-repo-manager/`](../../ui/freedom-angel-repo-man
 | **Credentials** | Optional fine-grained PAT, stored in `localStorage` |
 | **Write access** | None — strictly read-only against GitHub |
 | **Hosting options** | `file://`, localhost, or GitHub Pages (`main` / root) |
-| **Accessibility** | All 7 modes from `standards/accessibility.md` §4 |
+| **Accessibility** | All 7 modes from `ACCESSIBILITY_STANDARD.md` §4 |
 
 Inherits branding and compliance from **Freedom Angel Corp** (root
 entity, EIN 86-1209156). See

@@ -21,11 +21,11 @@ Successfully implemented comprehensive autonomous agent enhancements addressing 
 
 | Document | Size | Purpose |
 |----------|------|---------|
-| **standards/secret-management.md** | 589 lines | Complete strongDM evaluation, Infisical recommendation, implementation guide |
+| **SECRET_MANAGEMENT_STANDARD.md** | 589 lines | Complete strongDM evaluation, Infisical recommendation, implementation guide |
 | **AUTONOMOUS_AGENT_IMPLEMENTATION.md** | 570 lines | Full implementation guide with patterns, examples, metrics |
 | **AUTONOMOUS_AGENT_QUICK_REF.md** | 367 lines | Developer quick reference with flowcharts, checklists |
 | **AGENTS.md** (updated) | +85 lines | Added 7 core autonomy principles, error handling protocol |
-| **standards/goap-agent.md** (updated) | +79 lines | Enhanced with driven autonomy, auto-error handling |
+| **GOAP_AGENT_STANDARD.md** (updated) | +79 lines | Enhanced with driven autonomy, auto-error handling |
 | **GOAP_AGENT_PROMPT.md** (updated) | +59 lines | Added autonomy protocol, auto-error handling |
 
 **Total Documentation:** 1,749 new lines
@@ -103,12 +103,12 @@ New Files:
   .github/workflows/auto-error-handler.yml
   docs/AUTONOMOUS_AGENT_QUICK_REF.md
   docs/Master_Inventory/AUTONOMOUS_AGENT_IMPLEMENTATION.md
-  standards/secret-management.md
+  docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md
 
 Updated Files:
   GOAP_AGENT_PROMPT.md
   docs/AGENTS.md
-  standards/goap-agent.md
+  docs/Master_Inventory/GOAP_AGENT_STANDARD.md
   scripts/openrouter-triage.js
 ```
 
@@ -243,7 +243,7 @@ Enterprise access management platform for databases, servers, Kubernetes, cloud 
 - Can be invoked programmatically
 
 ✅ **"evaluate strongdm and implement"**
-- Complete evaluation in standards/secret-management.md
+- Complete evaluation in SECRET_MANAGEMENT_STANDARD.md
 - Recommended Infisical (MIT, FOSS)
 - Implementation guide with examples
 
@@ -326,11 +326,11 @@ gh issue list --label "openrouter:failed"
 ## References
 
 **Documentation:**
-- [standards/secret-management.md](standards/secret-management.md)
+- [SECRET_MANAGEMENT_STANDARD.md](docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md)
 - [AUTONOMOUS_AGENT_IMPLEMENTATION.md](docs/Master_Inventory/AUTONOMOUS_AGENT_IMPLEMENTATION.md)
 - [AUTONOMOUS_AGENT_QUICK_REF.md](docs/AUTONOMOUS_AGENT_QUICK_REF.md)
 - [AGENTS.md](docs/AGENTS.md)
-- [standards/goap-agent.md](standards/goap-agent.md)
+- [GOAP_AGENT_STANDARD.md](docs/Master_Inventory/GOAP_AGENT_STANDARD.md)
 - [GOAP_AGENT_PROMPT.md](GOAP_AGENT_PROMPT.md)
 
 **Code:**

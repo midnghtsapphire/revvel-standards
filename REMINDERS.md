@@ -95,7 +95,7 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 **Read before you start:**
 
-- [`standards/mcp.md`](standards/mcp.md) — the conformance contract every MCP server must satisfy
+- [`docs/Master_Inventory/MCP_STANDARD.md`](./docs/Master_Inventory/MCP_STANDARD.md) — the conformance contract every MCP server must satisfy
 - [`docs/MCP_REVVEL_CATALOG.md`](./docs/MCP_REVVEL_CATALOG.md) — the existing inventory; check for overlap before building a new one
 - [`mcp-servers/wr-control-plane/README.md`](./mcp-servers/wr-control-plane/README.md) — known v0.1.0 trade-offs to inherit or fix
 

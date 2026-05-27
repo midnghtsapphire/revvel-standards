@@ -80,7 +80,7 @@
 
 ## 5. Testing Infrastructure
 
-> Testing tools active for this project. Reference `standards/testing.md` for setup.
+> Testing tools active for this project. Reference `TESTING_STANDARD.md` for setup.
 
 | Category | Tool | Config File | Status |
 |---|---|---|---|
@@ -195,7 +195,7 @@ Answer each question. For each "❌ No" or "⚠️ Partial":
 ### 🔨 Phase 2 → 3: Development to Testing
 
 - [ ] Coverage meets minimums (statements ≥ 80%, branches ≥ 75%, functions ≥ 80%)?
-- [ ] All mandatory E2E journeys have Playwright tests (see `standards/testing.md` Section 3.3)?
+- [ ] All mandatory E2E journeys have Playwright tests (see `TESTING_STANDARD.md` Section 3.3)?
 - [ ] axe-core accessibility tests passing in Playwright?
 - [ ] Lighthouse CI scores passing (Performance ≥ 90, A11y ≥ 95, SEO ≥ 95)?
 - [ ] All agents/skills tested via PromptFoo (Section 6)?

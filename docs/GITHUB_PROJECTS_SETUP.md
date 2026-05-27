@@ -7,7 +7,7 @@ Complete guide to setting up GitHub Projects, Labels, and Milestones for the Rev
 **Scope:** This is the standard for **all Revvel repos**. Project setup is a mandatory gate before any issue intake (including in this repo).
 
 **Enterprise-first prerequisite:** Migration to the enterprise org and global secrets/PATs are the largest prerequisite steps before project/issue intake.
-- See [`standards/repository-privacy-migration.md`](standards/repository-privacy-migration.md)
+- See [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](../docs/Master_Inventory/REPOSITORY_PRIVACY_MIGRATION_STANDARD.md)
 - See [`SECRETS_MANAGEMENT.md`](../docs/SECRETS_MANAGEMENT.md)
 
 **Project-first gate:** If `project_exists = 0`, create the project and set the default repo before continuing. Only proceed to issue creation when `project_exists = 1`.
@@ -451,7 +451,7 @@ APP_REPO="midnghtsapphire/NEW_REPO"
 APP_NAME="new-app-name"
 
 # 0. Migrate repo to enterprise org + configure global secrets/PATs
-# (see standards/repository-privacy-migration.md + SECRETS_MANAGEMENT.md)
+# (see REPOSITORY_PRIVACY_MIGRATION_STANDARD.md + SECRETS_MANAGEMENT.md)
 
 # 1. Create GitHub Project board + set default repo
 # (manual step — do in GitHub UI)

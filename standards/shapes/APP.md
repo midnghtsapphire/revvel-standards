@@ -2,7 +2,7 @@
 
 **Parent pipeline:** [`AUTOMATED_PRODUCT_PIPELINE.md`](../AUTOMATED_PRODUCT_PIPELINE.md) → Step 5 shape = `app`
 **Template:** runs through the full revvel-standards pipeline
-**Related:** [`SAAS_PRODUCTS.md`](../SAAS_PRODUCTS.md), [`standards/oaudrey-deployment.md`](standards/oaudrey-deployment.md)
+**Related:** [`SAAS_PRODUCTS.md`](../SAAS_PRODUCTS.md), [`OAUDREY_DEPLOYMENT_STANDARD.md`](../OAUDREY_DEPLOYMENT_STANDARD.md)
 
 ---
 
@@ -230,7 +230,7 @@ const isPro = customerInfo.entitlements.active["pro"] !== undefined;
 
 ## MVI Contract
 
-Every full app MUST have an MVI (Minimum Viable Iteration) contract per [`standards/mvi-contract.md`](standards/mvi-contract.md):
+Every full app MUST have an MVI (Minimum Viable Iteration) contract per [`MVI_CONTRACT_STANDARD.md`](../MVI_CONTRACT_STANDARD.md):
 
 ```markdown
 # MVI Contract: <Product Name>

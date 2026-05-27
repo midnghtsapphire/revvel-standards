@@ -138,5 +138,5 @@ social_profile_claim(
 
 ## References
 
-- [standards/mcp.md](standards/mcp.md)
-- [standards/secret-management.md](standards/secret-management.md)
+- [MCP_STANDARD.md](../../docs/Master_Inventory/MCP_STANDARD.md)
+- [SECRET_MANAGEMENT_STANDARD.md](../../docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md)

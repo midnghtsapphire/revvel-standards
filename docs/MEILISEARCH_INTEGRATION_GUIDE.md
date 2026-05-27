@@ -616,7 +616,7 @@ Use these tools via your AI coding agent when MeiliSearch MCP is enabled:
 - [MeiliSearch Documentation](https://www.meilisearch.com/docs)
 - [MeiliSearch Cloud](https://www.meilisearch.com/cloud)
 - [MeiliSearch GitHub](https://github.com/meilisearch/meilisearch)
-- [revvel-standards standards/mcp.md](standards/mcp.md)
+- [revvel-standards MCP_STANDARD.md](./Master_Inventory/MCP_STANDARD.md)
 - [MeiliSearch MCP Server README](../mcp-servers/meilisearch-mcp/README.md)
 
 ---

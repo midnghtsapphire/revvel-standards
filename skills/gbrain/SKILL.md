@@ -247,9 +247,9 @@ Then run: `gbrain migrate --to supabase`
 
 | Revvel Standard | GBrain Integration |
 |---|---|
-| `standards/mcp.md` | Add `gbrain` to your project's `.mcp.json` |
-| `standards/agent-factory.md` | Use gbrain as agent memory layer |
-| `standards/audrey-autonomous-agent.md` | Brain-agent loop is the core pattern |
+| `MCP_STANDARD.md` | Add `gbrain` to your project's `.mcp.json` |
+| `AGENT_FACTORY_STANDARD.md` | Use gbrain as agent memory layer |
+| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the core pattern |
 | `skills/context-management/SKILL.md` | GBrain preserves context between sessions |
 | `skills/memory-pruning/SKILL.md` | Use gbrain to archive pruned memories |
 

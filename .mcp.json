@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/mcp-config",
-  "_comment": "Revvel MCP configuration — see standards/mcp.md and docs/MCP_REVVEL_CATALOG.md for full details.",
+  "_comment": "Revvel MCP configuration — see docs/Master_Inventory/MCP_STANDARD.md and docs/MCP_REVVEL_CATALOG.md for full details.",
   "mcpServers": {
     "rvvel-affiliate-links": {
       "_comment": "8 tools for the Revvel affiliate link ecosystem. See AGENTS.md for tool list.",

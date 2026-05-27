@@ -62,7 +62,7 @@ These repositories contain agent skills, Claude Code plugins, and AI extension m
 
 ## 4. Research Documents
 
-These documents contain AI-powered research analysis following the [AI Research Module Standard](standards/ai-research-module.md).
+These documents contain AI-powered research analysis following the [AI Research Module Standard](Master_Inventory/AI_RESEARCH_MODULE_STANDARD.md).
 
 | Document | Date | Status | Description | Link |
 | :--- | :--- | :--- | :--- | :--- |

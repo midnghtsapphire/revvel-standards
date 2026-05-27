@@ -38,7 +38,7 @@ Curated reading list — sorted by *when you'll need it*, not by topic. Open the
 | Building a full website + mobile UI artifact (glassmorphic, S2M quality) | [`templates/website-mobile-ui/README.md`](templates/website-mobile-ui/README.md) | Template |
 | Designing project delivery orchestration and completion gates | [`docs/orchestration/project-orchestration-standard.md`](docs/orchestration/project-orchestration-standard.md) | Standard |
 | Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
-| Adding a new MCP server to the WR/PR control plane | [`standards/mcp.md`](standards/mcp.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
+| Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
 
 When you add a new reference doc, add a row to this table. The table is the index — keep it short, keep it sorted by *trigger*, and link directly to the source. See [`REMINDERS.md`](./REMINDERS.md) for the matching activity-based reminders index.
 
@@ -162,12 +162,12 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 ---
 
 **Key Standards** — All standards live in [`docs/Master_Inventory/`](docs/Master_Inventory/)
-- [`standards/agent-factory.md`](standards/agent-factory.md) — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
-- [`standards/osint.md`](standards/osint.md) — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
-- [`standards/automated-audit-agent.md`](standards/automated-audit-agent.md) — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
-- [`standards/api-gatekeeper.md`](standards/api-gatekeeper.md) — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
-- [`standards/repository-privacy-migration.md`](standards/repository-privacy-migration.md) — **mandatory** process for making all repositories private, auditing git history for unauthorized contributors, and migrating from `midnghtsapphire` to the `Freedom Angel Corps` enterprise organization.
-- [`standards/test-environments.md`](standards/test-environments.md) — four-stage test pipeline (dev → staging → live-test → production), the **S.H.I.F.T. test harness**, and deployment targets (GitHub Actions/Pages → oaudrey subdomain → Freedom Angel Corps / DigitalOcean).
+- [`AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md) — trigger-driven agent factory (commands, settings, hooks, plugins) with self-healing guidance.
+- [`OSINT_STANDARD.md`](docs/Master_Inventory/OSINT_STANDARD.md) — automated OSINT pipelines, threat intelligence feeds, dark web monitoring, vulnerability enrichment, and social media intelligence.
+- [`AUTOMATED_AUDIT_AGENT_STANDARD.md`](docs/Master_Inventory/AUTOMATED_AUDIT_AGENT_STANDARD.md) — 24/7 autonomous code review and security auditing agents, compliance monitoring, self-healing patterns, and automated remediation workflows.
+- [`API_GATEKEEPER_STANDARD.md`](docs/Master_Inventory/API_GATEKEEPER_STANDARD.md) — API security control plane: request validation, token management, rate limiting, RBAC/ABAC, OSINT blocklist enforcement, FOSS alternatives, and custom API standards.
+- [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](docs/Master_Inventory/REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) — **mandatory** process for making all repositories private, auditing git history for unauthorized contributors, and migrating from `midnghtsapphire` to the `Freedom Angel Corps` enterprise organization.
+- [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) — four-stage test pipeline (dev → staging → live-test → production), the **S.H.I.F.T. test harness**, and deployment targets (GitHub Actions/Pages → oaudrey subdomain → Freedom Angel Corps / DigitalOcean).
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
@@ -628,7 +628,7 @@ Every app must have a deep About section with multiple sub-pages:
 - Requires website + Capacitor mobile parity, store-publish paths, and test harness checks to prevent overlapping fonts, dead visuals, and broken cart/checkout flows.
 
 ### Required Deployment Environments
-- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`standards/test-environments.md`](standards/test-environments.md) for details.
+- **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
 
 ### Design & Prototyping Tools
 

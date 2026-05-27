@@ -110,7 +110,7 @@
   │  Research doc committed  → AI agent (Copilot / Claude Code)        │
   │  reads it and creates:                                              │
   │                                                                     │
-  │  Mandatory artifacts (per standards/auto-documentation.md):         │
+  │  Mandatory artifacts (per AUTO_DOCUMENTATION_STANDARD.md):         │
   │  ┌─────────────────┐  ┌───────────────┐  ┌───────────────────────┐ │
   │  │  README.md      │  │  BLUEPRINT.md │  │  ROADMAP.md           │ │
   │  └─────────────────┘  └───────────────┘  └───────────────────────┘ │
@@ -283,7 +283,7 @@
   │  Retrieved at runtime by:                                           │
   │  actions/create-github-app-token@v1  →  short-lived token (1hr)   │
   │                                                                     │
-  │  All secrets flow through standards/api-gatekeeper.md rules:        │
+  │  All secrets flow through API_GATEKEEPER_STANDARD.md rules:        │
   │  • Rate limiting                                                    │
   │  • Token rotation                                                   │
   │  • Audit logging                                                    │

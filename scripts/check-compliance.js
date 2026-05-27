@@ -193,7 +193,7 @@ const checks = [
   { id: 'G2', category: 'G', desc: 'lint-staged config exists', points: 1, tier: 'P2', bonus: true, fn: () => fileExistsAny(['.lintstagedrc', '.lintstagedrc.json', '.lintstagedrc.js', 'lint-staged.config.js']) || fileContains('package.json', ['lint-staged']) },
   { id: 'G6', category: 'G', desc: '.github/workflows/syntax-check.yml exists', points: 3, tier: 'P1', bonus: false, fn: () => fileExists('.github/workflows/syntax-check.yml') },
   { id: 'G7', category: 'G', desc: '.pre-commit-config.yaml exists', points: 2, tier: 'P2', bonus: false, fn: () => fileExistsAny(['.pre-commit-config.yaml', '.pre-commit-config.yml']) },
-  { id: 'G8', category: 'G', desc: 'standards/syntax-error-prevention.md exists or syntax standard referenced', points: 1, tier: 'P1', bonus: false, fn: () => fileExists('standards/syntax-error-prevention.md') || fileContains('AGENTS.md', ['SYNTAX_ERROR_PREVENTION', 'syntax-check', 'pre-commit']) },
+  { id: 'G8', category: 'G', desc: 'SYNTAX_ERROR_PREVENTION_STANDARD.md exists or syntax standard referenced', points: 1, tier: 'P1', bonus: false, fn: () => fileExists('SYNTAX_ERROR_PREVENTION_STANDARD.md') || fileContains('AGENTS.md', ['SYNTAX_ERROR_PREVENTION', 'syntax-check', 'pre-commit']) },
 ];
 
 // ─── Run Checks ───────────────────────────────────────────

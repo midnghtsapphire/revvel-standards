@@ -589,7 +589,7 @@ A WR task is successful if:
 - **Automation Audit:** `docs/AUTOMATION_AUDIT.md`
 - **OpenRouter Swarms:** `skills/openrouter-swarms/SKILL.md`
 - **49Agents Integration:** `skills/49agents/SKILL.md`
-- **Agent Factory Standard:** `standards/agent-factory.md`
+- **Agent Factory Standard:** `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`
 
 ---
 

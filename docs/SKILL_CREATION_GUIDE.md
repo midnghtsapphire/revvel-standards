@@ -313,9 +313,9 @@ install/
 
 - **Use Skill Forge** — Open your AI tool and say "build a skill". The Forge persona will guide you.
 - **Look at existing skills** — Check `skills/code-review/` or `skills/gbrain/` for complete examples.
-- **Read the standard** — `standards/agentic-methodology.md` has detailed guidance on every aspect of skill building.
+- **Read the standard** — `AGENTIC_METHODOLOGY_STANDARD.md` has detailed guidance on every aspect of skill building.
 - **Test with PromptFoo** — Run tests early and often. They tell you exactly what's working and what isn't.
 
 ---
 
-*Built with the Revvel Agentic Skills Framework. See [standards/agentic-methodology.md](standards/agentic-methodology.md) for the full methodology.*
+*Built with the Revvel Agentic Skills Framework. See [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for the full methodology.*

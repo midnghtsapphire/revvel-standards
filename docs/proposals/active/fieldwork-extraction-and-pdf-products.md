@@ -123,7 +123,7 @@ until proven demand.
 
 **Recommendation for `fieldwork` specifically:** it already has a static
 landing page; keep it on `fieldwork.oaudrey.com` in line with the live-test
-subdomain standard in `standards/test-environments.md`
+subdomain standard in `docs/Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md`
 and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 **not** change `fieldwork`'s product plan — only its repository location.
 
