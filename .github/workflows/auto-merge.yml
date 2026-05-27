@@ -21,7 +21,7 @@ jobs:
       - name: Enable pull request auto-merge (squash)
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const pr     = context.payload.pull_request;
             const labels = pr.labels.map(l => l.name);
@@ -75,7 +75,7 @@ jobs:
       - name: Disable pull request auto-merge
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
 

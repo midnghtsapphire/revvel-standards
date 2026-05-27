@@ -48,6 +48,7 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
             const DEFAULT_PRIORITY_LABELS = ['priority-p0', 'priority-p1',
             'priority-p2', 'priority-p3'];
