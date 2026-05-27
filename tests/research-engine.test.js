@@ -156,7 +156,7 @@ async function run() {
   queue("findAndRequestLinkedPrReviews continues and logs when one PR write fails", async () => {
     const commentCalls = [];
     const warnings = [];
-    const origWarn = console.log;
+    const origLog = console.log;
     console.log = (msg) => { if (String(msg).startsWith("::warning::")) warnings.push(msg); };
     try {
       await engine.findAndRequestLinkedPrReviews(
@@ -176,9 +176,10 @@ async function run() {
         },
       );
     } finally {
-      console.log = origWarn;
+      console.log = origLog;
     }
     assert.strictEqual(commentCalls.length, 1, "successful PR should still get a comment");
+    assert.strictEqual(commentCalls[0].number, 2, "the successful comment should be for PR #2");
     assert.strictEqual(warnings.length, 1, "failed PR should emit a warning");
     assert.ok(warnings[0].includes("#1"), "warning should identify the failed PR number");
   });
