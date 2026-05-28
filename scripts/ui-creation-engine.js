@@ -467,7 +467,15 @@ const synthesisForPrompt = mcpPromptPack
 if (mcpPromptPack && synthesis.length > 12000) {
   console.warn(
     `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+const synthesisForPrompt = mcpPromptPack
+  ? truncatePromptSection(synthesis, 12000)
+  : synthesis;
+
+if (mcpPromptPack && synthesis.length > 12000) {
+  console.warn(
+    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
   );
+}
 }
   const synthesisForPrompt = mcpPromptPack
     ? truncatePromptSection(synthesis, 12000)
