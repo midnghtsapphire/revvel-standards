@@ -518,12 +518,25 @@ Detailed wireframes for:
 Be specific, actionable, and modern. Reference Tailwind CSS utility classes where appropriate.${mcpPromptPack}`;
 }
 
+function truncatePromptSection(text, maxLength) {
+  if (!text || text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength)}\n\n[Content truncated to keep total prompt size within model limits.]`;
+}
+
 async function generateUIRecommendations(synthesis, args) {
   console.log("\n🎨 Phase 5: UI Design Recommendations");
   console.log("=" .repeat(60));
 
   const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
-  const userPrompt = buildUIRecommendationsUserPrompt(synthesis, args);
+  const hasMcpPromptPack = Boolean(mcpPromptPack && mcpPromptPack.trim());
+  const boundedSynthesis = truncatePromptSection(
+    synthesis,
+    hasMcpPromptPack ? 12000 : 24000
+  );
+  const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
 
   console.log("  → [Pixel: UI Designer] Generating recommendations...");
   const uiDesign = await callOpenRouter(MODELS.design, systemPrompt, userPrompt);
