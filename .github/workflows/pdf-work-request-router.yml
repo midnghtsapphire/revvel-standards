@@ -30,7 +30,7 @@ jobs:
       - name: Post router comment for sellable-pdf WRs
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { parsePdfWorkRequest } = require(process.env.GITHUB_WORKSPACE + '/scripts/parse-pdf-work-request.js');
 
@@ -72,12 +72,12 @@ jobs:
               return;
             }
 
-            const { data: comments } = await github.rest.issues.listComments({
+            let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number,
               per_page: 100,
-            });
+            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
             if (comments.some((c) => c.body && c.body.includes(marker))) {
               core.info('pdf-workflow-router comment already exists; skipping.');
               return;

@@ -2,7 +2,6 @@
 
 import os
 from pathlib import Path
-from typing import Optional
 
 import yaml
 from dotenv import load_dotenv
@@ -47,7 +46,7 @@ class Config:
             },
         }
 
-    def get_doppler_token(self) -> Optional[str]:
+    def get_doppler_token(self) -> str | None:
         """Get Doppler API token."""
         return self._config["doppler"]["token"]
 
@@ -59,7 +58,7 @@ class Config:
         """Get default Doppler config."""
         return self._config["doppler"]["config"]
 
-    def get_github_token(self) -> Optional[str]:
+    def get_github_token(self) -> str | None:
         """Get GitHub API token."""
         return self._config["github"]["token"]
 

@@ -88,6 +88,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
       - name: Check agent availability
         id: check
         env:
@@ -155,10 +157,12 @@ jobs:
         uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       - name: Set up Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v9.0.0
@@ -307,9 +311,10 @@ jobs:
       - name: Create pull request (if changes were made)
         id: cpr
         if: steps.result.outputs.success == 'true'
-        uses: peter-evans/create-pull-request@v8.1.1
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: false
           branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
           title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"

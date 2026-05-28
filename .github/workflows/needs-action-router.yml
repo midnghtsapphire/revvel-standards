@@ -47,17 +47,7 @@ jobs:
             core.info(`Processing ${displayKind} #${issueNumber} (dry_run: ${dryRun})`);
 
             // Get the item details
-            const { data: item } = itemKind === 'issue' 
-              ? await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                })
-              : await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: issueNumber,
-                });
+            let item = { labels: [] }; try { const { data } = itemKind === 'issue' ? await github.rest.issues.get({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber }) : await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number: issueNumber }); item = data; } catch (e) { console.log(`⚠️ error getting item: ${e.message}`); core.setOutput('skip', 'true'); return; }
 
             const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
 

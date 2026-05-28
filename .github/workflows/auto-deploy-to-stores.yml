@@ -309,9 +309,9 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
       - name: Install dependencies
         run: npm ci --if-present
@@ -450,9 +450,9 @@ jobs:
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Install dependencies
         run: npm ci --if-present
       - name: Build web assets (if needed)

@@ -32,7 +32,7 @@ jobs:
       - name: Ensure review status labels exist
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const labels = [
               { name: 'awaiting-approval', color: 'fbca04', description: 'PR is awaiting review and approval' },
@@ -64,7 +64,7 @@ jobs:
       - name: Apply awaiting-approval label
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             // Check if PR already has review labels
             const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
@@ -88,7 +88,7 @@ jobs:
       - name: Post initial status comment
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const marker = '<!-- pr-review-status-badge -->';
 
@@ -133,7 +133,7 @@ jobs:
       - name: Determine review state and update labels
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
 
@@ -293,7 +293,7 @@ jobs:
         if: steps.determine-review-state.outputs.review_status == 'approved'
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             core.notice(
               `✅ PR #${context.payload.pull_request.number} has been approved and is ready to merge!`

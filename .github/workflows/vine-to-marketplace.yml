@@ -51,9 +51,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
       - name: Install dependencies
@@ -119,9 +119,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
       - name: Install dependencies
@@ -154,9 +154,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
           cache-dependency-path: reesereviews/vine-marketplace/package-lock.json
       - name: Install dependencies
