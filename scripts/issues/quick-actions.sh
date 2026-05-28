@@ -157,15 +157,35 @@ issue_export() {
   echo -e "${CYAN}Exporting issues to $filename...${NC}"
   
   echo "Number,Title,State,Labels,Assignees,Comments,Created,Updated" > "$filename"
-  
-  gh issue list \
-    --repo "$REPO_OWNER/$REPO_NAME" \
-    --state all \
-    --limit 1000 \
-    --json number,title,state,labels,assignees,comments,createdAt,updatedAt \
-    --jq -r '.[] | [.number, .title, .state, (.labels | map(.name) | join(";")), (.assignees | map(.login) | join(";")), .comments, .createdAt, .updatedAt] | @csv' \
-    >> "$filename"
-  
+
+  # Paginate via the REST API so we don't silently truncate at 1000 (the gh
+  # --limit hard ceiling). Per Octopus audit 2026-05-28: repos with >1000
+  # issues used to lose data here. Also: switched to @tsv internally to avoid
+  # CSV corruption from titles with embedded commas/quotes, then convert TSV
+  # rows to CSV-safe form via a final jq pass.
+  local page=1
+  while :; do
+    local rows
+    rows=$(gh api -X GET "/repos/$REPO_OWNER/$REPO_NAME/issues" \
+      -f state=all -f per_page=100 -f page="$page" \
+      --jq '
+        [ .[] | select(.pull_request | not) | [
+          .number,
+          .title,
+          .state,
+          ([.labels[]?.name] | join(";")),
+          ([.assignees[]?.login] | join(";")),
+          .comments,
+          .created_at,
+          .updated_at
+        ] ] | @json
+      ') || break
+    [ "$rows" = "[]" ] && break
+    # Emit CSV-safe rows (jq's @csv handles quoting commas/newlines).
+    echo "$rows" | jq -r '.[] | @csv' >> "$filename"
+    page=$((page + 1))
+  done
+
   echo -e "${GREEN}✅ Exported to $filename${NC}"
 }
 

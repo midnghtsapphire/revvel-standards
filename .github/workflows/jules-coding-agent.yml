@@ -24,7 +24,13 @@ permissions:
   issues: write
 
 env:
-  JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
+  # Unified to JULES_API_KEY 2026-05-28 — every other Jules workflow already used
+  # JULES_API_KEY; only this file looked for JULES_TOKEN, which left the
+  # secret-persistence-guard chasing a key nobody else referenced (the "clog").
+  # Old name kept (commented) per the standards convention; uncomment only if
+  # you ever genuinely need a separate token credential.
+  # JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
