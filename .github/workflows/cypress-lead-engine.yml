@@ -1,0 +1,54 @@
+name: Cypress E2E — life-insurance-lead-engine
+
+# Runs Cypress E2E + Applitools visual checks against the lead-engine app.
+# Triggers only when files inside that app change (per docs/TESTING_STACK.md:
+# Cypress is per-app, not repo-wide).
+#
+# Applitools is a free-tier visual check; APPLITOOLS_API_KEY is optional —
+# the eyes-cypress SDK no-ops if it's not set, so Cypress still passes.
+
+on:
+  pull_request:
+    paths:
+      - "products/life-insurance-lead-engine/build/**"
+      - ".github/workflows/cypress-lead-engine.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/life-insurance-lead-engine/build/**"
+      - ".github/workflows/cypress-lead-engine.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: products/life-insurance-lead-engine/build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+      - name: Build the app
+        run: npm run build
+      - name: Run Cypress against `npm start` (with Applitools eyes)
+        env:
+          APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+          APPLITOOLS_BATCH_NAME: "lead-engine PR #${{ github.event.number || 'main' }}"
+          # Keep the run from failing the PR purely on visual-only changes;
+          # eyes failures are flagged in the run log + Applitools dashboard.
+          APPLITOOLS_DONT_CLOSE_BATCHES: "true"
+        run: npm run e2e
+      - name: Upload Cypress screenshots (failure only)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: products/life-insurance-lead-engine/build/cypress/screenshots
