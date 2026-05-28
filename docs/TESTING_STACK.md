@@ -8,26 +8,52 @@ replacement. Nothing is dropped — everything is recoverable in one edit.
 
 ## ✅ Active
 
-### Keploy (GitHub App + Chrome extension)
+### Keploy (GitHub App + Chrome extension + CLI)
 **What it does**
-- **Keploy App** (`https://github.com/apps/keploy`) — AI auto-generates **validated unit + API tests** directly inside PRs, code-level, no external dashboard for the test logic.
-- **Keploy API Test Recorder** (Chrome extension) — captures real API traffic from your browser. Feed the recording to Keploy and it generates API tests from realistic request/response data instead of guessing.
+- **Keploy GitHub App** (`https://github.com/apps/keploy`) — auto-generates **validated unit + API tests** in PRs.
+- **Keploy API Test Recorder** (Chrome extension) — captures real API traffic from a browser session and converts it into API tests via Keploy.
+- **Keploy Navigator** (separate GitHub bot) — broader test-automation companion. Optional; install if you want continuous coverage beyond per-PR generation.
+- **Keploy CLI** (`keploy record` / `keploy test`) — local capture + replay of real traffic; useful when you want to author tests outside the browser.
+
+**Feature inventory — exploit these where they fit**
+- Unit test generation in PRs (Java, Go, Node, Python).
+- API test generation from recorded HTTP traffic (no manual stub-writing).
+- Mocked dependency calls in replay (no need to spin up real backends in CI).
+- Mutation testing on generated tests (catches false-confidence coverage).
+- Diff-based test impact (only run affected tests on a PR — faster CI).
+- Code coverage reporting integrated with the generator.
+- Dashboard at app.keploy.io for run history (optional; primary value is in-repo tests).
+
+**Pricing (free → paid tiers — verify at keploy.io/pricing before relying on numbers)**
+- **Free** — covers low-volume repos: limited test generations/month and a cap on concurrent runs. Sufficient for a single dev / small product cluster.
+- **Pro/Team** — per-seat monthly tier (estimated **$20–$40/seat/mo** range as of 2026; treat as estimate until verified). Lifts the generation cap + adds team features.
+- **Enterprise** — custom; SSO, audit logs, SOC2, dedicated support. Custom quote.
+
+> **Verify before sharing as policy.** Keploy adjusts tiers frequently. The
+> `docs/API_LIMIT_AUTO_UPGRADE.md` decision standard governs *when* an upgrade
+> auto-fires vs requires research, regardless of current price.
 
 **What we like**
 - Tests land **in the repo**, visible to the pipeline + agents + code review (unlike Mabl, where tests lived in a cloud dashboard).
-- No paid key for the basic tier.
-- Test recorder lets us drive a real session in the browser and convert it into committed test code — closes the loop between user-flow and unit/API coverage.
+- No paid key for the basic tier — real value before you ever pay.
+- The Chrome extension closes the loop between a browser session and committed test code — record once, replay in CI forever.
 - Pairs naturally with the **Completeness Gate** (`docs/DEFINITION_OF_DONE.md`): a deliverable that ships with auto-generated tests is more credibly "done."
 
 **What we don't (caveats)**
-- Doesn't replace true browser **E2E** (multi-page user journeys, visual regression). For those, add **Playwright** in the affected app.
+- Doesn't replace true browser **E2E** (multi-page user journeys, visual regression). For those, add **Playwright** per app.
 - AI-generated tests still need a human/agent skim — bad input → bad tests. Treat them as a *floor*, not a ceiling.
+- Free-tier rate limits are real — see auto-upgrade decision standard.
 
 **How to use the Chrome extension**
 1. Install from the Chrome Web Store: *Keploy API Test Recorder*.
 2. Open the deployed app you want to capture (e.g. the lead-engine Vercel preview).
 3. Click record, exercise the flow (capture leads, dedupe, etc.).
 4. Export the capture → Keploy turns it into API tests committed via PR.
+
+**Error-handling + auto-upgrade on rate limit**
+When a Keploy run fails with a rate-limit / quota-exceeded error, the standard in
+`docs/API_LIMIT_AUTO_UPGRADE.md` decides what happens (auto-upgrade vs research-
+first). This is a general standard — applies to any SaaS we hit a limit on.
 
 ### WCAG_PR_Checker — `eco-github-extensions.yml`
 Runs on every PR; uses Playwright + axe-core to scan the deployed Vercel preview for a11y violations (alt text, contrast, ARIA). See workflow file for details.
