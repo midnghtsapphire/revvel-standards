@@ -460,7 +460,15 @@ A close-up cinematic shot of a developer landing page for an advanced MCP host e
 
   const synthesisForPrompt = mcpPromptPack
     ? truncatePromptSection(synthesis, 12000)
-    : synthesis;
+const synthesisForPrompt = mcpPromptPack
+  ? truncatePromptSection(synthesis, 12000)
+  : synthesis;
+
+if (mcpPromptPack && synthesis.length > 12000) {
+  console.warn(
+    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+  );
+}
 
   return `Based on this competitive analysis for ${args.business}:
 
