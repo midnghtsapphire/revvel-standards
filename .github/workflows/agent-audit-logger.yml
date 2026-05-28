@@ -53,10 +53,10 @@ jobs:
          startsWith(github.event.issue.title, '[ALERT]')))
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           ref: main
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       - name: Set up audit log directory
         run: |
           mkdir -p logs/agent-audit
@@ -178,7 +178,7 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'health_check')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Analyze agent health
         uses: actions/github-script@v9.0.0
         env:
@@ -350,7 +350,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'token_report'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Analyze OpenRouter usage
         uses: actions/github-script@v9.0.0
         env:
@@ -418,7 +418,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'log_analysis'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Analyze audit logs
         run: |
           echo "📊 Audit Log Analysis"
