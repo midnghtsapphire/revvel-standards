@@ -542,7 +542,13 @@ Be specific, actionable, and modern. Reference Tailwind CSS utility classes wher
 function truncatePromptSection(text, maxLength) {
   if (!text || text.length <= maxLength) {
     return text;
-  }
+// Option A: derive the flag from args directly in generateUIRecommendations
+const hasMcpPromptPack = shouldIncludeMCPPromptPack(args);
+const boundedSynthesis = truncatePromptSection(
+  synthesis,
+  hasMcpPromptPack ? 12000 : 24000
+);
+const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
 
   return `${text.slice(0, maxLength)}\n\n[Content truncated to keep total prompt size within model limits.]`;
 }
