@@ -450,9 +450,21 @@ A close-up cinematic shot of a developer landing page for an advanced MCP host e
 - To change the visual hierarchy: If you want a more abstract layout representing the "protocol" flow, use terms like a central core with radial glass nodes stretching outward to shift it away from a standard rectangular layout.`
     : "";
 
+  const truncatePromptSection = (value, maxLength) => {
+    if (typeof value !== "string" || value.length <= maxLength) {
+      return value;
+    }
+
+    return `${value.slice(0, maxLength).trimEnd()}\n\n[Competitive analysis truncated to fit prompt budget when MCP guidance is enabled.]`;
+  };
+
+  const synthesisForPrompt = mcpPromptPack
+    ? truncatePromptSection(synthesis, 12000)
+    : synthesis;
+
   return `Based on this competitive analysis for ${args.business}:
 
-${synthesis}
+${synthesisForPrompt}
 
 Create detailed UI/UX recommendations including:
 
