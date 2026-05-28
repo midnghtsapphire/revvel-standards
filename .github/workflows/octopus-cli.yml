@@ -38,6 +38,9 @@ permissions:
   pull-requests: read
   issues: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 concurrency:
   group: octopus-cli-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
   cancel-in-progress: false
@@ -62,10 +65,9 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check out repo
-        if: steps.token-check.outputs.skip != 'true'
-        uses: actions/checkout@v4
-
+      # Security: deliberately do NOT actions/checkout the PR ref under
+      # pull_request_target. We only need PR metadata (number, body, linked
+      # issues), which we read via `gh api` — never executing PR code.
       - name: Install Octopus CLI
         if: steps.token-check.outputs.skip != 'true'
         run: npm install -g @octp/cli
@@ -146,5 +148,3 @@ jobs:
             echo "PR closes issues, but none authored by octopus-review[bot]. Skipping."
           fi
     timeout-minutes: 15
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
