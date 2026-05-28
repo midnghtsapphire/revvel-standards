@@ -21,7 +21,6 @@
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
-    "@applitools/eyes-cypress": "^3.49.0",
     "@testing-library/cypress": "^10.0.3",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.14",
