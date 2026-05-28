@@ -1,0 +1,161 @@
+name: Octopus Issue Router
+
+# ── Octopus Review → routable WR translator ──────────────────────────────────
+# Problem: octopus-review[bot] files issues with labels (wr:new, octopus-review,
+# topical labels) that the existing agent-dispatcher.yml does NOT recognize.
+# Octopus issues hit dispatcher's default `triage` case which has no
+# downstream action, so they sit stuck.
+#
+# Fix: when octopus-review[bot] opens an issue, translate its labels into the
+# vocabulary the dispatcher + wr-auto-classify already understand:
+#   - Add `work-request` label (so wr-auto-classify.yml picks it up)
+#   - Add `wr:code` label (so agent-dispatcher.yml routes to openrouter)
+#   - Prefix `[WR]` to title if missing (so wr-auto-classify's title gate fires)
+#
+# A separate edit to agent-dispatcher.yml adds an `octopus-review` label case
+# as belt-and-suspenders — if this translator ever misses, the dispatcher
+# still routes correctly on the originating `octopus-review` label.
+#
+# Manual backfill: workflow_dispatch with `backfill: true` re-labels every
+# open issue authored by octopus-review[bot]. Use sparingly — kicks off
+# downstream coder runs.
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "If true, re-label every open octopus-review[bot] issue (use sparingly)"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: octopus-route-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  route-single:
+    name: Translate labels for a freshly opened Octopus issue
+    if: |-
+      github.event_name == 'issues' &&
+      github.event.issue.user.login == 'octopus-review[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Translate labels + ensure [WR] title prefix
+        uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        with:
+          script: |
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            const currentLabels = (issue.labels || [])
+              .map(l => typeof l === 'string' ? l : l.name);
+            const labelsToAdd = ['work-request', 'wr:code']
+              .filter(l => !currentLabels.includes(l));
+
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: labelsToAdd,
+              });
+              core.info(`Added labels to #${issueNumber}: ${labelsToAdd.join(', ')}`);
+            } else {
+              core.info(`#${issueNumber} already had work-request + wr:code; nothing to add.`);
+            }
+
+            // Prefix [WR] if not already present.
+            const title = issue.title || '';
+            if (!/^\[WR\]/i.test(title)) {
+              const newTitle = `[WR] ${title}`.slice(0, 256);
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                title: newTitle,
+              });
+              core.info(`Prefixed title with [WR]: ${newTitle}`);
+            }
+
+            core.summary
+              .addHeading('Octopus issue routed', 3)
+              .addRaw(`Issue: #${issueNumber}`)
+              .addRaw(`Added labels: \`${labelsToAdd.join('`, `') || '(none — already present)'}\``)
+              .write();
+
+  backfill:
+    name: Backfill — re-label every open Octopus issue
+    if: |-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.backfill == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Walk open octopus-review[bot] issues
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const iter = github.paginate.iterator(
+              github.rest.search.issuesAndPullRequests,
+              {
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open author:app/octopus-review`,
+                per_page: 100,
+              }
+            );
+
+            let translated = 0;
+            let skipped = 0;
+            for await (const { data } of iter) {
+              for (const issue of data) {
+                const labels = (issue.labels || [])
+                  .map(l => typeof l === 'string' ? l : l.name);
+
+                const toAdd = ['work-request', 'wr:code']
+                  .filter(l => !labels.includes(l));
+
+                if (toAdd.length > 0) {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: toAdd,
+                  });
+                }
+
+                if (!/^\[WR\]/i.test(issue.title || '')) {
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    title: `[WR] ${issue.title}`.slice(0, 256),
+                  });
+                }
+
+                if (toAdd.length > 0) {
+                  core.info(`#${issue.number}: added ${toAdd.join(', ')}`);
+                  translated++;
+                } else {
+                  core.info(`#${issue.number}: already labeled`);
+                  skipped++;
+                }
+              }
+            }
+
+            core.summary
+              .addHeading('Octopus backfill complete', 3)
+              .addRaw(`Translated: ${translated}`)
+              .addRaw(`Skipped (already labeled): ${skipped}`)
+              .write();

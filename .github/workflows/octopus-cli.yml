@@ -1,0 +1,150 @@
+name: Octopus CLI
+
+# ── Octopus CLI wrapper ──────────────────────────────────────────────────────
+# Wraps @octp/cli (https://www.npmjs.com/package/@octp/cli) for on-demand
+# operations against the Octopus Review service. Authenticated via the
+# OCTOPUS_TOKEN repo secret (format: oct_...).
+#
+# Use cases:
+#   - On-demand: trigger a fresh Octopus PR review (`octopus pr review --pr N`)
+#   - On-demand: re-index the repo so Octopus has the latest code (`octopus repo index`)
+#   - Auto: when a PR is opened that closes an Octopus-originated issue,
+#           re-run `octopus pr review` so Octopus verifies its own ask was met.
+#
+# Provenance: registered in docs/PROVENANCE_STANDARD.md under "Octopus Review".
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Octopus CLI command to run"
+        required: true
+        type: choice
+        options:
+          - "pr review"
+          - "repo index"
+          - "whoami"
+          - "usage"
+      pr_number:
+        description: "PR number (required for `pr review`)"
+        required: false
+        type: number
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+
+concurrency:
+  group: octopus-cli-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  invoke:
+    name: Invoke Octopus CLI
+    runs-on: ubuntu-latest
+    if: |-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false)
+    steps:
+      - name: Bail if OCTOPUS_TOKEN is not configured
+        id: token-check
+        env:
+          OCTOPUS_TOKEN: ${{ secrets.OCTOPUS_TOKEN }}
+        run: |
+          if [ -z "$OCTOPUS_TOKEN" ]; then
+            echo "OCTOPUS_TOKEN secret is not set; skipping Octopus CLI invocation."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repo
+        if: steps.token-check.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Install Octopus CLI
+        if: steps.token-check.outputs.skip != 'true'
+        run: npm install -g @octp/cli
+
+      - name: Login with token
+        if: steps.token-check.outputs.skip != 'true'
+        env:
+          OCTOPUS_TOKEN: ${{ secrets.OCTOPUS_TOKEN }}
+        run: octopus login --token "$OCTOPUS_TOKEN"
+
+      - name: Run requested command (workflow_dispatch)
+        if: |-
+          steps.token-check.outputs.skip != 'true' &&
+          github.event_name == 'workflow_dispatch'
+        env:
+          CMD: ${{ github.event.inputs.command }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+        run: |
+          set -e
+          case "$CMD" in
+            "pr review")
+              if [ -z "$PR_NUMBER" ]; then
+                echo "pr_number is required for 'pr review'."
+                exit 1
+              fi
+              octopus pr review --pr "$PR_NUMBER"
+              ;;
+            "repo index")
+              octopus repo index
+              ;;
+            "whoami")
+              octopus whoami
+              ;;
+            "usage")
+              octopus usage
+              ;;
+            *)
+              echo "Unknown command: $CMD"
+              exit 1
+              ;;
+          esac
+
+      - name: Auto-review PRs that close Octopus-originated issues
+        if: |-
+          steps.token-check.outputs.skip != 'true' &&
+          github.event_name == 'pull_request_target'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          # Detect if the PR closes an octopus-review[bot]-authored issue.
+          # Reads issue-numbers from "Closes #N" / "Fixes #N" markers in the
+          # PR body. If any closed issue's author is octopus-review[bot],
+          # kick off `octopus pr review` so Octopus verifies its own ask.
+          BODY=$(gh pr view "$PR_NUMBER" --json body --jq .body)
+          ISSUE_NUMS=$(echo "$BODY" | grep -oiE '(closes|fixes|resolves)[[:space:]]+#[0-9]+' \
+            | grep -oE '[0-9]+' | sort -u)
+
+          if [ -z "$ISSUE_NUMS" ]; then
+            echo "No 'Closes #N' references in PR body. Skipping Octopus auto-review."
+            exit 0
+          fi
+
+          OCTOPUS_LINKED=0
+          for N in $ISSUE_NUMS; do
+            AUTHOR=$(gh api "repos/${{ github.repository }}/issues/$N" --jq '.user.login // ""')
+            if [ "$AUTHOR" = "octopus-review[bot]" ]; then
+              OCTOPUS_LINKED=1
+              echo "PR #$PR_NUMBER closes octopus-review[bot] issue #$N — running octopus pr review."
+              break
+            fi
+          done
+
+          if [ "$OCTOPUS_LINKED" = "1" ]; then
+            octopus pr review --pr "$PR_NUMBER"
+          else
+            echo "PR closes issues, but none authored by octopus-review[bot]. Skipping."
+          fi
+    timeout-minutes: 15
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
