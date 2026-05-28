@@ -1,11 +1,25 @@
 name: Jules PR Reviewer
+
+# ── SILENCED 2026-05-28 — sanjay3290/jules-pr-reviewer@v1 action is broken ────
+# JULES_API_KEY is set correctly (has been since Jules came to be), but this
+# workflow keeps failing because it invokes `sanjay3290/jules-pr-reviewer@v1`
+# — a single-author community action that appears broken or unmaintained. The
+# OTHER Jules workflows (jules-feedback, jules-invoke, jules-pr-comment) use
+# `BeksOmega/jules-*` actions and work fine.
+#
+# Per the standards: comment, don't delete. workflow_dispatch stays wired for
+# manual re-attempts. To replace properly: swap the `uses:` below for a
+# working BeksOmega/jules-* action, or rely on the other Jules workflows.
+# To re-enable auto-triggers as-is: uncomment the pull_request: block below.
+# ──────────────────────────────────────────────────────────────────────────────
+
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
+  # pull_request:
+  #   types:
+  #     - opened
+  #     - synchronize
+  #     - reopened
+  #     - ready_for_review
   workflow_dispatch: null
 permissions:
   contents: read
