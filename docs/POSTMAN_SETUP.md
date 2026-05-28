@@ -1,7 +1,8 @@
 # Postman — manual API exploration
 
 **What for:** poking APIs by hand, sharing collections across team, generating
-curl/code snippets. **Not** for automated CI tests — that's Keploy's job.
+curl/code snippets. This guide covers the Postman desktop workflow for manual
+exploration; automated collection runs in CI, where needed, go through Newman.
 **Free tier** is plenty for what we do here.
 
 ## Install (one-time)
