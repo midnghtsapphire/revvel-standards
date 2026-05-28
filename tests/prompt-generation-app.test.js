@@ -6,6 +6,7 @@ const path = require('node:path');
 const {
   generatePromptPacket,
   packetToMarkdown,
+  scoreRedOcean,
 } = require(path.join(__dirname, '..', 'products', 'prompt-generation-app', 'lib', 'prompt-generator.js'));
 
 function run(name, fn) {
@@ -92,4 +93,18 @@ run('red-ocean score reaches 100 with all known keywords', () => {
   // This verifies the current upper boundary exposed by generatePromptPacket.
   const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
   assert.equal(p.scores.redOcean, 100);
+});
+
+run('red-ocean score clamps values above 100', () => {
+  const score = scoreRedOcean('social chat todo note crm generic crypto extra', [
+    'social',
+    'chat',
+    'todo',
+    'note',
+    'crm',
+    'generic',
+    'crypto',
+    'extra',
+  ]);
+  assert.equal(score, 100);
 });

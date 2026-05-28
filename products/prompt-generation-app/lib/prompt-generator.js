@@ -24,8 +24,7 @@ function scoreBlueOcean(idea) {
   return Math.min(100, score);
 }
 
-function scoreRedOcean(idea) {
-  const keywords = ['social', 'chat', 'todo', 'note', 'crm', 'generic', 'crypto'];
+function scoreRedOcean(idea, keywords = ['social', 'chat', 'todo', 'note', 'crm', 'generic', 'crypto']) {
   const lower = idea.toLowerCase();
   let score = 30;
   keywords.forEach((k) => {
@@ -143,5 +142,6 @@ function packetToMarkdown(packet) {
 
 module.exports = {
   generatePromptPacket,
-  packetToMarkdown
+  packetToMarkdown,
+  scoreRedOcean
 };
