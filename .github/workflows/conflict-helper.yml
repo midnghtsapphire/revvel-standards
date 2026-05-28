@@ -40,11 +40,12 @@ jobs:
   analyze:
     name: Annotate conflicts with originating-PR notes
     runs-on: ubuntu-latest
+    # Only run when GitHub explicitly tells us the PR has conflicts. The
+    # earlier draft also fired on every opened/synchronize event, which
+    # produced empty-table noise comments on clean PRs.
     if: |-
       github.event.pull_request.mergeable_state == 'dirty' ||
-      contains(github.event.pull_request.labels.*.name, 'has-conflicts') ||
-      github.event.action == 'opened' ||
-      github.event.action == 'synchronize'
+      contains(github.event.pull_request.labels.*.name, 'has-conflicts')
     steps:
       - name: Check out PR with full history
         uses: actions/checkout@v4
@@ -63,23 +64,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set +e
-          # Make sure we have main locally for the merge-tree.
+          # Make sure we have the base ref locally.
           git fetch origin "$BASE_REF" --depth=100
 
-          # `git merge-tree` returns conflict markers without touching the
-          # working tree — perfect for read-only analysis.
-          MERGE_OUT=$(git merge-tree --write-tree --no-messages \
-            "$BASE_SHA" "$HEAD_SHA" 2>&1 || true)
+          # Reliable conflict detection: attempt a real merge into a worktree
+          # detached HEAD on top of base, then list unmerged paths via
+          # `git diff --diff-filter=U`. Abort the merge afterwards so the
+          # worktree is clean again. This is what `mergeable_state: dirty`
+          # is computed from server-side, mirrored locally for file detail.
+          git config user.email "conflict-helper@github-actions"
+          git config user.name "Conflict Helper"
+          git checkout -q "$BASE_SHA"
+          git merge --no-commit --no-ff --no-edit "$HEAD_SHA" >/dev/null 2>&1
+          MERGE_RC=$?
+          CONFLICTED=$(git diff --name-only --diff-filter=U 2>/dev/null | sort -u || true)
 
-          # Conflicted files appear in `git merge-tree -z` or in the merge-tree
-          # output via `<<<<<<<` markers. Fall back to a 3-way merge index.
-          CONFLICTED=$(git merge-tree --name-only \
-            "$BASE_SHA" "$HEAD_SHA" 2>/dev/null \
-            | grep -v '^$' | sort -u || true)
-
-          if [[ -z "$CONFLICTED" ]]; then
+          if [[ "$MERGE_RC" -eq 0 || -z "$CONFLICTED" ]]; then
+            git merge --abort 2>/dev/null || true
             echo "no_conflicts=true" >> "$GITHUB_OUTPUT"
-            echo "No conflicts detected against $BASE_REF."
+            echo "No conflicts detected against $BASE_REF (merge clean)."
             exit 0
           fi
 
@@ -154,6 +157,9 @@ jobs:
             echo "---"
             echo "_Posted by \`.github/workflows/conflict-helper.yml\`. Updated in place on every push. Never auto-resolves — you still click._"
           } >> "$REPORT"
+
+          # Clean up the in-progress merge so the worktree is normal again.
+          git merge --abort 2>/dev/null || true
 
           echo "report_file=$REPORT" >> "$GITHUB_OUTPUT"
           echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
