@@ -1,21 +1,10 @@
 name: Augment Code App Check
-
-# ── SILENCED 2026-05-28 — Augment is installed ────────────────────────────────
-# The owner installed every Augment offering long ago, but this workflow's
-# detection method was unreliable — it kept posting "Augment Code App not
-# detected" on every new PR (noise). Per the standards: comment, don't delete.
-# Manual workflow_dispatch is still wired so you can re-trigger the check by
-# hand if you ever want to verify detection.
-#
-# To re-enable auto-checks: uncomment the pull_request_target: block below.
-# ──────────────────────────────────────────────────────────────────────────────
-
 on:
-  # pull_request_target:
-  #   types:
-  #     - opened
-  #     - reopened
-  #     - ready_for_review
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
   workflow_dispatch:
     inputs:
       pr_number:
