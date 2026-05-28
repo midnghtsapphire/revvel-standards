@@ -22,6 +22,12 @@ upgrade decision can be made.
 | Bito | Free (limited) | $0 | Pro | est. $15 / user / mo | bito.ai/pricing |
 | Mabl | **PAUSED** | $0 | — | est. starts $150+ / mo | mabl.com/pricing (verify) |
 | Augment Code | Free (limited) | $0 | per their pricing | per their pricing | augmentcode.com |
+| Cypress | OSS / Free | $0 | Cypress Cloud — est. $75/mo team | est. $75 / mo | cypress.io/pricing (verify) |
+| Applitools | Free (100 checkpoints/mo) | $0 | Starter | est. $45 / mo | applitools.com/pricing (verify) |
+| Postman | Free | $0 | Basic | est. $14 / user / mo | postman.com/pricing (verify) |
+| BrowserStack | n/a (deferred) | $0 | Live | est. $29 / user / mo | browserstack.com/pricing |
+| Test.ai | n/a (skipped — overlaps Keploy) | — | — | — | — |
+| Jenkins | n/a (skipped — overlaps GH Actions) | $0 (OSS) | n/a | $0 | jenkins.io |
 
 ## Update procedure
 

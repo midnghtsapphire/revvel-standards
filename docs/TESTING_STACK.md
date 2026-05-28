@@ -83,3 +83,53 @@ Opens a follow-up PR after images are committed, with compressed versions. Saves
 - **Lighthouse CI** — performance + Core Web Vitals budgets on the deployed preview. Pairs with SEO standards (`docs/SEO_STANDARDS.md`).
 
 Add these only when a specific product needs them — don't pre-install paid tools.
+
+---
+
+## 🔍 Evaluated alternatives (and why we said yes / no)
+
+Per the standards convention, every tool we considered gets a record. Cost
+decisions follow `docs/API_LIMIT_AUTO_UPGRADE.md`.
+
+| Tool | What it does | Verdict | Why |
+| --- | --- | --- | --- |
+| **Test.ai** | AI-driven cross-platform test automation | ❌ **Skip — redundant** | Overlaps Keploy's AI test generation. Adding it = two AI testers competing for the same job. Re-evaluate only if Keploy can't keep up. |
+| **BrowserStack** | Cloud cross-browser device farm | ⏸ **Defer — expensive** | ~$29/seat/mo starting tier. Genuine value only if we ship multiple browser-critical apps. Today's Next.js products work in modern evergreen browsers. Add when a real cross-browser requirement appears. |
+| **Jenkins** | Self-hosted CI/CD | ❌ **Skip — redundant** | We already have GitHub Actions (free for public, generous for private). Jenkins adds ops burden (a server to maintain) for nothing we don't already have. |
+| **Cypress** | E2E browser testing | ✅ **Add per-app when E2E is needed** | Free for OSS, excellent DX, what most teams reach for. Don't install repo-wide; add `cypress/` per product app that needs E2E. See template below. |
+| **Applitools** | Visual regression / AI-eye diff | ✅ **Add when visual fidelity matters** | Free tier = 100 checkpoints/mo (often enough for one product). Catches UI regressions Keploy can't see. Integrates with Cypress/Playwright. |
+| **Postman** | Manual API exploration + collection sharing | ✅ **Install as dev tool, not pipeline-wired** | Free tier strong; great for poking APIs by hand, building collections to share, generating curl snippets. Keploy covers automated API testing; Postman covers the human side. |
+
+### Pattern: which tool to reach for, by need
+
+| Need | Reach for |
+| --- | --- |
+| Unit tests for a product's logic | **Keploy** (auto-generates in PRs) |
+| API tests for a product's endpoints | **Keploy** (record traffic via Chrome extension or CLI, replay in CI) |
+| Manual API exploration / shareable collections | **Postman** (dev's laptop, not CI) |
+| End-to-end browser flows (login, multi-page) | **Cypress** per app |
+| Pixel-level UI regression / visual diff | **Applitools** alongside Cypress |
+| Cross-browser smoke tests | **BrowserStack** (only when needed; expensive) |
+| Performance / Core Web Vitals | **Lighthouse CI** per app |
+| A11y violations (deployed page) | **WCAG_PR_Checker** (already wired) |
+| A11y violations (source code) | **SEO + A11y Guard** (already wired) |
+
+### Per-app Cypress setup template
+When a product genuinely needs E2E, add to the app:
+```bash
+npm i -D cypress @testing-library/cypress
+npx cypress open   # interactive
+npx cypress run    # CI
+```
+Then wire a per-app workflow that runs `npx cypress run` on PRs, against the
+Vercel preview URL. Don't pre-install in revvel-standards itself.
+
+---
+
+## 🔐 Manus-style auto-credential management — roadmap
+
+What we want (per owner): the pipeline can **generate a new API token from a
+provider** (e.g., mint a fresh Jules key) **and automatically store it as a
+GitHub secret** — no manual UI clicks. See **`docs/CREDENTIAL_AUTOMATION_ROADMAP.md`**
+for the phased plan, what's already wired (the backup/restore half), and what's
+missing (the auto-generate half).
