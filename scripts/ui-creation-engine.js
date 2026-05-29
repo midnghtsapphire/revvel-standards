@@ -427,15 +427,73 @@ Use actual keywords from the competitive analysis.`;
 // UI Design Recommendations: Phase 5
 // ---------------------------------------------------------------------------
 
-async function generateUIRecommendations(synthesis, args) {
-  console.log("\n🎨 Phase 5: UI Design Recommendations");
-  console.log("=" .repeat(60));
+function shouldIncludeMCPPromptPack(args) {
+  const context = `${args.business || ""} ${args.industry || ""} ${args.services || ""}`;
+  return /\b(?:mcp|model[\s-]+context[\s-]+protocol)\b/i.test(context);
+}
 
-  const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
+function buildUIRecommendationsUserPrompt(synthesis, args) {
+  const mcpPromptPack = shouldIncludeMCPPromptPack(args)
+    ? `
 
-  const userPrompt = `Based on this competitive analysis for ${args.business}:
+## 6. MCP Landing Page Visual Prompt Pack
+Include these exact master prompts in the final recommendations so they can be used directly for image generation:
 
-${synthesis}
+### Prompt 1: The MCP Server Node & Context Stream (Connected & Real-time)
+A cinematic hero shot of an ultra-modern landing page for a Model Context Protocol (MCP) server integration engine. The interface features a central glassmorphic terminal hub floating over a deep charcoal and navy background. Radiant, glowing circuit lines and translucent data pipelines extend outwards from the terminal, connecting to smaller, semi-transparent frosted glass modules representing diverse data sources and enterprise tools. Crisp, glowing neon-blue and amber monospaced text streams display real-time context exchanges and tool-calling scripts. Soft atmospheric haze drifts between the floating UI layers, catching sharp, brilliant rim lighting on the refractive, glossy glass edges. Photorealistic, 8k resolution, elegant 3D realism, hyper-detailed cloud architecture visualization.
+
+### Prompt 2: The MCP Host Hub & File/Tool Execution (Sleek Developer View)
+A close-up cinematic shot of a developer landing page for an advanced MCP host ecosystem. The central focus is a layered, thick-cut frosted glass workspace hovering over a dark, minimalist gradient background. The top glass layer displays a sharp, glowing code block executing a context handshake or tool-definition script. Overlapping it is a beautifully rendered, semi-transparent glass module illustrating active database and API connections, with sharp caustics and realistic light leaks rippling across the physical surfaces. Elegant, physical depth is created by soft shadows falling realistically between the floating UI cards. Hyper-realistic, 8k, ray-traced reflections, premium developer tool UX visualization, 3D glossy realism.
+
+💡 Tips for Fine-Tuning the MCP Vibe:
+- To emphasize tool-calling or security: Add phrases like showing secure API authorization badges or displaying sandboxed tool execution logs to make the functional purpose clearer.
+- To change the visual hierarchy: If you want a more abstract layout representing the "protocol" flow, use terms like a central core with radial glass nodes stretching outward to shift it away from a standard rectangular layout.`
+    : "";
+
+  const truncatePromptSection = (value, maxLength) => {
+    if (typeof value !== "string" || value.length <= maxLength) {
+      return value;
+    }
+
+    return `${value.slice(0, maxLength).trimEnd()}\n\n[Competitive analysis truncated to fit prompt budget when MCP guidance is enabled.]`;
+  };
+
+  const synthesisForPrompt = mcpPromptPack
+    ? truncatePromptSection(synthesis, 12000)
+const synthesisForPrompt = mcpPromptPack
+  ? truncatePromptSection(synthesis, 12000)
+  : synthesis;
+
+if (mcpPromptPack && synthesis.length > 12000) {
+  console.warn(
+    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+const synthesisForPrompt = mcpPromptPack
+  ? truncatePromptSection(synthesis, 12000)
+  : synthesis;
+
+if (mcpPromptPack && synthesis.length > 12000) {
+  console.warn(
+    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+  );
+}
+}
+  const synthesisForPrompt = mcpPromptPack
+    ? truncatePromptSection(synthesis, 12000)
+    : synthesis;
+
+  if (mcpPromptPack && synthesis.length > 12000) {
+    console.warn(
+      `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+    );
+  }
+
+  return `Based on this competitive analysis for ${args.business}:
+
+${synthesisForPrompt}
+...`;
+  return `Based on this competitive analysis for ${args.business}:
+
+${synthesisForPrompt}
 
 Create detailed UI/UX recommendations including:
 
@@ -478,7 +536,34 @@ Detailed wireframes for:
 ## 5. Differentiation Elements
 3-5 UI features that would make ${args.business} stand out from all competitors.
 
-Be specific, actionable, and modern. Reference Tailwind CSS utility classes where appropriate.`;
+Be specific, actionable, and modern. Reference Tailwind CSS utility classes where appropriate.${mcpPromptPack}`;
+}
+
+function truncatePromptSection(text, maxLength) {
+  if (!text || text.length <= maxLength) {
+    return text;
+// Option A: derive the flag from args directly in generateUIRecommendations
+const hasMcpPromptPack = shouldIncludeMCPPromptPack(args);
+const boundedSynthesis = truncatePromptSection(
+  synthesis,
+  hasMcpPromptPack ? 12000 : 24000
+);
+const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
+
+  return `${text.slice(0, maxLength)}\n\n[Content truncated to keep total prompt size within model limits.]`;
+}
+
+async function generateUIRecommendations(synthesis, args) {
+  console.log("\n🎨 Phase 5: UI Design Recommendations");
+  console.log("=" .repeat(60));
+
+  const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
+  const hasMcpPromptPack = Boolean(mcpPromptPack && mcpPromptPack.trim());
+  const boundedSynthesis = truncatePromptSection(
+    synthesis,
+    hasMcpPromptPack ? 12000 : 24000
+  );
+  const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
 
   console.log("  → [Pixel: UI Designer] Generating recommendations...");
   const uiDesign = await callOpenRouter(MODELS.design, systemPrompt, userPrompt);
@@ -694,4 +779,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main };
+module.exports = { main, shouldIncludeMCPPromptPack, buildUIRecommendationsUserPrompt };
