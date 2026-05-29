@@ -213,6 +213,12 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   if (!script.includes('Routed follow-up to agent repair issue')) {
     throw new Error('watchdog PR comments must point to the routed repair issue');
   }
+  if (!script.includes('closeLegacyStaleRepairIssues')) {
+    throw new Error('watchdog must close legacy stale-state repair issues to prevent duplicates');
+  }
+  if (!script.includes('This stale-state repair issue is now closed automatically')) {
+    throw new Error('watchdog must document why stale duplicate repair issues are auto-closed');
+  }
 });
 
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
