@@ -43,7 +43,7 @@ jobs:
             echo "JULES_API_KEY is configured."
           fi
       - name: Jules PR Review
-        if: env.JULES_API_KEY != ''
+        if: ${{ env.JULES_API_KEY != '' && env.JULES_API_KEY != null }}
         uses: sanjay3290/jules-pr-reviewer@v1
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
@@ -53,6 +53,26 @@ jobs:
           skip_forks: true
           bypass_label: jules-override
           status_context: jules/review
-    timeout-minutes: 30
+      - name: Mark Jules review status as skipped
+        if: ${{ env.JULES_API_KEY == '' || env.JULES_API_KEY == null }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const sha = context.payload.pull_request?.head?.sha;
+            if (!sha) {
+              core.setFailed('Missing pull_request.head.sha; cannot publish jules/review status.');
+              return;
+            }
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha,
+              state: 'success',
+              context: 'jules/review',
+              description: 'Skipped: JULES_API_KEY is not configured',
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            });
+state: 'failure',
+description: 'jules/review skipped: JULES_API_KEY not configured — add the secret or remove this required check',
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
