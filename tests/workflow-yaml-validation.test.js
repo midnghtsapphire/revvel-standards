@@ -451,5 +451,32 @@ test('morty-post-mortems.yml stays automated with required write scopes', () => 
   }
 });
 
+test('secret-persistence-guard.yml avoids stale spam escalation issues', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'secret-persistence-guard.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const escalate = doc.jobs?.escalate;
+  const cleanup = doc.jobs?.['close-stale-escalations'];
+
+  if (!escalate || !cleanup) {
+    throw new Error('secret-persistence-guard.yml must define escalate and close-stale-escalations jobs');
+  }
+
+  const escalateIf = String(escalate.if || '');
+  if (!escalateIf.includes("needs.monitor-secret-health.outputs.has_missing == 'true'")) {
+    throw new Error('escalate job must require has_missing == true');
+  }
+  if (!escalateIf.includes("needs.auto-recover.result == 'success'")) {
+    throw new Error('escalate job must require successful auto-recover execution');
+  }
+  if (!escalateIf.includes("needs.auto-recover.outputs.failed != '[]'")) {
+    throw new Error('escalate job must only run when failed secrets are non-empty');
+  }
+
+  const cleanupScript = cleanup.steps?.find((step) => step.name === 'Close stale "Secrets Missing" issues')?.run || '';
+  if (!cleanupScript.includes('gh issue close') || !cleanupScript.includes('Secrets Missing: Manual Recovery Required')) {
+    throw new Error('close-stale-escalations job must close stale secret escalation issues');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
