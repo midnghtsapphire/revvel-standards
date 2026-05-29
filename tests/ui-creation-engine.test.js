@@ -294,6 +294,10 @@ Strong local catering demand in target market.`;
     !prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
     "UI engine should not add MCP prompt pack for non-MCP contexts"
   );
+  assert.ok(
+    prompt.includes(synthesisFixture),
+    "Non-MCP prompt should preserve full synthesis when no truncation is needed"
+  );
 });
 
 // ---------------------------------------------------------------------------
