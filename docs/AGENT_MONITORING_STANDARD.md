@@ -23,6 +23,11 @@ whether the human or another agent is the supervisor.
    - `work-request` + `openrouter` + `wr:research` → research-engine first;
      the owner adds `spec-approved` to advance to coder.
    - `bito-ai` / `weekly-research` / `deep-research` → research-engine variants.
+   - `octopus-review` (auto-applied by Octopus on every issue it files) →
+     translated by `.github/workflows/octopus-route.yml` into the standard
+     vocabulary above (`work-request` + `wr:code` + `[WR]` title prefix).
+     The dispatcher (`.github/workflows/agent-dispatcher.yml`) also routes
+     `octopus-review`-labeled issues to openrouter as belt-and-suspenders.
 2. The body must have an **Acceptance criteria** section that's testable
    (per `docs/DEFINITION_OF_DONE.md`).
 3. Provenance: name the source of the request (e.g., "Octopus Review audit
