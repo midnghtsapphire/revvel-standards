@@ -28,11 +28,16 @@ on:
         type: boolean
         required: false
         default: false
-      max_prs:
-        description: "Maximum PRs to process in one run (safety cap)"
+      max_dirty:
+        description: "Stop after labeling this many DIRTY PRs (safety cap)"
         type: number
         required: false
         default: 25
+      max_inspected:
+        description: "Stop after inspecting this many open PRs total (rate-limit cap)"
+        type: number
+        required: false
+        default: 300
   schedule:
     # Mondays 13:00 UTC — early in the week so a fresh kick happens before
     # owner returns to the queue.
@@ -56,14 +61,19 @@ jobs:
         uses: actions/github-script@v9.0.0
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
-          MAX_PRS: ${{ github.event.inputs.max_prs || '25' }}
+          MAX_DIRTY: ${{ github.event.inputs.max_dirty || '25' }}
+          MAX_INSPECTED: ${{ github.event.inputs.max_inspected || '300' }}
         with:
           script: |
             const dryRun = String(process.env.DRY_RUN).toLowerCase() === 'true';
-            const maxPrs = Number.parseInt(process.env.MAX_PRS, 10) || 25;
+            const maxDirty = Number.parseInt(process.env.MAX_DIRTY, 10) || 25;
+            const maxInspected = Number.parseInt(process.env.MAX_INSPECTED, 10) || 300;
 
             // Walk every open PR. GitHub doesn't compute mergeable_state up-front,
-            // so we have to `get` each one to materialize the current value.
+            // so we have to `get` each one to materialize the current value —
+            // that's an API call per PR, so we cap total inspections separately
+            // from dirty-count to keep weekly cron runs predictable on
+            // hundred-PR queues (per Copilot review on #14099).
             const listed = await github.paginate(github.rest.pulls.list, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -72,10 +82,13 @@ jobs:
             });
 
             const processed = [];
+            let inspected = 0;
             for (const pr of listed) {
-              if (processed.length >= maxPrs) break;
+              if (processed.length >= maxDirty) break;
+              if (inspected >= maxInspected) break;
 
               // Materialize mergeable_state (may take a moment for huge diffs).
+              inspected++;
               const { data: full } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -134,6 +147,7 @@ jobs:
             const summary = core.summary
               .addHeading(`Stuck PR sweep — ${processed.length} PR(s) ${dryRun ? '[DRY RUN]' : 'kicked'}`, 2)
               .addRaw(dryRun ? '_Dry run — no labels were applied._\n' : '')
+              .addRaw(`Inspected ${inspected} / ${listed.length} open PR(s) before stopping (max_inspected cap: ${maxInspected}, max_dirty cap: ${maxDirty}).\n`)
               .addRaw('\n');
             if (processed.length === 0) {
               summary.addRaw('No PRs with `mergeable_state: dirty` found.');

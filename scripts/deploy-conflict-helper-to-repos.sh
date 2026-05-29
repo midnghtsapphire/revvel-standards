@@ -30,7 +30,11 @@ set -euo pipefail
 
 SOURCE_REPO_ROOT="${SOURCE_REPO_ROOT:-$(git rev-parse --show-toplevel)}"
 DRY_RUN="${DRY_RUN:-false}"
-BRANCH_NAME="${BRANCH_NAME:-claude/import-conflict-helper}"
+# Suffix the branch name with a UTC timestamp so re-running this script
+# never collides with a leftover branch from a previous attempt (e.g. a
+# push that succeeded but the target repo never merged the resulting PR).
+# Override with `BRANCH_NAME` to pin if you really want to.
+BRANCH_NAME="${BRANCH_NAME:-claude/import-conflict-helper-$(date -u +%Y%m%dT%H%M%S)}"
 
 ARTIFACTS=(
   ".github/workflows/conflict-helper.yml"
@@ -140,7 +144,10 @@ for target in "${TARGETS[@]}"; do
     continue
   fi
 
-  # Apply.
+  # Apply. Track exactly which files were actually copied so the PR body
+  # reflects reality (per Copilot review on #14099 — earlier versions
+  # hard-coded a 2-file list while the script could copy 3).
+  copied_files=()
   for f in "${ARTIFACTS[@]}"; do
     src="$SOURCE_REPO_ROOT/$f"
     [[ -f "$src" ]] || continue
@@ -148,6 +155,7 @@ for target in "${TARGETS[@]}"; do
     cp "$src" "$f"
     git add "$f"
     echo "  + $f"
+    copied_files+=("$f")
   done
 
   git config user.email "deploy-conflict-helper@github-actions"
@@ -185,6 +193,15 @@ Imported by scripts/deploy-conflict-helper-to-repos.sh.
     continue
   fi
 
+  # Build the file list for the PR body from what was actually copied,
+  # not a hard-coded set. Keeps the description honest when the resolver
+  # script is absent (Phase-1-only deploy) or when the standard doc is
+  # missing.
+  files_md=""
+  for f in "${copied_files[@]:-}"; do
+    files_md+="- \`$f\`"$'\n'
+  done
+
   pr_url=$(gh pr create \
     --repo "$target" \
     --base "$(gh repo view "$target" --json defaultBranchRef --jq '.defaultBranchRef.name')" \
@@ -192,10 +209,8 @@ Imported by scripts/deploy-conflict-helper-to-repos.sh.
     --title "Import conflict-helper + auto-resolve from revvel-standards" \
     --body "Imports the merge-conflict auto-resolver workflow + script from \`midnghtsapphire/revvel-standards\` so this repo benefits from the same auto-resolve + Jules-fallback flow.
 
-Files:
-- \`.github/workflows/conflict-helper.yml\`
-- \`scripts/auto-resolve-mechanical-conflicts.js\`
-
+Files copied:
+${files_md}
 Merge to enable.
 " 2>/dev/null || true)
 
