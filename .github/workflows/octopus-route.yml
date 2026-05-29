@@ -132,7 +132,7 @@ jobs:
             let translated = 0;
             let skipped = 0;
             for await (const { data } of iter) {
-              for (const issue of data) {
+              for (const issue of data.items) {
                 const labels = (issue.labels || [])
                   .map(l => typeof l === 'string' ? l : l.name);
 
