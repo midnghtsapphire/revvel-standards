@@ -1,0 +1,142 @@
+name: Third-Party Action Freshness Audit
+
+# ── Quarterly third-party action audit ───────────────────────────────────────
+# Standard: docs/THIRD_PARTY_ACTION_AUDIT.md
+# Script:   scripts/audit-third-party-actions.sh
+# Origin:   sanjay3290/jules-pr-reviewer@v1 (abandoned, single-author) left
+#           PR #13916 with a stuck `jules/review` check. This audit is the
+#           recurrence guard — it greps every workflow's `uses:` lines,
+#           classifies by publisher tier, and files a tracking issue if any
+#           single-author action's last release is older than the threshold.
+#
+# Trigger:  quarterly cron (1st of Jan/Apr/Jul/Oct at 09:00 UTC) + manual.
+# Output:   on flagged-actions exit code, opens a `[WR]` tracking issue.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    # 09:00 UTC on the 1st of Jan / Apr / Jul / Oct.
+    - cron: "0 9 1 1,4,7,10 *"
+  workflow_dispatch:
+    inputs:
+      staleness_months:
+        description: "Months since last release to flag (default 12)"
+        required: false
+        default: "12"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: third-party-action-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Scan workflows, file WR if anything is stale
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Run audit
+        id: audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STALENESS_MONTHS: ${{ github.event.inputs.staleness_months || '12' }}
+        run: |
+          set +e
+          REPORT_FILE="$RUNNER_TEMP/audit-report.txt"
+          scripts/audit-third-party-actions.sh > "$REPORT_FILE"
+          EXIT_CODE=$?
+          set -e
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          echo "report_file=$REPORT_FILE" >> "$GITHUB_OUTPUT"
+          cat "$REPORT_FILE"
+
+      - name: Append to job summary
+        if: always()
+        run: |
+          {
+            echo "### Third-Party Action Freshness Audit"
+            echo ""
+            echo '```'
+            cat "${{ steps.audit.outputs.report_file }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: File tracking WR if anything was flagged
+        if: steps.audit.outputs.exit_code == '1'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('${{ steps.audit.outputs.report_file }}', 'utf8');
+            const today = new Date().toISOString().slice(0, 10);
+            const title = `[WR] Third-party action audit flagged stale actions (${today})`;
+
+            // De-dupe: if an open WR with the same title-prefix already
+            // exists, comment on it instead of opening a duplicate.
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'work-request,third-party-action-audit',
+              per_page: 100,
+            });
+            const dupe = existing.data.find(i =>
+              i.title.startsWith('[WR] Third-party action audit flagged'));
+
+            const body = [
+              '## What',
+              'The quarterly third-party action freshness audit flagged one or more',
+              'single-author actions whose last release is older than the threshold.',
+              '',
+              '## Why this exists',
+              'Origin case: `sanjay3290/jules-pr-reviewer@v1` (single-author, abandoned)',
+              'left PR #13916 with a stuck `jules/review` check. See',
+              '`docs/THIRD_PARTY_ACTION_AUDIT.md` for the full recurrence guard.',
+              '',
+              '## Audit report',
+              '```',
+              report.trim(),
+              '```',
+              '',
+              '## Acceptance criteria',
+              '- [ ] For each flagged action: investigate the upstream repo (last commit, open issues, security advisories).',
+              '- [ ] If actively maintained but no release recently: pin to commit SHA + open issue upstream requesting a tag.',
+              '- [ ] If abandoned: silence the auto-trigger (`pull_request_target:` block commented out per standards), keep `workflow_dispatch:`, document why in the file header.',
+              '- [ ] If a replacement exists: open a focused PR swapping the action; cite this WR.',
+              '- [ ] Close this WR with one comment per flagged action explaining the disposition.',
+              '',
+              '## Provenance',
+              `Filed by \`.github/workflows/third-party-action-audit.yml\` → \`scripts/audit-third-party-actions.sh\` on ${today}.`,
+            ].join('\n');
+
+            if (dupe) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: dupe.number,
+                body: `### Audit re-run ${today}\n\n` + body,
+              });
+              core.info(`Commented on existing WR #${dupe.number}.`);
+              return;
+            }
+
+            const created = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['work-request', 'third-party-action-audit', 'needs-triage'],
+            });
+            core.info(`Opened WR #${created.data.number}.`);
+
+      - name: Fail job if anything was flagged
+        if: steps.audit.outputs.exit_code == '1'
+        run: |
+          echo "Audit flagged one or more actions; see WR and report above."
+          exit 1
+    timeout-minutes: 15
