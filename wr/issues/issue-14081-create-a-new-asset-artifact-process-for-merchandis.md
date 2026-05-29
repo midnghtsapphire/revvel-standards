@@ -294,6 +294,40 @@ When the merch concept targets a specific city, school, or fan base, require a l
 
 **Output requirement:** Ship a ranked motif shortlist and a "safe-use" prompt pack (licensed-safe defaults + fallback variants) for the artifact generation engine.
 
+#### Project-Scoped Palette Template Pack (Issue #14081)
+
+Store this palette pack in revvel-standards as a reusable reference for similar location-themed requests, but treat it as project-scoped defaults for this merchandise pipeline.
+
+| Palette Theme | Core Colors | Recommended Use |
+|---------------|-------------|-----------------|
+| Tennessee Signature | Tennessee Orange + White + Checkerboard pattern | Primary identity, hero treatments, sports-forward variants |
+| Traditional Athletic Accent | Tennessee Orange + White + Smokey Grey (charcoal) | Outlines, depth, retail-ready apparel variants |
+| Natural Knoxville Context | Smoky Mountain Blue/Purple + Deep Forest Greens + River Blues (+ restrained Orange accents) | Scenic/background variants, river/landmark compositions |
+| Premium Dark Variant | Dark Smokey Grey base + golden-orange highlights + white contrast | Premium/night editions and high-contrast merch previews |
+
+**Palette combo prompts to test:**
+
+1. Tradition-Rich: Tennessee Orange + White + Smokey Grey
+2. Checkerboard Power: Orange/White checkerboard borders + solid dark fields
+3. UT Natural: Tennessee Orange + Smoky Mountain Blue + River Blue
+4. Elegant Accents: Smokey Grey primary + sparse orange callouts
+
+#### Concept Grid Prompt Templates (Project-Scoped)
+
+Use these as baseline templates for preemptive research-engine prompt libraries and variant generation.
+
+**Template A — Vol Navy / Sailgating 2x2 Grid**
+
+> A vector graphic design showcase sheet featuring four logo variations in a clean 2x2 grid. Main character: cartoon banana mascot in cap and striped jersey steering a vintage wooden boat labeled "VOL NAVY" with checkerboard hull accents. Set on the Tennessee River with stylized Neyland Stadium, Sunsphere, and bridge in the background. Include a "Bananas" banner in bold cursive and a small Bluetick Coonhound side element near a baseball.  
+> Palette variants: (1) classic Tennessee orange/white with deep navy field, (2) Smokey charcoal grey with muted orange accents, (3) river blues + smoky mountain purples + soft sunset golds, (4) premium dark grey with vibrant golden-orange highlights.  
+> Style constraints: clean vector lines, screen-print aesthetic, no overlapping frames, single-sheet portfolio layout.
+
+**Template B — Batting Emblem 2x2 Grid**
+
+> A professional 2x2 design presentation sheet showing four variations of a circular sports emblem. Main emblem: cartoon banana mascot in batting stance with baseball bat, stadium scene with lights and scoreboard text "NEYLAND STADIUM HOME OF THE VOLS," and central ribbon scroll reading "Bananas" in thick script. Add a smaller lower emblem with a Bluetick Coonhound and baseball.  
+> Palette variants: (1) white background + navy lines + bright golden-yellow, (2) cream background + deep navy + muted mustard-gold, (3) orange/white checkerboard outer-ring accents + deep blue fills, (4) warm sunset gradient + charcoal outlines + rich orange jersey accents.  
+> Style constraints: flat vector color system, sharp typography, textured off-white presentation background, zero overlap.
+
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
@@ -451,6 +485,8 @@ Define a layered research engine using two AI fleets:
 2. **Review Fleet (Verification):** [agents/roles that audit research quality, detect missing sections, and reject unsupported claims]
 
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
+
+**Preemptive research requirement for design-heavy WRs:** Discovery must extract reusable prompt templates from successful concept iterations (palette grids, composition grids, mascot/layout variants), then normalize them into a project-scoped prompt pack saved in revvel-standards so future similar requests start from proven structures.
 
 **Minimum pass criteria (required):**
 
