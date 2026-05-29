@@ -3,6 +3,7 @@
 const assert = require("assert");
 const {
   shouldIncludeMCPPromptPack,
+  truncatePromptSection,
   buildUIRecommendationsUserPrompt,
 } = require("../scripts/ui-creation-engine.js");
 
@@ -204,6 +205,32 @@ test("Estimated cost per project is within budget", () => {
   assert.ok(estimatedCost <= maxBudget, "Estimated cost should be within budget");
 });
 
+test("truncatePromptSection returns non-string input unchanged", () => {
+  assert.equal(truncatePromptSection(null, 10), null);
+  assert.equal(truncatePromptSection(undefined, 10), undefined);
+  assert.equal(truncatePromptSection(42, 10), 42);
+  const obj = {};
+  const arr = [];
+  assert.equal(truncatePromptSection(obj, 10), obj);
+  assert.equal(truncatePromptSection(arr, 10), arr);
+});
+
+test("truncatePromptSection leaves short strings unchanged", () => {
+  const input = "short prompt";
+  assert.equal(truncatePromptSection(input, 100), input);
+});
+
+test("truncatePromptSection truncates long strings with standardized notice", () => {
+  const longInput = "a".repeat(20);
+  const output = truncatePromptSection(longInput, 10);
+
+  assert.ok(output.startsWith("a".repeat(10)), "Should keep only the max length prefix");
+  assert.ok(
+    output.includes("[Content truncated to keep total prompt size within model limits.]"),
+    "Should include the standardized truncation notice"
+  );
+});
+
 test("MCP projects inject the MCP landing page prompt pack into UI recommendations", () => {
   const synthesisFixture = `# Competitive Analysis: MCP Host
 
@@ -235,6 +262,17 @@ Strong demand for MCP integrations in developer workflows.`;
     prompt.includes("Prompt 2: The MCP Host Hub & File/Tool Execution"),
     "UI engine should include MCP Prompt 2"
   );
+  const longSynthesis = "x".repeat(12050);
+  const expectedTruncation = truncatePromptSection(longSynthesis, 12000);
+  const truncatedPrompt = buildUIRecommendationsUserPrompt(longSynthesis, {
+    business: "MCP Host",
+    industry: "Developer tools",
+    services: "MCP integration",
+  });
+  assert.ok(
+    truncatedPrompt.includes(expectedTruncation),
+    "MCP path should use shared truncation helper output"
+  );
 });
 
 test("Non-MCP projects do not inject MCP prompt pack", () => {
@@ -259,6 +297,10 @@ Strong local catering demand in target market.`;
   assert.ok(
     !prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
     "UI engine should not add MCP prompt pack for non-MCP contexts"
+  );
+  assert.ok(
+    prompt.includes(synthesisFixture),
+    "Non-MCP prompt should preserve full synthesis when no truncation is needed"
   );
 });
 
