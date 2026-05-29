@@ -209,6 +209,10 @@ test("truncatePromptSection returns non-string input unchanged", () => {
   assert.equal(truncatePromptSection(null, 10), null);
   assert.equal(truncatePromptSection(undefined, 10), undefined);
   assert.equal(truncatePromptSection(42, 10), 42);
+  const obj = {};
+  const arr = [];
+  assert.equal(truncatePromptSection(obj, 10), obj);
+  assert.equal(truncatePromptSection(arr, 10), arr);
 });
 
 test("truncatePromptSection leaves short strings unchanged", () => {
