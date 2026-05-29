@@ -280,7 +280,7 @@ jobs:
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Log workflow trigger
@@ -290,9 +290,9 @@ jobs:
           echo "::notice::Action: ${{ github.event.action }}"
           echo "::notice::Issue Title: ${{ env.ISSUE_TITLE }}"
       - name: Setup Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Get issue comments for research findings
         id: get_findings
         uses: actions/github-script@v9.0.0

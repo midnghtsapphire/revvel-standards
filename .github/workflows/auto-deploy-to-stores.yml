@@ -169,7 +169,7 @@ jobs:
     outputs:
       research_ok: ${{ steps.check.outputs.research_ok }}
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v4
         with:
           sparse-checkout: docs/research-engine
           sparse-checkout-cone-mode: false
@@ -308,10 +308,10 @@ jobs:
       GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
       - name: Install dependencies
         run: npm ci --if-present
@@ -449,10 +449,10 @@ jobs:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Install dependencies
         run: npm ci --if-present
       - name: Build web assets (if needed)

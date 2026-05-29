@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+# Third-party GitHub Action freshness audit.
+#
+# Scans .github/workflows/ for every `uses: <owner>/<action>@<ref>` line,
+# classifies the action by publisher tier, and flags any single-author
+# action whose latest release is older than the staleness threshold.
+#
+# Triggered by docs/THIRD_PARTY_ACTION_AUDIT.md — the recurrence guard
+# added after sanjay3290/jules-pr-reviewer@v1 (abandoned, single-author)
+# left PR #13916 with a stuck `jules/review` check.
+#
+# Output:
+#   - Plain text report to stdout (default)
+#   - JSON report to stderr if AUDIT_FORMAT=json (used by the workflow)
+#
+# Exit codes:
+#   0 — no flagged actions
+#   1 — flagged actions found (used by CI to file a tracking issue)
+#   2 — script error
+#
+# Requires: gh (for release lookup), jq, grep, sort.
+# Without gh auth, the script still classifies actions but skips release-age
+# checks and treats unknown ages as "unknown" rather than "stale".
+
+set -euo pipefail
+
+# ── Configuration ────────────────────────────────────────────────────────────
+WORKFLOWS_DIR="${WORKFLOWS_DIR:-.github/workflows}"
+# Default staleness: 12 months since last release.
+STALENESS_MONTHS="${STALENESS_MONTHS:-12}"
+# Output format: "text" (default) or "json".
+AUDIT_FORMAT="${AUDIT_FORMAT:-text}"
+
+# Publishers we trust without staleness checks (official / well-known).
+# Add to this list as needed. Names are matched as exact owner prefix.
+TRUSTED_OWNERS=(
+  "actions"
+  "github"
+  "docker"
+  "azure"
+  "aws-actions"
+  "google-github-actions"
+  "hashicorp"
+)
+
+# Multi-author / org-published — still warn if stale, but don't flag as
+# "single-author abandonment risk". Names are matched as exact owner prefix.
+MULTI_AUTHOR_OWNERS=(
+  "aquasecurity"
+  "cypress-io"
+  "digitalocean"
+  "dopplerhq"
+  "peter-evans"
+  "peaceiris"
+  "mentimeter"
+  "Mergifyio"
+  "eco-infra"
+  "green-coding-solutions"
+  "BeksOmega"
+)
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
+contains() {
+  local needle="$1"; shift
+  local item
+  for item in "$@"; do
+    [[ "$item" == "$needle" ]] && return 0
+  done
+  return 1
+}
+
+classify_owner() {
+  local owner="$1"
+  if contains "$owner" "${TRUSTED_OWNERS[@]}"; then
+    echo "trusted"
+  elif contains "$owner" "${MULTI_AUTHOR_OWNERS[@]}"; then
+    echo "multi-author"
+  else
+    echo "single-author"
+  fi
+}
+
+# Returns last release ISO timestamp via gh, or empty string on failure.
+last_release_date() {
+  local repo="$1"
+  if ! command -v gh >/dev/null 2>&1; then
+    return 0
+  fi
+  gh api "repos/$repo/releases/latest" \
+    --jq '.published_at // empty' 2>/dev/null || echo ""
+}
+
+# Days between an ISO date and today.
+days_since() {
+  local iso="$1"
+  [[ -z "$iso" ]] && { echo ""; return; }
+  local then_secs now_secs
+  then_secs=$(date -d "$iso" +%s 2>/dev/null || echo "")
+  [[ -z "$then_secs" ]] && { echo ""; return; }
+  now_secs=$(date +%s)
+  echo $(( (now_secs - then_secs) / 86400 ))
+}
+
+# ── Scan ─────────────────────────────────────────────────────────────────────
+
+if [[ ! -d "$WORKFLOWS_DIR" ]]; then
+  echo "audit: no $WORKFLOWS_DIR directory; nothing to scan" >&2
+  exit 0
+fi
+
+# Collect unique owner/repo pairs from `uses:` lines.
+# Strip @ref, comments, and the sub-path for monorepo actions
+# (e.g. github/codeql-action/init → github/codeql-action).
+mapfile -t USES < <(
+  grep -rh -E "^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*[^#]+" "$WORKFLOWS_DIR" 2>/dev/null \
+    | sed -E 's/^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*//' \
+    | sed -E 's/[[:space:]]*#.*$//' \
+    | sed -E 's/@.*$//' \
+    | sed -E 's|^([^/]+/[^/]+)/.*$|\1|' \
+    | grep -v '^\./' \
+    | grep -v '^docker://' \
+    | sort -u
+)
+
+stale_threshold_days=$(( STALENESS_MONTHS * 30 ))
+flagged=()
+report_rows=()
+json_rows=()
+
+for action in "${USES[@]}"; do
+  [[ -z "$action" ]] && continue
+  owner="${action%%/*}"
+  tier=$(classify_owner "$owner")
+  last_release=$(last_release_date "$action")
+  age_days=$(days_since "$last_release")
+
+  status="ok"
+  reason=""
+
+  case "$tier" in
+    trusted)
+      status="ok"
+      ;;
+    multi-author)
+      if [[ -n "$age_days" && "$age_days" -gt "$stale_threshold_days" ]]; then
+        status="warn"
+        reason="multi-author but no release in ${age_days}d (>${stale_threshold_days}d)"
+      fi
+      ;;
+    single-author)
+      if [[ -z "$age_days" ]]; then
+        status="warn"
+        reason="single-author, no published release found (or rate-limited)"
+      elif [[ "$age_days" -gt "$stale_threshold_days" ]]; then
+        status="flag"
+        reason="single-author, last release ${age_days}d ago (>${stale_threshold_days}d threshold)"
+        flagged+=("$action")
+      fi
+      ;;
+  esac
+
+  report_rows+=("$(printf '%-9s %-13s %-50s %s' "$status" "$tier" "$action" "$reason")")
+
+  # Escape for JSON.
+  json_rows+=("$(jq -n \
+    --arg action "$action" \
+    --arg tier "$tier" \
+    --arg last_release "${last_release:-}" \
+    --arg age_days "${age_days:-}" \
+    --arg status "$status" \
+    --arg reason "$reason" \
+    '{action:$action, tier:$tier, last_release:$last_release, age_days:$age_days, status:$status, reason:$reason}')")
+done
+
+# ── Output ───────────────────────────────────────────────────────────────────
+
+if [[ "$AUDIT_FORMAT" == "json" ]]; then
+  printf '%s\n' "${json_rows[@]}" | jq -s '.' > /dev/stderr || true
+fi
+
+printf '%-9s %-13s %-50s %s\n' "STATUS" "TIER" "ACTION" "NOTE"
+printf '%-9s %-13s %-50s %s\n' "------" "----" "------" "----"
+for row in "${report_rows[@]}"; do
+  printf '%s\n' "$row"
+done
+
+echo
+echo "Scanned ${#USES[@]} unique third-party actions."
+echo "Threshold: ${STALENESS_MONTHS} months since last release for single-author actions."
+
+if (( ${#flagged[@]} > 0 )); then
+  echo
+  echo "FLAGGED for review (${#flagged[@]}):"
+  printf '  - %s\n' "${flagged[@]}"
+  echo
+  echo "See docs/THIRD_PARTY_ACTION_AUDIT.md for the response process."
+  exit 1
+fi
+
+exit 0

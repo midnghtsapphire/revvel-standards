@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Content Security Policy — reduces XSS attack surface. Per Octopus audit
+       2026-05-28: OSINT/intelligence tools must ship with a CSP. Tune
+       allowlists when adding analytics, third-party fonts, etc. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
   <title>OSINT Hub — Gen Z Intelligence Arsenal 2026</title>
   <meta name="description" content="AI-orchestrated OSINT platform for next-gen intelligence gathering, threat analysis, and automated reconnaissance. Built for researchers, security professionals, and digital investigators." />
   

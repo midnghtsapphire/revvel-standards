@@ -20,7 +20,7 @@ jobs:
     name: Check rotation schedule
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v4
       - name: Check for overdue rotations
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -79,9 +79,49 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const THEMES = [
+  {
+    id: 'none',
+    label: 'None (Default)',
+    prompt: '',
+  },
+  {
+    id: 'gen-z',
+    label: 'Gen Z (Cyber-Grunge / Phonk)',
+    prompt: 'A fast-paced, kinetic cinematic music video shot with an edgy fish-eye lens. A group of stylish Gen Z individuals in oversized tactical streetwear, metallic chains, and tinted futuristic sunglasses are dancing rhythmically in an underground concrete bunker. The space is illuminated by flashing, strobing neon purple and toxic green laser lights. The camera moves with chaotic, high-energy handheld whip-pans and sudden zooms, synchronized perfectly to a heavy, distorted bass beat. Thick, atmospheric smoke and digital glitch overlays distort the frame occasionally. Hyper-realistic, 4k resolution, industrial rave aesthetic, dramatic neon lighting, chaotic camera movement, viral music video style.',
+  },
+  {
+    id: 'gen-x',
+    label: 'Gen X (80s Synthwave / Cyberpunk)',
+    prompt: 'A cinematic, moody music video shot with the warm texture and faint scanlines of 35mm retro film. A sleek, retro-futuristic sports car drives down a lonely, rain-slicked highway at midnight, reflecting a massive, glowing pink neon sun on the horizon. The camera slowly glides alongside the car in a smooth, sweeping tracking shot, capturing the driver silhouetted against a futuristic, sprawling cyberpunk cityscape in the background. Hues of deep magenta, electric blue, and warm amber bleed across the lens. Atmospheric low fog rolls across the asphalt. Photorealistic, 8k resolution, retro-wave aesthetic, cinematic lighting, nostalgic synthwave atmosphere, slow and smooth motion.',
+  },
+  {
+    id: 'glassmorphic',
+    label: 'Glassmorphic Tech-Core (Sleek & Modern)',
+    prompt: 'A medium cinematic shot of a solo artist performing inside an abstract, floating glassmorphic cube structure suspended in a dark, infinite void. The walls of the cube are made of thick, semi-transparent frosted glass that subtly blurs and refracts giant, glowing holographic equalizer bars pulsing in the background. The artist’s slow-vibe, fluid movements are tracked by a smooth, orbiting camera that glides seamlessly around the structure. Sharp caustics and light leaks ripple across the glossy surfaces, catching faint beams of cool cyan and warm violet ambient light. Cinematic lighting, photorealistic, 8k resolution, ultra-detailed 3D realism, smooth and hypnotic rhythm.',
+  },
+
+  {
+    id: 'ice-press',
+    label: 'Ice-Press Amygdala Freeze',
+    prompt: 'A single, sharp ice cube being pressed directly against the center of the palm. The frame completely freezes for a split second right at the moment of contact (utilizing Instagram’s viral "stuck frame" or glitch mechanic). Text Overlay: "Force-quit the background noise." Highly stylized, high-contrast lighting. The ice cube should look hyper-sharp, catching a direct LED beam against dark, matte-textured wood.',
+  },
+  {
+    id: 'hard-stop',
+    label: 'Hard Stop Pencil Break',
+    prompt: 'A heavy graphite pencil drawing a dense, thick black line across coarse paper—until the tip deliberately snaps with a sharp, resonant crack. Text Overlay: "Draw the boundary line." Extreme macro shot focused entirely on the pencil tip meeting the rough fibers of the paper grain.',
+  },
+  {
+    id: 'un-linked',
+    label: 'Un-Linked Wrist Tap',
+    prompt: 'A heavy metallic ring or watch clasp striking a glass surface or a bare wrist with a rhythmic, clock-like precision. Text Overlay: "You are the anchor, not the notification." A deep, layered depth-of-field shot utilizing frosted glass elements to obscure the background, highlighting only the physical interaction.',
+  },
+];
+
 export default function Home() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<string>(THEMES[0].id);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const [job, setJob] = useState<JobStatus | null>(null);
@@ -133,6 +173,10 @@ export default function Home() {
       const formData = new FormData();
       formData.append('audio', audioFile);
       formData.append('avatar', avatarFile);
+      const theme = THEMES.find(t => t.id === selectedTheme);
+      if (theme && theme.prompt) {
+        formData.append('theme_prompt', theme.prompt);
+      }
 
       const response = await fetch('/api/video', { method: 'POST', body: formData });
 
@@ -269,6 +313,38 @@ export default function Home() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  <Video className="w-4 h-4" />
+                  Video Theme Style
+                </label>
+                <select
+                  value={selectedTheme}
+                  onChange={(e) => setSelectedTheme(e.target.value)}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-2.5 px-3 mb-4"
+                >
+                  {THEMES.map((theme) => (
+                    <option key={theme.id} value={theme.id}>
+                      {theme.label}
+                    </option>
+                  ))}
+                </select>
+
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  <Music className="w-4 h-4" />
+                  Organic Ambient Audio
+                </label>
+                <select
+                  name="audio_track"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-2.5 px-3"
+                >
+                  <option value="none">None (Use Uploaded Audio)</option>
+                  <option value="pxle">&quot;it&apos;s all my fault&quot; by pxle (Stripped-back ambient)</option>
+                  <option value="rta">&quot;RTA — Stillness at 3AM&quot; (ElevenLabs Trend - 139 BPM ambient-electronic)</option>
+                  <option value="vinyl">&quot;Vinyl Crackle &amp; Low Hum&quot; (Pure Foley)</option>
+                </select>
+              </div>
+
               <button type="submit" disabled={!audioFile || !avatarFile || isGenerating}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-lg">
                 {isGenerating ? (
@@ -329,6 +405,15 @@ export default function Home() {
 
           {/* Sidebar Section */}
           <aside className="space-y-8">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <h3 className="text-xl font-bold mb-4">Practitioner Registry</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Join the high-status community of Architects building the &quot;Sub-Zero Cognitive Freeze.&quot;
+              </p>
+              <button className="w-full py-2 px-4 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors font-medium">
+                Join the Registry
+              </button>
+            </div>
             <NewsletterModule />
             <AffiliateModule />
           </aside>

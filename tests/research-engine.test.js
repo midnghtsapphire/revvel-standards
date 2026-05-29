@@ -120,6 +120,70 @@ async function run() {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
+  queue("findAndRequestLinkedPrReviews processes all linked PRs concurrently", async () => {
+    const labelCalls = [];
+    const commentCalls = [];
+    const prs = [{ number: 1 }, { number: 2 }, { number: 3 }];
+    const context = {
+      githubToken: "token",
+      issueNumber: "42",
+      prNumber: "",
+      repository: "owner/repo",
+      outputFile: "out.md",
+    };
+    await engine.findAndRequestLinkedPrReviews(context, {
+      listPrs: async () => prs,
+      applyLabels: async (args) => labelCalls.push(args),
+      applyComment: async (args) => commentCalls.push(args),
+    });
+    assert.strictEqual(labelCalls.length, 3, "should call addLabels for each PR");
+    assert.strictEqual(commentCalls.length, 3, "should call postComment for each PR");
+    assert.deepStrictEqual(
+      labelCalls.map((c) => c.number).sort((a, b) => a - b),
+      [1, 2, 3],
+    );
+  });
+
+  queue("findAndRequestLinkedPrReviews is skipped when context.prNumber is set", async () => {
+    let listCalled = false;
+    await engine.findAndRequestLinkedPrReviews(
+      { githubToken: "token", issueNumber: "42", prNumber: "10", repository: "owner/repo", outputFile: "out.md" },
+      { listPrs: async () => { listCalled = true; return []; } },
+    );
+    assert.strictEqual(listCalled, false, "should not list PRs when prNumber is set");
+  });
+
+  queue("findAndRequestLinkedPrReviews continues and logs when one PR write fails", async () => {
+    const commentCalls = [];
+    const warnings = [];
+    const origLog = console.log;
+    console.log = (msg) => { if (String(msg).startsWith("::warning::")) warnings.push(msg); };
+    try {
+      await engine.findAndRequestLinkedPrReviews(
+        {
+          githubToken: "token",
+          issueNumber: "42",
+          prNumber: "",
+          repository: "owner/repo",
+          outputFile: "out.md",
+        },
+        {
+          listPrs: async () => [{ number: 1 }, { number: 2 }],
+          applyLabels: async ({ number }) => {
+            if (number === 1) throw new Error("label write failed");
+          },
+          applyComment: async (args) => commentCalls.push(args),
+        },
+      );
+    } finally {
+      console.log = origLog;
+    }
+    assert.strictEqual(commentCalls.length, 1, "successful PR should still get a comment");
+    assert.strictEqual(commentCalls[0].number, 2, "the successful comment should be for PR #2");
+    assert.strictEqual(warnings.length, 1, "failed PR should emit a warning");
+    assert.ok(warnings[0].includes("#1"), "warning should identify the failed PR number");
+  });
+
   for (const item of tests) {
     await test(item.name, item.fn);
   }

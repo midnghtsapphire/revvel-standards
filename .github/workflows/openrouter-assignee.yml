@@ -79,10 +79,10 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
             const itemKind = '${{ steps.resolve.outputs.item_kind }}';
-
             let item;
+
             try {
-              const { data } = itemKind === 'issue'
+              const res = itemKind === 'issue'
                 ? await github.rest.issues.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -93,9 +93,9 @@ jobs:
                     repo: context.repo.repo,
                     pull_number: issueNumber,
                   });
-              item = data;
+              item = res.data;
             } catch (e) {
-              core.notice(`Failed to fetch ${itemKind} #${issueNumber}: ${e.message}`);
+              core.warning(`Failed to fetch item metadata: ${e.message}`);
               core.setOutput('skip', 'true');
               return;
             }
@@ -250,18 +250,12 @@ jobs:
             const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
 
-            let items = [];
-            try {
-              items = await github.paginate(github.rest.issues.listForRepo, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                per_page: 100,
-              });
-            } catch (e) {
-              core.notice(`Failed to fetch issues: ${e.message}`);
-              return;
-            }
+            const items = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
 
             const toRoute = [];
             const alreadyRouted = [];
@@ -332,18 +326,12 @@ jobs:
 
             // Recompute routing candidates via paginate — avoids "argument list too long"
             // on large backlogs when passing JSON through step env outputs.
-            let items = [];
-            try {
-              items = await github.paginate(github.rest.issues.listForRepo, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                per_page: 100,
-              });
-            } catch (e) {
-              core.notice(`Failed to fetch issues: ${e.message}`);
-              return;
-            }
+            const items = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
             const toRoute = items
               .filter((item) => {
                 const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);

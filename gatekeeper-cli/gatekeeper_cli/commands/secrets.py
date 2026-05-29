@@ -35,7 +35,7 @@ def list_secrets(project: str, config_name: str):
     api = DopplerAPI(token)
     try:
         secrets_list = api.list_secrets(project, config_name)
-        
+
         if not secrets_list:
             console.print(f"[yellow]No secrets found in {project}/{config_name}[/yellow]")
             return
@@ -71,7 +71,7 @@ def get(secret_name: str, project: str, config_name: str):
     try:
         secret = api.get_secret(secret_name, project, config_name)
         console.print(f"[green]Secret:[/green] {secret_name}")
-        console.print(f"[yellow]Value: ***REDACTED***[/yellow]")
+        console.print("[yellow]Value: ***REDACTED***[/yellow]")
         console.print(
             f"[dim]Note: Use Doppler CLI 'doppler secrets get {secret_name}' to see the actual value[/dim]"
         )

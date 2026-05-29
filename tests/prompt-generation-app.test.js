@@ -70,3 +70,33 @@ run('deterministic output for same input', () => {
   const b = generatePromptPacket({ idea: 'same idea', audience: 'agencies' });
   assert.deepEqual(a, b);
 });
+
+run('adds Spotify visual-link prompts for music embedding requests', () => {
+  const baseline = generatePromptPacket({
+    idea: 'Build a product analytics dashboard for agencies',
+    audience: 'operators'
+  });
+  const p = generatePromptPacket({
+    idea: 'Generate Spotify music platform embedding link visuals for TikTok video',
+    audience: 'artists'
+  });
+  const joined = p.implementationPrompts.join('\n');
+  assert.ok(joined.includes('cannot contain clickable hyperlinks'));
+  assert.ok(joined.includes('native TikTok/Instagram link stickers'));
+  assert.ok(joined.includes('open.spotify.com/track'));
+  assert.equal(p.implementationPrompts.length, baseline.implementationPrompts.length + 2);
+});
+
+run('does not add music-link prompts for non-music social requests', () => {
+  const baseline = generatePromptPacket({
+    idea: 'Build a B2B invoice reconciliation dashboard',
+    audience: 'finance teams'
+  });
+  const nonMusicPacket = generatePromptPacket({
+    idea: 'Build a TikTok analytics dashboard for agencies',
+    audience: 'marketers'
+  });
+  const joined = nonMusicPacket.implementationPrompts.join('\n');
+  assert.equal(nonMusicPacket.implementationPrompts.length, baseline.implementationPrompts.length);
+  assert.ok(!joined.includes('cannot contain clickable hyperlinks'));
+});

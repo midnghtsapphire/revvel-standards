@@ -138,14 +138,20 @@ jobs:
                 return;
               }
               if (e.status === 404) {
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: 'in-review',
-                  color: 'fbca04',
-                  description: 'Linked PR is open and ready for review',
-                });
-                core.info('Created label: in-review');
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: 'in-review',
+                    color: 'fbca04',
+                    description: 'Linked PR is open and ready for review',
+                  });
+                  core.info('Created label: in-review');
+                } catch (ce) {
+                  core.warning(`Failed to create label: ${ce.message}`);
+                }
+              } else {
+                core.warning(`Failed to get label: ${e.message}`);
               }
             }
       - name: Find linked issues and apply `in-review` label
@@ -204,10 +210,9 @@ jobs:
               }
             }
       - name: Check out repository (base ref, for scanner script)
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
-          persist-credentials: false
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v9.0.0
         with:
@@ -249,11 +254,16 @@ jobs:
               '',
               '| Bot | Trigger | Owns |',
               '| --- | --- | --- |',
-              '| **CodeRabbit** | `@coderabbitai review` | Line-by-line diff review, style, anti-patterns |',
-              '| **Jules** | `jules-pr-reviewer.yml` (auto on PR) | Blocking-severity verdict on `jules/review` status |',
-              '| **PandaOps** | `panda-ops.yml` (auto on PR) | Full-diff AI reasoning, inline feedback |',
-              '| **OpenRouter** | `ai-pr-review-openrouter.yml` (auto on PR) | Diff summary via OpenRouter model |',
-              '| **Copilot** | `@copilot` mention below | Code Quality checklist section |',
+              '| **oAudrey** 🧠 (us) via `scripts/openrouter-personas.js` [handle: oaudrey] | `oaudrey` mention below | **First line of sight** — Triage owner / orchestration verdict |',
+              '| **The Professor** 🎓 (us) via `scripts/openrouter-personas.js` [handle: professor, model: perplexity/sonar-pro] | `professor` mention below | Research-citations checklist section |',
+              '| **MindMappr** 🗺️ (us) via `scripts/openrouter-personas.js` [handle: mindmappr] | `mindmappr` mention below | Ideation & coverage-gap checklist section |',
+              '| **RadioChaser** (us, GOAP support) | `radiochaser` mention below | GOAP-support fallback when oAudrey is unavailable |',
+              '| **CodeRabbit** (CodeRabbit Inc.) via `github.com/apps/coderabbitai` | `@coderabbitai review` | Line-by-line diff review, style, anti-patterns |',
+              '| **Jules** (Google) via `BeksOmega/jules-action@v1.0.0` (invoke), `BeksOmega/jules-comms@v1.0.0` (feedback), `BeksOmega/jules-publish@v1.0.0` (publish) | auto on PR | Blocking-severity verdict on `jules/review` status. Note: `sanjay3290/jules-pr-reviewer@v1` was a 4th lane, silenced in #13974 — broken. |',
+              '| **PandaOps** via `panda-ops.yml` | auto on PR | Full-diff AI reasoning, inline feedback |',
+              '| **OpenRouter** (OpenRouter Inc.) via `ai-pr-review-openrouter.yml` | auto on PR | Diff summary via OpenRouter model |',
+              '| **Octopus Review** (octopus-review-bot) via the GitHub App + `@octp/cli` | auto on PR | AI PR analysis (codebase-aware). Findings auto-route to coder via `octopus-route.yml`. |',
+              '| **Copilot** (GitHub) via `github.com/apps/copilot` | `@copilot` mention below | Code Quality checklist section |',
               '| **Roo** | `roo` mention below | Testing checklist section |',
               '| **Antigravity** | `antigravity` mention below | Standards checklist section |',
               '',
@@ -263,14 +273,22 @@ jobs:
               '',
               '@coderabbitai review',
               '',
+              'oaudrey — please verify the **Triage** section below (first line of sight).',
               '@copilot — please verify the **Code Quality** section below.',
               'roo — please verify the **Testing** section below.',
+              'professor — please verify the **Research / Citations** section below.',
+              'mindmappr — please verify the **Ideation & Coverage** section below.',
               'antigravity — please verify the **Standards** section below.',
+              'radiochaser — fallback if `oaudrey` is unreachable; otherwise no-op.',
               '',
               'Each bot: tick the boxes you have verified, and leave a comment explaining anything you cannot confirm.',
               '',
+              '### Triage  _(owner: oaudrey)_',
+              '- [ ] Scope matches the linked WR / issue acceptance criteria',
+              '- [ ] No scope-creep beyond what was requested',
+              '- [ ] Correct routing label is on the PR (`wr:code` / `wr:research` / `wr:jules` / `octopus-review`)',
+              '',
               '### Code Quality  _(owner: @copilot)_',
-              renderCheckboxLine('No hardcoded secrets or credentials', checks.secrets),
               renderCheckboxLine('No hardcoded secrets or credentials', checks.secrets),
               '- [ ] All new API routes have input validation (Zod or equivalent)',
               '- [ ] All new API routes have auth / authorisation checks',
@@ -282,6 +300,16 @@ jobs:
               '- [ ] Tests written for new functionality',
               '- [ ] Coverage thresholds maintained (80% statements/functions/lines, 75% branches)',
               '- [ ] All CI checks passing',
+              '',
+              '### Research / Citations  _(owner: professor)_',
+              '- [ ] Any factual claim added to docs has a citation or source link',
+              '- [ ] No fabricated references (broken links, non-existent files)',
+              '- [ ] Tool / library versions cited match what `package.json` / workflows pin',
+              '',
+              '### Ideation & Coverage  _(owner: mindmappr)_',
+              '- [ ] Diff addresses the root cause, not just the surface symptom',
+              '- [ ] Adjacent affected areas considered (other workflows, docs, tests)',
+              '- [ ] No obvious missing follow-up (recurrence guard / standard addition)',
               '',
               '### Standards  _(owner: antigravity)_',
               '- [ ] Follows `MASTER_APP_TEMPLATE.md` conventions',
