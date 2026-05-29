@@ -9,6 +9,7 @@ This document defines the protocols that enable agents to operate with **driven 
 ### What is GOAP?
 
 Goal-Oriented Action Planning is an AI planning system where agents:
+
 1. Start with a clear goal
 2. Identify available actions
 3. Build a plan to achieve the goal
@@ -20,6 +21,7 @@ Goal-Oriented Action Planning is an AI planning system where agents:
 When facing a complex task:
 
 #### 1. Define the Goal State
+
 ```
 GOAL: Branch creation succeeds for all issue titles
 CURRENT STATE: Branch creation fails for titles containing URLs
@@ -27,6 +29,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 ```
 
 #### 2. Identify Available Actions
+
 - Research git ref naming rules
 - Update configuration files
 - Test sanitization logic
@@ -34,6 +37,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 - Document solution
 
 #### 3. Build Action Plan
+
 ```
 1. Research → Learn what characters are invalid
 2. Update config → Add characters to gitReplaceChars
@@ -43,6 +47,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 ```
 
 #### 4. Execute with Adaptation
+
 - Execute actions in sequence
 - Monitor for blockers
 - If action fails, add recovery actions:
@@ -52,6 +57,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
   - Continue toward goal
 
 #### 5. Verify Goal Achievement
+
 - Test that original failure case now succeeds
 - Verify no regressions
 - Confirm goal state is reached
@@ -62,21 +68,25 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 ## Task: [Clear description]
 
 ### Goal State
+
 - [ ] [Specific, measurable outcome 1]
 - [ ] [Specific, measurable outcome 2]
 - [ ] [Specific, measurable outcome 3]
 
 ### Current State
+
 - Current condition 1
 - Current condition 2
 - Current condition 3
 
 ### Available Actions
+
 1. **Action name** — what it does, inputs/outputs
 2. **Action name** — what it does, inputs/outputs
 3. **Action name** — what it does, inputs/outputs
 
 ### Action Plan
+
 ```
 [Action 1] → [Expected result]
   ↓
@@ -88,11 +98,13 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 ```
 
 ### Recovery Actions (if any action fails)
+
 - **If [Action 1] fails:** [Alternative approach]
 - **If [Action 2] fails:** [Alternative approach]
 - **If [Action 3] fails:** [Alternative approach]
 
 ### Verification Criteria
+
 - [ ] Test 1 passes
 - [ ] Test 2 passes
 - [ ] No regressions
@@ -108,6 +120,7 @@ Swarm coordination enables multiple agents to work on parallel, independent subt
 ### When to Use Swarms
 
 Use swarm coordination when:
+
 - Task decomposes into 3+ independent subtasks
 - Subtasks can execute in parallel
 - Results need to be integrated
@@ -118,7 +131,9 @@ Use swarm coordination when:
 ### Swarm Protocol
 
 #### 1. Task Decomposition
+
 Break the main task into independent subtasks:
+
 ```
 MAIN TASK: Update all services to use new authentication library
 
@@ -131,7 +146,9 @@ SUBTASKS:
 ```
 
 #### 2. Spawn Sub-Agents
+
 For each subtask, spawn a specialized agent with:
+
 - Clear goal
 - Required context
 - Success criteria
@@ -146,7 +163,9 @@ task agent_type=task name=update-notification-service description="Update notifi
 ```
 
 #### 3. Monitor Progress
+
 Track each agent's status:
+
 - Started
 - In progress
 - Blocked (needs intervention)
@@ -154,14 +173,18 @@ Track each agent's status:
 - Failed
 
 #### 4. Handle Failures
+
 When an agent fails:
+
 - Diagnose why it failed
 - Determine if it blocks other agents
 - Retry with different approach
 - If unrecoverable, document and continue with other subtasks
 
 #### 5. Synthesize Results
+
 Once all agents complete:
+
 - Combine outputs
 - Test integration
 - Verify overall goal is met
@@ -170,6 +193,7 @@ Once all agents complete:
 ### Swarm Anti-Patterns
 
 ❌ **Don't use swarms when:**
+
 - Subtasks have tight dependencies
 - Subtasks need to execute sequentially
 - Task is simple enough to do yourself
@@ -180,6 +204,7 @@ Once all agents complete:
 ### Self-Healing Principles
 
 Every workflow should be **self-healing**:
+
 1. **Detect failures** — monitor execution, capture errors
 2. **Diagnose root cause** — parse errors, check logs, inspect state
 3. **Attempt automatic fix** — retry with backoff, use fallback, apply known solutions
@@ -194,7 +219,7 @@ name: Self-Healing Example
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
+    - cron: "0 */6 * * *" # Every 6 hours
 
 jobs:
   main-task:
@@ -285,6 +310,7 @@ jobs:
 ### Error Detection Patterns
 
 #### Pattern 1: API Call with Retry
+
 ```yaml
 - name: Call API with retry
   id: api_call
@@ -300,6 +326,7 @@ jobs:
 ```
 
 #### Pattern 2: Check Dependencies
+
 ```yaml
 - name: Verify dependencies
   run: |
@@ -316,6 +343,7 @@ jobs:
 ```
 
 #### Pattern 3: Fallback to Alternative
+
 ```yaml
 - name: Try primary service
   id: primary_service
@@ -336,21 +364,27 @@ jobs:
 When OpenRouter API calls fail:
 
 #### 1. Immediate Retry with Backoff
+
+> **For illustration only.** Do **not** paste this example into a CI workflow where stdout/stderr is logged. Always call OpenRouter via `scripts/openrouter-routing.js` (or another wrapper) so the key never appears in user-controlled contexts. — Octopus audit 2026-05-28
+
 ```javascript
 async function callOpenRouterWithRetry(prompt, maxAttempts = 3) {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "anthropic/claude-sonnet-4",
+            messages: [{ role: "user", content: prompt }],
+          }),
         },
-        body: JSON.stringify({
-          model: 'anthropic/claude-sonnet-4',
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
+      );
 
       if (response.ok) {
         return await response.json();
@@ -359,36 +393,44 @@ async function callOpenRouterWithRetry(prompt, maxAttempts = 3) {
       // Handle rate limiting
       if (response.status === 429) {
         const waitTime = Math.pow(2, attempt) * 1000; // Exponential backoff
-        console.log(`Rate limited, waiting ${waitTime}ms before retry ${attempt}/${maxAttempts}`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        console.log(
+          `Rate limited, waiting ${waitTime}ms before retry ${attempt}/${maxAttempts}`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
         continue;
       }
 
       // Handle other errors
-      console.error(`OpenRouter error (attempt ${attempt}/${maxAttempts}):`, response.status);
-
+      console.error(
+        `OpenRouter error (attempt ${attempt}/${maxAttempts}):`,
+        response.status,
+      );
     } catch (error) {
-      console.error(`Network error (attempt ${attempt}/${maxAttempts}):`, error.message);
+      console.error(
+        `Network error (attempt ${attempt}/${maxAttempts}):`,
+        error.message,
+      );
     }
 
     // Wait before retry
     if (attempt < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
     }
   }
 
-  throw new Error('OpenRouter API failed after all retry attempts');
+  throw new Error("OpenRouter API failed after all retry attempts");
 }
 ```
 
 #### 2. Model Fallback Chain
+
 ```javascript
 const MODEL_FALLBACK_CHAIN = [
-  'anthropic/claude-sonnet-4',
-  'anthropic/claude-opus-4',
-  'openai/gpt-4-turbo',
-  'openai/gpt-4',
-  'anthropic/claude-3-haiku'
+  "anthropic/claude-sonnet-4",
+  "anthropic/claude-opus-4",
+  "openai/gpt-4-turbo",
+  "openai/gpt-4",
+  "anthropic/claude-3-haiku",
 ];
 
 async function callWithFallback(prompt) {
@@ -404,27 +446,30 @@ async function callWithFallback(prompt) {
     }
   }
 
-  throw new Error('All OpenRouter models failed');
+  throw new Error("All OpenRouter models failed");
 }
 ```
 
 #### 3. Circuit Breaker Pattern
+
 ```javascript
 class OpenRouterCircuitBreaker {
   constructor() {
     this.failures = 0;
     this.threshold = 5;
     this.timeout = 60000; // 1 minute
-    this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
+    this.state = "CLOSED"; // CLOSED, OPEN, HALF_OPEN
     this.nextAttempt = Date.now();
   }
 
   async call(fn) {
-    if (this.state === 'OPEN') {
+    if (this.state === "OPEN") {
       if (Date.now() < this.nextAttempt) {
-        throw new Error('Circuit breaker is OPEN - OpenRouter temporarily disabled');
+        throw new Error(
+          "Circuit breaker is OPEN - OpenRouter temporarily disabled",
+        );
       }
-      this.state = 'HALF_OPEN';
+      this.state = "HALF_OPEN";
     }
 
     try {
@@ -439,15 +484,17 @@ class OpenRouterCircuitBreaker {
 
   onSuccess() {
     this.failures = 0;
-    this.state = 'CLOSED';
+    this.state = "CLOSED";
   }
 
   onFailure() {
     this.failures++;
     if (this.failures >= this.threshold) {
-      this.state = 'OPEN';
+      this.state = "OPEN";
       this.nextAttempt = Date.now() + this.timeout;
-      console.error(`Circuit breaker opened due to ${this.failures} consecutive failures`);
+      console.error(
+        `Circuit breaker opened due to ${this.failures} consecutive failures`,
+      );
     }
   }
 }
@@ -459,6 +506,7 @@ await circuitBreaker.call(() => callOpenRouter(prompt));
 ```
 
 #### 4. Health Check & Pre-emptive Fallback
+
 ```yaml
 - name: Check OpenRouter health
   id: health_check
@@ -492,6 +540,7 @@ await circuitBreaker.call(() => callOpenRouter(prompt));
 ### When to Create Auto-Issues
 
 Create automatic issues for:
+
 - ✅ Errors that were fixed (for documentation)
 - ✅ Recurring failures that need pattern recognition
 - ✅ Workflow failures after exhausting recovery options
@@ -499,6 +548,7 @@ Create automatic issues for:
 - ✅ Performance issues detected
 
 Do NOT create issues for:
+
 - ❌ Transient errors that resolved on retry
 - ❌ Expected failures (e.g., validation rejecting bad input)
 - ❌ Errors that are still occurring (fix first, document second)
@@ -587,6 +637,7 @@ Maintain a knowledge base of errors and solutions:
 ## Summary
 
 These protocols enable agents to:
+
 - ✅ Work autonomously without constant human intervention
 - ✅ Recover from failures automatically
 - ✅ Learn from errors and improve over time
