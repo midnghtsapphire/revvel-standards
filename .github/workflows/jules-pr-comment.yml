@@ -40,6 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         with:
+          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           pr_description: ${{ github.event.pull_request.body }}
