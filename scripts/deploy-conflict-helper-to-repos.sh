@@ -50,27 +50,69 @@ else
 fi
 
 # ── Verify source artifacts exist ───────────────────────────────────────────
+#
+# Required: conflict-helper.yml (Phase 1 annotation — merged in #14072 to main).
+# Optional: auto-resolve-mechanical-conflicts.js (Phase 2 + 3 — merged in
+# #14092). Deploying without the resolver is still useful: target repos get
+# the annotation comment; once #14092 lands and you re-run, the resolver
+# layer goes with it.
+# Optional: docs/CONFLICT_RESOLUTION_STANDARD.md (also in #14092).
+#
+# Anything else missing is a hard error.
 
-missing=()
+OPTIONAL_FILES=(
+  "scripts/auto-resolve-mechanical-conflicts.js"
+  "docs/CONFLICT_RESOLUTION_STANDARD.md"
+)
+
+is_optional() {
+  local f="$1" o
+  for o in "${OPTIONAL_FILES[@]}"; do
+    [[ "$f" == "$o" ]] && return 0
+  done
+  return 1
+}
+
+missing_required=()
+missing_optional=()
 for f in "${ARTIFACTS[@]}"; do
   src="$SOURCE_REPO_ROOT/$f"
   if [[ ! -f "$src" ]]; then
-    # CONFLICT_RESOLUTION_STANDARD.md is optional (may not be merged yet).
-    if [[ "$f" == "docs/CONFLICT_RESOLUTION_STANDARD.md" ]]; then
-      echo "note: $f missing — will skip in copied set"
-      continue
+    if is_optional "$f"; then
+      echo "note: $f missing — will skip in copied set (Phase 1 deploy only)"
+      missing_optional+=("$f")
+    else
+      missing_required+=("$f")
     fi
-    missing+=("$f")
   fi
 done
 
-if (( ${#missing[@]} > 0 )); then
-  echo "error: source artifacts missing in $SOURCE_REPO_ROOT:" >&2
-  printf '  - %s\n' "${missing[@]}" >&2
+if (( ${#missing_required[@]} > 0 )); then
+  echo "error: required source artifacts missing in $SOURCE_REPO_ROOT:" >&2
+  printf '  - %s\n' "${missing_required[@]}" >&2
   exit 2
 fi
 
+if (( ${#missing_optional[@]} > 0 )); then
+  echo
+  echo "warning: optional artifacts missing — Phase 2 (auto-resolve) + Phase 3"
+  echo "(Jules dispatch) will not be deployed. Target repos will receive only"
+  echo "the annotation phase. Re-run after #14092 lands to ship the resolver."
+fi
+
 # ── Per-repo loop ───────────────────────────────────────────────────────────
+
+# Track every temp dir we create so we can clean them all up on exit
+# (one trap, not one-per-iteration — earlier versions overwrote the trap
+# inside the loop, leaking all but the last dir). Per-iteration cleanup
+# happens explicitly at the end of each loop body for the success path.
+TEMP_DIRS=()
+cleanup_temp_dirs() {
+  for d in "${TEMP_DIRS[@]:-}"; do
+    [[ -n "$d" && -d "$d" ]] && rm -rf "$d"
+  done
+}
+trap cleanup_temp_dirs EXIT
 
 opened_prs=()
 skipped=()
@@ -80,7 +122,7 @@ for target in "${TARGETS[@]}"; do
   echo "==> $target"
 
   tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' EXIT
+  TEMP_DIRS+=("$tmp")
 
   if ! gh repo clone "$target" "$tmp/repo" -- --depth=1 --no-tags >/dev/null 2>&1; then
     echo "  skip: clone failed (auth / permissions?)"
