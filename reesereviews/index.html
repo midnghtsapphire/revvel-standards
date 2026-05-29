@@ -765,7 +765,7 @@
     
     <div class="reviews-grid">
       <!-- Sample Review Card 1 -->
-      <div class="review-card glass" data-category="Electronics" data-rating="5">
+      <div class="review-card glass">
         <div class="review-header">
           <div class="rating">
             <span class="star">★</span>
@@ -789,7 +789,7 @@
       </div>
       
       <!-- Sample Review Card 2 -->
-      <div class="review-card glass" data-category="Electronics" data-rating="4">
+      <div class="review-card glass">
         <div class="review-header">
           <div class="rating">
             <span class="star">★</span>
@@ -813,7 +813,7 @@
       </div>
       
       <!-- Sample Review Card 3 -->
-      <div class="review-card glass" data-category="Home & Kitchen" data-rating="5">
+      <div class="review-card glass">
         <div class="review-header">
           <div class="rating">
             <span class="star">★</span>
@@ -961,48 +961,19 @@
   </footer>
 
   <script>
-    // Unified filter and search functionality
-    function filterReviews() {
-      const searchTerm = document.querySelector('.search-box').value.toLowerCase();
-      const activeFilterBtn = document.querySelector('.filter-btn.active');
-      const activeFilter = activeFilterBtn ? activeFilterBtn.textContent : 'All';
-      const reviewCards = document.querySelectorAll('.review-card');
-
-      reviewCards.forEach(card => {
-        const productName = card.querySelector('.product-name').textContent.toLowerCase();
-        const productExcerpt = card.querySelector('.review-excerpt').textContent.toLowerCase();
-        const productCategory = card.dataset.category;
-        const productRating = card.dataset.rating;
-
-        const matchesSearch = productName.includes(searchTerm) || productExcerpt.includes(searchTerm);
-
-        let matchesFilter = true;
-        if (activeFilter === '5 Stars Only') {
-          matchesFilter = productRating === '5';
-        } else if (activeFilter !== 'All') {
-          matchesFilter = productCategory === activeFilter;
-        }
-
-        if (matchesSearch && matchesFilter) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    // Filter button functionality
+    // Filter functionality
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-        filterReviews();
+        // TODO: Implement actual filtering logic
       });
     });
     
     // Search functionality
-    document.querySelector('.search-box').addEventListener('input', function() {
-      filterReviews();
+    document.querySelector('.search-box').addEventListener('input', function(e) {
+      // TODO: Implement search logic
+      console.log('Searching for:', e.target.value);
     });
 
     // Newsletter form

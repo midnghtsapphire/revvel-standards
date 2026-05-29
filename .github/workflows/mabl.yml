@@ -1,56 +1,14 @@
 name: mabl Automated Tests
-
-# ── PAUSED 2026-05-27 — Mabl replaced by Keploy ───────────────────────────────
-# Kept (commented) so this can be re-enabled in one edit if Mabl is ever needed
-# again for cloud-managed E2E browser tests. Per revvel-standards convention:
-# every tool we evaluated gets a record of what it did + what we liked + what
-# we didn't, so future-us doesn't re-litigate the same decision.
-#
-# ── What this workflow did ────────────────────────────────────────────────────
-# - On push to main/release/** + every PR, installed @mablhq/mabl-cli and
-#   called `mabl tests run` against the Mabl cloud account.
-# - Test plans were configured in the Mabl dashboard (NOT in this repo); the
-#   CLI only TRIGGERS them. If no plans existed with matching labels, the CLI
-#   ran and nothing actually executed → silent no-op.
-# - Since MABL_API_KEY went missing it short-circuited at the key check
-#   ("⚠️ MABL_API_KEY secret is not set"), so it's been a full no-op recently.
-#
-# ── What we liked ─────────────────────────────────────────────────────────────
-# - Hands-off cloud-managed E2E (no Playwright code to maintain in-repo).
-# - Visual recorder + dataflow tests in the dashboard.
-# - Cross-browser without our own grid.
-#
-# ── What we didn't like ───────────────────────────────────────────────────────
-# - Test plans live in Mabl's dashboard, NOT in this repo → invisible to the
-#   pipeline, the agents, code review, and audit. Can't reuse or version-
-#   control the test logic from code.
-# - Required a paid MABL_API_KEY that kept expiring / going missing → cascade
-#   into the Secrets Sentinel spam.
-# - In practice, "we never saw it run much" — either no plans were configured,
-#   or it no-op'd silently when the key was absent.
-#
-# ── Replaced by ───────────────────────────────────────────────────────────────
-# - **Keploy** GitHub App (https://github.com/apps/keploy) — AI-generated,
-#   validated unit + API tests written directly into PRs. Code-level, visible,
-#   no external dashboard for test logic, no paid key needed for the basic tier.
-# - For genuine browser E2E (login flows, multi-step journeys), add Playwright
-#   in the affected app rather than a paid cloud runner.
-#
-# ── To re-enable Mabl ─────────────────────────────────────────────────────────
-# Uncomment the push: / pull_request: blocks below, set MABL_API_KEY in repo
-# secrets, and configure plans in the Mabl dashboard with matching labels.
-# ──────────────────────────────────────────────────────────────────────────────
-
 on:
-  # push:
-  #   branches:
-  #     - main
-  #     - release/**
-  # pull_request:
-  #   types:
-  #     - opened
-  #     - synchronize
-  #     - reopened
+  push:
+    branches:
+      - main
+      - release/**
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
   workflow_dispatch:
     inputs:
       app-url:
@@ -81,7 +39,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Generate GitHub App Token
         id: app-token
         uses: actions/create-github-app-token@v3.1.1

@@ -9,8 +9,8 @@
     },
     {
       "id": 2,
-      "provider": "anthropic",
-      "name": "claude-sonnet-4",
+      "provider": "openai",
+      "name": "gpt-4o",
       "mode": "openrouter",
       "description": "Top performing openrouter model for code and logic"
     },

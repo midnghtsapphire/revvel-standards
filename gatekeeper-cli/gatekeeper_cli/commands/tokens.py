@@ -99,7 +99,7 @@ def revoke(token_id: str, project: str, config_name: str):
     api = DopplerAPI(token)
     try:
         api.revoke_service_token(token_id, project, config_name)
-        console.print("[green]✓[/green] Service token revoked successfully")
+        console.print(f"[green]✓[/green] Service token revoked successfully")
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         raise click.Abort()

@@ -164,7 +164,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Run OpenRouter triage with research focus
         if: env.OPENROUTER_API_KEY != ''
         env:

@@ -11,7 +11,7 @@
     },
     {
       "id": 2,
-      "provider": "anthropic",
+      "provider": "openai",
       "name": "claude-sonnet-4",
       "mode": "openrouter",
       "strengths": ["coding", "reasoning", "instruction_following"],
@@ -75,7 +75,7 @@
     },
     {
       "id": 10,
-      "provider": "anthropic",
+      "provider": "openai",
       "name": "claude-opus-3",
       "mode": "openrouter",
       "strengths": ["complex_reasoning", "nuance", "legal", "patents"],

@@ -70,7 +70,7 @@ jobs:
         if: github.event_name == 'issues'
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issue_number = context.issue.number;
             const comment = `🤖 **Content Automation Pipeline Activated**
@@ -191,7 +191,7 @@ jobs:
         if: github.event_name == 'issues' && steps.generate.outputs.output_path != ''
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
@@ -248,7 +248,7 @@ jobs:
         if: failure() && github.event_name == 'issues'
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = context.payload.issue?.number;
             if (!issueNumber) {
@@ -295,7 +295,7 @@ jobs:
         if: always()
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
             const title = '[AUTO-ERROR] Content Automation workflow failed';

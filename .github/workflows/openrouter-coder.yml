@@ -16,7 +16,6 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  workflows: write
 concurrency:
   group: openrouter-coder-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
@@ -28,7 +27,7 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (github.event.label.name == 'wr:code' ||
-        github.event.label.name == 'spec-approved')) ||
+        github.event.label.name == 'wr:research-complete')) ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
@@ -37,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       - name: Set up Python
@@ -105,7 +104,7 @@ jobs:
       - name: Create pull request
         id: cpr
         if: steps.coder.outputs.files_written != '0'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: openrouter/issue-${{ steps.issue.outputs.issue_number }}

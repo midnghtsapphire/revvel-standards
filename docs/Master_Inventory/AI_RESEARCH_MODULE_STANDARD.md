@@ -31,7 +31,6 @@ Invoke the AI Research Module whenever:
 - An architectural choice will affect more than one project
 
 **Do NOT** invoke the Research Module for:
-
 - Questions already answered in existing standards (look there first)
 - Simple how-to questions answerable in 1–2 searches
 - Tasks that are implementation work, not research
@@ -43,7 +42,6 @@ Invoke the AI Research Module whenever:
 ### 3.1 How an LLM Handles Deep Research
 
 A single LLM prompt cannot produce reliable deep research for several reasons:
-
 - Context window limits mean it cannot hold all sources simultaneously
 - A single pass cannot catch contradictions across sources
 - Hallucination risk increases as topics become more nuanced
@@ -62,7 +60,6 @@ User / Orchestrator
 ```
 
 Each sub-agent:
-
 1. Receives a **focused prompt** (one role, one question domain)
 2. Has access to **web search** or a curated knowledge base
 3. Returns a **structured report** (not raw text) in a defined schema
@@ -70,15 +67,15 @@ Each sub-agent:
 
 ### 3.2 Agent Roles
 
-| Agent                 | Responsibility                                           | Model Preference                         |
-| --------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| **Orchestrator**      | Decomposes the question, assigns tasks, drives synthesis | High-reasoning (GPT-5, Claude Opus)      |
-| **Spec Agent**        | Official docs, GitHub repos, API references              | Fast + accurate (Claude Sonnet, GPT-4.1) |
-| **Community Agent**   | Forums, Reddit, GitHub Issues, Hacker News               | Fast + broad (Gemini Flash, GPT-4o-mini) |
-| **Competitive Agent** | Alternatives, comparisons, market positioning            | Balanced (Claude Sonnet, GPT-4.1)        |
-| **Security Agent**    | CVEs, compliance, threat model, best practices           | High-reasoning (Claude Opus, GPT-5)      |
-| **Cost/Ops Agent**    | Pricing, operational burden, scaling limits              | Fast + precise (GPT-4o-mini, Gemini Pro) |
-| **Synthesizer**       | Merge findings, resolve conflicts, produce final doc     | High-reasoning (Claude Opus, GPT-5)      |
+| Agent | Responsibility | Model Preference |
+|---|---|---|
+| **Orchestrator** | Decomposes the question, assigns tasks, drives synthesis | High-reasoning (GPT-5, Claude Opus) |
+| **Spec Agent** | Official docs, GitHub repos, API references | Fast + accurate (Claude Sonnet, GPT-4.1) |
+| **Community Agent** | Forums, Reddit, GitHub Issues, Hacker News | Fast + broad (Gemini Flash, GPT-4o-mini) |
+| **Competitive Agent** | Alternatives, comparisons, market positioning | Balanced (Claude Sonnet, GPT-4.1) |
+| **Security Agent** | CVEs, compliance, threat model, best practices | High-reasoning (Claude Opus, GPT-5) |
+| **Cost/Ops Agent** | Pricing, operational burden, scaling limits | Fast + precise (GPT-4o-mini, Gemini Pro) |
+| **Synthesizer** | Merge findings, resolve conflicts, produce final doc | High-reasoning (Claude Opus, GPT-5) |
 
 ---
 
@@ -97,13 +94,13 @@ Each sub-agent:
 
 These five models cover the full spectrum of research tasks:
 
-| #   | Model (OpenRouter ID)       | Strengths                                       | Best For                                    |
-| --- | --------------------------- | ----------------------------------------------- | ------------------------------------------- |
-| 1   | `anthropic/claude-opus-4`   | Deep reasoning, nuance, long context            | Orchestration, synthesis, security analysis |
-| 2   | `anthropic/claude-sonnet-4` | Fast + high quality, great at structured output | Spec research, writing standards docs       |
-| 3   | `openai/gpt-4.1`            | Code understanding, tool use, broad knowledge   | Competitive analysis, technical docs        |
-| 4   | `google/gemini-2.5-pro`     | Massive context window (1M tokens), multi-modal | Processing large docs, PDFs, repo analysis  |
-| 5   | `openai/gpt-4o-mini`        | Ultra-fast and cheap                            | Community/forum scanning, quick lookups     |
+| # | Model (OpenRouter ID) | Strengths | Best For |
+|---|---|---|---|
+| 1 | `anthropic/claude-opus-4` | Deep reasoning, nuance, long context | Orchestration, synthesis, security analysis |
+| 2 | `anthropic/claude-sonnet-4` | Fast + high quality, great at structured output | Spec research, writing standards docs |
+| 3 | `openai/gpt-4.1` | Code understanding, tool use, broad knowledge | Competitive analysis, technical docs |
+| 4 | `google/gemini-2.5-pro` | Massive context window (1M tokens), multi-modal | Processing large docs, PDFs, repo analysis |
+| 5 | `openai/gpt-4o-mini` | Ultra-fast and cheap | Community/forum scanning, quick lookups |
 
 ### 4.3 Environment Configuration
 
@@ -114,8 +111,6 @@ OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ```
 
 ### 4.4 API Call Pattern (Node.js)
-
-> **For illustration only.** Do **not** paste this example into a CI workflow where stdout/stderr is logged. Always call OpenRouter via `scripts/openrouter-routing.js` (or another wrapper) so the key never appears in user-controlled contexts. — Octopus audit 2026-05-28
 
 ```javascript
 import OpenAI from "openai";
@@ -136,7 +131,7 @@ async function runSubAgent({ model, systemPrompt, userPrompt }) {
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    response_format: { type: "json_object" }, // structured output
+    response_format: { type: "json_object" },  // structured output
   });
   return JSON.parse(response.choices[0].message.content);
 }
@@ -176,14 +171,13 @@ async function runResearchModule(question) {
 
   // Run all sub-agents in parallel
   const reports = await Promise.all(
-    subAgentConfigs.map((config) => runSubAgent(config)),
+    subAgentConfigs.map((config) => runSubAgent(config))
   );
 
   // Synthesize with the most capable model
   const synthesis = await runSubAgent({
     model: "anthropic/claude-opus-4",
-    systemPrompt:
-      "You are a research synthesizer. Merge findings from multiple sub-agents into a coherent Revvel Standard document...",
+    systemPrompt: "You are a research synthesizer. Merge findings from multiple sub-agents into a coherent Revvel Standard document...",
     userPrompt: `Synthesize these research reports into a final recommendation:\n${JSON.stringify(reports, null, 2)}`,
   });
 
@@ -269,7 +263,6 @@ Use the `runResearchModule` function. All sub-agents run concurrently. Total tim
 ### Step 4: Synthesize
 
 Feed all sub-agent reports to the Synthesizer. The Synthesizer:
-
 - Identifies agreements across agents (high confidence)
 - Flags contradictions (low confidence — needs human review)
 - Produces a final recommendation with reasoning
@@ -277,7 +270,6 @@ Feed all sub-agent reports to the Synthesizer. The Synthesizer:
 ### Step 5: Document
 
 Convert the synthesis output into a Revvel Standard document following this repo's conventions. Store in:
-
 - Root level as `<TOPIC>_RESEARCH.md` for cross-cutting topics
 - `docs/<TOPIC>_RESEARCH.md` for project-specific research
 - Update `docs/PROJECT_CATALOG.md` to reference the new document
@@ -385,21 +377,21 @@ See `AGENT_FACTORY_STANDARD.md` for the full trigger matrix.
 
 ## 10. Secret Management
 
-| Secret                 | Vault Path                                    | GitHub Secret Name   |
-| ---------------------- | --------------------------------------------- | -------------------- |
-| OpenRouter API key     | `revvel/apps/openrouter/prod/api_key`         | `OPENROUTER_API_KEY` |
-| GitHub App ID          | `revvel/apps/github-app/prod/app_id`          | `APP_ID`             |
-| GitHub App Private Key | `revvel/apps/github-app/prod/private_key_pem` | `APP_PRIVATE_KEY`    |
+| Secret | Vault Path | GitHub Secret Name |
+|---|---|---|
+| OpenRouter API key | `revvel/apps/openrouter/prod/api_key` | `OPENROUTER_API_KEY` |
+| GitHub App ID | `revvel/apps/github-app/prod/app_id` | `APP_ID` |
+| GitHub App Private Key | `revvel/apps/github-app/prod/private_key_pem` | `APP_PRIVATE_KEY` |
 
 ---
 
 ## 11. References
 
-- OpenRouter documentation: <https://openrouter.ai/docs>
-- OpenRouter model list: <https://openrouter.ai/models>
-- Anthropic Claude models: <https://docs.anthropic.com/en/docs/about-claude/models>
-- OpenAI models: <https://platform.openai.com/docs/models>
-- Google Gemini: <https://ai.google.dev/gemini-api/docs/models>
+- OpenRouter documentation: https://openrouter.ai/docs
+- OpenRouter model list: https://openrouter.ai/models
+- Anthropic Claude models: https://docs.anthropic.com/en/docs/about-claude/models
+- OpenAI models: https://platform.openai.com/docs/models
+- Google Gemini: https://ai.google.dev/gemini-api/docs/models
 - Related Revvel Standards:
   - `AGENT_FACTORY_STANDARD.md` — agent routing and orchestration
   - `GITHUB_APP_INTEGRATION_STANDARD.md` — GitHub App setup for automation

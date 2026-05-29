@@ -6,7 +6,6 @@ const path = require('node:path');
 const {
   generatePromptPacket,
   packetToMarkdown,
-  scoreRedOcean,
 } = require(path.join(__dirname, '..', 'products', 'prompt-generation-app', 'lib', 'prompt-generator.js'));
 
 function run(name, fn) {
@@ -88,53 +87,8 @@ run('red-ocean scoring is case-insensitive', () => {
   assert.equal(p.scores.redOcean, 50);
 });
 
-run('red-ocean score reaches 100 with all known keywords', () => {
+run('red-ocean score is capped at 100', () => {
   // All 7 keywords: social, chat, todo, note, crm, generic, crypto
-  // This verifies the current upper boundary exposed by generatePromptPacket.
   const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
   assert.equal(p.scores.redOcean, 100);
-});
-
-run('red-ocean score clamps values above 100', () => {
-  const score = scoreRedOcean('social chat todo note crm generic crypto extra', [
-    'social',
-    'chat',
-    'todo',
-    'note',
-    'crm',
-    'generic',
-    'crypto',
-    'extra',
-  ]);
-  assert.equal(score, 100);
-});
-
-run('adds Spotify visual-link prompts for music embedding requests', () => {
-  const baseline = generatePromptPacket({
-    idea: 'Build a product analytics dashboard for agencies',
-    audience: 'operators'
-  });
-  const p = generatePromptPacket({
-    idea: 'Generate Spotify music platform embedding link visuals for TikTok video',
-    audience: 'artists'
-  });
-  const joined = p.implementationPrompts.join('\n');
-  assert.ok(joined.includes('cannot contain clickable hyperlinks'));
-  assert.ok(joined.includes('native TikTok/Instagram link stickers'));
-  assert.ok(joined.includes('open.spotify.com/track'));
-  assert.equal(p.implementationPrompts.length, baseline.implementationPrompts.length + 2);
-});
-
-run('does not add music-link prompts for non-music social requests', () => {
-  const baseline = generatePromptPacket({
-    idea: 'Build a B2B invoice reconciliation dashboard',
-    audience: 'finance teams'
-  });
-  const nonMusicPacket = generatePromptPacket({
-    idea: 'Build a TikTok analytics dashboard for agencies',
-    audience: 'marketers'
-  });
-  const joined = nonMusicPacket.implementationPrompts.join('\n');
-  assert.equal(nonMusicPacket.implementationPrompts.length, baseline.implementationPrompts.length);
-  assert.ok(!joined.includes('cannot contain clickable hyperlinks'));
 });

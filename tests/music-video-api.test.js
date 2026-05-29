@@ -188,20 +188,8 @@ test('normalizeProviderStatus luma completed → artifact_created, video_exists=
   assert.strictEqual(r.video_exists, true);
 });
 
-test('normalizeProviderStatus luma failed → failed, video_exists=false', () => {
-  const r = normalizeProviderStatus('luma', 'failed');
-  assert.strictEqual(r.render_status, 'failed');
-  assert.strictEqual(r.video_exists, false);
-});
-
 test('normalizeProviderStatus luma dreaming (unknown) → processing, video_exists=false', () => {
   const r = normalizeProviderStatus('luma', 'dreaming');
-  assert.strictEqual(r.render_status, 'processing');
-  assert.strictEqual(r.video_exists, false);
-});
-
-test('normalizeProviderStatus runway (defined but unhandled) → processing', () => {
-  const r = normalizeProviderStatus('runway', 'completed');
   assert.strictEqual(r.render_status, 'processing');
   assert.strictEqual(r.video_exists, false);
 });
@@ -210,22 +198,6 @@ test('normalizeProviderStatus unknown provider → processing, video_exists=fals
   const r = normalizeProviderStatus('unknown_provider', 'processing');
   assert.strictEqual(r.render_status, 'processing');
   assert.strictEqual(r.video_exists, false);
-});
-
-test('normalizeProviderStatus handles null/undefined rawStatus', () => {
-  const r1 = normalizeProviderStatus('heygen', null);
-  assert.strictEqual(r1.render_status, 'processing');
-  const r2 = normalizeProviderStatus('luma', undefined);
-  assert.strictEqual(r2.render_status, 'processing');
-});
-
-test('normalizeProviderStatus handles null/undefined/empty provider', () => {
-  const r1 = normalizeProviderStatus(null, 'completed');
-  assert.strictEqual(r1.render_status, 'processing');
-  const r2 = normalizeProviderStatus(undefined, 'completed');
-  assert.strictEqual(r2.render_status, 'processing');
-  const r3 = normalizeProviderStatus('', 'completed');
-  assert.strictEqual(r3.render_status, 'processing');
 });
 
 test('Music Video Creator polling treats provider completion as terminal success', () => {

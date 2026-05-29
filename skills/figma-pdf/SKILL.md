@@ -133,7 +133,7 @@ jobs:
         env:
           FIGMA_API_KEY: ${{ secrets.FIGMA_API_KEY }}
         run: |
-          figma export pdf ${{ github.event.inputs.figma_file }} \
+          figma export pdf ${{ github.events.figma_file }} \
             --output ./exports/ \
             --scale 2
       

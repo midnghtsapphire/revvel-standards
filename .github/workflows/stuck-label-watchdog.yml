@@ -210,25 +210,35 @@ jobs:
                 continue;
               }
 
-              // awaiting-review for 24h+ → label the PR + comment ON THE PR.
-              // No more new "agent repair" ISSUES for time-based stale states —
-              // they piled up one-per-PR (#13934/35/36/41 etc.) and just added
-              // noise that the agent processor (billing-blocked) never closed.
-              // Logical-conflict cases below still file repair issues.
+              // awaiting-review for 24h+ → ping
               if (labelNames.includes('awaiting-review') && age > 24 * HOUR) {
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  const repairIssue = await openAgentRepairIssue(
+                    pr,
+                    'awaiting-review-over-24h',
+                    '`awaiting-review` for 24+ hours',
+                    'Added `lifecycle:stuck` to make the stale review state visible.',
+                    'Review the PR, request the missing reviewer action, or patch automation if a review should already have been requested/submitted.'
+                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. Marked \`lifecycle:stuck\`.` });
+                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 }
               }
 
-              // checks-failing for 12h+ → label the PR + comment ON THE PR (no new issue).
+              // checks-failing for 12h+ → ping
               if (labelNames.includes('checks-failing') && age > 12 * HOUR) {
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
+                  const repairIssue = await openAgentRepairIssue(
+                    pr,
+                    'checks-failing-over-12h',
+                    '`checks-failing` for 12+ hours',
+                    'Added `lifecycle:stuck` to make the stale CI failure visible.',
+                    'Read the failing check logs, identify the root cause, and patch the PR or workflow so the PR can merge.'
+                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. Marked \`lifecycle:stuck\`.` });
+                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 }
               }
 

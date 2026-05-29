@@ -119,7 +119,7 @@ jobs:
       SWE_AGENT_API_KEY: ${{ secrets.SWE_AGENT_API_KEY }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: main
@@ -140,7 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           LLM_BASE_URL: https://openrouter.ai/api/v1
-          LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'openai/gpt-4o.5' }}
+          LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'openai/gpt-4o' }}
         run: |
           set -e
           # SWE-Agent has multiple invocation modes. The GitHub-issue mode is
