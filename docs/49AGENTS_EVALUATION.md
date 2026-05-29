@@ -17,7 +17,7 @@
 
 ## What is 49Agents?
 
-49Agents is an open-source platform (https://github.com/49Agents/49Agents) that positions itself as the "first 2D agentic IDE" with the following core capabilities:
+49Agents is an open-source platform (<https://github.com/49Agents/49Agents>) that positions itself as the "first 2D agentic IDE" with the following core capabilities:
 
 ### Key Features
 
@@ -52,7 +52,7 @@
 6. **Self-Hosting & Cloud Options**
    - Self-hosted via `./49ctl setup` and `./49ctl start`
    - Opens on `http://localhost:1071`
-   - Cloud option at https://app.49agents.com
+   - Cloud option at <https://app.49agents.com>
    - No account/login/token required for local instance
 
 ---
@@ -62,6 +62,7 @@
 ### Current State (revvel-standards)
 
 **Strengths:**
+
 - ✅ 58 GitHub Actions workflows providing comprehensive automation
 - ✅ OpenRouter integration for AI orchestration (triage, review, coder)
 - ✅ Multi-agent routing (OpenRouter, Copilot, Jules, Codex, GOAP)
@@ -71,6 +72,7 @@
 - ✅ Desktop-independent (runs in CI/CD)
 
 **Gaps:**
+
 - ⚠️ No unified visual interface for agent status
 - ⚠️ Limited real-time multi-agent coordination
 - ⚠️ Terminal-based agent work not visualized
@@ -80,6 +82,7 @@
 ### 49Agents Capabilities
 
 **Strengths:**
+
 - ✅ Visual unified workspace for all agents
 - ✅ Real-time agent status monitoring
 - ✅ Direct terminal access per agent
@@ -88,6 +91,7 @@
 - ✅ Cross-machine management without SSH
 
 **Gaps:**
+
 - ⚠️ Requires running desktop/web application
 - ⚠️ Not integrated with GitHub Actions natively
 - ⚠️ No built-in CI/CD automation
@@ -104,6 +108,7 @@
 **Use Case:** Create a 49Agents canvas as the "mission control" view for monitoring all revvel-standards automation.
 
 **Implementation:**
+
 - Set up 49Agents instance at `agent-hq.revvel.co` or locally
 - Create panes for each active agent type:
   - OpenRouter orchestrator pane
@@ -121,6 +126,7 @@
 **Use Case:** Use 49Agents for parallel deep-research tasks that current OpenRouter triage handles sequentially.
 
 **Implementation:**
+
 - When a `deep-research` label is applied, trigger 49Agents workflow
 - Spawn multiple research agents in parallel panes
 - Each agent investigates a different aspect of the issue
@@ -134,6 +140,7 @@
 **Use Case:** Enable local developers to run agents on their machines with visual feedback.
 
 **Implementation:**
+
 - Provide `./49ctl setup` installer in revvel-standards
 - Create default 49Agents canvas layout for Revvel work
 - Load skills vault into 49Agents environment
@@ -147,6 +154,7 @@
 **Use Case:** Manage work across multiple MIDNGHTSAPPHIRE repos simultaneously.
 
 **Implementation:**
+
 - One 49Agents canvas with panes per repo
 - Agents can coordinate changes across repos
 - Visual dependency tracking
@@ -158,7 +166,7 @@
 
 ## Recommended Implementation Strategy
 
-> **📝 NOTE:** This section describes a multi-phase *adoption roadmap* for future work across separate PRs/issues. This is **planning documentation**, not a proposal to implement code incrementally within a single task. Per AGENTS.md, agents must deliver complete solutions within their assigned scope—this roadmap defines what those separate scopes should be.
+> **📝 NOTE:** This section describes a multi-phase _adoption roadmap_ for future work across separate PRs/issues. This is **planning documentation**, not a proposal to implement code incrementally within a single task. Per AGENTS.md, agents must deliver complete solutions within their assigned scope—this roadmap defines what those separate scopes should be.
 
 ### Phase 1: Evaluation & Proof-of-Concept (Weeks 1-2)
 
@@ -200,6 +208,8 @@
 
 49Agents can call OpenRouter API directly for LLM access:
 
+> **For illustration only.** Do **not** paste this example into a CI workflow where stdout/stderr is logged. Always call OpenRouter via `scripts/openrouter-routing.js` (or another wrapper) so the key never appears in user-controlled contexts. — Octopus audit 2026-05-28
+
 ```javascript
 // 49Agents agent configuration
 {
@@ -214,6 +224,7 @@
 ### GitHub Integration
 
 49Agents can interact with GitHub via:
+
 - GitHub REST API (issues, PRs, comments)
 - Git commands (clone, branch, commit, push)
 - Webhooks (receive GitHub events)
@@ -249,36 +260,39 @@ jobs:
 
 ### Technical Risks
 
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| 49Agents is early-stage, may have bugs | Medium | Run alongside existing automation, not as replacement |
-| Requires additional infrastructure (hosting) | Low | Can run locally, cloud optional |
-| Integration complexity with GitHub Actions | Medium | Start with simple webhook integrations |
-| Learning curve for team | Low | Visual interface is intuitive |
+| Risk                                         | Severity | Mitigation                                            |
+| -------------------------------------------- | -------- | ----------------------------------------------------- |
+| 49Agents is early-stage, may have bugs       | Medium   | Run alongside existing automation, not as replacement |
+| Requires additional infrastructure (hosting) | Low      | Can run locally, cloud optional                       |
+| Integration complexity with GitHub Actions   | Medium   | Start with simple webhook integrations                |
+| Learning curve for team                      | Low      | Visual interface is intuitive                         |
 
 ### Operational Risks
 
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| Another system to monitor/maintain | Medium | Use only for high-value use cases |
-| Potential cost increase (hosting) | Low | Self-host on existing infrastructure |
-| Dependency on external project | Medium | It's open-source, can fork if needed |
+| Risk                               | Severity | Mitigation                           |
+| ---------------------------------- | -------- | ------------------------------------ |
+| Another system to monitor/maintain | Medium   | Use only for high-value use cases    |
+| Potential cost increase (hosting)  | Low      | Self-host on existing infrastructure |
+| Dependency on external project     | Medium   | It's open-source, can fork if needed |
 
 ---
 
 ## Alternatives Considered
 
 ### 1. Continue with Current GitHub Actions Only
+
 - **Pros:** No new dependencies, proven system, works well
 - **Cons:** No visual interface, limited real-time coordination
 - **Decision:** Rejected — leaves visual monitoring gap
 
 ### 2. Build Custom Agent Dashboard
+
 - **Pros:** Full control, tailored to our needs
 - **Cons:** Significant development effort, reinventing wheel
 - **Decision:** Rejected — 49Agents provides 80% of what we need
 
 ### 3. Use Existing Agent Platforms (AutoGPT, LangChain, etc.)
+
 - **Pros:** Mature ecosystems, extensive tooling
 - **Cons:** Not IDE-focused, less visual, more complex setup
 - **Decision:** Rejected — 49Agents' IDE approach better fits our workflow
@@ -311,7 +325,7 @@ jobs:
 **49Agents is a valuable addition to the revvel-standards automation ecosystem**, particularly for:
 
 1. **Visual monitoring** of agent activity
-2. **Parallel research** coordination  
+2. **Parallel research** coordination
 3. **Local development** with visual feedback
 
 **Recommended approach:**
@@ -333,9 +347,9 @@ jobs:
 
 ## Appendix: Links & References
 
-- 49Agents GitHub: https://github.com/49Agents/49Agents
-- 49Agents Cloud: https://app.49agents.com
-- OpenRouter API: https://openrouter.ai/docs
+- 49Agents GitHub: <https://github.com/49Agents/49Agents>
+- 49Agents Cloud: <https://app.49agents.com>
+- OpenRouter API: <https://openrouter.ai/docs>
 - Revvel Skills Vault: skills/REGISTRY.md
 - Agent Factory Standard: docs/Master_Inventory/AGENT_FACTORY_STANDARD.md
 - OpenRouter Swarms Skill: skills/openrouter-swarms/SKILL.md
