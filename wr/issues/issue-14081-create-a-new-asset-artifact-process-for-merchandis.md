@@ -275,6 +275,25 @@ _No response_
 | [Segment 1] | [Trigger] | High/Med/Low | [Size] |
 | [Segment 2] | [Trigger] | High/Med/Low | [Size] |
 
+#### Regional/Cultural Design Input Set (when location-specific merch is in scope)
+
+When the merch concept targets a specific city, school, or fan base, require a local motif pass in research before prompt finalization.
+
+**Example motif candidates for Knoxville / Tennessee football-adjacent themes:**
+
+- **Landmarks:** Sunsphere silhouette, Tennessee River context, Vol Navy dock/boats
+- **Team-adjacent visual language:** checkerboard pattern accents, historic "V-O-L-S" stadium letter styling
+- **Mascot and icon references:** subtle Smokey-inspired side element, background "Power T"-style geometry (only if licensing permits)
+- **Volunteer-era texture ideas:** decorative muskets/tricorn accents in scroll/banner treatments
+
+**Research gate for this section:**
+
+| Candidate Motif | Visual Value | Licensing Risk | Cultural Fit | Keep/Drop |
+|----------------|--------------|----------------|--------------|-----------|
+| [Motif] | High/Med/Low | High/Med/Low | High/Med/Low | Keep/Drop |
+
+**Output requirement:** Ship a ranked motif shortlist and a "safe-use" prompt pack (licensed-safe defaults + fallback variants) for the artifact generation engine.
+
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
