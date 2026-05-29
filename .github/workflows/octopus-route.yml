@@ -76,6 +76,19 @@ jobs:
               core.info(`Added labels to #${issueNumber}: ${labelsToAdd.join(', ')}`);
             } else {
               core.info(`#${issueNumber} already had work-request + wr:code; nothing to add.`);
+            const title = issue.title || '';
+            if (!/^\[WR\]/i.test(title)) {
+              const PREFIX = '[WR] ';
+              const maxBodyLen = 256 - PREFIX.length;
+              const body = title.length > maxBodyLen ? title.slice(0, maxBodyLen) : title;
+              const newTitle = `${PREFIX}${body}`;
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                title: newTitle,
+              });
+              core.info(`Prefixed title with [WR]: ${newTitle}`);
             }
 
             // Prefix [WR] if not already present.
