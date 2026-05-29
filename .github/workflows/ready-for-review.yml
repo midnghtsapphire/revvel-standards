@@ -271,7 +271,6 @@ jobs:
               '',
               '### Code Quality  _(owner: @copilot)_',
               renderCheckboxLine('No hardcoded secrets or credentials', checks.secrets),
-              renderCheckboxLine('No hardcoded secrets or credentials', checks.secrets),
               '- [ ] All new API routes have input validation (Zod or equivalent)',
               '- [ ] All new API routes have auth / authorisation checks',
               renderCheckboxLine('No raw SQL with user-supplied values', checks.rawSql),
