@@ -43,17 +43,27 @@ jobs:
         run: |
           set +e
           # Make the base ref reachable. If the depth-100 fetch can't reach
-          # BASE_SHA on long-lived branches, fall back to fetching unshallow
-          # so `git diff` against BASE_SHA always works. Both fetches are
-          # idempotent — second is a no-op if first already covered it.
-          git fetch origin "$BASE_REF" --depth=100 2>/dev/null
+          # BASE_SHA on long-lived branches, deepen the SAME base ref rather
+          # than fetching every branch (the earlier wide-refspec fallback
+          # added meaningful network cost on large repos for no extra value;
+          # all we need is BASE_SHA — per Copilot review on #14102).
+          # `2>&1` keeps stderr in the run log so debugging is possible;
+          # `|| true` is what makes the step soft-fail, not redirection.
+          git fetch origin "$BASE_REF" --depth=100 2>&1 || true
           if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-            git fetch origin --unshallow 2>/dev/null \
-              || git fetch origin "+refs/heads/*:refs/remotes/origin/*" --depth=10000 2>/dev/null
+            git fetch origin "$BASE_REF" --depth=10000 2>&1 || true
+            if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+              git fetch origin --unshallow 2>&1 || true
+            fi
           fi
           # Compute the diff; if even this fails (very rare), write empty
           # so the JS step still runs and posts nothing instead of erroring.
-          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || echo "")
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" 2>&1)
+          DIFF_RC=$?
+          if [[ "$DIFF_RC" -ne 0 ]]; then
+            echo "git diff failed (rc=$DIFF_RC): $CHANGED" >&2
+            CHANGED=""
+          fi
           echo "$CHANGED" > "$RUNNER_TEMP/changed.txt"
           echo "Changed files:"
           echo "$CHANGED"
@@ -65,8 +75,10 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            // Read changed-files from the previous step; fall through to
-            // empty if the file isn't there.
+            // Read changed-files from the previous step. If the file is
+            // missing (shouldn't happen — the bash step always writes it,
+            // even empty), warn and skip the rest. Comment now matches
+            // actual behavior — per Copilot review on #14102.
             let changed = [];
             try {
               changed = fs.readFileSync(
