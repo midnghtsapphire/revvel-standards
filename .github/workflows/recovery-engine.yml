@@ -227,6 +227,11 @@ jobs:
               if (hasLabel(labels, 'recovery:hands-off')) continue;
 
               // 5) Octopus issue without wr:code for too long → kick translator.
+              // Octopus-route fires on `issues: labeled` when this exact label
+              // is applied (octopus-route.yml triggers on `recovery:translate-me`).
+              // Earlier this code applied `has-conflicts` which did nothing —
+              // that label triggers conflict-helper, which doesn't handle
+              // issues. Fixed in this PR.
               const isOctopus = hasLabel(labels, 'octopus-review');
               const hasWrCode = hasLabel(labels, 'wr:code');
               const createdAt = Date.parse(issue.created_at || '');
@@ -234,10 +239,23 @@ jobs:
                 actions.push({
                   kind: 'Issue',
                   n: issue.number,
-                  action: 'label has-conflicts (kicks octopus-route translator)',
+                  action: 'label recovery:translate-me (fires octopus-route)',
                 });
-                await ensureLabel(issue.number, 'has-conflicts', 'd93f0b',
-                  'Set by recovery-engine to re-fire octopus-route');
+                // Toggle the label so a re-apply re-fires the issues: labeled
+                // event even if the label was already there (e.g., from a
+                // previous run that didn't translate cleanly).
+                if (hasLabel(labels, 'recovery:translate-me') && !dryRun) {
+                  await github.rest.issues
+                    .removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: issue.number,
+                      name: 'recovery:translate-me',
+                    })
+                    .catch(() => {});
+                }
+                await ensureLabel(issue.number, 'recovery:translate-me', 'd93f0b',
+                  'Set by recovery-engine to re-fire octopus-route on a stale Octopus issue');
                 continue;
               }
 
