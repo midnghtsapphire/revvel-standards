@@ -1,0 +1,192 @@
+name: Docs Freshness Check
+
+# ── Warn (don't block) when code change misses its paired doc update ────────
+# Standard: docs/DOCS_FRESHNESS_STANDARD.md
+#
+# Soft enforcement. Diff the PR vs base. For each rule pairing, if the
+# left-hand changed but no right-hand was touched, post a sticky comment
+# listing the unfulfilled pairings. Never sets a failure status.
+#
+# Escape hatch: `docs-freshness:` marker in the PR body suppresses the
+# warning for that PR (see standard §2).
+# ────────────────────────────────────────────────────────────────────────────
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: docs-freshness-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint docs/code pairings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Compute changed files vs base
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=100
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          echo "$CHANGED" > "$RUNNER_TEMP/changed.txt"
+          echo "Changed files:"
+          echo "$CHANGED"
+
+      - name: Evaluate rules and post warning
+        uses: actions/github-script@v9.0.0
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const changed = fs.readFileSync(
+              `${process.env.RUNNER_TEMP}/changed.txt`, 'utf8'
+            ).split('\n').filter(Boolean);
+').filter(Boolean);
+
+            // Escape-hatch: any `docs-freshness:` marker in PR body suppresses.
+            const body = process.env.PR_BODY || '';
+            if (/docs-freshness:/i.test(body)) {
+              core.info('PR body contains docs-freshness: marker — suppressing warning.');
+              return;
+            }
+
+            const any = (re) => changed.some(f => re.test(f));
+            const has = (path) => changed.includes(path);
+
+            // Rule pairings — each rule says: "if LHS changed, expect RHS too."
+            const rules = [
+              {
+                id: 'new-workflow',
+                lhs: () => any(/^\.github\/workflows\/.+\.ya?ml$/),
+                lhs_label: 'new/changed workflow under .github/workflows/',
+                rhs: () => any(/^docs\/(SYSTEM_MAP|AUTOMATION_AUDIT|PROVENANCE_STANDARD)\.md$/),
+                rhs_label: 'docs/SYSTEM_MAP.md, AUTOMATION_AUDIT.md, or PROVENANCE_STANDARD.md',
+              },
+              {
+                id: 'new-persona',
+                lhs: () => has('scripts/openrouter-personas.js'),
+                lhs_label: 'scripts/openrouter-personas.js (persona registry)',
+                rhs: () =>
+                  any(/^\.github\/workflows\/ready-for-review\.ya?ml$/) ||
+                  has('tests/openrouter-personas.test.js'),
+                rhs_label: 'ready-for-review.yml roster + tests/openrouter-personas.test.js',
+              },
+              {
+                id: 'paid-tool',
+                lhs: () => any(/TESTING_STACK\.md$|workflows\/.+\.ya?ml$/) &&
+                           /STRIPE|OPENAI|ANTHROPIC|OPENROUTER|MABL|KEPLOY|APPLITOOLS|RAPIDAPI/i.test(
+                             changed.join('\n')),
+                lhs_label: 'a workflow / testing-stack reference to a paid tool',
+                rhs: () => has('docs/TOOL_COST_INDEX.md') && has('docs/UPGRADE_LOG.md'),
+                rhs_label: 'docs/TOOL_COST_INDEX.md + docs/UPGRADE_LOG.md',
+              },
+              {
+                id: 'new-standard',
+                lhs: () => any(/^docs\/[A-Z_]+_STANDARD\.md$/),
+                lhs_label: 'a new *_STANDARD.md doc',
+                rhs: () => has('docs/DOCS_FRESHNESS_STANDARD.md') ||
+                           changed.some(f => /docs\/.+\.md$/.test(f) &&
+                                             !/_STANDARD\.md$/.test(f)),
+                rhs_label: 'cross-ref from at least one non-standard doc + this catalog',
+              },
+              {
+                id: 'routing-label',
+                lhs: () => changed.some(f =>
+                  /agent-dispatcher\.ya?ml$|wr-auto-classify\.ya?ml$|octopus-route\.ya?ml$/.test(f)),
+                lhs_label: 'a dispatcher / router workflow (wr label routing)',
+                rhs: () => has('docs/AGENT_MONITORING_STANDARD.md'),
+                rhs_label: 'docs/AGENT_MONITORING_STANDARD.md §1 routing lane',
+              },
+              {
+                id: 'new-shape',
+                lhs: () => any(/^standards\/shapes\/[a-z-]+\.md$/),
+                lhs_label: 'a new product shape under standards/shapes/',
+                rhs: () => has('docs/AUTOMATED_PRODUCT_PIPELINE.md'),
+                rhs_label: 'docs/AUTOMATED_PRODUCT_PIPELINE.md Step 5',
+              },
+            ];
+
+            const violations = rules.filter(r => r.lhs() && !r.rhs());
+
+            const marker = '<!-- docs-freshness:sticky -->';
+
+            if (violations.length === 0) {
+              // Clean up any prior comment so a green PR doesn't carry stale warnings.
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                per_page: 100,
+              });
+              const existing = comments.find(c => c.body && c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body: `${marker}\n## ✅ Docs Freshness — all pairings satisfied\n\nNo unfulfilled docs/code pairings detected. See \`docs/DOCS_FRESHNESS_STANDARD.md\` for the rules.`,
+                });
+              }
+              core.info('No docs-freshness violations.');
+              return;
+            }
+
+            const lines = [
+              marker,
+              '## ⚠️ Docs Freshness — paired doc update missing',
+              '',
+              'Per `docs/DOCS_FRESHNESS_STANDARD.md`, the changes below have a paired',
+              "doc that wasn't touched in this PR. **This is a warning, not a block** —",
+              'add the doc update, or add `docs-freshness: <reason>` to the PR body to',
+              'silence it intentionally.',
+              '',
+              '| Rule | What you changed | What needs an update |',
+              '| --- | --- | --- |',
+              ...violations.map(v =>
+                `| \`${v.id}\` | ${v.lhs_label} | ${v.rhs_label} |`),
+              '',
+              '---',
+              '_Posted by `.github/workflows/docs-freshness-check.yml`. Updated in place on every push. Never blocks merge._',
+            ];
+
+            const newBody = lines.join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: newBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: newBody,
+              });
+            }
+    timeout-minutes: 5
