@@ -63,7 +63,14 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
+  invoke:
+    name: Invoke Octopus CLI
+    runs-on: ubuntu-latest
+    if: |-
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.draft == false &&
+       github.event.pull_request.head.repo.full_name == github.repository)
 
       # Security: deliberately do NOT actions/checkout the PR ref under
       # pull_request_target. We only need PR metadata (number, body, linked
