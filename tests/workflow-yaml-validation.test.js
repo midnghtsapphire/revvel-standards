@@ -435,6 +435,35 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
 });
 
+test('workflow-monitor.yml re-sweeps stale Copilot runs on a schedule', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'workflow-monitor.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true || {};
+  const monitorStep = doc.jobs?.monitor?.steps?.find((step) => step.name === 'Monitor workflow');
+
+  if (!on.schedule?.some((entry) => entry.cron === '*/15 * * * *')) {
+    throw new Error('workflow-monitor.yml must sweep on a 15-minute schedule');
+  }
+  if (!monitorStep) {
+    throw new Error('Monitor workflow step not found');
+  }
+
+  const script = monitorStep.with?.script || '';
+  const requiredSnippets = [
+    "core.getInput('workflow_run_id')",
+    'COPILOT_DYNAMIC_PATH',
+    'listWorkflowRunsForRepo',
+    'cancelWorkflowRun',
+    'reRunWorkflow',
+  ];
+
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`workflow monitor stale-run sweep is missing ${snippet}`);
+    }
+  }
+});
+
 test('morty-post-mortems.yml stays automated with required write scopes', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'morty-post-mortems.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
