@@ -74,7 +74,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-          WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
+          WR_MODEL: ${{ vars.WR_MODEL || 'openai/gpt-4o' }}
         run: |
           python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
           python - <<'PY'

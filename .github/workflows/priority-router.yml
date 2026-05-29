@@ -151,7 +151,7 @@ jobs:
               if (!useOpenRouter) return null;
               const body = (item.body || '').slice(0, 2000);
               const payload = {
-                model: 'anthropic/claude-sonnet-4',
+                model: 'openai/gpt-4o',
                 messages: [
                   {
                     role: 'system',

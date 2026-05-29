@@ -120,7 +120,7 @@ jobs:
       ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
       LLM_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       LLM_BASE_URL: https://openrouter.ai/api/v1
-      LLM_MODEL: ${{ vars.OPENHANDS_MODEL || 'anthropic/claude-sonnet-4.5' }}
+      LLM_MODEL: ${{ vars.OPENHANDS_MODEL || 'openai/gpt-4o.5' }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6.0.2

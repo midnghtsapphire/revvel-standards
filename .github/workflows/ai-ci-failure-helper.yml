@@ -35,7 +35,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          model: anthropic/claude-sonnet-4
+          model: openai/gpt-4o
           max_log_lines: 200
           prompt_template: |
             Workflow {{WORKFLOW_NAME}} failed at job {{JOB_NAME}},

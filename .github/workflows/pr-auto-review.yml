@@ -157,7 +157,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-          MODEL: anthropic/claude-sonnet-4
+          MODEL: openai/gpt-4o
           MAX_DIFF_SIZE: 30000
           MAX_FILES_TO_FETCH: 100
         run: node scripts/pr-auto-review.js

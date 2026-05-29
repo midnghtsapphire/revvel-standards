@@ -84,7 +84,7 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
           ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
           EVENT_KIND: ${{ github.event_name == 'issues' && 'issue' || 'pull_request' }}
-          MODEL: anthropic/claude-sonnet-4
+          MODEL: openai/gpt-4o
         run: node scripts/openrouter-triage.js
     timeout-minutes: 30
   sweep-discover:
@@ -158,7 +158,7 @@ jobs:
           ISSUE_TITLE: ${{ matrix.issue_title }}
           ISSUE_BODY: ${{ matrix.issue_body }}
           EVENT_KIND: ${{ matrix.event_kind }}
-          MODEL: anthropic/claude-sonnet-4
+          MODEL: openai/gpt-4o
         run: node scripts/openrouter-triage.js
     timeout-minutes: 15
 env:

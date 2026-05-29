@@ -22,7 +22,7 @@ permissions:
   packages: write
 env:
   OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-  PRIMARY_MODEL: anthropic/claude-3.7-sonnet
+  PRIMARY_MODEL: openai/gpt-4o
   FALLBACK_MODEL: google/gemini-pro-1.5
   BUDGET_MODEL: deepseek/deepseek-chat
 jobs:

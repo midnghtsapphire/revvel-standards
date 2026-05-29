@@ -62,7 +62,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          MODEL: anthropic/claude-sonnet-4
+          MODEL: openai/gpt-4o
         run: node scripts/pr-review-request-handler.js
     timeout-minutes: 30
   update-status-badge:

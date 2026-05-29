@@ -62,7 +62,7 @@ jobs:
             --argjson system "$SYSTEM" \
             --argjson prompt "$PROMPT" \
             '{
-              model: "anthropic/claude-3.5-sonnet",
+              model: "openai/gpt-4o",
               max_tokens: 1024,
               messages: [
                 { role: "system", content: $system },
@@ -99,7 +99,7 @@ jobs:
           $REPLY
 
           ---
-          *Powered by [OpenRouter](https://openrouter.ai) · Model: \`anthropic/claude-3.5-sonnet\`*" \
+          *Powered by [OpenRouter](https://openrouter.ai) · Model: \`openai/gpt-4o\`*" \
             '{ body: $body }')
 
           gh api "repos/$REPO/issues/$ISSUE_NUMBER/comments" \

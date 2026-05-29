@@ -140,7 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           LLM_BASE_URL: https://openrouter.ai/api/v1
-          LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'anthropic/claude-sonnet-4.5' }}
+          LLM_MODEL: ${{ vars.SWE_AGENT_MODEL || 'openai/gpt-4o.5' }}
         run: |
           set -e
           # SWE-Agent has multiple invocation modes. The GitHub-issue mode is

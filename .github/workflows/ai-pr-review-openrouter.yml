@@ -32,7 +32,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          model: anthropic/claude-sonnet-4
+          model: openai/gpt-4o
           prompt_template: |
             You are a rewrite assistant, not a gatekeeper. Your job is to improve, never block.
 

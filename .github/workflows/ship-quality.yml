@@ -53,7 +53,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Referer: https://github.com" \
             -d '{
-              "model": "anthropic/claude-3.7-sonnet",
+              "model": "openai/gpt-4o",
               "messages": [{
                 "role": "system",
                 "content": "You are a code quality reviewer. Analyze PR changes for:\n1. Real TODOs/FIXMEs that are incomplete code\n2. Placeholder code that needs implementation\n3. Phased implementation language in code\n\nIGNORE:\n- Documentation explaining rules (like AGENTS.md)\n- README and docs files\n- Comments about what NOT to do\n\nRespond with:\n- BLOCK only if there are real incomplete code TODOs\n- WARN for minor issues\n- PASS if code is ship-ready\n\nFormat: VERDICT: BLOCK|WARN|PASS\nReason: one line exactly why"

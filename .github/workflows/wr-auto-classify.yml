@@ -60,7 +60,7 @@ jobs:
       PROJECT_OWNER_TYPE: user
       PROJECT_OWNER: midnghtsapphire
       PROJECT_NUMBER: 5
-      MODEL: anthropic/claude-sonnet-4
+      MODEL: openai/gpt-4o
     steps:
       - name: Classify and apply
         run: |

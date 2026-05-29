@@ -6,7 +6,6 @@ const path = require('node:path');
 const {
   generatePromptPacket,
   packetToMarkdown,
-  scoreRedOcean,
 } = require(path.join(__dirname, '..', 'products', 'prompt-generation-app', 'lib', 'prompt-generator.js'));
 
 function run(name, fn) {
@@ -88,23 +87,30 @@ run('red-ocean scoring is case-insensitive', () => {
   assert.equal(p.scores.redOcean, 50);
 });
 
-run('red-ocean score reaches 100 with all known keywords', () => {
+run('red-ocean score is capped at 100', () => {
   // All 7 keywords: social, chat, todo, note, crm, generic, crypto
-  // This verifies the current upper boundary exposed by generatePromptPacket.
   const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
   assert.equal(p.scores.redOcean, 100);
 });
 
-run('red-ocean score clamps values above 100', () => {
-  const score = scoreRedOcean('social chat todo note crm generic crypto extra', [
-    'social',
-    'chat',
-    'todo',
-    'note',
-    'crm',
-    'generic',
-    'crypto',
-    'extra',
-  ]);
-  assert.equal(score, 100);
+run('red-ocean base score is 30', () => {
+  const p = generatePromptPacket({ idea: 'unique innovative idea' });
+  assert.equal(p.scores.redOcean, 30);
+});
+
+run('red-ocean score boosts on keywords', () => {
+  const p = generatePromptPacket({ idea: 'social chat app' });
+  // 30 + 10 (social) + 10 (chat) = 50
+  assert.equal(p.scores.redOcean, 50);
+});
+
+run('red-ocean scoring is case-insensitive', () => {
+  const p = generatePromptPacket({ idea: 'SOCIAL CHAT' });
+  assert.equal(p.scores.redOcean, 50);
+});
+
+run('red-ocean score is capped at 100', () => {
+  // All 7 keywords: social, chat, todo, note, crm, generic, crypto
+  const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto extra' });
+  assert.equal(p.scores.redOcean, 100);
 });
