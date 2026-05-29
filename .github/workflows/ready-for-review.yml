@@ -206,10 +206,9 @@ jobs:
               }
             }
       - name: Check out repository (base ref, for scanner script)
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
-          persist-credentials: false
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v9.0.0
         with:
@@ -251,11 +250,12 @@ jobs:
               '',
               '| Bot | Trigger | Owns |',
               '| --- | --- | --- |',
-              '| **CodeRabbit** | `@coderabbitai review` | Line-by-line diff review, style, anti-patterns |',
-              '| **Jules** | `jules-pr-reviewer.yml` (auto on PR) | Blocking-severity verdict on `jules/review` status |',
-              '| **PandaOps** | `panda-ops.yml` (auto on PR) | Full-diff AI reasoning, inline feedback |',
-              '| **OpenRouter** | `ai-pr-review-openrouter.yml` (auto on PR) | Diff summary via OpenRouter model |',
-              '| **Copilot** | `@copilot` mention below | Code Quality checklist section |',
+              '| **CodeRabbit** (CodeRabbit Inc.) via `github.com/apps/coderabbitai` | `@coderabbitai review` | Line-by-line diff review, style, anti-patterns |',
+              '| **Jules** (Google) via `BeksOmega/jules-action@v1.0.0` (invoke), `BeksOmega/jules-comms@v1.0.0` (feedback), `BeksOmega/jules-publish@v1.0.0` (publish) | auto on PR | Blocking-severity verdict on `jules/review` status. Note: `sanjay3290/jules-pr-reviewer@v1` was a 4th lane, silenced in #13974 — broken. |',
+              '| **PandaOps** via `panda-ops.yml` | auto on PR | Full-diff AI reasoning, inline feedback |',
+              '| **OpenRouter** (OpenRouter Inc.) via `ai-pr-review-openrouter.yml` | auto on PR | Diff summary via OpenRouter model |',
+              '| **Octopus Review** (octopus-review-bot) via the GitHub App | auto on PR | AI PR analysis (codebase-aware) |',
+              '| **Copilot** (GitHub) via `github.com/apps/copilot` | `@copilot` mention below | Code Quality checklist section |',
               '| **Roo** | `roo` mention below | Testing checklist section |',
               '| **Antigravity** | `antigravity` mention below | Standards checklist section |',
               '',

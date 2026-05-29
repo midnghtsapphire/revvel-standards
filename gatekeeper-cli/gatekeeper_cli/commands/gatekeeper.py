@@ -68,32 +68,31 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
     config_name = config_name or config.get_doppler_config()
     repo = repo or f"{config.get_github_owner()}/{config.get_github_repo()}"
 
-    console.print(f"[cyan]Syncing secrets from Doppler to GitHub...[/cyan]")
+    console.print("[cyan]Syncing secrets from Doppler to GitHub...[/cyan]")
     console.print(f"Project: {project}")
     console.print(f"Config: {config_name}")
     console.print(f"Repo: {repo}\n")
 
     try:
         # Use the existing gatekeeper-sync.sh script (try to find it relative to repo root)
-        import os
         from pathlib import Path
-        
+
         # Try to find script relative to current directory or common locations
         script_candidates = [
             Path("scripts/gatekeeper-sync.sh"),
             Path("../scripts/gatekeeper-sync.sh"),
             Path("/home/runner/work/revvel-standards/revvel-standards/scripts/gatekeeper-sync.sh"),
         ]
-        
+
         script_path = None
         for candidate in script_candidates:
             if candidate.exists():
                 script_path = str(candidate.resolve())
                 break
-        
+
         if not script_path:
             raise FileNotFoundError("gatekeeper-sync.sh script not found")
-        
+
         cmd = [
             script_path,
             "--project", project,
@@ -105,49 +104,49 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
             cmd.extend(["--secrets", secrets])
 
         result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-        
+
         if result.returncode == 0:
             console.print("[green]✓[/green] Sync completed successfully")
             if result.stdout:
                 console.print(result.stdout)
         else:
-            console.print(f"[red]✗[/red] Sync failed")
+            console.print("[red]✗[/red] Sync failed")
             if result.stderr:
                 console.print(result.stderr)
             raise click.Abort()
 
     except FileNotFoundError:
-        console.print(f"[yellow]Warning: gatekeeper-sync.sh not found. Using API directly...[/yellow]\n")
-        
+        console.print("[yellow]Warning: gatekeeper-sync.sh not found. Using API directly...[/yellow]\n")
+
         # Fallback to direct API calls
         doppler_api = DopplerAPI(doppler_token)
         github_api = GitHubAPI(github_token)
-        
+
         owner, repo_name = repo.split("/")
-        
+
         # Get secrets from Doppler
         secret_list = doppler_api.list_secrets(project, config_name)
-        
+
         if secrets:
             secret_names = [s.strip() for s in secrets.split(",")]
             secret_list = [s for s in secret_list if s["name"] in secret_names]
-        
+
         synced = []
         failed = []
-        
+
         for secret in secret_list:
             try:
                 secret_name = secret["name"]
                 secret_data = doppler_api.get_secret(secret_name, project, config_name)
                 secret_value = secret_data.get("value", {}).get("computed", "")
-                
+
                 github_api.set_repo_secret(owner, repo_name, secret_name, secret_value)
                 synced.append(secret_name)
                 console.print(f"[green]✓[/green] Synced: {secret_name}")
             except Exception as e:
                 failed.append((secret_name, str(e)))
                 console.print(f"[red]✗[/red] Failed: {secret_name} - {e}")
-        
+
         console.print(f"\n[cyan]Summary:[/cyan] {len(synced)} synced, {len(failed)} failed")
 
 
@@ -219,7 +218,7 @@ def audit(secret: str, project: str, config_name: str):
     api = DopplerAPI(token)
     try:
         secret_data = api.get_secret(secret, project, config_name)
-        
+
         table = Table(title=f"Secret Audit: {secret}")
         table.add_column("Property", style="cyan")
         table.add_column("Value", style="green")
@@ -227,14 +226,14 @@ def audit(secret: str, project: str, config_name: str):
         table.add_row("Name", secret_data.get("name", "N/A"))
         table.add_row("Created", secret_data.get("created_at", "N/A"))
         table.add_row("Updated", secret_data.get("updated_at", "N/A"))
-        
+
         computed = secret_data.get("computed", {})
         table.add_row("Source", computed.get("source", "N/A"))
-        
+
         console.print(table)
         console.print()
         console.print("[dim]Note: Detailed audit logs are available in the Doppler dashboard[/dim]")
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
-        raise click.Abort()
+        raise click.Abort() from e

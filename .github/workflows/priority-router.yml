@@ -48,7 +48,7 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
             const DEFAULT_PRIORITY_LABELS = ['priority-p0', 'priority-p1',
             'priority-p2', 'priority-p3'];
@@ -66,6 +66,7 @@ jobs:
               .split(',')
               .map((label) => label.trim())
               .filter(Boolean);
+
 
             let PRIORITY_DEFINITIONS = DEFAULT_PRIORITY_DEFINITIONS;
 
@@ -151,7 +152,7 @@ jobs:
               if (!useOpenRouter) return null;
               const body = (item.body || '').slice(0, 2000);
               const payload = {
-                model: 'openai/gpt-4o',
+                model: 'anthropic/claude-sonnet-4',
                 messages: [
                   {
                     role: 'system',

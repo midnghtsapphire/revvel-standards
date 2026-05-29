@@ -727,18 +727,28 @@ async function requestPrReviews(context) {
   }
 }
 
-async function findAndRequestLinkedPrReviews(context) {
+async function findAndRequestLinkedPrReviews(
+  context,
+  {
+    listPrs = listPullRequestsForIssue,
+    applyLabels = addLabels,
+    applyComment = postComment,
+  } = {},
+) {
   if (!context.githubToken || !context.issueNumber || context.prNumber) return;
-  try {
-    const prs = await listPullRequestsForIssue(context);
-    for (const pr of prs.slice(0, 3)) {
-      await addLabels({
+  const prs = await listPrs(context).catch((error) => {
+    console.log(`::warning::Could not list linked PRs: ${error.message}`);
+    return [];
+  });
+  const results = await Promise.allSettled(
+    prs.slice(0, 3).map(async (pr) => {
+      await applyLabels({
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
         labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
       });
-      await postComment({
+      await applyComment({
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
@@ -748,9 +758,14 @@ async function findAndRequestLinkedPrReviews(context) {
           includeCoderTrigger: true,
         }),
       });
+    }),
+  );
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].status === "rejected") {
+      console.log(
+        `::warning::Could not request review for linked PR #${prs[i].number}: ${results[i].reason?.message ?? results[i].reason}`,
+      );
     }
-  } catch (error) {
-    console.log(`::warning::Could not request reviews for linked PRs: ${error.message}`);
   }
 }
 
@@ -829,6 +844,7 @@ module.exports = {
   buildReviewRequestComment,
   buildSynthesisPrompt,
   defaultOutputFile,
+  findAndRequestLinkedPrReviews,
   formatDocument,
   getOptionsFromEnv,
   parseDepth,

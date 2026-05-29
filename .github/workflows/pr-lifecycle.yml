@@ -39,7 +39,7 @@ jobs:
       - name: Update lifecycle labels
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
             const pr     = context.payload.pull_request;
 
@@ -61,11 +61,17 @@ jobs:
 
             // ─ helpers ────────────────────────────────────────────
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                const res = await github.rest.issues.listLabelsOnIssue({
+                  owner, repo, issue_number: num
+                });
+                return res.data.map(l => l.name);
+              } catch (e) {
+                core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -134,7 +140,10 @@ jobs:
 
               case 'review_requested': {
                 const cur = await currentLabels();
-                if (!cur.includes('awaiting-review')) await add('awaiting-review');
+                // Do not override an already approved PR unless a new commit/reopen resets it.
+                if (!cur.includes('approved') && !cur.includes('awaiting-review')) {
+                  await add('awaiting-review');
+                }
                 break;
               }
 
@@ -152,7 +161,7 @@ jobs:
       - name: Update labels on review submission
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
             const review = context.payload.review;
 
@@ -170,11 +179,17 @@ jobs:
             core.info(`PR #${num} review state: ${state}`);
 
 
-            const currentLabels = async () => (
-              await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: num
-              })
-            ).data.map(l => l.name);
+            const currentLabels = async () => {
+              try {
+                const res = await github.rest.issues.listLabelsOnIssue({
+                  owner, repo, issue_number: num
+                });
+                return res.data.map(l => l.name);
+              } catch (e) {
+                core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
+                return [];
+              }
+            };
 
 
             const add = async (...labels) => {
@@ -243,7 +258,7 @@ jobs:
       - name: Find open PRs for this SHA and update check labels
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
             const owner = context.repo.owner;
 

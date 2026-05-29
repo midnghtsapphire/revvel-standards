@@ -54,6 +54,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  workflows: write
 jobs:
   health-check:
     name: Check agent availability
@@ -88,6 +89,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
       - name: Check agent availability
         id: check
         env:
@@ -155,7 +158,8 @@ jobs:
         uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -229,7 +233,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-          MODEL: openai/gpt-4o
+          MODEL: anthropic/claude-sonnet-4
         run: |
           echo "🌐 Attempting to use OpenRouter (preferred free/affordable agent)..."
 
@@ -308,9 +312,9 @@ jobs:
       - name: Create pull request (if changes were made)
         id: cpr
         if: steps.result.outputs.success == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
           base: main
           title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"

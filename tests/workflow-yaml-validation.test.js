@@ -215,6 +215,20 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   }
 });
 
+test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+  const script = doc.jobs['pr-state'].steps[0].with?.script || '';
+
+  if (!script.includes("case 'review_requested'")) {
+    throw new Error('pr-state script must handle review_requested events');
+  }
+  if (!script.includes("!cur.includes('approved')")) {
+    throw new Error('review_requested path must not add awaiting-review when approved is present');
+  }
+});
+
 test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

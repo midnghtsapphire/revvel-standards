@@ -280,7 +280,7 @@ jobs:
       JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Log workflow trigger
