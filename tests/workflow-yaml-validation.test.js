@@ -476,6 +476,9 @@ test('secret-persistence-guard.yml avoids stale spam escalation issues', () => {
   if (!cleanupScript.includes('gh issue close') || !cleanupScript.includes('Secrets Missing: Manual Recovery Required')) {
     throw new Error('close-stale-escalations job must close stale secret escalation issues');
   }
+  if (!cleanupScript.includes('--search') || !cleanupScript.includes('in:title')) {
+    throw new Error('close-stale-escalations job must search by issue title before closing');
+  }
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);
