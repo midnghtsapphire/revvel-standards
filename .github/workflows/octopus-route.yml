@@ -56,11 +56,16 @@ concurrency:
 
 jobs:
   route-single:
-    name: Translate labels for a freshly opened Octopus issue
+    name: Translate labels on an Octopus issue (opened or recovery-labeled)
     # Fires on:
     #   - issues: opened   when Octopus files something new
-    #   - issues: labeled  when the recovery-engine applies
-    #                      `recovery:translate-me` to a stuck older Octopus issue
+    #   - issues: labeled  when a maintainer (or future external token-holder)
+    #                      applies `recovery:translate-me`. NB: workflows
+    #                      using the default GITHUB_TOKEN CANNOT trigger this
+    #                      path due to GitHub's anti-recursion rule —
+    #                      recovery-engine.yml therefore translates inline
+    #                      under its own token instead of cascading through
+    #                      this trigger (per Copilot review on PR #14107).
     if: |-
       github.event_name == 'issues' &&
       github.event.issue.user.login == 'octopus-review[bot]' &&
@@ -135,8 +140,33 @@ jobs:
           MAX_ISSUES: ${{ github.event.inputs.max_issues || '100' }}
         with:
           script: |
-            const rateLimitMinutes = Number.parseInt(process.env.RATE_LIMIT_MINUTES, 10) || 0;
-            const maxIssues = Number.parseInt(process.env.MAX_ISSUES, 10) || 100;
+            // Per Copilot review on PR #14107:
+            //   (1) Use Number.isFinite to avoid `0 || default` swallowing
+            //       an explicit max_issues=0 (the previous `|| 100` would
+            //       turn 0 into 100).
+            //   (2) Cap rateLimitMinutes * maxIssues to a safe job budget
+            //       so a drip-feed run can't hit GitHub's 6h timeout and
+            //       leave the queue half-translated with no resume.
+            const rawRate = Number.parseInt(process.env.RATE_LIMIT_MINUTES, 10);
+            const rateLimitMinutes = Number.isFinite(rawRate) ? Math.max(0, rawRate) : 0;
+            const rawMax = Number.parseInt(process.env.MAX_ISSUES, 10);
+            const maxIssues = Number.isFinite(rawMax) ? Math.max(0, rawMax) : 100;
+
+            const SAFE_JOB_BUDGET_MIN = 300; // 5h — leaves headroom under the 6h cap.
+            const plannedMinutes = rateLimitMinutes * Math.max(maxIssues - 1, 0);
+            if (plannedMinutes > SAFE_JOB_BUDGET_MIN) {
+              core.setFailed(
+                `rate_limit_minutes (${rateLimitMinutes}) × (max_issues - 1) = ${plannedMinutes} min ` +
+                `exceeds the safe job budget of ${SAFE_JOB_BUDGET_MIN} min. ` +
+                `Lower max_issues or rate_limit_minutes, or split across multiple dispatches.`
+              );
+              return;
+            }
+
+            if (maxIssues === 0) {
+              core.notice('max_issues=0 — nothing to do.');
+              return;
+            }
 
             const iter = github.paginate.iterator(
               github.rest.search.issuesAndPullRequests,
@@ -184,9 +214,10 @@ jobs:
                   core.info(`#${issue.number}: added ${toAdd.join(', ')} (${processed}/${maxIssues})`);
                   translated++;
                   // Drip-feed: pause between issues so downstream
-                  // openrouter-coder runs spread out instead of bursting,
-                  // keeping the cost curve gentle.
-                  if (rateLimitMinutes > 0) {
+                  // openrouter-coder runs spread out. Don't sleep after the
+                  // last issue or when we're already at the cap — pointless
+                  // runner-minute burn (per Copilot review on PR #14107).
+                  if (rateLimitMinutes > 0 && processed < maxIssues) {
                     core.info(`Sleeping ${rateLimitMinutes} min before next issue...`);
                     await sleep(rateLimitMinutes * 60 * 1000);
                   }
