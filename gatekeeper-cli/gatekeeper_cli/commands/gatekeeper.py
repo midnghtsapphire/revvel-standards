@@ -68,13 +68,14 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
     config_name = config_name or config.get_doppler_config()
     repo = repo or f"{config.get_github_owner()}/{config.get_github_repo()}"
 
-    console.print("[cyan]Syncing secrets from Doppler to GitHub...[/cyan]")
+    console.print(f"[cyan]Syncing secrets from Doppler to GitHub...[/cyan]")
     console.print(f"Project: {project}")
     console.print(f"Config: {config_name}")
     console.print(f"Repo: {repo}\n")
 
     try:
         # Use the existing gatekeeper-sync.sh script (try to find it relative to repo root)
+        import os
         from pathlib import Path
 
         # Try to find script relative to current directory or common locations
@@ -110,13 +111,13 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
             if result.stdout:
                 console.print(result.stdout)
         else:
-            console.print("[red]✗[/red] Sync failed")
+            console.print(f"[red]✗[/red] Sync failed")
             if result.stderr:
                 console.print(result.stderr)
             raise click.Abort()
 
     except FileNotFoundError:
-        console.print("[yellow]Warning: gatekeeper-sync.sh not found. Using API directly...[/yellow]\n")
+        console.print(f"[yellow]Warning: gatekeeper-sync.sh not found. Using API directly...[/yellow]\n")
 
         # Fallback to direct API calls
         doppler_api = DopplerAPI(doppler_token)
@@ -236,4 +237,4 @@ def audit(secret: str, project: str, config_name: str):
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
-        raise click.Abort() from e
+        raise click.Abort()

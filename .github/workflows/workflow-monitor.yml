@@ -18,16 +18,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6.0.2
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
-          node-version: "24"
+          node-version: "20"
           cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Monitor workflow
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -57,15 +57,6 @@ jobs:
             core.info(`Monitoring: ${runName} (ID: ${runId})`);
             core.info(`Status: ${runStatus}, Conclusion: ${runConclusion || 'N/A'}`);
             core.info(`Duration: ${Math.round(duration / 60000)} minutes`);
-            
-            const safeApiCall = async (operationDescription, apiOperation, fallback = null) => {
-              try {
-                return await apiOperation();
-              } catch (error) {
-                core.warning(`⚠️ ${operationDescription} failed: ${error.message}`);
-                return fallback;
-              }
-            };
 
             // ──────────────────────────────────────────────────────────────
             // Case 1: Workflow stuck (running too long)
@@ -74,18 +65,13 @@ jobs:
               core.warning(`⚠️ Workflow stuck: ${runName} running for ${Math.round(duration / 60000)} minutes`);
               
               // Check if alert already exists
-              const existingAlerts = await safeApiCall(
-                'Search for existing stuck workflow alerts',
-                () => github.rest.search.issuesAndPullRequests({
-                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-                })
-              );
+              const existingAlerts = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+              });
               
-              if (existingAlerts && existingAlerts.data.total_count === 0) {
+              if (existingAlerts.data.total_count === 0) {
                 // Create alert issue
-                const issue = await safeApiCall(
-                  'Create stuck workflow alert issue',
-                  () => github.rest.issues.create({
+                const issue = await github.rest.issues.create({
                   owner,
                   repo,
                   title: `[ALERT] Workflow stuck: ${runName}`,
@@ -125,13 +111,9 @@ jobs:
                     AUTO_FIX_LABEL,
                     'priority-p0',
                   ],
-                }));
+                });
                 
-                if (issue) {
-                  core.info(`✅ Created alert issue #${issue.data.number}`);
-                }
-              } else if (!existingAlerts) {
-                core.info('ℹ️ Skipping alert creation because existing-alert lookup failed');
+                core.info(`✅ Created alert issue #${issue.data.number}`);
               } else {
                 core.info(`ℹ️ Alert issue already exists, skipping creation`);
               }
@@ -216,9 +198,7 @@ jobs:
                   core.warning(`⚠️ Retry script failed: ${error.message}`);
                   
                   // Fallback: create issue for manual intervention
-                  await safeApiCall(
-                    'Create manual intervention issue after failed auto-retry',
-                    () => github.rest.issues.create({
+                  await github.rest.issues.create({
                     owner,
                     repo,
                     title: `[FAILURE] ${runName} failed (auto-retry failed)`,
@@ -246,15 +226,13 @@ jobs:
                       NEEDS_HUMAN_LABEL,
                       'priority-p1',
                     ],
-                  }));
+                  });
                 }
               } else {
                 core.info('❌ Non-transient failure, creating issue for human review');
                 
                 // Create issue for manual review
-                await safeApiCall(
-                  'Create manual review issue for non-transient failure',
-                  () => github.rest.issues.create({
+                await github.rest.issues.create({
                   owner,
                   repo,
                   title: `[FAILURE] ${runName} failed`,
@@ -288,7 +266,7 @@ jobs:
                     NEEDS_HUMAN_LABEL,
                     'priority-p2',
                   ],
-                }));
+                });
               }
             }
 
@@ -299,19 +277,13 @@ jobs:
               core.info('✅ Workflow succeeded');
               
               // Check for open alert issues for this workflow
-              const openAlerts = await safeApiCall(
-                'Search open alerts for recovered workflow',
-                () => github.rest.search.issuesAndPullRequests({
-                  q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
-                })
-              );
+              const openAlerts = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue is:open label:"${ALERT_LABEL}" "${runName}" in:title`,
+              });
               
-              const recoveredAlerts = openAlerts?.data?.items || [];
-              for (const alert of recoveredAlerts) {
+              for (const alert of openAlerts.data.items) {
                 // Post recovery comment
-                const comment = await safeApiCall(
-                  `Add recovery comment to alert #${alert.number}`,
-                  () => github.rest.issues.createComment({
+                await github.rest.issues.createComment({
                   owner,
                   repo,
                   issue_number: alert.number,
@@ -331,32 +303,21 @@ jobs:
                     '',
                     `_Auto-generated by workflow-monitor.yml at ${new Date().toISOString()}_`,
                   ].join('\n'),
-                }));
-                
-                if (!comment) {
-                  core.warning(`⚠️ Recovery comment failed for #${alert.number}; attempting to close alert anyway`);
-                }
-                const existingLabelNames = Array.isArray(alert.labels)
-                  ? alert.labels.map(l => l?.name).filter(Boolean)
-                  : [];
+                });
                 
                 // Close alert
-                const updated = await safeApiCall(
-                  `Close recovered alert #${alert.number}`,
-                  () => github.rest.issues.update({
+                await github.rest.issues.update({
                   owner,
                   repo,
                   issue_number: alert.number,
                   state: 'closed',
                   labels: [
-                    ...existingLabelNames,
+                    ...alert.labels.map(l => l.name),
                     'resolved',
                   ].filter(l => l !== ALERT_LABEL),
-                }));
+                });
                 
-                if (updated) {
-                  core.info(`✅ Closed alert issue #${alert.number}`);
-                }
+                core.info(`✅ Closed alert issue #${alert.number}`);
               }
             }
       - name: Update summary

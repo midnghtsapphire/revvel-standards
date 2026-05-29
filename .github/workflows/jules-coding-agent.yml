@@ -24,13 +24,7 @@ permissions:
   issues: write
 
 env:
-  # Unified to JULES_API_KEY 2026-05-28 — every other Jules workflow already used
-  # JULES_API_KEY; only this file looked for JULES_TOKEN, which left the
-  # secret-persistence-guard chasing a key nobody else referenced (the "clog").
-  # Old name kept (commented) per the standards convention; uncomment only if
-  # you ever genuinely need a separate token credential.
-  # JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
-  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -45,7 +39,7 @@ jobs:
        (github.event.label.name == 'wr:jules' || github.event.label.name == 'wr:code'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Prepare issue context
         id: context

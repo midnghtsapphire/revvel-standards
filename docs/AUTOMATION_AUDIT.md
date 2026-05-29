@@ -81,7 +81,7 @@ The revvel-standards repository has extensive automation infrastructure:
 #### Monitoring & Analytics
 33. ✅ `amplitude-events.yml` — Amplitude analytics events
 34. ✅ `amplitude-to-notion.yml` — Amplitude → Notion sync
-35. ⏸ `mabl.yml` — Mabl test automation (PAUSED 2026-05-27; replaced by Keploy. Auto-triggers commented; manual `workflow_dispatch` still works. See header notes in the workflow file for the full evaluation.)
+35. ✅ `mabl.yml` — Mabl test automation
 36. ✅ `workflow-health-dashboard.yml` — Workflow monitoring
 37. ✅ `proof-of-life.yml` — App health checks
 

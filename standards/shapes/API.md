@@ -151,10 +151,7 @@ User signs up → Stripe checkout → webhook → generate API key → email to 
 ```
 
 Key storage: database table `api_keys` with columns:
-- `key_hash` — **prefer HMAC-SHA256** with a server-held pepper for API tokens.
-  bcrypt is acceptable **only** if the API key is **≤ 72 bytes** (bcrypt
-  silently truncates beyond that, creating collision risk — flagged in the
-  Octopus audit 2026-05-28). Never store plaintext.
+- `key_hash` (bcrypt — never store plaintext)
 - `user_id`
 - `plan` (free, pro, enterprise)
 - `rate_limit` (requests/minute by plan)

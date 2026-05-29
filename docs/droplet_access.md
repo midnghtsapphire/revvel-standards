@@ -3,11 +3,11 @@
 ## MindMappr Droplet (Primary)
 - **IP**: 164.90.148.7
 - **SSH**: `ssh root@164.90.148.7`
-- **Password**: [REDACTED — stored in vault]
+- **Password**: `+j2swyCE.*B6kdg`
 - **Services Running**:
   - MindMappr Bot (systemd: mindmappr) — port 8080
   - meetaudreyevans.com Dashboard — port 80
-- **Bot Token**: [REDACTED — see vault]
+- **Bot Token**: 8237788245:AAFE01tfL0jWCqt6ODvLB_O_wjSRd3QlX30
 - **Telegram Group**: RISINGALOHA (chat ID: -1003735305867)
 - **Bot Username**: @googlieeyes_bot
 
@@ -48,7 +48,7 @@
 
 ## Namecheap (Domain Registrar)
 - **Username**: uprisinghope
-- **Password**: [REDACTED — stored in vault]
+- **Password**: Church#123
 - **Login URL**: https://www.namecheap.com/myaccount/login/
 - **Note**: Account requires email 2FA verification on new device logins
 - **Domains Managed**:

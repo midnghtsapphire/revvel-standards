@@ -63,12 +63,12 @@ jobs:
 
             // Don't repeat the notice on every label-fire; check for an
             // existing notice first.
-            let comments = []; try { const { data } = await github.rest.issues.listComments({
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               per_page: 100,
-            }); comments = data; } catch (e) { console.log(`⚠️ error getting comments: ${e.message}`); }
+            });
             const marker = '<!-- openhands-resolver:setup-needed -->';
             if (comments.some(c => c.body && c.body.includes(marker))) {
               core.info('Setup-needed notice already posted; skipping.');
@@ -123,7 +123,7 @@ jobs:
       LLM_MODEL: ${{ vars.OPENHANDS_MODEL || 'anthropic/claude-sonnet-4.5' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: main

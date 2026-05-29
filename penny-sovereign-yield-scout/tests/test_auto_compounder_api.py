@@ -22,13 +22,6 @@ from auto_compounder_api import (
 
 client = TestClient(app)
 
-VALID_API_KEY = "test-key-123"
-AUTH_HEADER = {"X-API-Key": VALID_API_KEY}
-
-@pytest.fixture(autouse=True)
-def setup_env(monkeypatch):
-    monkeypatch.setenv("COMPOUND_API_KEY", VALID_API_KEY)
-
 @pytest.fixture(autouse=True)
 def reset_state():
     """Reset the global state before each test."""
@@ -110,7 +103,7 @@ def test_compound_execute():
         "chain": "arbitrum"
     }
 
-    response = client.post("/compound", json=req_data, headers=AUTH_HEADER)
+    response = client.post("/compound", json=req_data)
     assert response.status_code == 200
     data = response.json()
 
@@ -140,7 +133,7 @@ def test_compound_skip():
         "chain": "arbitrum"
     }
 
-    response = client.post("/compound", json=req_data, headers=AUTH_HEADER)
+    response = client.post("/compound", json=req_data)
     assert response.status_code == 200
     data = response.json()
 
@@ -159,23 +152,23 @@ def test_history_and_positions():
     _positions["0x222:poolB"] = {"wallet": "0x222", "protocol": "B"}
 
     # Test history all
-    res = client.get("/history", headers=AUTH_HEADER)
+    res = client.get("/history")
     assert res.status_code == 200
     assert res.json()["total"] == 2
 
     # Test history filter
-    res = client.get("/history?wallet=0x111", headers=AUTH_HEADER)
+    res = client.get("/history?wallet=0x111")
     assert res.status_code == 200
     assert res.json()["total"] == 1
     assert res.json()["records"][0]["protocol"] == "A"
 
     # Test positions all
-    res = client.get("/positions", headers=AUTH_HEADER)
+    res = client.get("/positions")
     assert res.status_code == 200
     assert res.json()["total"] == 2
 
     # Test positions filter
-    res = client.get("/positions?wallet=0x222", headers=AUTH_HEADER)
+    res = client.get("/positions?wallet=0x222")
     assert res.status_code == 200
     assert res.json()["total"] == 1
     assert res.json()["positions"][0]["protocol"] == "B"
@@ -209,7 +202,7 @@ def test_audit_verify_empty():
     if LOG_FILE.exists():
         LOG_FILE.unlink()
 
-    res = client.get("/audit/verify", headers=AUTH_HEADER)
+    res = client.get("/audit/verify")
     assert res.status_code == 200
     assert res.json()["verified"] is True
     assert res.json()["entries"] == 0
@@ -225,10 +218,10 @@ def test_audit_verify_with_logs():
         "chain": "arbitrum"
     }
 
-    client.post("/compound", json=req_data, headers=AUTH_HEADER)
-    client.post("/compound", json=req_data, headers=AUTH_HEADER)
+    client.post("/compound", json=req_data)
+    client.post("/compound", json=req_data)
 
-    res = client.get("/audit/verify", headers=AUTH_HEADER)
+    res = client.get("/audit/verify")
     assert res.status_code == 200
     data = res.json()
     assert data["verified"] is True
@@ -245,7 +238,7 @@ def test_audit_verify_with_logs():
     with open(LOG_FILE, "w") as f:
         f.writelines(lines)
 
-    res = client.get("/audit/verify", headers=AUTH_HEADER)
+    res = client.get("/audit/verify")
     assert res.status_code == 200
     data = res.json()
     assert data["verified"] is False
@@ -388,23 +381,3 @@ def test_eth_price_endpoint(monkeypatch):
     data = res.json()
     assert data["price"] == 3000.0
     assert data["source"] == "coingecko"
-
-# --- Security Tests ---
-
-def test_unauthorized_access():
-    # No header
-    res = client.post("/compound", json={})
-    assert res.status_code == 403
-
-    res = client.get("/history")
-    assert res.status_code == 403
-
-    # Invalid key
-    res = client.get("/positions", headers={"X-API-Key": "wrong-key"})
-    assert res.status_code == 403
-
-def test_server_not_configured(monkeypatch):
-    monkeypatch.delenv("COMPOUND_API_KEY", raising=False)
-    res = client.get("/audit/verify", headers=AUTH_HEADER)
-    assert res.status_code == 500
-    assert "API authentication not configured" in res.json()["detail"]

@@ -41,18 +41,11 @@ jobs:
               return;
             }
 
-            let issue;
-            try {
-              const res = await github.rest.issues.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              issue = res.data;
-            } catch (e) {
-              core.warning(`Failed to get issue: ${e.message}`);
-              return;
-            }
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
 
             const body = issue.body || '';
             const existingLabels = (issue.labels || []).map(

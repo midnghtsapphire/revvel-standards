@@ -29,8 +29,7 @@ from typing import Optional
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, Depends, Security
-from fastapi.security import APIKeyHeader
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -57,31 +56,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ─── Security setup ────────────────────────────────────────────────────────────
-
-API_KEY_NAME = "X-API-Key"
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
-
-def validate_api_key(api_key: str = Security(api_key_header)) -> str:
-    """
-    Validate the request API key against COMPOUND_API_KEY env var.
-    Returns the key if valid, else raises 403 Forbidden.
-    """
-    expected_key = os.getenv("COMPOUND_API_KEY")
-    if not expected_key:
-        # If no key is configured, we reject all sensitive requests for safety
-        raise HTTPException(
-            status_code=500,
-            detail="API authentication not configured on server"
-        )
-    if api_key != expected_key:
-        raise HTTPException(
-            status_code=403,
-            detail="Could not validate credentials"
-        )
-    return api_key
-
 
 DEFILLAMA_BASE = os.getenv("DEFILLAMA_BASE_URL", "https://yields.llama.fi")
 LOG_DIR = Path(os.getenv("VERIFIABLE_LOG_DIR", "./logs"))
@@ -306,7 +280,7 @@ def eth_price(force_refresh: bool = Query(default=False, description="Bypass the
     return fetch_eth_price_usd(force_refresh=force_refresh)
 
 
-@app.post("/compound", response_model=CompoundResponse, tags=["Compounding"], dependencies=[Depends(validate_api_key)])
+@app.post("/compound", response_model=CompoundResponse, tags=["Compounding"])
 def trigger_compound(req: CompoundRequest) -> CompoundResponse:
     """
     Trigger an auto-compound action for a yield position.
@@ -389,7 +363,7 @@ def trigger_compound(req: CompoundRequest) -> CompoundResponse:
     )
 
 
-@app.get("/history", tags=["Compounding"], dependencies=[Depends(validate_api_key)])
+@app.get("/history", tags=["Compounding"])
 def get_history(
     wallet: Optional[str] = Query(default=None, description="Filter by wallet address"),
     limit: int = Query(default=50, le=500),
@@ -404,7 +378,7 @@ def get_history(
     }
 
 
-@app.get("/positions", tags=["Positions"], dependencies=[Depends(validate_api_key)])
+@app.get("/positions", tags=["Positions"])
 def list_positions(wallet: Optional[str] = Query(default=None)) -> dict:
     """List all tracked positions, optionally filtered by wallet."""
     positions = list(_positions.values())
@@ -443,7 +417,7 @@ def optimal_compound_interval(
     }
 
 
-@app.get("/audit/verify", tags=["Audit"], dependencies=[Depends(validate_api_key)])
+@app.get("/audit/verify", tags=["Audit"])
 def verify_audit_log() -> dict:
     """Verify the integrity of the audit chain log."""
     if not LOG_FILE.exists():

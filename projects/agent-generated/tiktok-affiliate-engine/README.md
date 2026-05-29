@@ -13,7 +13,7 @@ It features aesthetic matching (light/dark mode) so the landing page matches the
 | Field | Status |
 |-------|--------|
 | Target Revenue | $5,000/month |
-| Framework | Next.js ^16.2.6, React 19, Tailwind CSS |
+| Framework | Next.js 14, Tailwind CSS |
 | Integrations | Resend (Email), Twilio (SMS), Cal.com |
 
 ## Deployment & Testing

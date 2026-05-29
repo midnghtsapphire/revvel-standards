@@ -117,7 +117,6 @@ cd wr
 **Action Required:** URGENT - Deploy P0 repos immediately
 
 **10M by 2030 Goal:**
-
 - Years remaining: 3.58 years
 - Monthly target increase: ~$233/month
 - Weekly target increase: ~$54/week
@@ -159,7 +158,6 @@ These repositories have immediate revenue potential and should be addressed firs
 **Status:** ✅ Active
 
 **Triggers:**
-
 - ✅ Issue with `[WR]` prefix - automatically detected
 - ✅ Manual trigger with issue number via workflow_dispatch
 - ⏳ Scheduled weekly scan (can be configured)

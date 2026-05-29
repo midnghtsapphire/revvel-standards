@@ -170,13 +170,9 @@ async function submitHeygenJob(audioFile: File, avatarFile: File): Promise<strin
 
 // ─── Luma helpers ─────────────────────────────────────────────────────────────
 
-async function submitLumaJob(audioFile: File, themePrompt?: string): Promise<string> {
+async function submitLumaJob(audioFile: File): Promise<string> {
   const apiKey = process.env.LUMA_API_KEY;
   if (!apiKey) throw new Error('LUMA_API_KEY is not set');
-
-  const finalPrompt = themePrompt
-    ? `${themePrompt} (Song: ${audioFile.name})`
-    : `Music video for the song: ${audioFile.name}`;
 
   const res = await fetch('https://api.lumalabs.ai/dream-machine/v1/generations', {
     method: 'POST',
@@ -185,7 +181,7 @@ async function submitLumaJob(audioFile: File, themePrompt?: string): Promise<str
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      prompt: finalPrompt,
+      prompt: `Music video for the song: ${audioFile.name}`,
       loop: false,
       aspect_ratio: '16:9',
     }),
@@ -207,13 +203,12 @@ async function submitToProvider(
   provider: string,
   audioFile: File,
   avatarFile: File,
-  themePrompt?: string,
 ): Promise<string> {
   switch (provider) {
     case 'heygen':
       return submitHeygenJob(audioFile, avatarFile);
     case 'luma':
-      return submitLumaJob(audioFile, themePrompt);
+      return submitLumaJob(audioFile);
     case 'runway':
       throw new Error('Runway integration not yet provisioned — add RUNWAY_API_KEY and implement submitRunwayJob');
     default:
@@ -312,7 +307,6 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File | null;
     const avatarFile = formData.get('avatar') as File | null;
-    const themePrompt = formData.get('theme_prompt') as string | null;
 
     if (!(audioFile instanceof File) || !(avatarFile instanceof File)) {
       return NextResponse.json(
@@ -371,7 +365,7 @@ export async function POST(request: NextRequest) {
 
     let providerJobId: string;
     try {
-      providerJobId = await submitToProvider(selectedProvider, audioFile, avatarFile, themePrompt || undefined);
+      providerJobId = await submitToProvider(selectedProvider, audioFile, avatarFile);
     } catch (execErr) {
       const msg = execErr instanceof Error ? execErr.message : String(execErr);
       log('execution', 'submission_failed', msg);

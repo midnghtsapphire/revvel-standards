@@ -49,13 +49,11 @@ Templates are stored in `revvel-standards/templates/mcp/`. Copy the appropriate 
 These servers provide AI models with direct read/write access to databases. Use them for natural-language SQL queries, schema inspection, data analysis, and migrations.
 
 #### 1. Postgres MCP Server
-
 - **Repository:** `servers/src/postgres` ([@modelcontextprotocol/server-postgres](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-postgres`
 - **Required Env:** `DATABASE_URL` (PostgreSQL connection string)
 - **Use Case:** Primary Revvel database. All apps using PostgreSQL must enable this.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -64,13 +62,11 @@ These servers provide AI models with direct read/write access to databases. Use 
   ```
 
 #### 2. SQLite MCP Server
-
 - **Repository:** `servers/src/sqlite` ([@modelcontextprotocol/server-sqlite](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-sqlite`
 - **Required Env:** `SQLITE_DB_PATH` (path to `.db` file)
 - **Use Case:** Lightweight, single-tenant tools, local dev, CLI tools.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -79,13 +75,11 @@ These servers provide AI models with direct read/write access to databases. Use 
   ```
 
 #### 3. MongoDB MCP Server
-
 - **Repository:** [kiliczsh/mcp-mongo-server](https://github.com/kiliczsh/mcp-mongo-server)
 - **Package:** `mcp-mongo-server`
 - **Required Env:** `MONGODB_URI`
 - **Use Case:** NoSQL document stores, event logs, unstructured data.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -94,13 +88,11 @@ These servers provide AI models with direct read/write access to databases. Use 
   ```
 
 #### 4. ClickHouse MCP Server
-
 - **Repository:** [ClickHouse/mcp-clickhouse](https://github.com/ClickHouse/mcp-clickhouse)
 - **Package:** `mcp-clickhouse` (Python/uvx)
 - **Required Env:** `CLICKHOUSE_HOST`, `CLICKHOUSE_PORT`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`, `CLICKHOUSE_DATABASE`
 - **Use Case:** High-performance analytics, time-series data, large-scale reporting.
 - **Command:**
-
   ```json
   {
     "command": "uvx",
@@ -122,13 +114,11 @@ These servers provide AI models with direct read/write access to databases. Use 
 Give AI agents live internet access to defeat knowledge cutoffs and hallucination.
 
 #### 5. DuckDuckGo MCP Server
-
 - **Repository:** [nickclyde/duckduckgo-mcp-server](https://github.com/nickclyde/duckduckgo-mcp-server)
 - **Package:** `duckduckgo-mcp-server`
 - **Required Env:** None (no API key required)
 - **Use Case:** Privacy-first web search, no API key needed. Default search server.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -137,13 +127,11 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   ```
 
 #### 6. Tavily MCP
-
 - **Repository:** [tavily-ai/tavily-mcp](https://github.com/tavily-ai/tavily-mcp)
 - **Package:** `@tavily/mcp`
 - **Required Env:** `TAVILY_API_KEY`
 - **Use Case:** Fast, structured JSON search results optimized for AI agents. Use when DuckDuckGo results are insufficient.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -153,13 +141,11 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   ```
 
 #### 7. Google News MCP Server
-
 - **Repository:** [ChanMeng666/server-google-news](https://github.com/ChanMeng666/server-google-news)
 - **Package:** `server-google-news`
 - **Required Env:** None
 - **Use Case:** News headlines, article research, trend monitoring, marketing content ideas.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -168,13 +154,11 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   ```
 
 #### 8. Brave Search MCP Server
-
 - **Repository:** `servers/src/brave-search` ([@modelcontextprotocol/server-brave-search](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-brave-search`
 - **Required Env:** `BRAVE_API_KEY`
 - **Use Case:** Privacy-respecting web search with images, news, and video support.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -184,7 +168,6 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   ```
 
 #### 9. MeiliSearch MCP Server
-
 - **Repository:** `mcp-servers/meilisearch-mcp` (revvel-standards/mcp-servers/meilisearch-mcp)
 - **Package:** `meilisearch-mcp` (Python)
 - **Required Env:** `MEILI_HOST`, `MEILI_KEY`
@@ -199,24 +182,19 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   - `meili_settings_update` — Configure search relevance, typo tolerance, ranking rules
   - `meili_health` — Check MeiliSearch instance health
 - **Setup:**
-  1. **Self-hosted:** Install MeiliSearch locally or on DigitalOcean: <https://www.meilisearch.com/docs/learn/getting_started/quick_start>
-  2. **MeiliCloud:** Sign up at <https://www.meilisearch.com/cloud> (free tier available)
+  1. **Self-hosted:** Install MeiliSearch locally or on DigitalOcean: https://www.meilisearch.com/docs/learn/getting_started/quick_start
+  2. **MeiliCloud:** Sign up at https://www.meilisearch.com/cloud (free tier available)
   3. Install the MCP server:
-
      ```bash
      cd mcp-servers/meilisearch-mcp
      pip install -e .
      ```
-
   4. Set environment variables in `.env`:
-
      ```bash
      MEILI_HOST=http://localhost:7700  # or your MeiliCloud URL
      MEILI_KEY=yourMasterKey
      ```
-
 - **Command:**
-
   ```json
   {
     "command": "python",
@@ -227,9 +205,7 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
     }
   }
   ```
-
 - **Integration Example:**
-
   ```python
   # Sync product data to MeiliSearch
   import meilisearch
@@ -261,13 +237,11 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
 For Revvel's investment tools, crypto features, Penny Sovereign Yield Scout, and any financial app.
 
 #### 9. Investor Agent MCP Server
-
 - **Repository:** [ferdousbhai/investor-agent](https://github.com/ferdousbhai/investor-agent)
 - **Package:** `investor-agent` (Python/uvx)
 - **Required Env:** None (uses free public data sources)
 - **Use Case:** Stock analysis, financial insights, investment research, portfolio suggestions.
 - **Command:**
-
   ```json
   {
     "command": "uvx",
@@ -276,13 +250,11 @@ For Revvel's investment tools, crypto features, Penny Sovereign Yield Scout, and
   ```
 
 #### 10. Coincap MCP Server
-
 - **Repository:** [QuantGeekDev/coincap-mcp](https://github.com/QuantGeekDev/coincap-mcp)
 - **Package:** `coincap-mcp`
 - **Required Env:** None (free public API)
 - **Use Case:** Real-time cryptocurrency prices, market cap, volume data.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -291,13 +263,11 @@ For Revvel's investment tools, crypto features, Penny Sovereign Yield Scout, and
   ```
 
 #### 11. CoinMarketCap MCP Server
-
 - **Repository:** [anjor/coinmarket-mcp-server](https://github.com/anjor/coinmarket-mcp-server)
 - **Package:** `coinmarket-mcp-server`
 - **Required Env:** `COINMARKETCAP_API_KEY`
 - **Use Case:** Professional-grade crypto market data — prices, rankings, historical data.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -307,13 +277,11 @@ For Revvel's investment tools, crypto features, Penny Sovereign Yield Scout, and
   ```
 
 #### 12. Alpha Vantage MCP Server
-
 - **Repository:** [berlinbra/alpha-vantage-mcp](https://github.com/berlinbra/alpha-vantage-mcp)
 - **Package:** `alpha-vantage-mcp`
 - **Required Env:** `ALPHA_VANTAGE_API_KEY` (free tier available)
 - **Use Case:** Stocks, forex, commodities, economic indicators — the backbone for Penny Sovereign Yield Scout.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -329,13 +297,11 @@ For Revvel's investment tools, crypto features, Penny Sovereign Yield Scout, and
 Automate messaging, manage conversations, and integrate team communication tools.
 
 #### 13. Slack MCP Server
-
 - **Repository:** `servers/src/slack` ([@modelcontextprotocol/server-slack](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-slack`
 - **Required Env:** `SLACK_BOT_TOKEN`, `SLACK_TEAM_ID`
 - **Use Case:** Post alerts, read channels, manage workspace communication.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -348,13 +314,11 @@ Automate messaging, manage conversations, and integrate team communication tools
   ```
 
 #### 14. Telegram MCP Server
-
 - **Repository:** [chaindead/telegram-mcp](https://github.com/chaindead/telegram-mcp)
 - **Package:** Go binary (`telegram-mcp`)
 - **Required Env:** `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`, `TELEGRAM_PHONE`
 - **Use Case:** Telegram bot management, message automation, chat monitoring.
 - **Command:**
-
   ```json
   {
     "command": "telegram-mcp",
@@ -367,13 +331,11 @@ Automate messaging, manage conversations, and integrate team communication tools
   ```
 
 #### 15. Google GSuite MCP Server
-
 - **Repository:** [MarkusPfundstein/mcp-gsuite](https://github.com/MarkusPfundstein/mcp-gsuite)
 - **Package:** `mcp-gsuite` (Python/uvx)
 - **Required Env:** `GSUITE_CLIENT_ID`, `GSUITE_CLIENT_SECRET`, `GSUITE_REFRESH_TOKEN`
 - **Use Case:** Gmail, Calendar, Drive integration — read/write email, manage calendar events, access files.
 - **Command:**
-
   ```json
   {
     "command": "uvx",
@@ -387,13 +349,11 @@ Automate messaging, manage conversations, and integrate team communication tools
   ```
 
 #### 16. WhatsApp MCP Server
-
 - **Repository:** [lharries/whatsapp-mcp](https://github.com/lharries/whatsapp-mcp)
 - **Package:** Go binary (`whatsapp-mcp`)
 - **Required Env:** `WHATSAPP_DB_PATH` (path to WhatsApp database)
 - **Use Case:** Read/search WhatsApp messages, manage conversations programmatically.
 - **Command:**
-
   ```json
   {
     "command": "whatsapp-mcp",
@@ -410,13 +370,11 @@ Automate messaging, manage conversations, and integrate team communication tools
 Persistent memory and knowledge graphs. Required for all AI agents to maintain context across sessions.
 
 #### 17. MemoryMesh MCP Server
-
 - **Repository:** [CheMiguel23/MemoryMesh](https://github.com/CheMiguel23/MemoryMesh)
 - **Package:** `memorymesh`
 - **Required Env:** None
 - **Use Case:** Structured knowledge graphs — user preferences, project context, long-term agent memory.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -425,13 +383,11 @@ Persistent memory and knowledge graphs. Required for all AI agents to maintain c
   ```
 
 #### 18. Graphlit MCP Server
-
 - **Repository:** [graphlit/graphlit-mcp-server](https://github.com/graphlit/graphlit-mcp-server)
 - **Package:** `graphlit-mcp-server`
 - **Required Env:** `GRAPHLIT_ORGANIZATION_ID`, `GRAPHLIT_ENVIRONMENT_ID`, `GRAPHLIT_JWT_SECRET`
 - **Use Case:** Ingest, organize, and retrieve documents — great for large knowledge bases.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -445,13 +401,11 @@ Persistent memory and knowledge graphs. Required for all AI agents to maintain c
   ```
 
 #### 19. Mem0 MCP Server
-
 - **Repository:** [mem0ai/mem0-mcp](https://github.com/mem0ai/mem0-mcp)
 - **Package:** `mem0-mcp`
 - **Required Env:** `MEM0_API_KEY`
 - **Use Case:** Long-term AI memory — remembers user preferences, personalization context.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -461,13 +415,11 @@ Persistent memory and knowledge graphs. Required for all AI agents to maintain c
   ```
 
 #### 20. Memory MCP Server
-
 - **Repository:** `servers/src/memory` ([@modelcontextprotocol/server-memory](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-memory`
 - **Required Env:** None
 - **Use Case:** Built-in MCP memory — entity/relation storage, fact persistence across conversations.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -482,13 +434,11 @@ Persistent memory and knowledge graphs. Required for all AI agents to maintain c
 Note-taking, task management, calendars, calculations, and email management.
 
 #### 21. Obsidian MCP Server
-
 - **Repository:** [MarkusPfundstein/mcp-obsidian](https://github.com/MarkusPfundstein/mcp-obsidian)
 - **Package:** `mcp-obsidian`
 - **Required Env:** `OBSIDIAN_API_KEY`, `OBSIDIAN_HOST` (Obsidian Local REST API plugin required)
 - **Use Case:** Read/write Obsidian vault notes — ideal for knowledge management and documentation workflows.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -501,13 +451,11 @@ Note-taking, task management, calendars, calculations, and email management.
   ```
 
 #### 22. Notion MCP Server
-
 - **Repository:** [danhilse/notion_mcp](https://github.com/danhilse/notion_mcp)
 - **Package:** `notion-mcp-server`
 - **Required Env:** `NOTION_API_KEY`
 - **Use Case:** Create/update Notion pages, manage databases, track project tasks.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -517,13 +465,11 @@ Note-taking, task management, calendars, calculations, and email management.
   ```
 
 #### 23. MCP Calculator Server
-
 - **Repository:** [githejie/mcp-server-calculator](https://github.com/githejie/mcp-server-calculator)
 - **Package:** `mcp-server-calculator`
 - **Required Env:** None
 - **Use Case:** Precise arithmetic and financial calculations without LLM hallucination.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -532,13 +478,11 @@ Note-taking, task management, calendars, calculations, and email management.
   ```
 
 #### 24. Inbox Zero MCP Server
-
 - **Repository:** [inbox-zero/apps/mcp-server](https://github.com/elie222/inbox-zero)
 - **Package:** `@inbox-zero/mcp`
 - **Required Env:** `INBOX_ZERO_API_KEY`
 - **Use Case:** Automated email management, bulk actions, inbox decluttering.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -554,13 +498,11 @@ Note-taking, task management, calendars, calculations, and email management.
 File and cloud storage management — create, read, update, delete, merge, and organize files.
 
 #### 25. Filesystem MCP Server
-
 - **Repository:** `servers/src/filesystem` ([@modelcontextprotocol/server-filesystem](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-filesystem`
 - **Required Env:** None (pass allowed directories as args)
 - **Use Case:** Core local file operations — read/write/list files. Required for all projects.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -569,13 +511,11 @@ File and cloud storage management — create, read, update, delete, merge, and o
   ```
 
 #### 26. Google Drive MCP Server
-
 - **Repository:** `servers/src/gdrive` ([@modelcontextprotocol/server-gdrive](https://github.com/modelcontextprotocol/servers))
 - **Package:** `@modelcontextprotocol/server-gdrive`
 - **Required Env:** `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET`, `GDRIVE_REFRESH_TOKEN`
 - **Use Case:** Read/write Google Drive files, search documents, manage shared assets.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -589,13 +529,11 @@ File and cloud storage management — create, read, update, delete, merge, and o
   ```
 
 #### 27. MCP File Merger Server
-
 - **Repository:** [exoticknight/mcp-file-merger](https://github.com/exoticknight/mcp-file-merger)
 - **Package:** `mcp-file-merger`
 - **Required Env:** None
 - **Use Case:** Combine multiple files into a single output — useful for generating consolidated reports or merged code files.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -604,13 +542,11 @@ File and cloud storage management — create, read, update, delete, merge, and o
   ```
 
 #### 28. Filesystem Go MCP Server
-
 - **Repository:** [mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
 - **Package:** Go binary (`mcp-filesystem-server`)
 - **Required Env:** None
 - **Use Case:** High-performance Go-based filesystem operations — use for large codebases where Node.js performance is insufficient.
 - **Command:**
-
   ```json
   {
     "command": "mcp-filesystem-server",
@@ -625,13 +561,11 @@ File and cloud storage management — create, read, update, delete, merge, and o
 Code execution, generation, debugging, and semantic editing.
 
 #### 29. Python MCP Server
-
 - **Repository:** [pydantic-ai/mcp-run-python](https://github.com/pydantic/pydantic-ai)
 - **Package:** `mcp-run-python` (Python/uvx)
 - **Required Env:** None
 - **Use Case:** Execute Python code at runtime — data analysis, chart generation, scripting, automation.
 - **Command:**
-
   ```json
   {
     "command": "uvx",
@@ -640,13 +574,11 @@ Code execution, generation, debugging, and semantic editing.
   ```
 
 #### 30. JavaScript MCP Server
-
 - **Repository:** [yepcode/mcp-server-js](https://github.com/YepCode/mcp-server-js)
 - **Package:** `@yepcode/mcp-server-js`
 - **Required Env:** `YEPCODE_API_TOKEN`
 - **Use Case:** Execute JavaScript/Node.js code in a sandboxed cloud environment.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -656,13 +588,11 @@ Code execution, generation, debugging, and semantic editing.
   ```
 
 #### 31. Desktop Commander MCP
-
 - **Repository:** [wonderwhy-er/DesktopCommanderMCP](https://github.com/wonderwhy-er/DesktopCommanderMCP)
 - **Package:** `@wonderwhy-er/desktop-commander`
 - **Required Env:** None
 - **Use Case:** Run terminal commands, manage processes, edit files — a superset of filesystem operations.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -671,13 +601,11 @@ Code execution, generation, debugging, and semantic editing.
   ```
 
 #### 32. Serena MCP Server
-
 - **Repository:** [oraios/serena](https://github.com/oraios/serena)
 - **Package:** `serena` (Python/uvx)
 - **Required Env:** None
 - **Use Case:** Semantic code search and editing — understands code structure, not just text. Use for large codebase refactoring.
 - **Command:**
-
   ```json
   {
     "command": "uvx",
@@ -692,13 +620,11 @@ Code execution, generation, debugging, and semantic editing.
 Tools for creative work, design automation, and visual content generation.
 
 #### 33. Adobe Express Developer MCP Server
-
 - **Repository:** Adobe official (closed source)
 - **Package:** `@adobe/express-developer-mcp`
 - **Required Env:** None
 - **Use Case:** Adobe Express Add-on development support — access SDK documentation, code examples, and API references directly in AI coding tools. Essential for building Adobe Express add-ons and extensions.
 - **Command:**
-
   ```json
   {
     "command": "npx",
@@ -713,7 +639,6 @@ Tools for creative work, design automation, and visual content generation.
 All environment variables required by MCP servers. Copy from `templates/mcp/.env.mcp.example`.
 
 ### Database
-
 | Variable | Server | Description |
 |---|---|---|
 | `DATABASE_URL` | Postgres | Full PostgreSQL connection string |
@@ -726,21 +651,18 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 | `CLICKHOUSE_DATABASE` | ClickHouse | ClickHouse database name |
 
 ### Search
-
 | Variable | Server | Description |
 |---|---|---|
 | `BRAVE_API_KEY` | Brave Search | Brave Search API key (free tier available) |
 | `TAVILY_API_KEY` | Tavily | Tavily AI search API key |
 
 ### Finance
-
 | Variable | Server | Description |
 |---|---|---|
 | `COINMARKETCAP_API_KEY` | CoinMarketCap | CoinMarketCap API key |
 | `ALPHA_VANTAGE_API_KEY` | Alpha Vantage | Alpha Vantage API key (free tier: 25 req/day) |
 
 ### Communication
-
 | Variable | Server | Description |
 |---|---|---|
 | `SLACK_BOT_TOKEN` | Slack | Slack bot OAuth token (`xoxb-...`) |
@@ -754,7 +676,6 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 | `WHATSAPP_DB_PATH` | WhatsApp | Path to WhatsApp chat database |
 
 ### Memory & Knowledge
-
 | Variable | Server | Description |
 |---|---|---|
 | `MEM0_API_KEY` | Mem0 | Mem0 platform API key |
@@ -763,7 +684,6 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 | `GRAPHLIT_JWT_SECRET` | Graphlit | Graphlit JWT signing secret |
 
 ### Productivity
-
 | Variable | Server | Description |
 |---|---|---|
 | `OBSIDIAN_API_KEY` | Obsidian | Obsidian Local REST API key |
@@ -772,7 +692,6 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 | `INBOX_ZERO_API_KEY` | Inbox Zero | Inbox Zero API key |
 
 ### Cloud Storage
-
 | Variable | Server | Description |
 |---|---|---|
 | `GDRIVE_CLIENT_ID` | Google Drive | Google Drive OAuth client ID |
@@ -780,7 +699,6 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 | `GDRIVE_REFRESH_TOKEN` | Google Drive | Google Drive OAuth refresh token |
 
 ### Coding
-
 | Variable | Server | Description |
 |---|---|---|
 | `YEPCODE_API_TOKEN` | JavaScript MCP | YepCode cloud execution API token |
@@ -791,25 +709,21 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 ## 6. Project-Type Configuration Profiles
 
 ### Minimal Profile (8 servers)
-
 For lightweight CLIs, scripts, and utilities that need basic AI augmentation.
 
 Included: Postgres, SQLite, DuckDuckGo, Brave Search, Memory, Filesystem, Python MCP, Calculator
 
 ### Web Profile (18 servers)
-
 For all Next.js/React/Node web applications.
 
 Included: Postgres, SQLite, MongoDB, DuckDuckGo, Tavily, Google News, Brave Search, Slack, Memory, MemoryMesh, Mem0, Obsidian, Notion, Calculator, Filesystem, Google Drive, Python MCP, Desktop Commander
 
 ### Mobile Profile (14 servers)
-
 For Expo/React Native mobile applications.
 
 Included: Postgres, SQLite, DuckDuckGo, Tavily, Slack, Telegram, WhatsApp, Memory, MemoryMesh, Notion, Filesystem, Python MCP, Calculator, Desktop Commander
 
 ### Full Profile (32 servers)
-
 Maximum capability — all servers enabled. For flagship products and Audrey's local development environment.
 
 ---
@@ -830,19 +744,16 @@ These rules are an extension of the [SECURITY_STANDARD.md](SECURITY_STANDARD.md)
 ## 8. Installation Guide
 
 ### Prerequisites
-
 - **Node.js 20+** and **pnpm** (for npm-based servers)
 - **Python 3.11+** and **uv** (for Python/uvx-based servers)
 - **Go 1.22+** (only if using Go-binary servers: Telegram, WhatsApp, Filesystem Go)
 
 ### Install uv (Python fast runtime — required for Python servers)
-
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### Install Go MCP binaries (optional)
-
 ```bash
 # Telegram MCP (Go)
 go install github.com/chaindead/telegram-mcp@latest
@@ -854,7 +765,6 @@ go install github.com/mark3labs/mcp-filesystem-server@latest
 ```
 
 ### Verify npm-based servers work
-
 ```bash
 npx -y @modelcontextprotocol/server-memory --help
 ```
@@ -907,7 +817,6 @@ FastMCP ([jlowin/fastmcp](https://github.com/jlowin/fastmcp) · [gofastmcp.com](
 ### 11.2. When to Build a Custom Server
 
 Build a custom FastMCP server when:
-
 - The project has domain-specific business logic that AI agents should invoke (e.g., Penny Sovereign yield calculations, lead scoring, insurance quoting)
 - You need to wrap an internal API that has no public MCP server
 - You want to expose a project's database queries as typed, documented tools
@@ -989,7 +898,6 @@ After building, register the custom server in the project's `.mcp.json`:
 ```
 
 Or for development (running from source):
-
 ```json
 {
   "mcpServers": {
@@ -1047,13 +955,11 @@ For the full audit of all 22 repos see: [`docs/MCP_REVVEL_CATALOG.md`](../MCP_RE
 These two are **mandatory in every Revvel project** — include them in any profile alongside the standard servers.
 
 #### `rvvel-affiliate-links-mcp`
-
 - **Repo:** [midnghtsapphire/rvvel-affiliate-links-mcp](https://github.com/midnghtsapphire/rvvel-affiliate-links-mcp)
 - **Transport:** stdio · **Backend:** SQLite (self-contained) · **No env vars required**
 - **8 Tools:** `store_affiliate_link`, `get_affiliate_links`, `get_best_link`, `search_links`, `get_stats`, `track_click`, `track_conversion`, `export_links`
 - **Use case:** AI agents call `get_best_link` or `search_links` to automatically insert real, tracked affiliate links into any content, recommendation, or product page.
 - **Config:**
-
   ```json
   "rvvel-affiliate-links": {
     "command": "npx",
@@ -1062,22 +968,18 @@ These two are **mandatory in every Revvel project** — include them in any prof
   ```
 
 #### `code-review-mcp-server`
-
 - **Repo:** [midnghtsapphire/code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server)
 - **Transport:** stdio · **No database** (scans filesystem in-process)
 - **10 Tools:** `scan_nested_anchors`, `check_react_best_practices`, `validate_typescript`, `scan_accessibility`, `detect_security_issues`, `analyze_performance`, `generate_quality_report`, `validate_deployment_readiness`, `integrate_coderabbit`, `send_slack_report`
 - **Use case:** Enforce the Dev→Test→Live deployment gate. Run `validate_deployment_readiness` before every push to `main`.
 - **Config:**
-
   ```json
   "code-review": {
     "command": "node",
     "args": ["${CODE_REVIEW_MCP_PATH}/dist/index.js"]
   }
   ```
-
 - **Setup:**
-
   ```bash
   git clone https://github.com/midnghtsapphire/code-review-mcp-server ~/mct/code-review
   cd ~/mct/code-review && npm install && npm run build
@@ -1109,14 +1011,12 @@ MCP-AUTH, MCP-PAYMENT, MCP-AFFILIATE, MCP-SEO-ACCESSIBILITY, MCP-EMAIL-MARKETING
 ### 12.3. Adding MCT Modules to `.mcp.json`
 
 Build from source (development):
-
 ```bash
 git clone https://github.com/midnghtsapphire/MCP-ANALYTICS ~/mct/analytics
 cd ~/mct/analytics && npm install && npm run build
 ```
 
 Then add to `.mcp.json`:
-
 ```json
 "mct-analytics": {
   "command": "node",
@@ -1136,7 +1036,6 @@ For all custom Revvel servers in one config block, use `templates/mcp/mcp.revvel
 ## 13. Updating This Standard
 
 When adding new MCP servers to the Revvel ecosystem:
-
 1. Add the server entry to Section 4 with full documentation
 2. Add env vars to Section 5
 3. Update the relevant profile configs in Section 6
@@ -1144,20 +1043,3 @@ When adding new MCP servers to the Revvel ecosystem:
 5. Update `scripts/setup-mcp.sh` to install any new dependencies
 6. Update `MASTER_APP_TEMPLATE.md` if the server affects the default project template
 7. Bump this document's version number
-
-## MCP Image Prompts
-
-For marketing and landing pages for MCP servers, the following image generation prompts have proven effective:
-
-### Prompt 1: The MCP Server Node & Context Stream (Connected & Real-time)
-
-> A cinematic hero shot of an ultra-modern landing page for a Model Context Protocol (MCP) server integration engine. The interface features a central glassmorphic terminal hub floating over a deep charcoal and navy background. Radiant, glowing circuit lines and translucent data pipelines extend outwards from the terminal, connecting to smaller, semi-transparent frosted glass modules representing diverse data sources and enterprise tools. Crisp, glowing neon-blue and amber monospaced text streams display real-time context exchanges and tool-calling scripts. Soft atmospheric haze drifts between the floating UI layers, catching sharp, brilliant rim lighting on the refractive, glossy glass edges. Photorealistic, 8k resolution, elegant 3D realism, hyper-detailed cloud architecture visualization.
-
-### Prompt 2: The MCP Host Hub & File/Tool Execution (Sleek Developer View)
-
-> A close-up cinematic shot of a developer landing page for an advanced MCP host ecosystem. The central focus is a layered, thick-cut frosted glass workspace hovering over a dark, minimalist gradient background. The top glass layer displays a sharp, glowing code block executing a context handshake or tool-definition script. Overlapping it is a beautifully rendered, semi-transparent glass module illustrating active database and API connections, with sharp caustics and realistic light leaks rippling across the physical surfaces. Elegant, physical depth is created by soft shadows falling realistically between the floating UI cards. Hyper-realistic, 8k, ray-traced reflections, premium developer tool UX visualization, 3D glossy realism.
-
-💡 **Tips for Fine-Tuning the MCP Vibe:**
-
-- **To emphasize tool-calling or security:** Add phrases like *showing secure API authorization badges* or *displaying sandboxed tool execution logs* to make the functional purpose clearer.
-- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like *a central core with radial glass nodes stretching outward* to shift it away from a standard rectangular layout.
