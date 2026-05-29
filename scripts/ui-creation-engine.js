@@ -432,6 +432,14 @@ function shouldIncludeMCPPromptPack(args) {
   return /\b(?:mcp|model[\s-]+context[\s-]+protocol)\b/i.test(context);
 }
 
+function truncatePromptSection(text, maxLength) {
+  if (typeof text !== "string" || text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength).trimEnd()}\n\n[Content truncated to keep total prompt size within model limits.]`;
+}
+
 function buildUIRecommendationsUserPrompt(synthesis, args) {
   const mcpPromptPack = shouldIncludeMCPPromptPack(args)
     ? `
@@ -449,48 +457,16 @@ A close-up cinematic shot of a developer landing page for an advanced MCP host e
 - To emphasize tool-calling or security: Add phrases like showing secure API authorization badges or displaying sandboxed tool execution logs to make the functional purpose clearer.
 - To change the visual hierarchy: If you want a more abstract layout representing the "protocol" flow, use terms like a central core with radial glass nodes stretching outward to shift it away from a standard rectangular layout.`
     : "";
-
-  const truncatePromptSection = (value, maxLength) => {
-    if (typeof value !== "string" || value.length <= maxLength) {
-      return value;
-    }
-
-    return `${value.slice(0, maxLength).trimEnd()}\n\n[Competitive analysis truncated to fit prompt budget when MCP guidance is enabled.]`;
-  };
-
-  const synthesisForPrompt = mcpPromptPack
-    ? truncatePromptSection(synthesis, 12000)
-const synthesisForPrompt = mcpPromptPack
-  ? truncatePromptSection(synthesis, 12000)
-  : synthesis;
-
-if (mcpPromptPack && synthesis.length > 12000) {
-  console.warn(
-    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
-const synthesisForPrompt = mcpPromptPack
-  ? truncatePromptSection(synthesis, 12000)
-  : synthesis;
-
-if (mcpPromptPack && synthesis.length > 12000) {
-  console.warn(
-    `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
-  );
-}
-}
   const synthesisForPrompt = mcpPromptPack
     ? truncatePromptSection(synthesis, 12000)
     : synthesis;
 
-  if (mcpPromptPack && synthesis.length > 12000) {
+  if (mcpPromptPack && typeof synthesis === "string" && synthesis.length > 12000) {
     console.warn(
       `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
     );
   }
 
-  return `Based on this competitive analysis for ${args.business}:
-
-${synthesisForPrompt}
-...`;
   return `Based on this competitive analysis for ${args.business}:
 
 ${synthesisForPrompt}
@@ -539,26 +515,12 @@ Detailed wireframes for:
 Be specific, actionable, and modern. Reference Tailwind CSS utility classes where appropriate.${mcpPromptPack}`;
 }
 
-function truncatePromptSection(text, maxLength) {
-  if (!text || text.length <= maxLength) {
-    return text;
-// Option A: derive the flag from args directly in generateUIRecommendations
-const hasMcpPromptPack = shouldIncludeMCPPromptPack(args);
-const boundedSynthesis = truncatePromptSection(
-  synthesis,
-  hasMcpPromptPack ? 12000 : 24000
-);
-const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
-
-  return `${text.slice(0, maxLength)}\n\n[Content truncated to keep total prompt size within model limits.]`;
-}
-
 async function generateUIRecommendations(synthesis, args) {
   console.log("\n🎨 Phase 5: UI Design Recommendations");
   console.log("=" .repeat(60));
 
   const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
-  const hasMcpPromptPack = Boolean(mcpPromptPack && mcpPromptPack.trim());
+  const hasMcpPromptPack = shouldIncludeMCPPromptPack(args);
   const boundedSynthesis = truncatePromptSection(
     synthesis,
     hasMcpPromptPack ? 12000 : 24000
@@ -779,4 +741,9 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, shouldIncludeMCPPromptPack, buildUIRecommendationsUserPrompt };
+module.exports = {
+  main,
+  shouldIncludeMCPPromptPack,
+  truncatePromptSection,
+  buildUIRecommendationsUserPrompt,
+};
