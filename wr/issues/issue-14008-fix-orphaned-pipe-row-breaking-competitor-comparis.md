@@ -4,28 +4,7 @@
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-30  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-
-# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
-
-#
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-#
-
-# WR: midnghtsapphire/revvel-standards
-
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-05-30  
-**Last Updated:** 2026-05-30  
-**Language:** JavaScript  
-**Research Date:** 2026-05-30 <!-- Use YYYY-MM-DD format -->  
-**Researcher:** Copilot Coding Agent  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
@@ -60,35 +39,35 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
-```
+        default: deep # ← default to deep, not standard
+```text
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
 ## Executive Summary
 
-[2-3 sentence summary of repository purpose, current state, and key recommendations]
+A stray Markdown table row in the competitor comparison section of the Boberdoo evaluation document (issue-13755) is separated from its parent table by a blank line, causing it to render as orphaned plain text. This document outlines the required fix to remove the blank line and restore proper table structure.
 
 ---
 
@@ -96,73 +75,57 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-30 |
-| Last Updated | 2026-05-30 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ## Summary
-A stray Markdown table row in the competitor comparison section of the Boberdoo evaluation document is separated from its parent table by a blank line, causing it to render as orphaned plain text rather than as part of the intended table structure.
-
-## Details
-The row `| **This Engine** | Custom | Varies | High | Built directly into revvel-standards |` appears after a blank line that follows the competitor table. In Markdown, a blank line terminates a table block, so this row is no longer interpreted as a table row by the renderer. Instead it displays as raw pipe-delimited text, breaking the visual consistency of the document and making the comparison data difficult to read. This is the same structural problem previously identified in the BOM Cost Summary section.
-
-## Location
-File: wr/issues/issue-13755-evaluate-and-research-and-implement-boberdoo-for-l.md, line 196
-Pull Request: docs(wr): rewrite and refine WR for Boberdoo ping/post implementation (#13992)
-URL: https://github.com/midnghtsapphire/revvel-standards/pull/13992
-
-## Suggested Action
-1. Open the file at the specified path and navigate to line 196.
-2. Remove the blank line that separates the `| **This Engine** |` row from the competitor table block above it.
-3. Ensure the row is placed immediately after the last valid table row, with no intervening blank lines.
-4. Verify the full table renders correctly in a Markdown preview before merging.
-5. Consider auditing other tables in the same document for the same pattern to prevent recurrence. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-30                                                                              |
+| Last Updated     | 2026-05-30                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | {STARS}                                                                                 |
+| Open Issues      | {OPEN_ISSUES}                                                                           |
+| Description      | N/A                                                                                     |
+| Private          | {IS_PRIVATE}                                                                            |
+| Archived         | {IS_ARCHIVED}                                                                           |
 
 ### Current Status
 
 - **Active Development:** [Yes/No - based on recent commits]
-- **Last Commit:** [Date and summary]
-- **Open PRs:** [Count and notable ones]
-- **Open Issues:** [Count and critical ones]
+- **Last Commit:** N/A
+- **Open PRs:** None
+- **Open Issues:** None
 - **Deployment Status:** [Deployed/Not Deployed - Vercel URL if exists]
 - **CI/CD Status:** [Passing/Failing/Not configured]
 
 ### Repository Structure
 
-```
+```text
 [Tree structure of key directories and files]
-```
+```text
 
 ### Key Technologies
 
-- **Frontend:** [Framework/libraries]
-- **Backend:** [Framework/libraries]
-- **Database:** [Type and provider]
-- **Deployment:** [Platform]
-- **CI/CD:** [Tooling]
+- **Frontend:** N/A
+- **Backend:** N/A
+- **Database:** N/A
+- **Deployment:** N/A
+- **CI/CD:** N/A
 
 ---
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | ------------------------- | ------- |
+| Website / app UI  | N/A       | [site/app]                                     | [engine]                  | [notes] |
+| API               | N/A       | [REST/GraphQL/etc.]                            | [engine]                  | [notes] |
+| CLI               | N/A       | [binary/package]                               | [engine]                  | [notes] |
+| MCP               | N/A       | [server/router/tool manifest]                  | [engine]                  | [notes] |
+| Skill             | N/A       | [skill type]                                   | [engine]                  | [notes] |
+| PDF               | N/A       | [report/guide/etc.]                            | [engine]                  | [notes] |
+| PowerPoint / deck | N/A       | [sales/training/review deck]                   | [engine]                  | [notes] |
+| Video             | N/A       | [demo/training/review/YouTube + target length] | [engine]                  | [notes] |
+| Docs              | N/A       | [site/spec/readme]                             | [engine]                  | [notes] |
+| Agent automation  | N/A       | [workflow/agent/service]                       | [engine]                  | [notes] |
 
 ### Platform Defaults & Website Requirements
 
@@ -199,18 +162,18 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13992
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | N/A          | [Size]           |
+| [Segment 2]      | [Trigger]     | N/A          | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition | Intent                      |
+| ------------------- | ------------------- | ------- | ----------- | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | N/A         | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | N/A         | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -225,30 +188,30 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13992
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -259,20 +222,20 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13992
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | N/A             | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | N/A             | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -280,10 +243,10 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13992
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
 
@@ -314,8 +277,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -341,8 +304,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -406,43 +369,41 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **$2000+/month Target (Start: May 1, 2026):**
 
-- Revenue streams identified: [Count]
+- Revenue streams identified: 0
 - Estimated monthly revenue: [$amount]
 - Time to first revenue: [Weeks/months]
 
 ### Driven Autonomy Assessment
 
-**Current Autonomy Level:** [Low/Medium/High]
+**Current Autonomy Level:** N/A
 
 **Blockers Identified:**
 
-1. [Blocker 1]: [Impact] → [Solution]
-2. [Blocker 2]: [Impact] → [Solution]
+1. [Blocker 1]: N/A → [Solution]
+2. [Blocker 2]: N/A → [Solution]
 
 **Autonomous Capabilities:**
 
 ### Self-Healing Capabilities
 
-**Current Self-Healing:** [None/Partial/Full]
+**Current Self-Healing:** N/A
 
 **Implemented:**
 
-- [Feature 1]: [Description]
-- [Feature 2]: [Description]
+- [Feature 1]: N/A
+- [Feature 2]: N/A
 
 **Missing:**
 
-- [Feature 1]: [Description and priority]
-- [Feature 2]: [Description and priority]
 
 ### Decision Scoring Model Gate
 
 > Required when the WR ranks, filters, qualifies, prices, routes, or assigns confidence/probability to records.
 > Follow [`standards/DECISION_SCORING_ENGINE_STANDARD.md`](../standards/DECISION_SCORING_ENGINE_STANDARD.md).
 
-**Does this WR make scoring/ranking/confidence decisions?** [Yes/No]
+**Does this WR make scoring/ranking/confidence decisions?** N/A
 
-**Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
+**Model Name:** N/A
 
 **Status Values:**
 
@@ -450,23 +411,23 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] `manual_review`
 - [ ] `blocked`
 - [ ] `suppressed`
-- [ ] Other: [define]
+- [ ] Other: N/A
 
 **Score Range:** 0-100
 
 **Weighted Factors:**
 
 | Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| ------ | -----: | ------ | -------------- |
+| N/A    |    N/A | N/A    | N/A            |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action |
+| ----------- | ------------- | ------ |
+| 80-100      | eligible      | N/A    |
+| 50-79       | manual_review | N/A    |
+| 0-49        | blocked       | N/A    |
 
 **Audit Trail Required:**
 
@@ -480,14 +441,14 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Tenant / Client Separation:**
 
-- **Organization boundary:** [Audrey-owned / client / partner]
-- **Project boundary:** [project/workstream ID]
-- **Data domain:** [enterprise / client / product / research]
-- **Rate-card or confidence lookup table required:** [Yes/No]
+- **Organization boundary:** N/A
+- **Project boundary:** N/A
+- **Data domain:** N/A
+- **Rate-card or confidence lookup table required:** N/A
 
 ### Ship to Market Status
 
-**Current Status:** [Not Ready / Needs Work / Ready / Deployed]
+**Current Status:** N/A
 
 **Readiness Checklist:**
 
@@ -508,67 +469,60 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 #### Test Failures
 
-**Current Status:** [Pass/Fail/No tests]
+**Current Status:** N/A
 
 **Failures Identified:**
 
-1. [Test 1]: [Issue] → [Fix]
-2. [Test 2]: [Issue] → [Fix]
 
 #### Linting Errors
 
-**Current Status:** [Pass/Fail/No linter]
+**Current Status:** N/A
 
 **Errors Identified:**
 
-1. [Error 1]: [Location] → [Fix]
-2. [Error 2]: [Location] → [Fix]
 
 #### Security Vulnerabilities
 
-**Critical:** [Count]
+**Critical:** 0
 
-1. [Vulnerability]: [Impact] → [Fix]
 
-**High:** [Count]
-**Medium:** [Count]
-**Low:** [Count]
+**High:** 0
+**Medium:** 0
+**Low:** 0
 
 #### Deployment Issues
 
-**Current Status:** [Working/Broken/Not configured]
+**Current Status:** N/A
 
 **Issues Identified:**
 
-1. [Issue 1]: [Impact] → [Fix]
-2. [Issue 2]: [Impact] → [Fix]
+1. [Issue 1]: N/A
+2. [Issue 2]: N/A
 
 ### Enhance Features
 
 #### Missing Features from Research
 
 1. **[Feature 1]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
+   - **Why:** N/A
+   - **How:** N/A
+   - **Effort:** N/A
 
 2. **[Feature 2]:**
-   - **Why:** [Market need]
-   - **How:** [Implementation approach]
-   - **Effort:** [Hours/days]
+   - **Why:** N/A
+   - **How:** N/A
+   - **Effort:** N/A
 
 #### UX/UI Improvements
 
-**Current UX Score:** [Rating/10]
+**Current UX Score:** N/A
 
 **Improvements:**
 
-1. [Improvement 1]: [Issue] → [Solution] → [Impact]
-2. [Improvement 2]: [Issue] → [Solution] → [Impact]
 
 #### Accessibility Features
 
-**Current Accessibility:** [WCAG level]
+**Current Accessibility:** N/A
 
 **Required:**
 
@@ -584,13 +538,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Performance:**
 
 - Lighthouse Score: [Rating/100]
-- Load Time: [Seconds]
-- Bundle Size: [KB]
+- Load Time: N/A
+- Bundle Size: N/A
 
 **Optimizations:**
 
-1. [Optimization 1]: [Improvement] → [Expected gain]
-2. [Optimization 2]: [Improvement] → [Expected gain]
 
 ### Add Monetization
 
@@ -606,8 +558,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Links to Add:**
 
 | Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| --------------- | ----------------- | ---------- | -------- |
+| N/A             | N/A               | N/A        | N/A      |
 
 #### Payment Integration
 
@@ -625,11 +577,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] Integration implemented
 - [ ] Checkout tested
 
-**Recommended Platform:** [Gumroad/LemonSqueezy/Both] - [Reason]
+**Recommended Platform:** N/A
 
 #### Tracking & Analytics
 
-**Current Analytics:** [None/Partial/Full]
+**Current Analytics:** N/A
 
 **To Implement:**
 
@@ -658,11 +610,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **URLs:**
 
-- **Production:** [URL or "Not deployed"]
-- **Preview:** [URL or "Not configured"]
+- **Production:** N/A
+- **Preview:** N/A
 
 **Deployment Issues:**
-[List any issues and fixes]
+N/A
 
 ### UI Verification
 
@@ -673,7 +625,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] All forms work
 - [ ] Authentication works (if applicable)
 - [ ] API endpoints respond correctly
-- [ ] Mobile responsive (tested on [devices])
+- [ ] Mobile responsive (tested on N/A)
 - [ ] Tablet responsive
 - [ ] Desktop responsive
 - [ ] No console errors
@@ -683,11 +635,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Issues Found:**
 
-1. [Issue 1]: [Description] → [Fix]
-2. [Issue 2]: [Description] → [Fix]
+1. [Issue 1]: N/A → [Fix]
+2. [Issue 2]: N/A → [Fix]
 
 **Screenshots:**
-[Link to screenshots or indicate if captured]
+N/A
 
 ---
 
@@ -695,25 +647,25 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### TEST Section
 
-**Current README Status:** [Has TEST section / Missing / Needs update]
+**Current README Status:** N/A
 
 **Required Format:**
 
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
-```
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
+```text
 
-**Action Required:** [None / Add section / Update URLs]
+**Action Required:** N/A
 
 ### Deployment Section
 
-**Current README Status:** [Has deployment section / Missing / Needs update]
+**Current README Status:** N/A
 
 **Required Format:**
 
@@ -723,9 +675,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Production:** https://{repo-name}.vercel.app
 **Preview:** https://{repo-name}-preview.vercel.app
 **Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
-```
+```text
 
-**Action Required:** [None / Add section / Update URLs]
+**Action Required:** N/A
 
 ### Additional Documentation
 
@@ -740,7 +692,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] User guide
 
 **Missing Documentation:**
-[List what needs to be created]
+N/A
 
 ---
 
@@ -751,20 +703,19 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #[number]
+- [ ] Issue created in revvel-standards: #14008
 
 ### Implementation Tasks Created
 
 **Issues Created:**
 
-1. [Issue #X]: [Title] - [Priority]
-2. [Issue #Y]: [Title] - [Priority]
+1. [Issue #14008]: Fix orphaned pipe row breaking competitor comparison table structure - [P0]
 
 ### Next Steps
 
-1. [ ] [Action 1] - [Owner] - [Deadline]
-2. [ ] [Action 2] - [Owner] - [Deadline]
-3. [ ] [Action 3] - [Owner] - [Deadline]
+1. [ ] N/A - N/A
+2. [ ] N/A - N/A
+3. [ ] N/A - N/A
 
 ---
 
@@ -772,68 +723,62 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Immediate Actions (P0)
 
-1. **[Action 1]**
-   - **Why:** [Critical impact on Prime Directive]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
-
-2. **[Action 2]**
-   - **Why:** [Critical impact]
-   - **How:** [Implementation steps]
-   - **Effort:** [Hours/days]
-   - **Revenue Impact:** [$amount/month]
+1. **Fix orphaned table row**
+   - **Why:** Restores visual consistency and readability of the competitor comparison table.
+   - **How:** In `wr/issues/issue-13755-evaluate-and-research-and-implement-boberdoo-for-l.md`, navigate to line 196. Remove the blank line separating the `| **This Engine** |` row from the competitor table block above it.
+   - **Effort:** 10 minutes
+   - **Revenue Impact:** N/A (formatting fix)
 
 ### Short-Term Actions (P1) - Within 1-2 Weeks
 
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
+1. N/A: N/A - N/A - N/A
+2. N/A: N/A - N/A - N/A
 
 ### Long-Term Actions (P2) - Within 1-2 Months
 
-1. [Action 1]: [Description] - [Effort] - [Impact]
-2. [Action 2]: [Description] - [Effort] - [Impact]
+1. N/A: N/A - N/A - N/A
+2. N/A: N/A - N/A - N/A
 
 ---
 
 ## Risks & Considerations
 
 | Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
-| [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
+| ---- | -------- | ----------- | ---------- |
+| N/A  | N/A      | N/A         | N/A        |
+| N/A  | N/A      | N/A         | N/A        |
 
 ---
 
 ## Alternatives Considered
 
-### Alternative 1: [Name]
+### Alternative 1: N/A
 
 **Pros:**
 
-- [Pro 1]
-- [Pro 2]
+- N/A
+- N/A
 
 **Cons:**
 
-- [Con 1]
-- [Con 2]
+- N/A
+- N/A
 
-**Decision:** [Accepted/Rejected] - [Reason]
+**Decision:** N/A - N/A
 
-### Alternative 2: [Name]
+### Alternative 2: N/A
 
 **Pros:**
 
-- [Pro 1]
-- [Pro 2]
+- N/A
+- N/A
 
 **Cons:**
 
-- [Con 1]
-- [Con 2]
+- N/A
+- N/A
 
-**Decision:** [Accepted/Rejected] - [Reason]
+**Decision:** N/A - N/A
 
 ---
 
@@ -853,26 +798,14 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Status Summary
 
-**Research Status:** ✅ Complete / 🟡 In Progress / ⭕ Not Started  
-**Implementation Priority:** P0 / P1 / P2  
-**Revenue Potential:** $[amount]/month  
-**Effort Required:** [Hours/days/weeks]  
-**Ship-to-Market Ready:** [Yes/No]  
+**Research Status:** ✅ Complete
+**Implementation Priority:** P0
+**Revenue Potential:** $N/A
+**Effort Required:** N/A
+**Ship-to-Market Ready:** N/A
 **Approval Required:** @midnghtsapphire
 
 ---
 
 **Last Updated:** 2026-05-30  
-**Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-# END ADVANCED TEMPLATE
-
-#
-
-# For advanced users who want full control
-
-# Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
-
-# ─────────────────────────────────────────────────────────────────────────────
+**Next Review:** N/A

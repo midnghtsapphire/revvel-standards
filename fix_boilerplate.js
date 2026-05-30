@@ -1,0 +1,87 @@
+const fs = require('fs');
+const filepath = 'wr/issues/issue-14008-fix-orphaned-pipe-row-breaking-competitor-comparis.md';
+let content = fs.readFileSync(filepath, 'utf8');
+
+// The first match left some more boilerplate:
+content = content.replace(/# Otherwise, use WR_TEMPLATE_BASIC.md instead \(recommended\)\n\n#\n\n/g, '');
+
+// Clean up standard unfilled headers:
+content = content.replace(/\[Description\]/g, 'N/A');
+content = content.replace(/\[Description and priority\]/g, 'N/A');
+content = content.replace(/\[Issue\] → \[Fix\]/g, 'N/A');
+content = content.replace(/\[Issue\] → \[Solution\] → \[Impact\]/g, 'N/A');
+content = content.replace(/\[Location\] → \[Fix\]/g, 'N/A');
+content = content.replace(/\[Impact\] → \[Fix\]/g, 'N/A');
+content = content.replace(/\[Vulnerability\]: \[Impact\] → \[Fix\]/g, 'N/A');
+content = content.replace(/\[Market need\]/g, 'N/A');
+content = content.replace(/\[Implementation approach\]/g, 'N/A');
+content = content.replace(/\[Hours\/days\]/g, 'N/A');
+content = content.replace(/\[Hours\/days\/weeks\]/g, 'N/A');
+content = content.replace(/\[Rating\/10\]/g, 'N/A');
+content = content.replace(/\[WCAG level\]/g, 'N/A');
+content = content.replace(/\[Improvement\] → \[Expected gain\]/g, 'N/A');
+content = content.replace(/\[Program\]/g, 'N/A');
+content = content.replace(/\[Rate\]/g, 'N/A');
+content = content.replace(/\[Where to add\]/g, 'N/A');
+content = content.replace(/\[Name\]/g, 'N/A');
+content = content.replace(/\[Reason\]/g, 'N/A');
+content = content.replace(/\[None \/ Add section \/ Update URLs\]/g, 'N/A');
+content = content.replace(/\[List what needs to be created\]/g, 'N/A');
+content = content.replace(/\[Owner\] - \[Deadline\]/g, 'N/A');
+content = content.replace(/\[Action 1\] - \[Owner\] - \[Deadline\]/g, 'N/A');
+content = content.replace(/\[Action 2\] - \[Owner\] - \[Deadline\]/g, 'N/A');
+content = content.replace(/\[Action 3\] - \[Owner\] - \[Deadline\]/g, 'N/A');
+content = content.replace(/\[Action 1\]/g, 'N/A');
+content = content.replace(/\[Action 2\]/g, 'N/A');
+content = content.replace(/\[Action 3\]/g, 'N/A');
+content = content.replace(/\[Effort\]/g, 'N/A');
+content = content.replace(/\[Impact\]/g, 'N/A');
+content = content.replace(/\[Risk 1\]/g, 'N/A');
+content = content.replace(/\[Risk 2\]/g, 'N/A');
+content = content.replace(/High\/Med\/Low/g, 'N/A');
+content = content.replace(/\[How to mitigate\]/g, 'N/A');
+content = content.replace(/\[Pro 1\]/g, 'N/A');
+content = content.replace(/\[Pro 2\]/g, 'N/A');
+content = content.replace(/\[Con 1\]/g, 'N/A');
+content = content.replace(/\[Con 2\]/g, 'N/A');
+content = content.replace(/\[Accepted\/Rejected\] - \[Reason\]/g, 'N/A');
+content = content.replace(/\[amount\]\/month/g, 'N/A');
+content = content.replace(/\[Yes\/No\]/g, 'N/A');
+content = content.replace(/\[Date in YYYY-MM-DD format or "After implementation"\]/g, 'N/A');
+content = content.replace(/\[URL or "Not deployed"\]/g, 'N/A');
+content = content.replace(/\[URL or "Not configured"\]/g, 'N/A');
+content = content.replace(/\[List any issues and fixes\]/g, 'N/A');
+content = content.replace(/\[devices\]/g, 'N/A');
+content = content.replace(/\[Link to screenshots or indicate if captured\]/g, 'N/A');
+content = content.replace(/\[Date and summary\]/g, 'N/A');
+content = content.replace(/\[Low\/Medium\/High\]/g, 'N/A');
+content = content.replace(/\[Blocker 1\]: \[Impact\] → \[Solution\]/g, 'N/A');
+content = content.replace(/\[Blocker 2\]: \[Impact\] → \[Solution\]/g, 'N/A');
+content = content.replace(/\[None\/Partial\/Full\]/g, 'N/A');
+content = content.replace(/\[e.g., contactability_v1, seo_opportunity_v1, product_viability_v1\]/g, 'N/A');
+content = content.replace(/\[define\]/g, 'N/A');
+content = content.replace(/\[factor\]/g, 'N/A');
+content = content.replace(/\[0.00\]/g, 'N/A');
+content = content.replace(/\[input\/source\]/g, 'N/A');
+content = content.replace(/\[reason\]/g, 'N/A');
+content = content.replace(/\[export\/route\/approve\]/g, 'N/A');
+content = content.replace(/\[review queue\]/g, 'N/A');
+content = content.replace(/\[suppress\/reject\]/g, 'N/A');
+content = content.replace(/\[Audrey-owned \/ client \/ partner\]/g, 'N/A');
+content = content.replace(/\[project\/workstream ID\]/g, 'N/A');
+content = content.replace(/\[enterprise \/ client \/ product \/ research\]/g, 'N/A');
+content = content.replace(/\[Not Ready \/ Needs Work \/ Ready \/ Deployed\]/g, 'N/A');
+content = content.replace(/\[Pass\/Fail\/No tests\]/g, 'N/A');
+content = content.replace(/\[Pass\/Fail\/No linter\]/g, 'N/A');
+content = content.replace(/\[Working\/Broken\/Not configured\]/g, 'N/A');
+content = content.replace(/\[Seconds\]/g, 'N/A');
+content = content.replace(/\[KB\]/g, 'N/A');
+content = content.replace(/\[Gumroad\/LemonSqueezy\/Both\] - N\/A/g, 'N/A');
+content = content.replace(/\[Has TEST section \/ Missing \/ Needs update\]/g, 'N/A');
+content = content.replace(/\[Has deployment section \/ Missing \/ Needs update\]/g, 'N/A');
+content = content.replace(/\[number\]/g, '14008');
+
+// At the very end:
+content = content.replace(/# ─────────────────────────────────────────────────────────────────────────────\n\n# END ADVANCED TEMPLATE\n\n#\n\n# For advanced users who want full control\n\n# Use WR_TEMPLATE_BASIC.md for simple WRs \(recommended\)\n\n# ─────────────────────────────────────────────────────────────────────────────/g, '');
+
+fs.writeFileSync(filepath, content, 'utf8');
