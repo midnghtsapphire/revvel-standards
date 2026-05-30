@@ -73,6 +73,8 @@ jobs:
     steps:
       - name: Update PR comment with status badge
         uses: actions/github-script@v9.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
