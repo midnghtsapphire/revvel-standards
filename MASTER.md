@@ -60,8 +60,11 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **.github/pull_request_template.md** — PR template; mirrors the WR field-for-field.
 - **workflows/TITLE_TO_WR_EXPANSION.md** — title→full-WR generation + clean-output rules. Entry point per WR.
 - **workflows/PDF_WR_PLAYBOOK.md** — form-driven routing reference for the external automation.
-- **workflows/wr-lint.mjs** — automated lint gate; run in CI and the review-agent pass.
-- **WR_TEMPLATE_BASIC.md** — *(referenced; create if absent)* the lightweight template for bug/style/docs WRs.
+- **wr/scripts/wr-lint.mjs** — automated lint gate; run in CI (`.github/workflows/wr-lint.yml`) and the review-agent pass.
+- **wr/scripts/fix-wr-gate.mjs** — policy gate: fix-class WR PR must touch a non-`wr/` file or be `tracking-only` (`.github/workflows/fix-wr-gate.yml`).
+- **wr/WR_TEMPLATE_BASIC.md** — lightweight template for bug/style/docs WRs.
+- **wr/WR_TEMPLATE_FULL.md** — product/sellable WR template.
+- **wr/scripts/generate-wr.sh** — corrected WR generator; selects template by class, substitutes tokens, runs the lint gate before writing.
 
 ### Generators
 - **ARTIFACT_GENERATOR.md** — standing per-project spec: all artifacts across all surfaces (web, android,
@@ -98,7 +101,17 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - Never silently omit explicitly requested/implied scope; document any blocker.
 
 ## 5. GAPS TO CLOSE (flagged, not yet built)
-- `WR_TEMPLATE_BASIC.md` is referenced but not yet authored — create it so Step 0.5 has a real target.
-- MCP server *runtime* for the orchestrator is specced (BUILD_SPEC) but only core+CLI are reference-built.
-- A GitHub Actions workflow to run wr-lint.mjs on every WR/PR in CI (currently manual/agent-invoked).
-- Extend wr-lint with TODO/FIXME/TBD and empty-section checks.
+
+Closed by PR #14227:
+- ~~`WR_TEMPLATE_BASIC.md`~~ — authored at `wr/WR_TEMPLATE_BASIC.md`.
+- ~~CI workflow to run wr-lint.mjs~~ — landed as `.github/workflows/wr-lint.yml`.
+
+Still open:
+- `UPREV_METHOD.md` — referenced in §2; method definition not yet authored.
+- `WR_RESEARCH_MANDATE.md` — referenced in §2; research-first mandate / SEM-SEO discovery rules not yet authored.
+- `.github/ISSUE_TEMPLATE/work_request.yml` — canonical WR form schema not yet authored.
+- `.github/pull_request_template.md` — PR mirror of WR not yet authored.
+- `ARTIFACT_GENERATOR.md` — standing per-project artifact spec not yet authored.
+- `AGENT_BUILD_PROMPT.md` — XP-mode build prompt not yet authored.
+- `research-orchestrator/` — only `BUILD_SPEC.md` + core+CLI specced; MCP runtime not built.
+- Extend `wr-lint.mjs` with TODO/FIXME/TBD and empty-section checks.

@@ -15,9 +15,13 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
-          BASE: ${{ github.base_ref }}
+          # Use event-payload SHAs — `origin/${BASE}` is unreliable when
+          # actions/checkout uses the PR merge ref. Per Copilot review on
+          # #14227. fetch-depth: 0 above ensures both SHAs are reachable.
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          CHANGED="$(git diff --name-only --diff-filter=AM "origin/${BASE}...HEAD")"
+          CHANGED="$(git diff --name-only --diff-filter=AM "${BASE_SHA}...${HEAD_SHA}")"
           node wr/scripts/fix-wr-gate.mjs \
             --title "$PR_TITLE" \
             --labels "$PR_LABELS" \

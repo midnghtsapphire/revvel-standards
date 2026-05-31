@@ -19,8 +19,14 @@ HERE="$(cd "$(dirname "$0")/.." && pwd)"   # wr/
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----
+# ERE doesn't support \b word boundaries — they're matched literally and the
+# whole pattern fails to fire, so EVERY auto-classified WR fell through to
+# `full` (per Copilot review on #14227). Use grep -wiE so word matching is
+# done by grep itself.
 if [[ "$CLASS" == "auto" ]]; then
-  if echo "$TITLE" | grep -qiE '\b(fix|bug|typo|lint|refactor|chore|docs?|remove|add (missing|test)|pin|normalize|standardize|unreachable|duplicate)\b'; then
+  if echo "$TITLE" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+    CLASS="basic"
+  elif echo "$TITLE" | grep -qiE '\<add (missing|test)\>'; then
     CLASS="basic"
   else
     CLASS="full"
@@ -29,11 +35,21 @@ fi
 TEMPLATE="$HERE/WR_TEMPLATE_${CLASS^^}.md"
 [[ -f "$TEMPLATE" ]] || { echo "template missing: $TEMPLATE" >&2; exit 2; }
 
-# ---- FIX (class 1): strip any HTML-comment guidance is fine; we never emit '# Otherwise...' as H1 ----
-# Templates already use <!-- --> for guidance, so nothing leaks as a heading.
+# ---- FIX (class 1): strip leading HTML-comment guidance so the H1 lands at line 1.
+# WR_TEMPLATE_FULL.md has author-instruction <!-- --> comments above the # WR:
+# header. Without stripping, the linter sees H1 at line 3 and refuses the
+# whole generation (Devin finding on #14227 — would have broken all
+# FULL-template WRs). Strip ONLY leading comment lines, not body comments.
 
 # ---- helpers ----
-jq_get() { echo "$META" | (command -v jq >/dev/null && jq -r ".$1 // \"\"" || echo ""); }
+jq_get() {
+  # Empty meta values must produce "N/A" not "", or the contract
+  # (every section filled or explicit N/A) is silently violated per
+  # Copilot review on #14227.
+  local v
+  v="$(echo "$META" | (command -v jq >/dev/null && jq -r ".$1 // \"\"" || echo ""))"
+  [[ -z "$v" ]] && echo "N/A" || echo "$v"
+}
 
 DATE="$(date -u +%Y-%m-%d)"
 TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no backtick stripping)
@@ -41,6 +57,17 @@ TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no back
 # ---- FIX (class 4): issue body goes to its own section, NEVER into a table cell ----
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
 out="$(cat "$TEMPLATE")"
+# Strip leading HTML comments before the H1 — `awk` walks the head of the
+# template, drops any `<!-- ... -->` line and blank lines, until the first
+# non-comment / non-blank line, then prints the rest verbatim. Without this,
+# WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
+# the lint gate refuses the output (Devin finding on #14227).
+out="$(printf '%s\n' "$out" | awk '
+  BEGIN { stripping=1 }
+  stripping && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && /^[[:space:]]*$/           { next }
+  { stripping=0; print }
+')"
 subst() { out="${out//\{$1\}/$2}"; }
 subst TITLE             "$TITLE_CLEAN"
 subst ISSUE_REF         "#${ISSUE:-N/A}"
@@ -78,7 +105,8 @@ mkdir -p "$HERE/issues"
 printf '%s\n' "$out" > "$DEST"
 
 # ---- FIX (class 5 guard): warn if no code fix is staged alongside a fix-class WR ----
-if [[ "$CLASS" == "basic" ]] && echo "$TITLE" | grep -qiE '\bfix\b'; then
+# `\b` doesn't work in ERE — using grep -wi for actual word matching.
+if [[ "$CLASS" == "basic" ]] && echo "$TITLE" | grep -qwi "fix"; then
   echo "REMINDER: This is a fix WR. The SAME PR must also modify the actual buggy file, not just add this WR." >&2
 fi
 

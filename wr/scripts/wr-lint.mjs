@@ -40,8 +40,22 @@ function lintFile(path) {
   const lines = text.split("\n");
   const issues = [];
 
-  // 1. Exactly one H1, and it should be line 1.
-  const h1Idx = lines.map((l, i) => (/^#\s+\S/.test(l) ? i : -1)).filter((i) => i >= 0);
+  // Track fenced code blocks so every heuristic rule below can skip them.
+  // Without this the linter false-positives on legitimate WR content that
+  // includes example code (e.g. `# yaml comment` lines, `{TOKEN}` examples,
+  // `[options]` arrays, pipe tables shown as examples) — per Copilot review
+  // on #14227 (five separate findings all reduce to the same bug).
+  const inFence = new Array(lines.length).fill(false);
+  let fenced = false;
+  lines.forEach((l, i) => {
+    if (/^```/.test(l.trim())) fenced = !fenced;
+    inFence[i] = fenced;
+  });
+
+  // 1. Exactly one H1, and it should be line 1. Skip headings inside fences.
+  const h1Idx = lines
+    .map((l, i) => (!inFence[i] && /^#\s+\S/.test(l) ? i : -1))
+    .filter((i) => i >= 0);
   if (h1Idx.length === 0) issues.push("no H1 header found");
   if (h1Idx.length > 1) issues.push(`multiple H1 headers (lines ${h1Idx.map((i) => i + 1).join(", ")}) — keep one at line 1`);
   if (h1Idx.length && h1Idx[0] !== 0) issues.push(`H1 is at line ${h1Idx[0] + 1}, expected line 1 (scaffolding above it?)`);
@@ -61,6 +75,7 @@ function lintFile(path) {
 
   // 3. Raw bracketed placeholders (heuristic: short ALL/Title-case tokens in brackets, not links).
   lines.forEach((l, i) => {
+    if (inFence[i]) return; // skip code examples
     // ignore markdown links [text](url) and checkboxes [ ]/[x]
     const stripped = l.replace(/\[[ xX]\]/g, "").replace(/\[[^\]]+\]\([^)]+\)/g, "");
     const m = stripped.match(/\[[A-Za-z][^\]]{2,60}\]/);
@@ -80,12 +95,14 @@ function lintFile(path) {
 
   // 5. Unsubstituted generator tokens ({STARS} etc.)
   lines.forEach((l, i) => {
+    if (inFence[i]) return; // skip examples
     const m = l.match(RAW_TOKENS);
     if (m) issues.push(`line ${i + 1}: unsubstituted generator token(s) ${[...new Set(m)].join(", ")} — substitute real value or remove the row`);
   });
 
   // 6. Full-template bracket placeholders left raw.
   lines.forEach((l, i) => {
+    if (inFence[i]) return; // skip examples
     const m = l.match(BRACKET_PLACEHOLDER);
     if (m) issues.push(`line ${i + 1}: raw template placeholder ${m[0]} — fill or mark "N/A — <reason>"`);
   });
@@ -100,6 +117,7 @@ function lintFile(path) {
 
   // 8. Issue body pasted into a metadata table cell (## heading inside a | ... | row).
   lines.forEach((l, i) => {
+    if (inFence[i]) return; // skip example tables in fenced docs
     if (/^\|.*\|/.test(l) && /(^|\s)##\s|## Summary|## Details|## Suggested Action/.test(l)) {
       issues.push(`line ${i + 1}: issue body (## heading) embedded inside a table cell — breaks table rendering; move to a dedicated '## Issue Context' section`);
     }
