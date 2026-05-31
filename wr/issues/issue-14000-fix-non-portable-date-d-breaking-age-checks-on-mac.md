@@ -1,4 +1,4 @@
-# WR: [WR] Fix non-portable  breaking age checks on macOS runners
+# WR: [WR] Fix non-portable `date -d` breaking age checks on macOS runners
 
 **Issue:** #14000  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
