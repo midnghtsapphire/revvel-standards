@@ -54,24 +54,43 @@ function detectAction(task) {
  */
 function parsePersonaCommand(body) {
   if (!body || typeof body !== "string") return null;
-  const handles = Object.keys(getPersonas()); // openrouter, oaudrey, mindmappr, professor
+  const registry = getPersonas();
+  const canonical = Object.keys(registry); // openrouter, oaudrey, mindmappr, professor
+  // Collect every trigger token (canonical handles + role aliases like
+  // `triager`, `citer`, `spotter`) and map back to the canonical handle so
+  // the rest of the runner is unchanged.
+  const triggerToHandle = {};
+  for (const h of canonical) {
+    triggerToHandle[h] = h;
+    for (const alias of registry[h].aliases || []) {
+      triggerToHandle[alias.toLowerCase()] = h;
+    }
+  }
+  const triggers = Object.keys(triggerToHandle);
 
-  // "/persona <name> <task...>"
+  // "/persona <name> <task...>" — canonical or alias both work.
   const slash = body.match(/\/persona\s+([a-z0-9_-]+)\s*([\s\S]*)/i);
   if (slash) {
-    const handle = slash[1].toLowerCase();
-    if (handles.includes(handle)) {
+    const requested = slash[1].toLowerCase();
+    const handle = triggerToHandle[requested];
+    if (handle) {
       const rest = (slash[2] || "").trim();
       return { handle, task: rest || body.trim(), action: detectAction(rest) };
     }
   }
 
-  // "/<name> <task...>" shortcut (leading slash, so it never pings a real user).
-  for (const handle of handles) {
-    const shortcut = new RegExp(`(?:^|\\s)/${handle}\\b`, "i");
+  // "/<name> <task...>" shortcut. Leading slash so it never pings a real
+  // GitHub user — `@triager` would notify whoever owns that username; the
+  // slash form notifies no one.
+  for (const trigger of triggers) {
+    const shortcut = new RegExp(`(?:^|\\s)/${trigger}\\b`, "i");
     if (shortcut.test(body)) {
       const rest = body.replace(shortcut, " ").trim();
-      return { handle, task: rest || body.trim(), action: detectAction(rest) };
+      return {
+        handle: triggerToHandle[trigger],
+        task: rest || body.trim(),
+        action: detectAction(rest),
+      };
     }
   }
 
