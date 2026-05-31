@@ -122,13 +122,18 @@ security findings, a11y/SEO gaps).
 
 `scripts/openrouter-personas.js` defines named lanes, summonable from a PR/issue
 comment with a **leading slash** (`/professor`, `/oaudrey`, `/mindmappr`,
-`/openrouter`, or `/persona <name>`). Do **not** use `@professor` — GitHub reads
-`@name` as a mention of the real user account with that username and emails them:
+`/openrouter`, `/coder`, or `/persona <name>`). Do **not** use `@professor` —
+GitHub reads `@name` as a mention of the real user account with that username
+and emails them. Each persona also has a role-name alias so it's easy to
+remember by what it does:
 
-- **The Professor** — deep research via no-key Perplexity (free).
-- **oAudrey** — primary orchestrator / triage.
-- **MindMappr** — planning / breakdown.
-- **OpenRouter** — model routing with fallback chains.
+| Canonical | Role alias | What it does |
+| --- | --- | --- |
+| **oAudrey** (`/oaudrey`) | Triager (`/triager`) | First line of sight — sorts the inbox and decides next step |
+| **The Professor** (`/professor`) | Citer (`/citer`) | Cited research via no-key Perplexity Sonar lane (free) |
+| **MindMappr** (`/mindmappr`) | Spotter (`/spotter`) | Turns fuzzy ideas into structured mind maps / outlines |
+| **OpenRouter** (`/openrouter`) | Dispatcher (`/dispatcher`) | Model routing with fallback chains, picks cheapest capable |
+| **Coder** (`/coder`) | Fixer (`/fixer`) | Applies the actual code fix — consumes Devin / Octopus / Copilot diagnoses into a minimal patch |
 
 ---
 
