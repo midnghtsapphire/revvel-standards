@@ -62,9 +62,20 @@ jobs:
         # so a future refactor that lets the value come from user input could
         # inject shell commands here. Env-var pass is single-quoted by bash.
         # Octopus finding #13996.
+        # The `if: always()` causes this to run even if the audit step was
+        # skipped/cancelled (e.g., checkout failed) — in that case REPORT_FILE
+        # is empty and cat would error. Guard explicitly so the workflow log
+        # explains the skip instead of a confusing `cat -- ""` failure
+        # (Devin finding on #14219).
         env:
           REPORT_FILE: ${{ steps.audit.outputs.report_file }}
         run: |
+          if [[ -z "$REPORT_FILE" || ! -f "$REPORT_FILE" ]]; then
+            echo "### Third-Party Action Freshness Audit (no report)" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "_The audit step did not produce a report. See the step log above for the upstream failure._" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           {
             echo "### Third-Party Action Freshness Audit"
             echo ""

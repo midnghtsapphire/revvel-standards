@@ -66,10 +66,12 @@ contains() {
   local item
   for item in "$@"; do
     # Case-insensitive compare — GitHub owner names are case-insensitive,
-    # so a workflow file that says `BeksOmega/...` must match the lowercased
-    # `beksomega` entry in MULTI_AUTHOR_OWNERS too. Without this, mixed-case
-    # references silently mis-tier and the audit emits false single-author
-    # warnings (Octopus finding #14004).
+    # so a workflow file that says `BeksOmega/...` must match the
+    # `BeksOmega` entry in MULTI_AUTHOR_OWNERS regardless of how either
+    # side is cased. We lowercase BOTH sides at comparison time so the
+    # OPTIONS array can keep its readable mixed-case entries. Without this,
+    # mixed-case references silently mis-tier and the audit emits false
+    # single-author warnings (Octopus finding #14004).
     [[ "${item,,}" == "$needle" ]] && return 0
   done
   return 1
