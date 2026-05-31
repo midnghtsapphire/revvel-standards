@@ -135,6 +135,15 @@ remember by what it does:
 | **OpenRouter** (`/openrouter`) | Dispatcher (`/dispatcher`) | Model routing with fallback chains, picks cheapest capable |
 | **Coder** (`/coder`) | Fixer (`/fixer`) | Applies the actual code fix — consumes Devin / Octopus / Copilot diagnoses into a minimal patch |
 
+**Coder lane wiring** (`.github/workflows/openrouter-coder.yml`): primary
+attempt routes through Roomote (the successor to Roo Code, which was archived
+May 15 2026 — the open-source extension and `@roocode/cli` package are gone).
+Roomote is Slack-native so it must be invoked via `ROO_RUN_COMMAND` (a repo
+variable holding a one-liner that produces
+`/tmp/openrouter-coder-result.json`). If `ROO_API_KEY` + `ROO_RUN_COMMAND`
+aren't both set, the workflow runs OpenRouter directly — same behavior as
+before the Roo wiring landed.
+
 ---
 
 ## Where to look (for code review / audit)
