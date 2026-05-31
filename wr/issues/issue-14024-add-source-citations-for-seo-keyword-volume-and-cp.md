@@ -89,7 +89,17 @@ on:
 ## Executive Summary
 
 [2-3 sentence summary of repository purpose, current state, and key recommendations]
+| Description | Add source citations for SEO keyword volume and CPC data (see Issue Context section below) |
+| Private | {IS_PRIVATE} |
+| Archived | {IS_ARCHIVED} |
 
+### Issue Context
+
+**Summary:** The work record for issue-13971 includes specific SEO keyword volume and CPC figures without citing the tools or data sources used to obtain them...
+
+**Suggested Action:**
+1. Identify the tool(s) used to obtain each figure (e.g., Google Keyword Planner, Ahrefs, Semrush).
+2. Add an inline citation or a footnote next to each keyword volume and CPC value...
 ---
 
 ## Step 1: Repository Discovery
