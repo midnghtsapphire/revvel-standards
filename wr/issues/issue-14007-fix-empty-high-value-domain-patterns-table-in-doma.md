@@ -15,7 +15,7 @@
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-#
+<!-- Generated from WR_TEMPLATE_FULL.md — see wr/WR_TEMPLATE_BASIC.md for the lightweight alternative -->
 
 # WR: midnghtsapphire/revvel-standards
 
