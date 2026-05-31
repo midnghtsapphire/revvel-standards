@@ -1,4 +1,4 @@
-# WR: [WR] Fix out-of-scope  variable causing MCP logic to never activate
+# WR: [WR] Fix out-of-scope `mcpPromptPack` variable causing MCP logic to never activate
 
 **Issue:** #13995  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -15,7 +15,7 @@
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-#
+<!-- Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended) -->
 
 # WR: midnghtsapphire/revvel-standards
 
@@ -99,7 +99,7 @@ on:
 | Property | Value |
 |----------|-------|
 | Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-30 |
+| Description | SSOT standards, templates, and automation |
 | Last Updated | 2026-05-30 |
 | Primary Language | JavaScript |
 | Stars | {STARS} |
