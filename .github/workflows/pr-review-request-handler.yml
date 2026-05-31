@@ -42,11 +42,17 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-            });
+            let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+              });
+              labels = res.data;
+            } catch (e) {
+              core.warning(`listLabelsOnIssue error: ${e.message}`);
+            }
 
             const hasNoTriage = labels.some(l => l.name === 'no-triage');
             if (hasNoTriage) {
@@ -81,13 +87,17 @@ jobs:
             const prNumber = context.payload.pull_request.number;
 
             // Fetch current labels to determine status
-            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-            });
-
-            const labelNames = labels.map(l => l.name);
+            let labelNames = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+              });
+              labelNames = res.data.map(l => l.name);
+            } catch (e) {
+              core.warning(`listLabelsOnIssue error: ${e.message}`);
+            }
 
             let statusBadge, statusText;
             if (labelNames.includes('review-fix:complete')) {
@@ -108,14 +118,18 @@ jobs:
             const marker = '<!-- pr-review-fix-status -->';
 
             // Check if status comment exists
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              per_page: 100,
-            });
-
-            const existingComment = comments.find(c => c.body && c.body.includes(marker));
+            let existingComment = null;
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+              existingComment = comments.find(c => c.body && c.body.includes(marker));
+            } catch (e) {
+              core.warning(`listComments error: ${e.message}`);
+            }
 
             const body = [
               marker,
@@ -130,21 +144,29 @@ jobs:
             ].join('\n');
 
             if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body,
-              });
-              core.info('Updated existing review fix status comment');
+              try {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingComment.id,
+                  body,
+                });
+                core.info('Updated existing review fix status comment');
+              } catch (e) {
+                core.warning(`updateComment error: ${e.message}`);
+              }
             } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body,
-              });
-              core.info('Created new review fix status comment');
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body,
+                });
+                core.info('Created new review fix status comment');
+              } catch (e) {
+                core.warning(`createComment error: ${e.message}`);
+              }
             }
     timeout-minutes: 30
 env:
