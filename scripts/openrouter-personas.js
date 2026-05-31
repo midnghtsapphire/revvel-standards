@@ -62,6 +62,9 @@ const PERSONA_REGISTRY = {
     name: "OpenRouter",
     emoji: "🔀",
     role: "Model Router & Dispatch",
+    // Friendly job-name aliases so the persona is easy to remember by what
+    // it does. `/dispatcher` resolves to the same persona as `/openrouter`.
+    aliases: ["dispatcher", "router"],
     profile: "repo_surgery",
     description:
       "First line of sight. Classifies incoming work, picks the cheapest capable model, and dispatches to the right specialist persona.",
@@ -79,7 +82,10 @@ const PERSONA_REGISTRY = {
     handle: "oaudrey",
     name: "oAudrey",
     emoji: "🧠",
-    role: "Primary Orchestrator",
+    role: "Primary Orchestrator (Triager)",
+    // `/triager` is the role-name alias — easier to remember by what she does.
+    // Still uses `/` prefix; `@triager` would notify a real GitHub user.
+    aliases: ["triager", "triage"],
     profile: "repo_surgery",
     description:
       "Owner persona and first line of sight on every issue and PR. Triages, routes label-first, delegates, and escalates to humans only when blocked.",
@@ -97,7 +103,8 @@ const PERSONA_REGISTRY = {
     handle: "mindmappr",
     name: "MindMappr",
     emoji: "🗺️",
-    role: "Ideation & Mind-Mapping",
+    role: "Ideation & Mind-Mapping (Spotter)",
+    aliases: ["spotter"],
     profile: "cheap_batch_edits",
     description:
       "Turns fuzzy ideas into structured mind maps, outlines, and persona specs. Expands breadth first, then prunes to what matters.",
@@ -116,7 +123,8 @@ const PERSONA_REGISTRY = {
     handle: "professor",
     name: "The Professor",
     emoji: "🎓",
-    role: "Research & Teaching",
+    role: "Research & Teaching (Citer)",
+    aliases: ["citer", "sourcer"],
     // Perplexity Sonar lane via OpenRouter — the no-API-key research path used
     // by scripts/perplexity-research-issue.js. Falls back to deeper then cheaper.
     models: [
@@ -154,12 +162,19 @@ function getPersona(handle) {
     throw new Error("Persona handle is required");
   }
   const key = handle.trim().toLowerCase().replace(/^@/, "");
-  const persona = PERSONA_REGISTRY[key];
-  if (!persona) {
-    const available = Object.keys(PERSONA_REGISTRY).join(", ");
-    throw new Error(`Unknown persona: ${handle}. Available personas: ${available}`);
+  // Direct hit on the canonical handle.
+  if (PERSONA_REGISTRY[key]) return PERSONA_REGISTRY[key];
+  // Otherwise check aliases (e.g. `triager` → oaudrey).
+  for (const p of Object.values(PERSONA_REGISTRY)) {
+    if ((p.aliases || []).map((a) => a.toLowerCase()).includes(key)) return p;
   }
-  return persona;
+  const canonical = Object.keys(PERSONA_REGISTRY);
+  const aliases = Object.values(PERSONA_REGISTRY)
+    .flatMap((p) => (p.aliases || []).map((a) => `${a} → ${p.handle}`));
+  throw new Error(
+    `Unknown persona: ${handle}. Available: ${canonical.join(", ")}. ` +
+    `Aliases: ${aliases.join(", ") || "(none)"}.`
+  );
 }
 
 /**
