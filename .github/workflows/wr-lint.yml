@@ -9,10 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with: { fetch-depth: 0 }
       - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with: { node-version: "20" }
       - name: Lint changed WR files
         run: |
+          # NOTE: requires fetch-depth: 0 on actions/checkout above. Without
+          # it the base commit isn't in the shallow clone and `git diff` falls
+          # through to the wildcard fallback, which lints every existing WR
+          # file (most of which fail) and marks the PR red regardless of the
+          # actual diff. Per VADE finding on #14227.
           files=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref || 'main' }}...HEAD -- 'wr/issues/*.md' 2>/dev/null || echo "wr/issues/*.md")
           [ -z "$files" ] && { echo "no WR files changed"; exit 0; }
           node wr/scripts/wr-lint.mjs $files
