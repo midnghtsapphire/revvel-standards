@@ -1,4 +1,4 @@
-name: OpenRouter Coder
+name: Coder (Roo primary → OpenRouter fallback)
 on:
   issues:
     types:
@@ -46,6 +46,14 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests
+      - name: Set up Node (for Roo CLI)
+        if: env.ROO_API_KEY != '' || env.ROO_RUN_COMMAND != ''
+        env:
+          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
+          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v9.0.0
@@ -66,8 +74,44 @@ jobs:
             core.setOutput('issue_number', String(issue.number));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
-      - name: Generate code changes with OpenRouter
+      - name: Try Roo (Orchestrator mode) — primary coder lane
+        id: roo
+        if: env.ROO_API_KEY != ''
+        continue-on-error: true
+        env:
+          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
+          ROO_MODE: ${{ vars.ROO_MODE || 'orchestrator' }}
+          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          set -euo pipefail
+          # Roo writes its result to the same JSON shape OpenRouter expects:
+          # { "commit_message": "...", "files_written": [ "<path>", ... ] }
+          # If the public Roo surface differs from the default below, set the
+          # ROO_RUN_COMMAND repo variable to a one-liner that produces the
+          # same /tmp/openrouter-coder-result.json. The fallback OpenRouter
+          # step runs unchanged if Roo soft-fails or returns zero files.
+          if [[ -n "${ROO_RUN_COMMAND:-}" ]]; then
+            eval "$ROO_RUN_COMMAND"
+          else
+            npx --yes @roocode/cli run \
+              --mode "$ROO_MODE" \
+              --task "$ISSUE_TITLE"$'\n\n'"$ISSUE_BODY" \
+              --repo "$PWD" \
+              --output-json /tmp/openrouter-coder-result.json
+          fi
+          if [[ -s /tmp/openrouter-coder-result.json ]]; then
+            files=$(python3 -c "import json,sys; d=json.load(open('/tmp/openrouter-coder-result.json')); print(len(d.get('files_written') or []))")
+          else
+            files=0
+          fi
+          echo "files_written=$files" >> "$GITHUB_OUTPUT"
+      - name: Generate code changes with OpenRouter (fallback)
         id: coder
+        if: steps.roo.outcome != 'success' || steps.roo.outputs.files_written == '0' || steps.roo.outputs.files_written == ''
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
