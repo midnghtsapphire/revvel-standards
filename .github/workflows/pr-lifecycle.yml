@@ -63,9 +63,15 @@ jobs:
 
             const currentLabels = async () => {
               try {
-                const res = await github.rest.issues.listLabelsOnIssue({
-                  owner, repo, issue_number: num
-                });
+                let res;
+                try {
+                  res = await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  });
+                } catch (e) {
+                  core.warning(`listLabelsOnIssue error: ${e.message}`);
+                  return [];
+                }
                 return res.data.map(l => l.name);
               } catch (e) {
                 core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
@@ -181,9 +187,15 @@ jobs:
 
             const currentLabels = async () => {
               try {
-                const res = await github.rest.issues.listLabelsOnIssue({
-                  owner, repo, issue_number: num
-                });
+                let res;
+                try {
+                  res = await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  });
+                } catch (e) {
+                  core.warning(`listLabelsOnIssue error: ${e.message}`);
+                  return [];
+                }
                 return res.data.map(l => l.name);
               } catch (e) {
                 core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
@@ -303,9 +315,15 @@ jobs:
 
               const currentLabels = async () => {
                 try {
-                  const res = await github.rest.issues.listLabelsOnIssue({
-                    owner, repo, issue_number: num
-                  });
+                  let res;
+                  try {
+                    res = await github.rest.issues.listLabelsOnIssue({
+                      owner, repo, issue_number: num
+                    });
+                  } catch (e) {
+                    core.warning(`listLabelsOnIssue error: ${e.message}`);
+                    return [];
+                  }
                   return res.data.map(l => l.name);
                 } catch (e) {
                   core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
