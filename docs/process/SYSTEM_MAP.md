@@ -136,13 +136,15 @@ remember by what it does:
 | **Coder** (`/coder`) | Fixer (`/fixer`) | Applies the actual code fix — consumes Devin / Octopus / Copilot diagnoses into a minimal patch |
 
 **Coder lane wiring** (`.github/workflows/openrouter-coder.yml`): primary
-attempt routes through Roomote (the successor to Roo Code, which was archived
-May 15 2026 — the open-source extension and `@roocode/cli` package are gone).
-Roomote is Slack-native so it must be invoked via `ROO_RUN_COMMAND` (a repo
-variable holding a one-liner that produces
-`/tmp/openrouter-coder-result.json`). If `ROO_API_KEY` + `ROO_RUN_COMMAND`
-aren't both set, the workflow runs OpenRouter directly — same behavior as
-before the Roo wiring landed.
+attempt routes through whichever Roo successor you wire — **Cline** (the
+original Roo was forked from this), **ZooCode** (community fork), or
+**Roomote** (the founders' Slack-native commercial product). Roo Code
+itself was archived May 15 2026, so there is no default CLI to npx;
+activation is opt-in via `ROO_RUN_COMMAND` (a repo variable holding a
+one-liner that produces `/tmp/openrouter-coder-result.json`). OpenRouter
+is the always-available backup — runs unchanged if `ROO_API_KEY` +
+`ROO_RUN_COMMAND` aren't both set, or if the Roo step soft-fails or
+returns zero files.
 
 ---
 
