@@ -207,6 +207,27 @@ stateDiagram-v2
     Complete --> [*]: Issue closed
 ```
 
+### WR Completion Validity Gate
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: WR created from template
+    Draft --> ChecklistMarked: Pre-flight [x] applied
+    Draft --> SectionsFilled: Research content added
+    ChecklistMarked --> Invalid: Sections still placeholders
+    SectionsFilled --> Invalid: Sections still placeholders
+    SectionsFilled --> ReadyForReview: Citations >= 90%
+    Invalid --> Draft: Revert [x] to [ ]
+    ReadyForReview --> Complete: Review Fleet passes
+    Complete --> [*]
+
+    note right of Invalid
+      This PR is in this state:
+      checklist marked complete,
+      all sections still raw template
+    end note
+```
+
 ---
 
 ## Label Lifecycle
