@@ -1,0 +1,38 @@
+name: No Root Junk
+# Catches the #14119-class defect: throwaway development scripts
+# (plan.md, finish_clean.js, fix_boilerplate.js, update_wr.js, tmp_*, scratch*)
+# committed to the repo root. Per Octopus review of the recent WR-PR cluster.
+#
+# Runs on every PR, regardless of paths — junk can land anywhere.
+# If a file legitimately needs one of these names, add an exception to
+# JUNK_ALLOW below with a comment explaining why.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+jobs:
+  no-root-junk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with: { fetch-depth: 0 }
+      - name: Scan diff for throwaway files at repo root
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Repo-root only — depth-1 entries that match the throwaway pattern.
+          # Subdir files (scripts/finish_clean.js, etc.) are out of scope here;
+          # those have legitimate places to live.
+          CHANGED="$(git diff --name-only --diff-filter=AM "${BASE_SHA}...${HEAD_SHA}")"
+          JUNK="$(printf '%s\n' "$CHANGED" \
+            | grep -E '^(plan|finish_clean|fix_boilerplate|update_wr|tmp[_-].*|scratch.*|temp[_-].*|throwaway.*|notes)\.(js|mjs|ts|md|sh|py|txt)$' \
+            || true)"
+          if [ -n "$JUNK" ]; then
+            echo "::error::Throwaway dev files at repo root are not allowed. Move them under scripts/, docs/, or wr/ — or delete them before merge."
+            printf '  • %s\n' $JUNK
+            exit 1
+          fi
+          echo "✓ no throwaway files at repo root"
