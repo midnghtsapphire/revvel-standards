@@ -114,6 +114,9 @@ security findings, a11y/SEO gaps).
 | `agent-fallback.yml` | Picks up repair issues when the primary agent fails |
 | `stuck-label-watchdog.yml` | Turns stuck PRs into agent repair issues |
 | `automation-doctor.js` | Validates workflows + labels (`npm run automation:doctor`) |
+| `wr-lint.yml` + `wr/scripts/wr-lint.mjs` | Catches scaffolding leak, raw `{TOKEN}` substitutions, bracket placeholders, and any `[x]` checklist item flipped on while forbidden placeholders remain |
+| `fix-wr-gate.yml` + `wr/scripts/fix-wr-gate.mjs` | Blocks "documents the fix but doesn't apply it" PRs. Tracking-only escape requires both a tracking-* label AND an explicit `Tracks: #NNNN` reference in the PR body pointing at the follow-up that applies the actual fix |
+| `no-root-junk.yml` | Blocks throwaway dev files at repo root (`plan.md`, `finish_clean.js`, `fix_boilerplate.js`, `update_wr.js`, `tmp_*`, `scratch*`, etc.) on every PR |
 | Procurement BOM | When a credential/API is missing, writes `BOM.md` instead of failing silently |
 
 ---
