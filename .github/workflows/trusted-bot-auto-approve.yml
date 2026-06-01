@@ -40,7 +40,6 @@ jobs:
               'midnghtsapphire',
               'devin-ai-integration[bot]',
               'devin-ai[bot]',
-              'github-actions[bot]',
               'copilot[bot]',
               'dependabot[bot]',
               'jules[bot]',
@@ -69,7 +68,7 @@ jobs:
             }
 
             // Find open PRs for this SHA
-            const { data: pulls } = await github.rest.pulls.list({
+            const pulls = await github.paginate(github.rest.pulls.list, {
               owner, repo, state: 'open', per_page: 100,
             });
 
