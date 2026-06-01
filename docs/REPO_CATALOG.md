@@ -95,6 +95,7 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | awesome-cybersecurity-blueteam | :computer:🛡️ A curated collection of awesome resources, tools, and other shiny things for cybersecurity blue teams. | Fork | Library/Other | PUBLIC |
 | awesome-forensics | ⭐️ A curated list of awesome forensic analysis tools and resources | Fork | Library/Other | PUBLIC |
 | awesome-opensource-boilerplates | A curated list of production-ready and free SaaS boilerplates and starter templates. Build your next software-as-a-service project with battle-tested open source foundations. | Fork | Library/Other | PUBLIC |
+| bar-chart-race-engine | Animated bar-chart-race video generator (World Bank WDI data, custom datasets) for social media infographics | Active | Tool | PUBLIC |
 | babysitter | Babysitter enables Claude Code to manage sophisticated development workflows through deterministic, resumable orchestration | Fork | Library/Other | PUBLIC |
 | binfmt | Cross-platform emulator collection distributed with Docker images. | Fork | Library/Other | PUBLIC |
 | brave-browser | Brave browser for Android, iOS, Linux, macOS, Windows. | Fork | Library/Other | PUBLIC |
@@ -148,6 +149,7 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | nomad-navigator |  | Active | Library/Other | PUBLIC |
 | oath-gate-connect |  | Active | Library/Other | PUBLIC |
 | ocean2-v2-research |  | Active | Library/Other | PUBLIC |
+| oz-os | Oz OS — Research Intelligence Operating System (intel.md, research-packs, method-packs, agent specs, autonomy tiers) | Active | Framework | PUBLIC |
 | openclaw-skills-hub |  | Active | Library/Other | PUBLIC |
 | openclaw-ui | OpenClaw Agent Management SaaS Platform - Professional management layer for autonomous AI agents | Active | Frontend | PUBLIC |
 | oz-prompt-library |  | Active | Library/Other | PUBLIC |
