@@ -30,7 +30,7 @@ const PRODUCT_SECTIONS = [
 const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
 
 // Unsubstituted generator tokens that must never ship.
-const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/g;
+const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
 
 // Bracket placeholders the full template leaves behind.
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing)\]/gi;
@@ -94,9 +94,10 @@ function lintFile(path) {
   }
 
   // 5. Unsubstituted generator tokens ({STARS} etc.)
+  const RAW_TOKENS_G = new RegExp(RAW_TOKENS.source, "g");
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip examples
-    const m = l.match(RAW_TOKENS);
+    const m = l.match(RAW_TOKENS_G);
     if (m) issues.push(`line ${i + 1}: unsubstituted generator token(s) ${[...new Set(m)].join(", ")} — substitute real value or remove the row`);
   });
 
@@ -110,7 +111,6 @@ function lintFile(path) {
   // 7. Falsely pre-checked research checklist while body has raw placeholders.
   const checkedItems = (text.match(/^- \[x\]/gim) || []).length;
   const hasRawResearch = RAW_TOKENS.test(text) || /\[(Option \d|primary keyword|\$CPC|Complaint \d|Pattern \d)\]/i.test(text);
-  RAW_TOKENS.lastIndex = 0;
   if (checkedItems >= 5 && hasRawResearch) {
     issues.push(`research checklist pre-marked complete (${checkedItems} [x]) but body still contains raw placeholders — false-completion signal; uncheck N/A items with a reason or fill the sections`);
   }

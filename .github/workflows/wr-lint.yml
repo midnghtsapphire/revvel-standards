@@ -4,6 +4,8 @@ on:
     paths: ["wr/issues/**.md"]
   push:
     paths: ["wr/issues/**.md"]
+permissions:
+  contents: read
 jobs:
   lint:
     runs-on: ubuntu-latest

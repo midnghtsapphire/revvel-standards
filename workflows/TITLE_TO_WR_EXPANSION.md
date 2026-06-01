@@ -72,7 +72,7 @@ Jules rewrites ALL WR text to the canonical voice/structure of work_request.yml,
 PR text to MIRROR it field-for-field (pull_request_template.md). Jules does not change scope — only
 normalizes wording, structure, and cross-references so WR and PR read as one coherent contract.
 
-## STEP 6 — EXECUTE (one iteration)
+## STEP 5 — EXECUTE (one iteration)
 Agents build the full Required Bundle, opening multiple PRs as needed (all one iteration). Self-heal:
 detect CI/runtime/schema failures and open follow-up PRs within the same iteration; log cause+fix.
 PRs must mirror the WR Required Bundle + Definition of Done; partial scope requires a documented blocker.
