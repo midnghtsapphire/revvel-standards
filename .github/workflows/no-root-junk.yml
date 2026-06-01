@@ -4,8 +4,8 @@ name: No Root Junk
 # committed to the repo root. Per Octopus review of the recent WR-PR cluster.
 #
 # Runs on every PR, regardless of paths — junk can land anywhere.
-# If a file legitimately needs one of these names, add an exception to
-# JUNK_ALLOW below with a comment explaining why.
+# If a file legitimately needs one of these names, edit the grep -E
+# pattern below to add an exception (and leave a comment explaining why).
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -26,7 +26,10 @@ jobs:
           # Repo-root only — depth-1 entries that match the throwaway pattern.
           # Subdir files (scripts/finish_clean.js, etc.) are out of scope here;
           # those have legitimate places to live.
-          CHANGED="$(git diff --name-only --diff-filter=AM "${BASE_SHA}...${HEAD_SHA}")"
+          # AMR filter: Added | Modified | Renamed. Without R, renaming a
+          # legitimate file into a forbidden root name would bypass the gate.
+          # Per Copilot review.
+          CHANGED="$(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}")"
           JUNK="$(printf '%s\n' "$CHANGED" \
             | grep -E '^(plan|finish_clean|fix_boilerplate|update_wr|tmp[_-].*|scratch.*|temp[_-].*|throwaway.*|notes)\.(js|mjs|ts|md|sh|py|txt)$' \
             || true)"

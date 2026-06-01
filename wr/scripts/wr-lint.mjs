@@ -118,7 +118,10 @@ function lintFile(path) {
   // (excluding code fences via the same inFence mask).
   const FORBIDDEN_FOR_CHECKLIST = [
     RAW_TOKENS,
-    BRACKET_PLACEHOLDER,
+    // Non-global clone of BRACKET_PLACEHOLDER: the `g` flag makes `.test()`
+    // stateful (lastIndex), which can false-negative on repeat calls and
+    // let forbidden placeholders slip past the rule. Per Copilot review.
+    new RegExp(BRACKET_PLACEHOLDER.source, "i"),
     /\[Yes\/No\]/i,
     /\[Option \d+\]/i,
     /\[Research findings\.\.\.\]/i,
