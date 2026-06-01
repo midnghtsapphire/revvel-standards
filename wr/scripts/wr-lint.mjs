@@ -33,7 +33,7 @@ const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate
 const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
 
 // Bracket placeholders the full template leaves behind.
-const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing)\]/gi;
+const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
 
 function lintFile(path) {
   const text = fs.readFileSync(path, "utf8");
@@ -108,11 +108,37 @@ function lintFile(path) {
     if (m) issues.push(`line ${i + 1}: raw template placeholder ${m[0]} — fill or mark "N/A — <reason>"`);
   });
 
-  // 7. Falsely pre-checked research checklist while body has raw placeholders.
-  const checkedItems = (text.match(/^- \[x\]/gim) || []).length;
-  const hasRawResearch = RAW_TOKENS.test(text) || /\[(Option \d|primary keyword|\$CPC|Complaint \d|Pattern \d)\]/i.test(text);
-  if (checkedItems >= 5 && hasRawResearch) {
-    issues.push(`research checklist pre-marked complete (${checkedItems} [x]) but body still contains raw placeholders — false-completion signal; uncheck N/A items with a reason or fill the sections`);
+  // 7. Falsely pre-checked checklist while body has any raw placeholders.
+  // Per Octopus review of #14118/#14138/#14224/#14225: ANY [x] check while
+  // ANY forbidden pattern is in the doc is false-completion. The old
+  // threshold (≥5 [x] + narrow placeholder list) lets the worst offenders
+  // through — a single [x] flipped on while {STARS} is still in the table
+  // is the same false-completion signal.
+  // Build the forbidden-pattern detector once from the same rules used above
+  // (excluding code fences via the same inFence mask).
+  const FORBIDDEN_FOR_CHECKLIST = [
+    RAW_TOKENS,
+    // Non-global clone of BRACKET_PLACEHOLDER: the `g` flag makes `.test()`
+    // stateful (lastIndex), which can false-negative on repeat calls and
+    // let forbidden placeholders slip past the rule. Per Copilot review.
+    new RegExp(BRACKET_PLACEHOLDER.source, "i"),
+    /\[Yes\/No\]/i,
+    /\[Option \d+\]/i,
+    /\[Research findings\.\.\.\]/i,
+    /\[\$CPC\]/i,
+    /\[Date and summary\]/i,
+    /\[Fix\]/i,
+  ];
+  const hasAnyForbidden = lines.some((l, i) => {
+    if (inFence[i]) return false;
+    return FORBIDDEN_FOR_CHECKLIST.some((re) => re.test(l));
+  });
+  const checkedItems = lines.reduce((n, l, i) => {
+    if (inFence[i]) return n;
+    return n + (/^- \[x\]/i.test(l) ? 1 : 0);
+  }, 0);
+  if (checkedItems >= 1 && hasAnyForbidden) {
+    issues.push(`checklist has ${checkedItems} [x] item(s) but the doc still contains forbidden placeholders/tokens — false-completion signal; either fill the placeholders, or uncheck the items (and mark "N/A — <reason>" where genuinely not applicable)`);
   }
 
   // 8. Issue body pasted into a metadata table cell (## heading inside a | ... | row).

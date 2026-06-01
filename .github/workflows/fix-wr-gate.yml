@@ -16,6 +16,7 @@ jobs:
       - name: Enforce fix-WR includes a real fix or is labeled tracking-only
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY:  ${{ github.event.pull_request.body }}
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
           # Use event-payload SHAs — `origin/${BASE}` is unreliable when
           # actions/checkout uses the PR merge ref. Per Copilot review on
@@ -26,5 +27,6 @@ jobs:
           CHANGED="$(git diff --name-only --diff-filter=AM "${BASE_SHA}...${HEAD_SHA}")"
           node wr/scripts/fix-wr-gate.mjs \
             --title "$PR_TITLE" \
+            --body  "$PR_BODY" \
             --labels "$PR_LABELS" \
             --changed "$CHANGED"
