@@ -37,6 +37,18 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 (5) STEP 4.5 CLEAN OUTPUT        ← no scaffolding, one H1, no raw [placeholders] (in expansion spec)
    │
    ▼
+(5.5) METHOD HUNTER              ← (optional) find 10+ methods across domains → method-pack.md
+   │
+   ▼
+(5.6) CONTRARIAN                 ← (optional) attack every method → contrarian-pack.md
+   │
+   ▼
+(5.7) ADJACENT DOMAIN            ← (optional) cross-industry methods → adjacent-pack.md
+   │
+   ▼
+(5.8) SYNTHESIS                  ← (optional) merge packs; reject contrarian_confidence > 0.7 → synthesis.md
+   │
+   ▼
 (6) Jules normalize              ← rewrite WR + PR text to canonical voice; mirror field-for-field
    │      └─ pull_request_template.md mirrors work_request.yml
    ▼
