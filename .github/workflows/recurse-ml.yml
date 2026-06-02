@@ -25,6 +25,19 @@
 #
 # ORIGINAL WORKFLOW PRESERVED BELOW (commented out, never deleted per policy).
 # ============================================================================
+# Minimal stub to keep GitHub Actions parser happy while preserving the deprecation record below.
+name: RecurseML (deprecated)
+on:
+  workflow_dispatch:
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "RecurseML deprecated 2026-06-01 — see comments below and docs/CODE_REVIEW_WORKFLOW_STATUS.md"
+
+# ============================================================================
+# DEPRECATED — 2026-06-01
+# ... (existing comment block preserved below)
 
 # name: RecurseML — Autonomous Code Review
 # on:
