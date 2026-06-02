@@ -1,182 +1,119 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# generate-wr.sh — corrected WR generator. Fixes the five recurring review failures at the source.
+# Usage: generate-wr.sh --issue <n> --title "<title>" --body-file <path> [--class auto|basic|full] [--meta <json>]
+# Emits a clean WR to wr/issues/. Runs wr-lint.mjs at the end and FAILS if output is dirty.
+set -euo pipefail
 
-# generate-wr.sh - Generate a WR for a specific repository
-# Usage: ./generate-wr.sh <repo-name>
+ISSUE=""; TITLE=""; BODY_FILE=""; CLASS="auto"; META="{}"
+while [[ $# -gt 0 ]]; do case "$1" in
+  --issue) ISSUE="$2"; shift 2;;
+  --title) TITLE="$2"; shift 2;;
+  --body-file) BODY_FILE="$2"; shift 2;;
+  --class) CLASS="$2"; shift 2;;
+  --meta) META="$2"; shift 2;;
+  *) echo "unknown arg $1" >&2; exit 2;;
+esac; done
 
-set -e
+[[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
+HERE="$(cd "$(dirname "$0")/.." && pwd)"   # wr/
+ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Get script directory
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WR_DIR="$(dirname "$SCRIPT_DIR")"
-TEMPLATE_FILE="$WR_DIR/WR_TEMPLATE.md"
-REPOS_DIR="$WR_DIR/repos"
-
-# Check if repo name provided
-if [ -z "$1" ]; then
-    echo -e "${RED}Error: Repository name required${NC}"
-    echo "Usage: $0 <repo-name>"
-    echo "Example: $0 neurooz"
-    exit 1
+# ---- FIX (class 2): select template by issue class instead of always FULL ----
+# ERE doesn't support \b word boundaries — they're matched literally and the
+# whole pattern fails to fire, so EVERY auto-classified WR fell through to
+# `full` (per Copilot review on #14227). Use grep -wiE so word matching is
+# done by grep itself.
+if [[ "$CLASS" == "auto" ]]; then
+  if echo "$TITLE" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+    CLASS="basic"
+  elif echo "$TITLE" | grep -qiE '\<add (missing|test)\>'; then
+    CLASS="basic"
+  else
+    CLASS="full"
+  fi
 fi
+TEMPLATE="$HERE/WR_TEMPLATE_${CLASS^^}.md"
+[[ -f "$TEMPLATE" ]] || { echo "template missing: $TEMPLATE" >&2; exit 2; }
 
-REPO_NAME="$1"
+# ---- FIX (class 1): strip leading HTML-comment guidance so the H1 lands at line 1.
+# WR_TEMPLATE_FULL.md has author-instruction <!-- --> comments above the # WR:
+# header. Without stripping, the linter sees H1 at line 3 and refuses the
+# whole generation (Devin finding on #14227 — would have broken all
+# FULL-template WRs). Strip ONLY leading comment lines, not body comments.
 
-# Validate repo name to prevent path traversal
-if [[ ! "$REPO_NAME" =~ ^[A-Za-z0-9_.-]+$ ]]; then
-    echo -e "${RED}Error: Invalid repository name${NC}"
-    echo "Repository name must contain only letters, numbers, underscores, hyphens, and dots"
-    echo "Got: $REPO_NAME"
-    exit 1
-fi
-
-# Normalize with basename to be extra safe
-REPO_NAME=$(basename -- "$REPO_NAME")
-OUTPUT_FILE="$REPOS_DIR/${REPO_NAME}.md"
-
-# Check if gh CLI is available
-if ! command -v gh &> /dev/null; then
-    echo -e "${RED}Error: gh CLI not found${NC}"
-    echo "Please install GitHub CLI: https://cli.github.com/"
-    exit 1
-fi
-
-# Check if gh CLI is authenticated
-if ! gh auth status &> /dev/null; then
-    echo -e "${RED}Error: gh CLI not authenticated${NC}"
-    echo "Please run: gh auth login"
-    exit 1
-fi
-
-# Check if jq is available
-if ! command -v jq &> /dev/null; then
-    echo -e "${RED}Error: jq not found${NC}"
-    echo "Please install jq: https://stedolan.github.io/jq/"
-    exit 1
-fi
-
-# Check if template exists
-if [ ! -f "$TEMPLATE_FILE" ]; then
-    echo -e "${RED}Error: Template file not found: $TEMPLATE_FILE${NC}"
-    exit 1
-fi
-
-# Check if WR already exists
-if [ -f "$OUTPUT_FILE" ]; then
-    echo -e "${YELLOW}Warning: WR already exists for $REPO_NAME${NC}"
-    read -p "Overwrite? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Cancelled."
-        exit 0
-    fi
-fi
-
-echo -e "${GREEN}Fetching repository data for $REPO_NAME...${NC}"
-
-# Fetch repo data from GitHub API (using gh CLI if available)
-if command -v gh &> /dev/null; then
-    echo "Using gh CLI to fetch repository metadata..."
-    
-    REPO_DATA=$(gh api repos/midnghtsapphire/$REPO_NAME 2>/dev/null || echo "")
-    
-    if [ -z "$REPO_DATA" ]; then
-        echo -e "${YELLOW}Warning: Could not fetch repo data from GitHub API${NC}"
-        echo "Creating WR with placeholder data..."
-        
-        # Use placeholder data
-        CREATED_DATE="Unknown"
-        UPDATED_DATE="$(date +%Y-%m-%d)"
-        PRIMARY_LANGUAGE="Unknown"
-        REPO_URL="https://github.com/midnghtsapphire/$REPO_NAME"
-        DESCRIPTION="No description available"
-        STARS="0"
-        OPEN_ISSUES="0"
-        IS_PRIVATE="Unknown"
-        IS_ARCHIVED="Unknown"
-    else
-        # Parse JSON data
-        CREATED_DATE=$(echo "$REPO_DATA" | jq -r '.created_at[:10]')
-        UPDATED_DATE=$(echo "$REPO_DATA" | jq -r '.updated_at[:10]')
-        PRIMARY_LANGUAGE=$(echo "$REPO_DATA" | jq -r '.language // "Unknown"')
-        REPO_URL=$(echo "$REPO_DATA" | jq -r '.html_url')
-        DESCRIPTION=$(echo "$REPO_DATA" | jq -r '.description // "No description available"')
-        STARS=$(echo "$REPO_DATA" | jq -r '.stargazers_count')
-        OPEN_ISSUES=$(echo "$REPO_DATA" | jq -r '.open_issues_count')
-        IS_PRIVATE=$(echo "$REPO_DATA" | jq -r '.private')
-        IS_ARCHIVED=$(echo "$REPO_DATA" | jq -r '.archived')
-    fi
-else
-    echo -e "${YELLOW}Warning: gh CLI not found. Using placeholder data.${NC}"
-    CREATED_DATE="Unknown"
-    UPDATED_DATE="$(date +%Y-%m-%d)"
-    PRIMARY_LANGUAGE="Unknown"
-    REPO_URL="https://github.com/midnghtsapphire/$REPO_NAME"
-    DESCRIPTION="No description available"
-    STARS="0"
-    OPEN_ISSUES="0"
-    IS_PRIVATE="Unknown"
-    IS_ARCHIVED="Unknown"
-fi
-
-RESEARCH_DATE=$(date +%Y-%m-%d)
-
-echo -e "${GREEN}Generating WR from template...${NC}"
-
-# Helper function to escape sed replacement strings
-escape_sed() {
-    # Escape backslashes, ampersands, newlines, and forward slashes
-    printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g' -e ':a;N;$!ba;s/\n/\\n/g'
+# ---- helpers ----
+jq_get() {
+  # Empty meta values must produce "N/A" not "", or the contract
+  # (every section filled or explicit N/A) is silently violated per
+  # Copilot review on #14227.
+  local v
+  v="$(echo "$META" | (command -v jq >/dev/null && jq -r ".$1 // \"\"" || echo ""))"
+  [[ -z "$v" ]] && echo "N/A" || echo "$v"
 }
 
-# Escape all values for safe sed substitution
-REPO_NAME_ESC=$(escape_sed "$REPO_NAME")
-REPO_URL_ESC=$(escape_sed "$REPO_URL")
-CREATED_DATE_ESC=$(escape_sed "$CREATED_DATE")
-UPDATED_DATE_ESC=$(escape_sed "$UPDATED_DATE")
-PRIMARY_LANGUAGE_ESC=$(escape_sed "$PRIMARY_LANGUAGE")
-RESEARCH_DATE_ESC=$(escape_sed "$RESEARCH_DATE")
-DESCRIPTION_ESC=$(escape_sed "$DESCRIPTION")
-STARS_ESC=$(escape_sed "$STARS")
-OPEN_ISSUES_ESC=$(escape_sed "$OPEN_ISSUES")
-IS_PRIVATE_ESC=$(escape_sed "$IS_PRIVATE")
-IS_ARCHIVED_ESC=$(escape_sed "$IS_ARCHIVED")
+DATE="$(date -u +%Y-%m-%d)"
+TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no backtick stripping)
 
-# Create WR from template with substitutions
-sed -e "s|{REPO_NAME}|$REPO_NAME_ESC|g" \
-    -e "s|{REPO_URL}|$REPO_URL_ESC|g" \
-    -e "s|{CREATED_DATE}|$CREATED_DATE_ESC|g" \
-    -e "s|{UPDATED_DATE}|$UPDATED_DATE_ESC|g" \
-    -e "s|{PRIMARY_LANGUAGE}|$PRIMARY_LANGUAGE_ESC|g" \
-    -e "s|{RESEARCH_DATE}|$RESEARCH_DATE_ESC|g" \
-    -e "s|{DESCRIPTION}|$DESCRIPTION_ESC|g" \
-    -e "s|{STARS}|$STARS_ESC|g" \
-    -e "s|{OPEN_ISSUES}|$OPEN_ISSUES_ESC|g" \
-    -e "s|{IS_PRIVATE}|$IS_PRIVATE_ESC|g" \
-    -e "s|{IS_ARCHIVED}|$IS_ARCHIVED_ESC|g" \
-    "$TEMPLATE_FILE" > "$OUTPUT_FILE"
+# ---- FIX (class 4): issue body goes to its own section, NEVER into a table cell ----
+# ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
+out="$(cat "$TEMPLATE")"
+# Strip leading HTML comments before the H1 — `awk` walks the head of the
+# template, drops any `<!-- ... -->` line and blank lines, until the first
+# non-comment / non-blank line, then prints the rest verbatim. Without this,
+# WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
+# the lint gate refuses the output (Devin finding on #14227).
+out="$(printf '%s\n' "$out" | awk '
+  BEGIN { stripping=1 }
+  stripping && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && /^[[:space:]]*$/           { next }
+  { stripping=0; print }
+')"
+subst() { out="${out//\{$1\}/$2}"; }
+subst TITLE             "$TITLE_CLEAN"
+subst ISSUE_REF         "#${ISSUE:-N/A}"
+subst REPO              "midnghtsapphire/revvel-standards"
+subst DATE              "$DATE"
+subst RESEARCH_DATE     "$DATE"
+subst RESEARCHER        "$(jq_get researcher)"
+subst STATUS            "🟡 In Progress"
+subst ISSUE_BODY        "$ISSUE_BODY"
+subst SUMMARY           "$(jq_get summary)"
+subst OBJECTIVE         "$(jq_get objective)"
+subst REQUIRED_BUNDLE   "$(jq_get required_bundle)"
+subst DEFINITION_OF_DONE "$(jq_get definition_of_done)"
+subst VALIDATION        "$(jq_get validation)"
+subst BLOCKERS          "None."
+subst STARS             "$(jq_get stars)"
+subst OPEN_ISSUES       "$(jq_get open_issues)"
+subst IS_PRIVATE        "$(jq_get is_private)"
+subst IS_ARCHIVED       "$(jq_get is_archived)"
+subst EXECUTIVE_SUMMARY "$(jq_get executive_summary)"
+subst PRODUCT_SELECTIONS "$(jq_get product_selections)"
+subst DEEP_WEB_RESEARCH "$(jq_get deep_web_research)"
+subst REQUIREMENTS      "$(jq_get requirements)"
+subst RECOMMENDATIONS   "$(jq_get recommendations)"
+subst RISKS             "$(jq_get risks)"
 
-echo -e "${GREEN}✓ WR created successfully!${NC}"
-echo ""
-echo "Location: $OUTPUT_FILE"
-echo "Repository: $REPO_NAME"
-echo "Created: $CREATED_DATE"
-echo "URL: $REPO_URL"
-echo ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Review and complete the WR: $OUTPUT_FILE"
-echo "2. Conduct deep web research for market analysis"
-echo "3. Audit security vulnerabilities"
-echo "4. Check deployment status"
-echo "5. Update WR_TRACKER.md with status"
-echo ""
-echo "Edit the WR:"
-echo "  vim $OUTPUT_FILE"
-echo ""
-echo "View the WR:"
-echo "  cat $OUTPUT_FILE"
+# Any token left unfilled becomes an explicit N/A marker, never a raw {TOKEN} or empty.
+out="$(echo "$out" | sed -E 's/\{[A-Z_]+\}/N\/A/g')"
+# Any empty filled section line -> N/A with reason (basic class has no market sections to worry about).
+out="$(echo "$out" | sed -E 's/^([A-Za-z].*:)[[:space:]]*$/\1 N\/A/')"
+
+SLUG="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g' | cut -c1-50)"
+DEST="$HERE/issues/issue-${ISSUE:-x}-${SLUG}.md"
+mkdir -p "$HERE/issues"
+printf '%s\n' "$out" > "$DEST"
+
+# ---- FIX (class 5 guard): warn if no code fix is staged alongside a fix-class WR ----
+# `\b` doesn't work in ERE — using grep -wi for actual word matching.
+if [[ "$CLASS" == "basic" ]] && echo "$TITLE" | grep -qwi "fix"; then
+  echo "REMINDER: This is a fix WR. The SAME PR must also modify the actual buggy file, not just add this WR." >&2
+fi
+
+# ---- HARD GATE: lint the output; fail if dirty ----
+if command -v node >/dev/null && [[ -f "$HERE/scripts/wr-lint.mjs" || -f "$HERE/../workflows/wr-lint.mjs" ]]; then
+  LINT="$HERE/scripts/wr-lint.mjs"; [[ -f "$LINT" ]] || LINT="$HERE/../workflows/wr-lint.mjs"
+  node "$LINT" "$DEST" || { echo "GENERATOR REFUSED: output failed wr-lint. Not committing dirty WR." >&2; exit 1; }
+fi
+
+echo "WR written: $DEST  (class=$CLASS)"

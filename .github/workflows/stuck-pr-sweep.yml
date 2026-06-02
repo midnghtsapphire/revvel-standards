@@ -1,0 +1,172 @@
+name: Stuck PR Sweeper
+
+# ── Find every open PR with merge conflicts and re-trigger conflict-helper ──
+# Origin: the owner reported a queue of stuck PRs (#14082 21 conflicts,
+# #13805 38, #13951 25, datascope-standalone#4 10) blocking work, all
+# needing the auto-resolver from #14092. This workflow walks every open PR
+# whose mergeable_state is `dirty` and applies the `has-conflicts` label,
+# which is one of the triggers conflict-helper.yml watches — so the helper
+# fires once per stuck PR without anyone touching the branches.
+#
+# Triggers:
+#   - workflow_dispatch (manual: clear the queue on demand)
+#   - schedule (Mondays 13:00 UTC: weekly cleanup so PRs don't rot)
+#
+# Output:
+#   - Sticky comment on each stuck PR (label) → conflict-helper takes over
+#   - Summary job-summary listing each PR processed
+#
+# Never auto-resolves anything itself; that's conflict-helper's job. This
+# is the "kick" layer.
+# ────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, list stuck PRs without labeling them"
+        type: boolean
+        required: false
+        default: false
+      max_dirty:
+        description: "Stop after labeling this many DIRTY PRs (safety cap)"
+        type: number
+        required: false
+        default: 25
+      max_inspected:
+        description: "Stop after inspecting this many open PRs total (rate-limit cap)"
+        type: number
+        required: false
+        default: 300
+  schedule:
+    # Mondays 13:00 UTC — early in the week so a fresh kick happens before
+    # owner returns to the queue.
+    - cron: "0 13 * * 1"
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: stuck-pr-sweeper
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    name: Label stuck PRs to re-trigger conflict-helper
+    runs-on: ubuntu-latest
+    steps:
+      - name: Walk open PRs and label the dirty ones
+        uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          MAX_DIRTY: ${{ github.event.inputs.max_dirty || '25' }}
+          MAX_INSPECTED: ${{ github.event.inputs.max_inspected || '300' }}
+        with:
+          script: |
+            const dryRun = String(process.env.DRY_RUN).toLowerCase() === 'true';
+            const maxDirty = Number.parseInt(process.env.MAX_DIRTY, 10) || 25;
+            const maxInspected = Number.parseInt(process.env.MAX_INSPECTED, 10) || 300;
+
+            // Walk every open PR. GitHub doesn't compute mergeable_state up-front,
+            // so we have to `get` each one to materialize the current value —
+            // that's an API call per PR, so we cap total inspections separately
+            // from dirty-count to keep weekly cron runs predictable on
+            // hundred-PR queues (per Copilot review on #14099).
+            const listed = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const processed = [];
+            let inspected = 0;
+            for (const pr of listed) {
+              if (processed.length >= maxDirty) break;
+              if (inspected >= maxInspected) break;
+
+              // Materialize mergeable_state (may take a moment for huge diffs).
+              inspected++;
+              const { data: full } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+              });
+
+              if (full.mergeable_state !== 'dirty') continue;
+
+              const existingLabels = (full.labels || []).map((l) => l.name);
+              const alreadyLabeled = existingLabels.includes('has-conflicts');
+
+              const note = alreadyLabeled
+                ? 'already labeled has-conflicts (helper re-fires on label update)'
+                : 'applying has-conflicts label to re-trigger conflict-helper';
+
+              core.info(`#${full.number}: ${full.title} — ${note}`);
+
+              if (!dryRun) {
+                if (!alreadyLabeled) {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: full.number,
+                    labels: ['has-conflicts'],
+                  });
+                } else {
+                  // Bump the label so the conflict-helper's `labeled` trigger
+                  // refires on already-labeled PRs.
+                  await github.rest.issues
+                    .removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: full.number,
+                      name: 'has-conflicts',
+                    })
+                    .catch(() => {});
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: full.number,
+                    labels: ['has-conflicts'],
+                  });
+                }
+              }
+
+              processed.push({
+                number: full.number,
+                title: full.title,
+                url: full.html_url,
+                head: full.head.ref,
+                already_labeled: alreadyLabeled,
+              });
+            }
+
+            // Job summary so the run is auditable.
+            const summary = core.summary
+              .addHeading(`Stuck PR sweep — ${processed.length} PR(s) ${dryRun ? '[DRY RUN]' : 'kicked'}`, 2)
+              .addRaw(dryRun ? '_Dry run — no labels were applied._\n' : '')
+              .addRaw(`Inspected ${inspected} / ${listed.length} open PR(s) before stopping (max_inspected cap: ${maxInspected}, max_dirty cap: ${maxDirty}).\n`)
+              .addRaw('\n');
+            if (processed.length === 0) {
+              summary.addRaw('No PRs with `mergeable_state: dirty` found.');
+            } else {
+              summary
+                .addTable([
+                  [
+                    { data: '#', header: true },
+                    { data: 'Title', header: true },
+                    { data: 'Branch', header: true },
+                    { data: 'Action', header: true },
+                  ],
+                  ...processed.map((p) => [
+                    `<a href="${p.url}">#${p.number}</a>`,
+                    p.title,
+                    `\`${p.head}\``,
+                    p.already_labeled ? 're-bumped label' : 'labeled has-conflicts',
+                  ]),
+                ]);
+            }
+            await summary.write();
+    timeout-minutes: 15

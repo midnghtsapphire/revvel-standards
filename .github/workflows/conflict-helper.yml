@@ -145,8 +145,8 @@ jobs:
               echo ""
               echo "| Side | Last commit | PR | Author | Date |"
               echo "| --- | --- | --- | --- | --- |"
-              echo "| Current ($BASE_REF) | \`${CURRENT_SHA:-?}\` — $(cut -d'|' -f2 <<<\"$CURRENT_COMMIT\") | ${CURRENT_PR:-_unmatched_} | $(cut -d'|' -f3 <<<\"$CURRENT_COMMIT\") | $(cut -d'|' -f4 <<<\"$CURRENT_COMMIT\") |"
-              echo "| Incoming (this PR) | \`${INCOMING_SHA:-?}\` — $(cut -d'|' -f2 <<<\"$INCOMING_COMMIT\") | #$PR_NUMBER (this PR) | $(cut -d'|' -f3 <<<\"$INCOMING_COMMIT\") | $(cut -d'|' -f4 <<<\"$INCOMING_COMMIT\") |"
+              echo "| Current ($BASE_REF) | \`${CURRENT_SHA:-?}\` — ${CURRENT_COMMIT#*|} | ${CURRENT_PR:-_unmatched_} | ${CURRENT_COMMIT##*|} |"
+              echo "| Incoming (this PR) | \`${INCOMING_SHA:-?}\` — ${INCOMING_COMMIT#*|} | #$PR_NUMBER (this PR) | ${INCOMING_COMMIT##*|} |"
               echo ""
               echo "**Recommendation:** $REC"
               echo ""
@@ -163,6 +163,73 @@ jobs:
 
           echo "report_file=$REPORT" >> "$GITHUB_OUTPUT"
           echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
+
+      # ── Phase 2: auto-resolve the mechanical hunks (FREE — no LLM) ────────
+      # The script handles two safe patterns deterministically:
+      #   - VERSION_BUMP: same `uses: owner/repo@X` line on both sides,
+      #     pick the newer @ref (SHA > tag, higher semver > lower).
+      #   - ADDITIVE: both sides added distinct new lines around the same
+      #     anchor (e.g. new table rows). Keep both, current first.
+      # Anything else is left as a conflict for Phase 3.
+      - name: Auto-resolve mechanical conflicts
+        id: resolve
+        if: steps.analyze.outputs.has_conflicts == 'true'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set +e
+          git config user.email "conflict-helper@github-actions"
+          git config user.name "Conflict Helper"
+          # Re-run the merge that the analyze step aborted so we have the
+          # conflict markers in the worktree for the resolver to walk.
+          git merge --no-commit --no-ff "$HEAD_SHA" >/dev/null 2>&1 || true
+          node scripts/auto-resolve-mechanical-conflicts.js > "$RUNNER_TEMP/resolve.txt"
+          RC=$?
+          cat "$RUNNER_TEMP/resolve.txt"
+          echo "resolve_report=$RUNNER_TEMP/resolve.txt" >> "$GITHUB_OUTPUT"
+          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+
+      # If the script resolved EVERY hunk, commit and push back to the PR
+      # branch as a single audit-trail-friendly commit.
+      - name: Commit fully-resolved files
+        if: |-
+          steps.analyze.outputs.has_conflicts == 'true' &&
+          steps.resolve.outputs.exit_code == '0'
+        env:
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git add -A
+          MSG="chore: auto-resolve mechanical merge conflicts (version bumps + additive blocks)"
+          MSG="$MSG"$'\n\n'"Resolved by scripts/auto-resolve-mechanical-conflicts.js per docs/CONFLICT_RESOLUTION_STANDARD.md."
+          MSG="$MSG"$'\n'"Safe patterns only — see commit diff for the rules each hunk matched."
+          git commit -m "$MSG"
+          # Push to the PR branch using the default token; if branch protection
+          # rejects, the comment step below will mention this.
+          git push origin "HEAD:$PR_HEAD_REF" || echo "::warning::push failed — branch protection may block direct pushes from Actions"
+
+      # If anything stayed ambiguous, abort the merge (cleans the worktree)
+      # and hand off to Jules via the existing jules-coding-agent.yml lane.
+      # Explicitly NOT Copilot (per-PR cost adds up); NOT Bito (review-only,
+      # can't push fixes); NOT openrouter-triage (that's the Ralph Loop
+      # CI-fixer, separate concern). Jules is the right tool: coding agent,
+      # already paid for via the existing API key, pushes commits directly.
+      - name: Hand leftovers to Jules (NOT Copilot, NOT Bito)
+        if: |-
+          steps.analyze.outputs.has_conflicts == 'true' &&
+          steps.resolve.outputs.exit_code == '2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git merge --abort 2>/dev/null || true
+          gh issue edit "$PR_NUMBER" --add-label "conflicts:needs-jules" || true
+          # Trigger Jules on this PR. The Jules workflow expects an issue or
+          # PR number; we pass the PR. If the lane is paused / key missing,
+          # the run will no-op gracefully per jules-coding-agent.yml's own
+          # missing-secret behavior.
+          gh workflow run jules-coding-agent.yml -f pr_number="$PR_NUMBER" 2>/dev/null \
+            || echo "::warning::jules-coding-agent.yml dispatch failed (workflow may not accept pr_number input — see standard for alt path)"
 
       - name: Post / update sticky comment
         if: steps.analyze.outputs.has_conflicts == 'true'

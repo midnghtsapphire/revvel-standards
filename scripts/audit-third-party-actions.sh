@@ -62,10 +62,17 @@ MULTI_AUTHOR_OWNERS=(
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 contains() {
-  local needle="$1"; shift
+  local needle="${1,,}"; shift
   local item
   for item in "$@"; do
-    [[ "$item" == "$needle" ]] && return 0
+    # Case-insensitive compare — GitHub owner names are case-insensitive,
+    # so a workflow file that says `BeksOmega/...` must match the
+    # `BeksOmega` entry in MULTI_AUTHOR_OWNERS regardless of how either
+    # side is cased. We lowercase BOTH sides at comparison time so the
+    # OPTIONS array can keep its readable mixed-case entries. Without this,
+    # mixed-case references silently mis-tier and the audit emits false
+    # single-author warnings (Octopus finding #14004).
+    [[ "${item,,}" == "$needle" ]] && return 0
   done
   return 1
 }
@@ -91,12 +98,18 @@ last_release_date() {
     --jq '.published_at // empty' 2>/dev/null || echo ""
 }
 
-# Days between an ISO date and today.
+# Days between an ISO date and today. Tries GNU `date -d` first (Linux
+# runners) and falls back to BSD `date -j -f` (macOS / local dev). Without
+# the BSD fallback, every age check silently returned empty on macOS and
+# all single-author actions got demoted to `warn` instead of `flag`,
+# making the tool misleading when run locally (Octopus finding #14000).
 days_since() {
   local iso="$1"
   [[ -z "$iso" ]] && { echo ""; return; }
   local then_secs now_secs
-  then_secs=$(date -d "$iso" +%s 2>/dev/null || echo "")
+  then_secs=$(date -d "$iso" +%s 2>/dev/null) \
+    || then_secs=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$iso" +%s 2>/dev/null) \
+    || then_secs=""
   [[ -z "$then_secs" ]] && { echo ""; return; }
   now_secs=$(date +%s)
   echo $(( (now_secs - then_secs) / 86400 ))
@@ -123,7 +136,11 @@ mapfile -t USES < <(
     | sort -u
 )
 
-stale_threshold_days=$(( STALENESS_MONTHS * 30 ))
+# Use calendar-accurate days/month (~30.44) instead of a flat 30. For a
+# 12-month threshold the old math gave 360 days, so an action released
+# 361 days ago could be flagged when it's still within the calendar year.
+# Octopus finding #13998.
+stale_threshold_days=$(( (STALENESS_MONTHS * 3044 + 50) / 100 ))
 flagged=()
 report_rows=()
 json_rows=()
