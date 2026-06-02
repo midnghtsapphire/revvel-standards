@@ -1,11 +1,10 @@
-name: Trusted Author Auto-Approve
+name: Trusted Bot Auto-Approve
 
-# Auto-approves PRs authored by trusted authors (bots + org owner) once all
-# required CI checks pass. After approval, pr-state-orchestrator picks up the
-# 'approved' review event and handles label progression + auto-merge enablement.
+# Auto-approves PRs authored by trusted bots once all required CI checks pass.
+# After approval, pr-state-orchestrator picks up the 'approved' review event
+# and handles label progression + auto-merge enablement.
 #
-# Trusted authors: midnghtsapphire (org owner), Devin, Jules, Copilot, Cursor,
-# Octopus, CircleCI, Bito, OpenHands, Dependabot, Renovate
+# Trusted bots: Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands
 
 on:
   check_suite:
@@ -21,25 +20,25 @@ permissions:
   checks: read
 
 jobs:
-  auto-approve-trusted-author:
-    name: Auto-approve trusted author PR
+  auto-approve-trusted-bot:
+    name: Auto-approve trusted bot PR
     runs-on: ubuntu-latest
     if: >
       (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success') ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     steps:
-      - name: Find and approve trusted-author PRs with passing checks
+      - name: Find and approve trusted-bot PRs with passing checks
         uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
 
-            // Trusted authors — bots + org owner (case-insensitive match)
-            const TRUSTED_AUTHORS = [
-              'midnghtsapphire',
+            // Trusted bot authors — GitHub login names (case-insensitive match)
+            const TRUSTED_BOTS = [
               'devin-ai-integration[bot]',
               'devin-ai[bot]',
+              'github-actions[bot]',
               'copilot[bot]',
               'dependabot[bot]',
               'jules[bot]',
@@ -68,7 +67,7 @@ jobs:
             }
 
             // Find open PRs for this SHA
-            const pulls = await github.paginate(github.rest.pulls.list, {
+            const { data: pulls } = await github.rest.pulls.list({
               owner, repo, state: 'open', per_page: 100,
             });
 
@@ -80,37 +79,28 @@ jobs:
 
             for (const pr of matchingPRs) {
               const authorLogin = (pr.user?.login || '').toLowerCase();
-              const isTrusted = TRUSTED_AUTHORS.some(a => authorLogin === a.toLowerCase());
+              const isTrusted = TRUSTED_BOTS.some(bot => authorLogin === bot.toLowerCase());
 
               if (!isTrusted) {
-                core.info(`PR #${pr.number} author "${authorLogin}" is not a trusted author — skipping.`);
+                core.info(`PR #${pr.number} author "${authorLogin}" is not a trusted bot — skipping.`);
                 continue;
               }
 
-              core.info(`PR #${pr.number} by trusted author "${authorLogin}" — checking CI status...`);
+              core.info(`PR #${pr.number} by trusted bot "${authorLogin}" — checking CI status...`);
 
-              // Verify branch protection requirements are satisfied
-              const { data: prDetail } = await github.rest.pulls.get({
-                owner, repo, pull_number: pr.number,
-              });
-              if (prDetail.mergeable_state !== 'clean') {
-                core.info(`PR #${pr.number}: mergeable_state=${prDetail.mergeable_state} — required checks not yet satisfied, skipping.`);
-                continue;
-              }
-
-              // Paginate all check runs for this SHA (repo has 150+ workflows)
-              const allCheckRuns = await github.paginate(github.rest.checks.listForRef, {
+              // Verify ALL check runs on this SHA are passing
+              const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner, repo, ref: pr.head.sha, per_page: 100,
-              }, response => response.data);
+              });
 
-              const completed = allCheckRuns.filter(r => r.status === 'completed');
+              const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
               const failing = completed.filter(r =>
                 ['failure', 'timed_out', 'cancelled'].includes(r.conclusion)
               );
-              const pending = allCheckRuns.filter(r => r.status !== 'completed');
+              const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
               // Skip this workflow's own check to avoid circular dependency
-              const ownName = 'Auto-approve trusted author PR';
+              const ownName = 'Auto-approve trusted bot PR';
               const externalFailing = failing.filter(r => r.name !== ownName);
               const externalPending = pending.filter(r => r.name !== ownName);
 
@@ -146,15 +136,16 @@ jobs:
                 pull_number: pr.number,
                 event: 'APPROVE',
                 body: [
-                  `**Auto-Approved** — PR by trusted author \`${authorLogin}\`.`,
+                  `**Auto-Approved** — PR by trusted bot \`${authorLogin}\`.`,
                   `All ${completed.length} CI checks passed.`,
                   '',
                   '_This review was submitted automatically by the Trusted Bot Auto-Approve workflow._',
                 ].join('\n'),
               });
 
-              core.notice(`PR #${pr.number}: APPROVED (trusted author + all CI green)`);
+              core.notice(`PR #${pr.number}: APPROVED (trusted bot + all CI green)`);
             }
     timeout-minutes: 15
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -41,25 +41,61 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          git fetch origin "$BASE_REF" --depth=100
-          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          set +e
+          # Make the base ref reachable. If the depth-100 fetch can't reach
+          # BASE_SHA on long-lived branches, deepen the SAME base ref rather
+          # than fetching every branch (the earlier wide-refspec fallback
+          # added meaningful network cost on large repos for no extra value;
+          # all we need is BASE_SHA — per Copilot review on #14102).
+          # `2>&1` keeps stderr in the run log so debugging is possible;
+          # `|| true` is what makes the step soft-fail, not redirection.
+          git fetch origin "$BASE_REF" --depth=100 2>&1 || true
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            git fetch origin "$BASE_REF" --depth=10000 2>&1 || true
+            if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+              git fetch origin --unshallow 2>&1 || true
+            fi
+          fi
+          # Compute the diff; if even this fails (very rare), write empty
+          # so the JS step still runs and posts nothing instead of erroring.
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" 2>&1)
+          DIFF_RC=$?
+          if [[ "$DIFF_RC" -ne 0 ]]; then
+            echo "git diff failed (rc=$DIFF_RC): $CHANGED" >&2
+            CHANGED=""
+          fi
           echo "$CHANGED" > "$RUNNER_TEMP/changed.txt"
           echo "Changed files:"
           echo "$CHANGED"
+          # Always succeed — this is a soft-warn check.
+          exit 0
 
       - name: Evaluate rules and post warning
         uses: actions/github-script@v9.0.0
-        env:
-          PR_BODY: ${{ github.event.pull_request.body }}
         with:
           script: |
             const fs = require('fs');
-            const changed = fs.readFileSync(
-              `${process.env.RUNNER_TEMP}/changed.txt`, 'utf8'
-            ).split('\n').filter(Boolean);
+            // Read changed-files from the previous step. If the file is
+            // missing (shouldn't happen — the bash step always writes it,
+            // even empty), warn and skip the rest. Comment now matches
+            // actual behavior — per Copilot review on #14102.
+            let changed = [];
+            try {
+              changed = fs.readFileSync(
+                `${process.env.RUNNER_TEMP}/changed.txt`, 'utf8'
+              ).split('\n').filter(Boolean);
+            } catch (e) {
+              core.warning(`Could not read changed-files: ${e.message}. Skipping.`);
+              return;
+            }
+
+            // Read PR body from the event payload directly. Earlier versions
+            // passed it via env var, which failed silently on very long PR
+            // descriptions or bodies with special characters — making the
+            // whole job fail the check status. Direct read avoids that.
+            const body = context.payload.pull_request?.body || '';
 
             // Escape-hatch: any `docs-freshness:` marker in PR body suppresses.
-            const body = process.env.PR_BODY || '';
             if (/docs-freshness:/i.test(body)) {
               core.info('PR body contains docs-freshness: marker — suppressing warning.');
               return;
@@ -127,20 +163,26 @@ jobs:
 
             if (violations.length === 0) {
               // Clean up any prior comment so a green PR doesn't carry stale warnings.
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                per_page: 100,
-              });
-              const existing = comments.find(c => c.body && c.body.includes(marker));
-              if (existing) {
-                await github.rest.issues.updateComment({
+              // Wrap every API call in try/catch — a permissions issue or
+              // transient error must not fail this informational check.
+              try {
+                const { data: comments } = await github.rest.issues.listComments({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  comment_id: existing.id,
-                  body: `${marker}\n## ✅ Docs Freshness — all pairings satisfied\n\nNo unfulfilled docs/code pairings detected. See \`docs/DOCS_FRESHNESS_STANDARD.md\` for the rules.`,
+                  issue_number: context.payload.pull_request.number,
+                  per_page: 100,
                 });
+                const existing = comments.find(c => c.body && c.body.includes(marker));
+                if (existing) {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: existing.id,
+                    body: `${marker}\n## ✅ Docs Freshness — all pairings satisfied\n\nNo unfulfilled docs/code pairings detected. See \`docs/DOCS_FRESHNESS_STANDARD.md\` for the rules.`,
+                  });
+                }
+              } catch (e) {
+                core.warning(`Failed to update sticky comment (non-fatal): ${e.message}`);
               }
               core.info('No docs-freshness violations.');
               return;
@@ -165,26 +207,32 @@ jobs:
             ];
 
             const newBody = lines.join('\n');
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              per_page: 100,
-            });
-            const existing = comments.find(c => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body: newBody,
-              });
-            } else {
-              await github.rest.issues.createComment({
+            // Wrap comment posting in try/catch so a 403 / rate-limit / 422
+            // doesn't fail the entire informational check.
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                body: newBody,
+                per_page: 100,
               });
+              const existing = comments.find(c => c.body && c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body: newBody,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: newBody,
+                });
+              }
+            } catch (e) {
+              core.warning(`Failed to post / update sticky comment (non-fatal): ${e.message}`);
             }
     timeout-minutes: 5

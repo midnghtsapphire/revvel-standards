@@ -226,18 +226,54 @@ jobs:
               const labels = issue.labels || [];
               if (hasLabel(labels, 'recovery:hands-off')) continue;
 
-              // 5) Octopus issue without wr:code for too long → kick translator.
+              // 5) Octopus issue without wr:code for too long → translate INLINE.
+              // Earlier versions tried to cascade via labels (`has-conflicts` →
+              // wrong workflow; then `recovery:translate-me` → blocked by
+              // GitHub's anti-recursion rule, which prevents a workflow using
+              // GITHUB_TOKEN from triggering another workflow via the
+              // `issues: labeled` event). Both broken. Per Copilot review on
+              // #14107: inline the work here instead of cascading. The
+              // translation is small — exactly the same three operations
+              // octopus-route does — and runs under the recovery-engine's
+              // own token, no cross-workflow fire needed.
               const isOctopus = hasLabel(labels, 'octopus-review');
               const hasWrCode = hasLabel(labels, 'wr:code');
               const createdAt = Date.parse(issue.created_at || '');
               if (isOctopus && !hasWrCode && createdAt && NOW - createdAt > STALE_OCTOPUS_MS) {
+                const toAdd = ['work-request', 'wr:code']
+                  .filter((l) => !labels.map((x) => typeof x === 'string' ? x : x.name).includes(l));
+
                 actions.push({
                   kind: 'Issue',
                   n: issue.number,
-                  action: 'label has-conflicts (kicks octopus-route translator)',
+                  action: `inline-translate: add ${toAdd.join(', ') || '(labels already present)'} + ensure [WR] title`,
                 });
-                await ensureLabel(issue.number, 'has-conflicts', 'd93f0b',
-                  'Set by recovery-engine to re-fire octopus-route');
+
+                if (!dryRun) {
+                  if (toAdd.length > 0) {
+                    await github.rest.issues
+                      .addLabels({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: issue.number,
+                        labels: toAdd,
+                      })
+                      .catch((e) => core.warning(`#${issue.number} addLabels: ${e.message}`));
+                  }
+                  if (!/^\[WR\]/i.test(issue.title || '')) {
+                    const PREFIX = '[WR] ';
+                    const maxBodyLen = 256 - PREFIX.length;
+                    const newTitle = PREFIX + (issue.title || '').slice(0, maxBodyLen);
+                    await github.rest.issues
+                      .update({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: issue.number,
+                        title: newTitle,
+                      })
+                      .catch((e) => core.warning(`#${issue.number} title update: ${e.message}`));
+                  }
+                }
                 continue;
               }
 
