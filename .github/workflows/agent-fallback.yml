@@ -286,8 +286,11 @@ jobs:
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
-          echo "🤖 Using OpenHands AI (paid service - opt-in only)..."
-          bash scripts/call-openhands-api.sh
+          # Script was always Devin under an OpenHands name (audit confirmed).
+          # Renamed and rewired per the cleanup pass — this lane now reaches
+          # the real Devin Sessions API at api.devin.ai/v1/sessions.
+          echo "🤖 Using Devin AI (paid service - opt-in only)..."
+          bash scripts/call-devin-api.sh
       - name: Determine result
         if: always()
         id: result

@@ -21,10 +21,14 @@ if [ -z "${ISSUE_NUMBER}" ] || [ -z "${ISSUE_TITLE}" ]; then
   exit 1
 fi
 
-# Devin API endpoint (placeholder - update with actual endpoint when available)
-DEVIN_API_URL="${DEVIN_API_URL:-https://api.devin.ai/v1/tasks}"
+# Devin Sessions API. See https://docs.devin.ai/api-reference/sessions.
+# The previous URL (/v1/tasks) was a placeholder that 404'd against the
+# real API. Sessions take a single `prompt` field; Devin handles the
+# repo work autonomously and posts results back to its own UI + (when
+# wired) GitHub.
+DEVIN_API_URL="${DEVIN_API_URL:-https://api.devin.ai/v1/sessions}"
 
-echo "🤖 Calling Devin AI..."
+echo "🤖 Calling Devin Sessions API..."
 echo "Issue #${ISSUE_NUMBER}: ${ISSUE_TITLE}"
 
 # Function to call Devin API
@@ -33,14 +37,21 @@ call_devin() {
 
   echo "Attempt ${attempt}/${MAX_RETRIES}..."
 
-  # Prepare request payload using jq to safely escape special characters
+  # Build the prompt as a single string Devin can act on. Repo + issue
+  # context first, then the user-supplied body.
+  PROMPT="Repo: ${GITHUB_REPOSITORY:-unknown}
+Issue #${ISSUE_NUMBER}: ${ISSUE_TITLE}
+
+${ISSUE_BODY:-(no body provided)}"
+
+  # Sessions API payload — { prompt, [snapshot_id], [playbook_id] }.
   PAYLOAD=$(jq -n \
-    --arg title "$ISSUE_TITLE" \
-    --arg desc "${ISSUE_BODY:-}" \
-    --arg repo "${GITHUB_REPOSITORY:-unknown}" \
-    --argjson issue_num "$ISSUE_NUMBER" \
-    --argjson timeout "$TIMEOUT" \
-    '{task: {title: $title, description: $desc, repository: $repo, issue_number: $issue_num}, options: {timeout: $timeout, auto_commit: true, create_pr: true}}')
+    --arg prompt "$PROMPT" \
+    --arg snapshot "${DEVIN_SNAPSHOT_ID:-}" \
+    --arg playbook "${DEVIN_PLAYBOOK_ID:-}" \
+    '{prompt: $prompt}
+     + (if $snapshot != "" then {snapshot_id: $snapshot} else {} end)
+     + (if $playbook != "" then {playbook_id: $playbook} else {} end)')
 
   if [ -z "${PAYLOAD}" ]; then
     echo "❌ Failed to construct JSON payload"

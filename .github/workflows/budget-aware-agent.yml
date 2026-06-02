@@ -114,8 +114,11 @@ jobs:
           # Execute based on selected agent
           case "$AGENT" in
             devin)
+              # Real Devin Sessions API call via scripts/call-devin-api.sh.
+              # Requires DEVIN_API_KEY secret. Was a stub comment before
+              # the wire-up cleanup.
               echo "Using Devin Agent..."
-              # Would call Devin API
+              bash scripts/call-devin-api.sh
               ;;
             gpt-4o-mini)
               echo "Using GPT-4o Mini via OpenRouter..."

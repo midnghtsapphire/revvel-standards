@@ -1,0 +1,111 @@
+name: Devin — Architectural Diagnosis
+# Triggers Devin Sessions API on an issue labeled `wr:devin`. Devin runs
+# autonomously in its own VM and posts results back via its UI + the
+# Devin GitHub App. This workflow's only job is to kick the session and
+# comment the URL back so the issue thread has the link.
+#
+# Required secret: DEVIN_API_KEY (https://app.devin.ai/settings/api).
+# Optional repo variable: DEVIN_SNAPSHOT_ID (preconfigured VM snapshot)
+# Optional repo variable: DEVIN_PLAYBOOK_ID (playbook to attach)
+#
+# Per strict-reviewer audit finding: previously scripts/call-openhands-api.sh
+# was Devin code under an OpenHands name with a placeholder /v1/tasks URL,
+# called from no production workflow. This file + the renamed script
+# (scripts/call-devin-api.sh) close that gap.
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to send to Devin
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: devin-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  devin-session:
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' &&
+       github.event.label.name == 'wr:devin' &&
+       github.event.issue.user.login != 'github-actions[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Skip if DEVIN_API_KEY not configured
+        id: gate
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -z "${DEVIN_API_KEY:-}" ]; then
+            echo "::warning::DEVIN_API_KEY not configured — Devin lane skipped."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve issue context
+        if: steps.gate.outputs.skip != 'true'
+        id: issue
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issueNumber = context.eventName === 'workflow_dispatch'
+              ? Number('${{ inputs.issue_number }}')
+              : context.payload.issue?.number;
+            if (!issueNumber) { core.setFailed('Issue number required'); return; }
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+            core.setOutput('number', String(issue.number));
+            core.setOutput('title', issue.title || '');
+            core.setOutput('body', issue.body || '');
+
+      - name: Call Devin Sessions API
+        if: steps.gate.outputs.skip != 'true'
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          DEVIN_SNAPSHOT_ID: ${{ vars.DEVIN_SNAPSHOT_ID }}
+          DEVIN_PLAYBOOK_ID: ${{ vars.DEVIN_PLAYBOOK_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.body }}
+        run: bash scripts/call-devin-api.sh
+
+      - name: Comment session URL back on the issue
+        if: steps.gate.outputs.skip != 'true' && hashFiles('/tmp/devin-response.json') != ''
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '⚠️ Devin call completed but no session URL parsed.';
+            try {
+              const data = JSON.parse(fs.readFileSync('/tmp/devin-response.json', 'utf8'));
+              if (data.url) {
+                body = `🤖 Devin session started: ${data.url}\n\nDevin runs autonomously and will post results back here when ready.`;
+              } else if (data.session_id) {
+                body = `🤖 Devin session started: \`${data.session_id}\` (no URL returned).`;
+              }
+            } catch (e) {
+              body = `⚠️ Devin response parse failed: ${e.message}`;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.issue.outputs.number }}'),
+              body,
+            });
