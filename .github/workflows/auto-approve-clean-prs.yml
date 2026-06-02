@@ -125,8 +125,9 @@ jobs:
                     owner, repo, ref: sha, per_page: 100, page
                   });
                   allRuns = allRuns.concat(data.check_runs);
-                  if (allRuns.length >= data.total_count) break;
+                  if (data.check_runs.length < 100 || allRuns.length >= data.total_count) break;
                   page++;
+                  if (page > 10) break; // safety cap
                 }
 
                 // Filter out this workflow and known non-blocking checks
