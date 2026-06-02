@@ -6,7 +6,6 @@ Supports SRTMGL1 (30m global), COP30 (Copernicus 30m), and USGS1m (1m USA).
 
 from __future__ import annotations
 
-import asyncio
 import tempfile
 from pathlib import Path
 
