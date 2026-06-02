@@ -1,0 +1,92 @@
+[
+  {
+    "name": "tracking-only-with-tracks-ref",
+    "title": "[WR-DOCS] Fix regression in router",
+    "body": "Tracks: #4321\n\nDocuments the bug; fix follows in #4321.",
+    "labels": "wr-docs",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "pass",
+    "why": "Labeled tracking + body has explicit Tracks: #NNNN ref."
+  },
+  {
+    "name": "tracking-only-no-ref",
+    "title": "[WR-DOCS] Fix router bug",
+    "body": "Will sort this out later.",
+    "labels": "wr-docs",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "fail",
+    "why": "Tracking label without a Tracks: ref is an escape hatch — must fail."
+  },
+  {
+    "name": "tracking-only-tracks-in-codeblock",
+    "title": "[WR-DOCS] Fix router bug",
+    "body": "Example body for docs:\n\n```\nTracks: #4321\n```\n\n(not a real ref)",
+    "labels": "wr-docs",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "fail",
+    "why": "B.2 — Tracks ref inside a fenced code block must not satisfy the gate."
+  },
+  {
+    "name": "tracking-only-tracks-in-blockquote",
+    "title": "[WR-DOCS] Fix router bug",
+    "body": "Quoting the original report:\n\n> Tracks: #4321\n\nReal follow-up TBD.",
+    "labels": "wr-docs",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "fail",
+    "why": "B.2 — Tracks ref inside a blockquote must not satisfy the gate."
+  },
+  {
+    "name": "title-starts-with-track-prefix",
+    "title": "Track and fix the regression in user-service",
+    "body": "Looking into the regression now; no Tracks ref because this PR is supposed to BE the fix.",
+    "labels": "",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "fail",
+    "why": "B.1 — bare `track` prefix no longer counts as tracking-only marker; PR still claims a fix and only touches wr/, so gate must fail."
+  },
+  {
+    "name": "real-fix-in-wr-scripts",
+    "title": "Fix off-by-one in wr-lint.mjs token detector",
+    "body": "Patches the linter itself; no Tracks ref needed.",
+    "labels": "",
+    "changed": "wr/scripts/wr-lint.mjs",
+    "expect": "pass",
+    "why": "B.3 — wr/scripts/ is allowlisted as a real-fix path."
+  },
+  {
+    "name": "real-fix-in-wr-template",
+    "title": "Fix typo in WR_TEMPLATE_FULL.md",
+    "body": "Single character typo fix in the template.",
+    "labels": "",
+    "changed": "wr/WR_TEMPLATE_FULL.md",
+    "expect": "pass",
+    "why": "B.3 — wr/WR_TEMPLATE_*.md is allowlisted as a real-fix path."
+  },
+  {
+    "name": "code-file-changed-no-label",
+    "title": "Fix duplicate return in user-service",
+    "body": "Removes the duplicate `return` and adds a regression test.",
+    "labels": "",
+    "changed": "services/user-service.ts\ntests/user-service.test.ts",
+    "expect": "pass",
+    "why": "Real code files changed — the canonical happy path."
+  },
+  {
+    "name": "wr-only-no-real-fix-no-tracking",
+    "title": "Fix duplicate return in user-service",
+    "body": "Documents the fix.",
+    "labels": "",
+    "changed": "wr/issues/issue-100-router-bug.md",
+    "expect": "fail",
+    "why": "Claims a fix but only touches wr/issues/ with no tracking label or Tracks ref."
+  },
+  {
+    "name": "wr-readme-fix",
+    "title": "Fix broken link in wr/README.md",
+    "body": "Updates a stale link in the WR readme.",
+    "labels": "",
+    "changed": "wr/README.md",
+    "expect": "pass",
+    "why": "B.3 — wr/README.md is allowlisted as a real-fix path."
+  }
+]
