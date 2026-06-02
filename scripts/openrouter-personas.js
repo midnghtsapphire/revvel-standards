@@ -15,11 +15,12 @@
  * preferred routing strategy. Routing reuses scripts/openrouter-routing.js so
  * model selection, fallback, and header handling stay in one place.
  *
- * Personas:
- *   - openrouter  🔀  Model router & dispatch brain
- *   - oaudrey     🧠  Primary orchestrator / first line of sight
- *   - mindmappr   🗺️  Ideation & mind-mapping
- *   - professor   🎓  Research & teaching (citation-driven, no-API Perplexity)
+ * Personas (canonical handle · role-alias · one-line job):
+ *   - openrouter  🔀  Dispatcher — picks the cheapest capable model and routes work
+ *   - oaudrey     🧠  Triager     — sorts incoming issues/PRs, decides next step
+ *   - mindmappr   🗺️  Spotter     — turns fuzzy ideas into structured mind maps
+ *   - professor   🎓  Citer       — research with cited sources (Perplexity Sonar)
+ *   - coder       🛠️  Fixer       — applies the fix in code (consumes Devin/Octopus prompts)
  *
  * Requires OPENROUTER_API_KEY (env or apiKey option) only when a persona is
  * actually run; registration and deferred handles need no key.
@@ -61,7 +62,10 @@ const PERSONA_REGISTRY = {
     handle: "openrouter",
     name: "OpenRouter",
     emoji: "🔀",
-    role: "Model Router & Dispatch",
+    role: "Dispatcher — routes work to the cheapest capable model",
+    // Friendly job-name aliases so the persona is easy to remember by what
+    // it does. `/dispatcher` resolves to the same persona as `/openrouter`.
+    aliases: ["dispatcher", "router"],
     profile: "repo_surgery",
     description:
       "First line of sight. Classifies incoming work, picks the cheapest capable model, and dispatches to the right specialist persona.",
@@ -79,7 +83,10 @@ const PERSONA_REGISTRY = {
     handle: "oaudrey",
     name: "oAudrey",
     emoji: "🧠",
-    role: "Primary Orchestrator",
+    role: "Triager — first line of sight, sorts and routes incoming work",
+    // `/triager` is the role-name alias — easier to remember by what she does.
+    // Still uses `/` prefix; `@triager` would notify a real GitHub user.
+    aliases: ["triager", "triage"],
     profile: "repo_surgery",
     description:
       "Owner persona and first line of sight on every issue and PR. Triages, routes label-first, delegates, and escalates to humans only when blocked.",
@@ -97,7 +104,8 @@ const PERSONA_REGISTRY = {
     handle: "mindmappr",
     name: "MindMappr",
     emoji: "🗺️",
-    role: "Ideation & Mind-Mapping",
+    role: "Spotter — turns fuzzy ideas into structured mind maps and outlines",
+    aliases: ["spotter"],
     profile: "cheap_batch_edits",
     description:
       "Turns fuzzy ideas into structured mind maps, outlines, and persona specs. Expands breadth first, then prunes to what matters.",
@@ -116,7 +124,8 @@ const PERSONA_REGISTRY = {
     handle: "professor",
     name: "The Professor",
     emoji: "🎓",
-    role: "Research & Teaching",
+    role: "Citer — answers with sourced facts (Perplexity Sonar lane)",
+    aliases: ["citer", "sourcer"],
     // Perplexity Sonar lane via OpenRouter — the no-API-key research path used
     // by scripts/perplexity-research-issue.js. Falls back to deeper then cheaper.
     models: [
@@ -136,6 +145,30 @@ const PERSONA_REGISTRY = {
     readinessPrompt:
       "Report online as The Professor. In two or three sentences, confirm you are ready and state how you research with citations and teach as you answer.",
   },
+
+  coder: {
+    handle: "coder",
+    name: "Coder",
+    emoji: "🛠️",
+    role: "Fixer — applies the fix in code (consumes Devin/Octopus prompts)",
+    // `/fixer` is the role-name alias. Devin and Octopus produce diagnoses
+    // and ready-to-apply fix prompts; Coder is the persona that actually
+    // edits the files and opens the PR.
+    aliases: ["fixer", "patcher"],
+    profile: "repo_surgery",
+    description:
+      "Applies code fixes from issues and review findings. Takes a Devin/Octopus diagnosis or a WR description and produces the minimal correct patch.",
+    instructions: [
+      "You are Coder, the persona that actually applies the fix.",
+      "Read the issue, the WR, and any upstream diagnosis (Devin finding, Octopus comment, Copilot review) carefully — they usually contain the exact change to make.",
+      "Honor the canonical Fix Prompt Format (see docs/FIX_PROMPT_FORMAT.md): `Fix the following <Severity> (<Category>) issue in <path> at lines X-Y: Problem: <one-paragraph diagnosis>. Either <apply the real fix> or mark the WR explicitly as <status>`. If the inbound issue carries this shape, follow the file/line range exactly. If it does not, mentally reformat the diagnosis into this shape before acting — it forces you to pick a single file, a single span, and one of the two acceptance paths.",
+      "Make the smallest correct patch: change only what the diagnosis calls for. Do not refactor, do not add features, do not introduce abstractions.",
+      "Never produce a tracking-only WR pretending to be a fix. If the issue says \"fix X,\" your output must edit a real (non-wr/) file. If you cannot apply it, say so plainly and label the issue needs-human.",
+      "State which files you changed, why, and what you verified (lint, tests, smoke).",
+    ].join(" "),
+    readinessPrompt:
+      "Report online as Coder. In two or three sentences, confirm you are ready and state how you turn a fix prompt into a minimal, correct patch.",
+  },
 };
 
 /** @returns {Object} The full persona registry. */
@@ -154,12 +187,19 @@ function getPersona(handle) {
     throw new Error("Persona handle is required");
   }
   const key = handle.trim().toLowerCase().replace(/^@/, "");
-  const persona = PERSONA_REGISTRY[key];
-  if (!persona) {
-    const available = Object.keys(PERSONA_REGISTRY).join(", ");
-    throw new Error(`Unknown persona: ${handle}. Available personas: ${available}`);
+  // Direct hit on the canonical handle.
+  if (PERSONA_REGISTRY[key]) return PERSONA_REGISTRY[key];
+  // Otherwise check aliases (e.g. `triager` → oaudrey).
+  for (const p of Object.values(PERSONA_REGISTRY)) {
+    if ((p.aliases || []).map((a) => a.toLowerCase()).includes(key)) return p;
   }
-  return persona;
+  const canonical = Object.keys(PERSONA_REGISTRY);
+  const aliases = Object.values(PERSONA_REGISTRY)
+    .flatMap((p) => (p.aliases || []).map((a) => `${a} → ${p.handle}`));
+  throw new Error(
+    `Unknown persona: ${handle}. Available: ${canonical.join(", ")}. ` +
+    `Aliases: ${aliases.join(", ") || "(none)"}.`
+  );
 }
 
 /**

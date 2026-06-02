@@ -20,6 +20,7 @@ jobs:
             const DAY = 86400000;
             const AGENT_REPAIR_LABELS = ['agent-fallback', 'auto-fix', 'openrouter', 'role:orchestrator', 'bug'];
             let routingLabelSet;
+            let openAgentRepairIssues;
 
             async function ensureRoutingLabelsExist(labels) {
               const palette = {
@@ -53,14 +54,16 @@ jobs:
             async function openAgentRepairIssue(pr, conflictKey, summary, appliedFix, agentTask) {
               const repairLabels = await ensureRoutingLabelsExist(AGENT_REPAIR_LABELS);
               const marker = `<!-- watchdog-agent-repair:pr-${pr.number}:${conflictKey} -->`;
-              const { data: openIssues } = await github.rest.issues.listForRepo({
-                owner,
-                repo,
-                state: 'open',
-                labels: 'agent-fallback',
-                per_page: 100,
-              });
-              const existing = openIssues.find(issue => !issue.pull_request && issue.body && issue.body.includes(marker));
+              if (!openAgentRepairIssues) {
+                openAgentRepairIssues = await github.paginate(github.rest.issues.listForRepo, {
+                  owner,
+                  repo,
+                  state: 'open',
+                  labels: 'agent-fallback',
+                  per_page: 100,
+                });
+              }
+              const existing = openAgentRepairIssues.find(issue => !issue.pull_request && issue.body && issue.body.includes(marker));
               if (existing) {
                 await github.rest.issues.createComment({
                   owner,
@@ -106,8 +109,46 @@ jobs:
               if (repairLabels.length > 0) {
                 await github.rest.issues.addLabels({ owner, repo, issue_number: issue.number, labels: repairLabels });
               }
+              openAgentRepairIssues.push(issue);
               core.info(`Created agent repair issue #${issue.number} for PR #${pr.number}`);
               return issue;
+            }
+
+            async function closeLegacyStaleRepairIssues(prNumber, summary) {
+              const title = `[AUTO-FIX] PR #${prNumber} watchdog repair — ${summary}`;
+              if (!openAgentRepairIssues) {
+                openAgentRepairIssues = await github.paginate(github.rest.issues.listForRepo, {
+                  owner,
+                  repo,
+                  state: 'open',
+                  labels: 'agent-fallback',
+                  per_page: 100,
+                });
+              }
+
+              const staleIssues = openAgentRepairIssues.filter(
+                issue => !issue.pull_request && issue.title === title
+              );
+              for (const staleIssue of staleIssues) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: staleIssue.number,
+                  body: '✅ This stale-state repair issue is now closed automatically by `stuck-label-watchdog.yml`. The watchdog keeps `lifecycle:stuck` on the PR and avoids opening duplicate stale repair issues.'
+                });
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: staleIssue.number,
+                  state: 'closed',
+                });
+              }
+              if (staleIssues.length > 0) {
+                openAgentRepairIssues = openAgentRepairIssues.filter(
+                  issue => !staleIssues.some(staleIssue => staleIssue.number === issue.number)
+                );
+              }
+              return staleIssues.length;
             }
 
             // ─── SWEEP OPEN PRs ──────────────────────────────────────
@@ -210,35 +251,29 @@ jobs:
                 continue;
               }
 
-              // awaiting-review for 24h+ → ping
+              // awaiting-review for 24h+ → label the PR + comment ON THE PR.
+              // No more new "agent repair" ISSUES for time-based stale states —
+              // they piled up one-per-PR (#13934/35/36/41 etc.) and just added
+              // noise that the agent processor (billing-blocked) never closed.
+              // Logical-conflict cases below still file repair issues.
               if (labelNames.includes('awaiting-review') && age > 24 * HOUR) {
+                const closedLegacyCount = await closeLegacyStaleRepairIssues(prNumber, '`awaiting-review` for 24+ hours');
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
-                  const repairIssue = await openAgentRepairIssue(
-                    pr,
-                    'awaiting-review-over-24h',
-                    '`awaiting-review` for 24+ hours',
-                    'Added `lifecycle:stuck` to make the stale review state visible.',
-                    'Review the PR, request the missing reviewer action, or patch automation if a review should already have been requested/submitted.'
-                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
+                    body: `⏰ **Watchdog:** This PR has been \`awaiting-review\` for 24+ hours. Marked \`lifecycle:stuck\`.` });
+                } else if (closedLegacyCount > 0) {
+                  await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
+                    body: `🧹 **Watchdog:** Closed ${closedLegacyCount} duplicate stale auto-fix issue(s) for \`awaiting-review\` and kept this PR marked \`lifecycle:stuck\`.` });
                 }
               }
 
-              // checks-failing for 12h+ → ping
+              // checks-failing for 12h+ → label the PR + comment ON THE PR (no new issue).
               if (labelNames.includes('checks-failing') && age > 12 * HOUR) {
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
-                  const repairIssue = await openAgentRepairIssue(
-                    pr,
-                    'checks-failing-over-12h',
-                    '`checks-failing` for 12+ hours',
-                    'Added `lifecycle:stuck` to make the stale CI failure visible.',
-                    'Read the failing check logs, identify the root cause, and patch the PR or workflow so the PR can merge.'
-                  );
                   await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. Routed follow-up to agent repair issue #${repairIssue.number}.` });
+                    body: `⏰ **Watchdog:** CI has been failing for 12+ hours. Marked \`lifecycle:stuck\`.` });
                 }
               }
 

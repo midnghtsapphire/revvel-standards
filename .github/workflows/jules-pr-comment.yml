@@ -12,7 +12,6 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  issues: write
 concurrency:
   group: jules-pr-comment-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
   cancel-in-progress: true
@@ -33,15 +32,17 @@ jobs:
       - name: Checkout
         if: env.JULES_API_KEY != ''
         uses: actions/checkout@v6.0.2
+        with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       - name: Post Jules Comment
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-publish@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != "" && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         with:
           pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           pr_description: ${{ github.event.pull_request.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
