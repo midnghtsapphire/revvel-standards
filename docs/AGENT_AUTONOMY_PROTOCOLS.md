@@ -336,13 +336,6 @@ jobs:
 When OpenRouter API calls fail:
 
 #### 1. Immediate Retry with Backoff
-
-See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
-
-
-
-See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
-
 ```javascript
 async function callOpenRouterWithRetry(prompt, maxAttempts = 3) {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {

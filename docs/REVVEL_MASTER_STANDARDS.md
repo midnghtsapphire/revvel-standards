@@ -72,7 +72,7 @@ This document is the master policy document. For detailed implementation specifi
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
 
 ### Core Principles
-- **One-Iteration Delivery:** The goal is to move from idea to production-ready deployment in a single, intense iteration. Mid-PR retro-research (the owner having to drop "you should have considered X" comments) is the failure mode this principle exists to prevent. For visual / branded / merchandise WRs, the [`templates/research-preemptive-inputs/`](../templates/research-preemptive-inputs/) packs are the enforcement — research engine MUST surface regional motifs, palette tiers, and ready-to-use prompt packs in the first pass. Originating case: [PR #14085](https://github.com/midnghtsapphire/revvel-standards/pull/14085).
+- **One-Iteration Delivery:** The goal is to move from idea to production-ready deployment in a single, intense iteration.
 - **Artifact-First:** Every project must generate a complete set of artifacts (Blueprints, Roadmaps, Specs) before or alongside code.
 - **Genius Orchestration:** Use multi-agent AI systems (OpenRouter, Kimi, Venice, Grok, Sonnet 4 and 4.5, DeepSeek) to handle complex research, design, and coding tasks autonomously.
 - **FOSS Priority:** Always prioritize Free and Open Source Software tools and libraries.

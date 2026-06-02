@@ -1,4 +1,4 @@
-name: Coder (Roo primary → OpenRouter fallback)
+name: OpenRouter Coder
 on:
   issues:
     types:
@@ -45,14 +45,6 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests
-      - name: Set up Node (for Roo/Roomote invocation)
-        if: env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
-        env:
-          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
-          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
       - name: Resolve issue context
         id: issue
         uses: actions/github-script@v9.0.0
@@ -73,39 +65,8 @@ jobs:
             core.setOutput('issue_number', String(issue.number));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
-      - name: Try Roo/Roomote (Orchestrator mode) — primary coder lane
-        id: roo
-        # Roo Code (the extension/CLI) was archived May 15 2026. The successor
-        # is Roomote (https://roomote.dev) — Slack-native, not a vanilla CLI —
-        # so the integration must be wired explicitly via ROO_RUN_COMMAND. We
-        # require BOTH the key and a run command so we never silently 404 on
-        # a missing package; if either is absent, OpenRouter is the only lane.
-        if: env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
-        continue-on-error: true
-        env:
-          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
-          ROO_MODE: ${{ vars.ROO_MODE || 'orchestrator' }}
-          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-        run: |
-          set -euo pipefail
-          # ROO_RUN_COMMAND must produce /tmp/openrouter-coder-result.json
-          # in the shape: { "commit_message": "...", "files_written": [paths] }
-          # Typical Roomote pattern: curl their run endpoint, poll for completion,
-          # write the resulting diff into the JSON shape above.
-          eval "$ROO_RUN_COMMAND"
-          if [[ -s /tmp/openrouter-coder-result.json ]]; then
-            files=$(python3 -c "import json; d=json.load(open('/tmp/openrouter-coder-result.json')); print(len(d.get('files_written') or []))")
-          else
-            files=0
-          fi
-          echo "files_written=$files" >> "$GITHUB_OUTPUT"
-      - name: Generate code changes with OpenRouter (fallback)
+      - name: Generate code changes with OpenRouter
         id: coder
-        if: steps.roo.outcome != 'success' || steps.roo.outputs.files_written == '0' || steps.roo.outputs.files_written == ''
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -24,7 +24,7 @@ permissions:
   issues: write
 
 env:
-  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:

@@ -346,7 +346,7 @@ jobs:
           echo "notify_on_warning=$NOTIFY_ON_WARNING" >> $GITHUB_OUTPUT
       - name: Create PR with health report
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "TrustForge: E-E-A-T health report run #${{ steps.trustforge.outputs.run_number }}"

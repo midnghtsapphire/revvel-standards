@@ -102,7 +102,6 @@ The synthesizer uses `RESEARCH_SYNTHESIS_MODEL`, defaulting to `anthropic/claude
 - [ ] Split research into independent specialist lanes with named agents.
 - [ ] Run each lane through OpenRouter model triangulation or a configured MAS provider.
 - [ ] Require evidence, citations, confidence, and explicit unknowns from every lane.
-- [ ] **If Output Type is visual / branded / merchandise / asset-artifact** — run the three **preemptive input packs** under [`templates/research-preemptive-inputs/`](../templates/research-preemptive-inputs/) so the human owner doesn't have to add regional motifs, color palettes, or generation prompts as PR comments later. See PR [#14085](https://github.com/midnghtsapphire/revvel-standards/pull/14085) for the originating case.
 - [ ] Synthesize marketing, SEO, competitors, audience, chatter, factual validation, delivery, and revenue into one packet.
 - [ ] Create a code-review packet that asks review agents for comments and automatic-fix commits.
 - [ ] Apply research lifecycle labels so stuck items are visible.

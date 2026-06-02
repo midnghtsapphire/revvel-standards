@@ -200,11 +200,6 @@
 
 49Agents can call OpenRouter API directly for LLM access:
 
-See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
-
-
-See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
-
 ```javascript
 // 49Agents agent configuration
 {

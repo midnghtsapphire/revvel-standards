@@ -1,16 +1,12 @@
 # Automation Doctor Report
 
-Generated: 2026-05-29T05:01:37.280Z
+Generated: 2026-05-24T23:34:02.865Z
 
 ## Workflow Validation
 
-- Valid workflows: 138
+- Valid workflows: 133
 - Invalid workflows: 0
-- Jobs missing timeout: 1
-
-### Jobs Missing timeout-minutes
-
-- `verify-security-fix.yml`: verify
+- Jobs missing timeout: 0
 
 ## Labels Check
 

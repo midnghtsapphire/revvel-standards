@@ -239,7 +239,7 @@ jobs:
           # Try alternative models
           MODELS=(
             "openai/gpt-4o"
-            "anthropic/claude-sonnet-4"
+            "openai/gpt-4o"
             "openai/gpt-4-turbo-preview"
           )
 

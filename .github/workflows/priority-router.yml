@@ -27,8 +27,7 @@ permissions:
   contents: read
 env:
   PRIORITY_LABELS: priority-p0,priority-p1,priority-p2,priority-p3
-  PRIORITY_DEFINITIONS:
-    '[{"name":"priority-p0","color":"b60205","description":"Critical
+  PRIORITY_DEFINITIONS: '[{"name":"priority-p0","color":"b60205","description":"Critical
     priority — drop
     everything"},{"name":"priority-p1","color":"d93f0b","description":"High
     priority — next
@@ -275,18 +274,12 @@ jobs:
 
 
             const runSweep = async () => {
-              let items = [];
-              try {
-                items = await github.paginate(github.rest.issues.listForRepo, {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  state: 'open',
-                  per_page: 100,
-                });
-              } catch (e) {
-                core.warning(`paginate listForRepo error: ${e.message}`);
-                return;
-              }
+              const items = await github.paginate(github.rest.issues.listForRepo, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100,
+              });
 
               let routed = 0;
               let skipped = 0;

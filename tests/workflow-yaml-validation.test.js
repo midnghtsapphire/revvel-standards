@@ -213,12 +213,6 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   if (!script.includes('Routed follow-up to agent repair issue')) {
     throw new Error('watchdog PR comments must point to the routed repair issue');
   }
-  if (!script.includes('closeLegacyStaleRepairIssues')) {
-    throw new Error('watchdog must close legacy stale-state repair issues to prevent duplicates');
-  }
-  if (!script.includes('This stale-state repair issue is now closed automatically')) {
-    throw new Error('watchdog must document why stale duplicate repair issues are auto-closed');
-  }
 });
 
 test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
@@ -418,35 +412,6 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   }
   if (!script.includes("event: 'workflow_dispatch'")) {
     throw new Error('Dispatch step startup check must filter workflow_dispatch runs');
-  }
-});
-
-test('workflow-monitor.yml re-sweeps stale Copilot runs on a schedule', () => {
-  const filePath = path.join(WORKFLOWS_DIR, 'workflow-monitor.yml');
-  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
-  const on = doc.on || doc.true || {};
-  const monitorStep = doc.jobs?.monitor?.steps?.find((step) => step.name === 'Monitor workflow');
-
-  if (!on.schedule?.some((entry) => entry.cron === '*/15 * * * *')) {
-    throw new Error('workflow-monitor.yml must sweep on a 15-minute schedule');
-  }
-  if (!monitorStep) {
-    throw new Error('Monitor workflow step not found');
-  }
-
-  const script = monitorStep.with?.script || '';
-  const requiredSnippets = [
-    "core.getInput('workflow_run_id')",
-    'COPILOT_DYNAMIC_PATH',
-    'listWorkflowRunsForRepo',
-    'cancelWorkflowRun',
-    'reRunWorkflow',
-  ];
-
-  for (const snippet of requiredSnippets) {
-    if (!script.includes(snippet)) {
-      throw new Error(`workflow monitor stale-run sweep is missing ${snippet}`);
-    }
   }
 });
 

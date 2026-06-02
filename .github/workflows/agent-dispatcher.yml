@@ -27,17 +27,6 @@ permissions:
   issues: write
   contents: read
 
-# Dedup concurrent dispatcher runs for the same issue. Without this, a fresh
-# Octopus issue triggers TWO routes: once on `issues: opened` (label
-# octopus-review matches), then again on `issues: labeled` when
-# octopus-route.yml adds `wr:code` to the same issue. The group keys on the
-# issue number + dispatch-event so both runs collapse to one openrouter-coder
-# trigger. cancel-in-progress is false so a run already mid-dispatch finishes
-# rather than being killed and re-queued (idempotency lives downstream).
-concurrency:
-  group: agent-dispatcher-${{ github.event.issue.number || github.event.inputs.issue_number }}
-  cancel-in-progress: false
-
 env:
   GH_TOKEN: ${{ github.token }}
 
@@ -62,25 +51,12 @@ jobs:
           # Check issue labels
           LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
           
-          # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
-          # even if the octopus-route.yml translator hasn't applied wr:code yet.
-          # The translator runs in parallel with this dispatcher on issue:opened;
-          # when the translator later adds wr:code, GitHub re-fires this
-          # workflow with `labeled` action AND the original `octopus-review`
-          # label is still present. With `octopus-review` ordered BEFORE
-          # `wr:code` below, both events hit the same case, so the workflow-
-          # level concurrency group (added above) dedups them into a single
-          # openrouter-coder dispatch instead of two. Per oAudrey diagnosis on
-          # PR #14068.
           case "$LABELS" in
             *wr:research*)
               echo "agent=perplexity" >> $GITHUB_OUTPUT
               ;;
             *wr:jules*)
               echo "agent=jules" >> $GITHUB_OUTPUT
-              ;;
-            *octopus-review*)
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
               ;;
             *wr:code*)
               echo "agent=openrouter" >> $GITHUB_OUTPUT
