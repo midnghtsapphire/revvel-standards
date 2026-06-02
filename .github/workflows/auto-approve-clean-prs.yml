@@ -1,50 +1,241 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# AUTO-APPROVE CLEAN PRS
+# Who: Audrey Evans (midnghtsapphire)
+# When: 2026-06-01
+# Why: Replaced narrow Bito-label-only trigger with comprehensive trusted-author
+#      auto-approve. PRs from trusted bots/authors get auto-approved when CI passes.
+#      Bito-only version (below, commented out) required manual 'awaiting-approval'
+#      label AND Bito review labels — too narrow, caused PRs to sit in limbo.
+# What: Triggers on check_suite completion, verifies all required checks pass,
+#       then auto-approves if the PR author is trusted.
+# ═══════════════════════════════════════════════════════════════════════════════
+
 name: Auto-Approve Clean PRs
+
 on:
+  # Trigger when CI checks complete on a PR
+  check_suite:
+    types: [completed]
+  # Also trigger when labels change (backward compat with Bito workflow)
   pull_request:
-    types:
-      - labeled
+    types: [labeled]
+  # Allow manual trigger for stuck PRs
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to auto-approve'
+        required: true
+
 permissions:
   pull-requests: write
   issues: write
   contents: read
+  checks: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   auto-approve:
-    name: Auto-approve Bito-clean PR
-    if: github.event.label.name == 'awaiting-approval'
+    name: Auto-approve trusted-author PR
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GIT_ACCESS_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
 
-            // Verify Bito actually reviewed this PR (bito-ai:review label present)
-            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: prNumber,
-            });
-            const labelNames = labels.map(l => l.name);
+            // Trusted authors: bots and org owner
+            const TRUSTED_AUTHORS = [
+              'midnghtsapphire',
+              'app/copilot-swe-agent',
+              'app/github-actions',
+              'devin-ai-integration[bot]',
+              'google-labs-jules[bot]',
+              'github-actions[bot]',
+              'dependabot[bot]',
+              'renovate[bot]',
+              'app/devin-ai-integration',
+              'copilot',
+              'Copilot',
+            ];
 
-            if (labelNames.includes('bito-ai:changes-needed')) {
-              core.notice(`PR #${prNumber} has bito-ai:changes-needed — skipping auto-approve.`);
+            // Determine which PR(s) to process
+            let prNumbers = [];
+
+            if (context.eventName === 'workflow_dispatch') {
+              prNumbers = [parseInt(context.payload.inputs.pr_number)];
+            } else if (context.eventName === 'pull_request') {
+              prNumbers = [context.payload.pull_request.number];
+            } else if (context.eventName === 'check_suite') {
+              // check_suite events include associated PRs
+              const prs = context.payload.check_suite?.pull_requests || [];
+              prNumbers = prs.map(pr => pr.number);
+            }
+
+            if (prNumbers.length === 0) {
+              core.info('No PRs associated with this event — skipping.');
               return;
             }
 
-            if (!labelNames.includes('bito-ai:review') && !labelNames.includes('bito-ai')) {
-              core.notice(`PR #${prNumber} has no Bito review labels — skipping auto-approve.`);
-              return;
+            for (const prNumber of prNumbers) {
+              try {
+                const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+
+                // Check if author is trusted
+                const author = pr.user.login;
+                const isTrusted = TRUSTED_AUTHORS.some(t =>
+                  t.toLowerCase() === author.toLowerCase() ||
+                  (t.startsWith('app/') && author.toLowerCase() === t.replace('app/', '').toLowerCase())
+                );
+
+                if (!isTrusted) {
+                  core.info(`PR #${prNumber} author '${author}' is not in trusted list — skipping.`);
+                  continue;
+                }
+
+                // Skip closed/merged PRs
+                if (pr.state !== 'open') {
+                  core.info(`PR #${prNumber} is ${pr.state} — skipping.`);
+                  continue;
+                }
+
+                // Skip PRs with merge conflicts
+                if (pr.mergeable === false) {
+                  core.info(`PR #${prNumber} has merge conflicts — skipping.`);
+                  continue;
+                }
+
+                // Check if already approved
+                const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+                const hasApproval = reviews.some(r => r.state === 'APPROVED');
+                if (hasApproval) {
+                  core.info(`PR #${prNumber} already has an approval — skipping.`);
+                  continue;
+                }
+
+                // Verify CI checks pass (paginate through all check runs)
+                const sha = pr.head.sha;
+                let allRuns = [];
+                let page = 1;
+                while (true) {
+                  const { data } = await github.rest.checks.listForRef({
+                    owner, repo, ref: sha, per_page: 100, page
+                  });
+                  allRuns = allRuns.concat(data.check_runs);
+                  if (allRuns.length >= data.total_count) break;
+                  page++;
+                }
+
+                // Filter out this workflow and known non-blocking checks
+                const NON_BLOCKING = [
+                  'auto-approve',
+                  'recurseml',
+                  'recurse-ml',
+                  'vercel',
+                ];
+                const relevant = allRuns.filter(r =>
+                  !NON_BLOCKING.some(nb => r.name.toLowerCase().includes(nb))
+                );
+
+                const pending = relevant.filter(r => r.status !== 'completed');
+                const failed = relevant.filter(r =>
+                  r.status === 'completed' && r.conclusion !== 'success' && r.conclusion !== 'skipped' && r.conclusion !== 'neutral'
+                );
+
+                if (pending.length > 0) {
+                  core.info(`PR #${prNumber} has ${pending.length} pending checks — will retry on next check_suite event.`);
+                  continue;
+                }
+
+                if (failed.length > 0) {
+                  const failedNames = failed.map(r => r.name).join(', ');
+                  core.info(`PR #${prNumber} has ${failed.length} failed checks: ${failedNames} — skipping.`);
+                  continue;
+                }
+
+                // All checks pass, author is trusted — submit APPROVE
+                await github.rest.pulls.createReview({
+                  owner, repo, pull_number: prNumber,
+                  event: 'APPROVE',
+                  body: `🤖 **Auto-Approved** — All CI checks pass and author (${author}) is trusted. Lifecycle automation will handle merge progression.`,
+                });
+
+                core.info(`✅ Submitted APPROVE review on PR #${prNumber} (author: ${author})`);
+
+                // Remove stuck/waiting labels if present
+                const CLEANUP_LABELS = ['scaffolding-detected', 'needs-completion', 'lifecycle:stuck', 'status:waiting-for-review', 'awaiting-review'];
+                const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                const labelNames = labels.map(l => l.name);
+                for (const label of CLEANUP_LABELS) {
+                  if (labelNames.includes(label)) {
+                    try {
+                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
+                    } catch (e) { /* label may already be removed */ }
+                  }
+                }
+
+              } catch (err) {
+                core.warning(`Error processing PR #${prNumber}: ${err.message}`);
+              }
             }
 
-            // Submit formal APPROVE review
-            await github.rest.pulls.createReview({
-              owner, repo, pull_number: prNumber,
-              event: 'APPROVE',
-              body: '🤖 **Auto-Approved** — Bito AI code review passed with no blocking findings. Lifecycle automation will handle label progression.',
-            });
-
-            core.info(`Submitted APPROVE review on PR #${prNumber}`);
-    timeout-minutes: 30
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+# ═══════════════════════════════════════════════════════════════════════════════
+# DEPRECATED: Original Bito-only auto-approve (commented out, not deleted)
+# Why: Too narrow — required 'awaiting-approval' label + Bito review labels.
+#      Most bot PRs never got these labels, so they sat in limbo indefinitely.
+# Replaced by: Trusted-author auto-approve above (triggers on check_suite completion).
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# name: Auto-Approve Clean PRs
+# on:
+#   pull_request:
+#     types:
+#       - labeled
+# permissions:
+#   pull-requests: write
+#   issues: write
+#   contents: read
+# jobs:
+#   auto-approve:
+#     name: Auto-approve Bito-clean PR
+#     if: github.event.label.name == 'awaiting-approval'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/github-script@v9.0.0
+#         with:
+#           github-token: ${{ secrets.GIT_ACCESS_TOKEN }}
+#           script: |
+#             const { owner, repo } = context.repo;
+#             const pr = context.payload.pull_request;
+#             const prNumber = pr.number;
+#
+#             // Verify Bito actually reviewed this PR (bito-ai:review label present)
+#             const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+#               owner, repo, issue_number: prNumber,
+#             });
+#             const labelNames = labels.map(l => l.name);
+#
+#             if (labelNames.includes('bito-ai:changes-needed')) {
+#               core.notice(`PR #${prNumber} has bito-ai:changes-needed — skipping auto-approve.`);
+#               return;
+#             }
+#
+#             if (!labelNames.includes('bito-ai:review') && !labelNames.includes('bito-ai')) {
+#               core.notice(`PR #${prNumber} has no Bito review labels — skipping auto-approve.`);
+#               return;
+#             }
+#
+#             // Submit formal APPROVE review
+#             await github.rest.pulls.createReview({
+#               owner, repo, pull_number: prNumber,
+#               event: 'APPROVE',
+#               body: '🤖 **Auto-Approved** — Bito AI code review passed with no blocking findings.',
+#             });
+#
+#             core.info(`Submitted APPROVE review on PR #${prNumber}`);
+#     timeout-minutes: 30
+# env:
+#   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

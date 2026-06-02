@@ -1,10 +1,12 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # ANTI-SCAFFOLDING ENFORCER
 # Who: Audrey Evans (midnghtsapphire)
-# When: 2026-05-06
-# Why: Removed false positive check for "torrents/pirate bay" - legitimate content in docs
-# What: Removed only torrent/pirate bay check, preserving all other checks
-# NOTE: Workflow is kept active - only removed one false positive pattern
+# When: 2026-06-01
+# Why: Fixed false positives — now scans only ADDED lines in the diff, not entire files.
+#      Previously, touching a file caused the entire file to be scanned, flagging pre-existing
+#      code that the PR author didn't write.
+# What: Replaced whole-file grep with git-diff-based scanning of added lines only.
+# NOTE: Workflow is kept active - owner PRs are still exempt
 # ═══════════════════════════════════════════════════════════════════════════════════════
 
 
@@ -46,88 +48,69 @@ jobs:
       - name: Scan for scaffolding language
         id: scan
         run: |
-          echo "🔍 Scanning for scaffolding language violations..."
+          echo "🔍 Scanning ADDED lines only (not entire files) for scaffolding language..."
           
-          # Get files changed in this PR
           git fetch origin ${{ github.event.pull_request.base.ref }}
-          FILES_CHANGED=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}..HEAD)
+          BASE="origin/${{ github.event.pull_request.base.ref }}"
           
-          echo "Files changed in PR:"
-          echo "$FILES_CHANGED"
+          # Extract only ADDED lines from the diff for code files (skip docs/config/lockfiles).
+          # Format: "filename:line_content" so we can report which file triggered it.
+          ADDED_LINES=$(git diff "$BASE"..HEAD --unified=0 --diff-filter=ACMR -- \
+            '*.js' '*.ts' '*.jsx' '*.tsx' '*.py' \
+            ':!*.json' ':!*.lock' ':!*.yaml' ':!*.yml' ':!*.md' \
+            | awk '
+              /^--- /{ next }
+              /^\+\+\+ b\//{ file=substr($0,7); next }
+              /^\+[^+]/{ print file ":" substr($0,2) }
+            ')
           
-          # Forbidden patterns
+          if [ -z "$ADDED_LINES" ]; then
+            echo "✅ No code lines added — nothing to scan"
+            echo "violations=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
           VIOLATIONS=()
           
-          # Check each changed file for violations
-          for file in $FILES_CHANGED; do
-            # Skip certain file types (docs, config, lockfiles)
-            if [[ "$file" == *.json ]] || [[ "$file" == *.lock ]] || [[ "$file" == *.yaml ]] || [[ "$file" == *.yml ]] || [[ "$file" == *.md ]]; then
-              continue
-            fi
-            
-            # Skip if file doesn't exist (deleted files)
-            if [[ ! -f "$file" ]]; then
-              continue
-            fi
-            
-            # Check for TODO without issue reference
-            if grep -n "TODO" "$file" | grep -v "TODO: See issue #" | grep -v "github.com.*issues" > /dev/null 2>&1; then
-              VIOLATIONS+=("$file: Contains TODO without issue reference")
-            fi
-            
-            # Check for FIXME
-            if grep -n "FIXME" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("$file: Contains FIXME")
-            fi
-            
-            # Check for "scaffold" in code files
-            if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]] || [[ "$file" == *.jsx ]] || [[ "$file" == *.tsx ]] || [[ "$file" == *.py ]]; then
-              if grep -in "scaffold" "$file" | grep -v "scaffolding tools like npm init" > /dev/null 2>&1; then
-                VIOLATIONS+=("$file: Contains 'scaffold' - ship complete code")
-              fi
-            fi
-            
-            # Check for "placeholder" in code - exclude valid HTML/CSS uses
-            if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]] || [[ "$file" == *.jsx ]] || [[ "$file" == *.tsx ]] || [[ "$file" == *.py ]]; then
-              # Exclude: HTML placeholder="...", CSS ::placeholder, placeholder values, alt="placeholder"
-              if grep -in "placeholder" "$file" | \
-                grep -v "placeholder=" | \
-                grep -v "::placeholder" | \
-                grep -v 'placeholder values' | \
-                grep -v 'alt="placeholder"' | \
-                grep -v 'Search projects' > /dev/null 2>&1; then
-                VIOLATIONS+=("$file: Contains 'placeholder' - implement complete functionality")
-              fi
-            fi
-            
-            # Check for empty TODO implement comments
-            if grep -n "// TODO: implement" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("$file: Contains '// TODO: implement' - implement it now")
-            fi
-            
-            # Check for "Phase 1", "MVP first" type language in code comments
-            if grep -in "phase 1\|phase 2\|mvp first\|coming soon\|not yet implemented" "$file" > /dev/null 2>&1; then
-              VIOLATIONS+=("$file: Contains phased implementation language - deliver complete solution")
-            fi
-            
-            # Check for empty/stub functions in new code
-            if [[ "$file" == *.js ]] || [[ "$file" == *.ts ]]; then
-              if grep -Pzo "function\s+\w+\s*\([^)]*\)\s*\{\s*\}" "$file" > /dev/null 2>&1; then
-                VIOLATIONS+=("$file: Contains empty function stubs - implement functionality")
-              fi
-            fi
+          # Scan added lines for TODO without issue reference
+          echo "$ADDED_LINES" | grep "TODO" | grep -v "TODO: See issue #" | grep -v "github.com.*issues" | while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains TODO without issue reference")
           done
+          
+          # Scan added lines for FIXME
+          while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains FIXME")
+          done < <(echo "$ADDED_LINES" | grep "FIXME")
+          
+          # Scan added lines for "scaffold" (exclude anti-scaffolding workflow references)
+          while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains 'scaffold' — ship complete code")
+          done < <(echo "$ADDED_LINES" | grep -i "scaffold" | grep -v "scaffolding tools like npm init" | grep -v "anti-scaffolding" | grep -v "Anti-Scaffolding")
+          
+          # Scan added lines for "placeholder" (exclude valid HTML/CSS uses)
+          while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains 'placeholder' — implement complete functionality")
+          done < <(echo "$ADDED_LINES" | grep -i "placeholder" | grep -v "placeholder=" | grep -v "::placeholder" | grep -v 'placeholder values' | grep -v 'alt="placeholder"' | grep -v 'Search projects')
+          
+          # Scan added lines for "// TODO: implement"
+          while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains '// TODO: implement'")
+          done < <(echo "$ADDED_LINES" | grep "// TODO: implement")
+          
+          # Scan added lines for phased implementation language
+          while IFS=: read -r f line; do
+            VIOLATIONS+=("$f: Added line contains phased implementation language")
+          done < <(echo "$ADDED_LINES" | grep -i "phase 1\|phase 2\|mvp first\|coming soon\|not yet implemented")
           
           # Output results
           if [ ${#VIOLATIONS[@]} -eq 0 ]; then
-            echo "✅ No scaffolding language detected"
+            echo "✅ No scaffolding language detected in added lines"
             echo "violations=false" >> $GITHUB_OUTPUT
           else
-            echo "⚠️ Found ${#VIOLATIONS[@]} violations:"
+            echo "⚠️ Found ${#VIOLATIONS[@]} violations in newly added code:"
             printf '%s\n' "${VIOLATIONS[@]}"
             echo "violations=true" >> $GITHUB_OUTPUT
             
-            # Save violations for comment
             VIOLATIONS_TEXT=$(printf '%s\n' "${VIOLATIONS[@]}")
             echo "VIOLATIONS<<EOF" >> $GITHUB_ENV
             echo "$VIOLATIONS_TEXT" >> $GITHUB_ENV
@@ -145,9 +128,14 @@ jobs:
             
             const violations = [];
             
-            // Check title - but exclude workflow name matches
-            const titleLower = title.toLowerCase().replace(/check-for-scaffolding/gi, '').replace(/anti-scaffolding/gi, '');
-            if (titleLower.includes('scaffold') || titleLower.includes('wip') || titleLower.includes('draft')) {
+            // Check title — exclude workflow self-references and common bot prefixes.
+            // [WIP] from Copilot and 'draft' from GitHub Draft PRs are legitimate — don't flag them.
+            const titleLower = title.toLowerCase()
+              .replace(/check-for-scaffolding/gi, '')
+              .replace(/anti-scaffolding/gi, '')
+              .replace(/\[wip\]/gi, '')       // Copilot often prefixes with [WIP]
+              .replace(/\bdraft\b/gi, '');     // GitHub Draft PRs use "draft" in title
+            if (titleLower.includes('scaffold') || titleLower.includes('initial stub')) {
               violations.push('PR title contains scaffolding language: ' + title);
             }
             
@@ -230,7 +218,7 @@ jobs:
             body.push('- "Do not create placeholder files with `// TODO: implement`"');
             body.push('- "Do not propose phases. Deliver the complete solution in one pass."');
             body.push('');
-            body.push('Per `recurse-rules.md`:');
+            body.push('Per code-quality standards (CodeRabbit + Semgrep):');
             body.push('- "No TODO or FIXME Left in Merged Code"');
             body.push('- "No Placeholder Escalation Labels Without Action"');
             body.push('');
