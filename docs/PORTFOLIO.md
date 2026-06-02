@@ -456,6 +456,8 @@ Every active Revvel project has a dedicated docs directory with a Bill of Materi
 | Universal SAR App | [`docs/universal-sar-app/`](../docs/universal-sar-app/) | [BOM.md](../docs/universal-sar-app/BOM.md) | — |
 | Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
 | penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
+| Oz OS | [midnghtsapphire/oz-os](https://github.com/midnghtsapphire/oz-os) | Research Intelligence Operating System — intel.md, research-packs, method-packs, 6 agent specs, autonomy tiers | — |
+| Bar Chart Race Engine | [midnghtsapphire/bar-chart-race-engine](https://github.com/midnghtsapphire/bar-chart-race-engine) | Animated infographic video generator (8 races: electricity, literacy, life expectancy, internet, CO2, GDP, renewable energy, non-HE washers) | — |
 
 **Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](_MASTER_BOM.md)
 
