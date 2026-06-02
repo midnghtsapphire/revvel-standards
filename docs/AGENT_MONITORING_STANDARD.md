@@ -108,6 +108,6 @@ That's a more credible "AI under control" story than most teams have.
 
 | Issue / PR | Source | Acceptance | Subscribed? | Notes |
 | --- | --- | --- | --- | --- |
-| #13987 | Octopus audit item #5 — OpenRouter doc caveat | banner above the example block in `docs/AGENT_AUTONOMY_PROTOCOLS.md` | will subscribe to the resulting PR when it opens | First test of the openrouter-coder loop end-to-end after the secrets cleanup |
+| #13987 | Octopus audit item #5 — OpenRouter doc caveat | `grep -q 'CAVEAT' docs/AGENT_AUTONOMY_PROTOCOLS.md` returns 0 (caveat banner present above the OpenRouter example block); CI passes; no files outside `docs/` modified | will subscribe to the resulting PR when it opens | First test of the openrouter-coder loop end-to-end after the secrets cleanup |
 
 Append rows as we delegate more items from #13978 (and other audits).

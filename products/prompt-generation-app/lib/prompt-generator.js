@@ -178,5 +178,6 @@ function packetToMarkdown(packet) {
 
 module.exports = {
   generatePromptPacket,
-  packetToMarkdown
+  packetToMarkdown,
+  scoreRedOcean
 };

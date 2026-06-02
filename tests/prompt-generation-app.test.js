@@ -6,6 +6,7 @@ const path = require('node:path');
 const {
   generatePromptPacket,
   packetToMarkdown,
+  scoreRedOcean,
 } = require(path.join(__dirname, '..', 'products', 'prompt-generation-app', 'lib', 'prompt-generator.js'));
 
 function run(name, fn) {
@@ -85,6 +86,42 @@ run('adds Spotify visual-link prompts for music embedding requests', () => {
   assert.ok(joined.includes('native TikTok/Instagram link stickers'));
   assert.ok(joined.includes('open.spotify.com/track'));
   assert.equal(p.implementationPrompts.length, baseline.implementationPrompts.length + 2);
+});
+
+// --- Red-ocean scoring: direct unit tests ---
+
+run('red-ocean base score is 30 with no keywords', () => {
+  assert.equal(scoreRedOcean('some unrelated product idea'), 30);
+});
+
+run('red-ocean score increments by 10 per keyword', () => {
+  assert.equal(scoreRedOcean('social'), 40);       // 30 + 10
+  assert.equal(scoreRedOcean('social chat'), 50);   // 30 + 10 + 10
+  assert.equal(scoreRedOcean('social chat todo'), 60);
+});
+
+run('red-ocean scoring is case-insensitive', () => {
+  assert.equal(scoreRedOcean('SOCIAL'), scoreRedOcean('social'));
+  assert.equal(scoreRedOcean('CrYpTo NoTe'), scoreRedOcean('crypto note'));
+});
+
+run('red-ocean score clamps at 100 when all keywords present', () => {
+  // All 7 keywords: social chat todo note crm generic crypto
+  // 30 + 7*10 = 100
+  const allKeywords = 'social chat todo note crm generic crypto';
+  assert.equal(scoreRedOcean(allKeywords), 100);
+});
+
+run('red-ocean score clamps at 100 even with repeated keyword context', () => {
+  // Even if the string could theoretically push past 100, Math.min caps it
+  const overloaded = 'social chat todo note crm generic crypto social social';
+  assert.equal(scoreRedOcean(overloaded), 100);
+});
+
+run('red-ocean via generatePromptPacket stays within 0-100', () => {
+  const p = generatePromptPacket({ idea: 'social chat todo note crm generic crypto app' });
+  assert.ok(p.scores.redOcean >= 0 && p.scores.redOcean <= 100);
+  assert.equal(p.scores.redOcean, 100);
 });
 
 run('does not add music-link prompts for non-music social requests', () => {
