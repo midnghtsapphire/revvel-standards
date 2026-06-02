@@ -1,49 +1,37 @@
 # WR: [WR] Duplicated WR header and leaked template comments in issue-14067 WR doc
 
 **Issue:** #14217  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-06-02  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**Repository:** midnghtsapphire/revvel-standards
+**Created:** 2026-06-02
+**WR Status:** ✅ Complete
 
----
+## Bug Report
+The WR document for issue #14067 contains two stacked header blocks, including leaked template scaffolding comments and conflicting metadata. This is the same generator scaffolding-leak pattern previously observed in issue-13802 and issue-13894 WRs and must be cleaned up to leave a single canonical header.
 
-**WR Status:** {STATUS}  
+Lines 1-9 already declare a valid WR header for Issue #14067 with Researcher 'Jules + OpenRouter' and Research Date 2026-05-30. Lines 13-30 then re-declare the WR header, including raw template comment lines such as '# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)' and '# ─────────────────────────────────────────────────────────────────────────────', a duplicate '# WR: midnghtsapphire/revvel-standards' heading, and a second metadata block listing a different Researcher ('Copilot Coding Agent'). The duplication indicates the generator concatenated the template verbatim rather than substituting into it, producing inconsistent metadata and polluting the document with internal template guidance that should never appear in a finalized WR.
 
-## Issue Context
-{ISSUE_BODY}
+Location:
+File: wr/issues/issue-14067-wr-doc-retains-unfilled-template-placeholders-use-.md, around line 13 (duplicated block spans roughly lines 11-21 / 13-30).
+PR: #14184 — [WR] WR doc retains unfilled template placeholders — use basic template or mark N/A (https://github.com/midnghtsapphire/revvel-standards/pull/14184)
 
-## Repository Metadata
-| Property | Value |
-| --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+## Summary
+The WR generator erroneously concatenated template scaffolding into the generated WR document for issue #14067 instead of properly substituting values, leading to duplicated metadata blocks, a duplicated header, and leaked scaffolding comments.
 
-## Research Checklist
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+## Objective
+Remove the duplicated header block and the leaked template comment lines from the `issue-14067` WR document. Ensure the document has exactly one valid `# WR: ...` header and no template scaffolding comments, retaining the correct researcher and date. Audit and apply generator fixes similar to those for issue-13802 to prevent further verbatim template concatenation.
 
-## Executive Summary
-{EXECUTIVE_SUMMARY}
+## Required Bundle
+N/A — docs-only/bug-fix change, no external bundles required.
 
-## Step 1A — Product/Output Selections
-{PRODUCT_SELECTIONS}
+## Definition of Done
+- The duplicated header block and leaked template comment lines (lines 11-21/13-30) are removed from the `issue-14067` WR document.
+- The `issue-14067` WR document contains exactly one `# WR:` header.
+- The document has a single canonical metadata block with the correct Researcher (`Jules + OpenRouter`) and Research Date (`2026-05-30`).
+- The `wr-lint.mjs` linter runs cleanly on the file without raising scaffolding or double-header violations.
 
-## Step 2 — Deep Web Research
-{DEEP_WEB_RESEARCH}
+## Validation
+- Run `node wr/scripts/wr-lint.mjs wr/issues/issue-14067-wr-doc-retains-unfilled-template-placeholders-use-.md` and verify it passes.
+- Inspect the file manually to ensure exactly one H1 header at line 1.
 
-## Step 3 — Requirements
-{REQUIREMENTS}
-
-## Recommendations
-{RECOMMENDATIONS}
-
-## Risks
-{RISKS}
+## Blockers
+N/A — no known blockers.
