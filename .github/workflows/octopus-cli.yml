@@ -51,23 +51,6 @@ jobs:
     runs-on: ubuntu-latest
     if: |-
       (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false)
-    steps:
-      - name: Bail if OCTOPUS_TOKEN is not configured
-        id: token-check
-        env:
-          OCTOPUS_TOKEN: ${{ secrets.OCTOPUS_TOKEN }}
-        run: |
-          if [ -z "$OCTOPUS_TOKEN" ]; then
-            echo "OCTOPUS_TOKEN secret is not set; skipping Octopus CLI invocation."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-  invoke:
-    name: Invoke Octopus CLI
-    runs-on: ubuntu-latest
-    if: |-
-      (github.event_name == 'workflow_dispatch') ||
       (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
        github.event.pull_request.head.repo.full_name == github.repository)
