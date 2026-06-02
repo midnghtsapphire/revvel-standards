@@ -2,8 +2,25 @@
 // wr-lint.mjs — gate for WR/PR markdown. Catches the recurring review failures automatically.
 // Usage: node wr-lint.mjs <file-or-glob...>   |   exit 0 clean, 1 issues found.
 // Wire into CI / review-agent pass so these never reach a human reviewer.
+//
+// v3 (strict-reviewer audit): the bracket-placeholder heuristic and the
+// fixed RAW_TOKENS enum both produced false positives / false negatives.
+// They have been replaced with:
+//   (a) a runtime allowlist of bracket placeholders extracted from the
+//       WR_TEMPLATE_*.md files at startup. Only those exact strings are
+//       forbidden when found in a generated WR — legitimate prose like
+//       "[Closes #123]" or "[TODO: refactor]" no longer false-positives.
+//   (b) a generic uppercase-snake-case curly-token detector
+//       (`/\{[A-Z_][A-Z0-9_]*\}/`) so any new token added to the
+//       generator is caught without code changes here.
 
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Templates live at wr/WR_TEMPLATE_*.md; this script lives at wr/scripts/.
+const WR_DIR = path.resolve(__dirname, "..");
 
 const SCAFFOLD_PATTERNS = [
   { re: /^#\s*Otherwise,\s*use\s+WR_TEMPLATE_BASIC\.md/im, msg: "template scaffolding comment ('Otherwise, use WR_TEMPLATE_BASIC.md') left in rendered output" },
@@ -26,17 +43,57 @@ const PRODUCT_SECTIONS = [
   "Product/Output Selections", "Deep Web Research", "Prime Directive"
 ];
 
+// FULL-template headings that signal the WR was generated FROM the full
+// template. If none of these are present, the doc looks like a basic WR
+// (a strong fallback signal when the title verb doesn't classify cleanly).
+const FULL_TEMPLATE_HEADINGS = [
+  "Executive Summary", "Deep Web Research", "BOM",
+  "Step 1A", "Step 2", "Step 3", "Repository Metadata", "Research Checklist"
+];
+
 // Title/type signals that mean BASIC template (no market research).
-const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
+// Audit finding A.4: extend with explicit verbs (remove/delete/fix/patch/
+// chore/docs/refactor/lint/format/typo/style) so titles like
+// "Remove unused MCP route" classify as basic and trigger the wrong-template
+// product-sections check.
+const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore|remove|delete|patch|docs?|format)\b/i;
+const BASIC_TITLE_VERBS = /^\s*(remove|delete|fix|patch|chore|docs?|refactor|lint|format|typo|style)\b/i;
 
-// Unsubstituted generator tokens that must never ship.
-const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
+// Generic unsubstituted-generator-token detector. Matches any UPPER_SNAKE
+// curly token (`{STARS}`, `{NEW_TOKEN}`, `{REPO_NAME_2}`), so adding a
+// fresh placeholder to the generator no longer silently passes lint.
+const RAW_TOKEN = /\{[A-Z_][A-Z0-9_]*\}/;
 
-// Bracket placeholders the full template leaves behind.
-const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
+// Load bracket placeholders from the template files at startup.
+// Anything else found in `[…]` in a rendered WR is treated as legitimate prose.
+function loadTemplatePlaceholders() {
+  const placeholders = new Set();
+  const files = ["WR_TEMPLATE_BASIC.md", "WR_TEMPLATE_FULL.md"];
+  for (const f of files) {
+    const p = path.join(WR_DIR, f);
+    if (!fs.existsSync(p)) continue;
+    const txt = fs.readFileSync(p, "utf8");
+    // Capture every `[…]` that looks like a placeholder (no nested brackets,
+    // not a markdown link `[txt](url)`, not a checkbox `[ ]`/`[x]`).
+    const re = /\[([^\]\n]+)\]/g;
+    let m;
+    while ((m = re.exec(txt)) !== null) {
+      const inner = m[1];
+      // skip checkboxes
+      if (/^[ xX]$/.test(inner)) continue;
+      // skip markdown link forms: peek next char
+      const next = txt[m.index + m[0].length];
+      if (next === "(") continue;
+      placeholders.add(`[${inner}]`);
+    }
+  }
+  return placeholders;
+}
 
-function lintFile(path) {
-  const text = fs.readFileSync(path, "utf8");
+const TEMPLATE_PLACEHOLDERS = loadTemplatePlaceholders();
+
+function lintFile(filePath) {
+  const text = fs.readFileSync(filePath, "utf8");
   const lines = text.split("\n");
   const issues = [];
 
@@ -73,17 +130,38 @@ function lintFile(path) {
     issues.push(`line ${ln}: scaffolding '# WR: <owner>/<repo>' header — strip it; the title H1 is the real header`);
   }
 
-  // 3. Raw bracketed placeholders (heuristic: short ALL/Title-case tokens in brackets, not links).
+  // 3. Raw bracketed placeholders.
+  // Audit finding A.1: the old heuristic (any `[A-Za-z][^\]]{2,60}]`) false-
+  // positived on legitimate prose like `[Closes #123]`, `[TODO: refactor]`,
+  // `[RFC 2119]`. Replaced with a strict allowlist: only the exact bracket
+  // strings extracted from the template files are forbidden. Everything
+  // else in brackets is treated as legitimate prose.
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip code examples
     // ignore markdown links [text](url) and checkboxes [ ]/[x]
     const stripped = l.replace(/\[[ xX]\]/g, "").replace(/\[[^\]]+\]\([^)]+\)/g, "");
-    const m = stripped.match(/\[[A-Za-z][^\]]{2,60}\]/);
-    if (m) issues.push(`line ${i + 1}: raw placeholder ${m[0]} — fill it or mark "N/A — <reason>"`);
+    for (const ph of TEMPLATE_PLACEHOLDERS) {
+      if (stripped.includes(ph)) {
+        issues.push(`line ${i + 1}: raw template placeholder ${ph} — fill it or mark "N/A — <reason>"`);
+        break; // one issue per line is enough
+      }
+    }
   });
 
   // 4. Template/type mismatch: BASIC-signal title but product sections present.
-  const isBasic = BASIC_SIGNALS.test(path) || BASIC_SIGNALS.test(lines[0] || "");
+  // Audit finding A.4: extend classification with verb-prefix on title and
+  // "looks like basic because it has none of the FULL headings" fallback.
+  const titleLine = lines[0] || "";
+  const verbBasic = BASIC_TITLE_VERBS.test(titleLine.replace(/^#\s*WR:\s*/i, ""));
+  const looksFull = FULL_TEMPLATE_HEADINGS.some((h) => {
+    const re = new RegExp(`^#{1,4}\\s+.*${h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "im");
+    return re.test(text);
+  });
+  const isBasic =
+    BASIC_SIGNALS.test(filePath) ||
+    BASIC_SIGNALS.test(titleLine) ||
+    verbBasic ||
+    !looksFull;
   if (isBasic) {
     for (const sec of PRODUCT_SECTIONS) {
       const re = new RegExp(`^#{1,4}\\s*.*${sec.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "im");
@@ -93,45 +171,30 @@ function lintFile(path) {
     }
   }
 
-  // 5. Unsubstituted generator tokens ({STARS} etc.)
-  const RAW_TOKENS_G = new RegExp(RAW_TOKENS.source, "g");
+  // 5. Unsubstituted generator tokens — generic UPPER_SNAKE curly-token detector.
+  // Audit finding A.2: fixed enum (STARS|OPEN_ISSUES|...) silently passed any
+  // new {TOKEN} the generator added. Use a generic regex instead.
+  const RAW_TOKEN_G = new RegExp(RAW_TOKEN.source, "g");
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip examples
-    const m = l.match(RAW_TOKENS_G);
+    const m = l.match(RAW_TOKEN_G);
     if (m) issues.push(`line ${i + 1}: unsubstituted generator token(s) ${[...new Set(m)].join(", ")} — substitute real value or remove the row`);
   });
 
-  // 6. Full-template bracket placeholders left raw.
-  lines.forEach((l, i) => {
-    if (inFence[i]) return; // skip examples
-    const m = l.match(BRACKET_PLACEHOLDER);
-    if (m) issues.push(`line ${i + 1}: raw template placeholder ${m[0]} — fill or mark "N/A — <reason>"`);
-  });
+  // 6. Removed: covered by the allowlist in rule 3 (BRACKET_PLACEHOLDER no
+  //    longer exists — TEMPLATE_PLACEHOLDERS is the single source of truth).
 
-  // 7. Falsely pre-checked checklist while body has any raw placeholders.
+  // 7. Falsely pre-checked checklist while body has any forbidden patterns.
   // Per Octopus review of #14118/#14138/#14224/#14225: ANY [x] check while
   // ANY forbidden pattern is in the doc is false-completion. The old
-  // threshold (≥5 [x] + narrow placeholder list) lets the worst offenders
+  // threshold (≥5 [x] + narrow placeholder list) let the worst offenders
   // through — a single [x] flipped on while {STARS} is still in the table
   // is the same false-completion signal.
-  // Build the forbidden-pattern detector once from the same rules used above
-  // (excluding code fences via the same inFence mask).
-  const FORBIDDEN_FOR_CHECKLIST = [
-    RAW_TOKENS,
-    // Non-global clone of BRACKET_PLACEHOLDER: the `g` flag makes `.test()`
-    // stateful (lastIndex), which can false-negative on repeat calls and
-    // let forbidden placeholders slip past the rule. Per Copilot review.
-    new RegExp(BRACKET_PLACEHOLDER.source, "i"),
-    /\[Yes\/No\]/i,
-    /\[Option \d+\]/i,
-    /\[Research findings\.\.\.\]/i,
-    /\[\$CPC\]/i,
-    /\[Date and summary\]/i,
-    /\[Fix\]/i,
-  ];
   const hasAnyForbidden = lines.some((l, i) => {
     if (inFence[i]) return false;
-    return FORBIDDEN_FOR_CHECKLIST.some((re) => re.test(l));
+    if (RAW_TOKEN.test(l)) return true;
+    for (const ph of TEMPLATE_PLACEHOLDERS) if (l.includes(ph)) return true;
+    return false;
   });
   const checkedItems = lines.reduce((n, l, i) => {
     if (inFence[i]) return n;

@@ -16,7 +16,21 @@ esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
 HERE="$(cd "$(dirname "$0")/.." && pwd)"   # wr/
-ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
+
+# Audit finding A.5: the original `&&...||...` ternary silently swallowed any
+# `cat` failure (read error, perm error, partial file) and replaced it with the
+# "no issue body" fallback even when --body-file WAS passed. Use an explicit
+# if/then/else so a real read failure aborts the generator.
+if [[ -n "$BODY_FILE" ]]; then
+  if [[ ! -f "$BODY_FILE" ]]; then
+    echo "--body-file '$BODY_FILE' does not exist" >&2; exit 2
+  fi
+  if ! ISSUE_BODY="$(cat "$BODY_FILE")"; then
+    echo "failed to read --body-file '$BODY_FILE'" >&2; exit 2
+  fi
+else
+  ISSUE_BODY="_No issue body provided._"
+fi
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----
 # ERE doesn't support \b word boundaries — they're matched literally and the
@@ -94,8 +108,9 @@ subst REQUIREMENTS      "$(jq_get requirements)"
 subst RECOMMENDATIONS   "$(jq_get recommendations)"
 subst RISKS             "$(jq_get risks)"
 
-# Any token left unfilled becomes an explicit N/A marker, never a raw {TOKEN} or empty.
-out="$(echo "$out" | sed -E 's/\{[A-Z_]+\}/N\/A/g')"
+# Audit finding A.3: the previous fallback `sed -E 's/\{[A-Z_]+\}/N\/A/g'`
+# papered over missing substitutions and made lint pass on broken generation.
+# REMOVED — the linter (wr-lint.mjs, rule 5) catches missing tokens explicitly.
 # Any empty filled section line -> N/A with reason (basic class has no market sections to worry about).
 out="$(echo "$out" | sed -E 's/^([A-Za-z].*:)[[:space:]]*$/\1 N\/A/')"
 

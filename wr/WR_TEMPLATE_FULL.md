@@ -33,15 +33,30 @@
 {EXECUTIVE_SUMMARY}
 
 ## Step 1A — Product/Output Selections
+- Primary option: [Option 1]
+- Backup option: [Option 2]
+- Outcome decision required: [Yes/No]
+
 {PRODUCT_SELECTIONS}
 
 ## Step 2 — Deep Web Research
+[Research findings...]
+
+| Primary keyword | Volume | CPC |
+| --- | --- | --- |
+| [primary keyword 1] | [volume] | [$CPC] |
+| [primary keyword 2] | [volume] | [$CPC] |
+
 {DEEP_WEB_RESEARCH}
 
 ## Step 3 — Requirements
 {REQUIREMENTS}
 
 ## Recommendations
+- Pricing: [Pricing]
+- Fix to ship first: [Fix]
+- Last reviewed: [Date and summary]
+
 {RECOMMENDATIONS}
 
 ## Risks
