@@ -2,48 +2,26 @@
 
 **Issue:** #14218  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-06-02  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-**WR Status:** {STATUS}  
+**Created:** 2026-06-02
+**WR Status:** ✅ Complete
 
 ## Issue Context
-{ISSUE_BODY}
+The work request for a trivial single-character quoting fix in `jules-pr-comment.yml` was authored using the full deep-research WR template, leaving numerous placeholders unsubstituted and many sections irrelevant to the scope of the change. This violates the repository's own template guidance, which recommends `WR_TEMPLATE_BASIC.md` for chores of this size.
 
-## Repository Metadata
-| Property | Value |
-| --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+## Summary
+The WR document for a simple quote normalization task was generated using the full deep-research template, leaving numerous unfilled placeholders and irrelevant sections. This violates repo guidelines.
 
-## Research Checklist
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+## Objective
+Regenerate the WR using `WR_TEMPLATE_BASIC.md` so the document structure matches the scope of a one-character quoting fix.
 
-## Executive Summary
-{EXECUTIVE_SUMMARY}
+## Required Bundle
+- Updated WR document: `wr/issues/issue-14218-wr-uses-deep-research-template-for-a-one-char-quot.md`
 
-## Step 1A — Product/Output Selections
-{PRODUCT_SELECTIONS}
+## Definition of Done
+The WR document matches the BASIC template structure with no raw placeholders or irrelevant sections.
 
-## Step 2 — Deep Web Research
-{DEEP_WEB_RESEARCH}
+## Validation
+Verify the document structure manually and run `node wr/scripts/wr-lint.mjs`.
 
-## Step 3 — Requirements
-{REQUIREMENTS}
-
-## Recommendations
-{RECOMMENDATIONS}
-
-## Risks
-{RISKS}
+## Blockers
+None
