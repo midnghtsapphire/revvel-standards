@@ -1,7 +1,10 @@
+# DEPRECATED — 2026-06-01. Replaced by CodeRabbit + Semgrep + CodeQL.
+# RecurseML trial expired; pricing was misleading ($15 → $180 at checkout).
+# Do not install RecurseML on new repos. Original content preserved below.
 name: recurse_ml
-title: RecurseML — Autonomous Code Review
+title: "RecurseML — Autonomous Code Review (DEPRECATED)"
 version: 1.0.0
-description: "Integrate RecurseML for autonomous bug detection, custom code-standards enforcement, and self-healing PR review across all Revvel projects."
+description: "DEPRECATED 2026-06-01. Replaced by CodeRabbit + Semgrep + CodeQL. Original: Integrate RecurseML for autonomous bug detection, custom code-standards enforcement, and self-healing PR review across all Revvel projects."
 
 metadata:
   author: "Revvel AI Engine"

@@ -1,8 +1,25 @@
-# RecurseML Autonomous Code Quality Workflow
+# ============================================================================
+# DEPRECATED TEMPLATE — 2026-06-01
+# RecurseML has been replaced by CodeRabbit + Semgrep + CodeQL.
+# See .github/workflows/recurse-ml.yml deprecation header for full details.
+#
+# DO NOT COPY this template to new repos. Use instead:
+#   - CodeRabbit: https://github.com/marketplace/coderabbit-ai (AI PR review)
+#   - Semgrep:    templates/cicd/semgrep.yml (SAST rules)
+#   - CodeQL:     templates/cicd/codeql.yml (deep SAST)
+#
+# REASON: RecurseML trial expired; renewal pricing was misleading
+#   ($15 advertised, $180 charged at checkout vs. $250/year in docs).
+#   CodeRabbit already provides equivalent AI PR review at no extra cost.
+#
+# Original template preserved below for reference (never deleted per policy).
+# ============================================================================
+#
+# RecurseML Autonomous Code Quality Workflow (DEPRECATED)
 # Triggers on every PR and push to main.
 # RecurseML analyzes code for bugs, enforces recurse-rules.md, and posts review comments on PRs.
 #
-# SETUP:
+# SETUP (NO LONGER RECOMMENDED):
 #   1. Install the RecurseML GitHub App: https://app.recurse.ml/integrations/github
 #   2. Add your RecurseML API key as a repository secret: RECURSE_ML_API_KEY
 #      (Settings → Secrets and variables → Actions → New repository secret)

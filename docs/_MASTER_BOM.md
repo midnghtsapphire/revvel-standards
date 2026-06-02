@@ -45,7 +45,7 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 | Revvel Forensic Studio | OpenAI API (GPT-4o Vision) | AI image analysis, face feature description | OpenAI | ~$20–100/mo | P0 | ❌ Not set up |
 | Revvel Music Studio | Audio CDN / storage | Hosting audio files (samples, uploads) | Cloudflare R2 or AWS S3 | ~$5–20/mo | P0 | ❌ Not set up |
 | Revvel Music Studio | Stripe payments | Music marketplace transactions | Stripe | Transaction % | P0 | ❌ Not set up |
-| Revvel Standards | RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28 |
+| Revvel Standards | ~~RecurseML~~ | ~~Autonomous PR code review~~ **DEPRECATED 2026-06-01** — replaced by CodeRabbit (free) + Semgrep + CodeQL. Pricing was misleading ($15 advertised, $180 charged). | ~~RecurseML~~ | ~~$250/yr~~ $0 | ~~P0~~ | ❌ **REMOVED** — see `docs/CODE_REVIEW_WORKFLOW_STATUS.md` |
 | Revvel Standards | GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription |
 | The Alt Text | OpenAI API (GPT-4o Vision) | Core AI: generate alt text from images | OpenAI | ~$10–50/mo | P0 | ❌ Check usage — may need upgrade |
 | The Alt Text | Domain renewal | Keep `thealttext.com` active | Namecheap | ~$15/yr | P0 | ❌ Verify renewal date |
@@ -63,17 +63,17 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 | Growlingeyes | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased |
 | Penny Sovereign Yield Scout | Reddit API (free tier) | Social signal monitoring | Reddit | $0 | P1 | ❌ Not configured |
 | Penny Sovereign Yield Scout | Domain registration | `pennyscout.io` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
-| Penny Sovereign Yield Scout | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| Penny Sovereign Yield Scout | ~~RecurseML~~ | ~~Autonomous PR code review + bug detection~~ **DEPRECATED** — use CodeRabbit instead | ~~RecurseML~~ | ~~$250/yr~~ $0 | ~~P1~~ | ❌ **REMOVED 2026-06-01** |
 | Penny Sovereign Yield Scout | DigitalOcean Managed PostgreSQL | Storing yield history, signal log, compounding records | DigitalOcean | ~$15/mo | P1 | ❌ Currently using shared MySQL |
 | Penny Sovereign Yield Scout | Sentry | Error monitoring for background jobs | Sentry | $0 (free tier) | P1 | ❌ Not configured |
 | Penny Sovereign Yield Scout | Resend | Alert emails (impermanent loss warnings, compound reports) | Resend | $0 (free tier) | P1 | ❌ Not configured |
 | Premolt | Domain registration | `premolt.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
 | Revvel Forensic Studio | Domain registration | `revvelforensics.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
-| Revvel Forensic Studio | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| Revvel Forensic Studio | ~~RecurseML~~ | ~~Autonomous PR code review + bug detection~~ **DEPRECATED** — use CodeRabbit instead | ~~RecurseML~~ | ~~$250/yr~~ $0 | ~~P1~~ | ❌ **REMOVED 2026-06-01** |
 | Revvel Forensic Studio | DeepAI / Replicate API | Image enhancement, face reconstruction models | Replicate or DeepAI | ~$10–50/mo | P1 | ❌ Not set up |
 | Revvel Forensic Studio | Sentry Error Tracking | Production error monitoring | Sentry | $0 (free tier) | P1 | ❌ Not configured |
 | Revvel Music Studio | Domain registration | `revvelmusic.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
-| The Alt Text | RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active |
+| The Alt Text | ~~RecurseML~~ | ~~Autonomous PR code review + bug detection~~ **DEPRECATED** — use CodeRabbit instead | ~~RecurseML~~ | ~~$250/yr~~ $0 | ~~P1~~ | ❌ **REMOVED 2026-06-01** |
 | Universal Sar App | Domain registration | `universalsar.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased |
 | Universal Sar App | Apple Developer Program | iOS App Store submission | Apple | $99/year | P1 | ❌ Not purchased |
 | Universal Sar App | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased |
@@ -122,8 +122,8 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 | Tool | Category | Cost | Fit | Priority |
 |---|---|---|---|---|
-| **RecurseML** | Autonomous bug detection + custom code standards on PRs | $250/yr | ⭐⭐⭐ All repos — catches AI-generated bugs | **P0 — 14-day trial active now** |
-| **Codacy** | Static analysis, test coverage, code duplication | Free (open source) / $15/mo | ⭐⭐ Good alternative if RecurseML doesn't pan out | P1 |
+| ~~**RecurseML**~~ | ~~Autonomous bug detection + custom code standards on PRs~~ **DEPRECATED 2026-06-01** | ~~$250/yr~~ $0 | ~~⭐⭐⭐~~ Replaced by CodeRabbit (free) | **REMOVED** |
+| **Codacy** | Static analysis, test coverage, code duplication | Free (open source) / $15/mo | ⭐⭐ Redundant now that CodeRabbit + Semgrep + CodeQL are active | P2 |
 | **SonarQube Cloud** | SAST, code smell detection, security hotspots | Free (public repos) / $75/mo+ | ⭐⭐ Enterprise-grade SAST for security-sensitive projects | P1 |
 | **Snyk Code** | AI-powered security vulnerability scanner | Free tier / $25/mo | ⭐⭐⭐ Pairs with Snyk for dep + code scanning | P1 |
 | **API CraftPro** | Auto-generates Go + Gin backend REST API (CRUD, JWT/PASETO auth, tests, CI/CD, Docker, Postman) from a SQL schema and pushes it to GitHub ([eval](API_CRAFTPRO_EVAL_2026-04-20.md)) | Free trial / paid tier | ⭐ Stack mismatch — Revvel default is Node/TypeScript, not Go; prototype-only candidate | P3 — defer |
@@ -200,24 +200,30 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 ---
 
-## RecurseML 14-Day Trial Decision Gate
+## ~~RecurseML 14-Day Trial Decision Gate~~ (RESOLVED)
+
+> **DECISION: NOT RENEWED — 2026-06-01.**
+> RecurseML trial expired. Pricing was misleading ($15/mo advertised on SourceForge,
+> $180 charged at checkout, vs. $250/year in skill config). Replaced by CodeRabbit
+> (free, GitHub Marketplace) + existing Semgrep + CodeQL workflows.
+> See `docs/CODE_REVIEW_WORKFLOW_STATUS.md` for full deprecation record.
 
 **Trial Start:** April 14, 2026  
 **Trial Expires:** April 28, 2026  
-**Cost if Renewed:** $250/year  
-**Skill Reference:** `skills/recurse-ml/SKILL.md`
+**Cost if Renewed:** ~~$250/year~~ NOT RENEWED  
+**Skill Reference:** `skills/recurse-ml/SKILL.md` (DEPRECATED)
 
-Renew if ≥ 4 of 5 criteria are met by April 28:
+~~Renew if ≥ 4 of 5 criteria are met by April 28:~~
 
 | Criterion | Target | Status |
 |---|---|---|
-| Bugs caught before merge | ≥ 5 genuine issues caught | ⬜ Pending |
-| False positive rate | < 20% of comments are noise | ⬜ Pending |
-| PR review time reduction | Noticeable reduction in manual review | ⬜ Pending |
-| Integration reliability | 0 workflow failures due to RecurseML | ⬜ Pending |
-| Custom rules effectiveness | Catching Revvel-specific patterns | ⬜ Pending |
+| Bugs caught before merge | ≥ 5 genuine issues caught | ❌ Not met — trial expired before meaningful data |
+| False positive rate | < 20% of comments are noise | ❌ Not evaluated — service unavailable without payment |
+| PR review time reduction | Noticeable reduction in manual review | ❌ Not evaluated |
+| Integration reliability | 0 workflow failures due to RecurseML | ❌ FAILED — `recurseml/analysis` check failed on every PR |
+| Custom rules effectiveness | Catching Revvel-specific patterns | ❌ Not evaluated |
 
-_Update the Status column daily during the trial. Decision and rationale go in `docs/DARE_LOG.md`._
+_Decision: 0 of 5 criteria met. RecurseML deprecated 2026-06-01. CodeRabbit is the replacement._
 
 - [GrowlingEyes BOM](growlingeyes/BOM.md)
 - [Neurooz BOM](neurooz/BOM.md)

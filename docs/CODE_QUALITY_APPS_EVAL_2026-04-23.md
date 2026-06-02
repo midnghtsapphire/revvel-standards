@@ -143,20 +143,27 @@ Grouped by reason for skipping.
 
 ### 5.1 Duplicate RecurseML + OpenRouter AI reviewer
 
-RecurseML already posts autonomous PR reviews and enforces the rules
+> **UPDATE 2026-06-01:** RecurseML trial has expired and was **NOT renewed**.
+> Reason: misleading pricing ($15/mo advertised on SourceForge, $180 charged
+> at checkout, vs. $250/year documented in skill config). RecurseML workflow
+> has been fully commented out (not deleted). **CodeRabbit** (already active
+> via GitHub Marketplace) now serves as the AI PR reviewer alongside Bito AI.
+> Semgrep + CodeQL cover all SAST needs. See `docs/CODE_REVIEW_WORKFLOW_STATUS.md`
+> for the full deprecation record.
+
+~~RecurseML already posts autonomous PR reviews and enforces the rules
 in [`recurse-rules.md`](../recurse-rules.md) (trial runs through
-**April 28, 2026** per [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md#111-code-quality--autonomous-review)).
-In parallel, the OpenRouter-routed AI PR reviewer templated in
+**April 28, 2026** per [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md#111-code-quality--autonomous-review)).~~
+
+The OpenRouter-routed AI PR reviewer templated in
 [`OPENROUTER_MARKETPLACE_ACTIONS.md`](./OPENROUTER_MARKETPLACE_ACTIONS.md)
 row 2 (`maxlim0/AI-PR-Reviewer`) and row 5 (`VIVAAN-DHAWAN/ai-code-reviewer`)
-post the same signal. Adding another AI reviewer only increases noise:
+remains available as a manual fallback. Adding another AI reviewer only increases noise:
 
 - **Codacy** (#3), **Sourcery** (#4), **DeepSource** (#6), **Qlty Cloud** (#8), **CodeFactor** (#12), **CodeAnt AI** (#14), **CR.GPT** (#18).
 
-**When to revisit:** if the RecurseML trial does **not** convert on
-April 28, 2026, re-run this table and pick the single best
-free-tier replacement (Sourcery is the current front-runner based on
-free-for-OSS pricing and native GitHub App shape).
+**Decision made:** RecurseML not renewed. CodeRabbit + Bito AI + Semgrep + CodeQL
+is the production code review stack going forward.
 
 ### 5.2 Duplicate CodeQL / Dependabot / Gitleaks
 
@@ -194,19 +201,17 @@ free-for-OSS pricing and native GitHub App shape).
    [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) §9.
 2. **Week of May 4, 2026** — If the three pilots are green, mirror the
    same three into `oaudrey` and `penny-sovereign-yield-scout`.
-3. **April 28, 2026** — RecurseML trial decision point. Re-evaluate
-   §5.1 *only if* the trial does not convert.
+3. ~~**April 28, 2026** — RecurseML trial decision point.~~ **RESOLVED 2026-06-01:** Trial not renewed. RecurseML deprecated; CodeRabbit is the replacement.
 4. **On first Terraform commit** — Install Infracost on that repo only.
 5. **On first UI ship** — Install Argos Visual Testing on that repo only.
 
 ## 7. Out of scope (deliberately)
 
 - We do **not** install more than one AI PR reviewer in parallel. The
-  current stack is RecurseML + one OpenRouter reviewer; adding a third
+  current stack is **CodeRabbit + Bito AI** (RecurseML removed 2026-06-01); adding a third
   increases comment noise and slows PRs without adding signal.
-- We do **not** install any paid tier beyond the current RecurseML
-  trial without a sign-off in [`_MASTER_BOM.md`](./_MASTER_BOM.md).
+- We do **not** install any paid tier without a sign-off in [`_MASTER_BOM.md`](./_MASTER_BOM.md).
 
 ---
 
-*Authored: April 23, 2026. Next review: April 28, 2026 (RecurseML decision date).*
+*Authored: April 23, 2026. Updated: June 1, 2026 (RecurseML deprecated, CodeRabbit confirmed as replacement).*

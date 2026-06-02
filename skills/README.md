@@ -93,7 +93,7 @@ skills/
 | [`deployment`](deployment/) | Deploy to DigitalOcean with PM2, Nginx, and GitHub Actions |
 | [`error-reporting`](error-reporting/) | Three-tier error reporting: console → email → GitHub Issue |
 | [`ralph-loop`](ralph-loop/) | Self-healing CI: auto-trigger @copilot on failure, loop until fixed |
-| [`recurse-ml`](recurse-ml/) | Autonomous PR review and bug detection via RecurseML |
+| [`recurse-ml`](recurse-ml/) | ~~Autonomous PR review and bug detection via RecurseML~~ **DEPRECATED 2026-06-01** — replaced by CodeRabbit + Semgrep + CodeQL |
 
 ### Security & Compliance
 | Skill | Description |

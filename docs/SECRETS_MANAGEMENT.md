@@ -37,7 +37,7 @@ See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AU
 | `OPENROUTER_API_KEY` | ai-pr-review, ai-ci-failure-helper, ai-weekly-changelog, openrouter-triage, openrouter-coder, openrouter-instantiation-check, priority-router, proof-of-life, research-module, run-human-testing-api, eeat-trust-cron | Most have guards | Core LLM routing key — if missing, most AI features silently skip |
 | `JULES_API_KEY` | jules-invoke, jules-feedback, jules-pr-comment, jules-pr-reviewer | Yes (all guarded) | Google Jules agent integration |
 | `OPENAI_API_KEY` | panda-ops | Yes | PandaOps AI PR review |
-| `RECURSE_ML_API_KEY` | recurse-ml | No guard | RecurseML code review — will fail if missing |
+| ~~`RECURSE_ML_API_KEY`~~ | ~~recurse-ml~~ | ~~No guard~~ | ~~RecurseML code review~~ **DEPRECATED 2026-06-01** — secret no longer needed; workflow commented out |
 | `ADMIN_GITHUB_TOKEN` | fork-audit-bot, openrouter-instantiation-check, project-board-sync, ready-for-review, saml-sso-registration | Varies | Fine-grained PAT with elevated repo permissions |
 | `READY_FOR_REVIEW_TOKEN` | ready-for-review | Yes | Fine-grained PAT for promoting drafts |
 | `APP_ID` | mabl, research-module, run-human-testing-api | No guard | GitHub App ID for app-based auth |
@@ -91,7 +91,7 @@ These workflows will **fail hard** if their secrets are not configured
 | `mabl.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY` |
 | `openrouter-coder.yml` | `OPENROUTER_API_KEY` |
 | `openrouter-instantiation-check.yml` | `OPENROUTER_API_KEY` |
-| `recurse-ml.yml` | `RECURSE_ML_API_KEY` |
+| ~~`recurse-ml.yml`~~ | ~~`RECURSE_ML_API_KEY`~~ (DEPRECATED 2026-06-01) |
 | `research-module.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `OPENROUTER_API_KEY` |
 | `run-human-testing-api.yml` | `APP_ID`, `APP_PRIVATE_KEY`, `OPENROUTER_API_KEY` |
 

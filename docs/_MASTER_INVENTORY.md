@@ -134,7 +134,7 @@
 
 | Service | What It Does | Provider | Free Tier Limit | Est. Monthly Cost | ⚡ UPGRADE TRIGGER | Status | Used By |
 |---|---|---|---|---|---|---|---|
-| RecurseML | Autonomous PR code review; enforces Revvel coding standards and catches AI-generated bugs | RecurseML | 14-day trial | $250/yr | Trial ends April 28, 2026 — must decide | 🧪 Trial Active | All repos |
+| ~~RecurseML~~ | ~~Autonomous PR code review~~ **DEPRECATED 2026-06-01** — replaced by CodeRabbit (free) + Semgrep + CodeQL. Pricing was misleading ($15 advertised, $180 charged at checkout). | ~~RecurseML~~ | ~~14-day trial~~ | ~~$250/yr~~ $0 | ~~Trial ends April 28~~ **REMOVED** | ❌ Deprecated | ~~All repos~~ None |
 | GitHub Copilot | AI code completion and chat inside IDE; context-aware suggestions | GitHub | No free tier for business use | $10–19/mo/seat | First seat activated (no free tier) | ⚠️ Expiring Soon | All developers |
 | Codacy | Static analysis, test coverage tracking, code duplication detection — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#51-duplicate-recurseml--openrouter-ai-reviewer) (defer) | Codacy | Free for open-source | $15+/mo (private) | Repo becomes private | 🟡 Research Topic | All repos (evaluate) |
 | SonarQube Cloud | SAST security scanning and code smell detection — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#41-sonarqube-cloud--sast--smells-public-repos) | SonarSource | Free for public repos | $75+/mo (private) | Repo becomes private | 🟡 Research Topic | Security-sensitive projects (evaluate) |
@@ -384,7 +384,7 @@
 | App | What It Does | Cost | ⚡ UPGRADE TRIGGER | Status | Install Link |
 |---|---|---|---|---|---|
 | **Bito AI** | Persistent-memory code review with agentic workflows; enforces repo conventions automatically | Free (limited) / $20+/mo | Exceeds free tier limits | ✅ Active | Installation ID: [128849516](https://github.com/settings/installations/128849516) |
-| **RecurseML** | Autonomous code review on every PR; enforces Revvel standards | $250/yr | Trial ends April 28, 2026 | 🧪 Trial Active | Already installed |
+| ~~**RecurseML**~~ | ~~Autonomous code review on every PR; enforces Revvel standards~~ **DEPRECATED 2026-06-01** — replaced by CodeRabbit + Semgrep + CodeQL. Uninstall the GitHub App to stop `recurseml/analysis` check. | ~~$250/yr~~ $0 | N/A | ❌ **Deprecated** | Uninstall: Settings → Integrations → RecurseML |
 | **Dependabot** | Automated dependency update PRs for security vulnerabilities | Free | N/A (always free) | ✅ Active | Built into GitHub |
 | **GitGuardian** | Scans every push for accidentally committed secrets | Free (individual) | Needs team plan for multiple contributors | 🟡 Research Topic | [marketplace.github.com](https://github.com/marketplace/gitguardian) |
 | **Snyk** | Dependency vulnerability scanning + automatic fix PRs | Free (limited) / $25+/mo | Exceeds free scan quota | 🟡 Research Topic | [marketplace.github.com](https://github.com/marketplace/snyk) |
@@ -396,7 +396,7 @@
 | **SonarQube Cloud** | SAST + code-smell metrics (complexity, duplication) — free while repos are public — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#41-sonarqube-cloud--sast--smells-public-repos) | Free (public) / $75+/mo private | Any repo flips to private | 🟡 Research Topic | [marketplace.github.com](https://github.com/marketplace/sonarcloud) |
 | **Infracost** | Terraform cloud-cost estimates in PRs — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#42-infracost--terraform-cost-estimates-in-prs) | Free (Cloud tier) | Enterprise SSO / policy needs | 🟡 Research Topic (on condition) | [marketplace.github.com](https://github.com/marketplace/infracost) |
 | **Argos Visual Testing** | Visual regression diffs on UI PRs — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#43-argos-visual-testing--visual-regression) | Free (5k screenshots/mo OSS) | Exceeds 5k screenshots/mo | 🟡 Research Topic (on condition) | [marketplace.github.com](https://github.com/marketplace/argos-ci) |
-| **Sourcery / DeepSource / Qlty Cloud / CodeFactor / CodeAnt AI / CR.GPT / Code Review Doctor** | AI / aggregator PR reviewers | varies | — | 🗑️ Removed — [duplicates RecurseML + OpenRouter reviewer](CODE_QUALITY_APPS_EVAL_2026-04-23.md#51-duplicate-recurseml--openrouter-ai-reviewer) | see eval |
+| **Sourcery / DeepSource / Qlty Cloud / CodeFactor / CodeAnt AI / CR.GPT / Code Review Doctor** | AI / aggregator PR reviewers | varies | — | 🗑️ Removed — [duplicates CodeRabbit + Semgrep + CodeQL](CODE_QUALITY_APPS_EVAL_2026-04-23.md#51-duplicate-recurseml--openrouter-ai-reviewer) (RecurseML also removed) | see eval |
 | **Aikido Security / DeepScan / Datree / Imgbot / CodeScene / Coveralls** | Security bundle / JS SAST / K8s policy / image optimizer / behavioral analysis / coverage | varies | — | 🗑️ Removed — [wrong stack or duplicates existing tooling](CODE_QUALITY_APPS_EVAL_2026-04-23.md#5-skip--defer--and-below) | see eval |
 
 > Full rationale for adoption / deferral / rejection of the 20 apps in the April 2026 code-quality sweep: [`CODE_QUALITY_APPS_EVAL_2026-04-23.md`](CODE_QUALITY_APPS_EVAL_2026-04-23.md).

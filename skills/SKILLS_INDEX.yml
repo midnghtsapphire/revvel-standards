@@ -49,12 +49,18 @@ skills:
       - "code review with memory"
       - "repo memory review"
 
+  # DEPRECATED — 2026-06-01. Replaced by CodeRabbit + Semgrep + CodeQL.
+  # RecurseML trial expired; pricing was misleading ($15 → $180 at checkout).
+  # Skill files preserved in skills/recurse-ml/ for reference only.
   - name: recurse_ml
-    title: "RecurseML — Autonomous Code Review"
+    title: "RecurseML — Autonomous Code Review (DEPRECATED)"
     version: "1.0.0"
     path: "skills/recurse-ml/"
     skill_file: "skills/recurse-ml/recurse-ml.skill.yml"
     category: "Code Quality & Autonomous Review"
+    status: deprecated
+    deprecated_date: "2026-06-01"
+    replaced_by: "CodeRabbit (AI PR review) + Semgrep (SAST) + CodeQL (deep SAST)"
     access: all
     triggers:
       - "recurse ml"

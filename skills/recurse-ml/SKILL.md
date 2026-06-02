@@ -1,5 +1,9 @@
 # RecurseML Skill
 
+> **DEPRECATED — 2026-06-01.** RecurseML has been replaced by **CodeRabbit** (AI PR review) + **Semgrep** (SAST) + **CodeQL** (deep SAST). These tools are already active and cover all RecurseML functionality at zero cost. RecurseML's trial expired and renewal pricing was misleading ($15 advertised, $180 charged at checkout). **Do not install RecurseML on new repos.** Use CodeRabbit (GitHub Marketplace) + the existing Semgrep/CodeQL workflows instead. Original content preserved below for reference.
+
+<!-- DEPRECATED — original content preserved per comment-out-never-delete policy -->
+
 Activate when any task involves code review automation, bug detection, enforcing code standards on PRs, or integrating RecurseML into a Revvel project.
 
 ## What RecurseML Does

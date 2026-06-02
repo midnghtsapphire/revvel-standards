@@ -25,7 +25,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 | If the task involves... | Load this skill |
 |---|---|
-| RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| ~~RecurseML~~ (DEPRECATED 2026-06-01 — replaced by CodeRabbit + Semgrep + CodeQL) | [`recurse-ml`](#recurse-ml) |
 | BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review | [`bito-ai`](#bito-ai) |
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
@@ -94,13 +94,15 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Workflow:** `.github/workflows/bito-ai.yml`
 - **Integration doc:** `docs/BITO_AI_INTEGRATION.md`
 
-#### recurse-ml
+#### recurse-ml (DEPRECATED)
+
+> **DEPRECATED 2026-06-01.** Replaced by CodeRabbit + Semgrep + CodeQL. RecurseML trial expired; pricing was misleading. Files preserved for reference only.
 
 - **Path:** `skills/recurse-ml/`
 - **Files:** `SKILL.md` · `recurse-ml.skill.yml`
-- **Description:** Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.
+- **Description:** ~~Wire RecurseML into any Revvel repo for autonomous bug detection, custom code-standards enforcement (`recurse-rules.md`), and self-healing PR review via GitHub Actions.~~ DEPRECATED — use CodeRabbit (GitHub Marketplace) for AI PR review instead.
 - **Tags:** recurse-ml, autonomous-review, bug-detection, code-standards, pr-review, self-healing, github-actions
-- **Trigger:** Setting up code-review automation; integrating RecurseML; enforcing recurse-rules; self-healing PR loop.
+- **Trigger:** ~~Setting up code-review automation; integrating RecurseML; enforcing recurse-rules; self-healing PR loop.~~ Do not use — see CodeRabbit + Semgrep instead.
 
 #### truthslayer-audit
 

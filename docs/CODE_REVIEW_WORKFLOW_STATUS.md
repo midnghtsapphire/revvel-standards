@@ -1,6 +1,6 @@
 # Code Review Workflow Status
 
-**Last Updated:** May 6, 2026  
+**Last Updated:** June 1, 2026  
 **Status:** Current
 
 ## Overview
@@ -43,6 +43,29 @@ This document clarifies the current state of code review automation in `revvel-s
 **Trigger:** Automatic on PR open/edit/sync  
 **Purpose:** Enforce "No scaffolding" rule from AGENTS.md Prime Directive  
 **Failure Mode:** 🚫 **BLOCKING** — Violations prevent merge
+
+## Deprecated Workflows
+
+### 1. RecurseML (recurse-ml.yml)
+**Workflow:** `.github/workflows/recurse-ml.yml`  
+**Status:** **DEPRECATED** — Fully commented out, 2026-06-01  
+**Who:** Devin (session c7c1b9ab)  
+**When:** 2026-06-01  
+**Why:** RecurseML trial expired. Renewal pricing was misleading ($15/mo advertised on SourceForge, $180 charged at checkout, vs. $250/year documented in skill config). CodeRabbit already provides equivalent AI PR review at no extra cost. Semgrep + CodeQL cover SAST.  
+**Replaced by:**
+- **CodeRabbit** — AI PR review (active, GitHub Marketplace)
+- **Semgrep** — SAST rules (active, `.github/workflows/semgrep.yml`)
+- **CodeQL** — Deep SAST (active, `.github/workflows/codeql.yml`)
+
+**TO FULLY REMOVE the `recurseml/analysis` check from PRs:**
+- Uninstall the RecurseML GitHub App: Settings → Integrations → Applications → RecurseML → Uninstall
+
+**Files deprecated (preserved, not deleted):**
+- `.github/workflows/recurse-ml.yml` — workflow commented out
+- `templates/cicd/recurse-ml.yml` — template marked deprecated
+- `skills/recurse-ml/SKILL.md` — skill marked deprecated
+- `skills/recurse-ml/recurse-ml.skill.yml` — skill config marked deprecated
+- `recurse-rules.md` — rules file marked deprecated (patterns still valid as guidance)
 
 ## Disabled Workflows (Manual Dispatch Only)
 
@@ -160,6 +183,7 @@ All workflows now use **valid OpenRouter model IDs**:
 | BITO AI | `BITO_API_KEY` | [bito.ai](https://bito.ai) → Settings → API Keys |
 | OpenRouter fallbacks | `OPENROUTER_API_KEY` | [openrouter.ai](https://openrouter.ai) → API Keys |
 | PromptFoo | `OPENROUTER_API_KEY` | Same as above |
+| ~~RecurseML~~ | ~~`RECURSE_ML_API_KEY`~~ | ~~DEPRECATED — no longer needed. Uninstall the GitHub App.~~ |
 
 ## FAQs
 

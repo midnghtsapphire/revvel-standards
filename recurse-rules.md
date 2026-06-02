@@ -1,7 +1,16 @@
 # Recurse Rules — MIDNGHTSAPPHIRE / Revvel Standards
 #
-# This file defines custom code quality rules enforced by RecurseML on every PR.
-# RecurseML reads this file and flags any patterns listed below as violations.
+# DEPRECATED — 2026-06-01. RecurseML has been replaced by CodeRabbit + Semgrep + CodeQL.
+# These rules are no longer enforced by RecurseML. The patterns below are now covered by:
+#   - CodeRabbit (AI PR review — catches most of these patterns automatically)
+#   - Semgrep rule packs: p/security-audit, p/secrets, p/owasp-top-ten, p/cwe-top-25
+#   - CodeQL (deep SAST for JS/TS + GitHub Actions)
+# This file is preserved as a reference for the code quality standards it documents.
+# The rules themselves remain valid guidance — they're just enforced by different tools now.
+#
+# Original header:
+# This file defines custom code quality rules formerly enforced by RecurseML on every PR.
+# RecurseML read this file and flagged any patterns listed below as violations.
 #
 # Rule format:
 #   ## Rule Name
