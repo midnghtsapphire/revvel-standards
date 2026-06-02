@@ -29,7 +29,8 @@ on:
     types: [opened, synchronize, reopened, labeled]
 
 permissions:
-  contents: read
+  actions: write
+  contents: write
   pull-requests: write
 
 concurrency:
@@ -189,6 +190,12 @@ jobs:
           cat "$RUNNER_TEMP/resolve.txt"
           echo "resolve_report=$RUNNER_TEMP/resolve.txt" >> "$GITHUB_OUTPUT"
           echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+
+      - name: Clean up partial merge after failed auto-resolve
+        if: |-
+          steps.analyze.outputs.has_conflicts == 'true' &&
+          steps.resolve.outputs.exit_code != '0'
+        run: git merge --abort 2>/dev/null || true
 
       # If the script resolved EVERY hunk, commit and push back to the PR
       # branch as a single audit-trail-friendly commit.
