@@ -1,0 +1,151 @@
+name: Trusted Bot Auto-Approve
+
+# Auto-approves PRs authored by trusted bots once all required CI checks pass.
+# After approval, pr-state-orchestrator picks up the 'approved' review event
+# and handles label progression + auto-merge enablement.
+#
+# Trusted bots: Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands
+
+on:
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows:
+      - "GitGuardian Security Checks"
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  contents: read
+  checks: read
+
+jobs:
+  auto-approve-trusted-bot:
+    name: Auto-approve trusted bot PR
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Find and approve trusted-bot PRs with passing checks
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            // Trusted bot authors — GitHub login names (case-insensitive match)
+            const TRUSTED_BOTS = [
+              'devin-ai-integration[bot]',
+              'devin-ai[bot]',
+              'github-actions[bot]',
+              'copilot[bot]',
+              'dependabot[bot]',
+              'jules[bot]',
+              'jules-google[bot]',
+              'cursor[bot]',
+              'cursor-ai[bot]',
+              'octopus-ai[bot]',
+              'circleci[bot]',
+              'bito-ai[bot]',
+              'openhands-ai-integration[bot]',
+              'openhands-agent[bot]',
+              'renovate[bot]',
+            ];
+
+            // Resolve the HEAD SHA from the event
+            let headSha;
+            if (context.eventName === 'check_suite') {
+              headSha = context.payload.check_suite.head_sha;
+            } else if (context.eventName === 'workflow_run') {
+              headSha = context.payload.workflow_run.head_sha;
+            }
+
+            if (!headSha) {
+              core.info('No head SHA found — skipping.');
+              return;
+            }
+
+            // Find open PRs for this SHA
+            const { data: pulls } = await github.rest.pulls.list({
+              owner, repo, state: 'open', per_page: 100,
+            });
+
+            const matchingPRs = pulls.filter(pr => pr.head.sha === headSha);
+            if (matchingPRs.length === 0) {
+              core.info(`No open PRs match SHA ${headSha.slice(0,8)} — skipping.`);
+              return;
+            }
+
+            for (const pr of matchingPRs) {
+              const authorLogin = (pr.user?.login || '').toLowerCase();
+              const isTrusted = TRUSTED_BOTS.some(bot => authorLogin === bot.toLowerCase());
+
+              if (!isTrusted) {
+                core.info(`PR #${pr.number} author "${authorLogin}" is not a trusted bot — skipping.`);
+                continue;
+              }
+
+              core.info(`PR #${pr.number} by trusted bot "${authorLogin}" — checking CI status...`);
+
+              // Verify ALL check runs on this SHA are passing
+              const { data: checkRuns } = await github.rest.checks.listForRef({
+                owner, repo, ref: pr.head.sha, per_page: 100,
+              });
+
+              const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
+              const failing = completed.filter(r =>
+                ['failure', 'timed_out', 'cancelled'].includes(r.conclusion)
+              );
+              const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
+
+              // Skip this workflow's own check to avoid circular dependency
+              const ownName = 'Auto-approve trusted bot PR';
+              const externalFailing = failing.filter(r => r.name !== ownName);
+              const externalPending = pending.filter(r => r.name !== ownName);
+
+              if (externalPending.length > 0) {
+                core.info(`PR #${pr.number}: ${externalPending.length} checks still running — will re-evaluate when they complete.`);
+                continue;
+              }
+
+              if (externalFailing.length > 0) {
+                const failNames = externalFailing.map(r => r.name).join(', ');
+                core.warning(`PR #${pr.number}: ${externalFailing.length} checks failing (${failNames}) — NOT approving.`);
+                continue;
+              }
+
+              if (completed.length === 0) {
+                core.info(`PR #${pr.number}: no completed checks yet — skipping.`);
+                continue;
+              }
+
+              // Check if already approved
+              const { data: reviews } = await github.rest.pulls.listReviews({
+                owner, repo, pull_number: pr.number,
+              });
+              const hasApproval = reviews.some(r => r.state === 'APPROVED');
+              if (hasApproval) {
+                core.info(`PR #${pr.number}: already has an APPROVE review — skipping.`);
+                continue;
+              }
+
+              // Submit APPROVE review
+              await github.rest.pulls.createReview({
+                owner, repo,
+                pull_number: pr.number,
+                event: 'APPROVE',
+                body: [
+                  `**Auto-Approved** — PR by trusted bot \`${authorLogin}\`.`,
+                  `All ${completed.length} CI checks passed.`,
+                  '',
+                  '_This review was submitted automatically by the Trusted Bot Auto-Approve workflow._',
+                ].join('\n'),
+              });
+
+              core.notice(`PR #${pr.number}: APPROVED (trusted bot + all CI green)`);
+            }
+    timeout-minutes: 15
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
