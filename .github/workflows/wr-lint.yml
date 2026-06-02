@@ -49,12 +49,15 @@ jobs:
 
           fail=0
 
-          # Audit finding C.3: feed file list via xargs -d '\n' so paths
-          # with spaces / globs don't fall apart under word splitting.
+          # Audit finding C.3: feed file list via NUL-separated xargs so
+          # paths with spaces / globs don't fall apart under word splitting.
+          # Uses `tr '\n' '\0' | xargs -0` for portability — `xargs -d` is a
+          # GNU extension and breaks on macOS/BSD. Per Octopus review on
+          # this PR.
           if [ -n "$files" ]; then
             echo "Linting changed WR files:"
             printf '%s\n' "$files"
-            printf '%s\n' "$files" | xargs -d '\n' -r node wr/scripts/wr-lint.mjs || fail=1
+            printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 -r node wr/scripts/wr-lint.mjs || fail=1
           else
             echo "no WR files under wr/issues/ changed"
           fi
