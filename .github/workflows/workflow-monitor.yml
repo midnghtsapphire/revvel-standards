@@ -12,6 +12,9 @@ permissions:
   actions: write
   issues: write
   contents: read
+concurrency:
+  group: workflow-monitor
+  cancel-in-progress: false
 jobs:
   monitor:
     name: Monitor workflow health

@@ -131,7 +131,7 @@ jobs:
       - name: BITO Code Review — PR
         id: bito_review_pr
         if: env.BITO_KEY_MISSING == 'false' && (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
-        uses: gitbito/codereviewagent@main
+        uses: gitbito/codereviewagent@040bbc8d9a65e1db416743f5957abbb9b80dbb5d # main as of 2026-06-02
         continue-on-error: true
         with:
           pr: ${{ steps.pr.outputs.url }}
@@ -140,7 +140,7 @@ jobs:
       - name: BITO Code Review — Issue Comment
         id: bito_review_comment
         if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'issue_comment'
-        uses: gitbito/codereviewagent@main
+        uses: gitbito/codereviewagent@040bbc8d9a65e1db416743f5957abbb9b80dbb5d # main as of 2026-06-02
         continue-on-error: true
         with:
           pr: ${{ steps.pr.outputs.url }}

@@ -63,7 +63,8 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-  invoke:
+          fi
+  review:
     name: Invoke Octopus CLI
     runs-on: ubuntu-latest
     if: |-
@@ -71,10 +72,10 @@ jobs:
       (github.event_name == 'pull_request_target' &&
        github.event.pull_request.draft == false &&
        github.event.pull_request.head.repo.full_name == github.repository)
-
-      # Security: deliberately do NOT actions/checkout the PR ref under
-      # pull_request_target. We only need PR metadata (number, body, linked
-      # issues), which we read via `gh api` — never executing PR code.
+    # Security: deliberately do NOT actions/checkout the PR ref under
+    # pull_request_target. We only need PR metadata (number, body, linked
+    # issues), which we read via `gh api` — never executing PR code.
+    steps:
       - name: Install Octopus CLI
         if: steps.token-check.outputs.skip != 'true'
         run: npm install -g @octp/cli

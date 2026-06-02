@@ -7,6 +7,9 @@ permissions:
   pull-requests: write
   issues: write
   contents: read
+concurrency:
+  group: stuck-label-watchdog
+  cancel-in-progress: false
 jobs:
   sweep:
     runs-on: ubuntu-latest

@@ -25,6 +25,9 @@ permissions:
   issues: write
   pull-requests: write
   contents: read
+concurrency:
+  group: priority-router-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 env:
   PRIORITY_LABELS: priority-p0,priority-p1,priority-p2,priority-p3
   PRIORITY_DEFINITIONS:

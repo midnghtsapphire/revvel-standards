@@ -54,7 +54,6 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  workflows: write
 jobs:
   health-check:
     name: Check agent availability
