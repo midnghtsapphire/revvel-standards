@@ -2,48 +2,31 @@
 
 **Issue:** #14067  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-06-02  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-**WR Status:** {STATUS}  
+**Created:** 2026-06-02
+**WR Status:** ✅ Complete
 
 ## Issue Context
-{ISSUE_BODY}
+N/A
 
-## Repository Metadata
-| Property | Value |
-| --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+## Summary
+WR documents generated for issues were keeping unfilled template placeholders (such as STARS, OPEN_ISSUES, IS_PRIVATE, IS_ARCHIVED) from the WR_TEMPLATE_FULL.md if they were not populated with actual values. This was occurring because the bug-fix/chore issues were being mistakenly assigned the full product template instead of the basic template.
 
-## Research Checklist
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+## Objective
+The objective is to fix the WR document for issue #14067 to adhere to the basic template `wr/WR_TEMPLATE_BASIC.md`, and replace any empty template placeholders with `N/A`. The WR status is also updated to "✅ Complete".
 
-## Executive Summary
-{EXECUTIVE_SUMMARY}
+## Required Bundle
+N/A
 
-## Step 1A — Product/Output Selections
-{PRODUCT_SELECTIONS}
+## Definition of Done
+- WR doc for issue #14067 uses `WR_TEMPLATE_BASIC.md` structure.
+- All empty template variables (e.g. STARS, IS_PRIVATE) are removed or replaced with `N/A`.
+- WR Status is "✅ Complete".
+- Document passes `wr-lint.mjs`.
 
-## Step 2 — Deep Web Research
-{DEEP_WEB_RESEARCH}
+## Validation
+Run `node wr/scripts/wr-lint.mjs wr/issues/issue-14067-wr-doc-retains-unfilled-template-placeholders-use-.md` to verify the rewritten document passes all linting rules.
 
-## Step 3 — Requirements
-{REQUIREMENTS}
+## Blockers
+N/A
 
-## Recommendations
-{RECOMMENDATIONS}
-
-## Risks
-{RISKS}
+<!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
