@@ -48,9 +48,8 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: prNumber
-            });
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
@@ -68,7 +67,7 @@ jobs:
                 'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
                 'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
               };
-              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }).catch(e => { console.log(`Rate limit or error listing repo labels: ${e.message}`); return { data: [] }; });
               const existing = new Set(repoLabels.map(l => l.name));
               for (const label of labels) {
                 if (!existing.has(label) && palette[label]) {
@@ -203,7 +202,8 @@ jobs:
 
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //  owner, repo, issue_number: prNumber });
             let currentLabels = labelData.map(l => l.name);
 
             async function addLabel(label) {
@@ -387,7 +387,8 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //  owner, repo, issue_number: prNumber });
               let currentLabels = labelData.map(l => l.name);
 
               async function addLabel(label) {
@@ -503,7 +504,8 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //  owner, repo, issue_number: prNumber });
               let currentLabels = labelData.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
@@ -625,7 +627,8 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //  owner, repo, issue_number: prNumber });
                 let currentLabels = labelData.map(l => l.name);
 
                 async function addLabel(label) {
@@ -728,7 +731,8 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }).catch(e => { console.log(`Rate limit or error listing PR labels: ${e.message}`); return { data: [] }; });
+            //  owner, repo, issue_number: prNumber });
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [

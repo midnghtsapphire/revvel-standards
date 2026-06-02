@@ -65,9 +65,7 @@ jobs:
               try {
                 let res;
                 try {
-                  res = await github.rest.issues.listLabelsOnIssue({
-                    owner, repo, issue_number: num
-                  });
+                  res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num }).catch(e => { core.warning(`listLabelsOnIssue rate limit: ${e.message}`); return { data: [] }; });
                 } catch (e) {
                   core.warning(`listLabelsOnIssue error: ${e.message}`);
                   return [];
@@ -189,9 +187,7 @@ jobs:
               try {
                 let res;
                 try {
-                  res = await github.rest.issues.listLabelsOnIssue({
-                    owner, repo, issue_number: num
-                  });
+                  res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num }).catch(e => { core.warning(`listLabelsOnIssue rate limit: ${e.message}`); return { data: [] }; });
                 } catch (e) {
                   core.warning(`listLabelsOnIssue error: ${e.message}`);
                   return [];
@@ -317,9 +313,7 @@ jobs:
                 try {
                   let res;
                   try {
-                    res = await github.rest.issues.listLabelsOnIssue({
-                      owner, repo, issue_number: num
-                    });
+                    res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: num }).catch(e => { core.warning(`listLabelsOnIssue rate limit: ${e.message}`); return { data: [] }; });
                   } catch (e) {
                     core.warning(`listLabelsOnIssue error: ${e.message}`);
                     return [];
