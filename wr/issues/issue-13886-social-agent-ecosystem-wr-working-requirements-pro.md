@@ -8,15 +8,6 @@
 
 ---
 
-
-# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
-
-#
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-#
-
 # WR: midnghtsapphire/revvel-standards
 
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -228,18 +219,13 @@ The system operates using the following reasoning architecture:
 
 1. UNDERSTAND
 
-
 2. ANALYZE
-
 
 3. REASON
 
-
 4. SYNTHESIZE
 
-
 5. CONCLUDE
-
 
 6. SELF-HEAL
 
@@ -453,7 +439,6 @@ TypeScript
 
 Framer Motion
 
-
 Deploy:
 
 Vercel
@@ -496,7 +481,6 @@ Azure SQL
 
 SQL Server
 
-
 Reason: Existing SQL knowledge and enterprise reporting compatibility.
 
 ---
@@ -531,7 +515,6 @@ Claude Sonnet
 
 Gemini Pro
 
-
 Critics / Red-team
 
 DeepSeek
@@ -539,7 +522,6 @@ DeepSeek
 Qwen
 
 Kimi
-
 
 Coding / repo automation
 
@@ -653,9 +635,7 @@ Messenger Webhooks
 
 FastAPI endpoints
 
-
 Workflow: Message → webhook → agent router → AI response → reply
-
 
 ---
 
@@ -672,7 +652,6 @@ excellent bot support
 stable APIs
 
 low friction
-
 
 Use:
 
@@ -709,7 +688,6 @@ aggressive automation
 spam commenting
 
 high-frequency scraping
-
 
 Preferred:
 
@@ -822,9 +800,7 @@ preview deployments
 
 rollback orchestration
 
-
 GitHub Actions should remain lightweight.
-
 
 ---
 
@@ -908,7 +884,6 @@ enterprise orchestration,
 
 and autonomous multi-agent collaboration frameworks.
 
-
 The platform should eventually function as:
 
 an emergency intelligence layer,
@@ -935,7 +910,6 @@ build simple agent router
 
 add Supabase auth/database
 
-
 Week 2
 
 add image upload analysis
@@ -948,7 +922,6 @@ add GitHub issue generation
 
 add workflow generation
 
-
 Week 3
 
 add Discord integration
@@ -958,7 +931,6 @@ add Facebook Messenger integration
 add MCP tools
 
 add environmental modules
-
 
 Week 4+
 
@@ -973,8 +945,6 @@ add enterprise reporting
 add CircleCI
 
 add Azure SQL migration layer
-
-
 
 ---
 
@@ -995,7 +965,6 @@ source-verified,
 correction-first,
 
 and progressively scalable.
-
 
 The goal is not one giant omniscient AI.
 
@@ -1038,7 +1007,6 @@ enterprise direction
 UX philosophy
 
 long-term autonomous ecosystem vision
-
 
 It’s structured so you can hand it to:
 
@@ -1850,14 +1818,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Last Updated:** 2026-05-25  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
 
-# ─────────────────────────────────────────────────────────────────────────────
-
 # END ADVANCED TEMPLATE
-
-#
 
 # For advanced users who want full control
 
 # Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
 
-# ─────────────────────────────────────────────────────────────────────────────

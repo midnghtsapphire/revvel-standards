@@ -8,15 +8,6 @@
 
 ---
 
-
-# Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
-
-#
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-#
-
 # WR: midnghtsapphire/revvel-standards
 
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -863,14 +854,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Last Updated:** 2026-05-30  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
 
-# ─────────────────────────────────────────────────────────────────────────────
-
 # END ADVANCED TEMPLATE
-
-#
 
 # For advanced users who want full control
 
 # Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
 
-# ─────────────────────────────────────────────────────────────────────────────
