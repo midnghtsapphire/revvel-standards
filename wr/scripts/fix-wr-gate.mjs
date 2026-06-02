@@ -6,7 +6,9 @@
 // Usage: node fix-wr-gate.mjs --changed <file-list-newline-or-comma> [--labels <csv>] [--title "<pr title>"] [--body "<pr body>"]
 //   exit 0 = pass, 1 = gate violation.
 //
-// "Real fix" = any changed file NOT under wr/ and NOT a pure docs/tracking artifact.
+// "Real fix" = any changed file outside wr/, OR specific allowlisted wr/ paths
+// (wr/scripts/, wr/WR_TEMPLATE_*.md, wr/README.md) because fixes to the gate
+// itself or the templates are also genuine fixes.
 // Tracking-only escape hatch = PR has a label in TRACKING_LABELS or title starts with a TRACKING_PREFIX
 // AND the body carries an explicit `Tracks: #NNNN` reference to the follow-up issue/PR that will apply the fix.
 
@@ -16,24 +18,52 @@ const get = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 
 const changedRaw = get("changed");
 const labels = get("labels").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
 const title = get("title") || "";
-const body  = get("body")  || "";
+const bodyRaw = get("body")  || "";
+
+// Audit finding B.2: `Tracks: #N` regex matched inside fenced code blocks
+// (```...```) and blockquotes (`^>`). Strip those before testing so a
+// quoted/commented-out tracking ref can't satisfy the gate.
+function stripCodeAndQuotes(s) {
+  // strip ```...``` fenced blocks
+  let out = s.replace(/```[\s\S]*?```/g, "");
+  // strip ~~~...~~~ fenced blocks
+  out = out.replace(/~~~[\s\S]*?~~~/g, "");
+  // strip blockquote lines (^>) line-by-line
+  out = out.split("\n").filter((l) => !/^\s{0,3}>/.test(l)).join("\n");
+  return out;
+}
+const body = stripCodeAndQuotes(bodyRaw);
 
 // "Tracks: #1234" or "Tracks #1234" or "Tracking: #1234" — case-insensitive,
 // allows owner/repo qualified forms too ("Tracks: foo/bar#1234").
 const TRACKS_REF = /\btrack(?:s|ing)?\s*[: ]\s*([A-Za-z0-9_.\/-]+)?#\d+/i;
 
 const TRACKING_LABELS = ["tracking-only", "wr-docs", "wr-tracking", "meta-tracking", "docs-only"];
-const TRACKING_PREFIXES = [/^\[wr-docs\]/i, /^\[wr-tracking\]/i, /^track\b/i, /^\[track\]/i];
+// Audit finding B.1: the bare `/^track\b/i` matched legitimate titles like
+// "Track down regression" / "Tracking memory leak". Keep only the bracketed
+// forms which are unambiguous tracking-PR markers.
+const TRACKING_PREFIXES = [/^\[wr-docs\]/i, /^\[wr-tracking\]/i, /^\[track\]/i];
 
 // Title signals this PR claims to FIX something (not just track it).
 const FIX_SIGNAL = /\b(fix|resolve|repair|correct|patch|remove|add (missing|the)|implement)\b/i;
 
 const changed = changedRaw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
 
-function isRealFix(path) {
-  if (path.startsWith("wr/")) return false;                 // WR tracking docs don't count
-  if (/^docs\/.*\.md$/i.test(path)) return true;            // a docs FIX (e.g. broken link) IS the fix
-  return true;                                              // any code/config/workflow file counts
+// Audit finding B.3: `wr/` was a blanket "not a real fix", which blocked
+// legitimate fixes to the gate scripts / templates / readme themselves. Add
+// an explicit allowlist for those.
+const WR_REAL_FIX_ALLOWLIST = [
+  /^wr\/scripts\//,
+  /^wr\/WR_TEMPLATE_.*\.md$/,
+  /^wr\/README\.md$/,
+];
+
+function isRealFix(p) {
+  if (p.startsWith("wr/")) {
+    return WR_REAL_FIX_ALLOWLIST.some((re) => re.test(p));
+  }
+  if (/^docs\/.*\.md$/i.test(p)) return true;            // a docs FIX (e.g. broken link) IS the fix
+  return true;                                            // any code/config/workflow file counts
 }
 
 const realFixFiles = changed.filter(isRealFix);
