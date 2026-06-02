@@ -43,7 +43,32 @@ def extract_json_payload(text: str) -> dict[str, Any]:
         return json.loads(candidate[start : end + 1])
 
 
+# RCE-close per the strict-reviewer audit: the model used to be able to write
+# anywhere inside the repo, including the very workflow and gate scripts that
+# invoke it. Overwriting `.github/workflows/*.yml` or `.github/scripts/*.py`
+# means the next workflow run (which holds `contents: write`) executes
+# attacker-controlled YAML. We therefore deny-list infrastructure paths and
+# executable file types at write time, in addition to the existing traversal
+# and absolute-path checks.
+_DENY_PATH_PREFIXES: tuple[str, ...] = (
+    ".github/",
+    "wr/scripts/",
+    "scripts/openrouter-personas",
+    "scripts/persona-",
+)
+_DENY_SUFFIXES: tuple[str, ...] = (".yml", ".yaml", ".sh")
+
+
 def validate_rel_path(path_value: str) -> Path:
+    """Validate a model-supplied relative repo path before writing to it.
+
+    RCE-close per the strict-reviewer audit: rejects traversal, absolute
+    paths, AND any write that targets the gate infrastructure
+    (`.github/`, `wr/scripts/`, persona scripts) or executable formats
+    (`*.yml`, `*.yaml`, `*.sh`, and `*.mjs` under any `scripts/` dir).
+    Raises ``PermissionError`` when the deny-list matches so the caller
+    can surface a clear, auditable failure to the issue thread.
+    """
     normalized_path = path_value.strip()
     if not normalized_path:
         raise ValueError("File path must not be empty.")
@@ -51,6 +76,38 @@ def validate_rel_path(path_value: str) -> Path:
     rel_path = Path(normalized_path)
     if rel_path == Path(".") or rel_path.is_absolute() or ".." in rel_path.parts:
         raise ValueError(f"Unsafe file path: {path_value}")
+
+    # Normalize to forward slashes for prefix/suffix matching regardless of OS.
+    posix_path = rel_path.as_posix()
+    lowered = posix_path.lower()
+
+    for prefix in _DENY_PATH_PREFIXES:
+        if posix_path.startswith(prefix):
+            raise PermissionError(
+                f"Refusing to write {path_value!r}: path is under the "
+                f"protected prefix {prefix!r} (RCE-close: model must not "
+                "overwrite workflow gates or persona scripts)."
+            )
+
+    for suffix in _DENY_SUFFIXES:
+        if lowered.endswith(suffix):
+            raise PermissionError(
+                f"Refusing to write {path_value!r}: file extension "
+                f"{suffix!r} is denied (RCE-close: workflows and shell "
+                "scripts are not model-writable)."
+            )
+
+    # `*.mjs` is only denied when it lives under a `scripts/` directory —
+    # those are the ones wired into automation lanes.
+    if lowered.endswith(".mjs") and (
+        posix_path.startswith("scripts/") or "/scripts/" in posix_path
+    ):
+        raise PermissionError(
+            f"Refusing to write {path_value!r}: `.mjs` files under a "
+            "`scripts/` directory are denied (RCE-close: would let the "
+            "model replace automation entrypoints)."
+        )
+
     return rel_path
 
 
