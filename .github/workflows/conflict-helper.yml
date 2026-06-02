@@ -29,8 +29,9 @@ on:
     types: [opened, synchronize, reopened, labeled]
 
 permissions:
-  contents: read
+  contents: write       # needed by "git push" in the commit step
   pull-requests: write
+  actions: write         # needed by "gh workflow run" to dispatch Jules
 
 concurrency:
   group: conflict-helper-${{ github.event.pull_request.number }}
@@ -207,6 +208,17 @@ jobs:
           # Push to the PR branch using the default token; if branch protection
           # rejects, the comment step below will mention this.
           git push origin "HEAD:$PR_HEAD_REF" || echo "::warning::push failed — branch protection may block direct pushes from Actions"
+
+      # If the auto-resolve script errored (exit 1), clean up the
+      # in-progress merge so the worktree doesn't stay dirty.
+      - name: Clean up on script error
+        if: |-
+          steps.analyze.outputs.has_conflicts == 'true' &&
+          steps.resolve.outputs.exit_code != '0' &&
+          steps.resolve.outputs.exit_code != '2'
+        run: |
+          git merge --abort 2>/dev/null || true
+          echo "::warning::auto-resolve script exited with code ${{ steps.resolve.outputs.exit_code }} — merge aborted, no changes pushed"
 
       # If anything stayed ambiguous, abort the merge (cleans the worktree)
       # and hand off to Jules via the existing jules-coding-agent.yml lane.
