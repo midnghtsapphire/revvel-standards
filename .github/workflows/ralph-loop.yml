@@ -11,7 +11,15 @@ jobs:
   ralph-trigger:
     name: Ralph Loop — Trigger Fix
     runs-on: ubuntu-latest
-    if: github.event.check_suite.conclusion == 'failure'
+    # Only run on failures of check_suites whose linked PR is still OPEN.
+    # check_suite.completed fires for re-runs against merged/closed PRs too;
+    # without this guard, Ralph posts "Attempt N/5" comments on closed PRs
+    # and tries to push fix commits to merged branches. Per strict-reviewer
+    # audit finding on the agent fleet sweep.
+    if: |
+      github.event.check_suite.conclusion == 'failure' &&
+      (github.event.check_suite.pull_requests[0] == null ||
+       github.event.check_suite.pull_requests[0].state == 'open')
     steps:
       - name: Find matching open PR
         id: find-pr
