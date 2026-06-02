@@ -1,9 +1,21 @@
 name: WR Lint
 on:
   pull_request:
-    paths: ["wr/issues/**.md"]
+    paths:
+      - "wr/issues/**.md"
+      # Audit finding C.1: when the linter or template itself changes,
+      # re-run lint (including the golden-sample suite below).
+      - "wr/scripts/**"
+      - "wr/WR_TEMPLATE_*.md"
+      - ".github/workflows/wr-*.yml"
+      - "wr/tests/fixtures/**.md"
   push:
-    paths: ["wr/issues/**.md"]
+    paths:
+      - "wr/issues/**.md"
+      - "wr/scripts/**"
+      - "wr/WR_TEMPLATE_*.md"
+      - ".github/workflows/wr-*.yml"
+      - "wr/tests/fixtures/**.md"
 permissions:
   contents: read
 jobs:
@@ -22,13 +34,59 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
+          set -u
+          # Audit finding C.2: previously `2>&1` redirected stderr into the
+          # `files` variable, which would then be passed to node as bogus
+          # filenames. Redirect stderr to /dev/null instead, and detect git
+          # errors via the exit status.
           if [ -n "$BASE_SHA" ] && [ -n "$HEAD_SHA" ]; then
-            files=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' 2>&1) || files=""
+            files=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' 2>/dev/null) || files=""
+            linter_changes=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/scripts/*' 'wr/WR_TEMPLATE_*.md' 2>/dev/null) || linter_changes=""
           else
             files=""
+            linter_changes=""
           fi
-          if [ -z "$files" ]; then
-            echo "no WR files changed (or diff unavailable); skipping lint"
-            exit 0
+
+          fail=0
+
+          # Audit finding C.3: feed file list via xargs -d '\n' so paths
+          # with spaces / globs don't fall apart under word splitting.
+          if [ -n "$files" ]; then
+            echo "Linting changed WR files:"
+            printf '%s\n' "$files"
+            printf '%s\n' "$files" | xargs -d '\n' -r node wr/scripts/wr-lint.mjs || fail=1
+          else
+            echo "no WR files under wr/issues/ changed"
           fi
-          node wr/scripts/wr-lint.mjs $files
+
+          # Audit finding C.4: when the linter or templates change, run the
+          # golden-sample suite so regressions are caught at PR time.
+          if [ -n "$linter_changes" ]; then
+            echo
+            echo "Linter/template changed — running golden-sample suite:"
+            echo "  $linter_changes"
+
+            if compgen -G 'wr/tests/fixtures/golden-good/*.md' > /dev/null; then
+              echo "-- golden-good (must pass) --"
+              for f in wr/tests/fixtures/golden-good/*.md; do
+                if ! node wr/scripts/wr-lint.mjs "$f"; then
+                  echo "REGRESSION: golden-good fixture failed lint: $f" >&2
+                  fail=1
+                fi
+              done
+            fi
+
+            if compgen -G 'wr/tests/fixtures/golden-bad/*.md' > /dev/null; then
+              echo "-- golden-bad (must fail) --"
+              for f in wr/tests/fixtures/golden-bad/*.md; do
+                if node wr/scripts/wr-lint.mjs "$f" > /dev/null 2>&1; then
+                  echo "REGRESSION: golden-bad fixture passed lint when it must fail: $f" >&2
+                  fail=1
+                else
+                  echo "  ok (failed as expected): $f"
+                fi
+              done
+            fi
+          fi
+
+          exit "$fail"
