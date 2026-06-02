@@ -10,7 +10,7 @@ jobs:
   mergify-merge-queue-labels-copier:
     name: Copy Labels to Merge-Queue PR
     runs-on: ubuntu-latest
-    if: startsWith(github.event.pull_request.head.ref, 'mergify/merge-queue/')
+    if: startsWith(github.event.pull_request.head.ref, 'mergify/merge-queue/') && github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Copy labels to merge-queue PR
         uses: Mergifyio/gha-mergify-merge-queue-labels-copier@v6
