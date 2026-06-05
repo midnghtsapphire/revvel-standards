@@ -51,7 +51,12 @@ jobs:
     runs-on: ubuntu-latest
     if: |-
       (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false)
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.draft == false &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    # Security: deliberately do NOT actions/checkout the PR ref under
+    # pull_request_target. We only need PR metadata (number, body, linked
+    # issues), which we read via `gh api` — never executing PR code.
     steps:
       - name: Bail if OCTOPUS_TOKEN is not configured
         id: token-check
@@ -63,18 +68,8 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-  invoke:
-    name: Invoke Octopus CLI
-    runs-on: ubuntu-latest
-    if: |-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' &&
-       github.event.pull_request.draft == false &&
-       github.event.pull_request.head.repo.full_name == github.repository)
+          fi
 
-      # Security: deliberately do NOT actions/checkout the PR ref under
-      # pull_request_target. We only need PR metadata (number, body, linked
-      # issues), which we read via `gh api` — never executing PR code.
       - name: Install Octopus CLI
         if: steps.token-check.outputs.skip != 'true'
         run: npm install -g @octp/cli
@@ -132,7 +127,6 @@ jobs:
           # kick off `octopus pr review` so Octopus verifies its own ask.
           BODY=$(gh pr view "$PR_NUMBER" --json body --jq .body)
           ISSUE_NUMS=$(echo "$BODY" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+' \
-            | grep -oE '[0-9]+' | sort -u)
             | grep -oE '[0-9]+' | sort -u)
 
           if [ -z "$ISSUE_NUMS" ]; then
