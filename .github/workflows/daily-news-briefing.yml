@@ -1,0 +1,14 @@
+name: Daily News Briefing
+on:
+  schedule:
+    - cron: '0 6 *' # 6am UTC
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch headlines
+        run: |
+          curl "https://newsapi.org/v2/top-headlines?country=us&apiKey=${{ secrets.NEWS_API_KEY }}" > headlines.json
+      - name: Process & post
+        run: python scripts/process_news.py
