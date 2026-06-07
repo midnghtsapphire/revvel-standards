@@ -14,6 +14,10 @@ function hashString(str) {
   return Math.abs(h);
 }
 
+function clampScore(score) {
+  return Math.min(100, score);
+}
+
 function scoreBlueOcean(idea) {
   const keywords = ['ai', 'osint', 'compliance', 'audit', 'niche', 'vertical', 'b2b'];
   const lower = idea.toLowerCase();
@@ -21,7 +25,7 @@ function scoreBlueOcean(idea) {
   keywords.forEach((k) => {
     if (lower.includes(k)) score += 8;
   });
-  return Math.min(100, score);
+  return clampScore(score);
 }
 
 function scoreRedOcean(idea) {
@@ -31,7 +35,7 @@ function scoreRedOcean(idea) {
   keywords.forEach((k) => {
     if (lower.includes(k)) score += 10;
   });
-  return Math.min(100, score);
+  return clampScore(score);
 }
 
 function marketFacts(idea) {
@@ -178,5 +182,6 @@ function packetToMarkdown(packet) {
 
 module.exports = {
   generatePromptPacket,
-  packetToMarkdown
+  packetToMarkdown,
+  clampScore
 };
