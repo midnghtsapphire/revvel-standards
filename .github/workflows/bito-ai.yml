@@ -18,16 +18,27 @@
 #   RECOMMENDATION: Pin to a specific version once BITO stabilizes
 #   Example when ready: uses: gitbito/codereviewagent@v1.2.3
 #
-# SECRET REQUIREMENTS:
-#   This workflow needs TWO secrets (Bito drops them often - see backup below):
+# SECRET SOURCES (ORDER OF PRECEDENCE):
+#   1. DOPPLER (if configured) - via dopplerhq/secrets-fetch-action
+#      - Project: revvel-standards, Config: prd
+#      - Secrets: BITO_ACCESS_KEY, GIT_ACCESS_TOKEN
+#   2. GITHUB_SECRETS (fallback) - if Doppler is not set up
+#      - Set in: Settings → Secrets → Actions
+#      - Same secrets: BITO_ACCESS_KEY, GIT_ACCESS_TOKEN
+#
+#   WHY THE FALLBACK?
+#   Doppler has been dropping BITO secrets unexpectedly.
+#   The workflow gracefully skips if secrets are missing.
+#   You can re-enable Doppler by adding dopplerhq/secrets-fetch-action step.
+#
+# REQUIRED SECRETS:
 #   1. BITO_ACCESS_KEY - from bito.ai → Settings → Access Keys
 #   2. GIT_ACCESS_TOKEN - GitHub PAT with repo scope
 #
-# DOPPLER BACKUP METHOD:
-#   Since Doppler keeps deleting secrets, we use a backup approach:
-#   - Primary: GitHub Secrets (set manually or via gatekeeper)
-#   - Backup: Comments on PR noting secrets are missing
-#   - The workflow gracefully skips if secrets are absent
+# IF MISSING:
+#   - Workflow skips gracefully
+#   - Posts comment on PR explaining what's needed
+#   - Does NOT fail the PR
 #
 # =============================================================================
 
@@ -82,9 +93,23 @@ jobs:
 
     steps:
       # -------------------------------------------------------------------------
+      # OPTIONAL: Enable Doppler (currently disabled - secrets dropped)
+      # Uncomment this section and comment out "Verify BITO secrets" to re-enable
+      # -------------------------------------------------------------------------
+      # - name: Fetch secrets from Doppler
+      #   if: false  # Set to true to enable Doppler
+      #   uses: dopplerhq/secrets-fetch-action@v2.0.0
+      #   with:
+      #     doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #   env:
+      #     DOPPLER_PROJECT: revvel-standards
+      #     DOPPLER_CONFIG: prd
+
+      # -------------------------------------------------------------------------
       # STEP: Verify secrets
       # BITO_ACCESS_KEY and GIT_ACCESS_TOKEN are required
-      # Doppler keeps dropping these - see backup method below
+      # Falls back to GitHub Secrets if Doppler is not configured
       # -------------------------------------------------------------------------
       - name: Verify BITO secrets are configured
         id: verify-secrets
