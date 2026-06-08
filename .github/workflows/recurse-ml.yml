@@ -1,5 +1,9 @@
 name: RecurseML — Autonomous Code Review
 on:
+
+permissions:
+  contents: read
+
   push:
     branches:
       - main

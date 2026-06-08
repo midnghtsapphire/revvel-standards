@@ -42,6 +42,10 @@ name: mabl Automated Tests
 # ──────────────────────────────────────────────────────────────────────────────
 
 on:
+
+permissions:
+  contents: read
+
   # push:
   #   branches:
   #     - main

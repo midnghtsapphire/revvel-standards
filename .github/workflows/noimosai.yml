@@ -1,5 +1,7 @@
 name: NoimosAI — Autonomous Marketing
 on:
+permissions:
+  contents: write
   workflow_dispatch:
     inputs:
       prompt:

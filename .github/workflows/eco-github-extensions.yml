@@ -1,6 +1,10 @@
 name: Eco Github Extensions
 
 on:
+
+permissions:
+  contents: read
+
   pull_request:
 
 jobs:

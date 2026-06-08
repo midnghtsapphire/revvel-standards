@@ -12,6 +12,9 @@ on:
   # Can also be triggered manually
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   CHECK_INTERVAL_MINUTES: 15
 

@@ -7,6 +7,10 @@
 name: Self-Healing Agent
 
 on:
+
+permissions:
+  contents: read
+
   # Run daily to check system health
   schedule:
     - cron: '0 */4 * * *'  # Every 4 hours

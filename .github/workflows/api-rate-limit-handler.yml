@@ -1,6 +1,10 @@
 name: API Rate Limit Handler
 
 on:
+
+permissions:
+  contents: read
+
   workflow_run:
     types: [completed]
     workflows: ["*"]

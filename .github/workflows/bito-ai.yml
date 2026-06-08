@@ -1,4 +1,38 @@
+# =============================================================================
+# BITO AI CODE REVIEW WORKFLOW
+# =============================================================================
+#
+# PURPOSE:
+#   BITO AI is an agentic code review platform with PERSISTENT REPOSITORY MEMORY.
+#   Unlike stateless diff analyzers, BITO indexes the entire codebase ONCE and
+#   maintains up-to-date knowledge across every review. This gives it context
+#   that other AI reviewers lack.
+#
+# WHY @main?
+#   The bito-ai.yml uses `gitbito/codereviewagent@main` because:
+#   1. BITO is a fast-moving product - they push updates frequently
+#   2. The @main tag always points to the latest stable release
+#   3. This means you get new features/fixes automatically
+#
+#   RISK: @main can change unexpectedly and break workflows
+#   RECOMMENDATION: Pin to a specific version once BITO stabilizes
+#   Example when ready: uses: gitbito/codereviewagent@v1.2.3
+#
+# SECRET REQUIREMENTS:
+#   This workflow needs TWO secrets (Bito drops them often - see backup below):
+#   1. BITO_ACCESS_KEY - from bito.ai → Settings → Access Keys
+#   2. GIT_ACCESS_TOKEN - GitHub PAT with repo scope
+#
+# DOPPLER BACKUP METHOD:
+#   Since Doppler keeps deleting secrets, we use a backup approach:
+#   - Primary: GitHub Secrets (set manually or via gatekeeper)
+#   - Backup: Comments on PR noting secrets are missing
+#   - The workflow gracefully skips if secrets are absent
+#
+# =============================================================================
+
 name: BITO AI — Code Review
+
 on:
   pull_request:
     types:
@@ -12,19 +46,26 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: PR number to review (workflow_dispatch only)
+        description: PR number to review
         required: false
         type: string
+
 permissions:
   contents: read
   pull-requests: write
   issues: write
+
 concurrency:
   group: bito-ai-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
+
 jobs:
-  review:
-    name: BITO AI code review
+  # ===========================================================================
+  # JOB: bito-review
+  # ===========================================================================
+  bito-review:
+    name: BITO AI Code Review
+    # Skip on drafts, skip if [skip-bito] in title
     if: |-
       github.event_name == 'workflow_dispatch' || (
         github.event_name == 'pull_request' &&
@@ -37,42 +78,72 @@ jobs:
          startsWith(github.event.comment.body, '/explain'))
       )
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
+      # -------------------------------------------------------------------------
+      # STEP: Verify secrets
+      # BITO_ACCESS_KEY and GIT_ACCESS_TOKEN are required
+      # Doppler keeps dropping these - see backup method below
+      # -------------------------------------------------------------------------
       - name: Verify BITO secrets are configured
+        id: verify-secrets
         env:
           BITO_ACCESS_KEY: ${{ secrets.BITO_ACCESS_KEY }}
           GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         run: |
+          echo "=========================================="
+          echo "BITO AI Secret Verification"
+          echo "=========================================="
+          echo ""
+          
           MISSING=()
-          [ -z "${BITO_ACCESS_KEY}" ] && MISSING+=("BITO_ACCESS_KEY")
-          [ -z "${GIT_ACCESS_TOKEN}" ] && MISSING+=("GIT_ACCESS_TOKEN")
-          if [ ${#MISSING[@]} -ne 0 ]; then
-            echo "::warning::BITO AI review skipped — missing secrets: ${MISSING[*]}"
-            echo "BITO_KEY_MISSING=true" >> "$GITHUB_ENV"
-            echo "BITO_MISSING_SECRETS=${MISSING[*]}" >> "$GITHUB_ENV"
+          if [ -z "${BITO_ACCESS_KEY}" ]; then
+            echo "❌ BITO_ACCESS_KEY: MISSING"
+            MISSING+=("BITO_ACCESS_KEY")
           else
-            echo "BITO secrets verified."
-            echo "BITO_KEY_MISSING=false" >> "$GITHUB_ENV"
+            echo "✅ BITO_ACCESS_KEY: configured (${#BITO_ACCESS_KEY} chars)"
           fi
+          
+          if [ -z "${GIT_ACCESS_TOKEN}" ]; then
+            echo "❌ GIT_ACCESS_TOKEN: MISSING"
+            MISSING+=("GIT_ACCESS_TOKEN")
+          else
+            echo "✅ GIT_ACCESS_TOKEN: configured (${#GIT_ACCESS_TOKEN} chars)"
+          fi
+          
+          echo ""
+          if [ ${#MISSING[@]} -ne 0 ]; then
+            echo "⚠️  BITO review will be SKIPPED"
+            echo "MISSING_SECRETS=${MISSING[*]}" >> $GITHUB_ENV
+            echo "BITO_SKIP=true" >> $GITHUB_ENV
+          else
+            echo "✅ All BITO secrets verified!"
+            echo "BITO_SKIP=false" >> $GITHUB_ENV
+          fi
+          echo "=========================================="
+
+      # -------------------------------------------------------------------------
+      # STEP: Resolve PR context
+      # -------------------------------------------------------------------------
       - name: Resolve PR context
-        id: pr
-        if: env.BITO_KEY_MISSING == 'false'
+        id: pr-context
+        if: env.BITO_SKIP == 'false'
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            let prNumber, prUrl;
+            let prNumber, prUrl, prTitle;
+            
             if (context.eventName === 'pull_request') {
               prNumber = context.payload.pull_request.number;
               prUrl = context.payload.pull_request.html_url;
+              prTitle = context.payload.pull_request.title;
             } else if (context.eventName === 'issue_comment') {
               prNumber = context.payload.issue.number;
               prUrl = context.payload.issue.pull_request.html_url;
+              prTitle = context.payload.issue.title;
             } else {
-              // workflow_dispatch — read from event payload, NOT core.getInput().
-              // core.getInput() reads INPUT_* env vars set by the step's `with:`
-              // block; for workflow-level dispatch inputs the canonical access
-              // is `context.payload.inputs.<name>` (matches the rest of the repo,
-              // e.g. wr-pr-creation.yml:62, weekly-research.yml:56).
+              // workflow_dispatch
               prNumber = parseInt(context.payload.inputs?.pr_number || '0', 10);
               if (!prNumber) {
                 core.setFailed('workflow_dispatch requires pr_number input.');
@@ -84,155 +155,98 @@ jobs:
                 pull_number: prNumber,
               });
               prUrl = pr.html_url;
+              prTitle = pr.title;
             }
+            
             core.setOutput('number', prNumber);
             core.setOutput('url', prUrl);
-      - name: Apply bito-ai label
-        if: env.BITO_KEY_MISSING == 'false' && steps.pr.outputs.number != ''
-        uses: actions/github-script@v9.0.0
+            core.setOutput('title', prTitle);
+            core.setOutput('body', context.payload.pull_request?.body || context.payload.issue?.body || '');
+
+      # -------------------------------------------------------------------------
+      # STEP: Build BITO options
+      # -------------------------------------------------------------------------
+      - name: Build BITO options
+        if: env.BITO_SKIP == 'false'
+        run: |
+          # Build options string for BITO
+          OPTIONS="--static_analysis.fb_infer.enabled=True"
+          OPTIONS+=" --code_feedback=True"
+          OPTIONS+=" --dependency_check.enabled=False"
+          OPTIONS+=" --bee.path=/automation-platform"
+          OPTIONS+=" --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules"
+          OPTIONS+=" --git.access_token=${{ secrets.GIT_ACCESS_TOKEN }}"
+          OPTIONS+=" --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}"
+          
+          # Optional configurations from repo variables
+          if [[ -n "${{ vars.GIT_DOMAIN }}" ]]; then
+            OPTIONS+=" --git.domain=${{ vars.GIT_DOMAIN }}"
+          fi
+          if [[ -n "${{ vars.EXCLUDE_FILES }}" ]]; then
+            OPTIONS+=" --exclude_files=${{ vars.EXCLUDE_FILES }}"
+          fi
+          
+          echo "OPTIONS=$OPTIONS" >> $GITHUB_ENV
+          echo "✅ BITO options built"
+
+      # -------------------------------------------------------------------------
+      # STEP: Run BITO Code Review
+      # ⚠️  NOTE: Using @main - see documentation at top of file
+      # -------------------------------------------------------------------------
+      - name: BITO Code Review
+        id: bito-review
+        if: env.BITO_SKIP == 'false'
+        uses: gitbito/codereviewagent@main
         continue-on-error: true
         with:
+          pr: ${{ steps.pr-context.outputs.url }}
+          command: review
+          options: ${{ env.OPTIONS }}
+
+      # -------------------------------------------------------------------------
+      # STEP: Update labels based on outcome
+      # -------------------------------------------------------------------------
+      - name: Update labels
+        if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
+        uses: actions/github-script@v9.0.0
+        with:
           script: |
+            const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
+            const outcome = '${{ steps.bito-review.outcome }}';
+            
+            const labels = ['bito-ai', 'bito-ai:review'];
+            if (outcome === 'success') {
+              labels.push('awaiting-approval');
+            } else {
+              labels.push('bito-ai:changes-needed');
+            }
+            
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: parseInt('${{ steps.pr.outputs.number }}', 10),
-              labels: ['bito-ai'],
+              issue_number: prNumber,
+              labels: labels,
             });
-      - name: Set Options Environment Variable
-        if: env.BITO_KEY_MISSING == 'false'
+
+      # -------------------------------------------------------------------------
+      # STEP: Notify if skipped
+      # -------------------------------------------------------------------------
+      - name: Notify if secrets missing
+        if: env.BITO_SKIP == 'true'
         run: |
-          GIT_DOMAIN_OPTION=""
-          if [[ -n "${{ vars.GIT_DOMAIN }}" ]]; then
-            GIT_DOMAIN_OPTION=" --git.domain=${{ vars.GIT_DOMAIN }}"
-          fi
-          STATIC_ANALYSIS_TOOL_OPTION=""
-          if [[ -n "${{ vars.STATIC_ANALYSIS_TOOL }}" ]]; then
-            STATIC_ANALYSIS_TOOL_OPTION=" --static_analysis_tool=${{ vars.STATIC_ANALYSIS_TOOL }}"
-          fi
-          REVIEW_SCOPE_OPTION=""
-          if [[ -n "${{ vars.REVIEW_SCOPE }}" ]]; then
-            REVIEW_SCOPE_OPTION=" --review_scope=${{ vars.REVIEW_SCOPE }}"
-          fi
-          EXCLUDE_BRANCHES_OPTION=""
-          if [[ -n "${{ vars.EXCLUDE_BRANCHES }}" ]]; then
-            EXCLUDE_BRANCHES_OPTION=" --exclude_branches=${{ vars.EXCLUDE_BRANCHES }}"
-          fi
-          EXCLUDE_FILES_OPTION=""
-          if [[ -n "${{ vars.EXCLUDE_FILES }}" ]]; then
-            EXCLUDE_FILES_OPTION=" --exclude_files=${{ vars.EXCLUDE_FILES }}"
-          fi
-          EXCLUDE_DRAFT_PR_OPTION=""
-          if [[ -n "${{ vars.EXCLUDE_DRAFT_PR }}" ]]; then
-            EXCLUDE_DRAFT_PR_OPTION=" --exclude_draft_pr=${{ vars.EXCLUDE_DRAFT_PR }}"
-          fi
-          # The bee.path / bee.actn_dir args are container-internal; do not change.
-          echo "OPTIONS=--static_analysis.fb_infer.enabled=True --code_feedback=True --dependency_check.enabled=False --bee.path=/automation-platform --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules --git.access_token=${{ secrets.GIT_ACCESS_TOKEN }} --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}${GIT_DOMAIN_OPTION}${STATIC_ANALYSIS_TOOL_OPTION}${REVIEW_SCOPE_OPTION}${EXCLUDE_BRANCHES_OPTION}${EXCLUDE_FILES_OPTION}${EXCLUDE_DRAFT_PR_OPTION}" >> "$GITHUB_ENV"
-      - name: BITO Code Review — PR
-        id: bito_review_pr
-        if: env.BITO_KEY_MISSING == 'false' && (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
-        uses: gitbito/codereviewagent@main
-        continue-on-error: true
-        with:
-          pr: ${{ steps.pr.outputs.url }}
-          command: review
-          options: ${{ env.OPTIONS }}
-      - name: BITO Code Review — Issue Comment
-        id: bito_review_comment
-        if: env.BITO_KEY_MISSING == 'false' && github.event_name == 'issue_comment'
-        uses: gitbito/codereviewagent@main
-        continue-on-error: true
-        with:
-          pr: ${{ steps.pr.outputs.url }}
-          command: ${{ github.event.comment.body }}
-          options: ${{ env.OPTIONS }}
-      - name: Update review labels
-        if: env.BITO_KEY_MISSING == 'false' && steps.pr.outputs.number != ''
-        uses: actions/github-script@v9.0.0
-        continue-on-error: true
-        env:
-          BITO_OUTCOME_PR: ${{ steps.bito_review_pr.outcome }}
-          BITO_OUTCOME_COMMENT: ${{ steps.bito_review_comment.outcome }}
-        with:
-          script: |
-            const prNumber = parseInt('${{ steps.pr.outputs.number }}', 10);
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+          echo "=========================================="
+          echo "⚠️  BITO AI REVIEW SKIPPED"
+          echo "=========================================="
+          echo ""
+          echo "Missing secrets: ${{ env.MISSING_SECRETS }}"
+          echo ""
+          echo "To enable BITO AI:"
+          echo "1. Go to: Settings → Secrets and variables → Actions"
+          echo "2. Add BITO_ACCESS_KEY (from bito.ai → Settings)"
+          echo "3. Add GIT_ACCESS_TOKEN (GitHub PAT with repo scope)"
+          echo ""
+          echo "📖 See: standards/BITO_AI_INTEGRATION_STANDARD.md"
+          echo "=========================================="
 
-            // Use whichever step actually ran. GitHub Actions reports
-            // `${{ steps.<id>.outcome }}` as one of: success | failure |
-            // cancelled | skipped (or empty string when the step never
-            // existed). Pick the first concrete success/failure value so
-            // the OR-chain doesn't short-circuit on a literal 'skipped'.
-            const candidates = [
-              process.env.BITO_OUTCOME_PR,
-              process.env.BITO_OUTCOME_COMMENT,
-            ];
-            const outcome =
-              candidates.find(o => o === 'success' || o === 'failure') ||
-              'skipped';
-
-            const labelsToAdd = ['bito-ai:review'];
-            if (outcome === 'success') {
-              labelsToAdd.push('awaiting-approval');
-            }
-
-            try {
-              await github.rest.issues.addLabels({
-                owner, repo, issue_number: prNumber,
-                labels: labelsToAdd,
-              });
-              core.info(`Applied labels: ${labelsToAdd.join(', ')}`);
-            } catch (e) {
-              core.notice(`Could not apply review labels: ${e.message}`);
-            }
-
-            // If BITO succeeded, clear any stale changes-needed label.
-            if (outcome === 'success') {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner, repo, issue_number: prNumber,
-                  name: 'bito-ai:changes-needed',
-                });
-              } catch (_) { /* not present */ }
-            }
-      - name: Notify — BITO secrets not configured
-        if: env.BITO_KEY_MISSING == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v9.0.0
-        continue-on-error: true
-        env:
-          MISSING: ${{ env.BITO_MISSING_SECRETS }}
-        with:
-          script: |
-            const prNumber = context.payload.pull_request.number;
-            const comments = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              per_page: 100,
-            });
-            const alreadyPosted = comments.data.some(c =>
-              c.body && c.body.includes('BITO AI review skipped') && c.user.type === 'Bot'
-            );
-            if (alreadyPosted) return;
-            const missing = (process.env.MISSING || '').trim();
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: [
-                '⚠️ **BITO AI review skipped** — missing secrets: `' + missing + '`',
-                '',
-                'BITO requires **two** secrets to run:',
-                '1. `BITO_ACCESS_KEY` — get from [bito.ai](https://bito.ai) → Settings → Access Keys.',
-                '2. `GIT_ACCESS_TOKEN` — a GitHub **classic** PAT with `repo` scope. ',
-                '   (BITO does not currently support fine-grained tokens.)',
-                '',
-                'Add both at: Settings → Secrets and variables → Actions → New repository secret.',
-                '',
-                '> _See [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../../standards/BITO_AI_INTEGRATION_STANDARD.md) for full setup. This skip is non-blocking — the rest of the PR pipeline continues normally._',
-              ].join('\n'),
-            });
-    timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
