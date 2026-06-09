@@ -490,17 +490,19 @@ test('secret-persistence-guard.yml auto-recover supports force_recovery manual d
   const filePath = path.join(WORKFLOWS_DIR, 'secret-persistence-guard.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
   const ifCondition = String(doc.jobs?.['auto-recover']?.if || '');
+  const normalizedCondition = ifCondition.replace(/\s+/g, ' ').trim();
 
-  if (!ifCondition.includes("needs.monitor-secret-health.outputs.has_missing == 'true'")) {
+  if (!normalizedCondition.includes("needs.monitor-secret-health.outputs.has_missing == 'true'")) {
     throw new Error('auto-recover must still run when missing secrets are detected');
   }
-  if (!ifCondition.includes('inputs.force_recovery')) {
+  if (!normalizedCondition.includes('inputs.force_recovery')) {
     throw new Error('auto-recover must allow workflow_dispatch force_recovery overrides');
   }
-  if (!ifCondition.includes("github.event_name == 'workflow_dispatch'")) {
+  if (!normalizedCondition.includes("github.event_name == 'workflow_dispatch'")) {
     throw new Error('force_recovery override must be limited to workflow_dispatch runs');
   }
-  if (!ifCondition.includes('||')) {
+  const expectedOrPattern = /^needs\.monitor-secret-health\.outputs\.has_missing == 'true' \|\| \(github\.event_name == 'workflow_dispatch' && inputs\.force_recovery\)$/;
+  if (!expectedOrPattern.test(normalizedCondition)) {
     throw new Error('auto-recover condition must preserve OR logic between missing-secrets and force_recovery paths');
   }
 });
