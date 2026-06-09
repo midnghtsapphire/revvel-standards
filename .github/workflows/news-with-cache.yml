@@ -13,7 +13,7 @@ jobs:
 
       - name: Restore cached news
         id: cache-news
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.0.0
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: news-cache.json
           key: news-${{ hashFiles('scripts/fetch_news.py') }}-${{ steps.date.outputs.today }}
