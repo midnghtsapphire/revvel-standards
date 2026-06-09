@@ -500,6 +500,9 @@ test('secret-persistence-guard.yml auto-recover supports force_recovery manual d
   if (!ifCondition.includes("github.event_name == 'workflow_dispatch'")) {
     throw new Error('force_recovery override must be limited to workflow_dispatch runs');
   }
+  if (!ifCondition.includes('||')) {
+    throw new Error('auto-recover condition must preserve OR logic between missing-secrets and force_recovery paths');
+  }
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);
