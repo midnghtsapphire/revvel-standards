@@ -37,8 +37,15 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+# The concurrency group is split by event/action so that label-churn on a WR
+# issue (sibling workflows tag it with ~6 routing labels right after `opened`)
+# does NOT share a lane with — and therefore cannot cancel — the meaningful
+# `opened` / `workflow_dispatch` / `issue_comment` run that actually performs
+# research and dispatches PR creation. Previously every labeled event piled into
+# `research-engine-<issue>` and, because runs sit pending under heavy queue load,
+# each new labeled run cancelled the still-pending research run.
 concurrency:
-  group: research-engine-${{ github.event.issue.number || github.event.inputs.issue_number || github.event.inputs.research_query || github.run_id }}
+  group: research-engine-${{ github.event.issue.number || github.event.inputs.issue_number || github.event.inputs.research_query || github.run_id }}-${{ github.event_name }}-${{ github.event.action }}
   cancel-in-progress: false
 jobs:
   route:
@@ -82,7 +89,13 @@ jobs:
             const hasAgentMention = /@copilot|@cursoragent|@openhands-agent|@imgbotapp/i.test(commentBody);
             const hasResearchIntent = /research engine|deep research|create a product|ship to market|implement|research|wr/i.test(commentBody);
             const commentTriggered = hasResearchIntent && (hasAgentMention || /research engine|deep research|wr/i.test(commentBody));
-            const issueEventTriggered = labelTriggered || titleTriggered;
+            // On a `labeled` event only a *specific* trigger label should start
+            // a research run. Otherwise every sibling workflow that tags a WR
+            // issue (work-request, weekly-research, openrouter, area:*,
+            // priority:* …) re-fires a full research run. Title matching still
+            // applies to opened/reopened so a fresh `[WR]` issue still triggers.
+            const isLabeledEvent = context.eventName === 'issues' && context.payload.action === 'labeled';
+            const issueEventTriggered = isLabeledEvent ? labelTriggered : (labelTriggered || titleTriggered);
             const issueCommentTriggered = isIssueComment && !isPullRequestComment && (commentTriggered || issueEventTriggered);
             const shouldRun = dispatch || issueCommentTriggered || (!isIssueComment && issueEventTriggered);
             const querySource = isIssueComment ? commentBody : title;

@@ -18,8 +18,14 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+# Split the concurrency group by event/action so that label-churn `issues`
+# runs cannot cancel the `workflow_dispatch` run that research-engine fires to
+# actually create the PR. Previously all of them shared `wr-pr-<issue>`, and
+# because runs sit pending under heavy queue load, each new labeled event
+# cancelled the still-pending PR-creation run — so recent WR issues normalized
+# their labels but never got a PR.
 concurrency:
-  group: wr-pr-${{ github.event.issue.number || github.event.inputs.issue_number }}
+  group: wr-pr-${{ github.event.issue.number || github.event.inputs.issue_number }}-${{ github.event_name }}-${{ github.event.action }}
   cancel-in-progress: false
 jobs:
   detect-completion:
@@ -57,6 +63,23 @@ jobs:
               core.notice('No issue number found');
               skip('no_issue_number', { notify: false });
               return;
+            }
+
+            // Ignore label-churn from sibling workflows AND from this job's own
+            // normalization step below (it adds work-request, weekly-research,
+            // wr:in-progress, deep-research, openrouter, role:orchestrator —
+            // each firing a fresh `labeled` event). Reacting to every one of
+            // them piles redundant runs into the concurrency group and cancels
+            // the real PR-creation run. Only labels that genuinely signal
+            // research/WR completion should advance here; `opened`,
+            // `issue_comment`, and `workflow_dispatch` paths are unaffected.
+            if (context.eventName === 'issues' && context.payload.action === 'labeled') {
+              const triggerLabel = context.payload.label?.name || '';
+              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research']);
+              if (!COMPLETION_LABELS.has(triggerLabel)) {
+                skip(`labeled_noise:${triggerLabel}`, { notify: false });
+                return;
+              }
             }
 
             const commentBody = context.payload.comment?.body || '';
