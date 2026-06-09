@@ -192,6 +192,6 @@ jobs:
                 `Check: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/${workflowId}`
               );
             }
-    timeout-minutes: 45
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
