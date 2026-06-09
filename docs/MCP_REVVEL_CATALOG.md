@@ -13,7 +13,7 @@ This catalog documents every custom MCP repository in the MIDNGHTSAPPHIRE GitHub
 
 | Group | Count | Description |
 |---|---|---|
-| **[Group A] True MCP Servers** | 3 | Production-ready MCP servers exposing tools via the Model Context Protocol stdio transport |
+| **[Group A] True MCP Servers** | 4 | Production-ready MCP servers exposing tools via the Model Context Protocol stdio transport |
 | **[Group B] MCT Microservice Modules** | 20 | Express REST API microservices for the InTheWild platform with partial `@modelcontextprotocol/sdk` integration |
 
 All repos in Group B follow the naming convention `MCP-<DOMAIN>` (uppercase), use TypeScript/Node.js, and are containerized via Docker. Each has a `src/mct/` layer that either fully implements MCP SDK tooling or has a placeholder awaiting completion.
@@ -182,6 +182,77 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
 | Unpaginated GitHub REST calls (~30 comments per WR) | Acceptable at intake stage; pagination is best owned by Composio's GitHub toolkit alongside per-user OAuth | Composio GitHub toolkit pagination |
 | Per-call `ControlPlaneConfig.from_env` reads | Keeps tools individually importable for tests and trivially auditable under Obot DLP | Process-wide cache shared with the Composio OAuth refresh path |
 | `disabled: true` in `.mcp.json` by default | Downstream clones must opt in after installing local Python deps and provisioning credentials | `setup-mcp.sh` flips the flag once the credential check passes |
+
+---
+
+### 4. `chrome-devtools-mcp`
+
+| Field | Value |
+|---|---|
+| **Repo** | [midnghtsapphire/chrome-devtools-mcp](https://github.com/midnghtsapphire/chrome-devtools-mcp) |
+| **Upstream** | Open-source fork (MIT) |
+| **Language** | TypeScript (Node.js) |
+| **Transport** | stdio |
+| **Run** | `node /path/to/chrome-devtools-mcp/dist/index.js` |
+| **MCP Status** | ✅ Wired in `.mcp.json` (disabled by default — enable for dev/CI use) |
+| **WR** | [#14450](https://github.com/midnghtsapphire/revvel-standards/issues/14450) |
+
+**What it does:**
+Exposes Chrome DevTools Protocol (CDP) capabilities as MCP tools. AI agents can navigate, screenshot, inspect DOM, read/write cookies and `localStorage`/`sessionStorage`, intercept network requests, evaluate JavaScript, and control a running Chromium browser — without writing any browser automation glue code.
+
+**⚠️ Security constraint:** Cookie, storage, and network intercept tools must **only** target `localhost` or test origins the operator owns. Never use against a production user session. See `wr/issues/issue-14450-wire-in-chrome-devtools-mcp.md` for the full security boundary.
+
+**Prerequisites:**
+1. Start Chrome: `google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/cdp-test-profile`
+2. Clone the fork and `npm install`
+3. Set `CHROME_DEVTOOLS_MCP_PATH` and `CHROME_DEBUG_PORT=9222` in `.env`
+4. Remove `"disabled": true` from the `.mcp.json` entry
+
+**Tools (15):**
+
+| Tool | CDP Domain | What it returns / does |
+|---|---|---|
+| `cdp_navigate` | Page | Navigate active tab to a URL |
+| `cdp_screenshot` | Page | Return base64 PNG screenshot of the viewport |
+| `cdp_evaluate` | Runtime | Execute a JS expression and return the result |
+| `cdp_get_cookies` | Network | Return all cookies for the current origin (name, value, domain, secure, httpOnly, expiry) |
+| `cdp_set_cookie` | Network | Write or overwrite a cookie |
+| `cdp_get_local_storage` | Runtime (JS) | Return all `localStorage` keys and values for the current origin |
+| `cdp_get_session_storage` | Runtime (JS) | Return all `sessionStorage` keys and values |
+| `cdp_network_intercept` | Network | Capture request/response headers including `Authorization` ****** |
+| `cdp_get_indexed_db` | IndexedDB | Enumerate databases, object stores, and records |
+| `cdp_service_worker_cache` | CacheStorage (JS) | List Service Worker cache keys and entries |
+| `cdp_dom_query` | DOM | CSS selector → list of matching nodes + attributes |
+| `cdp_click` | Input | Simulate a mouse click on a page element |
+| `cdp_type` | Input | Type text into the focused element |
+| `cdp_wait_for_selector` | Runtime | Poll until a CSS selector resolves (timeout configurable) |
+| `cdp_close_tab` | Target | Close the active tab |
+
+**Token / Secret Retrieval Use Cases:**
+
+| Scenario | Tool | Revvel Product |
+|---|---|---|
+| Retrieve session cookie after login for CI auth flow | `cdp_get_cookies` | All auth-gated products |
+| Read JWT from `localStorage` after OAuth callback | `cdp_get_local_storage` | GrowlingEyes, Lead Engine, Music Video Creator |
+| Capture `Authorization: ****** header on API calls | `cdp_network_intercept` | Any product with REST API auth |
+| Read OAuth refresh token from `sessionStorage` | `cdp_get_session_storage` | Products using Google/GitHub sign-in |
+| Verify `window.__ENV__` secret injection at runtime | `cdp_evaluate` | Prompt Generation App, any product using env injection |
+| Inspect Service Worker cached auth manifest | `cdp_service_worker_cache` | PWA products; offline-mode auth debugging |
+
+**`.mcp.json` entry:**
+```json
+"chrome-devtools-mcp": {
+  "command": "node",
+  "args": ["${CHROME_DEVTOOLS_MCP_PATH}"],
+  "env": {
+    "CHROME_DEBUG_PORT": "${CHROME_DEBUG_PORT:-9222}",
+    "CHROME_DEBUG_HOST": "${CHROME_DEBUG_HOST:-localhost}"
+  },
+  "disabled": true
+}
+```
+
+**When to use:** Any time an AI agent needs to inspect browser state — auth tokens, cookies, DOM content, or network traffic — during local development or CI E2E test runs against products in the Revvel portfolio.
 
 ---
 

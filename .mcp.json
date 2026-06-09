@@ -91,6 +91,17 @@
       },
       "disabled": true,
       "disabledReason": "Enable after installing the local server (cd mcp-servers/wr-control-plane && uv pip install -e .) and provisioning credentials in your secrets manager: GITHUB_TOKEN, COMPOSIO_API_KEY, OBOT_BASE_URL, and OBOT_IDP_CONFIG. FIRECRAWL_API_KEY and TAVILY_API_KEY are strongly recommended when WRs include docs, PDFs, or external research targets."
+    },
+    "chrome-devtools-mcp": {
+      "_comment": "15 tools exposing Chrome DevTools Protocol (CDP) as MCP tools — navigate, screenshot, DOM query, cookie/storage read-write, network intercept, JS evaluate, and more. Fork: midnghtsapphire/chrome-devtools-mcp. See docs/MCP_REVVEL_CATALOG.md and wr/issues/issue-14450-wire-in-chrome-devtools-mcp.md for full use-case map. SECURITY: token/cookie tools are scoped to localhost and authorized test origins ONLY — never point at a production session you do not own.",
+      "command": "node",
+      "args": ["${CHROME_DEVTOOLS_MCP_PATH:-./node_modules/.bin/chrome-devtools-mcp}"],
+      "env": {
+        "CHROME_DEBUG_PORT": "${CHROME_DEBUG_PORT:-9222}",
+        "CHROME_DEBUG_HOST": "${CHROME_DEBUG_HOST:-localhost}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable only for local dev or CI E2E testing. Prerequisites: (1) Start Chrome with --remote-debugging-port=9222 --user-data-dir=/tmp/cdp-test-profile, (2) Clone the fork: git clone https://github.com/midnghtsapphire/chrome-devtools-mcp, (3) npm install in the fork dir, (4) Set CHROME_DEVTOOLS_MCP_PATH to the fork's entry point (e.g. /path/to/chrome-devtools-mcp/dist/index.js), (5) Set CHROME_DEBUG_PORT=9222 in .env. SECURITY REQUIREMENT: Only call cdp_get_cookies, cdp_get_local_storage, cdp_get_session_storage, and cdp_network_intercept against localhost or test origins you own. Never use against production user sessions."
     }
   }
 }
