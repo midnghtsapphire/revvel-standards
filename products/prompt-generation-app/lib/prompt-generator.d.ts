@@ -20,6 +20,7 @@ export interface PromptPacket {
   reviewerPrompts: string[];
 }
 
+export function clampScore(score: number): number;
 export function generatePromptPacket(input: { idea: string; audience?: string }): PromptPacket;
 export function packetToMarkdown(packet: PromptPacket): string;
 export interface ResearchSource {
