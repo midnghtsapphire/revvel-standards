@@ -176,6 +176,24 @@ test('openrouter-triage.yml listens for issue-open triage', () => {
   }
 });
 
+test('pdf-work-request-router.yml keeps issue/workflow_dispatch triggers under on', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pdf-work-request-router.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || {};
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+  const permissions = doc.permissions || {};
+
+  if (!issueTypes.includes('opened') || !issueTypes.includes('edited') || !issueTypes.includes('labeled')) {
+    throw new Error('pdf-work-request-router.yml must listen for opened/edited/labeled issue events');
+  }
+  if (!on.workflow_dispatch || !on.workflow_dispatch.inputs?.issue_number) {
+    throw new Error('pdf-work-request-router.yml must expose workflow_dispatch issue_number input');
+  }
+  if ('issues' in permissions || 'workflow_dispatch' in permissions) {
+    throw new Error('pdf-work-request-router.yml must not nest trigger config under permissions');
+  }
+});
+
 test('agent-fallback.yml is triggered by routed repair issues', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-fallback.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -381,6 +399,24 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
 
   if (script.includes('clearAttemptLabels(')) {
     throw new Error('stuck detector escalation should not clear retry labels during escalation');
+  }
+});
+
+test('stuck-wr-detector.yml only retries WRs that are PR-ready and not duplicates', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const healStep = doc.jobs.scan.steps.find((step) => step.name === 'Detect stuck WRs and heal');
+
+  if (!healStep) {
+    throw new Error('Detect stuck WRs and heal step not found');
+  }
+
+  const script = healStep.with?.script || '';
+  if (!script.includes("labelNames.has('duplicate')")) {
+    throw new Error('stuck detector must skip duplicate issues before retriggering');
+  }
+  if (!script.includes("labelNames.has('wr:complete')") || !script.includes("labelNames.has('research:complete')")) {
+    throw new Error('stuck detector must require wr:complete or research:complete before retriggering');
   }
 });
 

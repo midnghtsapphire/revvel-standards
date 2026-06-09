@@ -63,6 +63,18 @@ jobs:
             const stuck = [];
             for (const issue of issues) {
               if (issue.pull_request) continue;  // already a PR, not an issue
+              const labelNames = new Set((issue.labels || []).map(l => typeof l === 'string' ? l : l.name));
+              if (labelNames.has('duplicate')) {
+                core.info(`#${issue.number}: duplicate issue; skipping stuck-WR retries.`);
+                continue;
+              }
+              const readyForWrPr =
+                labelNames.has('wr:complete') ||
+                labelNames.has('research:complete');
+              if (!readyForWrPr) {
+                core.info(`#${issue.number}: WR not ready for PR creation (missing wr:complete/research:complete).`);
+                continue;
+              }
               const ageMs = Date.now() - new Date(issue.created_at).getTime();
               if (ageMs < minStuckAgeMs) continue;     // give it time to run normally
               if (ageMs > maxAgeMs) continue;          // ignore ancient WRs
