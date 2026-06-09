@@ -1,7 +1,15 @@
 name: NoimosAI — Autonomous Marketing
 on:
 permissions:
-  contents: write
+name: NoimosAI — Autonomous Marketing
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        ...
+
+permissions:
+  contents: read  # change to write only if the job pushes commits, and document why
   workflow_dispatch:
     inputs:
       prompt:
