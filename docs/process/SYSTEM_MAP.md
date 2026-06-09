@@ -80,6 +80,10 @@ needs and where it ships:
 | Documentation | `technical-documentation`, `project-management-doc` | `docs` |
 | A script/automation | `internal-script-automation` | `cli` |
 
+For projects requiring live dashboards, follow
+[`LIVE_HTML_DASHBOARD_PROCESS.md`](./LIVE_HTML_DASHBOARD_PROCESS.md) to map each
+output type to the required HTML/UI surface.
+
 On top of that, every PR is evaluated for **quality (needs enhancement?)**:
 
 | Check | Tool | Blocks merge? |
