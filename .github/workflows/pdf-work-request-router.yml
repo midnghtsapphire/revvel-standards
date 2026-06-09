@@ -1,9 +1,5 @@
 name: PDF work request router
 on:
-
-permissions:
-  contents: read
-
   issues:
     types: [opened, edited, labeled]
   workflow_dispatch:
@@ -12,6 +8,9 @@ permissions:
         description: Issue number to route (parses body + posts JSON comment if sellable-pdf)
         required: true
         type: string
+
+permissions:
+  contents: read
 
 jobs:
   route:

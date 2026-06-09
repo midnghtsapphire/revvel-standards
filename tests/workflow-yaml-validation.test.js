@@ -176,6 +176,24 @@ test('openrouter-triage.yml listens for issue-open triage', () => {
   }
 });
 
+test('pdf-work-request-router.yml keeps issue/workflow_dispatch triggers under on', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pdf-work-request-router.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || doc.true || {};
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+  const permissions = doc.permissions || {};
+
+  if (!issueTypes.includes('opened') || !issueTypes.includes('edited') || !issueTypes.includes('labeled')) {
+    throw new Error('pdf-work-request-router.yml must listen for opened/edited/labeled issue events');
+  }
+  if (!on.workflow_dispatch || !on.workflow_dispatch.inputs?.issue_number) {
+    throw new Error('pdf-work-request-router.yml must expose workflow_dispatch issue_number input');
+  }
+  if (typeof permissions.issues === 'object') {
+    throw new Error('pdf-work-request-router.yml must not nest trigger config under permissions.issues');
+  }
+});
+
 test('agent-fallback.yml is triggered by routed repair issues', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-fallback.yml');
   const content = fs.readFileSync(filePath, 'utf8');
