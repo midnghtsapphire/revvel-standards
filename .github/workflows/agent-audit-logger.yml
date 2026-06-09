@@ -19,8 +19,12 @@ on:
       - created
       - edited
       - deleted
-  schedule:
-    - cron: 0 * * * *
+  # Cron paused 2026-06-02 — was firing hourly and filing a new
+  # "[FAILURE] Agent Audit Logger failed" issue per failure with no
+  # backoff or dedup, creating ~1k duplicate issues. Re-enable only
+  # after the root failure is fixed AND dedup is in place.
+  # schedule:
+  #   - cron: 0 * * * *
   workflow_dispatch:
     inputs:
       action:
