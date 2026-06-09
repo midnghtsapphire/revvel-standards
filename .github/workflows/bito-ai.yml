@@ -131,7 +131,8 @@ jobs:
           fi
           
           if [ -z "${GIT_ACCESS_TOKEN}" ]; then
-            echo "❌ GIT_ACCESS_TOKEN: MISSING"
+echo "MISSING_SECRETS=${MISSING[*]}" >> "$GITHUB_ENV"
+echo "BITO_SKIP=true" >> "$GITHUB_ENV"
             MISSING+=("GIT_ACCESS_TOKEN")
           else
             echo "✅ GIT_ACCESS_TOKEN: configured (${#GIT_ACCESS_TOKEN} chars)"
