@@ -290,7 +290,25 @@ if (outcome === 'success') {
           echo "3. Add GIT_ACCESS_TOKEN (GitHub PAT with repo scope)"
           echo ""
           echo "📖 See: standards/BITO_AI_INTEGRATION_STANDARD.md"
-          echo "=========================================="
+      - name: Notify if secrets missing
+        if: env.BITO_SKIP == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v9.0.0
+        continue-on-error: true
+        env:
+          MISSING: ${{ env.MISSING_SECRETS }}
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber, per_page: 100,
+            });
+            if (comments.data.some(c => c.body && c.body.includes('BITO AI review skipped') && c.user.type === 'Bot')) return;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `⚠️ **BITO AI review skipped** — missing secrets: \`${process.env.MISSING}\`\n\nSee \`standards/BITO_AI_INTEGRATION_STANDARD.md\`.`,
+            });
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
