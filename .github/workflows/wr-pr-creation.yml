@@ -136,6 +136,7 @@ jobs:
 
             // Normalize labels immediately so BASIC WR / issue-type intake cannot
             // get stuck waiting for another workflow to add the routing labels.
+            // BATCH: add all missing labels in a single API call for efficiency.
             const requiredWrLabels = [
               'work-request',
               'weekly-research',
@@ -144,19 +145,21 @@ jobs:
               'openrouter',
               'role:orchestrator',
             ];
-            for (const label of requiredWrLabels) {
-              if (labelSet.has(label)) continue;
+            const missingLabels = requiredWrLabels.filter(label => !labelSet.has(label));
+            if (missingLabels.length > 0) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
-                  labels: [label],
+                  labels: missingLabels,
                 });
-                labelSet.add(label);
-                core.info(`Normalized missing WR label: ${label}`);
+                missingLabels.forEach(label => {
+                  labelSet.add(label);
+                  core.info(`Normalized missing WR label: ${label}`);
+                });
               } catch (error) {
-                core.notice(`Could not normalize WR label "${label}": ${error.message}`);
+                core.notice(`Could not normalize WR labels: ${error.message}`);
               }
             }
 
@@ -666,17 +669,18 @@ jobs:
                 ))
             ]));
 
-            for (const label of labels) {
+            // BATCH: add all labels in a single API call for efficiency
+            if (labels.length > 0) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: prNumber,
-                  labels: [label],
+                  labels: labels,
                 });
-                core.info(`Added label: ${label}`);
+                core.info(`Added ${labels.length} labels to PR`);
               } catch (error) {
-                core.notice(`Could not add label "${label}": ${error.message}`);
+                core.notice(`Could not add labels: ${error.message}`);
               }
             }
       - name: Request Jules review
