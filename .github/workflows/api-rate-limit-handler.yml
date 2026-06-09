@@ -4,7 +4,13 @@ on:
 
 permissions:
   contents: read
+on:
+  workflow_run:
+    types: [completed]
+    workflows: ["*"]
 
+permissions:
+  contents: read
   workflow_run:
     types: [completed]
     workflows: ["*"]
