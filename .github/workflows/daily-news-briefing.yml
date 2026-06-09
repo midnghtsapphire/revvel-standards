@@ -8,41 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Fetch headlines
-on:
-  schedule:
-    - cron: '0 6 * * *' # 6am UTC daily
-jobs:
-  news:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Fetch headlines
-        env:
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-        run: python scripts/fetch_news.py > headlines.json
-      - name: Process & post
-        run: python scripts/process_news.py
-      - name: Fetch headlines
-        env:
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-        run: python scripts/fetch_news.py > headlines.json
-      - name: Process & post
-name: Daily News Briefing
-on:
-  schedule:
-    - cron: '0 6 * * *' # 6am UTC daily
-
-permissions:
-  contents: read
-
-jobs:
-  news:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Fetch headlines
-        env:
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-        run: python scripts/fetch_news.py > headlines.json
+        run: |
+          curl "https://newsapi.org/v2/top-headlines?country=us&apiKey=${{ secrets.NEWS_API_KEY }}" > headlines.json
       - name: Process & post
         run: python scripts/process_news.py
