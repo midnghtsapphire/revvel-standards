@@ -384,6 +384,24 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
   }
 });
 
+test('stuck-wr-detector.yml only retries WRs that are PR-ready and not duplicates', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const healStep = doc.jobs.scan.steps.find((step) => step.name === 'Detect stuck WRs and heal');
+
+  if (!healStep) {
+    throw new Error('Detect stuck WRs and heal step not found');
+  }
+
+  const script = healStep.with?.script || '';
+  if (!script.includes("labelNames.has('duplicate')")) {
+    throw new Error('stuck detector must skip duplicate issues before retriggering');
+  }
+  if (!script.includes("labelNames.has('wr:complete')") || !script.includes("labelNames.has('research:complete')")) {
+    throw new Error('stuck detector must require wr:complete or research:complete before retriggering');
+  }
+});
+
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
