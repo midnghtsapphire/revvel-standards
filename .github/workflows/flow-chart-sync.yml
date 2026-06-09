@@ -1,7 +1,14 @@
 name: Flow Chart Sync
 on:
 permissions:
-  contents: write
+name: Flow Chart Sync
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write  # required because <reason>
   push:
     branches:
       - main
