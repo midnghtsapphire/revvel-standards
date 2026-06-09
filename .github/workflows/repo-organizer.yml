@@ -7,6 +7,10 @@
 name: Repo Organizer
 
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
     inputs:
       dry_run:

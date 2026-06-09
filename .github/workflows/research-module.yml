@@ -1,5 +1,9 @@
 name: AI Research Module
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
     inputs:
       question:

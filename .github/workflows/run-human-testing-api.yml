@@ -1,5 +1,9 @@
 name: Human Testing API
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
     inputs:
       target_url:

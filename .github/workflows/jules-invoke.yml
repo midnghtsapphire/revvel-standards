@@ -1,5 +1,9 @@
 name: Jules Invoke
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
     inputs:
       prompt:

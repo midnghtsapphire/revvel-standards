@@ -1,5 +1,9 @@
 name: Proposal Prosecution
 on:
+
+permissions:
+  contents: read
+
   issues:
     types:
       - labeled

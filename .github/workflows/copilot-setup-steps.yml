@@ -3,6 +3,10 @@ name: Copilot Setup Steps
 # Run automatically when this file or root dependency files change to validate setup steps,
 # and allow manual testing via the Actions tab.
 on:
+
+permissions:
+  contents: read
+
   workflow_dispatch:
   push:
     paths:
