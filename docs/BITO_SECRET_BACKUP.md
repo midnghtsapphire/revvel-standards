@@ -55,8 +55,8 @@ echo "Enter GIT_ACCESS_TOKEN (GitHub PAT):"
 read -s GIT_TOKEN
 
 # 3. Set in GitHub Actions
-gh secret set BITO_ACCESS_KEY --body "$BITO_KEY"
-gh secret set GIT_ACCESS_TOKEN --body "$GIT_TOKEN"
+printf '%s' "$BITO_KEY" | gh secret set BITO_ACCESS_KEY --repo midnghtsapphire/revvel-standards
+printf '%s' "$GIT_TOKEN" | gh secret set GIT_ACCESS_TOKEN --repo midnghtsapphire/revvel-standards
 
 echo "✅ BITO secrets restored!"
 ```
