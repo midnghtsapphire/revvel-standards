@@ -16,7 +16,7 @@ def fetch_news():
         req = urllib.request.Request(url, headers={'User-Agent': 'GetNewsFirst/1.0'})
         with urllib.request.urlopen(req) as response:
             data = response.read()
-            print(data.decode('utf-8'))
+        with urllib.request.urlopen(req, timeout=30) as response:
     except urllib.error.URLError as e:
         print(json.dumps({"error": str(e), "articles": []}))
 
