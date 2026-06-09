@@ -225,7 +225,19 @@ jobs:
       # STEP: Run BITO Code Review
       # ⚠️  NOTE: Using @main - see documentation at top of file
       # -------------------------------------------------------------------------
-      - name: BITO Code Review
+if (outcome === 'success') {
+  labels.push('awaiting-approval');
+  try {
+    await github.rest.issues.removeLabel({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: prNumber,
+      name: 'bito-ai:changes-needed',
+    });
+  } catch (_) { /* label not present */ }
+} else {
+  labels.push('bito-ai:changes-needed');
+}
         id: bito-review
         if: env.BITO_SKIP == 'false'
         uses: gitbito/codereviewagent@main
