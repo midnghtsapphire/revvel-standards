@@ -1,49 +1,29 @@
-# WR: [WR] Add regression tests for red-ocean scoring boundaries and clamping
+# WR: Add regression tests for red-ocean scoring boundaries and clamping
 
 **Issue:** #14441  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-06-07  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-**WR Status:** {STATUS}  
+**Repository:** midnghtsapphire/revvel-standards
+**Created:** 2026-06-07
+**WR Status:** ✅ Complete
 
 ## Issue Context
-{ISSUE_BODY}
+The `red-ocean` scoring logic in the codebase lacks regression tests for boundaries and clamping logic. Need to add tests to verify that scoring logic behaves correctly at the extremes.
 
-## Repository Metadata
-| Property | Value |
-| --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+## Summary
+Added regression tests for the `red-ocean` scoring logic to ensure proper handling of boundaries and clamping.
 
-## Research Checklist
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+## Objective
+To ensure reliability of the `red-ocean` scoring system.
 
-## Executive Summary
-{EXECUTIVE_SUMMARY}
+## Required Bundle
+N/A
 
-## Step 1A — Product/Output Selections
-{PRODUCT_SELECTIONS}
+## Definition of Done
+Regression tests are written, passing, and merged.
 
-## Step 2 — Deep Web Research
-{DEEP_WEB_RESEARCH}
+## Validation
+Tests pass successfully.
 
-## Step 3 — Requirements
-{REQUIREMENTS}
+## Blockers
+None.
 
-## Recommendations
-{RECOMMENDATIONS}
-
-## Risks
-{RISKS}
+<!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
