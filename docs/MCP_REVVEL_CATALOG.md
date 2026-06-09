@@ -219,7 +219,7 @@ Exposes Chrome DevTools Protocol (CDP) capabilities as MCP tools. AI agents can 
 | `cdp_set_cookie` | Network | Write or overwrite a cookie |
 | `cdp_get_local_storage` | Runtime (JS) | Return all `localStorage` keys and values for the current origin |
 | `cdp_get_session_storage` | Runtime (JS) | Return all `sessionStorage` keys and values |
-| `cdp_network_intercept` | Network | Capture request/response headers including `Authorization` ****** |
+| `cdp_network_intercept` | Network | Capture request/response headers including `Authorization: Bearer` tokens |
 | `cdp_get_indexed_db` | IndexedDB | Enumerate databases, object stores, and records |
 | `cdp_service_worker_cache` | CacheStorage (JS) | List Service Worker cache keys and entries |
 | `cdp_dom_query` | DOM | CSS selector → list of matching nodes + attributes |
@@ -234,7 +234,7 @@ Exposes Chrome DevTools Protocol (CDP) capabilities as MCP tools. AI agents can 
 |---|---|---|
 | Retrieve session cookie after login for CI auth flow | `cdp_get_cookies` | All auth-gated products |
 | Read JWT from `localStorage` after OAuth callback | `cdp_get_local_storage` | GrowlingEyes, Lead Engine, Music Video Creator |
-| Capture `Authorization: ****** header on API calls | `cdp_network_intercept` | Any product with REST API auth |
+| Capture `Authorization: Bearer` header on API calls | `cdp_network_intercept` | Any product with REST API auth |
 | Read OAuth refresh token from `sessionStorage` | `cdp_get_session_storage` | Products using Google/GitHub sign-in |
 | Verify `window.__ENV__` secret injection at runtime | `cdp_evaluate` | Prompt Generation App, any product using env injection |
 | Inspect Service Worker cached auth manifest | `cdp_service_worker_cache` | PWA products; offline-mode auth debugging |
