@@ -1,29 +1,49 @@
-# WR: Add regression tests for red-ocean scoring boundaries and clamping
+# WR: [WR] Add regression tests for red-ocean scoring boundaries and clamping
 
 **Issue:** #14441  
-**Repository:** midnghtsapphire/revvel-standards
-**Created:** 2026-06-07
-**WR Status:** ✅ Complete
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Research Date:** 2026-06-10  
+**Researcher:** Jules (Google) + OpenRouter  
+**WR Status:** 🟡 In Progress
+
+---
+
+**WR Status:** {STATUS}  
 
 ## Issue Context
-The `red-ocean` scoring logic in the codebase lacks regression tests for boundaries and clamping logic. Need to add tests to verify that scoring logic behaves correctly at the extremes.
+{ISSUE_BODY}
 
-## Summary
-Added regression tests for the `red-ocean` scoring logic to ensure proper handling of boundaries and clamping.
+## Repository Metadata
+| Property | Value |
+| --- | --- |
+| Stars | N/A — CI automation |
+| Open Issues | N/A — CI automation |
+| Private | N/A — CI automation |
+| Archived | N/A — CI automation |
 
-## Objective
-To ensure reliability of the `red-ocean` scoring system.
+## Research Checklist
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis
+- [ ] Domain strategy
+- [ ] Monetization
 
-## Required Bundle
-N/A
+## Executive Summary
+{EXECUTIVE_SUMMARY}
 
-## Definition of Done
-Regression tests are written, passing, and merged.
+## Step 1A — Product/Output Selections
+{PRODUCT_SELECTIONS}
 
-## Validation
-Tests pass successfully.
+## Step 2 — Deep Web Research
+{DEEP_WEB_RESEARCH}
 
-## Blockers
-None.
+## Step 3 — Requirements
+{REQUIREMENTS}
 
-<!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
+## Recommendations
+{RECOMMENDATIONS}
+
+## Risks
+{RISKS}
