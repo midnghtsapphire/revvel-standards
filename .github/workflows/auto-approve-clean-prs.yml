@@ -168,7 +168,11 @@ jobs:
 
                 // Remove stuck/waiting labels if present
                 const CLEANUP_LABELS = ['scaffolding-detected', 'needs-completion', 'lifecycle:stuck', 'status:waiting-for-review', 'awaiting-review'];
-                const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                let labels = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labels = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
                 const labelNames = labels.map(l => l.name);
                 for (const label of CLEANUP_LABELS) {
                   if (labelNames.includes(label)) {

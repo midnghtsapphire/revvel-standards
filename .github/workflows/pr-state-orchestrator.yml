@@ -70,7 +70,11 @@ jobs:
                 'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
                 'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
               };
-              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+              let repoLabels = [];
+              try {
+                const res = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+                repoLabels = res.data;
+              } catch(e) { console.log('⚠️ Could not fetch repo labels:', e.message); }
               const existing = new Set(repoLabels.map(l => l.name));
               for (const label of labels) {
                 if (!existing.has(label) && palette[label]) {
