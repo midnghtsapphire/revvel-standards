@@ -49,12 +49,21 @@ jobs:
             let elapsed = INITIAL_WAIT_MS;
 
             while (true) {
-              const { data } = await github.rest.checks.listForRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: context.payload.pull_request.head.sha,
-                per_page: 100,
-              });
+              let data = { check_runs: [] };
+              try {
+                const res = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: context.payload.pull_request.head.sha,
+                  per_page: 100,
+                });
+                data = res.data;
+              } catch (e) {
+                core.warning(`Error fetching checks: ${e.message}`);
+                await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+                elapsed += POLL_INTERVAL_MS;
+                continue;
+              }
 
               const runs = data.check_runs.filter(r => !SELF_JOB_NAMES.has(r.name));
               core.info(`[${elapsed / 1000}s] Found ${runs.length} external check run(s):`);
