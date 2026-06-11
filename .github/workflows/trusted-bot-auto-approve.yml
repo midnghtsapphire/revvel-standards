@@ -30,7 +30,7 @@ jobs:
       - name: Find and approve trusted-bot PRs with passing checks
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
             const { owner, repo } = context.repo;
 
