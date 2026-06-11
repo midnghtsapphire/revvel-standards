@@ -69,6 +69,10 @@ jobs:
                     owner, repo, issue_number: num
                   });
                 } catch (e) {
+                  if (e.status === 403 && e.message.includes('API rate limit')) {
+                    core.warning('Rate limit hit for listLabelsOnIssue, returning empty array.');
+                    return [];
+                  }
                   core.warning(`listLabelsOnIssue error: ${e.message}`);
                   return [];
                 }
@@ -193,6 +197,10 @@ jobs:
                     owner, repo, issue_number: num
                   });
                 } catch (e) {
+                  if (e.status === 403 && e.message.includes('API rate limit')) {
+                    core.warning('Rate limit hit for listLabelsOnIssue, returning empty array.');
+                    return [];
+                  }
                   core.warning(`listLabelsOnIssue error: ${e.message}`);
                   return [];
                 }
@@ -317,13 +325,17 @@ jobs:
                 try {
                   let res;
                   try {
-                    res = await github.rest.issues.listLabelsOnIssue({
-                      owner, repo, issue_number: num
-                    });
-                  } catch (e) {
-                    core.warning(`listLabelsOnIssue error: ${e.message}`);
+                  res = await github.rest.issues.listLabelsOnIssue({
+                    owner, repo, issue_number: num
+                  });
+                } catch (e) {
+                  if (e.status === 403 && e.message.includes('API rate limit')) {
+                    core.warning('Rate limit hit for listLabelsOnIssue, returning empty array.');
                     return [];
                   }
+                  core.warning(`listLabelsOnIssue error: ${e.message}`);
+                  return [];
+                }
                   return res.data.map(l => l.name);
                 } catch (e) {
                   core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
