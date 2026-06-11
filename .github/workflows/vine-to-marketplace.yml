@@ -1,5 +1,6 @@
 name: Vine → Marketplace Automation
 on:
+  workflow_dispatch:
 
 permissions:
   contents: read

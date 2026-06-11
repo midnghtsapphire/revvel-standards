@@ -1,6 +1,7 @@
 name: Verify Security Fix
 
 on:
+  workflow_dispatch:
 
 permissions:
   contents: read
