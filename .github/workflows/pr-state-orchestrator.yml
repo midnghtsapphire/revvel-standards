@@ -48,9 +48,11 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: prNumber
-            });
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
@@ -203,7 +205,11 @@ jobs:
 
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
             let currentLabels = labelData.map(l => l.name);
 
             async function addLabel(label) {
@@ -387,7 +393,11 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
               let currentLabels = labelData.map(l => l.name);
 
               async function addLabel(label) {
@@ -503,7 +513,11 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
               let currentLabels = labelData.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
@@ -625,7 +639,11 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
                 let currentLabels = labelData.map(l => l.name);
 
                 async function addLabel(label) {
@@ -728,7 +746,11 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+            let labelData = [];
+            try {
+              const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              labelData = res.data;
+            } catch(e) { console.log('⚠️ Could not fetch labels:', e.message); }
             let currentLabels = labelData.map(l => l.name);
 
             const ALL_STATUS = [
