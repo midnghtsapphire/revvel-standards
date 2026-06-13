@@ -1,9 +1,5 @@
 name: Proposal Prosecution
 on:
-
-permissions:
-  contents: read
-
   issues:
     types:
       - labeled
@@ -12,6 +8,10 @@ permissions:
       issue_id:
         description: Issue number
         required: false
+
+permissions:
+  contents: read
+
 jobs:
   prosecute:
     if: |

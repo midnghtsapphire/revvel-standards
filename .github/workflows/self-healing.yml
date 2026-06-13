@@ -7,15 +7,14 @@
 name: Self-Healing Agent
 
 on:
-
-permissions:
-  contents: read
-
   # Run daily to check system health
   schedule:
     - cron: '0 */4 * * *'  # Every 4 hours
   # Can be manually triggered
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state

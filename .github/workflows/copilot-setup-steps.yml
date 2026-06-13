@@ -3,10 +3,6 @@ name: Copilot Setup Steps
 # Run automatically when this file or root dependency files change to validate setup steps,
 # and allow manual testing via the Actions tab.
 on:
-
-permissions:
-  contents: read
-
   workflow_dispatch:
   push:
     paths:
@@ -18,6 +14,9 @@ permissions:
       - .github/workflows/copilot-setup-steps.yml
       - package.json
       - package-lock.json
+
+permissions:
+  contents: read
 
 jobs:
   # Job MUST be named `copilot-setup-steps` to be picked up by Copilot cloud agent.
