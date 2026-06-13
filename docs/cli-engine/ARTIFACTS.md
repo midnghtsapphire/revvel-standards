@@ -8,13 +8,15 @@
 
 | Requirement | Status | Notes |
 | --- | :---: | --- |
-| Live Vercel URL | ❌ | no URL in app-deployments.yml |
+| Live deployment URL | ❌ | no URL in app-deployments.yml |
 | README `## Live Deployment` | ❌ | section missing / URL not in README |
 | Live web test interface | ✅ | web app detected |
 | .mcp.json at root | ❌ | missing |
-| Stripe monetization | ✅ | stripe referenced |
-| Tests | ❌ | no tests dir |
+| Monetization wired | ✅ | stripe referenced |
+| Tests | ❌ | no tests found |
 | Listed in APP_REGISTRY.md | ✅ | listed |
+
+_Legend: ✅ met · ❌ gap · ➖ not applicable._
 
 ## Required deliverable records
 
@@ -24,7 +26,7 @@ These live here in `docs/` (only code goes in the app dir). Fill each as it ship
 - [ ] **Research** — demand/chatter packet from the research engine
 - [ ] **Decision / ROI** — revenue ÷ cost gate (auto-approve ≥ 5)
 - [ ] **Deploy** — live URL + deploy record (above)
-- [ ] **Monetize** — Stripe products / pricing
+- [ ] **Monetize** — payment provider products / pricing
 - [ ] **Market / SEO** — meta, OG, sitemap, listing copy
 - [ ] **Sales** — sales tracking / dashboard
 

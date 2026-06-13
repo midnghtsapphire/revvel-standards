@@ -6,22 +6,22 @@
 
 | App | Live URL | DoD | Top gaps |
 | --- | --- | :---: | --- |
-| [life-insurance-lead-engine](./life-insurance-lead-engine/ARTIFACTS.md) | — none — | 1/7 | Live Vercel URL, README `## Live Deployment`, Live web test interface |
-| [sessiono](./sessiono/ARTIFACTS.md) | — none — | 1/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [affiliate-hub](./affiliate-hub/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [ai-video-toolkit](./ai-video-toolkit/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [graphify-evaluator](./graphify-evaluator/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [life-insurance-lead-saas](./life-insurance-lead-saas/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, Live web test interface |
-| [music-video-creator](./music-video-creator/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [openmythos](./openmythos/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [prompt-generation-app](./prompt-generation-app/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [revvel-skill-runner](./revvel-skill-runner/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [screen-recorder-finder](./screen-recorder-finder/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [ugc-review-generator](./ugc-review-generator/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [coldtrace](./coldtrace/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [fieldwork](./fieldwork/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [osint-hub](./osint-hub/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [oaudrey](./oaudrey/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [reesereviews](./reesereviews/ARTIFACTS.md) | — none — | 2/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [cli-engine](./cli-engine/ARTIFACTS.md) | — none — | 3/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
-| [creator-payout-tracker](./creator-payout-tracker/ARTIFACTS.md) | — none — | 4/7 | Live Vercel URL, README `## Live Deployment`, .mcp.json at root |
+| [life-insurance-lead-engine](./life-insurance-lead-engine/ARTIFACTS.md) | — none — | 1/7 | Live deployment URL, README `## Live Deployment`, Live web test interface |
+| [life-insurance-lead-saas](./life-insurance-lead-saas/ARTIFACTS.md) | — none — | 1/7 | Live deployment URL, README `## Live Deployment`, Live web test interface |
+| [affiliate-hub](./affiliate-hub/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [ai-video-toolkit](./ai-video-toolkit/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [fieldwork](./fieldwork/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [graphify-evaluator](./graphify-evaluator/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [music-video-creator](./music-video-creator/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [oaudrey](./oaudrey/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [openmythos](./openmythos/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [osint-hub](./osint-hub/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [prompt-generation-app](./prompt-generation-app/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [screen-recorder-finder](./screen-recorder-finder/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [ugc-review-generator](./ugc-review-generator/ARTIFACTS.md) | — none — | 2/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [cli-engine](./cli-engine/ARTIFACTS.md) | — none — | 3/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [coldtrace](./coldtrace/ARTIFACTS.md) | — none — | 3/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [reesereviews](./reesereviews/ARTIFACTS.md) | — none — | 3/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [revvel-skill-runner](./revvel-skill-runner/ARTIFACTS.md) | — none — | 3/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [creator-payout-tracker](./creator-payout-tracker/ARTIFACTS.md) | — none — | 4/7 | Live deployment URL, README `## Live Deployment`, .mcp.json at root |
+| [sessiono](./sessiono/ARTIFACTS.md) | — none — | 0/2 | Live deployment URL, Listed in APP_REGISTRY.md |
