@@ -332,6 +332,31 @@ agent is the exception, not the default; prefer a sub-agent, an on-demand
 agent, or a swarm. See `skills/openrouter-swarms/SKILL.md` for the topology
 decision tree and spawn protocol.
 
+### Use every available agent — for every kind of artifact or asset
+
+Do not hand-build what an agent or agent-team can produce. For **every** kind
+of artifact or asset — code, PDF, video, image, slide deck, audio/music, docs,
+data, MCP / CLI / API — reach for the most capable agent or tool available and
+let it do the work. Match the agent to the asset, and stack them:
+
+- **Roo (Roo Code) — free, and a whole team.** It ships a full set of modes
+  (Architect, Code, Debug, Orchestrator, Ask + custom modes). Because it is
+  **free**, use it liberally — especially for coding, testing, and multi-step
+  orchestration. Roo already owns the Testing lane in the reviewer roster.
+- **GitHub Agent Factory — wired in.** Use it to spin up agents on demand:
+  `agent-factory/` (commands, hooks, plugins, settings), the Copilot coding
+  agent (`.github/workflows/copilot-setup-steps.yml`), and `swe-agent.yml`.
+  See `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`.
+- **OpenRouter swarms / sub-agents / on-demand agents** (above) for fan-out and
+  model routing across the 3 LLMs.
+- **Specialist skills** in the vault (`skills/REGISTRY.md`) — e.g.
+  `ui-creation-engine`, `content-automation`, video/music publishing — pick the
+  one that already does the asset type instead of reinventing it.
+
+**Rule:** if a free or wired-in agent/team can make the asset, route it there
+first; only build by hand when no agent covers it. Cost-rank: free (Roo,
+no-key OpenRouter lanes) → wired-in (Agent Factory / Copilot) → paid.
+
 ### Build Methodology — one iteration, multiple PRs (every project, every size)
 
 **This applies to big builds too.** Every project — no matter how large — ships
