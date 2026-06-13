@@ -1,5 +1,31 @@
 'use strict';
 
+// How long a freshly-created WR is given to get its PR through the normal
+// event-driven path before the safety-net sweep considers it "stuck".
+//
+// Was 15 min. Tightened to 5: GitHub throttles the detector's `*/30` cron
+// (observed ~50–70 min between runs), so a WR whose research completes right
+// after its own wr-pr-creation runs fired-and-skipped could sit ~1h with no
+// PR. Paired with the `workflow_run: Research Engine Orchestrator` trigger,
+// the sweep now fires within minutes of research completing, and 5 min is
+// enough headroom for the normal labeled-event path to win the race first.
+const DEFAULT_MIN_STUCK_AGE_MS = 5 * 60 * 1000;
+
+// A WR is eligible for PR creation once research/WR completion is signalled.
+function isWrReadyForPr(labels) {
+  const names = labels instanceof Set ? labels : new Set(getLabelNames(labels));
+  return names.has('wr:complete') || names.has('research:complete');
+}
+
+// Verdict on whether a WR is in the "old enough to be stuck, not so old we
+// ignore it" window. Pure + injectable clock so it's unit-testable.
+function stuckAgeVerdict(createdAt, { now = Date.now(), minStuckAgeMs = DEFAULT_MIN_STUCK_AGE_MS, maxAgeMs } = {}) {
+  const ageMs = now - new Date(createdAt).getTime();
+  if (ageMs < minStuckAgeMs) return 'too_young';
+  if (maxAgeMs != null && ageMs > maxAgeMs) return 'too_old';
+  return 'eligible';
+}
+
 function getLabelNames(labels) {
   return (labels || [])
     .map((label) => (typeof label === 'string' ? label : label.name))
@@ -118,6 +144,9 @@ async function findAssociatedPr({ github, owner, repo, issue, core = console }) 
 }
 
 module.exports = {
+  DEFAULT_MIN_STUCK_AGE_MS,
+  isWrReadyForPr,
+  stuckAgeVerdict,
   extractPrNumbersFromText,
   findAssociatedPr,
   getIssueBaseTitle,

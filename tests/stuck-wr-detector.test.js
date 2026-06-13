@@ -9,6 +9,9 @@ const {
   hasIssueBranchRef,
   isAssociatedPr,
   referencesIssue,
+  isWrReadyForPr,
+  stuckAgeVerdict,
+  DEFAULT_MIN_STUCK_AGE_MS,
 } = require('../scripts/stuck-wr-detector');
 
 let passed = 0;
@@ -123,6 +126,30 @@ const issue = {
 
     const pr = await findAssociatedPr({ github, owner: 'org', repo: 'repo', issue });
     assert.equal(pr.number, 13461);
+  });
+
+  await test('isWrReadyForPr requires a completion signal', () => {
+    assert.equal(isWrReadyForPr(['work-request', 'research:complete']), true);
+    assert.equal(isWrReadyForPr(['work-request', 'wr:complete']), true);
+    assert.equal(isWrReadyForPr(new Set(['research:complete'])), true);
+    assert.equal(isWrReadyForPr(['work-request', 'wr:in-progress']), false);
+    assert.equal(isWrReadyForPr([]), false);
+  });
+
+  await test('stuck threshold is 5 min so a throttled cron cannot strand a WR', () => {
+    assert.equal(DEFAULT_MIN_STUCK_AGE_MS, 5 * 60 * 1000);
+  });
+
+  await test('stuckAgeVerdict windows a WR by age', () => {
+    const created = '2026-06-13T15:00:00Z';
+    const at = (mins) => new Date('2026-06-13T15:00:00Z').getTime() + mins * 60000;
+    // The exact gap that stranded #14545: completed ~12 min in, the old 15-min
+    // gate called it too young; the new 5-min gate makes it eligible.
+    assert.equal(stuckAgeVerdict(created, { now: at(12) }), 'eligible');
+    assert.equal(stuckAgeVerdict(created, { now: at(3) }), 'too_young');
+    assert.equal(stuckAgeVerdict(created, { now: at(200), maxAgeMs: 60 * 60 * 1000 }), 'too_old');
+    // Old behaviour, asserted for contrast.
+    assert.equal(stuckAgeVerdict(created, { now: at(12), minStuckAgeMs: 15 * 60 * 1000 }), 'too_young');
   });
 
   console.log(`\n${passed} passed, ${failed} failed`);

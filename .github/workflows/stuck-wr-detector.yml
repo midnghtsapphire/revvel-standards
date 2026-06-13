@@ -2,6 +2,12 @@ name: Stuck WR Detector & Auto-Healer
 on:
   schedule:
     - cron: "*/30 * * * *"
+  # GitHub throttles the cron above (observed ~50–70 min apart), which can
+  # strand a just-completed WR. Sweep the moment research completes too, so a
+  # ready WR with no PR is healed within minutes instead of waiting for cron.
+  workflow_run:
+    workflows: ["Research Engine Orchestrator"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       max_age_hours:
@@ -40,6 +46,7 @@ jobs:
             const {
               findAssociatedPr,
               getIssueBaseTitle,
+              DEFAULT_MIN_STUCK_AGE_MS,
             } = require(path.join(process.env.GITHUB_WORKSPACE, 'scripts', 'stuck-wr-detector.js'));
 
             const owner = context.repo.owner;
@@ -47,7 +54,7 @@ jobs:
             const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
             const dryRun = process.env.DRY_RUN === 'true';
             const cutoff = Date.now() - maxAgeMs;
-            const minStuckAgeMs = 15 * 60 * 1000;  // 15 minutes
+            const minStuckAgeMs = DEFAULT_MIN_STUCK_AGE_MS;  // shared SSOT (5 min)
 
             core.info(`Scanning open work-request issues younger than ${process.env.MAX_AGE_HOURS}h.`);
             core.info(`Dry-run mode: ${dryRun}`);
