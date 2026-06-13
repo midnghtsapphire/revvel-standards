@@ -26,6 +26,8 @@ const README_PATH = path.join(ROOT, 'README.md');
 
 const BEGIN = '<!-- BEGIN:connections -->';
 const END = '<!-- END:connections -->';
+const FB_BEGIN = '<!-- BEGIN:fallback -->';
+const FB_END = '<!-- END:fallback -->';
 
 const TYPE_ORDER = ['agent', 'mcp', 'api', 'cli', 'github-action', 'app', 'model'];
 const TYPE_TITLE = {
@@ -133,14 +135,33 @@ function renderReadmeBlock(doc) {
   return lines.join('\n');
 }
 
-/** Replace (or append) the README block between the markers. Pure. */
-function injectReadme(readme, block) {
-  if (readme.includes(BEGIN) && readme.includes(END)) {
-    const re = new RegExp(`${BEGIN}[\\s\\S]*?${END}`);
+/** Replace the block between a marker pair. No-op if the markers are absent. Pure. */
+function injectReadme(readme, block, begin = BEGIN, end = END) {
+  if (readme.includes(begin) && readme.includes(end)) {
+    const re = new RegExp(`${begin}[\\s\\S]*?${end}`);
     return readme.replace(re, block);
   }
-  // Append after the first top-level heading block if markers absent.
-  return readme.replace(/\n(---\n)/, `\n\n${block}\n\n$1`);
+  // Only the connections block falls back to auto-insert before the first rule.
+  if (begin === BEGIN) return readme.replace(/\n(---\n)/, `\n\n${block}\n\n$1`);
+  return readme;
+}
+
+/** Generated agent-fallback chain block for the README (replaces stale prose). */
+function renderFallbackBlock(doc) {
+  const chain = (doc.meta && doc.meta.fallback_chain) || [];
+  const retired = (doc.meta && doc.meta.fallback_retired) || [];
+  const lines = [FB_BEGIN];
+  lines.push('**Fallback chain** — generated from `config/connections.yml`, so it never drifts:');
+  lines.push('');
+  chain.forEach((step, i) => {
+    lines.push(`${i + 1}. **${step.id}** — *${step.role}* — ${step.note}`);
+  });
+  if (retired.length) {
+    lines.push('');
+    lines.push(`*Retired: ${retired.map((r) => `\`${r.id}\` (${r.note})`).join('; ')}*`);
+  }
+  lines.push(FB_END);
+  return lines.join('\n');
 }
 
 function renderHtml(doc) {
@@ -253,7 +274,8 @@ function main(argv = process.argv.slice(2)) {
     fs.writeFileSync(DOC_PATH, renderMarkdown(doc));
     if (fs.existsSync(README_PATH)) {
       const readme = fs.readFileSync(README_PATH, 'utf8');
-      const next = injectReadme(readme, renderReadmeBlock(doc));
+      let next = injectReadme(readme, renderReadmeBlock(doc));
+      next = injectReadme(next, renderFallbackBlock(doc), FB_BEGIN, FB_END);
       if (next !== readme) fs.writeFileSync(README_PATH, next);
     }
     console.log(`✅ wrote ${path.relative(ROOT, DOC_PATH)} (+ README block)`);
@@ -275,8 +297,8 @@ function main(argv = process.argv.slice(2)) {
 }
 
 module.exports = {
-  BEGIN, END,
-  load, groupByType, renderMarkdown, renderReadmeBlock,
+  BEGIN, END, FB_BEGIN, FB_END,
+  load, groupByType, renderMarkdown, renderReadmeBlock, renderFallbackBlock,
   injectReadme, renderHtml, detectDrift, scanRepoInventory, main,
 };
 

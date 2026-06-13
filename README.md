@@ -108,13 +108,21 @@ npm run dashboard open
 
 ## 🚀 Agent Fallback System (NEW!)
 
-**Automatic OpenHands → Cursor → OpenRouter fallback** ensures zero-downtime automation when AI agents hit rate limits.
+Zero-downtime automation when AI agents hit rate limits — the orchestrator can route recursively to specialized agents or swarms before falling back.
+
+<!-- BEGIN:fallback -->
+**Fallback chain** — generated from `config/connections.yml`, so it never drifts:
+
+1. **openrouter** — *first line of sight / orchestrator* — Triages every WR/PR and can route recursively to specialized agents or OpenRouter swarms.
+2. **openhands** — *free autonomous fallback* — Picks up when the orchestrator defers; full multi-file autonomy on a free quota.
+3. **manual** — *human escalation* — Applies the needs-human label with full diagnostics if agents can't resolve it.
+
+*Retired: `cursor` (Removed from the chain in #14539; IDE config retained.)*
+<!-- END:fallback -->
 
 ### Quick Setup
 ```bash
 ./scripts/setup-agent-fallback.sh midnghtsapphire/YOUR-REPO
-gh secret set OpenHands_API_KEY --repo YOUR-REPO
-gh secret set CURSOR_API_KEY --repo YOUR-REPO
 ```
 
 **Automatic Triggers:**
@@ -122,12 +130,6 @@ gh secret set CURSOR_API_KEY --repo YOUR-REPO
 - ✅ PRs opened or marked ready for review
 - ✅ Manual via GitHub Actions UI or `gh` CLI
 - ✅ Reusable from other workflows
-
-**Fallback Chain:**
-1. **OpenHands AI** (primary) — Complex multi-file changes, full autonomy
-2. **Cursor** (secondary) — Fast iteration, smaller features  
-3. **OpenRouter** (tertiary) — Multi-model backup, effectively unlimited
-4. **Manual escalation** — Creates `needs-human` issue with full diagnostics
 
 📖 **Documentation:**
 - [`docs/AGENT_FALLBACK_QUICKSTART.md`](docs/AGENT_FALLBACK_QUICKSTART.md) — Quick start guide

@@ -22,6 +22,21 @@
 meta:
   owner: midnghtsapphire
   updated: "2026-06-13"
+  # Ordered agent fallback chain. SSOT for the README "Agent Fallback System"
+  # block — edit here, regenerate, never hand-write the chain in prose again.
+  fallback_chain:
+    - id: openrouter
+      role: "first line of sight / orchestrator"
+      note: "Triages every WR/PR and can route recursively to specialized agents or OpenRouter swarms."
+    - id: openhands
+      role: "free autonomous fallback"
+      note: "Picks up when the orchestrator defers; full multi-file autonomy on a free quota."
+    - id: manual
+      role: "human escalation"
+      note: "Applies the needs-human label with full diagnostics if agents can't resolve it."
+  fallback_retired:
+    - id: cursor
+      note: "Removed from the chain in #14539; IDE config retained."
 
 connections:
   # ── Coding / orchestration agents ─────────────────────────────────────────

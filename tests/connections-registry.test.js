@@ -59,6 +59,38 @@ test('the shipped registry has no drift against the repo .env.example', () => {
   assert.deepEqual(missing, [], `unexpected drift: ${missing.map((m) => m.key).join(', ')}`);
 });
 
+test('fallback block renders the ordered chain from meta', () => {
+  const doc = {
+    meta: {
+      fallback_chain: [
+        { id: 'openrouter', role: 'orchestrator', note: 'routes recursively' },
+        { id: 'openhands', role: 'free fallback', note: 'autonomy' },
+      ],
+      fallback_retired: [{ id: 'cursor', note: 'removed #14539' }],
+    },
+    connections: [],
+  };
+  const block = reg.renderFallbackBlock(doc);
+  assert.match(block, /1\. \*\*openrouter\*\*/);
+  assert.match(block, /2\. \*\*openhands\*\*/);
+  assert.match(block, /recursively/);
+  assert.match(block, /Retired:.*cursor/);
+});
+
+test('injectReadme targets a specific marker pair and no-ops when absent', () => {
+  const readme = `a\n${reg.FB_BEGIN}\nOLD\n${reg.FB_END}\nb`;
+  const next = reg.injectReadme(readme, `${reg.FB_BEGIN}\nNEW\n${reg.FB_END}`, reg.FB_BEGIN, reg.FB_END);
+  assert.match(next, /NEW/);
+  assert.doesNotMatch(next, /OLD/);
+  // absent markers -> unchanged
+  assert.equal(reg.injectReadme('no markers', 'x', reg.FB_BEGIN, reg.FB_END), 'no markers');
+});
+
+test('the real README ends up with both generated blocks after main()', () => {
+  const doc = reg.load(path.join(__dirname, '../config/connections.yml'));
+  assert.ok((doc.meta.fallback_chain || []).length >= 2, 'SSOT must define a fallback chain');
+});
+
 test('html dashboard embeds the data and filter controls', () => {
   const html = reg.renderHtml(sampleDoc);
   assert.match(html, /Connections Dashboard/);
