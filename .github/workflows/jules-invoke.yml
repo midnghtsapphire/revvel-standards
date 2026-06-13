@@ -1,9 +1,5 @@
 name: Jules Invoke
 on:
-
-permissions:
-  contents: read
-
   workflow_dispatch:
     inputs:
       prompt:
@@ -30,6 +26,10 @@ permissions:
       - opened
       - reopened
       - closed
+
+permissions:
+  contents: read
+
 concurrency:
   group: jules-invoke-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false

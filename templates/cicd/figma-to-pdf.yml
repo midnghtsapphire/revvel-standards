@@ -104,29 +104,29 @@ jobs:
           
           # Convert exported images to PDF
           python3 - <<'PY'
-import os
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from PIL import Image
+          import os
+          from reportlab.lib.pagesizes import letter
+          from reportlab.pdfgen import canvas
+          from PIL import Image
 
-output = "${{ steps.parse.outputs.output }}"
-images = sorted([f for f in os.listdir('exports') if f.endswith('.png')])
+          output = "${{ steps.parse.outputs.output }}"
+          images = sorted([f for f in os.listdir('exports') if f.endswith('.png')])
 
-pdf = f"exports/{output or 'figma-export'}.pdf"
-c = canvas.Canvas(pdf, pagesize=letter)
-w, h = letter
+          pdf = f"exports/{output or 'figma-export'}.pdf"
+          c = canvas.Canvas(pdf, pagesize=letter)
+          w, h = letter
 
-for img in images:
-    img_path = f"exports/{img}"
-    try:
-        c.drawImage(img_path, 0, 0, width=w, height=h)
-        c.showPage()
-    except Exception as e:
-        print(f"Skipping {img}: {e}")
+          for img in images:
+              img_path = f"exports/{img}"
+              try:
+                  c.drawImage(img_path, 0, 0, width=w, height=h)
+                  c.showPage()
+              except Exception as e:
+                  print(f"Skipping {img}: {e}")
 
-c.save()
-print(f"Created: {pdf}")
-PY
+          c.save()
+          print(f"Created: {pdf}")
+          PY
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

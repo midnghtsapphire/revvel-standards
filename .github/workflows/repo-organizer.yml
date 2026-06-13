@@ -7,10 +7,6 @@
 name: Repo Organizer
 
 on:
-
-permissions:
-  contents: read
-
   workflow_dispatch:
     inputs:
       dry_run:
@@ -18,6 +14,9 @@ permissions:
         default: "true"
   schedule:
     - cron: '0 2 * * 0'  # Weekly on Sunday
+
+permissions:
+  contents: read
 
 jobs:
   # PHASE 1: Organize docs - PUT FILES WHERE THEY BELONG

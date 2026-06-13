@@ -1,10 +1,10 @@
 name: PandaOps AI PR Review
 on:
+  workflow_dispatch: null
 
 permissions:
   contents: read
 
-  workflow_dispatch: null
 concurrency:
   group: panda-ops-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true

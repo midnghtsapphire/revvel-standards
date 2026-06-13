@@ -281,7 +281,7 @@ jobs:
                 owner, repo, ref: pr.head.sha, per_page: 100
               });
               const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
-              const failing = runs.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+              const failing = runs.filter(r => ['failure','timed_out'].includes(r.conclusion));
               const passing = runs.filter(r => r.conclusion === 'success');
               if (failing.length === 0 && passing.length > 0) {
                 await addLabel('status:checks-passing');
@@ -322,7 +322,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            if (!conclusion || ['skipped','neutral','stale'].includes(conclusion)) {
+            if (!conclusion || ['skipped','neutral','stale','cancelled'].includes(conclusion)) {
               console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
               return;
             }
@@ -416,7 +416,7 @@ jobs:
                   await enableAutoMerge(prNumber, pr.node_id);
                   console.log(`🚀 PR #${prNumber}: approved + passing = READY TO MERGE`);
                 }
-              } else if (['failure','timed_out','cancelled'].includes(conclusion)) {
+              } else if (['failure','timed_out'].includes(conclusion)) {
                 await addLabel('status:checks-failing');
                 for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
                 console.log(`❌ PR #${prNumber}: checks FAILING (${conclusion})`);
@@ -440,7 +440,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            if (!conclusion || ['skipped','neutral','stale','action_required'].includes(conclusion)) {
+            if (!conclusion || ['skipped','neutral','stale','action_required','cancelled'].includes(conclusion)) {
               console.log(`ℹ️ check_run conclusion: ${conclusion} — no action`);
               return;
             }
@@ -511,7 +511,7 @@ jobs:
                 owner, repo, ref: headSha, per_page: 100
               });
               const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-              const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+              const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
               const passing = completed.filter(r => r.conclusion === 'success');
               const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
@@ -681,7 +681,7 @@ jobs:
                   owner, repo, ref: pr.head.sha, per_page: 100
                 });
                 const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-                const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+                const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
                 const passing = completed.filter(r => r.conclusion === 'success');
                 const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
@@ -837,7 +837,7 @@ jobs:
               owner, repo, ref: pr.head.sha, per_page: 100
             });
             const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-            const failing = completed.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion));
+            const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
             const passing = completed.filter(r => r.conclusion === 'success');
             const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
 
