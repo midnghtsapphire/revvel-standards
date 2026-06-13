@@ -1,5 +1,10 @@
 # 🛰️ oAudrey — Automation Software Hub
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/oaudrey/)**
+
+
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp
 **Version:** 1.0.0
 **Status:** Concept / Landing Page

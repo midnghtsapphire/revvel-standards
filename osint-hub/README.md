@@ -1,5 +1,10 @@
 # OSINT Hub — Gen Z Intelligence Arsenal 2026
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/osint-hub/)**
+
+
 ![OSINT Hub](https://img.shields.io/badge/OSINT-Hub-3a86ff?style=for-the-badge)
 ![AI Powered](https://img.shields.io/badge/AI-Powered-8338ec?style=for-the-badge)
 ![Open Source](https://img.shields.io/badge/Open-Source-06ffa5?style=for-the-badge)

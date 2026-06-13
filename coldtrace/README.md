@@ -1,5 +1,10 @@
 # 🔍 ColdTrace — Temporal GIS Cold-Case Investigation Platform
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/coldtrace/)**
+
+
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp  
 **Status:** IN BUILD  
 **Subdomain:** `coldtrace.oaudrey.com`  

@@ -1,5 +1,10 @@
 # 🏗️ FieldWork
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/fieldwork/)**
+
+
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp
 **Version:** 0.1.0
 **Status:** Concept / Landing Page
