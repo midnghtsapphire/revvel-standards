@@ -1,5 +1,10 @@
 # OpenMythos
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/openmythos/)**
+
+
 OpenMythos is a production-app website UI for launching a sellable mythic worldbuilding product.
 
 ## Quick Start

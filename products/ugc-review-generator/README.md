@@ -1,5 +1,10 @@
 # UGC Review Generator
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ugc-review-generator/)**
+
+
 A viral TikTok-style Amazon Product Review video prompt generator.
 
 ## Description

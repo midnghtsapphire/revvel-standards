@@ -1,5 +1,10 @@
 # Revvel CLI Engine
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/cli-engine/)**
+
+
 > A premium glassmorphic CLI agent execution engine that runs automation pipelines, generates PDF reports, and ships production-grade outputs from a beautiful terminal interface.
 
 [![WR Issue](https://img.shields.io/badge/WR-upgrade--cli--engine-blue)](https://github.com/midnghtsapphire/revvel-standards/issues)

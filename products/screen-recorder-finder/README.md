@@ -1,5 +1,10 @@
 # Mac Screen Recorder Finder
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/screen-recorder-finder/)**
+
+
 **Find Your Perfect Mac Screen Recording Software**
 
 An interactive comparison tool to help Mac users find the perfect screen recorder for their needs. Filter by use case, budget, and required features to discover the ideal tool.

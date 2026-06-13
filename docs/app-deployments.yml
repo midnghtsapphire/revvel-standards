@@ -14,7 +14,7 @@
 # (or let scripts/vercel_sync.py fill it from Vercel when VERCEL_TOKEN is set).
 deployment:
   project: revvel-standards
-  base_url: ""
+  base_url: "https://revvel-standards.vercel.app"
 
 apps:
   affiliate-hub:          { path: products/affiliate-hub,          type: web, live_url: "" }

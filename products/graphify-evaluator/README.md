@@ -1,5 +1,10 @@
 # Graphify Evaluator
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/graphify-evaluator/)**
+
+
 > Production-ready Next.js app for evaluating Graphify-based code graph workflows and shipping the concept to market.
 
 **Deep-research engine suggested product:** Graphify Evaluator (this app), based on WR #13651 research findings.

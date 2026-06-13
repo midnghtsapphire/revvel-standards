@@ -1,5 +1,10 @@
 # High-Ticket Affiliate Hub
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/affiliate-hub/)**
+
+
 **Best High-Ticket Affiliate Programs for 2026**
 
 A comprehensive, interactive web application for discovering and comparing the most lucrative affiliate marketing programs. Perfect for affiliates, marketers, and content creators looking to maximize their revenue with high-ticket offers.

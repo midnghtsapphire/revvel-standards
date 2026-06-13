@@ -1,5 +1,10 @@
 # Creator Payout Tracker
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/creator-payout-tracker/)**
+
+
 > **Which platform pays creators the most in 2025?** — A free, creator-first payout comparison and earnings calculator.
 
 [![WR Issue](https://img.shields.io/badge/WR-%2313641-blue)](https://github.com/midnghtsapphire/revvel-standards/issues/13641)
