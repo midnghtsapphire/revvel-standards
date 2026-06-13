@@ -115,7 +115,7 @@ jobs:
         id: verify-secrets
         env:
           BITO_ACCESS_KEY: ${{ secrets.BITO_ACCESS_KEY }}
-          GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
+          GIT_ACCESS_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
         run: |
           echo "=========================================="
           echo "BITO AI Secret Verification"
@@ -208,7 +208,7 @@ echo "BITO_SKIP=true" >> "$GITHUB_ENV"
           OPTIONS+=" --dependency_check.enabled=False"
           OPTIONS+=" --bee.path=/automation-platform"
           OPTIONS+=" --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules"
-          OPTIONS+=" --git.access_token=${{ secrets.GIT_ACCESS_TOKEN }}"
+          OPTIONS+=" --git.access_token=${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}"
           OPTIONS+=" --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}"
           
           # Optional configurations from repo variables
