@@ -358,6 +358,10 @@ let it do the work. Match the agent to the asset, and stack them:
 - **Specialist skills** in the vault (`skills/REGISTRY.md`) — e.g.
   `ui-creation-engine`, `content-automation`, video/music publishing — pick the
   one that already does the asset type instead of reinventing it.
+- **Octopus Review — best-in-class code review.** Codebase-aware AI review;
+  findings auto-route to the coder via `octopus-route.yml` (with Bito,
+  OpenRouter, and CodeRabbit alongside). Treat Octopus as the default reviewer
+  on every PR, not just research.
 
 **Rule:** if a free or wired-in agent/team can make the asset, route it there
 first; only build by hand when no agent covers it. Cost-rank: free (Roo,
@@ -392,10 +396,11 @@ shallow findings. (Depth-over-speed applies to research; the *build* still
 ships in one iteration — see below.)
 
 **Then review the results.** Research output is **code-reviewed before any
-implementation** — Bito / OpenRouter / CodeRabbit per the *Research Engine
-Review Request* flow — checking factual validation, gaps, fabricated
-references, and implementation risk. No implementation starts on unreviewed
-research.
+implementation** — **Octopus Review** (best-in-class, codebase-aware; findings
+auto-route to the coder via `octopus-route.yml`), Bito, OpenRouter, and
+CodeRabbit per the *Research Engine Review Request* flow — checking factual
+validation, gaps, fabricated references, and implementation risk. No
+implementation starts on unreviewed research.
 
 ### Build Methodology — one iteration, multiple PRs (every project, every size)
 
