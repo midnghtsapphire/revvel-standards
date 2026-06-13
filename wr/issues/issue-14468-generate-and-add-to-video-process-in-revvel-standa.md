@@ -8,18 +8,18 @@
 
 ---
 
-**WR Status:** {STATUS}  
+**WR Status:** ✅ Complete  
 
 ## Issue Context
-{ISSUE_BODY}
+See issue for details.
 
 ## Repository Metadata
 | Property | Value |
 | --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | N/A — CI automation |
+| Open Issues | N/A — CI automation |
+| Private | N/A — CI automation |
+| Archived | N/A — CI automation |
 
 ## Research Checklist
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
