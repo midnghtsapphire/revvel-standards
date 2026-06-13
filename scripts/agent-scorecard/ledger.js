@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { updateTrust, grade, STARTING_TRUST } = require('./score-engine');
+const { agentTrends, arrow } = require('./trends');
 
 const LEDGER_PATH = path.join(__dirname, '../../wr/memory/agent-scorecard.jsonl');
 const LEADERBOARD_PATH = path.join(__dirname, '../../docs/AGENT_SCORECARD.md');
@@ -61,6 +62,7 @@ function aggregate(events = []) {
         latencySumMin: 0,
         latencyCount: 0,
         lastPr: null,
+        events: [], // retained in order for trend analysis
       });
     }
     return agents.get(name);
@@ -69,6 +71,7 @@ function aggregate(events = []) {
   for (const ev of events) {
     if (!ev || !ev.agent) continue;
     const a = get(ev.agent);
+    a.events.push(ev);
 
     if (ev.type === 'score') {
       a.prs += 1;
@@ -85,12 +88,13 @@ function aggregate(events = []) {
     }
   }
 
-  // Derive rates.
+  // Derive rates and longitudinal trends.
   for (const a of agents.values()) {
     a.hallucinationRate = a.prs ? +(a.hallucinationEvents / a.prs).toFixed(3) : 0;
     a.recoveryRate = a.remediations ? +(a.recoveries / a.remediations).toFixed(3) : null;
     a.avgLatencyMin = a.latencyCount ? Math.round(a.latencySumMin / a.latencyCount) : null;
     a.grade = grade(a.trust);
+    a.trends = agentTrends(a.events);
   }
 
   return agents;
@@ -111,17 +115,38 @@ function renderLeaderboard(agents) {
       'not just the agent. Regenerated automatically from `wr/memory/agent-scorecard.jsonl`.'
   );
   lines.push('');
-  lines.push('| Rank | Agent | Trust | Grade | PRs | Hallucination rate | Recovery rate | Avg latency |');
-  lines.push('| ---: | --- | ---: | :---: | ---: | ---: | ---: | ---: |');
+  lines.push('| Rank | Agent | Trust | Trend | Grade | PRs | Builds | Hallucination rate | Recovery rate | Avg latency |');
+  lines.push('| ---: | --- | ---: | :---: | :---: | ---: | ---: | ---: | ---: | ---: |');
   rows.forEach((a, i) => {
+    const t = a.trends || {};
+    const trendArrow = t.quality ? arrow(t.quality.direction) : '·';
+    const builds = `${t.builds || 0}${t.capabilitiesAdded ? ` (+${t.capabilitiesAdded})` : ''}`;
     lines.push(
-      `| ${i + 1} | \`${a.agent}\` | ${a.trust} | ${a.grade.letter} (${a.grade.label}) | ${a.prs} | ` +
+      `| ${i + 1} | \`${a.agent}\` | ${a.trust} | ${trendArrow} | ${a.grade.letter} (${a.grade.label}) | ${a.prs} | ${builds} | ` +
         `${fmtPct(a.hallucinationRate)} | ${fmtPct(a.recoveryRate)} | ${fmtLat(a.avgLatencyMin)} |`
     );
   });
   if (!rows.length) {
-    lines.push('| — | *no scored PRs yet* | — | — | — | — | — | — |');
+    lines.push('| — | *no scored PRs yet* | — | — | — | — | — | — | — | — |');
   }
+  lines.push('');
+  lines.push('**Trend** = quality direction over recent PRs vs the prior window ' +
+    '(↑ improving · ↓ regressing · → flat · `·` not enough data). ' +
+    '**Builds** = `feat` PRs that shipped (`+N` = net-new files under skills/products/engines/workflows/scripts — capability you didn\'t have before).');
+
+  // Per-dimension movement, so you can see *where* an agent is improving or slipping.
+  const withTrends = rows.filter((a) => a.trends && (a.trends.improving.length || a.trends.regressing.length));
+  if (withTrends.length) {
+    lines.push('');
+    lines.push('## Per-dimension movement');
+    lines.push('');
+    for (const a of withTrends) {
+      const up = a.trends.improving.length ? `improving: ${a.trends.improving.join(', ')}` : '';
+      const down = a.trends.regressing.length ? `regressing: ${a.trends.regressing.join(', ')}` : '';
+      lines.push(`- \`${a.agent}\` — ${[up, down].filter(Boolean).join(' · ')}`);
+    }
+  }
+
   lines.push('');
   lines.push(`*Last updated: ${new Date().toISOString().slice(0, 10)}.*`);
   return lines.join('\n') + '\n';

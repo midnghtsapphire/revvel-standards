@@ -9,6 +9,7 @@ const { checkClaims } = require('../scripts/agent-scorecard/claim-checker');
 const { aggregate, renderLeaderboard } = require('../scripts/agent-scorecard/ledger');
 const crossModel = require('../scripts/agent-scorecard/cross-model-review');
 const remediate = require('../scripts/agent-scorecard/remediate');
+const trends = require('../scripts/agent-scorecard/trends');
 
 test('clean PR scores high', () => {
   const { score, dimensions } = engine.prQualityScore({ ciGreen: true });
@@ -159,4 +160,34 @@ test('recordOutcome attributes the weak link correctly', () => {
   assert.deepEqual(remediate.recordOutcome({ tier: 'agent-handoff', postPassed: true }).weakLink, 'agent');
   assert.deepEqual(remediate.recordOutcome({ tier: 'escalate-claude', postPassed: true }).weakLink, 'task-difficulty');
   assert.deepEqual(remediate.recordOutcome({ tier: 'agent-handoff', postPassed: false }).weakLink, 'unresolved');
+});
+
+test('windowedTrend needs enough points and detects direction', () => {
+  assert.equal(trends.windowedTrend([1, 2, 3], 5).direction, 'insufficient');
+  const up = trends.windowedTrend([40, 42, 41, 43, 44, 80, 82, 81, 83, 84]);
+  assert.equal(up.direction, 'up');
+  assert.ok(up.delta > 0);
+  const down = trends.windowedTrend([90, 88, 91, 89, 90, 50, 52, 48, 51, 49]);
+  assert.equal(down.direction, 'down');
+});
+
+test('agentTrends counts builds and net-new capabilities', () => {
+  const events = [
+    { type: 'score', agent: 'x', quality: 80, prType: 'feat', newCapabilities: 2, dimensions: {} },
+    { type: 'score', agent: 'x', quality: 85, prType: 'fix', newCapabilities: 0, dimensions: {} },
+    { type: 'score', agent: 'x', quality: 90, prType: 'feat', newCapabilities: 1, dimensions: {} },
+  ];
+  const t = trends.agentTrends(events);
+  assert.equal(t.builds, 2);
+  assert.equal(t.capabilitiesAdded, 3);
+});
+
+test('agentTrends flags improving vs regressing dimensions', () => {
+  const mk = (h, r) => ({ type: 'score', agent: 'x', quality: 70, dimensions: { hallucination: h, rash: r, badCode: 1, directions: 1, ci: 1 } });
+  // hallucination improving (0.4->0.9), rash regressing (0.9->0.4)
+  const events = [mk(0.4, 0.9), mk(0.4, 0.9), mk(0.4, 0.9), mk(0.4, 0.9), mk(0.4, 0.9),
+                  mk(0.9, 0.4), mk(0.9, 0.4), mk(0.9, 0.4), mk(0.9, 0.4), mk(0.9, 0.4)];
+  const t = trends.agentTrends(events);
+  assert.ok(t.improving.includes('hallucination'));
+  assert.ok(t.regressing.includes('rash'));
 });

@@ -57,6 +57,24 @@ The loop records whether the re-run recovered **and which tier fixed it**. A low
 **recovery rate** on `prompt-correction` is the signal that our instructions —
 not the agents — need work. That's the diagnosis you can't get from a pass/fail gate.
 
+## Trends & capability credit
+
+A single trust number can't tell you if an agent is *getting better* or just
+*coasting*. Because the ledger keeps per-dimension scores on every event,
+`trends.js` computes, per agent:
+
+- **Quality trend** (`↑`/`↓`/`→`) — recent PRs vs the prior window, so you see
+  improvement or regression over time.
+- **Per-dimension movement** — *where* it's improving or slipping (e.g.
+  "hallucination improving, rashness regressing"), not just the aggregate.
+- **Builds & net-new capability** — `feat` PRs that shipped, plus `+N` net-new
+  files under `skills/ products/ engines/ scripts/ .github/workflows/` — i.e.
+  functionality you didn't have before. This credits agents that *extend* the
+  system, not only the ones that play it safe with fixes.
+
+These render into the leaderboard so the question "are my agents improving, and
+which ones actually add capability?" is answered directly.
+
 ## Where the data lives
 
 - **Ledger:** `wr/memory/agent-scorecard.jsonl` — append-only, one event per line

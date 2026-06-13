@@ -77,6 +77,18 @@ async function main() {
     .split('\n')
     .map((s) => s.trim())
     .filter(Boolean);
+  const newFiles = (process.env.NEW_FILES || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  // Conventional-commit type from the PR title ("feat: ...", "fix(scope): ...").
+  const titleType = (process.env.PR_TITLE || '').match(/^(\w+)(?:\([^)]*\))?!?:/);
+  const prType = process.env.PR_TYPE || (titleType ? titleType[1].toLowerCase() : '');
+
+  // Net-new capability = added files under the dirs where capability actually lives.
+  const CAPABILITY_DIRS = /^(skills|products|engines|scripts|\.github\/workflows)\//;
+  const newCapabilities = newFiles.filter((f) => CAPABILITY_DIRS.test(f)).length;
 
   // Local detectors (free, deterministic).
   const refs = findUnresolvedRefs({ diff, exists: repoExists, envKeys: loadEnvKeys() });
@@ -119,6 +131,8 @@ async function main() {
     quality: score,
     hallucination: hallucinationCount,
     latencyMin: process.env.LATENCY_MIN ? envInt('LATENCY_MIN') : undefined,
+    prType,
+    newCapabilities,
     dimensions,
     detail: { refs: refs.findings, claims: claims.findings, crossModel: cross.flags },
   });

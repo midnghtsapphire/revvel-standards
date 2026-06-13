@@ -72,6 +72,7 @@ jobs:
               owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber, per_page: 100,
             });
             const changedFiles = files.map(f => f.filename).join('\n');
+            const newFiles = files.filter(f => f.status === 'added').map(f => f.filename).join('\n');
             const { data: diff } = await github.rest.pulls.get({
               owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber,
               mediaType: { format: 'diff' },
@@ -91,6 +92,7 @@ jobs:
             core.setOutput('agent', agent);
             core.setOutput('pr_title', pr.title || '');
             core.setOutput('changed_files', changedFiles);
+            core.setOutput('new_files', newFiles);
             core.setOutput('ci_green', redRuns === 0 ? 'true' : 'false');
             core.setOutput('red_runs', String(redRuns));
             core.setOutput('merged', pr.merged ? 'true' : 'false');
@@ -105,6 +107,7 @@ jobs:
           DIFF_FILE: /tmp/pr.diff
           BODY_FILE: /tmp/pr-body.txt
           CHANGED_FILES: ${{ steps.signals.outputs.changed_files }}
+          NEW_FILES: ${{ steps.signals.outputs.new_files }}
           CI_GREEN: ${{ steps.signals.outputs.ci_green }}
           RED_RUNS: ${{ steps.signals.outputs.red_runs }}
           CROSS_MODEL: ${{ (github.event.inputs.cross_model == 'true') && '1' || '0' }}
