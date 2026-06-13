@@ -55,7 +55,7 @@ Open a PR on `revvel-standards` that:
    summary row (line ~95), since deploy now lives in the new repo.
 3. Updates cross-references that point at `fieldwork/` as a local dir (e.g.
    `docs/GITKRAKEN_INTEGRATION.md`) to point at the new repo URL.
-4. Moves the proposal to `docs/proposals/done/` (or marks it ✅ shipped).
+4. Moves the proposal to `docs/proposals/shipped/` (the terminal success state).
 
 Keep that removal PR **draft until Step 2 is verified** — deleting the only copy
 before the new repo has it would lose the product.
