@@ -1,6 +1,6 @@
 # Proposal — Extract `fieldwork/` to Its Own Repo + PDF-With-Code Product Strategy
 
-**Status:** 🟡 Draft — awaiting Audrey's 👍
+**Status:** ✅ Approved (2026-06-13) — execute via [`docs/FIELDWORK_EXTRACTION_RUNBOOK.md`](../../FIELDWORK_EXTRACTION_RUNBOOK.md)
 **Owner:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp
 **Author (draft):** automation agent, drafted on behalf of Jules
 **Date:** 2026-04-24
