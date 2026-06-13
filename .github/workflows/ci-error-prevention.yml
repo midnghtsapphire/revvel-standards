@@ -58,7 +58,9 @@ jobs:
 
       - name: Validate YAML syntax
         run: |
+          shopt -s nullglob
           for f in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -e "$f" ] || continue
             if ! python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null; then
               echo "❌ Invalid YAML: $f"
               exit 1
