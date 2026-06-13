@@ -16,10 +16,10 @@
 ## Repository Metadata
 | Property | Value |
 | --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | N/A — CI automation (not a product repo) |
+| Open Issues | N/A — CI automation (not a product repo) |
+| Private | N/A — CI automation (not a product repo) |
+| Archived | N/A — CI automation (not a product repo) |
 
 ## Research Checklist
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
