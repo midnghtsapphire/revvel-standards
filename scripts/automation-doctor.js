@@ -222,8 +222,10 @@ class AutomationDoctor {
     const reportText = report.join('\n');
     console.log(reportText);
     
-    // Write report to file
-    const reportPath = 'AUTOMATION-DOCTOR-REPORT.md';
+    // Write report to file. Defaults to the tracked root report (committed by
+    // the automation workflow); tests set AUTOMATION_DOCTOR_REPORT to a temp
+    // path so `npm test` never rewrites the committed file (WR #14544).
+    const reportPath = process.env.AUTOMATION_DOCTOR_REPORT || 'AUTOMATION-DOCTOR-REPORT.md';
     fs.writeFileSync(reportPath, reportText);
     console.log(`\n📄 Report written to: ${reportPath}`);
   }

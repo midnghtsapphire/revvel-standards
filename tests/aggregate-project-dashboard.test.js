@@ -112,18 +112,24 @@ if (test('parseProjectCatalog handles rows without markdown links', () => {
 if (test('Dashboard generation runs without errors', () => {
   const { execSync } = require('child_process');
   const path = require('path');
+  const os = require('os');
+  const fs = require('fs');
   const repoRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
-  
+
+  // Write to a temp dir, not the repo root, so a plain `npm test` never rewrites
+  // the committed dashboard (WR #14544). The script honors DASHBOARD_OUT_DIR.
+  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
+
   // Run the aggregator
   execSync('node scripts/aggregate-project-dashboard.js', {
     cwd: repoRoot,
     stdio: 'pipe',
+    env: { ...process.env, DASHBOARD_OUT_DIR: outDir },
   });
-  
+
   // Check that output files exist
-  const fs = require('fs');
-  const dashboardPath = path.join(repoRoot, 'dashboard.html');
-  const dataPath = path.join(repoRoot, 'dashboard-data.json');
+  const dashboardPath = path.join(outDir, 'dashboard.html');
+  const dataPath = path.join(outDir, 'dashboard-data.json');
   
   assert(fs.existsSync(dashboardPath));
   assert(fs.existsSync(dataPath));
