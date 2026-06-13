@@ -20,7 +20,7 @@ Stop re-explaining the same workflow to your AI agent every time.
 The Revvel AI Skills Vault is **49 production-ready "skills"** — focused, copy-paste playbooks that give your AI coding agent expert instructions for one domain. Drop a skill into your project, use a trigger keyword, and your agent instantly knows the rules, workflow, and tools — no trial and error.
 
 **What you get**
-- 49 skill files (SKILL.md / .skill.yml) ready to drop into any repo
+- 49 skills, each as its `SKILL.md` and `<skill-name>.skill.yml`, ready to drop into any repo
 - A full illustrated catalogue PDF (start here)
 - A machine-readable index so your agents auto-load the right skill per task
 

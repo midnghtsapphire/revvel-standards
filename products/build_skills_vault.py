@@ -2,7 +2,8 @@
 """
 Build a sellable catalogue PDF from skills/SKILLS_INDEX.yml.
 Output: products/dist/Revvel-AI-Skills-Vault.pdf
-Pure reportlab (no system deps).
+Requires: reportlab, PyYAML  ->  pip install reportlab pyyaml
+(No native/system deps; pure-Python wheels.)
 """
 import os
 import yaml
@@ -10,7 +11,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.enums import TA_CENTER
 from reportlab.platypus import (
     BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, PageBreak,
     Table, TableStyle, HRFlowable, KeepTogether, NextPageTemplate,
@@ -19,7 +20,6 @@ from reportlab.platypus import (
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, "skills", "SKILLS_INDEX.yml")
 OUTDIR = os.path.join(ROOT, "products", "dist")
-os.makedirs(OUTDIR, exist_ok=True)
 OUT = os.path.join(OUTDIR, "Revvel-AI-Skills-Vault.pdf")
 
 # ---- brand palette ----
@@ -69,7 +69,9 @@ def footer(canvas, doc):
 
 
 def build():
-    data = yaml.safe_load(open(INDEX))
+    os.makedirs(OUTDIR, exist_ok=True)
+    with open(INDEX, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
     skills = data["skills"]
 
     doc = BaseDocTemplate(
@@ -111,7 +113,7 @@ def build():
     story.append(Spacer(1, 8))
     story.append(Paragraph(
         f"This vault contains <b>{len(skills)} skills</b> across "
-        f"<b>{len({s.get('category','') for s in skills})} categories</b>. Each entry below lists "
+        f"<b>{len({s.get('category','Other') for s in skills})} categories</b>. Each entry below lists "
         "what it does and the trigger keywords that activate it.", P_LEAD))
     story.append(Spacer(1, 12))
 
