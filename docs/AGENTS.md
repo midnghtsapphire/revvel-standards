@@ -347,6 +347,12 @@ let it do the work. Match the agent to the asset, and stack them:
   `agent-factory/` (commands, hooks, plugins, settings), the Copilot coding
   agent (`.github/workflows/copilot-setup-steps.yml`), and `swe-agent.yml`.
   See `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`.
+- **Jules (Google) — best at orchestration & PR rewrites.** Hand Jules the
+  refine/rewrite-the-PR job: it restructures and refines the WR doc and the PR
+  itself, and orchestrates the work. Wired via `jules-invoke.yml`,
+  `jules-coding-agent.yml`, and the review/feedback lane
+  (`jules-pr-reviewer.yml`, `jules-feedback.yml`, `jules-pr-comment.yml`).
+  Route PR rewriting/refinement and multi-step orchestration to Jules by default.
 - **OpenRouter swarms / sub-agents / on-demand agents** (above) for fan-out and
   model routing across the 3 LLMs.
 - **Specialist skills** in the vault (`skills/REGISTRY.md`) — e.g.
