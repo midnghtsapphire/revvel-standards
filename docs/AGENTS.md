@@ -357,6 +357,40 @@ let it do the work. Match the agent to the asset, and stack them:
 first; only build by hand when no agent covers it. Cost-rank: free (Roo,
 no-key OpenRouter lanes) → wired-in (Agent Factory / Copilot) → paid.
 
+### Research Fleet — the most important phase, best-in-class
+
+**Research is the highest-priority phase of every WR.** Depth wins over speed:
+invest the best agents and tools here, and never truncate or rush research to
+save time or tokens. This is the one place where **paid APIs are justified**
+(unlike the build phase, which prefers FOSS/free).
+
+**Composition — run the best research team available:**
+
+- **Paid research APIs where they win** — Perplexity `sonar-pro` (the
+  *Professor / citer* persona) for sourced, citation-backed facts;
+  `.github/workflows/perplexity-research-agent.yml`.
+- **OpenRouter across the 3 LLMs** for synthesis, cross-validation, and
+  competing takes on the same question.
+- **openclaw skills** — `skills/openclaw-eeat` (E-E-A-T validation) and
+  `skills/openclaw-self-eval` to grade the research before it ships.
+- **Sub-agents + the 4 on-demand agents + swarms** spread across the research
+  lanes: `research:marketing`, `research:seo`, `research:competitors`,
+  `research:chatter`, `research:facts`, `research:technical`,
+  `research:revenue`, `research:reviewer`. Engines: `research-engine.yml`,
+  `weekly-research.yml`, `research-module.yml`.
+
+**Time & PR policy:** research may legitimately run for **hours**, and a single
+WR's research may **fan out into multiple PRs on the same WR** — that is
+encouraged, not a problem. Break it up by lane/surface rather than shipping
+shallow findings. (Depth-over-speed applies to research; the *build* still
+ships in one iteration — see below.)
+
+**Then review the results.** Research output is **code-reviewed before any
+implementation** — Bito / OpenRouter / CodeRabbit per the *Research Engine
+Review Request* flow — checking factual validation, gaps, fabricated
+references, and implementation risk. No implementation starts on unreviewed
+research.
+
 ### Build Methodology — one iteration, multiple PRs (every project, every size)
 
 **This applies to big builds too.** Every project — no matter how large — ships
