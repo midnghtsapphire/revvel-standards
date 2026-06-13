@@ -29,12 +29,13 @@ const END = '<!-- END:connections -->';
 const FB_BEGIN = '<!-- BEGIN:fallback -->';
 const FB_END = '<!-- END:fallback -->';
 
-const TYPE_ORDER = ['agent', 'mcp', 'api', 'cli', 'github-action', 'app', 'model'];
+const TYPE_ORDER = ['agent', 'mcp', 'api', 'cli', 'library', 'github-action', 'app', 'model'];
 const TYPE_TITLE = {
   agent: 'Agents & orchestration',
   mcp: 'MCP servers',
   api: 'APIs',
   cli: 'CLIs',
+  library: 'Libraries',
   'github-action': 'GitHub Actions',
   app: 'GitHub apps / bots',
   model: 'Models',

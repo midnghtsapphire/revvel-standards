@@ -18,7 +18,6 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `openhands` (OpenHands) | ✅ verified | key | code-gen, issue-resolve, pr-create | github, openrouter | agent-fallback.yml, openhands-resolver.yml | Pre-paywall Devin-class agent, free quota. Now instantiated as free fallback (#14541). |
 | `openrouter` (OpenRouter) | ✅ verified | key | code-gen, pr-review, triage, swarms | github, anthropic, perplexity, deepseek | agent-fallback.yml, openrouter-assignee.yml, ai-pr-review-openrouter.yml | Primary coding agent. Fallback chain: OpenRouter -> OpenHands -> manual. |
 | `roo` (Roo (Roo Code?)) | ⚠️ unverified | unknown | code-gen | jules, linear | — | Owner: 'the one that starts with R' that creates/promotes WR/PR via Linear, and that Jules can reach. Confirm identity + how it's invoked. |
-| `vade` (VADE (Vercel?)) | ⚠️ unverified | unknown | — | vercel | — | Owner now thinks VADE may simply be Vercel (which IS wired — see the vercel entry). If confirmed, merge this into vercel and delete this row. Otherwise: what is VADE and how is it accessed? |
 
 ## MCP servers
 
@@ -57,6 +56,12 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
 
+## Libraries
+
+| Name | Status | Auth | Can access | Connects to | Used by | Notes |
+| --- | :---: | :---: | --- | --- | --- | --- |
+| `vader` (VADER (Valence Aware Dictionary and sEntiment Reasoner)) | ⚠️ unverified | free | sentiment-analysis | — | — | Lexicon + rule-based sentiment analysis (cjhutto/vaderSentiment), forked as midnghtsapphire/vaderSentiment. Owner wants it wired in (social/review/chatter sentiment). Not yet referenced by any workflow — stays unverified until actually used; flip to verified + set used_by once wired. |
+
 ## GitHub apps / bots
 
 | Name | Status | Auth | Can access | Connects to | Used by | Notes |
@@ -64,6 +69,6 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `augment` (Augment Code) | ✅ verified | key | code-review | github | augment-check.yml | — |
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
-| `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). Owner thinks 'VADE' may refer to this — see the vade entry. |
+| `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
 
 *Last generated: 2026-06-13 from `config/connections.yml`.*

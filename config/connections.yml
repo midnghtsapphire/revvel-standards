@@ -152,7 +152,7 @@ connections:
     access: [preview-deploys, production-deploys, hosting]
     connects_to: [github]
     used_by: [vercel-bot]
-    note: "Deploys a preview on every PR (observed via vercel[bot]). Owner thinks 'VADE' may refer to this — see the vade entry."
+    note: "Deploys a preview on every PR (observed via vercel[bot])."
 
   - id: perplexity
     name: Perplexity
@@ -359,14 +359,14 @@ connections:
     connects_to: [digitalocean]
 
   # ── Asserted by owner, NOT yet verified — confirm before relying on these ──
-  - id: vade
-    name: VADE (Vercel?)
-    type: agent
-    auth: unknown
+  - id: vader
+    name: VADER (Valence Aware Dictionary and sEntiment Reasoner)
+    type: library
+    auth: free
     status: unverified
-    access: []
-    connects_to: [vercel]
-    note: "Owner now thinks VADE may simply be Vercel (which IS wired — see the vercel entry). If confirmed, merge this into vercel and delete this row. Otherwise: what is VADE and how is it accessed?"
+    access: [sentiment-analysis]
+    connects_to: []
+    note: "Lexicon + rule-based sentiment analysis (cjhutto/vaderSentiment), forked as midnghtsapphire/vaderSentiment. Owner wants it wired in (social/review/chatter sentiment). Not yet referenced by any workflow — stays unverified until actually used; flip to verified + set used_by once wired."
   - id: roo
     name: Roo (Roo Code?)
     type: agent
