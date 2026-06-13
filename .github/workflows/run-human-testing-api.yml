@@ -1,9 +1,5 @@
 name: Human Testing API
 on:
-
-permissions:
-  contents: read
-
   workflow_dispatch:
     inputs:
       target_url:
@@ -32,6 +28,10 @@ permissions:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: human-testing-api-${{ github.run_id }}
   cancel-in-progress: false

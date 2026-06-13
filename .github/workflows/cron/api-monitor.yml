@@ -22,8 +22,7 @@ jobs:
           for url in $APIs; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
             if [ "$status" = "000" ]; then
-              FAILED="$FAILED
-- $url: TIMEOUT"
+              FAILED="${FAILED}"$'\n'"- $url: TIMEOUT"
             fi
           done
           

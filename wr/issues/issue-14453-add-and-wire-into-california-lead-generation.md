@@ -1,6 +1,6 @@
-# WR: [WR] Add regression tests for red-ocean scoring boundaries and clamping
+# WR: [WR] add and wire into california lead generation
 
-**Issue:** #14441  
+**Issue:** #14453  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-06-10  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -8,10 +8,10 @@
 
 ---
 
-**WR Status:** {STATUS}  
+**WR Status:** ✅ Complete  
 
 ## Issue Context
-{ISSUE_BODY}
+See issue for details.
 
 ## Repository Metadata
 | Property | Value |

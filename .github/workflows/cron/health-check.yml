@@ -26,8 +26,7 @@ jobs:
             url="https://$ep"
             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
             if [ "$status" != "200" ]; then
-              FAILED="$FAILED
-- $ep: HTTP $status"
+              FAILED="${FAILED}"$'\n'"- $ep: HTTP $status"
             fi
           done
           

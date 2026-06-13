@@ -1,13 +1,12 @@
 name: Verify Security Fix
 
 on:
-
-permissions:
-  contents: read
-
   pull_request:
     paths:
       - "penny-sovereign-yield-scout/**"
+
+permissions:
+  contents: read
 
 jobs:
   verify:

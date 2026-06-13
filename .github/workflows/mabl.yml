@@ -42,10 +42,6 @@ name: mabl Automated Tests
 # ──────────────────────────────────────────────────────────────────────────────
 
 on:
-
-permissions:
-  contents: read
-
   # push:
   #   branches:
   #     - main
@@ -73,6 +69,10 @@ permissions:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: mabl-${{ github.ref }}
   cancel-in-progress: true

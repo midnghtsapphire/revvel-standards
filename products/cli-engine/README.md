@@ -39,7 +39,7 @@ Runs at: `http://localhost:3008`
 - Glassmorphic hero with live terminal simulation
 - Floating PDF export card overlay
 - Feature grid (6 capability cards)
-- 30-day ship-to-market execution plan
+- Ship-to-market execution plan
 - Pricing tiers (Starter / Pro / Enterprise)
 - "Run & Export" prominent CTA block
 - Developer waitlist capture form with early-access incentive

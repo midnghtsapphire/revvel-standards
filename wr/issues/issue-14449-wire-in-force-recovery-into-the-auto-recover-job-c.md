@@ -1,6 +1,6 @@
-# WR: [WR] Add regression tests for red-ocean scoring boundaries and clamping
+# WR: [WR] Wire in  force_recovery into the auto-recover job condition
 
-**Issue:** #14441  
+**Issue:** #14449  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-06-10  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -16,10 +16,10 @@
 ## Repository Metadata
 | Property | Value |
 | --- | --- |
-| Stars | N/A — CI automation |
-| Open Issues | N/A — CI automation |
-| Private | N/A — CI automation |
-| Archived | N/A — CI automation |
+| Stars | {STARS} |
+| Open Issues | {OPEN_ISSUES} |
+| Private | {IS_PRIVATE} |
+| Archived | {IS_ARCHIVED} |
 
 ## Research Checklist
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->

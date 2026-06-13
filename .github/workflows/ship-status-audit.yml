@@ -1,12 +1,12 @@
 name: Ship Status Audit
 on:
+  schedule:
+    - cron: 0 0 * * 1
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-  schedule:
-    - cron: 0 0 * * 1
-  workflow_dispatch:
 jobs:
   audit:
     runs-on: ubuntu-latest

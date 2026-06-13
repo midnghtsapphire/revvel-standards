@@ -53,7 +53,7 @@
 
 **Our wedge:** Revvel CLI Engine is the only tool that combines a premium glassmorphic landing page, native PDF export, Stripe billing, and MCP/API orchestration in one deployable Next.js product.
 
-## 30-Day Launch Plan
+## Launch Plan
 
 1. **Week 1:** Deploy landing page to Vercel. Submit to Product Hunt as "CLI Agent UI of the Week". Post on X/Dev.to/Hacker News.
 2. **Week 2:** Open Starter tier. Onboard first 25 paying developers. Publish demo video of live terminal execution.

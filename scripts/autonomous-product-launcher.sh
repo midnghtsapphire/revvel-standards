@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-# autonomous-product-launcher.sh — Launch a new product using the 30-day autonomous framework
+# autonomous-product-launcher.sh — Launch a new product using the autonomous framework
 #
-# This script orchestrates the entire 30-day product launch pipeline based on
-# docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md
+# DEPRECATED 2026-06-13: the "30-day" timeline framing is superseded by the
+# one-iteration ship-to-market standard (docs/DEFINITION_OF_DONE.md). The legacy
+# blueprint it references is archived under docs/30Dayiteration/. The script is
+# kept (not deleted) in case the staged framework is wanted again.
+#
+# This script orchestrates the product launch pipeline based on the archived
+# docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md
 #
 # Usage:
 #   ./scripts/autonomous-product-launcher.sh <product-name> [OPTIONS]
@@ -35,7 +40,7 @@ DRY_RUN=false
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SCRIPT_DIR="$REPO_ROOT/scripts"
-BLUEPRINT="$REPO_ROOT/docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md"
+BLUEPRINT="$REPO_ROOT/docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md"  # archived 2026-06-13
 
 # ============================================================================
 # Helper Functions
@@ -333,7 +338,7 @@ if [ "$DRY_RUN" = false ]; then
 
 ## Resources
 
-- Blueprint: [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- Blueprint: [\`docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../../docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - Project folder: \`projects/agent-generated/$PRODUCT_SLUG/\`
 - Research: \`research/\`
 - Build: \`build/\`
@@ -659,7 +664,7 @@ Your autonomous 30-day product launch has been initialized! 🚀
 
 ## Key Resources
 
-- **Blueprint:** [\`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- **Blueprint:** [\`docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md\`](../../../docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - **Pipeline:** [\`standards/AUTOMATED_PRODUCT_PIPELINE.md\`](../../../standards/AUTOMATED_PRODUCT_PIPELINE.md)
 - **Pricing:** [\`standards/PRICING.md\`](../../../standards/PRICING.md)
 
@@ -738,7 +743,7 @@ log "   - Weekly: Update launch/30-day-plan.md"
 log "   - Launch: $LAUNCH_DATE"
 log ""
 log "📚 Resources:"
-log "   - Blueprint: docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md"
+log "   - Blueprint: docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md"
 log "   - Pipeline: standards/AUTOMATED_PRODUCT_PIPELINE.md"
 log ""
 

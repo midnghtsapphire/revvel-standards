@@ -1,9 +1,5 @@
 name: Vine → Marketplace Automation
 on:
-
-permissions:
-  contents: read
-
   schedule:
     - cron: 0 8 * * *
     - cron: 0 10 * * 1
@@ -28,6 +24,10 @@ permissions:
         description: Fetch emails before (YYYY-MM-DD) — optional
         required: false
         type: string
+
+permissions:
+  contents: read
+
 jobs:
   fetch-and-post:
     name: Fetch Emails + Post New Products

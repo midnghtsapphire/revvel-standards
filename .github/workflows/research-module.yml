@@ -1,9 +1,5 @@
 name: AI Research Module
 on:
-
-permissions:
-  contents: read
-
   workflow_dispatch:
     inputs:
       question:
@@ -23,6 +19,10 @@ permissions:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: research-module-${{ github.run_id }}
   cancel-in-progress: false
