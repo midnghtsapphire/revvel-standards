@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Build a sellable catalogue PDF from skills/SKILLS_INDEX.yml.
+Reusable catalogue-PDF renderer + the full-vault build.
 Output: products/dist/Revvel-AI-Skills-Vault.pdf
 Requires: reportlab, PyYAML  ->  pip install reportlab pyyaml
 (No native/system deps; pure-Python wheels.)
+
+Importable: `load_skills()` and `render_catalogue(...)` are reused by build_packs.py.
 """
 import os
 import yaml
@@ -59,26 +61,35 @@ def cover(canvas, doc):
 def footer(canvas, doc):
     canvas.saveState()
     w, _ = letter
+    label = getattr(doc, "title", "") or "Revvel"
     canvas.setStrokeColor(colors.HexColor("#E3E6F0"))
     canvas.line(0.9 * inch, 0.7 * inch, w - 0.9 * inch, 0.7 * inch)
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(MUTED)
-    canvas.drawString(0.9 * inch, 0.52 * inch, "Revvel AI Skills Vault  ·  © Revvel / MIDNGHTSAPPHIRE")
+    canvas.drawString(0.9 * inch, 0.52 * inch, f"{label}  ·  © Revvel / MIDNGHTSAPPHIRE")
     canvas.drawRightString(w - 0.9 * inch, 0.52 * inch, "Page %d" % doc.page)
     canvas.restoreState()
 
 
-def build():
-    os.makedirs(OUTDIR, exist_ok=True)
+def load_skills():
+    """Return (metadata, skills) from the machine-readable skills index."""
     with open(INDEX, encoding="utf-8") as f:
         data = yaml.safe_load(f)
-    skills = data["skills"]
+    return data, data["skills"]
+
+
+def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
+                     skills, version_line="", price_line="", closing_title="What's inside",
+                     closing_lead=""):
+    """Render a branded catalogue PDF for the given list of skill records."""
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    n_cats = len({s.get("category", "Other") for s in skills})
 
     doc = BaseDocTemplate(
-        OUT, pagesize=letter,
+        out_path, pagesize=letter,
         leftMargin=0.9 * inch, rightMargin=0.9 * inch,
         topMargin=0.9 * inch, bottomMargin=0.9 * inch,
-        title="Revvel AI Skills Vault", author="Revvel / MIDNGHTSAPPHIRE",
+        title=doc_title, author="Revvel / MIDNGHTSAPPHIRE",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="main")
     cover_frame = Frame(0.9 * inch, 1.2 * inch, letter[0] - 1.8 * inch, letter[1] - 2.8 * inch, id="cover")
@@ -91,33 +102,26 @@ def build():
 
     # ---------- COVER ----------
     story += [Spacer(1, 2.4 * inch)]
-    story += [Paragraph("THE REVVEL", H_SUB)]
-    story += [Paragraph("AI&nbsp;Skills&nbsp;Vault", H_TITLE)]
+    story += [Paragraph(hero_kicker, H_SUB)]
+    story += [Paragraph(hero_title, H_TITLE)]
     story += [Spacer(1, 0.18 * inch)]
-    story += [Paragraph(
-        f"{len(skills)} production-ready agent skills for Claude Code, Cursor, "
-        "Windsurf, Cline &amp; any AI coding agent. Copy-paste playbooks that turn "
-        "a generic agent into a domain expert — code review, automation, OSINT, "
-        "compliance, analytics, product ops &amp; more.", H_SUB)]
-    story += [Spacer(1, 0.5 * inch)]
-    story += [Paragraph("v" + str(data.get("vault_version", "1.0")) +
-                        "  ·  updated " + str(data.get("last_updated", "")), H_SUB)]
+    story += [Paragraph(hero_sub, H_SUB)]
+    if version_line:
+        story += [Spacer(1, 0.5 * inch), Paragraph(version_line, H_SUB)]
     story += [NextPageTemplate("body"), PageBreak()]
 
     # ---------- INTRO ----------
-    story.append(Paragraph("What's inside", H_CAT))
+    story.append(Paragraph(closing_title, H_CAT))
     story.append(Paragraph(
         "A <b>skill</b> is a focused, copy-paste playbook that gives an AI agent expert "
         "instructions for one domain. Load it at the start of a task and the agent instantly "
         "knows the rules, workflow and tools for that domain — no trial and error.", P_LEAD))
     story.append(Spacer(1, 8))
     story.append(Paragraph(
-        f"This vault contains <b>{len(skills)} skills</b> across "
-        f"<b>{len({s.get('category','Other') for s in skills})} categories</b>. Each entry below lists "
-        "what it does and the trigger keywords that activate it.", P_LEAD))
+        f"This pack contains <b>{len(skills)} skills</b> across <b>{n_cats} categories</b>. "
+        "Each entry below lists what it does and the trigger keywords that activate it.", P_LEAD))
     story.append(Spacer(1, 12))
 
-    # how to use box
     how = Table([[Paragraph(
         "<b>How to use</b>&nbsp;&nbsp;1) Pick the skill for your task.&nbsp; "
         "2) Paste its playbook into your agent / project rules.&nbsp; "
@@ -133,7 +137,6 @@ def build():
     story.append(PageBreak())
 
     # ---------- CATALOGUE ----------
-    # group by category, preserve order of first appearance
     order, groups = [], {}
     for s in skills:
         cat = s.get("category", "Other")
@@ -146,18 +149,15 @@ def build():
     story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
 
     for cat in order:
-        block = [Paragraph(cat.upper(), st("catlabel", fontName="Helvetica-Bold",
-                                           fontSize=9.5, textColor=ACCENT, spaceBefore=10, spaceAfter=2))]
-        story.append(KeepTogether(block))
+        story.append(KeepTogether([Paragraph(cat.upper(), st(
+            "catlabel", fontName="Helvetica-Bold", fontSize=9.5,
+            textColor=ACCENT, spaceBefore=10, spaceAfter=2))]))
         for s in groups[cat]:
-            title = s.get("title", s.get("name", ""))
-            trig = s.get("triggers", [])[:6]
-            persona = s.get("persona", "")
-            rows = [Paragraph(title, H_SKILL)]
-            if persona:
-                rows.append(Paragraph(f"Persona: {persona}", P_TRIG))
-            if trig:
-                rows.append(Paragraph("Triggers: " + ", ".join(trig), P_TRIG))
+            rows = [Paragraph(s.get("title", s.get("name", "")), H_SKILL)]
+            if s.get("persona"):
+                rows.append(Paragraph(f"Persona: {s['persona']}", P_TRIG))
+            if s.get("triggers"):
+                rows.append(Paragraph("Triggers: " + ", ".join(s["triggers"][:6]), P_TRIG))
             tbl = Table([[r] for r in rows], colWidths=[doc.width])
             tbl.setStyle(TableStyle([
                 ("LEFTPADDING", (0, 0), (-1, -1), 10), ("RIGHTPADDING", (0, 0), (-1, -1), 10),
@@ -169,20 +169,39 @@ def build():
 
     # ---------- CLOSING ----------
     story.append(PageBreak())
-    story.append(Paragraph("Get the full vault", H_CAT))
-    story.append(Paragraph(
-        "This catalogue is the map. The full vault download includes every skill file "
-        "(<i>SKILL.md / .skill.yml</i>) ready to drop into your repo, plus the machine-readable "
-        "index so your agents can auto-load the right skill per task.", P_LEAD))
-    story.append(Spacer(1, 10))
-    story.append(Paragraph(
-        "Single skill packs · $29   |   Full vault (all skills) · $99", H_CAT))
+    story.append(Paragraph("Get it", H_CAT))
+    if closing_lead:
+        story.append(Paragraph(closing_lead, P_LEAD))
+        story.append(Spacer(1, 10))
+    if price_line:
+        story.append(Paragraph(price_line, H_CAT))
     story.append(Paragraph(
         "Licensed for use in your own projects. Not for resale or redistribution as a competing pack.",
         P_TRIG))
 
     doc.build(story)
-    print("WROTE", OUT, "(%.0f KB)" % (os.path.getsize(OUT) / 1024))
+    print("WROTE", out_path, "(%.0f KB)" % (os.path.getsize(out_path) / 1024))
+
+
+def build():
+    data, skills = load_skills()
+    render_catalogue(
+        OUT,
+        doc_title="Revvel AI Skills Vault",
+        hero_kicker="THE REVVEL",
+        skills=skills,
+        hero_title="AI&nbsp;Skills&nbsp;Vault",
+        hero_sub=(f"{len(skills)} production-ready agent skills for Claude Code, Cursor, "
+                  "Windsurf, Cline &amp; any AI coding agent. Copy-paste playbooks that turn "
+                  "a generic agent into a domain expert — code review, automation, OSINT, "
+                  "compliance, analytics, product ops &amp; more."),
+        version_line=("v" + str(data.get("vault_version", "1.0")) +
+                      "  ·  updated " + str(data.get("last_updated", ""))),
+        price_line="Single skill packs · $29   |   Full vault (all skills) · $99",
+        closing_lead=("The full vault download includes every skill file (each skill's "
+                      "SKILL.md and &lt;skill&gt;.skill.yml) ready to drop into your repo, plus "
+                      "the machine-readable index so your agents auto-load the right skill per task."),
+    )
 
 
 if __name__ == "__main__":
