@@ -33,7 +33,7 @@ Break-even estimate:
 - Fixed stack cost baseline from BOM: ~$39/mo
 - Break-even at ~3 Starter subscribers (or 1 Pro subscriber)
 
-## 30-Day Execution Checklist
+## Launch Execution Checklist
 
 - [ ] Publish live Vercel deployment
 - [ ] Enable Polar checkout link for paid plans

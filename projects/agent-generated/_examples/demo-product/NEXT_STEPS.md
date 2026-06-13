@@ -32,7 +32,7 @@ Your autonomous 30-day product launch has been initialized! 🚀
 
 ## Key Resources
 
-- **Blueprint:** [`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- **Blueprint:** [`docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](../../docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - **Pipeline:** [`standards/AUTOMATED_PRODUCT_PIPELINE.md`](../../standards/AUTOMATED_PRODUCT_PIPELINE.md)
 - **Pricing:** [`standards/PRICING.md`](../../standards/PRICING.md)
 

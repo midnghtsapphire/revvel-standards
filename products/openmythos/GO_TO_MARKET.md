@@ -18,7 +18,7 @@
 | Pro | $79/month | Myth workspace + automation prompts |
 | Studio | $399 sprint | Done-with-you ship-to-market setup |
 
-## 30-Day Launch Plan
+## Launch Plan
 
 1. **Week 1:** Launch waitlist page + announce in creator communities.
 2. **Week 2:** Publish 2 showcase templates and 1 case-study landing page.
