@@ -253,33 +253,27 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   }
 });
 
-test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
+test('agent-audit-logger.yml persists audit entries without committing to main', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
-  const commitStep = doc.jobs['log-agent-action'].steps.find(
-    (step) => step.name === 'Commit audit log'
-  );
+  const steps = doc.jobs['log-agent-action'].steps;
 
-  if (!commitStep) throw new Error('Commit audit log step not found');
+  // The old commit-and-push-to-main step was the source of push contention
+  // and a flood of "chore: log agent action" commits. It must be gone.
+  const hasGitPush = steps.some((step) => (step.run || '').includes('git push'));
+  if (hasGitPush) {
+    throw new Error('log-agent-action must not push the audit log to main');
+  }
 
-  const script = commitStep.run || '';
-  if (!script.includes('for attempt in 1 2 3')) {
-    throw new Error('Commit step must retry git push attempts');
+  const persistStep = steps.find((step) => step.name === 'Persist audit entry');
+  if (!persistStep) throw new Error('Persist audit entry step not found');
+  if (!(persistStep.run || '').includes('GITHUB_STEP_SUMMARY')) {
+    throw new Error('Persist step must write the entry to the job summary');
   }
-  if (!script.includes('fetch first|non-fast-forward')) {
-    throw new Error('Commit step must detect non-fast-forward push errors');
-  }
-  if (!script.includes('git pull --rebase origin main')) {
-    throw new Error('Commit step must rebase before retrying push');
-  }
-  if (!script.includes('Rebase failed; audit log push aborted.')) {
-    throw new Error('Commit step must log rebase failure details');
-  }
-  if (!script.includes('Push failed with non-rebaseable error; audit log push aborted.')) {
-    throw new Error('Commit step must log non-rebaseable push failures');
-  }
-  if (!script.includes('exit 0')) {
-    throw new Error('Commit step must exit cleanly when push remains blocked');
+
+  const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
+  if (!uploadStep || !String(uploadStep.uses || '').startsWith('actions/upload-artifact')) {
+    throw new Error('Audit entry must be retained via upload-artifact');
   }
 });
 
