@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**40** connections · **37** verified · **3** unverified (confirm before relying on them).
+**41** connections · **38** verified · **3** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -18,7 +18,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `openhands` (OpenHands) | ✅ verified | key | code-gen, issue-resolve, pr-create | github, openrouter | agent-fallback.yml, openhands-resolver.yml | Pre-paywall Devin-class agent, free quota. Now instantiated as free fallback (#14541). |
 | `openrouter` (OpenRouter) | ✅ verified | key | code-gen, pr-review, triage, swarms | github, anthropic, perplexity, deepseek | agent-fallback.yml, openrouter-assignee.yml, ai-pr-review-openrouter.yml | Primary coding agent. Fallback chain: OpenRouter -> OpenHands -> manual. |
 | `roo` (Roo (Roo Code?)) | ⚠️ unverified | unknown | code-gen | jules, linear | — | Owner: 'the one that starts with R' that creates/promotes WR/PR via Linear, and that Jules can reach. Confirm identity + how it's invoked. |
-| `vade` (VADE) | ⚠️ unverified | unknown | — | — | — | Owner: excellent — wants it wired in. No env key / workflow found yet. Needs setup details. |
+| `vade` (VADE (Vercel?)) | ⚠️ unverified | unknown | — | vercel | — | Owner now thinks VADE may simply be Vercel (which IS wired — see the vercel entry). If confirmed, merge this into vercel and delete this row. Otherwise: what is VADE and how is it accessed? |
 
 ## MCP servers
 
@@ -64,5 +64,6 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `augment` (Augment Code) | ✅ verified | key | code-review | github | augment-check.yml | — |
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
+| `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). Owner thinks 'VADE' may refer to this — see the vade entry. |
 
 *Last generated: 2026-06-13 from `config/connections.yml`.*

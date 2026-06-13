@@ -129,6 +129,16 @@ connections:
     connects_to: [github]
     used_by: [augment-check.yml]
 
+  - id: vercel
+    name: Vercel
+    type: app
+    auth: oauth
+    status: verified
+    access: [preview-deploys, production-deploys, hosting]
+    connects_to: [github]
+    used_by: [vercel-bot]
+    note: "Deploys a preview on every PR (observed via vercel[bot]). Owner thinks 'VADE' may refer to this — see the vade entry."
+
   - id: perplexity
     name: Perplexity
     type: api
@@ -335,13 +345,13 @@ connections:
 
   # ── Asserted by owner, NOT yet verified — confirm before relying on these ──
   - id: vade
-    name: VADE
+    name: VADE (Vercel?)
     type: agent
     auth: unknown
     status: unverified
     access: []
-    connects_to: []
-    note: "Owner: excellent — wants it wired in. No env key / workflow found yet. Needs setup details."
+    connects_to: [vercel]
+    note: "Owner now thinks VADE may simply be Vercel (which IS wired — see the vercel entry). If confirmed, merge this into vercel and delete this row. Otherwise: what is VADE and how is it accessed?"
   - id: roo
     name: Roo (Roo Code?)
     type: agent
