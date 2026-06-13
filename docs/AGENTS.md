@@ -309,6 +309,39 @@ When a task is complex:
 - **Synthesize results** — combine outputs into cohesive whole
 - **Verify quality** — ensure all pieces work together
 
+### Agent Fleet Architecture — how the 400+ agents are composed
+
+The fleet is **400+ agents, but they are NOT 400 massive pre-canned agent
+definitions.** Do not build or expect a giant static roster of hardcoded
+agents. The count is reached by **dynamic composition** at run time:
+
+- **Sub-agents** — spawned per task to handle independent subtasks, then retired.
+- **On-demand agents** — created when a task needs one and torn down after;
+  never persisted as a permanent canned agent.
+- **OpenRouter routing across 3 LLMs** — model selection (not 400 separate
+  brains) is what gives each agent its capability; route via
+  `scripts/openrouter-routing.js` / the `openrouter-swarms` skill.
+- **~300 swarms** — parallel micro-agent groups for large fan-out work. Keep
+  each swarm small (≤10 agents without explicit approval, per
+  `skills/openrouter-swarms/SKILL.md`); scale by spawning more swarms, not by
+  inflating a single one.
+
+**Rule of thumb:** reach for the lightest topology that works — single agent →
+sub-agents → MAS → swarm — and compose on demand. A new permanent "canned"
+agent is the exception, not the default; prefer a sub-agent, an on-demand
+agent, or a swarm. See `skills/openrouter-swarms/SKILL.md` for the topology
+decision tree and spawn protocol.
+
+### Build Methodology — one iteration, multiple PRs (every project, every size)
+
+**This applies to big builds too.** Every project — no matter how large — ships
+in a **single iteration** (no "Phase 1 / MVP-first / 30-day"; see
+`docs/DEFINITION_OF_DONE.md`). When the work spans multiple surfaces
+(app / cli / api / pdf / mcp / docs), **fan out into multiple PRs** — one per
+surface — rather than one monster PR or a partial patch. The bundle defined by
+the WR is the deliverable; do not silently defer parts of it. A large build is
+still one iteration: many parallel agents/swarms, many PRs, one shipped outcome.
+
 ### The Bottom Line
 
 **You do not wait. You do not escalate. You do not accept "I don't know" as an answer.**

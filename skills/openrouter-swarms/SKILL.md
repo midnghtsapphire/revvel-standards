@@ -17,6 +17,15 @@ This skill defines **when and how to use OpenRouter, Multi-Agent Systems (MAS), 
 
 **Issue reference:** GitHub Issue #41 — *"I need a system of when to use MAS, SWARMs and sub agents. I would like to give them a human name."*
 
+### Fleet scale & composition
+
+The Revvel fleet is **400+ agents reached by dynamic composition — not 400
+pre-canned agents.** It is made of **sub-agents** (spawned per task),
+**on-demand agents** (created when needed, then retired), **OpenRouter routing
+across 3 LLMs** for capability, and **~300 swarms** for fan-out. Scale by
+spawning more swarms, not by inflating one swarm or minting permanent canned
+agents. See `docs/AGENTS.md` → *Agent Fleet Architecture*.
+
 ---
 
 ## What This Skill Does
