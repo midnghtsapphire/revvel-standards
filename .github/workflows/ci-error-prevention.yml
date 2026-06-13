@@ -160,5 +160,5 @@ jobs:
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Error Prevention Tests | ${{ needs.error-prevention-tests.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Workflow Lint | ${{ needs.lint-workflows.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Token Security | ${{ needs.token-security-check.result == 'success' && '✅' || '❌' }} |" >> $GITHANG_STEP_SUMMARY
+          echo "| Token Security | ${{ needs.token-security-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Automation Health | ${{ needs.automation-health.result == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY

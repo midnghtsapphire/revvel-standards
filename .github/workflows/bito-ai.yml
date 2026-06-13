@@ -131,8 +131,7 @@ jobs:
           fi
           
           if [ -z "${GIT_ACCESS_TOKEN}" ]; then
-echo "MISSING_SECRETS=${MISSING[*]}" >> "$GITHUB_ENV"
-echo "BITO_SKIP=true" >> "$GITHUB_ENV"
+            echo "❌ GIT_ACCESS_TOKEN: MISSING"
             MISSING+=("GIT_ACCESS_TOKEN")
           else
             echo "✅ GIT_ACCESS_TOKEN: configured (${#GIT_ACCESS_TOKEN} chars)"
@@ -226,19 +225,7 @@ echo "BITO_SKIP=true" >> "$GITHUB_ENV"
       # STEP: Run BITO Code Review
       # ⚠️  NOTE: Using @main - see documentation at top of file
       # -------------------------------------------------------------------------
-if (outcome === 'success') {
-  labels.push('awaiting-approval');
-  try {
-    await github.rest.issues.removeLabel({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: prNumber,
-      name: 'bito-ai:changes-needed',
-    });
-  } catch (_) { /* label not present */ }
-} else {
-  labels.push('bito-ai:changes-needed');
-}
+      - name: Run BITO Code Review
         id: bito-review
         if: env.BITO_SKIP == 'false'
         uses: gitbito/codereviewagent@main
