@@ -8,7 +8,7 @@
 
 | Requirement | Status | Notes |
 | --- | :---: | --- |
-| Live deployment URL | ❌ | no URL in app-deployments.yml |
+| Live deployment URL | ❌ | no URL — set deployment.base_url or a per-app live_url |
 | README `## Live Deployment` | ➖ | n/a — lives in midnghtsapphire/sessiono |
 | Live web test interface | ➖ | n/a — lives in midnghtsapphire/sessiono |
 | .mcp.json at root | ➖ | n/a — lives in midnghtsapphire/sessiono |

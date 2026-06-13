@@ -70,7 +70,9 @@ def main():
 
     with open(MANIFEST, encoding="utf-8") as f:
         text = f.read()
-    app_keys = set((yaml.safe_load(text) or {}).get("apps", {}).keys())
+    manifest = yaml.safe_load(text) or {}
+    app_keys = set((manifest.get("apps") or {}).keys())
+    deploy_project = ((manifest.get("deployment") or {}).get("project") or "").strip()
 
     try:
         projects = list_all_projects(requests, headers, team_q)
@@ -80,6 +82,24 @@ def main():
         return 0
 
     updated = 0
+    # Fill deployment.base_url from the single docs-serving project, so every app
+    # gets a working <base_url>/docs/<app>/ link.
+    if deploy_project:
+        proj = next((p for p in projects if p.get("name") == deploy_project), None)
+        if proj:
+            try:
+                base = latest_prod_url(requests, headers, team_q, proj.get("id"))
+            except Exception as e:
+                print(f"vercel_sync: ERROR fetching base deployment ({e}).", file=sys.stderr)
+                base = ""
+            if base:
+                pat = re.compile(r'(?m)^(\s*base_url:\s*")[^"\n]*(")')
+                new, n = pat.subn(rf'\g<1>{base}\g<2>', text)
+                if n:
+                    text = new
+                    updated += 1
+                    print(f"  deployment.base_url -> {base}")
+
     for proj in projects:
         name = proj.get("name", "")
         if name not in app_keys:

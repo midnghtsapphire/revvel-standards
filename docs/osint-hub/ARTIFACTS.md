@@ -8,7 +8,7 @@
 
 | Requirement | Status | Notes |
 | --- | :---: | --- |
-| Live deployment URL | ❌ | no URL in app-deployments.yml |
+| Live deployment URL | ❌ | no URL — set deployment.base_url or a per-app live_url |
 | README `## Live Deployment` | ❌ | section missing / URL not in README |
 | Live web test interface | ✅ | web app detected |
 | .mcp.json at root | ❌ | missing |
