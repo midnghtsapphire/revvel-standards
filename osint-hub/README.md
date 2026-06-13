@@ -4,11 +4,6 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/osint-hub/)**
 
-
-![OSINT Hub](https://img.shields.io/badge/OSINT-Hub-3a86ff?style=for-the-badge)
-![AI Powered](https://img.shields.io/badge/AI-Powered-8338ec?style=for-the-badge)
-![Open Source](https://img.shields.io/badge/Open-Source-06ffa5?style=for-the-badge)
-
 ## 🎯 Overview
 
 **OSINT Hub** is a next-generation intelligence platform built for researchers, security professionals, and digital investigators who operate at machine speed. Combining AI orchestration, automated reconnaissance, and fusion-powered analysis, OSINT Hub represents the future of intelligence gathering.

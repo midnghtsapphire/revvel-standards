@@ -4,15 +4,6 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/coldtrace/)**
 
-
-**Author:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp  
-**Status:** IN BUILD  
-**Subdomain:** `coldtrace.oaudrey.com`  
-**Repo (target):** `midnghtsapphire/coldtrace`  
-**WR:** `revvel-standards/wr/specs/11-coldtrace.md`
-
----
-
 ## What Is This?
 
 **ColdTrace** is an open-source temporal GIS platform for cold case

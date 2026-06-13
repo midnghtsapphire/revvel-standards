@@ -4,9 +4,6 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/life-insurance-lead-engine/)**
 
-
-A production-ready Next.js application that generates high-value life insurance leads by querying the NPPES NPI Registry API for medical professionals, scoring them by specialty, and producing tailored pitch scripts. Also includes a CSV/Excel deduplication utility.
-
 ## Mission Alignment
 
 This product is part of the **$10M in 3 Years** prime directive pipeline.

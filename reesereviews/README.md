@@ -4,12 +4,6 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/reesereviews/)**
 
-
-**Status:** Live  
-**Domain:** [reesereviews.com](https://reesereviews.com)  
-**Repository:** Part of revvel-standards  
-**Version:** 1.0.0
-
 ## Overview
 
 Reese Reviews is a professional product review platform focused on Amazon Vine reviews, featuring:

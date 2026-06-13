@@ -4,16 +4,6 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/creator-payout-tracker/)**
 
-
-> **Which platform pays creators the most in 2025?** — A free, creator-first payout comparison and earnings calculator.
-
-[![WR Issue](https://img.shields.io/badge/WR-%2313641-blue)](https://github.com/midnghtsapphire/revvel-standards/issues/13641)
-[![Status](https://img.shields.io/badge/status-shipped-green)](https://github.com/midnghtsapphire/revvel-standards)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org)
-[![Port](https://img.shields.io/badge/dev--port-3005-purple)](http://localhost:3005)
-
----
-
 ## What It Is
 
 Creator Payout Tracker is a **Next.js 15 web app** that shows real 2025 payout rates for 12 major creator platforms — YouTube, TikTok, Patreon, Substack, Kick, Twitch, OnlyFans, Spotify, Ko-fi, Instagram, and more — and lets creators calculate estimated monthly earnings based on their own metrics.
