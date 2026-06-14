@@ -86,7 +86,7 @@ test('injectReadme targets a specific marker pair and no-ops when absent', () =>
   assert.equal(reg.injectReadme('no markers', 'x', reg.FB_BEGIN, reg.FB_END), 'no markers');
 });
 
-test('the real README ends up with both generated blocks after main()', () => {
+test('SSOT defines a fallback chain', () => {
   const doc = reg.load(path.join(__dirname, '../config/connections.yml'));
   assert.ok((doc.meta.fallback_chain || []).length >= 2, 'SSOT must define a fallback chain');
 });
