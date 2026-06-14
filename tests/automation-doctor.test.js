@@ -3,16 +3,30 @@
  */
 
 // 2026-05-21 (Claude): import BDD globals so the file runs directly and under `node --test`.
-const { describe, it } = require('node:test');
+const { after, describe, it } = require('node:test');
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 // Redirect the doctor report to a temp file BEFORE requiring the script, so any
 // doctor.run() during tests never rewrites the tracked AUTOMATION-DOCTOR-REPORT.md
 // (WR #14544 — `npm test` must leave the working tree clean).
-process.env.AUTOMATION_DOCTOR_REPORT = require('path').join(
-  require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'doctor-test-')),
+const previousAutomationDoctorReport = process.env.AUTOMATION_DOCTOR_REPORT;
+const doctorTestTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'doctor-test-'));
+process.env.AUTOMATION_DOCTOR_REPORT = path.join(
+  doctorTestTempDir,
   'AUTOMATION-DOCTOR-REPORT.md'
 );
+
+after(() => {
+  if (previousAutomationDoctorReport === undefined) {
+    delete process.env.AUTOMATION_DOCTOR_REPORT;
+  } else {
+    process.env.AUTOMATION_DOCTOR_REPORT = previousAutomationDoctorReport;
+  }
+  fs.rmSync(doctorTestTempDir, { recursive: true, force: true });
+});
 
 const { AutomationDoctor, CONFIG } = require('../scripts/automation-doctor.js');
 
