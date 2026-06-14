@@ -78,12 +78,16 @@ def load_skills():
     return data, data["skills"]
 
 
+def category_name(skill):
+    return skill.get("category") or "Other"
+
+
 def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
                      skills, version_line="", price_line="", closing_title="What's inside",
                      closing_lead=""):
     """Render a branded catalogue PDF for the given list of skill records."""
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    n_cats = len({s.get("category", "Other") for s in skills})
+    n_cats = len({category_name(skill) for skill in skills})
 
     doc = BaseDocTemplate(
         out_path, pagesize=letter,
@@ -139,7 +143,7 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
     # ---------- CATALOGUE ----------
     order, groups = [], {}
     for s in skills:
-        cat = s.get("category", "Other")
+        cat = category_name(s)
         if cat not in groups:
             groups[cat] = []
             order.append(cat)
