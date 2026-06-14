@@ -16,10 +16,10 @@
 ## Repository Metadata
 | Property | Value |
 | --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | N/A |
+| Open Issues | N/A |
+| Private | No |
+| Archived | No |
 
 ## Research Checklist
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
