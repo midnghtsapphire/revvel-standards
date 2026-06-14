@@ -166,8 +166,7 @@ function renderFallbackBlock(doc) {
 }
 
 function renderHtml(doc) {
-  const data = JSON.stringify(doc.connections);
-  return `<!doctype html>
+  const data = JSON.stringify(doc.connections).replace(/</g, '\\u003c');
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
