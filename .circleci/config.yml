@@ -16,7 +16,7 @@ orbs:
 executors:
   node-executor:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:22.11
 
 jobs:
   lint-and-test:
