@@ -254,3 +254,4 @@ failed auto-fix attempts by pinging `@midnghtsapphire` and applying
 - [`skills/openrouter-swarms/SKILL.md`](../skills/openrouter-swarms/SKILL.md) — the downstream swarm
 - [`OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIGNEE_PROCESS.md) — the routing contract consumed by this bot
 - [`STARRED_REPOS_EVAL_2026-04-20.md`](./STARRED_REPOS_EVAL_2026-04-20.md) — hand-authored precedent for the same evaluation pattern
+- [`JULES_ACTION_FORK_AUDIT.md`](./JULES_ACTION_FORK_AUDIT.md) — worked example of a Band C "mirror issue only" audit resolution (`BeksOmega/jules-action`, score 44)
