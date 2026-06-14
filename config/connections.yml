@@ -15,8 +15,7 @@
 #   unverified — asserted but not yet confirmed; DO NOT treat as fact until
 #                someone flips it to verified (anti-hallucination discipline)
 #
-# type:   agent | mcp | api | cli | github-action | app | model
-# auth:   free | key | paid | oauth | none
+# type:   agent | mcp | api | cli | library | github-action | app | model
 # ═══════════════════════════════════════════════════════════════════════════
 
 meta:
