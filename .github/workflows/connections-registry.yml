@@ -30,8 +30,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-      - name: Install YAML parser
-        run: npm install --no-save yaml
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Drift check (warn on PRs)
         run: node scripts/connections-registry.js --drift
       - name: Regenerate views
