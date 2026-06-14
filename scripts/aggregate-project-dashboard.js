@@ -20,6 +20,7 @@ const DOCS_DIR = path.join(REPO_ROOT, 'docs');
 // the real tracked dashboard). Tests set DASHBOARD_OUT_DIR to a temp dir so a
 // plain `npm test` no longer rewrites the committed dashboard (WR #14544).
 const OUT_DIR = process.env.DASHBOARD_OUT_DIR || REPO_ROOT;
+fs.mkdirSync(OUT_DIR, { recursive: true });
 const OUTPUT_FILE = path.join(OUT_DIR, 'dashboard.html');
 const DATA_FILE = path.join(OUT_DIR, 'dashboard-data.json');
 
