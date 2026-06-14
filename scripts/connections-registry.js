@@ -204,7 +204,14 @@ const DATA = ${data};
 const tbody = document.querySelector('#t tbody');
 const typeSel = document.getElementById('type');
 [...new Set(DATA.map(d=>d.type))].sort().forEach(t=>{const o=document.createElement('option');o.value=o.textContent=t;typeSel.appendChild(o);});
-const tags = a => (a||[]).map(x=>'<span class="tag">'+x+'</span>').join('') || '—';
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}[c]));
+const tags = (a) => (a || []).map((x) => '<span class="tag">' + esc(x) + '</span>').join('') || '—';
 let sortK='type', asc=true;
 function render(){
   const q=document.getElementById('q').value.toLowerCase();
@@ -215,12 +222,12 @@ function render(){
   });
   rows.sort((a,b)=>((a[sortK]||'')+'').localeCompare((b[sortK]||'')+'')*(asc?1:-1));
   tbody.innerHTML=rows.map(d=>'<tr>'+
-    '<td><code>'+d.id+'</code><br><small>'+(d.name||'')+'</small></td>'+
-    '<td>'+d.type+'</td>'+
-    '<td class="'+(d.status==='verified'?'v':'u')+'">'+(d.status||'')+'</td>'+
-    '<td>'+(d.auth||'')+'</td>'+
+    '<td><code>'+esc(d.id)+'</code><br><small>'+(d.name?esc(d.name):'')+'</small></td>'+
+    '<td>'+esc(d.type)+'</td>'+
+    '<td class="'+(d.status==='verified'?'v':'u')+'">'+esc(d.status||'')+'</td>'+
+    '<td>'+(d.auth?esc(d.auth):'')+'</td>'+
     '<td>'+tags(d.access)+'</td><td>'+tags(d.connects_to)+'</td><td>'+tags(d.used_by)+'</td>'+
-    '<td>'+(d.note||'')+'</td></tr>').join('');
+    '<td>'+(d.note?esc(d.note):'')+'</td></tr>').join('');
   document.getElementById('count').textContent=rows.length+' / '+DATA.length+' shown';
 }
 document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;asc=sortK===k?!asc:true;sortK=k;render();});
