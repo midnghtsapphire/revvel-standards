@@ -252,7 +252,7 @@ jobs:
             fi
           fi
       - name: Try OpenHands AI (Opt-in Only - Paid Service)
-        if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHands_available == 'true' && inputs.prefer_agent == 'OpenHands'
+if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == 'auto')
         id: OpenHands
         continue-on-error: true
         env:
