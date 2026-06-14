@@ -1,5 +1,11 @@
 name: RecurseML — Autonomous Code Review
 on:
+  # RecurseML reviews PRs (its primary job) as well as pushes to protected
+  # branches. The pull_request trigger was missing here, so the step that
+  # builds a PR-scoped diff (github.event_name == "pull_request") never ran on
+  # PRs — restored to match templates/cicd/recurse-ml.yml.
+  pull_request:
+    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
