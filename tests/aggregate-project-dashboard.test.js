@@ -126,7 +126,6 @@ if (test('Dashboard generation runs without errors', () => {
       stdio: 'pipe',
       env: { ...process.env, DASHBOARD_OUT_DIR: outDir },
     });
-
     // Check that output files exist
     const dashboardPath = path.join(outDir, 'dashboard.html');
     const dataPath = path.join(outDir, 'dashboard-data.json');
