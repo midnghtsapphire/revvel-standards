@@ -51,7 +51,7 @@ RECORD — not to do the task.** Specifically:
    job and compounds.
 3. **Record provenance for everything:** who proposed the idea, who executed,
    which model/route was used, how long it took, and how it scored. That ledger
-   (`logs/agent-audit/`, the scorecard, `decisions.jsonl`) IS the product.
+   (`logs/agent-audit/`, the scorecard, `wr/memory/decisions.jsonl`) IS the product.
 4. **Re-anchor often.** If you notice yourself writing code/content that belongs
    to another agent's lane, **stop, hand it off, and log it.** Re-read this
    section — it's the sticky note. Everyone forgets this under load; the reminder
