@@ -87,7 +87,6 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
                      closing_lead=""):
     """Render a branded catalogue PDF for the given list of skill records."""
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    n_cats = len({category_name(skill) for skill in skills})
 
     doc = BaseDocTemplate(
         out_path, pagesize=letter,
@@ -148,6 +147,7 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
             groups[cat] = []
             order.append(cat)
         groups[cat].append(s)
+    n_cats = len(groups)
 
     story.append(Paragraph("The Catalogue", H_CAT))
     story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
