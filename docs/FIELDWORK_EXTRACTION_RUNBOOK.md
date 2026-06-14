@@ -1,7 +1,7 @@
 # Fieldwork Extraction Runbook
 
 Executes the approved proposal
-[`docs/proposals/active/fieldwork-extraction-and-pdf-products.md`](proposals/active/fieldwork-extraction-and-pdf-products.md):
+[`docs/proposals/approved/fieldwork-extraction-and-pdf-products.md`](proposals/approved/fieldwork-extraction-and-pdf-products.md):
 move `fieldwork/` out of `revvel-standards` into its own repo
 (`midnghtsapphire/fieldwork`), with **full git history preserved**.
 
