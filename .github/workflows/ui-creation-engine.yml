@@ -43,9 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     if: |
-      (github.event_name == 'issues' && github.event.label.name == 'ui-creation') ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@copilot ui-engine')) ||
-      github.event_name == 'workflow_dispatch'
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.sender.type != 'Bot' && (
+        (github.event_name == 'issues' && github.event.label.name == 'ui-creation') ||
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@copilot ui-engine'))))
     
     steps:
       - name: Checkout repository
