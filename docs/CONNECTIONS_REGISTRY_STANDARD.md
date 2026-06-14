@@ -14,7 +14,7 @@ connect to?" — so capability got re-scaffolded or ignored.
 ## How it works
 
 - **SSOT:** [`config/connections.yml`](../config/connections.yml) — the only file
-  you edit. Each entry has `type` (agent/mcp/api/cli/github-action/app/model),
+  you edit. Each entry has `type` (agent/mcp/api/cli/library/github-action/app/model),
   `auth`, `env`, `status`, `access` (what it can do), `connects_to`, `used_by`,
   and a free-text `note`.
 - **Generated views** (never hand-edited):
