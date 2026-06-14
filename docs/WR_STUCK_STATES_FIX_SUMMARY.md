@@ -255,7 +255,44 @@ Created `docs/WORKFLOW_STATE_MACHINE.md` with:
 
 ---
 
-**Resolution Date:** 2026-05-03  
+---
+
+## Update (2026-06-14): Permanent self-healing clearance for `lifecycle:stuck`
+
+**Follow-up issue:** Items were still getting stuck *permanently* — not because of
+timeout thresholds, but because the `lifecycle:stuck` label was **only ever added,
+never removed**. Many workflows apply `lifecycle:stuck` when they detect a stuck or
+conflicting state, but nothing cleared it after the item recovered, so issues and PRs
+stayed marked stuck forever even after they were approved, passed checks, or merged.
+
+### Root cause
+
+`lifecycle:stuck` was a one-way label. The only removal path was
+`issue-lifecycle.yml` clearing it from a *linked issue* when its PR merged — PRs
+themselves and issues without a merged PR kept the label indefinitely.
+
+### Permanent fix
+
+Made `lifecycle:stuck` self-clearing in the two hourly watchdogs that own it:
+
+1. **`.github/workflows/stuck-label-watchdog.yml`** — after sweeping each open PR,
+   if it carries `lifecycle:stuck` but none of the stuck/conflicting conditions
+   still hold (no label conflict, not `awaiting-review` for 24h+, not
+   `checks-failing` for 12h+), the watchdog removes `lifecycle:stuck` and comments.
+
+2. **`.github/workflows/stuck-check-watchdog.yml`** — when a previously-stuck issue
+   reaches a resolved diagnosis (`move-review`, `move-code`, or `label-failed`), the
+   watchdog removes `lifecycle:stuck`. Its `permissions` were also corrected from
+   `issues: read` to `issues: write` so the label mutations it already attempted can
+   actually take effect.
+
+Both changes are covered by regression tests in
+`tests/workflow-yaml-validation.test.js` so the clearance paths cannot silently
+regress.
+
+
+---
+
+**Resolution Date:** 2026-05-03 (original), 2026-06-14 (self-healing follow-up)  
 **Author:** @copilot (GitHub Copilot Coding Agent)  
-**Review Status:** ✅ Code Review Passed, ✅ CodeQL Security Scan Passed  
-**PR:** copilot/wr-things-getting-stuck-blocked
+**Review Status:** ✅ Code Review Passed, ✅ CodeQL Security Scan Passed
