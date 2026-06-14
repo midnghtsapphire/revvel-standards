@@ -1,0 +1,210 @@
+# =============================================================================
+# PR MARKED-FOR-REVIEW — REVIEW ORCHESTRATION WORKFLOW
+# =============================================================================
+#
+# PURPOSE:
+#   When a human (or bot) adds the `marked-for-review` label to a PR, this
+#   workflow spins up an OpenRouter agent that:
+#
+#   1. Fetches ALL reviewer feedback — formal reviews, line comments, and
+#      general issue comments — so nothing is missed.
+#   2. Fetches the live PR diff.
+#   3. Loads Revvel Standards excerpts from the repo to evaluate feedback
+#      against documented conventions.
+#   4. Calls OpenRouter (Claude Sonnet 4) to render a per-feedback verdict:
+#        • IMPLEMENT INCOMING  — accept the reviewer's suggestion
+#        • KEEP CURRENT        — defer/reject; keep the existing PR content
+#        • IMPLEMENT BOTH      — cherry-pick the reviewer's idea + keep content
+#        • ESCALATE            — too complex/contradictory; flag for human
+#   5. Posts a full Decision Report as a PR comment.
+#   6. Applies the corresponding decision label and RESETS review cycle labels
+#      so downstream auto-processing workflows (auto-merge, pr-review-status,
+#      etc.) pick up the PR cleanly.
+#
+# LABELS APPLIED:
+#   review:implement-incoming | review:keep-current |
+#   review:implement-both     | review:needs-human
+#
+# HOW TO TRIGGER:
+#   • Apply the `marked-for-review` label to any open PR
+#   • Comment `/review-decision` on any PR (issue_comment trigger)
+#   • Run this workflow manually from the Actions tab (workflow_dispatch)
+#
+# AUTOMATION ROUTING POLICY:
+#   Runs through OpenRouter via OPENROUTER_API_KEY — NOT BITO.
+#   See docs/PR_MARKED_FOR_REVIEW_AUTOMATION.md for full documentation.
+#
+# =============================================================================
+
+name: PR Marked-For-Review — Decision Orchestration
+
+on:
+  pull_request:
+    types:
+      - labeled
+  issue_comment:
+    types:
+      - created
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to process"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: pr-marked-for-review-${{ github.event.pull_request.number || github.event.issue.number || github.event.inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # JOB: orchestrate-review
+  # ===========================================================================
+  orchestrate-review:
+    name: Orchestrate Review Decision
+    runs-on: ubuntu-latest
+
+    # Run when:
+    #   - `marked-for-review` label is added to a PR
+    #   - Someone comments `/review-decision` on a PR
+    #   - Manual dispatch with a PR number
+    if: |-
+      (
+        github.event_name == 'pull_request' &&
+        github.event.action == 'labeled' &&
+        github.event.label.name == 'marked-for-review'
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request != null &&
+        startsWith(github.event.comment.body, '/review-decision')
+      ) ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      # -----------------------------------------------------------------------
+      # STEP: Resolve PR number from any trigger type
+      # -----------------------------------------------------------------------
+      - name: Resolve PR number
+        id: resolve-pr
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            let prNumber;
+
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.eventName === 'issue_comment') {
+              prNumber = context.payload.issue.number;
+            } else {
+              // workflow_dispatch
+              prNumber = parseInt(context.payload.inputs?.pr_number || '0', 10);
+              if (!prNumber) {
+                core.setFailed('workflow_dispatch requires a valid pr_number input.');
+                return;
+              }
+            }
+
+            // Verify the PR exists
+            try {
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+              core.setOutput('pr_number', String(prNumber));
+              core.setOutput('pr_state', pr.state);
+              core.info(`Resolved PR #${prNumber} (state: ${pr.state})`);
+            } catch (err) {
+              core.setFailed(`PR #${prNumber} not found: ${err.message}`);
+            }
+
+      # -----------------------------------------------------------------------
+      # STEP: Check for no-triage skip label
+      # -----------------------------------------------------------------------
+      - name: Check skip labels
+        id: check-skip
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const prNumber = parseInt('${{ steps.resolve-pr.outputs.pr_number }}', 10);
+            if (!prNumber) {
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const labelNames = labels.map(l => l.name);
+            const skip = labelNames.includes('no-triage');
+            if (skip) {
+              core.notice(`Skipping — PR #${prNumber} has no-triage label`);
+            }
+            core.setOutput('skip', skip ? 'true' : 'false');
+
+      # -----------------------------------------------------------------------
+      # STEP: Verify OPENROUTER_API_KEY
+      # -----------------------------------------------------------------------
+      - name: Verify OPENROUTER_API_KEY
+        if: steps.check-skip.outputs.skip != 'true'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::error::OPENROUTER_API_KEY is not set — cannot run review orchestration."
+            exit 1
+          fi
+          echo "✅ OPENROUTER_API_KEY is configured."
+
+      # -----------------------------------------------------------------------
+      # STEP: Check out repository (for standards files)
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        if: steps.check-skip.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # STEP: Setup Node.js
+      # -----------------------------------------------------------------------
+      - name: Setup Node.js
+        if: steps.check-skip.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # -----------------------------------------------------------------------
+      # STEP: Run review orchestration handler
+      # -----------------------------------------------------------------------
+      - name: Run review orchestration
+        if: steps.check-skip.outputs.skip != 'true'
+        id: run-handler
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.resolve-pr.outputs.pr_number }}
+          MODEL: "anthropic/claude-sonnet-4"
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: node scripts/pr-marked-review-handler.js
+
+      # -----------------------------------------------------------------------
+      # STEP: Notify if skipped
+      # -----------------------------------------------------------------------
+      - name: Log skip reason
+        if: steps.check-skip.outputs.skip == 'true'
+        run: |
+          echo "::notice::PR Marked-For-Review skipped — no-triage label is present."
+
+    timeout-minutes: 30
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

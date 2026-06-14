@@ -179,6 +179,31 @@ labels:
     color: "d93f0b"
     description: "OpenRouter could not automatically fix review issues"
 
+  # ── Marked For Review (human-triggered orchestration) ────────────────────────
+  - name: "marked-for-review"
+    color: "7057ff"
+    description: "Trigger review-orchestration agent to evaluate all reviewer feedback"
+
+  - name: "review:implement-incoming"
+    color: "0e8a16"
+    description: "Agent decided: accept reviewer suggestions (incoming changes)"
+
+  - name: "review:keep-current"
+    color: "1d76db"
+    description: "Agent decided: keep current PR content, reviewer suggestions deferred"
+
+  - name: "review:implement-both"
+    color: "e4e669"
+    description: "Agent decided: merge incoming suggestions with current PR content"
+
+  - name: "review:needs-human"
+    color: "d93f0b"
+    description: "Agent could not decide — escalated to human for conflict resolution"
+
+  - name: "review:processing"
+    color: "fbca04"
+    description: "Review-orchestration agent is currently evaluating all feedback"
+
   # ── Merge Control ─────────────────────────────────────────────────────────────
   - name: auto-merge
     color: "0e8a16"
