@@ -171,26 +171,101 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
 
 async function callOpenRouter(systemPrompt, userPrompt) {
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
-  const response = await requestJson({
-    hostname: OPENROUTER_HOST,
-    pathName: OPENROUTER_PATH,
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-      "HTTP-Referer": referer,
-      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
-    },
-    payload: {
-      model: MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: 0.2,
-    },
-  });
+  
+  // Try OpenRouter first
+  try {
+    const response = await requestJson({
+      hostname: OPENROUTER_HOST,
+      pathName: OPENROUTER_PATH,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "HTTP-Referer": referer,
+        "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
+      },
+      payload: {
+        model: MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.2,
+      },
+    });
 
-  return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
+    return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
+  } catch (err) {
+    // Check if it's a credits issue - fallback to Perplexity No-Key
+    if (err.message.includes("402") || err.message.includes("Insufficient credits")) {
+      console.log("OpenRouter credits exhausted, falling back to Perplexity No-Key...");
+      return await callPerplexityNoKey(systemPrompt, userPrompt);
+    }
+    throw err;
+  }
+}
+
+async function callPerplexityNoKey(systemPrompt, userPrompt) {
+  // Use the Perplexity No-Key Python bridge
+  const { execSync } = require("child_process");
+  const installHint = 'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+  
+  const pythonScript = `
+import sys
+try:
+    from perplexity import LabsClient, Client
+except Exception as exc:
+    raise SystemExit(f"Missing no-key Perplexity dependency ({exc}). Install with: ${installHint}")
+
+def normalize(value):
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, dict):
+        for key in ("output", "answer", "text", "content"):
+            candidate = value.get(key)
+            if isinstance(candidate, str) and candidate.strip():
+                return candidate.strip()
+    return ""
+
+labs_error = ""
+response_text = ""
+
+try:
+    response_text = normalize(LabsClient().ask(sys.argv[1], model='sonar'))
+except Exception as exc:
+    labs_error = str(exc)
+
+if not response_text:
+    try:
+        response_text = normalize(Client().search(sys.argv[1], mode='auto'))
+    except Exception as exc:
+        if labs_error:
+            raise SystemExit(f"LabsClient failed: {labs_error}; Client.search failed: {exc}")
+        raise SystemExit(str(exc))
+
+print(response_text)
+`;
+
+  const userPromptEscaped = userPrompt.replace(/'/g, "'\\''");
+  const systemPromptEscaped = systemPrompt.replace(/'/g, "'\\''");
+  const combinedPrompt = `${systemPromptEscaped}\n\n---\n\n${userPromptEscaped}`;
+  
+  const scriptPath = "/tmp/perplexity_triage.py";
+  require("fs").writeFileSync(scriptPath, pythonScript);
+  
+  try {
+    // Install if needed
+    execSync(`${installHint} 2>/dev/null || true`, { stdio: "pipe" });
+    
+    const result = execSync(`python3 "${scriptPath}" '${combinedPrompt}'`, {
+      maxBuffer: 10 * 1024 * 1024,
+      timeout: 120000,
+    }).toString().trim();
+    
+    return result || "Perplexity returned empty response.";
+  } catch (err) {
+    const errorOutput = err.stdout?.toString() || err.stderr?.toString() || err.message;
+    throw new Error(`Perplexity No-Key fallback failed: ${errorOutput}`);
+  }
 }
 
 async function postGitHubComment(commentBody) {
