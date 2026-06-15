@@ -134,6 +134,8 @@ jobs:
 
       - name: Trigger OpenRouter Assignee workflow
         if: steps.validate.outputs.exists == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "Triggering openrouter-assignee workflow..."
           gh workflow run openrouter-assignee.yml \
