@@ -239,6 +239,37 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   }
 });
 
+test('stuck-label-watchdog.yml clears lifecycle:stuck once a PR recovers', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  if (!/removeLabel\([^)]*name:\s*'lifecycle:stuck'/.test(script)) {
+    throw new Error('watchdog must remove lifecycle:stuck so PRs do not stay stuck permanently');
+  }
+  if (!script.includes('stillStuck')) {
+    throw new Error('watchdog must only clear lifecycle:stuck when no stuck condition remains');
+  }
+});
+
+test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  if (doc.permissions?.issues !== 'write') {
+    throw new Error('stuck-check-watchdog must have issues: write to remove lifecycle:stuck');
+  }
+
+  const job = doc.jobs['find-stuck-issues'];
+  const script = job.steps.map(s => s.with?.script || '').join('\n');
+  if (!script.includes("name: 'lifecycle:stuck'") || !script.includes('removeLabel')) {
+    throw new Error('stuck-check-watchdog must remove lifecycle:stuck once an issue recovers');
+  }
+  if (!script.includes('RESOLVED_ACTIONS')) {
+    throw new Error('stuck-check-watchdog must only clear lifecycle:stuck for resolved diagnoses');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
