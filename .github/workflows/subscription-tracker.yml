@@ -1,0 +1,109 @@
+name: Subscription & Trial Tracker
+
+# Tracks paid/trial third-party tools, GitHub Apps and SaaS (data/subscriptions.yml)
+# and keeps a single GitHub issue up to date with how close each one is to a
+# trial expiry or a renewal charge. Born from the RecurseML 14-day trial: a trial
+# must never lapse silently or auto-convert to a paid plan unnoticed.
+#
+# Behaviour:
+#   • Runs daily (cron) and on demand (workflow_dispatch).
+#   • Upserts ONE issue ("📅 Subscription & Trial Tracker", label: subscriptions),
+#     editing its body in place so the repo never accumulates duplicate trackers.
+#   • The body always shows the full inventory; an "Action needed" section lists
+#     anything expiring/renewing inside the warning window.
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # daily at 13:00 UTC
+  workflow_dispatch:
+    inputs:
+      warn_within_days:
+        description: Flag subscriptions due within this many days.
+        required: false
+        type: number
+        default: 7
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: subscription-tracker
+  cancel-in-progress: false
+
+jobs:
+  track:
+    name: Sweep subscriptions and upsert tracking issue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute report and upsert tracking issue
+        uses: actions/github-script@v9.0.0
+        env:
+          WARN_WITHIN_DAYS: ${{ inputs.warn_within_days || 7 }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path');
+            const {
+              loadSubscriptions,
+              buildReport,
+              renderIssueBody,
+            } = require(path.join(process.env.GITHUB_WORKSPACE, 'scripts', 'subscription-tracker.js'));
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const warnWithinDays = parseInt(process.env.WARN_WITHIN_DAYS, 10) || 7;
+            const MARKER = '<!-- subscription-tracker -->';
+            const LABEL = 'subscriptions';
+            const TITLE = '📅 Subscription & Trial Tracker';
+
+            const file = path.join(process.env.GITHUB_WORKSPACE, 'data', 'subscriptions.yml');
+            const subscriptions = loadSubscriptions(file);
+            const report = buildReport(subscriptions, { warnWithinDays });
+            const body = renderIssueBody(report, { marker: MARKER });
+
+            core.info(`Loaded ${subscriptions.length} subscription(s); ${report.alerts.length} alert(s).`);
+
+            // Make sure the label exists (best effort).
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: LABEL });
+            } catch (_) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner, repo, name: LABEL, color: '0e8a16',
+                  description: 'Third-party subscription / trial tracking',
+                });
+              } catch (e) {
+                core.notice(`Could not ensure label "${LABEL}": ${e.message}`);
+              }
+            }
+
+            // Find an existing tracker issue by marker (open issues only).
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: LABEL, per_page: 100,
+            });
+            const tracker = existing.find(
+              (issue) => !issue.pull_request && issue.body && issue.body.includes(MARKER)
+            );
+
+            if (tracker) {
+              await github.rest.issues.update({
+                owner, repo, issue_number: tracker.number, title: TITLE, body,
+              });
+              core.notice(`Updated subscription tracker issue #${tracker.number}.`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner, repo, title: TITLE, body, labels: [LABEL],
+              });
+              core.notice(`Created subscription tracker issue #${created.data.number}.`);
+            }
+
+            // Surface alerts in the run summary too.
+            await core.summary
+              .addHeading('Subscription & Trial Tracker')
+              .addRaw(body)
+              .write();

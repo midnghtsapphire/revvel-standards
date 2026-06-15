@@ -1,0 +1,86 @@
+# Subscriptions & Trials — Single Source of Truth
+#
+# This file is the canonical inventory of paid (or trial) third-party tools,
+# GitHub Apps, and SaaS services used across MIDNGHTSAPPHIRE / Revvel repos.
+#
+# It is read by:
+#   • scripts/subscription-tracker.js  — computes renewal / trial-expiry verdicts
+#   • .github/workflows/subscription-tracker.yml — daily sweep that upserts a
+#     tracking issue and warns before a trial expires or a subscription renews.
+#
+# WHY: tools like RecurseML start on a free trial and silently convert to a paid
+# plan. Without a tracker, a trial can lapse (losing coverage) or auto-charge
+# (paying for something we decided not to keep). This file + job make every
+# subscription's clock visible and actionable.
+#
+# ── Field reference ───────────────────────────────────────────────────────────
+#   name            Human-readable product name (required)
+#   vendor          Company / provider
+#   type            github_app | saas | api | hosting | ci | other
+#   status          trial | active | cancelled | evaluating
+#   trial_start     YYYY-MM-DD (trial begin) — null if not a trial
+#   trial_end       YYYY-MM-DD (trial expiry / first charge) — null if not a trial
+#   renewal_date    YYYY-MM-DD next renewal/charge for active subs — null if n/a
+#   billing_cycle   monthly | annual | usage | free
+#   cost            Numeric amount per billing_cycle — null if unknown/free
+#   currency        ISO 4217 code (e.g. USD)
+#   repositories    "all" OR a list of owner/repo this applies to
+#   dashboard_url   Where to manage / cancel the subscription
+#   decision_doc    Path to the trial decision / DARE log entry, if any
+#   notes           Free-form context
+#
+# Keep dates accurate. Use null (not a guess) for anything unknown — the tracker
+# treats null due-dates as "unknown" and surfaces them for a human to fill in.
+
+subscriptions:
+  - name: RecurseML
+    vendor: RecurseML
+    type: github_app
+    status: trial
+    trial_start: 2026-06-13
+    trial_end: 2026-06-27        # 14-day free trial that began 2026-06-13
+    renewal_date: null
+    billing_cycle: annual
+    cost: 250
+    currency: USD
+    repositories: all
+    dashboard_url: https://app.recurse.ml
+    decision_doc: docs/DARE_LOG.md
+    notes: >-
+      Autonomous PR code-review GitHub App. 14-day free trial → ~$250/year.
+      Decide renew/cancel before trial_end using the Decision Gate in
+      skills/recurse-ml/SKILL.md. Workflow: .github/workflows/recurse-ml.yml.
+
+  - name: Vercel
+    vendor: Vercel
+    type: hosting
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: usage
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://vercel.com/oaudrey-projects
+    decision_doc: null
+    notes: >-
+      Website-in-Test + production deploys for Revvel projects (required for DB
+      integrations). Usage-based; no fixed renewal date.
+
+  - name: OpenRouter
+    vendor: OpenRouter
+    type: api
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: usage
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://openrouter.ai/settings/credits
+    decision_doc: null
+    notes: >-
+      Primary automation LLM routing (OPENROUTER_API_KEY). Pay-as-you-go credits;
+      monitor balance rather than a renewal date.

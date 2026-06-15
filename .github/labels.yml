@@ -792,3 +792,8 @@ labels:
   - name: "deliver:marketplace"
     color: "e4e669"
     description: "Draft app store listing (human review required)"
+
+  # ── Operations / Subscriptions ────────────────────────────────────────────────
+  - name: "subscriptions"
+    color: "0e8a16"
+    description: "Third-party subscription / trial tracking"
