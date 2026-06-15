@@ -92,6 +92,7 @@ The revvel-standards repository has extensive automation infrastructure:
 41. ✅ `durability-mirror.yml` — Backup/mirror automation
 42. ✅ `migration-cron.yml` — Migration scheduling
 43. ✅ `static.yml` — Static site deployment
+44. ✅ `app-artifact-audit.yml` — **NEW** Enforces Definition of Done every 6h: refreshes `docs/<app>/ARTIFACTS.md`, README live-deployment links, and `docs/APP_DELIVERY_STATUS.md` (Vercel auto-fill when `VERCEL_TOKEN` is set)
 
 #### Documentation & Changelog
 44. ✅ `ai-weekly-changelog.yml` — Auto-generated changelogs

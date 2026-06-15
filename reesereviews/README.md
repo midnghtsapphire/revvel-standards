@@ -1,9 +1,8 @@
 # Reese Reviews - Professional Amazon Vine Product Reviews
 
-**Status:** Live  
-**Domain:** [reesereviews.com](https://reesereviews.com)  
-**Repository:** Part of revvel-standards  
-**Version:** 1.0.0
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/reesereviews/)**
 
 ## Overview
 

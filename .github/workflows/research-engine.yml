@@ -97,7 +97,11 @@ jobs:
             const isLabeledEvent = context.eventName === 'issues' && context.payload.action === 'labeled';
             const issueEventTriggered = isLabeledEvent ? labelTriggered : (labelTriggered || titleTriggered);
             const issueCommentTriggered = isIssueComment && !isPullRequestComment && (commentTriggered || issueEventTriggered);
-            const shouldRun = dispatch || issueCommentTriggered || (!isIssueComment && issueEventTriggered);
+            // Never let a bot-authored event (re)start a research run — bot
+            // comments/labels triggering this engine is the main runaway-loop
+            // source. Human dispatch (workflow_dispatch) is always allowed.
+            const isBot = context.payload.sender?.type === 'Bot';
+            const shouldRun = dispatch || (!isBot && (issueCommentTriggered || (!isIssueComment && issueEventTriggered)));
             const querySource = isIssueComment ? commentBody : title;
             core.setOutput('should_run', shouldRun ? 'true' : 'false');
             core.setOutput('issue_number', String(issueNumber));

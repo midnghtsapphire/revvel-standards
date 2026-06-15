@@ -1,6 +1,8 @@
 # Music Video Creator
 
-Music Video Creator is a production-ready application to generate automated music videos from .wav files and avatar images using multiple AI video generation APIs. Built according to EXRUP methodology.
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/music-video-creator/)**
 
 ## 🚀 Live Product
 

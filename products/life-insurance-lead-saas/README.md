@@ -1,6 +1,8 @@
 # Life Wizard - Insurance Lead SaaS
 
-This is the production app for the Life Wizard insurance lead generation landing page. It is built as a Next.js 15 app with Tailwind CSS.
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/)**
 
 ## Features
 - Next.js 15 with App Router
