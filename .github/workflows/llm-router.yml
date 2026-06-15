@@ -5,7 +5,7 @@ description: >
   Perplexity No-Key (free, no API key required) when credits exhausted.
 
 on:
-  workflow_dispatch:  # Manual trigger for testing
+  workflow_dispatch:
     inputs:
       prompt:
         description: Test prompt
@@ -17,58 +17,23 @@ on:
         type: string
         default: general
   workflow_call:
-    inputs:
-      prompt:
-        description: The prompt to send to the LLM
-        required: true
-        type: string
-      system_prompt:
-        description: Optional system prompt
-        required: false
-        type: string
-        default: "You are a helpful assistant."
-      model_preference:
-        description: Preferred model type (coding, general, research)
-        required: false
-        type: string
-        default: "general"
-    outputs:
-      response:
-        description: The LLM response
-        value: ${{ jobs.route.outputs.response }}
-      model_used:
-        description: Which model was used
-        value: ${{ jobs.route.outputs.model_used }}
-      success:
-        description: Whether the call succeeded
-        value: ${{ jobs.route.outputs.success }}
-  workflow_dispatch:
-    inputs:
-      prompt:
-        description: Test prompt
-        required: true
-        type: string
-      model_preference:
-        description: Model preference (coding, general, research)
-        required: false
-        type: string
-        default: "general"
 
 jobs:
   route:
     name: Route LLM Call
     runs-on: ubuntu-latest
     outputs:
-      response: ${{ steps.openrouter.outputs.response || steps.perplexity.outputs.response }}
-      model_used: ${{ steps.openrouter.outputs.model_used || steps.perplexity.outputs.model_used }}
-      success: ${{ steps.openrouter.outputs.success || steps.perplexity.outputs.success }}
+      response: ${{ steps.openrouter.outputs.response || steps.perplexity.outputs.response || 'null' }}
+      model_used: ${{ steps.openrouter.outputs.model_used || steps.perplexity.outputs.model_used || 'none' }}
+      success: ${{ steps.openrouter.outputs.success || steps.perplexity.outputs.success || 'false' }}
     steps:
       - name: Check OpenRouter credits
         id: check_credits
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          # Quick check if OpenRouter is available
           RESPONSE=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
-            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{"model":"google/gemma-2-27b-it:free","messages":[{"role":"user","content":"hi"}],"max_tokens":5}' 2>&1)
           
@@ -82,42 +47,27 @@ jobs:
           else
             echo "status=available" >> $GITHUB_OUTPUT
           fi
-          
-          echo "debug=$RESPONSE" >> $GITHUB_OUTPUT
 
-      # === OPENROUTER PATH (if credits available) ===
       - name: Try OpenRouter
         id: openrouter
         if: steps.check_credits.outputs.status == 'available'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          PROMPT: ${{ inputs.prompt || 'Hello' }}
+          MODEL_PREF: ${{ inputs.model_preference || 'general' }}
         run: |
-          # Select model based on preference
-          case "${{ inputs.model_preference }}" in
-            coding)
-              MODEL="qwen/qwen3-coder:free"
-              ;;
-            research)
-              MODEL="nousresearch/hermes-3-llama-3.1-405b:free"
-              ;;
-            *)
-              MODEL="google/gemma-4-31b-it:free"
-              ;;
+          case "$MODEL_PREF" in
+            coding) MODEL="qwen/qwen3-coder:free" ;;
+            research) MODEL="nousresearch/hermes-3-llama-3.1-405b:free" ;;
+            *) MODEL="google/gemma-4-31b-it:free" ;;
           esac
           
           echo "Using model: $MODEL"
           
           RESPONSE=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
-            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
-            -H "HTTP-Referer: https://revvel-standards" \
-            -H "X-Title: Revvel Standards" \
-            -d "{
-              \"model\": \"$MODEL\",
-              \"messages\": [
-                {\"role\": \"system\", \"content\": \"${{ inputs.system_prompt }}\"},
-                {\"role\": \"user\", \"content\": \"${{ inputs.prompt }}\"}
-              ],
-              \"max_tokens\": 4000
-            }" 2>&1)
+            -d "{\"model\":\"$MODEL\",\"messages\":[{\"role\":\"user\",\"content\":\"$PROMPT\"}],\"max_tokens\":4000}" 2>&1)
           
           if echo "$RESPONSE" | jq -e '.choices[0].message.content' > /dev/null 2>&1; then
             echo "response=$(echo "$RESPONSE" | jq -r '.choices[0].message.content' | jq -Rs .)" >> $GITHUB_OUTPUT
@@ -129,89 +79,63 @@ jobs:
             echo "success=false" >> $GITHUB_OUTPUT
           fi
 
-      # === PERPLEXITY NO-KEY FALLBACK ===
-      - name: Setup Python for Perplexity No-Key
+      - name: Setup Perplexity No-Key
         if: steps.check_credits.outputs.status != 'available' || steps.openrouter.outputs.success == 'false'
         run: |
-          python3 --version
           pip3 install --quiet "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
 
       - name: Try Perplexity No-Key
         id: perplexity
         if: steps.check_credits.outputs.status != 'available' || steps.openrouter.outputs.success == 'false'
         env:
-          ISSUE_NUMBER: "0"  # Dummy for this workflow
-          REPO: ${{ github.repository }}
+          PROMPT: ${{ inputs.prompt || 'Hello' }}
+          MODEL_PREF: ${{ inputs.model_preference || 'general' }}
         run: |
-          # Use existing script but call perplexity directly
+          if [[ "$MODEL_PREF" == "research" ]]; then MODEL="sonar-deep-research"
+          elif [[ "$MODEL_PREF" == "coding" ]]; then MODEL="sonar-pro"
+          else MODEL="sonar"
+          fi
+          
+          echo "Using Perplexity No-Key with model: $MODEL"
+          
           cat > /tmp/perplexity_call.py << 'PYEOF'
 import sys
-import json
-
-prompt = sys.argv[1]
-labs_model = sys.argv[2]  # sonar, sonar-pro, sonar-deep-research
-
 try:
     from perplexityai import LabsClient
     import asyncio
-    
     async def main():
         client = LabsClient()
-        
-        # Try direct chat first
         try:
             result = await client.achat(
-                messages=[{"role": "user", "content": prompt}],
-                model=labs_model,
-                max_tokens=4000
-            )
+                messages=[{"role": "user", "content": sys.argv[1]}],
+                model=sys.argv[2], max_tokens=4000)
             print(result.content[0].text if hasattr(result, 'content') else str(result))
-        except Exception as e:
-            # Fallback to search
-            result = await client.search(
-                query=prompt,
-                mode="auto",
-                model=labs_model
-            )
+        except:
+            result = await client.search(query=sys.argv[1], mode="auto", model=sys.argv[2])
             print(str(result))
-    
     asyncio.run(main())
-    
 except Exception as e:
     print(f"ERROR: {str(e)}", file=sys.stderr)
     sys.exit(1)
 PYEOF
           
-          # Select model based on preference
-          if [[ "${{ inputs.model_preference }}" == "research" ]]; then
-            MODEL="sonar-deep-research"
-          elif [[ "${{ inputs.model_preference }}" == "coding" ]]; then
-            MODEL="sonar-pro"
-          else
-            MODEL="sonar"
-          fi
-          
-          python3 /tmp/perplexity_call.py "${{ inputs.prompt }}" "$MODEL" > /tmp/response.txt 2>&1
+          python3 /tmp/perplexity_call.py "$PROMPT" "$MODEL" > /tmp/response.txt 2>&1
           
           if [ $? -eq 0 ]; then
-            RESPONSE=$(cat /tmp/response.txt | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))")
-            echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+            echo "response=$(cat /tmp/response.txt | jq -Rs .)" >> $GITHUB_OUTPUT
             echo "model_used=perplexity-no-key" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Perplexity No-Key succeeded"
           else
             echo "response=Perplexity No-Key failed" >> $GITHUB_OUTPUT
             echo "model_used=perplexity-no-key" >> $GITHUB_OUTPUT
             echo "success=false" >> $GITHUB_OUTPUT
-            echo "❌ Error:"
-            cat /tmp/response.txt
           fi
 
-      - name: Final Status
+      - name: Summary
         run: |
           echo "=========================================="
           echo "LLM Router Result"
           echo "=========================================="
-          echo "Success: ${{ steps.openrouter.outputs.success || steps.perplexity.outputs.success }}"
-          echo "Model Used: ${{ steps.openrouter.outputs.model_used || steps.perplexity.outputs.model_used }}"
-          echo "Response Length: $(${{ steps.openrouter.outputs.response || steps.perplexity.outputs.response }} | wc -c) chars"
+          echo "OpenRouter Status: ${{ steps.check_credits.outputs.status }}"
+          echo "Success: ${{ steps.openrouter.outputs.success || steps.perplexity.outputs.success || 'unknown' }}"
+          echo "Model Used: ${{ steps.openrouter.outputs.model_used || steps.perplexity.outputs.model_used || 'none' }}"
