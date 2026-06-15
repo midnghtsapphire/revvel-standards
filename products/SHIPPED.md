@@ -196,7 +196,7 @@ cd ../screen-recorder-finder && vercel --prod
 ✅ **Shipped working, tested code** (not plans or proposals)  
 ✅ **Production-ready applications** with complete UIs  
 ✅ **Revenue-generating** from day one  
-✅ **Deployed to market** ready for Vercel  
+✅ **Build-ready** for Vercel (not yet deployed to market — see status below)  
 
 ---
 
@@ -208,5 +208,5 @@ Questions or issues? Open an issue in [revvel-standards](https://github.com/midn
 
 **Ship Date:** May 2, 2026  
 **Author:** Audrey Evans (@midnghtsapphire)  
-**Status:** 🟢 All Products Live  
-**Revenue Target:** $3,000/month
+**Status:** 🟡 Build-ready — **NOT yet deployed** (audit 2026-06-13: no live URLs; "View Live Demo" links are `#`/"Coming soon"; affiliate links are placeholders. Code builds locally but nothing is live to market.)  
+**Revenue Target:** $3,000/month (currently $0 MRR)
