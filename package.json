@@ -18,6 +18,7 @@
     "build": "npm run typecheck",
     "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\"",
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
+    "scorecard": "node scripts/agent-scorecard/index.js",
     "connections": "node scripts/connections-registry.js --markdown",
     "connections:html": "node scripts/connections-registry.js --html",
     "connections:drift": "node scripts/connections-registry.js --drift",
