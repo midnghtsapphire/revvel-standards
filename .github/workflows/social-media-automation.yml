@@ -39,26 +39,46 @@ jobs:
           echo "Facebook: $FB"
           echo "----------------------"
 
-      - name: Send to Zapier Webhook
-        env:
-          ZAPIER_WEBHOOK_URL: ${{ secrets.ZAPIER_WEBHOOK_URL }}
-          TWITTER_POST: ${{ steps.format_posts.outputs.twitter_post }}
-          LINKEDIN_POST: ${{ steps.format_posts.outputs.linkedin_post }}
-          FACEBOOK_POST: ${{ steps.format_posts.outputs.facebook_post }}
-        run: |
-          # If the webhook URL is missing (e.g. during a dry run), skip posting
-          if [ -z "$ZAPIER_WEBHOOK_URL" ]; then
-             echo "ZAPIER_WEBHOOK_URL is not set. Skipping live webhook dispatch."
-          else
-             PAYLOAD=$(jq -n \
-               --arg tw "$TWITTER_POST" \
-               --arg li "$LINKEDIN_POST" \
-               --arg fb "$FACEBOOK_POST" \
-               '{twitter: $tw, linkedin: $li, facebook: $fb}')
+      # --- ZAPIER WEBHOOK (commented out - use direct posting below) ---
+      # - name: Send to Zapier Webhook
+      #   env:
+      #     ZAPIER_WEBHOOK_URL: ${{ secrets.ZAPIER_WEBHOOK_URL }}
+      #     TWITTER_POST: ${{ steps.format_posts.outputs.twitter_post }}
+      #     LINKEDIN_POST: ${{ steps.format_posts.outputs.linkedin_post }}
+      #     FACEBOOK_POST: ${{ steps.format_posts.outputs.facebook_post }}
+      #   run: |
+      #     if [ -z "$ZAPIER_WEBHOOK_URL" ]; then
+      #        echo "ZAPIER_WEBHOOK_URL is not set. Skipping live webhook dispatch."
+      #     else
+      #        PAYLOAD=$(jq -n \
+      #          --arg tw "$TWITTER_POST" \
+      #          --arg li "$LINKEDIN_POST" \
+      #          --arg fb "$FACEBOOK_POST" \
+      #          '{twitter: $tw, linkedin: $li, facebook: $fb}')
+      #
+      #        curl --fail --show-error --silent --max-time 30 \
+      #          -X POST \
+      #          -H "Content-Type: application/json" \
+      #          -d "$PAYLOAD" \
+      #          "$ZAPIER_WEBHOOK_URL"
+      #     fi
 
-             curl --fail --show-error --silent --max-time 30 \
-               -X POST \
-               -H "Content-Type: application/json" \
-               -d "$PAYLOAD" \
-               "$ZAPIER_WEBHOOK_URL"
-           fi
+      # --- DIRECT TWITTER/X POSTING ---
+      - name: Post to Twitter/X
+        if: vars.TWITTER_ENABLED == 'true'
+        uses: ch一经/ch一经-action@v1
+        with:
+          twitter_api_key: ${{ secrets.TWITTER_API_KEY }}
+          twitter_api_secret: ${{ secrets.TWITTER_API_KEY_SECRET }}
+          twitter_access_token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          tweet: ${{ steps.format_posts.outputs.twitter_post }}
+
+      # --- DIRECT LINKEDIN POSTING ---
+      - name: Post to LinkedIn
+        if: vars.LINKEDIN_ENABLED == 'true'
+        uses: v，增量/linkedin-post-action@v1
+        with:
+          linkedin_access_token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          content: ${{ steps.format_posts.outputs.linkedin_post }}
+          visibility: PUBLIC
