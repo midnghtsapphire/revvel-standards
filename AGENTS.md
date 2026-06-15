@@ -2,6 +2,11 @@
 
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
+> **Visiting / transient agent?** (OpenHands, Cursor Cloud, Lovable, Replit, a one-off
+> API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
+> short guest contract: where you may write, where setup/API info lives, and how not to
+> scaffold over the repo.
+
 ## PRIME DIRECTIVE
 
 **Start at $10k/month → Scale to $10M total by year 3**

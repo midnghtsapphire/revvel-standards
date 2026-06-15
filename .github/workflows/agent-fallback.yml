@@ -115,14 +115,16 @@ jobs:
           fi
 
           # Determine recommended agent based on availability and preference
-          # POLICY: Prefer free/affordable agents (OpenRouter) over paid agents (OpenHands)
-          # OpenHands is opt-in only via explicit prefer_agent parameter
-          RECOMMENDED="openrouter"  # Default to free/affordable option
+          # POLICY: OpenRouter is primary. OpenHands (free quota — the pre-paywall
+          # Devin-class agent) is the automatic fallback when OpenRouter is down or
+          # fails. Both are free-tier; chain is OpenRouter → OpenHands → manual.
+          RECOMMENDED="openrouter"  # Default to primary
           if [ "$OPENROUTER_AVAILABLE" = "true" ]; then
             RECOMMENDED="openrouter"
           elif [ "$OpenHands_AVAILABLE" = "true" ]; then
-            # OpenHands is last resort due to cost
             RECOMMENDED="OpenHands"
+          elif [ "$CURSOR_AVAILABLE" = "true" ]; then
+            RECOMMENDED="cursor"
           fi
 
           echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
@@ -253,6 +255,23 @@ jobs:
           fi
       - name: Try OpenHands AI (Opt-in Only - Paid Service)
 if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == 'auto')
+      - name: Fallback to Cursor
+        if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
+        id: cursor
+        continue-on-error: true
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+        run: |
+          echo "🔧 Attempting to use Cursor..."
+          bash scripts/call-cursor-api.sh
+      - name: Try OpenHands AI (free-quota fallback)
+        # OpenHands runs automatically when OpenRouter does not succeed — it is a
+        # free-tier agent (pre-paywall Devin-class), so it is a real fallback, not
+        # an opt-in last resort. Explicit prefer_agent=OpenHands also routes here.
+        if: steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == '')
         id: OpenHands
         continue-on-error: true
         env:
@@ -261,7 +280,7 @@ if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHand
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
         run: |
-          echo "🤖 Using OpenHands AI (paid service - opt-in only)..."
+          echo "🤖 Using OpenHands AI (free-quota fallback)..."
           bash scripts/call-openhands-api.sh
       - name: Determine result
         if: always()
@@ -274,7 +293,7 @@ if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHand
           elif [ "${{ steps.OpenHands.outcome }}" = "success" ]; then
             echo "agent=OpenHands" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by OpenHands AI (paid service)"
+            echo "✅ Task completed by OpenHands AI (free-quota fallback)"
           else
             echo "agent=none" >> $GITHUB_OUTPUT
             echo "success=false" >> $GITHUB_OUTPUT
@@ -296,6 +315,7 @@ if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHand
 
             **Agent used:** ${{ steps.result.outputs.agent }}
             **Fallback chain:** OpenRouter → OpenHands (opt-in)
+            **Fallback chain:** OpenRouter → OpenHands → manual (all free-tier)
 
             ### Issue
             ${{ steps.issue.outputs.issue_body }}
