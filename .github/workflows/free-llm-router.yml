@@ -45,5 +45,5 @@ jobs:
         if: steps.check_credits.outputs.status != 'available'
         run: |
           echo "OpenRouter exhausted, using Perplexity No-Key"
-          pip3 install -q perplexity-api
+          pip3 install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
           python3 -c "from perplexityai import LabsClient; import asyncio; asyncio.run(LabsClient().search(query='test', mode='auto'))"
