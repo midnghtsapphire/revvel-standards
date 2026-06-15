@@ -101,6 +101,15 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
         PageTemplate(id="body", frames=[frame], onPage=footer),
     ])
 
+    order, groups = [], {}
+    for s in skills:
+        cat = category_name(s)
+        if cat not in groups:
+            groups[cat] = []
+            order.append(cat)
+        groups[cat].append(s)
+    n_cats = len(groups)
+
     story = []
 
     # ---------- COVER ----------
@@ -140,15 +149,6 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
     story.append(PageBreak())
 
     # ---------- CATALOGUE ----------
-    order, groups = [], {}
-    for s in skills:
-        cat = category_name(s)
-        if cat not in groups:
-            groups[cat] = []
-            order.append(cat)
-        groups[cat].append(s)
-    n_cats = len(groups)
-
     story.append(Paragraph("The Catalogue", H_CAT))
     story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
 
