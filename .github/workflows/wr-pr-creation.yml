@@ -126,6 +126,17 @@ jobs:
               return;
             }
 
+            // Do not (re)create skeleton PRs for finished WRs. A closed issue
+            // — or one explicitly marked `issue:done` — has already been
+            // delivered; re-triggers here only spawn duplicate skeleton PRs
+            // (this is what happened on #14451, which kept generating new
+            // skeleton PRs every time a label changed after it was closed).
+            if (issue.state === 'closed' || labelSet.has('issue:done')) {
+              core.info(`Issue #${issueNumber} is closed/done; not creating a WR PR.`);
+              skip('issue_closed_or_done', { notify: false });
+              return;
+            }
+
             // Skip bot-created issues (defensive — bot-spam should be filtered
             // by the job-level `if:` already).
             if (issue.user && issue.user.login === 'github-actions[bot]') {
@@ -183,13 +194,20 @@ jobs:
             // the dedup is correct even if a different workflow ever
             // applied one of the others.
             //
-            // Search OPEN PRs only — a previously-closed/merged WR-skeleton
-            // PR doesn't block a fresh WR-skeleton PR; that's a re-trigger
-            // of the same WR after the original was abandoned.
+            // Search ALL PRs (open + closed) so we can tell apart the three
+            // cases. An OPEN skeleton means one is already in flight — this
+            // also closes the few-minutes race where two triggers fire before
+            // either PR is visible (#14451 got #14497 and #14502 three minutes
+            // apart this way). A MERGED skeleton means the WR doc already
+            // shipped, so the WR is done — do not spawn another. Only a
+            // CLOSED-but-unmerged skeleton (genuinely abandoned) leaves the
+            // door open for a fresh re-trigger.
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open',
+              state: 'all',
+              sort: 'created',
+              direction: 'desc',
               per_page: 100,
             });
 
@@ -203,7 +221,10 @@ jobs:
                 prLabels.includes('weekly-research') &&
                 prLabels.includes('wr:in-progress');
               const refsThisIssue = pr.body && issueRefRegex.test(pr.body);
-              return isWrSkeleton && refsThisIssue;
+              // Block on an in-flight (open) or already-shipped (merged)
+              // skeleton; allow re-trigger after an abandoned (closed-unmerged) one.
+              const blocks = pr.state === 'open' || Boolean(pr.merged_at);
+              return isWrSkeleton && refsThisIssue && blocks;
             });
 
             if (existingPR) {

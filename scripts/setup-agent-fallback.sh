@@ -1,6 +1,9 @@
 #!/bin/bash
 # Setup Agent Fallback System
-# Configures Devin → Cursor → OpenRouter fallback chain
+# NOTE: This setup script still contains legacy Devin/Cursor checks.
+# Current fallback workflow is OpenRouter → OpenHands (opt-in) → manual.
+# See .github/workflows/agent-fallback.yml for the authoritative chain.
+# The .cursorrules step below is Cursor *IDE* config (symlinks AGENTS.md).
 # Usage: ./setup-agent-fallback.sh [OWNER/REPO]
 
 set -e

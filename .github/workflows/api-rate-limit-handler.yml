@@ -24,7 +24,6 @@ permissions:
   contents: read
   issues: write
   actions: write
-
 jobs:
   handle-rate-limit:
     runs-on: ubuntu-latest
