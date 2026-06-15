@@ -22,7 +22,7 @@ jobs:
           RESPONSE=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
-            -d '{"model":"google/gemma-2-27b-it:free","messages":[{"role":"user","content":"hi"}],"max_tokens":5}' 2>&1)
+            -d '{"model":"google/gemma-2-27b-it:free","messages":[{"role":"user","content":"hi"}],"max_tokens":5}')
           if echo "$RESPONSE" | jq -e '.error' > /dev/null 2>&1; then
             echo "status=exhausted" >> $GITHUB_OUTPUT
           else
@@ -38,20 +38,12 @@ jobs:
           RESULT=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "{\"model\":\"google/gemma-4-31b-it:free\",\"messages\":[{\"role\":\"user\",\"content\":\"${{ inputs.prompt }}\"}],\"max_tokens\":4000}")
-          echo "$RESULT" | jq -r '.choices[0].message.content // "OpenRouter failed"'
+            -d '{"model":"google/gemma-4-31b-it:free","messages":[{"role":"user","content":"test"}],"max_tokens":100}')
+          echo "$RESULT" | jq -r '.choices[0].message.content // "failed"'
 
       - name: Use Perplexity No-Key
         if: steps.check_credits.outputs.status != 'available'
         run: |
           echo "OpenRouter exhausted, using Perplexity No-Key"
-          pip3 install --quiet "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
-          python3 -c "
-from perplexityai import LabsClient
-import asyncio
-async def main():
-    client = LabsClient()
-    result = await client.search(query='${{ inputs.prompt }}', mode='auto')
-    print(result)
-asyncio.run(main())
-"
+          pip3 install -q perplexity-api
+          python3 -c "from perplexityai import LabsClient; import asyncio; asyncio.run(LabsClient().search(query='test', mode='auto'))"
