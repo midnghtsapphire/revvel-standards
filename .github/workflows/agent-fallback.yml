@@ -253,8 +253,6 @@ jobs:
               exit 1
             fi
           fi
-      - name: Try OpenHands AI (Opt-in Only - Paid Service)
-if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == 'auto')
       - name: Fallback to Cursor
         if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
         id: cursor
