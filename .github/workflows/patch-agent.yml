@@ -1,0 +1,55 @@
+name: Patch Agent
+
+# Manual-only by design. This repo's prior automation failed because everything
+# auto-triggered on label/comment/schedule churn and looped. The Patch agent runs
+# deliberately: dispatch it, review the report, and let it open a PR you approve.
+on:
+  workflow_dispatch:
+    inputs:
+      fix:
+        description: Apply fixes (raise vulnerable ranges) and open a PR. If false, report only.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: patch-agent
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    name: Scan advisories and (optionally) patch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install root deps (for semver range engine)
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+      - name: Run patch agent (report)
+        id: report
+        run: node scripts/patch-agent.js --check | tee /tmp/patch-report.txt
+      - name: Apply fixes and open PR
+        if: inputs.fix == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/patch-agent.js --fix
+          if [ -n "$(git status --porcelain)" ]; then
+            branch="patch-agent/security-bumps-${{ github.run_id }}"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -b "$branch"
+            git commit -am "fix(security): raise vulnerable dependency floors (patch-agent)"
+            git push origin "$branch"
+            gh pr create --title "fix(security): patch-agent dependency bumps" \
+              --body "Automated by the Patch agent (scripts/patch-agent.js). Review the raised version floors before merging." \
+              --base main --head "$branch"
+          else
+            echo "No declared dependencies needed patching."
+          fi

@@ -454,11 +454,20 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
   const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
 
-  if (!Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
-    throw new Error('research-engine.yml must support issue_comment triggers');
+  // Loop-prevention (WR retrigger storms on #14572/#14579): research-engine must
+  // NOT auto-run on issue_comment or issues:labeled churn — sibling automation
+  // fires those constantly, which re-ran the orchestrator on a loop. It runs on a
+  // new issue (opened/reopened) or deliberate workflow_dispatch only.
+  void issueCommentTypes;
+  const issuesTypes = on.issues?.types || [];
+  if (Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
+    throw new Error('research-engine.yml must NOT auto-trigger on issue_comment (loop risk)');
   }
-  if (!issueCommentTypes.includes('created') || !issueCommentTypes.includes('edited')) {
-    throw new Error('research-engine.yml issue_comment trigger must include created and edited');
+  if (issuesTypes.includes('labeled')) {
+    throw new Error('research-engine.yml must NOT auto-trigger on issues:labeled (loop risk)');
+  }
+  if (!issuesTypes.includes('opened') || !Object.prototype.hasOwnProperty.call(on, 'workflow_dispatch')) {
+    throw new Error('research-engine.yml must run on issues:opened + workflow_dispatch');
   }
   if (!routeScript.includes('isPullRequestComment')) {
     throw new Error('Research engine route must detect pull request comments');
