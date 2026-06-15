@@ -112,28 +112,36 @@ if (test('parseProjectCatalog handles rows without markdown links', () => {
 if (test('Dashboard generation runs without errors', () => {
   const { execSync } = require('child_process');
   const path = require('path');
-  const repoRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
-  
-  // Run the aggregator
-  execSync('node scripts/aggregate-project-dashboard.js', {
-    cwd: repoRoot,
-    stdio: 'pipe',
-  });
-  
-  // Check that output files exist
+  const os = require('os');
   const fs = require('fs');
-  const dashboardPath = path.join(repoRoot, 'dashboard.html');
-  const dataPath = path.join(repoRoot, 'dashboard-data.json');
-  
-  assert(fs.existsSync(dashboardPath));
-  assert(fs.existsSync(dataPath));
-  
-  // Check that data file is valid JSON
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-  assert(data.projects);
-  assert(data.urls);
-  assert(data.domains);
-  assert(data.lastUpdated);
+  const repoRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
+
+  // Write to a temp dir, not the repo root, so a plain `npm test` never rewrites
+  // the committed dashboard (WR #14544). The script honors DASHBOARD_OUT_DIR.
+  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
+  try {
+    // Run the aggregator
+    execSync('node scripts/aggregate-project-dashboard.js', {
+      cwd: repoRoot,
+      stdio: 'pipe',
+      env: { ...process.env, DASHBOARD_OUT_DIR: outDir },
+    });
+    // Check that output files exist
+    const dashboardPath = path.join(outDir, 'dashboard.html');
+    const dataPath = path.join(outDir, 'dashboard-data.json');
+    
+    assert(fs.existsSync(dashboardPath));
+    assert(fs.existsSync(dataPath));
+    
+    // Check that data file is valid JSON
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+    assert(data.projects);
+    assert(data.urls);
+    assert(data.domains);
+    assert(data.lastUpdated);
+  } finally {
+    fs.rmSync(outDir, { recursive: true, force: true });
+  }
 })) passed++; else failed++;
 
 // Summary
