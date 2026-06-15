@@ -22,12 +22,10 @@ on:
   # as the timing mechanism. That's the "don't rely on labels" point: relying on
   # a label to EXIST is fine; relying on label-event timing + a throttled cron
   # is what burned us.
-  schedule:
-    - cron: "*/30 * * * *"
-  workflow_run:
-    workflows: ["Research Engine Orchestrator"]
-    types: [completed]
-    branches: [main]
+  # Auto-triggers (schedule cron + workflow_run) are intentionally disabled:
+  # the */30 sweep and Research-Engine-completion retriggers caused retrigger
+  # storms that escalated stuck WRs into [AUTO-ERROR] issues (e.g. #14592,
+  # #14599). The detector is now manual-only — run it deliberately when needed.
   workflow_dispatch:
     inputs:
       max_age_hours:

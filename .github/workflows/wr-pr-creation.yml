@@ -1,13 +1,14 @@
 name: WR PR Creation
 on:
-  issue_comment:
-    types:
-      - created
+  # `issue_comment` and `issues: labeled` triggers are intentionally removed:
+  # sibling automation re-applies labels (incl. research:complete) and posts
+  # comments constantly, which regenerated duplicate skeleton WR PRs for the
+  # same issues every sweep. WR PRs are now created only when an issue is first
+  # opened/reopened, or deliberately via workflow_dispatch.
   issues:
     types:
       - opened
       - reopened
-      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
