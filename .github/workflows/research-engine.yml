@@ -1,14 +1,14 @@
 name: Research Engine Orchestrator
 on:
+  # `labeled` and `issue_comment` triggers removed: sibling automation tags
+  # every WR issue with ~6 routing labels and posts bot comments constantly,
+  # which re-ran this orchestrator on a loop (each completion then triggered
+  # stuck-wr-detector → wr-pr-creation retries → [AUTO-ERROR] storms). Research
+  # now runs once per new issue, or deliberately via workflow_dispatch.
   issues:
     types:
       - opened
       - reopened
-      - labeled
-  issue_comment:
-    types:
-      - created
-      - edited
   workflow_dispatch:
     inputs:
       issue_number:
