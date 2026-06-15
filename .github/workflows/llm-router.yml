@@ -5,6 +5,17 @@ description: >
   Perplexity No-Key (free, no API key required) when credits exhausted.
 
 on:
+  workflow_dispatch:  # Manual trigger for testing
+    inputs:
+      prompt:
+        description: Test prompt
+        required: true
+        type: string
+      model_preference:
+        description: Model preference (coding, general, research)
+        required: false
+        type: string
+        default: general
   workflow_call:
     inputs:
       prompt:
