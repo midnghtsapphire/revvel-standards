@@ -1,0 +1,16 @@
+{
+  "_comment": "Advisory feed for the Patch agent (scripts/patch-agent.js). Each entry drives a deterministic scan + fix. Seed from GitHub Advisory Database / OSV (https://osv.dev). Keep vulnerableRange in node-semver range syntax.",
+  "advisories": [
+    {
+      "id": "GHSA-c2qf-rxjj-qqgw",
+      "cve": "CVE-2022-25883",
+      "package": "semver",
+      "ecosystem": "npm",
+      "severity": "moderate",
+      "title": "semver vulnerable to Regular Expression Denial of Service (ReDoS)",
+      "vulnerableRange": "<5.7.2 || >=6.0.0 <6.3.1 || >=7.0.0 <7.5.2",
+      "patchedVersions": ["5.7.2", "6.3.1", "7.5.2"],
+      "reference": "https://github.com/advisories/GHSA-c2qf-rxjj-qqgw"
+    }
+  ]
+}
