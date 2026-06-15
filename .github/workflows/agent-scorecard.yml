@@ -4,8 +4,10 @@
 name: Agent Scorecard
 
 on:
-  pull_request_target:
-    types: [closed]
+  # pull_request_target:[closed] removed: it scored EVERY closed PR and opened a
+  # "Self-heal: ... fell short" remediation issue for unmerged closes — so routine
+  # cleanup of junk/stub PRs spawned a fresh auto-fix issue each time (e.g. #14638).
+  # Score deliberately via workflow_dispatch instead.
   workflow_dispatch:
     inputs:
       pr_number:
