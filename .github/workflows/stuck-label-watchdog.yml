@@ -283,6 +283,26 @@ jobs:
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
                   body: '🔍 **Watchdog:** PR is approved and checks pass but was missing `ready-to-merge`. Fixed.' });
               }
+
+              // Self-healing: clear lifecycle:stuck once the PR recovers.
+              // Without this, lifecycle:stuck was only ever added and never
+              // removed, leaving PRs marked stuck permanently even after the
+              // conflicting/stale condition that triggered it was resolved.
+              if (labelNames.includes('lifecycle:stuck')) {
+                const stillStuck =
+                  (labelNames.includes('approved') && labelNames.includes('needs-action')) ||
+                  (labelNames.includes('checks-passing') && labelNames.includes('checks-failing')) ||
+                  (labelNames.includes('awaiting-review') && labelNames.includes('approved')) ||
+                  (labelNames.includes('ready-to-merge') && !labelNames.includes('approved')) ||
+                  (labelNames.includes('awaiting-review') && age > 24 * HOUR) ||
+                  (labelNames.includes('checks-failing') && age > 12 * HOUR);
+                if (!stillStuck) {
+                  try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'lifecycle:stuck' }); } catch(e) {}
+                  labelNames.splice(labelNames.indexOf('lifecycle:stuck'), 1);
+                  await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
+                    body: '✅ **Watchdog:** No stuck/conflicting label conditions remain. Removed `lifecycle:stuck`.' });
+                }
+              }
             }
 
             // ─── SWEEP OPEN ISSUES ───────────────────────────────────

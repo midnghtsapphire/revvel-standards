@@ -1,8 +1,8 @@
 # revvel-skill-runner
 
-Production application for executing skill-based runners under the Revvel platform.
+## Live Deployment
 
-Part of the **$10M in 3 Years** mission — automated product pipeline.
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/revvel-skill-runner/)**
 
 ## Structure
 

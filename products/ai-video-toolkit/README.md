@@ -1,8 +1,8 @@
 # AI Video Toolkit
 
-**Complete AI Toolstack for Faceless YouTube Automation**
+## Live Deployment
 
-A comprehensive, interactive web application showcasing the best AI tools for building automated faceless YouTube channels. Organize your workflow from scriptwriting to publishing with curated tool recommendations.
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ai-video-toolkit/)**
 
 ## Features
 

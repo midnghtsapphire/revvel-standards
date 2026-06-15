@@ -20,7 +20,10 @@ function isWrReadyForPr(labels) {
 // Verdict on whether a WR is in the "old enough to be stuck, not so old we
 // ignore it" window. Pure + injectable clock so it's unit-testable.
 function stuckAgeVerdict(createdAt, { now = Date.now(), minStuckAgeMs = DEFAULT_MIN_STUCK_AGE_MS, maxAgeMs } = {}) {
-  const ageMs = now - new Date(createdAt).getTime();
+  if (createdAt == null) return 'invalid';
+  const created = new Date(createdAt).getTime();
+  if (isNaN(created)) return 'invalid';
+  const ageMs = now - created;
   if (ageMs < minStuckAgeMs) return 'too_young';
   if (maxAgeMs != null && ageMs > maxAgeMs) return 'too_old';
   return 'eligible';

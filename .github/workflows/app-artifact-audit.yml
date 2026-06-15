@@ -1,0 +1,58 @@
+name: App Artifact Audit
+
+# Enforces docs/DEFINITION_OF_DONE.md across every app, several times a day:
+# refreshes docs/<app>/ARTIFACTS.md, the live-link in each README, and the
+# docs/APP_DELIVERY_STATUS.md dashboard. Auto-fills live URLs from Vercel when
+# a VERCEL_TOKEN secret is present (otherwise gaps are flagged, not faked).
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "products/**"
+      - "docs/app-deployments.yml"
+      - "scripts/app_artifact_auditor.py"
+      - "scripts/vercel_sync.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-artifact-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install --quiet pyyaml requests
+
+      - name: Sync live URLs from Vercel (no-op without VERCEL_TOKEN)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+        run: python scripts/vercel_sync.py
+
+      - name: Audit apps against Definition of Done
+        run: python scripts/app_artifact_auditor.py
+
+      - name: Commit refreshed artifacts
+        run: |
+          git config user.name "revvel-audit-bot"
+          git config user.email "audit-bot@users.noreply.github.com"
+          git add docs/ products/*/README.md
+          if git diff --cached --quiet; then
+            echo "No artifact changes."
+          else
+            git commit -m "chore(audit): refresh app delivery artifacts + live links"
+            git push
+          fi

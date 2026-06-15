@@ -1,0 +1,113 @@
+name: Bulk Close Failure Spam
+
+# One-shot, manually triggered cleanup for the ~2,400 auto-generated
+# "[FAILURE] <workflow> failed" issues that accumulated before dedup was
+# added to workflow-monitor.yml. Safe by construction:
+#   - Only acts on issues labeled `workflow-failure` AND `auto-fix`
+#   - AND whose title starts with "[FAILURE]"
+#   - AND that were opened by a bot account
+# Human-authored issues (WRs, bugs, research) never match all three.
+#
+# Defaults to dry_run = true: it reports what WOULD be closed without
+# closing anything. Run once with dry_run=true, review the count in the
+# job summary, then run again with dry_run=false.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report only — do not actually close issues"
+        type: boolean
+        default: true
+      max_to_close:
+        description: "Safety cap on issues processed per run"
+        type: number
+        default: 500
+
+permissions:
+  issues: write
+
+concurrency:
+  group: bulk-close-failure-spam
+  cancel-in-progress: false
+
+jobs:
+  close-spam:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Close matching failure-spam issues
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const dryRun = `${{ inputs.dry_run }}` !== 'false';
+            const maxToClose = parseInt(`${{ inputs.max_to_close }}`, 10) || 500;
+            const { owner, repo } = context.repo;
+
+            let processed = 0;
+            let closed = 0;
+            let scanned = 0;
+
+            const iterator = github.paginate.iterator(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              labels: 'workflow-failure,auto-fix',
+              per_page: 100,
+            });
+
+            for await (const { data: issues } of iterator) {
+              for (const issue of issues) {
+                if (issue.pull_request) continue; // never touch PRs
+                scanned++;
+
+                const titleOk = (issue.title || '').startsWith('[FAILURE]');
+                const botAuthored = issue.user && issue.user.type === 'Bot';
+                if (!titleOk || !botAuthored) continue;
+
+                processed++;
+                if (processed > maxToClose) {
+                  core.info(`Reached max_to_close cap (${maxToClose}); stopping.`);
+                  break;
+                }
+
+                if (dryRun) {
+                  core.info(`[dry-run] would close #${issue.number}: ${issue.title}`);
+                  continue;
+                }
+
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: 'Auto-closing duplicate workflow-failure spam. Root cause '
+                    + '(unthrottled, non-deduped failure issue creation) has been '
+                    + 'addressed: the Agent Audit Logger cron is paused, its '
+                    + 'per-event commit-to-main was removed, and workflow-monitor '
+                    + 'now dedups failure issues. Closed by bulk-close-failure-spam.yml.',
+                });
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  state: 'closed',
+                  state_reason: 'not_planned',
+                });
+                closed++;
+                if (closed % 50 === 0) core.info(`Closed ${closed} so far...`);
+              }
+              if (processed > maxToClose) break;
+            }
+
+            const summary = dryRun
+              ? `Dry run: scanned ${scanned}, matched ${processed} that WOULD be closed.`
+              : `Closed ${closed} of ${processed} matched issues (scanned ${scanned}).`;
+            core.notice(summary);
+            await core.summary
+              .addHeading('Bulk Close Failure Spam')
+              .addRaw(`\n- Mode: **${dryRun ? 'dry-run' : 'live'}**`)
+              .addRaw(`\n- Issues scanned (label-matched): ${scanned}`)
+              .addRaw(`\n- Matched spam signature: ${processed}`)
+              .addRaw(`\n- Actually closed: ${dryRun ? 0 : closed}`)
+              .addRaw(`\n- Safety cap (max_to_close): ${maxToClose}`)
+              .write();

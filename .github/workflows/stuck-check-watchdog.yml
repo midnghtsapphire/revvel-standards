@@ -16,7 +16,7 @@ on:
         default: false
 
 permissions:
-  issues: read
+  issues: write
   pull-requests: read
   contents: read
 
@@ -224,6 +224,20 @@ jobs:
                   });
                 } else if (diagnosis.action === 'move-review' || diagnosis.action === 'comment') {
                   // Do nothing for now
+                }
+
+                // Self-healing: once a previously-stuck issue reaches a resolved
+                // state (checks passed, moved back to code, or marked check-failed),
+                // remove lifecycle:stuck so it does not stay marked stuck forever.
+                const RESOLVED_ACTIONS = ['move-review', 'move-code', 'label-failed'];
+                if (issue.labels.includes('lifecycle:stuck') && RESOLVED_ACTIONS.includes(diagnosis.action)) {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    name: 'lifecycle:stuck'
+                  }).catch(() => {});
+                  diagnosis.cleared_stuck = true;
                 }
                 
                 // Always comment with diagnosis

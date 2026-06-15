@@ -1,16 +1,12 @@
 # CircleCI Configuration for Revvel Standards
 #
-# This configuration re-enables CircleCI for:
-# 1. PR code reviews using OpenRouter (free/affordable alternative to paid agents)
-# 2. CI failure diagnosis
-# 3. Ready-for-review automation
+# Single purpose: a REAL lint + test gate (markdownlint + node --test).
+# GitHub Actions owns everything else (AI PR review, CI-failure diagnosis,
+# ready-for-review automation), so the old OpenRouter `pr-review` job was
+# removed — it duplicated the GitHub Actions OpenRouter review and only ever
+# ran when OPENROUTER_API_KEY was set in CircleCI.
 #
-# Required environment variables in CircleCI project settings:
-# - OPENROUTER_API_KEY (for AI-powered reviews)
-# - GITHUB_TOKEN (for PR/issue operations)
-#
-# This replaces paid agent workflows (OpenHands, Copilot) with OpenRouter-based automation
-# per user request to use affordable/free agents for reviews.
+# Cursor agent tier retired 2026-06-13; this file is unrelated to that.
 
 version: 2.1
 
@@ -20,125 +16,50 @@ orbs:
 executors:
   node-executor:
     docker:
-      - image: cimg/node:20.11
-    environment:
-      OPENROUTER_MODEL: anthropic/claude-sonnet-4
+      - image: cimg/node:22.11
 
 jobs:
-  pr-review:
-    executor: node-executor
-    steps:
-      - checkout
-      - run:
-          name: Check OPENROUTER_API_KEY
-          command: |
-            if [ -z "${OPENROUTER_API_KEY}" ]; then
-              echo "ERROR: OPENROUTER_API_KEY is required for PR reviews"
-              echo "Please configure it in CircleCI project settings"
-              exit 1
-            fi
-            echo "✅ OPENROUTER_API_KEY is configured"
-      
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y jq curl
-      
-      - run:
-          name: Automated PR Review via OpenRouter
-          command: |
-            echo "🤖 Running automated PR review via OpenRouter..."
-            
-            # Get PR number from CircleCI env
-            PR_NUMBER="${CIRCLE_PR_NUMBER}"
-            
-            if [ -z "${PR_NUMBER}" ]; then
-              echo "Not a PR build, skipping review"
-              exit 0
-            fi
-            
-            echo "Reviewing PR #${PR_NUMBER}"
-            
-            # Get PR diff
-            PR_DIFF=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-              "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${PR_NUMBER}" | \
-              jq -r '.diff_url' | xargs curl -s)
-            
-            # Send to OpenRouter for review
-            REVIEW_PROMPT="You are an expert code reviewer. Review this PR diff and provide:
-            1. Security concerns (if any)
-            2. Code quality issues (if any)
-            3. Suggestions for improvement
-            4. Overall assessment (APPROVE, REQUEST_CHANGES, or COMMENT)
-
-            PR Diff:
-            ${PR_DIFF}"
-            
-            REVIEW_RESPONSE=$(curl -s -X POST https://openrouter.ai/api/v1/chat/completions \
-              -H "Authorization: Bearer ${OPENROUTER_API_KEY}" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"model\": \"${OPENROUTER_MODEL}\",
-                \"messages\": [
-                  {\"role\": \"system\", \"content\": \"You are an expert code reviewer following revvel-standards.\"},
-                  {\"role\": \"user\", \"content\": \"${REVIEW_PROMPT}\"}
-                ]
-              }")
-            
-            REVIEW_CONTENT=$(echo "${REVIEW_RESPONSE}" | jq -r '.choices[0].message.content')
-            
-            echo "--- OpenRouter PR Review ---"
-            echo "${REVIEW_CONTENT}"
-            echo "--- End Review ---"
-            
-            # Post review as PR comment
-            curl -X POST \
-              -H "Authorization: token ${GITHUB_TOKEN}" \
-              -H "Content-Type: application/json" \
-              "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" \
-              -d "{\"body\": \"## 🤖 CircleCI + OpenRouter PR Review\n\n${REVIEW_CONTENT}\n\n---\n*Automated review via CircleCI + OpenRouter*\"}"
-
   lint-and-test:
     executor: node-executor
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
+      # Real gate, scoped to changed Markdown so it enforces standards on new
+      # work without drowning in the repo's large pre-existing lint backlog.
       - run:
-          name: Run linters
+          name: Lint changed Markdown (markdownlint)
           command: |
-            if [ -f "package.json" ]; then
-              npm run lint || echo "No lint script found"
+            git fetch origin main --depth=200
+            BASE="$(git merge-base origin/main HEAD 2>/dev/null || true)"
+            if [ -z "$BASE" ]; then
+              echo "ERROR: Could not determine merge base with origin/main; refusing to skip markdownlint." >&2
+              exit 1
             fi
+            FILES="$(git diff --name-only --diff-filter=d "$BASE" HEAD -- '*.md' || true)"
+            if [ -z "$FILES" ]; then
+              echo "No changed Markdown files to lint."
+            else
+              echo "Linting changed Markdown:"; echo "$FILES"
+              npx markdownlint-cli2 $FILES
+            fi
+      # Tests run for real — a failure fails the job (no "|| echo" swallowing).
       - run:
-          name: Run tests
-          command: |
-            if [ -f "package.json" ]; then
-              npm test || echo "No test script found"
-            fi
+          name: Run tests (node --test + shell)
+          command: npm test
 
 workflows:
   version: 2
 
-  # Run on every PR.
-  #
-  # OpenHands-RESTRUCTURE 2026-05-05 (Audrey ask: "stuff that constantly never gets
-  # fixed"): the `pr-review` job was removed from this workflow because (a) it
-  # required OPENROUTER_API_KEY to be set in CircleCI project settings (it
-  # wasn't, so the job exited 1 on every PR and was the chronic
-  # `ci/circleci: pr-review` red X), and (b) it duplicated work that's already
-  # done by OpenHands Review, Jules, and BITO AI on every PR via GitHub Actions.
-  # If you ever want a 4th PR reviewer in CircleCI, restore the job and set
-  # OPENROUTER_API_KEY in the CircleCI project's Environment Variables.
+  # Run on every PR (non-main branches).
   pr-workflow:
     jobs:
       - lint-and-test:
           filters:
             branches:
               ignore: main
-  
-  # Run on main branch
+
+  # Run on main.
   main-workflow:
     jobs:
       - lint-and-test:

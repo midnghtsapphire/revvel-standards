@@ -239,6 +239,37 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   }
 });
 
+test('stuck-label-watchdog.yml clears lifecycle:stuck once a PR recovers', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  if (!/removeLabel\([^)]*name:\s*'lifecycle:stuck'/.test(script)) {
+    throw new Error('watchdog must remove lifecycle:stuck so PRs do not stay stuck permanently');
+  }
+  if (!script.includes('stillStuck')) {
+    throw new Error('watchdog must only clear lifecycle:stuck when no stuck condition remains');
+  }
+});
+
+test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  if (doc.permissions?.issues !== 'write') {
+    throw new Error('stuck-check-watchdog must have issues: write to remove lifecycle:stuck');
+  }
+
+  const job = doc.jobs['find-stuck-issues'];
+  const script = job.steps.map(s => s.with?.script || '').join('\n');
+  if (!script.includes("name: 'lifecycle:stuck'") || !script.includes('removeLabel')) {
+    throw new Error('stuck-check-watchdog must remove lifecycle:stuck once an issue recovers');
+  }
+  if (!script.includes('RESOLVED_ACTIONS')) {
+    throw new Error('stuck-check-watchdog must only clear lifecycle:stuck for resolved diagnoses');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -253,33 +284,27 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   }
 });
 
-test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
+test('agent-audit-logger.yml persists audit entries without committing to main', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
-  const commitStep = doc.jobs['log-agent-action'].steps.find(
-    (step) => step.name === 'Commit audit log'
-  );
+  const steps = doc.jobs['log-agent-action'].steps;
 
-  if (!commitStep) throw new Error('Commit audit log step not found');
+  // The old commit-and-push-to-main step was the source of push contention
+  // and a flood of "chore: log agent action" commits. It must be gone.
+  const hasGitPush = steps.some((step) => (step.run || '').includes('git push'));
+  if (hasGitPush) {
+    throw new Error('log-agent-action must not push the audit log to main');
+  }
 
-  const script = commitStep.run || '';
-  if (!script.includes('for attempt in 1 2 3')) {
-    throw new Error('Commit step must retry git push attempts');
+  const persistStep = steps.find((step) => step.name === 'Persist audit entry');
+  if (!persistStep) throw new Error('Persist audit entry step not found');
+  if (!(persistStep.run || '').includes('GITHUB_STEP_SUMMARY')) {
+    throw new Error('Persist step must write the entry to the job summary');
   }
-  if (!script.includes('fetch first|non-fast-forward')) {
-    throw new Error('Commit step must detect non-fast-forward push errors');
-  }
-  if (!script.includes('git pull --rebase origin main')) {
-    throw new Error('Commit step must rebase before retrying push');
-  }
-  if (!script.includes('Rebase failed; audit log push aborted.')) {
-    throw new Error('Commit step must log rebase failure details');
-  }
-  if (!script.includes('Push failed with non-rebaseable error; audit log push aborted.')) {
-    throw new Error('Commit step must log non-rebaseable push failures');
-  }
-  if (!script.includes('exit 0')) {
-    throw new Error('Commit step must exit cleanly when push remains blocked');
+
+  const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
+  if (!uploadStep || !String(uploadStep.uses || '').startsWith('actions/upload-artifact')) {
+    throw new Error('Audit entry must be retained via upload-artifact');
   }
 });
 

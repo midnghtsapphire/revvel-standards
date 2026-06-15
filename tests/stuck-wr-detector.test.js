@@ -152,6 +152,13 @@ const issue = {
     assert.equal(stuckAgeVerdict(created, { now: at(12), minStuckAgeMs: 15 * 60 * 1000 }), 'too_young');
   });
 
+  await test('stuckAgeVerdict returns invalid for malformed timestamps', () => {
+    assert.equal(stuckAgeVerdict(null), 'invalid');
+    assert.equal(stuckAgeVerdict(undefined), 'invalid');
+    assert.equal(stuckAgeVerdict('not-a-date'), 'invalid');
+    assert.equal(stuckAgeVerdict(''), 'invalid');
+  });
+
   console.log(`\n${passed} passed, ${failed} failed`);
   if (failed > 0) process.exit(1);
 })();

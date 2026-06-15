@@ -1,6 +1,8 @@
 # UGC Review Generator
 
-A viral TikTok-style Amazon Product Review video prompt generator.
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ugc-review-generator/)**
 
 ## Description
 This app is designed specifically to generate prompts for an avatar platform like HeyGen (or for an AI video generator). The prompts are structured to create a highly realistic, relatable "UGC" (User Generated Content) aesthetic.

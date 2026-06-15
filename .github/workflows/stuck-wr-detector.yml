@@ -27,6 +27,7 @@ on:
   workflow_run:
     workflows: ["Research Engine Orchestrator"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       max_age_hours:

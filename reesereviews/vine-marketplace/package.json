@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.22.2",
     "imap": "^0.8.19",
     "mailparser": "^3.7.1",
-    "node-cron": "^3.0.3",
+    "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0"
   },
   "engines": {
