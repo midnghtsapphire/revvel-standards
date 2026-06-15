@@ -14,7 +14,7 @@ on:
       issue_number:
         description: Issue number to create WR PR for
         required: true
-        type: number
+        type: string
 permissions:
   contents: write
   issues: write
@@ -52,7 +52,29 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            // Parse issue number from multiple possible sources:
+            // 1. context.payload.issue.number - for issue-triggered events
+            // 2. context.payload.inputs.issue_number - for workflow_dispatch (string or number)
+            // 3. Extract from run URL as last resort fallback
+            let issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            
+            // Ensure we have a string for regex operations
+            const rawIssueNumber = String(issueNumber || '');
+            
+            // If issue_number is in format "14569" (plain number string), use it directly
+            // If it's in format "#14569" or "issue-14569", extract the numeric part
+            const numericMatch = rawIssueNumber.match(/#?(\d+)/);
+            if (numericMatch) {
+              issueNumber = numericMatch[1];
+            } else {
+              // Try to extract from run URL as fallback (format: .../runs/27566386345/jobs/...)
+              const runUrl = process.env.GITHUB_RUN_URL || '';
+              const runIdMatch = runUrl.match(/\/runs\/(\d+)\//);
+              if (runIdMatch) {
+                core.warning(`Could not get issue number from event/inputs, falling back to run ID extraction`);
+              }
+            }
+            
             function skip(reason, { notify = context.eventName !== 'issue_comment' } = {}) {
               core.info(`Skipping WR PR creation: ${reason}`);
               core.setOutput('should_create_pr', 'false');
@@ -62,6 +84,8 @@ jobs:
 
             if (!issueNumber) {
               core.notice('No issue number found');
+              core.notice(`Raw inputs: ${JSON.stringify(context.payload.inputs)}`);
+              core.notice(`Event: ${context.eventName}, Action: ${context.payload.action}`);
               skip('no_issue_number', { notify: false });
               return;
             }
@@ -333,10 +357,20 @@ jobs:
           fetch-depth: 0
       - name: Log workflow trigger
         run: |
-          echo "::notice::WR PR Creation triggered for issue #${{ env.ISSUE_NUMBER }}"
+          echo "=== WR PR Creation Debug ==="
+          echo "::notice::ISSUE_NUMBER: '${{ env.ISSUE_NUMBER }}'"
           echo "::notice::Event: ${{ github.event_name }}"
           echo "::notice::Action: ${{ github.event.action }}"
-          echo "::notice::Issue Title: ${{ env.ISSUE_TITLE }}"
+          echo "::notice::Issue Title: '${{ env.ISSUE_TITLE }}'"
+          
+          # Validate ISSUE_NUMBER is not empty
+          if [ -z "${{ env.ISSUE_NUMBER }}" ]; then
+            echo "::error::ISSUE_NUMBER is empty! This will cause failures downstream."
+            echo "::error::Failing workflow to prevent partial execution."
+            exit 1
+          fi
+          
+          echo "=== Debug complete ==="
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
