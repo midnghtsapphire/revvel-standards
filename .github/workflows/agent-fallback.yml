@@ -22,7 +22,7 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: Preferred agent (openrouter, cursor, OpenHands, auto)
+        description: Preferred agent (openrouter, OpenHands, auto)
         required: false
         type: string
         default: openrouter
@@ -43,7 +43,7 @@ on:
         required: true
         type: number
       prefer_agent:
-        description: Preferred agent (openrouter, cursor, OpenHands, auto)
+        description: Preferred agent (openrouter, OpenHands, auto)
         required: false
         type: string
         default: openrouter
@@ -83,7 +83,6 @@ jobs:
         (github.event.action == 'labeled' && github.event.label.name == 'agent-fallback')))
     outputs:
       OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
-      cursor_available: ${{ steps.check.outputs.cursor_available }}
       openrouter_available: ${{ steps.check.outputs.openrouter_available }}
       recommended_agent: ${{ steps.check.outputs.recommended_agent }}
     steps:
@@ -95,12 +94,10 @@ jobs:
         id: check
         env:
           OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Check which agents are configured
           OpenHands_AVAILABLE="false"
-          CURSOR_AVAILABLE="false"
           OPENROUTER_AVAILABLE="false"
 
           if [ -n "${OPENHANDS_API_KEY}" ]; then
@@ -108,13 +105,6 @@ jobs:
             echo "✅ OpenHands API key configured"
           else
             echo "⚠️  OpenHands API key not configured"
-          fi
-
-          if [ -n "${CURSOR_API_KEY}" ]; then
-            CURSOR_AVAILABLE="true"
-            echo "✅ Cursor API key configured"
-          else
-            echo "⚠️  Cursor API key not configured"
           fi
 
           if [ -n "${OPENROUTER_API_KEY}" ]; then
@@ -138,7 +128,6 @@ jobs:
           fi
 
           echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
-          echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
 
@@ -264,6 +253,8 @@ jobs:
               exit 1
             fi
           fi
+      - name: Try OpenHands AI (Opt-in Only - Paid Service)
+if: steps.openrouter.outcome != 'success' && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == 'auto')
       - name: Fallback to Cursor
         if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
         id: cursor
@@ -299,10 +290,6 @@ jobs:
             echo "agent=openrouter" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
             echo "✅ Task completed by OpenRouter"
-          elif [ "${{ steps.cursor.outcome }}" = "success" ]; then
-            echo "agent=cursor" >> $GITHUB_OUTPUT
-            echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by Cursor"
           elif [ "${{ steps.OpenHands.outcome }}" = "success" ]; then
             echo "agent=OpenHands" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
@@ -327,6 +314,7 @@ jobs:
             issue #${{ steps.issue.outputs.issue_number }}.
 
             **Agent used:** ${{ steps.result.outputs.agent }}
+            **Fallback chain:** OpenRouter → OpenHands (opt-in)
             **Fallback chain:** OpenRouter → OpenHands → manual (all free-tier)
 
             ### Issue
@@ -351,7 +339,6 @@ jobs:
             const prUrl = process.env.PR_URL || '';
 
             let agentIcon = '🤖';
-            if (agent === 'cursor') agentIcon = '🔧';
             if (agent === 'openrouter') agentIcon = '🌐';
 
             const body = prUrl
@@ -397,7 +384,6 @@ jobs:
         env:
           ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
           OpenHands_OUTCOME: ${{ steps.OpenHands.outcome }}
-          CURSOR_OUTCOME: ${{ steps.cursor.outcome }}
           OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
         with:
           script: |
@@ -410,7 +396,6 @@ jobs:
 
               **Attempted:**
               - OpenHands AI: ${process.env.OpenHands_OUTCOME}
-              - Cursor: ${process.env.CURSOR_OUTCOME}
               - OpenRouter: ${process.env.OPENROUTER_OUTCOME}
 
               **Next steps:**
