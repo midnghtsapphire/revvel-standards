@@ -88,6 +88,13 @@ jobs:
                 next_label: 'triage:in-progress',
                 description: 'New item not triaged'
               },
+              {
+                label: 'auto-error',
+                max_age_ms: 7 * MS_PER_DAY,
+                next_action: 'close-stale-auto-error',
+                next_label: 'needs-human',
+                description: 'Auto-error issue unresolved for 7 days'
+              },
             ];
 
             const now = Date.now();
@@ -103,7 +110,7 @@ jobs:
                 labels: pattern.label,
                 per_page: 100,
               });
-              
+
               for (const issue of issues.data) {
                 // Find when the label was applied
                 const timeline = await github.rest.issues.listEventsForTimeline({
@@ -112,17 +119,17 @@ jobs:
                   issue_number: issue.number,
                   per_page: 100,
                 });
-                
+
                 // Find most recent application of this label
                 const labelEvents = timeline.data
                   .filter(e => e.event === 'labeled' && e.label?.name === pattern.label)
                   .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                
+
                 if (labelEvents.length === 0) continue;
-                
+
                 const labeledAt = new Date(labelEvents[0].created_at).getTime();
                 const age_ms = now - labeledAt;
-                
+
                 if (age_ms > pattern.max_age_ms) {
                   const item = {
                     number: issue.number,
@@ -134,13 +141,13 @@ jobs:
                     description: pattern.description,
                     is_pr: !!issue.pull_request,
                   };
-                  
+
                   if (issue.pull_request) {
                     stuck_prs.push(item);
                   } else {
                     stuck_issues.push(item);
                   }
-                  
+
                   core.info(`Stuck: #${issue.number} - ${pattern.label} (${item.age_hours}h)`);
                 }
               }
@@ -186,21 +193,21 @@ jobs:
 
             for (const item of items) {
               core.info(`Processing #${item.number}: ${item.next_action}`);
-              
+
               let comment_body = `## 🔄 Stuck Label Auto-Progression\n\n`;
               comment_body += `**Label:** \`${item.label}\`\n`;
               comment_body += `**Age:** ${item.age_hours} hours\n`;
               comment_body += `**Issue:** ${item.description}\n`;
               comment_body += `**Auto-action:** ${item.next_action}\n\n`;
-              
+
               // Perform action based on next_action
               switch (item.next_action) {
-                
+
                 case 'auto-classify':
                   comment_body += `Attempting to auto-classify this issue...\n\n`;
                   comment_body += `Since this has been in triage for over 24 hours, I'm moving it to classified state.\n`;
                   comment_body += `Please review the classification and adjust labels if needed.\n`;
-                  
+
                   if (!dry_run && item.next_label) {
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
@@ -208,7 +215,7 @@ jobs:
                       issue_number: item.number,
                       name: item.label,
                     }).catch(() => {});
-                    
+
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
@@ -217,14 +224,14 @@ jobs:
                     });
                   }
                   break;
-                
+
                 case 'escalate-research':
                   comment_body += `Research has been in progress for over 7 days.\n\n`;
                   comment_body += `**Escalation:** This needs human attention to either:\n`;
                   comment_body += `1. Complete the research and apply \`wr:complete\`\n`;
                   comment_body += `2. Break into smaller research tasks\n`;
                   comment_body += `3. Re-scope if requirements changed\n`;
-                  
+
                   if (!dry_run && item.next_label) {
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
@@ -234,11 +241,11 @@ jobs:
                     });
                   }
                   break;
-                
+
                 case 'recheck-credentials':
                   comment_body += `Credentials have been marked missing for over 48 hours.\n\n`;
                   comment_body += `**Auto-action:** Re-triggering credential gatekeeper to check current state.\n`;
-                  
+
                   if (!dry_run) {
                     // Trigger credential-gatekeeper workflow
                     await github.rest.actions.createWorkflowDispatch({
@@ -252,11 +259,11 @@ jobs:
                     }).catch(e => core.warning(`Could not trigger credential-gatekeeper: ${e.message}`));
                   }
                   break;
-                
+
                 case 'retry-instantiation':
                   comment_body += `OpenRouter instantiation has been stuck for over 2 hours.\n\n`;
                   comment_body += `**Auto-action:** Marking as failed. Ralph Loop will retry.\n`;
-                  
+
                   if (!dry_run && item.next_label) {
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
@@ -264,7 +271,7 @@ jobs:
                       issue_number: item.number,
                       name: item.label,
                     }).catch(() => {});
-                    
+
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
@@ -273,19 +280,19 @@ jobs:
                     });
                   }
                   break;
-                
+
                 case 'ping-reviewers':
                   const { data: pr } = await github.rest.pulls.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     pull_number: item.number,
                   });
-                  
+
                   const reviewers = pr.requested_reviewers?.map(r => `@${r.login}`).join(' ') || '@midnghtsapphire';
                   comment_body += `This PR has been awaiting approval for over 72 hours.\n\n`;
                   comment_body += `**Ping:** ${reviewers} - please review when you have a moment.\n`;
                   break;
-                
+
                 case 'recheck-blocker':
                   comment_body += `This issue has been blocked for over 1 day.\n\n`;
                   comment_body += `**Action needed:** Please update the status:\n`;
@@ -293,11 +300,11 @@ jobs:
                   comment_body += `- If still blocked, add a comment explaining current status\n`;
                   comment_body += `- If blocker won't be resolved soon, consider closing or re-scoping\n`;
                   break;
-                
+
                 case 'retry-review-fix':
                   comment_body += `Review fix automation has been running for over 6 hours.\n\n`;
                   comment_body += `**Auto-action:** Marking as failed. Please review manually.\n`;
-                  
+
                   if (!dry_run && item.next_label) {
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
@@ -305,7 +312,7 @@ jobs:
                       issue_number: item.number,
                       name: item.label,
                     }).catch(() => {});
-                    
+
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
@@ -314,12 +321,12 @@ jobs:
                     });
                   }
                   break;
-                
+
                 case 'trigger-triage':
                   comment_body += `This item has been in \`triage:new\` for over 2 hours without progression.\n\n`;
                   comment_body += `**Auto-action:** Triggering triage workflow sweep.\n`;
                   comment_body += `Note: The item will remain in \`triage:new\` until the sweep processes it.\n`;
-                  
+
                   if (!dry_run) {
                     // Trigger openrouter-triage workflow sweep (workflow_dispatch has no
                     // per-item context). The item stays in triage:new and will be picked
@@ -332,15 +339,34 @@ jobs:
                     }).catch(e => core.warning(`Could not trigger openrouter-triage: ${e.message}`));
                   }
                   break;
+
+                case 'close-stale-auto-error':
+                  comment_body += `This \`auto-error\` issue has been open for over 7 days without resolution.\n\n`;
+                  comment_body += `**Auto-action:** Escalating to human — the underlying workflow automation `;
+                  comment_body += `needs manual review.\n\n`;
+                  comment_body += `**Common fixes:**\n`;
+                  comment_body += `- Review the linked workflow run logs\n`;
+                  comment_body += `- Fix the root-cause script or workflow step\n`;
+                  comment_body += `- Close this issue once the fix is confirmed\n`;
+
+                  if (!dry_run && item.next_label) {
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: item.number,
+                      labels: [item.next_label, 'priority-p1'],
+                    });
+                  }
+                  break;
               }
-              
+
               comment_body += `\n---\n`;
               comment_body += `_Auto-progressed by Stuck Label Automation`;
               if (dry_run) {
                 comment_body += ` (DRY RUN - no changes made)`;
               }
               comment_body += `_`;
-              
+
               // Post comment
               if (!dry_run) {
                 await github.rest.issues.createComment({
@@ -392,7 +418,7 @@ jobs:
               } else {
                 core.summary.addRaw('None\n\n');
               }
-              
+
               core.summary.addHeading('Stuck PRs', 3);
               if (prs.length > 0) {
                 const rows = prs.map(item => [
