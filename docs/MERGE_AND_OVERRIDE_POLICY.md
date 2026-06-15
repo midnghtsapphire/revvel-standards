@@ -10,7 +10,7 @@ let real work stall behind noise. This policy draws the line.
 ## TL;DR
 
 | Situation | Can you merge? | How |
-|-----------|----------------|-----|
+| --- | --- | --- |
 | `ci/circleci: lint-and-test` is **green** | ✅ Yes | Normal merge |
 | PR state is `blocked` (required review/check pending, cosmetic jobs running) | ✅ Yes | Admin override is acceptable |
 | PR is a **draft** | ❌ No | Mark "Ready for review" first — no override exists |
