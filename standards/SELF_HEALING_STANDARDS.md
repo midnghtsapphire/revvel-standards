@@ -20,7 +20,7 @@ Standards must self-heal. Every time we fix a problem, update a workflow, or dis
 For ANY change to a `.yml` workflow or `.md` standard file:
 
 | Field | Required | Example |
-|-------|----------|---------|
+| ------- | ---------- | --------- |
 | **Who** | ✅ | Audrey Evans (midnghtsapphire) |
 | **When** | ✅ | 2026-05-06 |
 | **Why** | ✅ | Removed false positive check for torrents/pirate bay - legitimate content in docs |
@@ -46,7 +46,7 @@ At the TOP of every modified workflow or standard file:
 
 ### 2.3 Document in Git Commit
 
-```
+```text
 fix(workflow-name): [one-line summary]
 
 - Who: [username]
@@ -115,7 +115,7 @@ fix(workflow-name): [one-line summary]
 ## 5. Standards to Always Keep Updated
 
 | Standard | When to Update |
-|----------|----------------|
+| ---------- | ---------------- |
 | `.github/workflows/*.yml` | Any workflow change |
 | `AGENTS.md` | New skills, tools, or processes |
 | `CODE_REVIEW_STANDARD.md` | New code review tools |
@@ -148,7 +148,7 @@ The system auto-updates when:
 When a workflow, automation, or process **fails but shouldn't block**:
 
 | Scenario | Action | Notification |
-|----------|--------|--------------|
+| ---------- | -------- | -------------- |
 | Non-critical check fails | Continue anyway | Notify in PR comment |
 | Required credential missing | Continue with fallback | Label `credentials-missing` |
 | Optional workflow fails | Skip, don't block | Log failure, proceed |
@@ -157,12 +157,14 @@ When a workflow, automation, or process **fails but shouldn't block**:
 ### 7A.2 Notification Rules
 
 ✅ **DO:**
+
 - Alert failures to appropriate channel (Slack, PR comment, etc.)
 - Include context: what failed, why, what tried
 - Add `credentials-missing` or `fix-me` label
 - Log in running conversation
 
 ❌ **DON'T:**
+
 - Block the entire PR/issue just because one check fails
 - Stop everything for optional dependencies
 - Leave failures unacknowledged
@@ -207,7 +209,7 @@ When disabling a workflow or check:
 ## 7B. Notification Channels
 
 | Failure Type | Channel | Priority |
-|--------------|---------|----------|
+| -------------- | --------- | ---------- |
 | Credential missing | PR comment + `credentials-missing` label | Medium |
 | Workflow timeout | PR comment + retry | Low |
 | Required check fails | PR comment + block | High |
@@ -227,6 +229,7 @@ When an issue body or label contains "completed": auto-close.
 ## 8. Verification
 
 All changes should:
+
 - Have Who/When/Why in file header
 - Have proper commit message
 - Pass all required checks
@@ -262,6 +265,7 @@ All changes should:
   gate: `node scripts/check-workflow-yaml.js` (exit 1 if any invalid).
 - **Fix:** keep github-script bodies indented inside the block; build multi-line
   strings as an indented array joined with `\n`:
+
   ```js
   body: [
     `## Title`,
@@ -269,6 +273,7 @@ All changes should:
     `**Field:** ${value}`,
   ].join('\n')
   ```
+
   Never write template-literal continuation lines at column 0.
 
 ### 10.2 WR PRs stuck because generated docs ship raw `{TOKEN}`s
@@ -310,7 +315,7 @@ All changes should:
   calls.
 - **Fix (remove the real risk first):**
   1. Never build a shell command by interpolating variables
-     (`execSync(\`curl "${url}"\`)`). Use `execFileSync`/`spawnSync` with an
+     (`execSync(\`curl "${url}"\`)`). Use`execFileSync`/`spawnSync` with an
      **argv array** and no shell: `execFileSync('curl', ['-sL', url, '--max-time', '30'])`.
   2. Pass secrets via **stdin** (`{ input: value }`), never `echo "$value" | …`,
      so they never appear on a command line.
