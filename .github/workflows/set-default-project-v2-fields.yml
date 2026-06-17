@@ -39,7 +39,10 @@ jobs:
           # event never hard-fails over optional project automation. List what is
           # missing so a human can wire it up later.
           missing=""
-          { [ -z "${APP_ID}" ] || [ -z "${APP_PRIVATE_KEY}" ]; } && missing="${missing} PROJECTS_APP_ID/PROJECTS_APP_PRIVATE_KEY"
+          # Name each credential separately so the notice tells a human EXACTLY
+          # which one to set (e.g. half-configured App auth) rather than a vague pair.
+          [ -z "${APP_ID}" ] && missing="${missing} PROJECTS_APP_ID(var)"
+          [ -z "${APP_PRIVATE_KEY}" ] && missing="${missing} PROJECTS_APP_PRIVATE_KEY(secret)"
           for v in PROJECT_ID PRIORITY_FIELD_ID STATUS_FIELD_ID RESEARCH_MODE_FIELD_ID \
                    PRIORITY_MEDIUM_OPTION_ID STATUS_INBOX_OPTION_ID RESEARCH_MODE_STANDARD_OPTION_ID; do
             [ -z "${!v}" ] && missing="${missing} ${v}(var)"
