@@ -322,3 +322,26 @@ All changes should:
      Never blanket-suppress without first removing the shell.
 - **Reference:** the 2026-06-17 hardening of `scripts/auto-credential-fetcher.js`,
   `scripts/openrouter-triage.js`, and `scripts/credential-autonomy-agent.js`.
+
+### 10.5 "Invalid workflow file" — startup_failure (0s, no jobs)
+
+- **Symptom:** a workflow run shows **Failure, duration 0s, no jobs**, often with
+  `event: push` even when the file has no `push` trigger. That is GitHub's
+  signature for rejecting a workflow at parse/validation time — it fails on
+  **every push** and is invisible to plain YAML linting (the file is valid YAML
+  but invalid against the Actions schema).
+- **Most common cause:** the **`workflow_run`** event is declared **without the
+  required `workflows:` list**. Other causes: bad `on:`/expression syntax, an
+  invalid `needs:`/`if:` expression.
+- **Auto-detection (real fix):** `scripts/check-workflow-yaml.js` now performs an
+  Actions-**schema** check (not just YAML validity), starting with
+  `workflow_run`-without-`workflows`. It runs in **two** places from one source
+  of truth:
+  - **Prevention** — wired into the CI **Workflow Lint** job
+    (`ci-error-prevention.yml`), so a new invalid file is blocked at PR time.
+  - **Detection** — the daily **Repo Self-Healer** (`checkWorkflowHealth()`)
+    files a deduped `[SELF-HEAL] Invalid workflow YAML` issue with the fix.
+- **Fix:** add `workflows: [<workflow names>]` under `workflow_run`, or — if the
+  trigger is redundant (e.g. `check_suite: completed` already covers it) —
+  comment out the trigger with a documented header (§2.2 / §7A.4).
+- **Reference:** the 2026-06-17 repair of `.github/workflows/pr-check-status.yml`.

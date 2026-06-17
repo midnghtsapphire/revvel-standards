@@ -68,6 +68,19 @@ jobs:
           done
           echo "✅ All YAML files are valid"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Catches GitHub Actions SCHEMA errors that plain YAML validation misses —
+      # e.g. `workflow_run` without a required `workflows:` list, which makes
+      # GitHub reject the whole file (startup_failure, 0s) on every run. Same
+      # guard the daily Repo Self-Healer runs, so prevention (here) and detection
+      # (self-healer) share one source of truth.
+      - name: Validate workflow Actions-schema
+        run: node scripts/check-workflow-yaml.js
+
   token-security-check:
     name: Token Security
     runs-on: ubuntu-latest

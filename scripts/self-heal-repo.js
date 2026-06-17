@@ -299,8 +299,12 @@ async function checkWorkflowHealth() {
     list,
     '',
     '### How to fix (runbook)',
-    'Almost always a `github-script` body whose multi-line template literal was written',
-    'flush-left, escaping the `script: |` block scalar. Rebuild it as an indented array:',
+    '- If the error mentions **`workflow_run`**: that event requires a `workflows:`',
+    '  list — add it (or comment out the trigger). Without it GitHub rejects the',
+    '  whole file. See `standards/SELF_HEALING_STANDARDS.md` §10.5.',
+    '- Otherwise it is usually a `github-script` body whose multi-line template',
+    '  literal was written flush-left, escaping the `script: |` block scalar.',
+    '  Rebuild it as an indented array (§10.1):',
     '',
     '```js',
     'body: [',
@@ -310,7 +314,7 @@ async function checkWorkflowHealth() {
     "].join('\\n')",
     '```',
     '',
-    'See `standards/SELF_HEALING_STANDARDS.md` §10 and `scripts/check-workflow-yaml.js`.',
+    'Detector: `scripts/check-workflow-yaml.js` (also runs as the CI Workflow Lint gate).',
   ].join('\n');
 
   try {

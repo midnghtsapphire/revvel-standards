@@ -37,10 +37,12 @@ const path = require('node:path');
 
 const WORKFLOWS_DIR = path.resolve(__dirname, '..', '.github', 'workflows');
 
-// Lines that begin at column 0 inside a workflow are almost always a broken
-// block scalar when they start with one of these markdown/JS fragments — none
-// is a legal start for a top-level YAML key, list item, comment, or doc marker.
-const FLUSH_LEFT_BROKEN = /^(\*|`|_|\||#{1,6}\s|\d+\.\s|-{3,}\s*$|\)\.join)/;
+// Lines that begin at column 0 and start with one of these fragments are almost
+// always a github-script template literal that escaped its `script: |` block
+// scalar (the real failure mode). Deliberately EXCLUDES `#` (a legal YAML
+// comment) and `---` (a legal document separator) to avoid false positives on
+// the many workflows that open with a top-level comment.
+const FLUSH_LEFT_BROKEN = /^(\*|`|_|\|\s|\d+\.\s|\)\.join)/;
 
 function listWorkflowFiles() {
   if (!fs.existsSync(WORKFLOWS_DIR)) return [];
@@ -70,22 +72,64 @@ function heuristicError(text) {
   return null;
 }
 
+// GitHub Actions SCHEMA check (beyond plain YAML validity): the `workflow_run`
+// event REQUIRES a `workflows:` list. Without it GitHub rejects the entire file
+// as an "Invalid workflow file" (startup_failure, 0s, no jobs) on every run —
+// a class that plain yaml.safe_load (the old "Workflow Lint") does NOT catch.
+// Line-based so it works with or without a YAML parser installed.
+function workflowRunMissingWorkflows(text) {
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^(\s*)workflow_run:\s*(\S.*)?$/);
+    if (!m) continue;
+    const indent = m[1].length;
+    const inline = (m[2] || '').trim();
+    if (inline) {
+      // Inline mapping form, e.g. `workflow_run: {workflows: [..], ...}`
+      return inline.includes('workflows')
+        ? null
+        : `line ${i + 1}: 'on.workflow_run' has no 'workflows:' — GitHub rejects the whole file as an invalid workflow`;
+    }
+    // Block form: scan the more-indented lines that belong to this mapping.
+    for (let j = i + 1; j < lines.length; j++) {
+      if (lines[j].trim() === '') continue;
+      const curIndent = lines[j].match(/^(\s*)/)[1].length;
+      if (curIndent <= indent) break; // left the workflow_run block
+      if (/^\s*workflows:/.test(lines[j])) return null; // found it — valid
+    }
+    return `line ${i + 1}: 'on.workflow_run' has no 'workflows:' — GitHub rejects the whole file as an invalid workflow`;
+  }
+  return null;
+}
+
 /** @returns {{file:string,error:string}[]} */
 function findInvalidWorkflows() {
   const parser = tryLoadYamlParser();
   const bad = [];
+  const root = path.resolve(__dirname, '..');
   for (const file of listWorkflowFiles()) {
+    const rel = path.relative(root, file);
     const text = fs.readFileSync(file, 'utf8');
+
+    // 1) YAML validity (real parse when available, flush-left heuristic otherwise)
     if (parser) {
       try {
         parser.parse(text);
       } catch (e) {
-        bad.push({ file: path.relative(path.resolve(__dirname, '..'), file), error: e.message.split('\n')[0] });
+        bad.push({ file: rel, error: e.message.split('\n')[0] });
+        continue; // can't trust structural checks on unparseable YAML
       }
     } else {
       const err = heuristicError(text);
-      if (err) bad.push({ file: path.relative(path.resolve(__dirname, '..'), file), error: err });
+      if (err) {
+        bad.push({ file: rel, error: err });
+        continue;
+      }
     }
+
+    // 2) GitHub Actions schema checks (caught even when YAML is valid)
+    const schemaErr = workflowRunMissingWorkflows(text);
+    if (schemaErr) bad.push({ file: rel, error: schemaErr });
   }
   return bad;
 }
