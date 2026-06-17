@@ -15,7 +15,10 @@ permissions:
 
 env:
   REPO: ${{ github.repository }}
-  GH_TOKEN: ${{ github.token }}
+  # Prefer the ADMIN PAT secret so label/PR changes can cascade to downstream
+  # workflows (the default GITHUB_TOKEN cannot trigger other workflows). Falls
+  # back to the built-in token when the secret isn't configured.
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   self-heal:
@@ -35,7 +38,7 @@ jobs:
       - name: Run self-healing
         id: cleanup
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/self-heal-repo.js
           node scripts/self-heal-repo.js

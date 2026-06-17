@@ -104,7 +104,9 @@ jobs:
       contents: read
       issues: write
     env:
-      GH_TOKEN: ${{ github.token }}
+      # Prefer the ADMIN PAT secret (falls back to the built-in token) so the
+      # WR it files can trigger downstream automation.
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
     steps:
       - name: Check for existing WR
         id: existing
