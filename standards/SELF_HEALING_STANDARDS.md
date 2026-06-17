@@ -239,3 +239,59 @@ All changes should:
 - `AGENTS.md` - Agent instructions and skills
 - `.github/ISSUE_TEMPLATE/00-work-request.md` - WR process
 - `docs/agent-stack/AGENT_STACK_SETUP.md` - Agent stack setup
+
+---
+
+## 10. Known Failure Modes & Auto-Remediations (Runbook)
+
+> **Added:** 2026-06-17 · **Who:** Claude (controller-auditor pass) · **Why:**
+> Capture "what to do if it happens again" for the recurring failures fixed in
+> the WR/PR pipeline audit, so the next occurrence auto-recovers or is surfaced
+> with an exact fix instead of silently breaking CI.
+
+### 10.1 Invalid workflow YAML breaks repo-wide `Workflow Lint`
+
+- **Symptom:** `Workflow Lint` (and CircleCI lint) fail on *every* PR, often
+  pointing at a file the PR never touched. Root cause is almost always a
+  `github-script` body whose multi-line template literal was written
+  **flush-left (column 1)**, terminating the `script: |` block scalar.
+- **Auto-detection:** `scripts/check-workflow-yaml.js` runs inside the daily
+  **Repo Self-Healer** (`checkWorkflowHealth()`); on any invalid file it files a
+  deduped `[SELF-HEAL] Invalid workflow YAML…` issue (label `auto-error`,
+  `needs-human`, `ci`) listing each file + parse error. Also runnable as a CI
+  gate: `node scripts/check-workflow-yaml.js` (exit 1 if any invalid).
+- **Fix:** keep github-script bodies indented inside the block; build multi-line
+  strings as an indented array joined with `\n`:
+  ```js
+  body: [
+    `## Title`,
+    ``,
+    `**Field:** ${value}`,
+  ].join('\n')
+  ```
+  Never write template-literal continuation lines at column 0.
+
+### 10.2 WR PRs stuck because generated docs ship raw `{TOKEN}`s
+
+- **Symptom:** `[WR]` PRs from `wr-pr-creation.yml` sit with `review:stuck`;
+  `wr-lint` reports "unsubstituted generator token `{STARS}` / `{OPEN_ISSUES}` /
+  …" or "product section in a bug WR".
+- **Auto-remediation:** `wr-pr-creation.yml` substitutes the template's real
+  tokens, then catch-alls any remaining `{TOKEN}` → `N/A`, and classifies
+  fix/bug titles to `WR_TEMPLATE_BASIC.md`. The canonical generator
+  `wr/scripts/generate-wr.sh` does the same and lint-gates its own output.
+- **Fix if it recurs:** ensure any new template token is either added to the
+  substitution map or covered by the `re.sub(r"\{[A-Z_]+\}", …)` catch-all, and
+  that fix/bug WRs use the BASIC template. Re-run the generator via
+  `workflow_dispatch` to refresh already-open WR PRs.
+
+### 10.3 Auto-generated `[FAILURE]` issue spam
+
+- **Symptom:** Thousands of duplicate `[FAILURE] <workflow> failed` issues.
+- **Auto-remediation:** failure-issue creators (e.g. `workflow-monitor.yml`)
+  dedup on title prefix; `agent-audit-logger.yml` no longer commits to `main`
+  on every event. Bulk cleanup: run the **Bulk Close Failure Spam** workflow
+  (dry-run first) or close issues labeled `workflow-failure`+`auto-fix` with a
+  `[FAILURE]` title authored by a bot.
+- **Fix if it recurs:** confirm the creating workflow checks for an existing
+  open issue before `issues.create`, and that any hourly cron has backoff.

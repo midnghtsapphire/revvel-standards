@@ -269,6 +269,65 @@ async function cleanupStuckPRs() {
   }
 }
 
+async function checkWorkflowHealth() {
+  console.log('\n🩺 Checking workflow YAML health...');
+
+  let findInvalidWorkflows;
+  try {
+    ({ findInvalidWorkflows } = require('./check-workflow-yaml.js'));
+  } catch (e) {
+    console.log(`  ⚠️  guard unavailable: ${e.message}`);
+    return;
+  }
+
+  const bad = findInvalidWorkflows();
+  if (bad.length === 0) {
+    console.log('  ✅ All workflows parse');
+    return;
+  }
+
+  console.log(`  ❌ ${bad.length} invalid workflow file(s) — surfacing for repair`);
+
+  const title = '[SELF-HEAL] Invalid workflow YAML blocking Workflow Lint';
+  const list = bad.map((b) => `- \`${b.file}\` — ${b.error}`).join('\n');
+  const body = [
+    '🤖 The self-healer detected one or more workflow files that fail to parse as YAML.',
+    'Because the repo-wide **Workflow Lint** check fails on the first invalid file, this',
+    'silently breaks CI on *every* PR until fixed.',
+    '',
+    '### Invalid files',
+    list,
+    '',
+    '### How to fix (runbook)',
+    'Almost always a `github-script` body whose multi-line template literal was written',
+    'flush-left, escaping the `script: |` block scalar. Rebuild it as an indented array:',
+    '',
+    '```js',
+    'body: [',
+    '  `## Title`,',
+    '  ``,',
+    '  `**Field:** ${value}`,',
+    "].join('\\n')",
+    '```',
+    '',
+    'See `standards/SELF_HEALING_STANDARDS.md` §10 and `scripts/check-workflow-yaml.js`.',
+  ].join('\n');
+
+  try {
+    // Dedup: only one open self-heal issue for this failure mode at a time.
+    const open = await getIssues('open', { labels: 'auto-error' });
+    const existing = open.find((i) => (i.title || '').startsWith('[SELF-HEAL] Invalid workflow YAML'));
+    if (existing) {
+      await addComment(existing.number, `Still detecting invalid workflow YAML:\n\n${list}`);
+    } else {
+      await post('/issues', { title, body, labels: ['auto-error', 'needs-human', 'ci'] });
+      console.log('  📣 Filed remediation issue');
+    }
+  } catch (e) {
+    console.log(`  ⚠️  could not file issue: ${e.message}`);
+  }
+}
+
 async function main() {
   console.log('═══════════════════════════════════════════════');
   console.log('🔧 Repo Self-Healer Starting');
@@ -277,6 +336,7 @@ async function main() {
   console.log('═══════════════════════════════════════════════');
   
   try {
+    await checkWorkflowHealth();
     await cleanupStaleIssues();
     await labelStaleIssues();
     await cleanupDuplicates();
