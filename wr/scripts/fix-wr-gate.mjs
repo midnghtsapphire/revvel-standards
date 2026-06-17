@@ -22,6 +22,10 @@ const body  = get("body")  || "";
 // allows owner/repo qualified forms too ("Tracks: foo/bar#1234").
 const TRACKS_REF = /\btrack(?:s|ing)?\s*[: ]\s*([A-Za-z0-9_.\/-]+)?#\d+/i;
 
+// GitHub issue-closing keywords ("Closes #1234", "Fixes owner/repo#12", …).
+// Used to confirm a research WR links its originating issue (the follow-up tracker).
+const CLOSES_REF = /\b(?:clos(?:e|es|ed)|fix(?:e|es|ed)?|resolv(?:e|es|ed))\s+(?:[A-Za-z0-9_.\/-]+)?#\d+/i;
+
 const TRACKING_LABELS = ["tracking-only", "wr-docs", "wr-tracking", "meta-tracking", "docs-only"];
 const TRACKING_PREFIXES = [/^\[wr-docs\]/i, /^\[wr-tracking\]/i, /^track\b/i, /^\[track\]/i];
 
@@ -48,9 +52,19 @@ const trackingLabeled =
 const hasTracksRef = TRACKS_REF.test(body);
 const isTrackingOnly = trackingLabeled && hasTracksRef;
 
+// The INITIAL WR research PR (auto-created by wr-pr-creation.yml, labeled
+// `weekly-research`) is the research deliverable itself: a wr/issues/*.md doc
+// that links its originating issue with "Closes #N". It is NOT a fix-class WR
+// claiming to apply a fix — the implementation lands later against that issue —
+// so the "must include a real (non-wr/) fix" rule does not apply. We still
+// require a closing/tracking reference so a reviewer can find the originating
+// issue; that keeps this from being a blanket bypass for genuine fix WRs.
+const linksIssue = hasTracksRef || CLOSES_REF.test(body);
+const isResearchWR = labels.includes("weekly-research") && linksIssue;
+
 const issues = [];
 
-if (claimsFix && wrOnly && !isTrackingOnly) {
+if (claimsFix && wrOnly && !isTrackingOnly && !isResearchWR) {
   if (trackingLabeled && !hasTracksRef) {
     issues.push(
       `PR is labeled tracking-only but the body has no "Tracks: #NNNN" reference. ` +
@@ -66,6 +80,11 @@ if (claimsFix && wrOnly && !isTrackingOnly) {
       `"Tracks: #NNNN" to the PR body pointing at the follow-up that applies the fix.`
     );
   }
+}
+
+// Research WR accepted: surface it so a reviewer knows the fix is tracked, not applied here.
+if (claimsFix && wrOnly && !isTrackingOnly && isResearchWR) {
+  console.log(`note: weekly-research WR accepted (research deliverable that links its originating issue). The fix lands in a follow-up against that issue.`);
 }
 
 // Secondary: a fix WR that is tracking-only should SAY so, to avoid a future reviewer thinking it's resolved.
