@@ -65,17 +65,23 @@ jobs:
             }
 
             core.setOutput('skip_triage', 'false');
-      - name: Verify OPENROUTER_API_KEY
+      - name: Report OPENROUTER_API_KEY status
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
+          # NOTE: OpenRouter is NOT free-for-all — its key must belong to a
+          # FUNDED/verified account (even ":free" models need credits). A missing
+          # or unfunded key just means triage cuts over to the keyless Perplexity
+          # lane below; it is no longer a reason to skip triage entirely.
           if [ -z "${OPENROUTER_API_KEY}" ]; then
-            echo "::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage."
+            echo "::warning::OPENROUTER_API_KEY not set — triage will use the keyless Perplexity fallback lane."
           else
-            echo "OPENROUTER_API_KEY is configured."
+            echo "OPENROUTER_API_KEY is configured (ensure the OpenRouter account is funded)."
           fi
-      - name: Run OpenRouter triage
-        if: env.OPENROUTER_API_KEY != '' && steps.labels.outputs.skip_triage != 'true'
+      # Runs WITH or WITHOUT a key: scripts/openrouter-triage.js cascades
+      # OpenRouter → keyless Perplexity so triage never dead-ends.
+      - name: Run triage (OpenRouter → keyless Perplexity fallback)
+        if: steps.labels.outputs.skip_triage != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,8 +144,10 @@ jobs:
             core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
     timeout-minutes: 45
   sweep-triage:
-    name: Sweep triage via OpenRouter
-    if: needs.sweep-discover.outputs.count != '0' && secrets.OPENROUTER_API_KEY != ''
+    name: Sweep triage (OpenRouter → keyless fallback)
+    # Runs whenever there are queued items — even with no OpenRouter key, the
+    # script cuts over to the keyless Perplexity lane (never dead-end).
+    if: needs.sweep-discover.outputs.count != '0'
     needs: sweep-discover
     runs-on: ubuntu-latest
     strategy:

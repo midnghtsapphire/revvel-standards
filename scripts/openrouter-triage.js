@@ -57,8 +57,20 @@ function buildFailureComment({ kind, detail, model, issueNumber, eventKind }) {
     kind === "needs-key"
       ? "Add the secret under *Settings → Secrets and variables → Actions* and re-run this workflow (or wait for the hourly sweep). " +
         "This item has been labelled `openrouter:needs-key` + `needs-human` so it does not sit silently."
-      : "This item has been labelled `openrouter:triage-failed` + `needs-human` so it does not sit silently. " +
-        "Re-run the `OpenRouter Triage` workflow once the underlying issue is fixed; a subsequent success will clear these labels automatically.",
+      : "Triage tried **both** lanes and both failed. This item has been labelled " +
+        "`openrouter:triage-failed` + `needs-human` so it does not sit silently. " +
+        "A later success will clear these labels automatically.",
+    "",
+    "<details><summary>For whoever is troubleshooting (you may not be the repo owner)</summary>",
+    "",
+    "Triage cascades so it never dead-ends:",
+    "",
+    "1. **OpenRouter** — requires `OPENROUTER_API_KEY` tied to a **funded/verified** account. " +
+      "OpenRouter is *not* free-for-all: even `:free` models need a real, credited account, so a missing/unfunded key returns `401/402/403/429`, not a completion. Check the key **and** the account balance at <https://openrouter.ai/credits>.",
+    "2. **Perplexity (keyless)** — the no-API safety net. Needs `python3` + the `perplexity-ai` bridge (the workflow installs it). If this also failed, check the bridge install / network.",
+    "",
+    "If both are down, add another keyless lane in `scripts/openrouter-triage.js` → `triageWithFallback()`. Rule: always fall back to something.",
+    "</details>",
   ].join("\n");
   return body;
 }
@@ -169,39 +181,42 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
   });
 }
 
+// IMPORTANT — OpenRouter "free" is not actually keyless/free-for-all:
+// OpenRouter requires an API key tied to a FUNDED/verified account. Even the
+// models tagged ":free" need a real account with credits (and have tight rate
+// limits); an unfunded or missing key returns 401 / 402 / 403 / 429 rather than
+// a completion. So we must NEVER treat OpenRouter as a guaranteed lane.
+//
+// Fleet rule (per owner): every failure must cascade to a working fallback —
+// "every failure is where our agent fleet rises above the best because we
+// planned for it." Triage therefore ALWAYS falls back to the keyless Perplexity
+// lane (callPerplexityNoKey) on ANY OpenRouter failure, and skips OpenRouter
+// entirely when no key is configured. See docs/OPENROUTER_TRIAGE_PROCESS.md.
 async function callOpenRouter(systemPrompt, userPrompt) {
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
-  
-  // Try OpenRouter first
-  try {
-    const response = await requestJson({
-      hostname: OPENROUTER_HOST,
-      pathName: OPENROUTER_PATH,
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        "HTTP-Referer": referer,
-        "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
-      },
-      payload: {
-        model: MODEL,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.2,
-      },
-    });
 
-    return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
-  } catch (err) {
-    // Check if it's a credits issue - fallback to Perplexity No-Key
-    if (err.message.includes("402") || err.message.includes("Insufficient credits")) {
-      console.log("OpenRouter credits exhausted, falling back to Perplexity No-Key...");
-      return await callPerplexityNoKey(systemPrompt, userPrompt);
-    }
-    throw err;
-  }
+  const response = await requestJson({
+    hostname: OPENROUTER_HOST,
+    pathName: OPENROUTER_PATH,
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "HTTP-Referer": referer,
+      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
+    },
+    payload: {
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+    },
+  });
+
+  // Let ANY failure (402/credits, 401 bad key, 429 rate-limit, 5xx, network)
+  // propagate to triageWithFallback(), which cascades to the keyless lane.
+  return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
 }
 
 async function callPerplexityNoKey(systemPrompt, userPrompt) {
@@ -417,21 +432,34 @@ async function reportTriageFailure({ kind, detail }) {
   });
 }
 
-async function main() {
-  if (!OPENROUTER_API_KEY) {
-    console.log("::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage.");
-    await reportTriageFailure({
-      kind: "needs-key",
-      detail:
-        "OPENROUTER_API_KEY is not configured in this repository's Actions secrets. " +
-        "The triage workflow cannot call OpenRouter without it.",
-    });
-    // Surface in the workflow UI but do not hard-fail the job — "needs-key"
-    // is an operator action, not a bug. A non-zero exit here would mask the
-    // visible signal we just posted on the issue/PR.
-    process.exit(0);
+// Always-fall-back triage cascade. Returns { text, lane, model }.
+//   1. OpenRouter — best models, but ONLY if a key is set AND the account is
+//      funded/verified (see the note on callOpenRouter; "free" still needs a
+//      real, credited account).
+//   2. Keyless Perplexity bridge — the universal safety net; needs no API key
+//      (python3 + the perplexity-ai bridge, which the workflow installs).
+// Only if BOTH lanes fail does triage surface a failure (handled by caller).
+// FOR WHOEVER TROUBLESHOOTS THIS NEXT: to harden the fleet further, add more
+// keyless lanes here (e.g. a no-API Gemini or Cohere bridge) BEFORE the final
+// throw — the rule is "always fall back to something," never dead-end.
+async function triageWithFallback(systemPrompt, userPrompt) {
+  if (OPENROUTER_API_KEY) {
+    try {
+      const text = await callOpenRouter(systemPrompt, userPrompt);
+      return { text, lane: "OpenRouter", model: MODEL };
+    } catch (err) {
+      // 401/402/403/429 here almost always means the OpenRouter account is not
+      // funded/verified — not a code bug. Cut over instead of dead-ending.
+      console.log(`::warning::OpenRouter triage failed (${err.message}). Cutting over to the keyless Perplexity lane.`);
+    }
+  } else {
+    console.log("::warning::OPENROUTER_API_KEY not configured — cutting over to the keyless Perplexity lane.");
   }
+  const text = await callPerplexityNoKey(systemPrompt, userPrompt);
+  return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
+}
 
+async function main() {
   if (!GITHUB_TOKEN) {
     console.error("ERROR: GITHUB_TOKEN is required.");
     process.exit(1);
@@ -451,22 +479,28 @@ async function main() {
   });
 
   let triage;
+  let lane;
+  let modelUsed;
   try {
-    triage = await callOpenRouter(systemPrompt, userPrompt);
+    const result = await triageWithFallback(systemPrompt, userPrompt);
+    triage = result.text;
+    lane = result.lane;
+    modelUsed = result.model;
   } catch (err) {
-    // OpenRouter unreachable, bad key, rate-limit, etc. — report visibly on
-    // the issue/PR and re-throw so the workflow run goes red too.
+    // BOTH OpenRouter and the keyless lane failed — only now surface a failure
+    // so the item never sits silently. The comment explains the funding fact so
+    // a human (possibly not the repo owner) can troubleshoot.
     await reportTriageFailure({
       kind: "triage-failed",
-      detail: `OpenRouter call failed: ${err.message}`,
+      detail: `All triage lanes failed (OpenRouter + keyless Perplexity): ${err.message}`,
     });
     throw err;
   }
 
   const commentBody = [
-    "🤖 **OpenRouter Triage**",
+    "🤖 **Automated Triage**",
     "",
-    `Model: \`${MODEL}\``,
+    `Lane: \`${lane}\` · Model: \`${modelUsed}\``,
     `Event: \`${EVENT_KIND}\` · Item: #${ISSUE_NUMBER}`,
     "",
     triage,
