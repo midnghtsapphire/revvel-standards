@@ -3,11 +3,27 @@ on:
   check_suite:
     types:
       - completed
-  workflow_run:
-    types:
-      - completed
-    branches:
-      - main
+  # ─────────────────────────────────────────────────────────────────────────
+  # DISABLED TRIGGER: workflow_run
+  # Who: Claude (controller-auditor)  When: 2026-06-17
+  # Why: GitHub rejected this whole file as "Invalid workflow file"
+  #      (startup_failure, 0s, no jobs) on EVERY push, because the
+  #      `workflow_run` event requires a `workflows:` list and it was missing.
+  #      That invalidated the entire workflow — including the check_suite job.
+  # What: Commented out the workflow_run trigger. The `check_suite: completed`
+  #       trigger already updates PR status labels with fuller logic, so no
+  #       behaviour is lost. The `workflow-run-status` job below is now dormant
+  #       (its `if: github.event_name == 'workflow_run'` can never match) and is
+  #       kept for history.
+  # Re-enable: add `workflows: [<workflow names>]` under workflow_run.
+  # NOTE: Keeping for history — do not delete.
+  # ─────────────────────────────────────────────────────────────────────────
+  # workflow_run:
+  #   workflows: ["<list required>"]
+  #   types:
+  #     - completed
+  #   branches:
+  #     - main
 concurrency:
   group: pr-check-status-${{ github.event.check_suite.pull_requests[0].number || github.event.workflow_run.pull_requests[0].number || 'unknown' }}
   cancel-in-progress: false

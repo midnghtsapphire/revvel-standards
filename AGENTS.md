@@ -163,3 +163,17 @@ npm test             # product-specific tests (if defined)
   error paths. Treat the suite as green if only those known cases fail.
 - **Port conflicts:** Always pass `-- -p <port>` to `npm run dev` when running
   more than one product simultaneously; defaults all collide on 3000.
+- **OpenRouter is NOT free-for-all:** `OPENROUTER_API_KEY` must belong to a
+  **funded/verified** OpenRouter account. Even `:free` models need credits, so a
+  missing or unfunded key returns `401/402/403/429`, not a completion. Automation
+  must therefore always fall back to a keyless lane (e.g. the keyless Perplexity
+  bridge in `scripts/openrouter-triage.js` → `triageWithFallback()`). If triage
+  or research "isn't processing," check the key **and** the balance at
+  <https://openrouter.ai/credits> before assuming a code bug.
+
+## Commenting
+
+Comment **robustly, for the next human** (who may not be you and can't skim code
+as fast as an agent): explain *why*, document external-service gotchas at the
+call site, and always state the fallback / "what to check if it fails." See
+`standards/CODE_COMMENTING_STANDARD.md`.
