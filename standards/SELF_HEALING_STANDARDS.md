@@ -295,3 +295,30 @@ All changes should:
   `[FAILURE]` title authored by a bot.
 - **Fix if it recurs:** confirm the creating workflow checks for an existing
   open issue before `issues.create`, and that any hourly cron has backoff.
+
+### 10.4 `semgrep` ERROR gate fails on `detect-child-process` (command injection)
+
+- **Symptom:** the repo-wide **`semgrep`** check fails on every PR. The blocking
+  gate in `.github/workflows/semgrep.yml` runs
+  `semgrep scan --config=p/secrets --config=p/security-audit --severity=ERROR --error`,
+  so any ERROR-severity finding from those packs fails the job. The usual culprit
+  is `javascript.lang.security.detect-child-process` — "Detected calls to
+  child_process from a function argument `X`".
+- **Why it triggers:** the rule flags **any** `child_process` call whose argument
+  is not a string literal — even shell-free `execFileSync`/`spawnSync` with argv
+  arrays. So it fires on both genuinely-unsafe shell interpolation *and* already-safe
+  calls.
+- **Fix (remove the real risk first):**
+  1. Never build a shell command by interpolating variables
+     (`execSync(\`curl "${url}"\`)`). Use `execFileSync`/`spawnSync` with an
+     **argv array** and no shell: `execFileSync('curl', ['-sL', url, '--max-time', '30'])`.
+  2. Pass secrets via **stdin** (`{ input: value }`), never `echo "$value" | …`,
+     so they never appear on a command line.
+  3. **Validate** any value used as an argument name/identifier
+     (e.g. secret name `^[A-Za-z_][A-Za-z0-9_]*$`).
+  4. For a call that is now shell-free and reviewed but still flagged, add a
+     **scoped** suppression on the line (or the line above) with a justification:
+     `// nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); inputs validated`.
+     Never blanket-suppress without first removing the shell.
+- **Reference:** the 2026-06-17 hardening of `scripts/auto-credential-fetcher.js`,
+  `scripts/openrouter-triage.js`, and `scripts/credential-autonomy-agent.js`.
