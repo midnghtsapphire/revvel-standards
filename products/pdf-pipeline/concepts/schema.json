@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PDF Pipeline Concept Batch",
+  "description": "Output of products/pdf-pipeline/concepts/generate.mjs — a batch of PDF product concepts for one niche.",
+  "type": "object",
+  "required": ["niche", "generated_at", "count", "concepts"],
+  "additionalProperties": true,
+  "properties": {
+    "niche": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "model_used": {
+      "type": "string"
+    },
+    "concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/concept" }
+    }
+  },
+  "definitions": {
+    "concept": {
+      "type": "object",
+      "required": [
+        "title",
+        "subtitle",
+        "format",
+        "target_buyer",
+        "toc",
+        "hook",
+        "price_usd",
+        "tags",
+        "cover_prompt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 59
+        },
+        "subtitle": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "planner",
+            "workbook",
+            "guide",
+            "checklist",
+            "ebook",
+            "template-pack",
+            "journal",
+            "course"
+          ]
+        },
+        "target_buyer": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "toc": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 15,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          }
+        },
+        "hook": {
+          "type": "string",
+          "minLength": 30,
+          "maxLength": 600
+        },
+        "price_usd": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 199
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40
+          }
+        },
+        "cover_prompt": {
+          "type": "string",
+          "minLength": 30,
+          "maxLength": 800
+        }
+      }
+    }
+  }
+}
