@@ -1,27 +1,27 @@
-# WR: [WR] need meta artifact analyzer
+# WR: need meta artifact analyzer
 
 **Issue:** #14577  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-06-15  
+**Created:** 2026-06-15  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
-
----
-
-**WR Status:** {STATUS}  
+**Research Date:** 2026-06-15  
+**WR Status:** 🟡 In Progress  
 
 ## Issue Context
-{ISSUE_BODY}
+
+See #14577 for the original request.
 
 ## Repository Metadata
+
 | Property | Value |
 | --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | N/A |
+| Open Issues | N/A |
+| Private | N/A |
+| Archived | N/A |
 
 ## Research Checklist
+
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
@@ -31,19 +31,25 @@
 - [ ] Monetization
 
 ## Executive Summary
-{EXECUTIVE_SUMMARY}
+
+N/A — pending deep research (Jules rewrite / research engine).
 
 ## Step 1A — Product/Output Selections
-{PRODUCT_SELECTIONS}
+
+N/A — pending deep research.
 
 ## Step 2 — Deep Web Research
-{DEEP_WEB_RESEARCH}
+
+N/A — pending deep research.
 
 ## Step 3 — Requirements
-{REQUIREMENTS}
+
+N/A — pending deep research.
 
 ## Recommendations
-{RECOMMENDATIONS}
+
+N/A — pending deep research.
 
 ## Risks
-{RISKS}
+
+N/A — pending deep research.
