@@ -8,8 +8,10 @@ on:
   workflow_dispatch:  # Manual trigger
 
 permissions:
+  contents: read
   issues: write
   pull-requests: write
+  checks: read
 
 env:
   REPO: ${{ github.repository }}
@@ -28,6 +30,7 @@ jobs:
         with:
           sparse-checkout: |
             scripts/self-heal-repo.js
+            scripts/check-workflow-yaml.js
 
       - name: Run self-healing
         id: cleanup

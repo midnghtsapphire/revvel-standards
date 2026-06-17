@@ -345,3 +345,17 @@ All changes should:
   trigger is redundant (e.g. `check_suite: completed` already covers it) —
   comment out the trigger with a documented header (§2.2 / §7A.4).
 - **Reference:** the 2026-06-17 repair of `.github/workflows/pr-check-status.yml`.
+
+### 10.6 Reprocess PR status labels during self-heal
+
+- **Why:** the PR State Orchestrator sets `status:*` labels from events. If an
+  event is missed or a label workflow was broken (e.g. the `pr-check-status` /
+  `workflow_run` outages above), PRs can keep stale or contradictory labels
+  (the classic `status:ready-to-merge` + stuck combo).
+- **Real fix:** `self-heal-repo.js` `reprocessPRLabels()` re-derives every open
+  PR's state from scratch each run — draft → review decisions → CI check-runs —
+  and converges the `status:*` labels, mirroring the orchestrator's
+  `resync-all-prs` rules. Crucially it only keeps `status:ready-to-merge` when a
+  PR is **both approved and passing**, so the contradiction self-corrects.
+- **Requires:** `checks: read` on the self-healer token and
+  `scripts/check-workflow-yaml.js` in its sparse-checkout (both added 2026-06-17).

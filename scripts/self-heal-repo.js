@@ -332,6 +332,96 @@ async function checkWorkflowHealth() {
   }
 }
 
+// Status labels owned by the PR State Orchestrator. We reprocess them here so a
+// daily self-heal converges PR labels to reality even if an event was missed or
+// a label workflow was broken (e.g. the pr-check-status / workflow_run repairs).
+// Mirrors the canonical rules in .github/workflows/pr-state-orchestrator.yml
+// (resync-all-prs): draft → review state → CI check-runs.
+const STATUS_LABELS = [
+  'status:draft', 'status:waiting-for-review', 'status:approved',
+  'status:needs-action', 'status:checks-failing', 'status:checks-passing', 'status:ready-to-merge',
+];
+
+async function reprocessPRLabels() {
+  console.log('\n🏷️  Reprocessing PR status labels...');
+
+  let prs;
+  try {
+    prs = await getPRs('open');
+  } catch (e) {
+    console.log(`  ⚠️  could not list PRs: ${e.message}`);
+    return;
+  }
+  console.log(`  Re-evaluating ${prs.length} open PRs`);
+
+  for (const pr of prs) {
+    const n = pr.number;
+    try {
+      let labels = (await api(`/issues/${n}/labels`)).map((l) => l.name);
+      const add = async (l) => {
+        if (!labels.includes(l)) {
+          try { await post(`/issues/${n}/labels`, { labels: [l] }); labels.push(l); results.labeled++; } catch (e) { /* noop */ }
+        }
+      };
+      const del = async (l) => {
+        if (labels.includes(l)) {
+          try { await api(`/issues/${n}/labels/${encodeURIComponent(l)}`, { method: 'DELETE' }); labels = labels.filter((x) => x !== l); } catch (e) { /* noop */ }
+        }
+      };
+
+      // 1. Draft wins outright
+      if (pr.draft) {
+        await add('status:draft');
+        for (const l of STATUS_LABELS.filter((s) => s !== 'status:draft')) await del(l);
+        continue;
+      }
+      await del('status:draft');
+
+      // 2. Review state — latest non-comment decision per reviewer
+      const reviews = await api(`/pulls/${n}/reviews`);
+      const latest = {};
+      for (const r of reviews) if (r.state !== 'COMMENTED') latest[r.user.login] = r.state;
+      const states = Object.values(latest);
+      const approved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
+      const needsChanges = states.includes('CHANGES_REQUESTED');
+
+      if (needsChanges) {
+        await add('status:needs-action');
+        for (const l of ['status:waiting-for-review', 'status:approved', 'status:ready-to-merge']) await del(l);
+      } else if (approved) {
+        await add('status:approved');
+        for (const l of ['status:waiting-for-review', 'status:needs-action']) await del(l);
+      } else {
+        await add('status:waiting-for-review');
+        for (const l of ['status:approved', 'status:needs-action', 'status:ready-to-merge']) await del(l);
+      }
+
+      // 3. CI state — full picture from check runs for the head SHA
+      const cr = await api(`/commits/${pr.head.sha}/check-runs?per_page=100`);
+      const runs = cr.check_runs || [];
+      const completed = runs.filter((r) => r.status === 'completed');
+      const failing = completed.filter((r) => ['failure', 'timed_out'].includes(r.conclusion));
+      const passing = completed.filter((r) => r.conclusion === 'success');
+      const pending = runs.filter((r) => r.status !== 'completed');
+
+      if (failing.length > 0) {
+        await add('status:checks-failing');
+        for (const l of ['status:checks-passing', 'status:ready-to-merge']) await del(l);
+      } else if (pending.length === 0 && passing.length > 0) {
+        await add('status:checks-passing');
+        await del('status:checks-failing');
+        // ready-to-merge requires BOTH approval and passing checks — this is what
+        // resolves the ready-to-merge + review:stuck contradiction.
+        if (approved) await add('status:ready-to-merge');
+        else await del('status:ready-to-merge');
+      }
+    } catch (e) {
+      console.log(`  PR #${n}: ⚠️  ${e.message}`);
+    }
+  }
+  console.log('  ✅ Label reprocess complete');
+}
+
 async function main() {
   console.log('═══════════════════════════════════════════════');
   console.log('🔧 Repo Self-Healer Starting');
@@ -341,6 +431,7 @@ async function main() {
   
   try {
     await checkWorkflowHealth();
+    await reprocessPRLabels();
     await cleanupStaleIssues();
     await labelStaleIssues();
     await cleanupDuplicates();
