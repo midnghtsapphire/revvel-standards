@@ -18,7 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 // Configuration
 const CREDS_DIR = process.env.CREDENTIALS_DIR || 
@@ -126,7 +126,9 @@ async function fetchWithBrowser(url, options = {}) {
   // Fallback to curl
   console.log(`   Using curl fallback...`);
   try {
-    const result = execSync(`curl -sL "${url}" --max-time 30`, { encoding: 'utf8' });
+    // No shell: pass args as an array so the URL can't be interpreted by a shell.
+    // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); url comes from the hardcoded SERVICES allowlist
+    const result = execFileSync('curl', ['-sL', url, '--max-time', '30'], { encoding: 'utf8' });
     return { success: true, content: result, title: '', method: 'curl' };
   } catch (e) {
     return { success: false, error: e.message, method: 'none' };
@@ -188,10 +190,16 @@ async function syncToGitHub(name) {
   const value = fs.readFileSync(filePath, 'utf8').trim();
   
   try {
-    // Use gh CLI to set secret
-    const result = execSync(
-      `echo "${value}" | gh secret set ${name} --body-file - --repo ${REPO}`,
-      { encoding: 'utf8' }
+    // Validate the secret name and pass the value via stdin (no shell, no echo)
+    // so the secret never appears on a command line and can't be shell-injected.
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+      throw new Error(`Refusing to sync secret with unsafe name: ${name}`);
+    }
+    // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); name validated; secret passed via stdin (input) not argv
+    const result = execFileSync(
+      'gh',
+      ['secret', 'set', name, '--body-file', '-', '--repo', REPO],
+      { encoding: 'utf8', input: value }
     );
     console.log(`   ✅ Synced to GitHub: ${name}`);
     return true;
