@@ -488,10 +488,21 @@ jobs:
 
           echo "WR_FILE=${WR_FILE}" >> "$GITHUB_ENV"
 
+          # Classify the WR: bug/fix/chore/docs-style issues use the BASIC
+          # template (no market-research sections); everything else uses FULL.
+          # Previously every WR used FULL, so fix-class WRs tripped wr-lint
+          # rule 4 ("product section in a bug WR") and the PR stuck. Mirrors the
+          # classification in wr/scripts/generate-wr.sh (grep -wiE; ERE has no \b).
+          if printf '%s' "${ISSUE_TITLE}" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+            TEMPLATE_PREF="wr/WR_TEMPLATE_BASIC.md"
+          else
+            TEMPLATE_PREF="wr/WR_TEMPLATE_FULL.md"
+          fi
+
           # Copy the canonical WR template. The old path, wr/WR_TEMPLATE.md,
           # was removed when the WR template set was split into BASIC/FULL.
           TEMPLATE_FILE=""
-          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
+          for candidate in "$TEMPLATE_PREF" wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
             if [ -f "$candidate" ]; then
               TEMPLATE_FILE="$candidate"
               break
@@ -523,16 +534,33 @@ jobs:
           replacements = {
               "{REPO_NAME}": "midnghtsapphire/revvel-standards",
               "{REPO_URL}": "https://github.com/midnghtsapphire/revvel-standards",
+              "{REPO}": "midnghtsapphire/revvel-standards",
               "{CREATED_DATE}": today,
               "{UPDATED_DATE}": today,
+              "{DATE}": today,
               "{RESEARCH_DATE}": today,
               "{PRIMARY_LANGUAGE}": "JavaScript",
+              "{LANGUAGE}": "JavaScript",
               "{TITLE}": clean_title,
               "{DESCRIPTION}": body,
+              "{ISSUE_BODY}": body or "_No issue body provided._",
+              "{RESEARCHER}": "Jules (Google) + OpenRouter",
+              "{STATUS}": "🟡 In Progress",
+              "{IS_PRIVATE}": "No",
+              "{IS_ARCHIVED}": "No",
+              "{STARS}": "N/A",
+              "{OPEN_ISSUES}": "N/A",
           }
           text = wr_file.read_text(encoding="utf8")
           for key, value in replacements.items():
               text = text.replace(key, value)
+          # Catch-all: any generator token still left (e.g. {EXECUTIVE_SUMMARY},
+          # {DEEP_WEB_RESEARCH}, {RISKS}, {RECOMMENDATIONS}, {REQUIREMENTS},
+          # {PRODUCT_SELECTIONS}, {TOKEN}) becomes an explicit N/A marker rather
+          # than shipping a raw {TOKEN}. Unsubstituted tokens like {STARS},
+          # {OPEN_ISSUES}, {IS_PRIVATE}, {IS_ARCHIVED} were failing wr-lint and
+          # jamming every generated WR PR. Mirrors wr/scripts/generate-wr.sh.
+          text = re.sub(r"\{[A-Z_]+\}", "N/A — pending Jules refinement", text)
           wr_file.write_text(text, encoding="utf8")
           PY
 
