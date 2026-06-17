@@ -65,15 +65,17 @@ jobs:
             const duplicates = '${{ needs.self-heal.outputs.duplicates }}';
             const labeled = '${{ needs.self-heal.outputs.labeled }}';
             
-            const body = `## 🔧 Daily Self-Heal Report
-            
-| Metric | Count |
-|--------|-------|
-| Closed | ${closed} |
-| Labeled stale | ${labeled} |
-| Duplicates merged | ${duplicates} |
-
-_Ran at: ${new Date().toISOString()}_`;
+            const body = [
+              `## 🔧 Daily Self-Heal Report`,
+              ``,
+              `| Metric | Count |`,
+              `|--------|-------|`,
+              `| Closed | ${closed} |`,
+              `| Labeled stale | ${labeled} |`,
+              `| Duplicates merged | ${duplicates} |`,
+              ``,
+              `_Ran at: ${new Date().toISOString()}_`,
+            ].join('\n');
 
             // Check if we already posted today
             const { data: issues } = await github.rest.issues.list({
