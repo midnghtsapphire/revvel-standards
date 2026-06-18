@@ -74,7 +74,8 @@ const CHECKS = [
     run() {
       const guard = read('.github/workflows/secret-persistence-guard.yml');
       const sentinel = read('.github/workflows/secrets-sentinel.yml');
-      // The kill switches we put in PR #14672:
+      // Kill-switch assertions: both workflows must show their explicit
+      // disable markers. PR-agnostic by design.
       const guardOff = /if false; then\s*#\s*was: if \[ -n "\$DOPPLER_TOKEN" \]/i.test(guard);
       const sentinelOff = /DOPPLER DISABLED|Auto-heal disabled/i.test(sentinel);
       const pass = guardOff && sentinelOff;
