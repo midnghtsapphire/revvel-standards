@@ -133,14 +133,13 @@ export function normalizeLoadInputs(raw: Partial<LoadInputs>): LoadInputs {
 export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
   const inputs = normalizeLoadInputs(rawInputs);
 
-  const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId)!;
-  const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId)!;
+  const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId);
+  const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId);
+  if (!zone || !ins) {
+    throw new Error(`Unknown climateZoneId=${inputs.climateZoneId} or insulationLevelId=${inputs.insulationLevelId}`);
+  }
 
-const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId);
-const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId);
-if (!zone || !ins) {
-  throw new Error(`Unknown climateZoneId=${inputs.climateZoneId} or insulationLevelId=${inputs.insulationLevelId}`);
-}
+  const indoorCool = inputs.indoorCoolingSetpoint!;
   const indoorHeat = inputs.indoorHeatingSetpoint!;
 
   // ── Geometric assumptions ─────────────────────────────
