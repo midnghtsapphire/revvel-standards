@@ -239,29 +239,33 @@ export function calculateEnergy(inputs: EnergyInputs): EnergyResult {
   const coolHours = ANNUAL_COOLING_HOURS[inputs.climateZoneId] ?? 1500;
   const heatHours = ANNUAL_HEATING_HOURS[inputs.climateZoneId] ?? 2000;
 
-  const annualCoolingKwh = round2(
-    (inputs.coolingLoadBtu * coolHours) / (inputs.seer2 * 1000)
-  );
-  const annualCoolingCost = round2(
-    (annualCoolingKwh * inputs.electricityRateCentsKwh) / 100
-  );
+  const seer2 = Number.isFinite(inputs.seer2) && inputs.seer2 > 0 ? inputs.seer2 : 16;
+  const hspf2 =
+    Number.isFinite(inputs.hspf2) && inputs.hspf2 > 0
+      ? inputs.hspf2
+      : inputs.isFurnace
+        ? 0.95
+        : 8.5;
+  const electricityRateCentsKwh =
+    Number.isFinite(inputs.electricityRateCentsKwh) && inputs.electricityRateCentsKwh > 0
+      ? inputs.electricityRateCentsKwh
+      : 16;
+
+  const annualCoolingKwh = round2((inputs.coolingLoadBtu * coolHours) / (seer2 * 1000));
+  const annualCoolingCost = round2((annualCoolingKwh * electricityRateCentsKwh) / 100);
 
   let annualHeatingKwh: number;
   let annualHeatingCost: number;
 
   if (inputs.isFurnace && inputs.gasRateDollarsTherm !== undefined) {
-    // Gas furnace: HSPF2 used as AFUE decimal (e.g. 0.95 for 95% AFUE)
-    const therms = (inputs.heatingLoadBtu * heatHours) / (100_000 * inputs.hspf2);
+    const afue = hspf2 > 1 ? hspf2 / 100 : hspf2;
+    const safeAfue = afue >= 0.5 && afue <= 1 ? afue : 0.95;
+    const therms = (inputs.heatingLoadBtu * heatHours) / (100_000 * safeAfue);
     annualHeatingCost = round2(therms * inputs.gasRateDollarsTherm);
     annualHeatingKwh = round2(therms * 29.3); // 1 therm ≈ 29.3 kWh
   } else {
-    // Heat pump
-    annualHeatingKwh = round2(
-      (inputs.heatingLoadBtu * heatHours) / (inputs.hspf2 * 1000)
-    );
-    annualHeatingCost = round2(
-      (annualHeatingKwh * inputs.electricityRateCentsKwh) / 100
-    );
+    annualHeatingKwh = round2((inputs.heatingLoadBtu * heatHours) / (hspf2 * 1000));
+    annualHeatingCost = round2((annualHeatingKwh * electricityRateCentsKwh) / 100);
   }
 
   const totalAnnualCost = round2(annualCoolingCost + annualHeatingCost);
