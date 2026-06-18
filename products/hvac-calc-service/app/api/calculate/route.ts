@@ -38,7 +38,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  if (typeof body.floorArea !== "number" || body.floorArea <= 0) {
+  if (
+    typeof body.floorArea !== "number" ||
+    !Number.isFinite(body.floorArea) ||
+    body.floorArea <= 0
+  ) {
     return NextResponse.json(
       { error: "floorArea must be a positive number" },
       { status: 400 }
