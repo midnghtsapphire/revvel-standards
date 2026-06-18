@@ -16,22 +16,44 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// ── Helpers (pure Node — no shell, no injection surface) ────────────────────
 
 function read(rel) {
   try { return fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8'); }
   catch { return ''; }
 }
 
+function walk(dir, out = []) {
+  let entries;
+  try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
+  catch { return out; }
+  for (const e of entries) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) walk(p, out);
+    else if (e.isFile()) out.push(p);
+  }
+  return out;
+}
+
 function glob(rel) {
-  try {
-    return execSync(`find ${rel} -type f`, { cwd: REPO_ROOT })
-      .toString().split('\n').filter(Boolean);
-  } catch { return []; }
+  return walk(path.join(REPO_ROOT, rel))
+    .map(p => path.relative(REPO_ROOT, p));
+}
+
+function grepIn(dirs, regex) {
+  const hits = new Set();
+  for (const d of dirs) {
+    for (const file of walk(path.join(REPO_ROOT, d))) {
+      const rel = path.relative(REPO_ROOT, file);
+      let text;
+      try { text = fs.readFileSync(file, 'utf8'); } catch { continue; }
+      if (regex.test(text)) hits.add(rel);
+    }
+  }
+  return [...hits];
 }
 
 // ── Assertions ──────────────────────────────────────────────────────────────
@@ -144,13 +166,10 @@ const CHECKS = [
     gating: true,
     name: 'No new Doppler call sites added outside the gated blocks',
     run() {
-      let hits;
-      try {
-        hits = execSync(
-          `grep -rln "DOPPLER_TOKEN\\|doppler.com/v3" .github/workflows/ scripts/ 2>/dev/null`,
-          { cwd: REPO_ROOT }
-        ).toString().split('\n').filter(Boolean);
-      } catch { hits = []; }
+      const hits = grepIn(
+        ['.github/workflows', 'scripts'],
+        /DOPPLER_TOKEN|doppler\.com\/v3/
+      );
       // Expected (gated) call sites — only these may reference Doppler:
       const allowed = new Set([
         '.github/workflows/secret-persistence-guard.yml', // gated via `if false`
