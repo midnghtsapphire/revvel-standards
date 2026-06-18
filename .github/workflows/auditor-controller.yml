@@ -1,0 +1,90 @@
+name: Auditor Controller
+# Daily meta-audit that asserts the recurring failure modes are actually
+# fixed and stay fixed. Upserts a SINGLE tracking issue (label:
+# auditor-controller) so the repo never accumulates duplicate audit issues.
+#
+# Add new assertions by editing scripts/auditor-controller.js → CHECKS.
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # daily at 13:00 UTC
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/auditor-controller.js'
+      - '.github/workflows/auditor-controller.yml'
+      - '.github/workflows/secret-persistence-guard.yml'
+      - '.github/workflows/secrets-sentinel.yml'
+      - 'data/subscriptions.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: auditor-controller
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Run recurring-failure audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Generate report
+        id: audit
+        run: |
+          set +e
+          node scripts/auditor-controller.js > /tmp/audit-report.md
+          rc=$?
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          cat /tmp/audit-report.md >> "$GITHUB_STEP_SUMMARY"
+          # Also run with --check so exit_code reflects failures
+          node scripts/auditor-controller.js --check
+          echo "check_exit=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upsert single tracking issue
+        if: github.event_name != 'pull_request'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('/tmp/audit-report.md', 'utf8');
+            const marker = '<!-- auditor-controller -->';
+            const title = '🛡️ Auditor Controller — recurring-failure audit';
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', per_page: 100,
+            });
+            const existing = open.find(i => !i.pull_request && i.title === title);
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number, body,
+              });
+              core.info(`Updated #${existing.number}`);
+            } else {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  name: 'auditor-controller', color: '6f42c1',
+                  description: 'Recurring-failure audit issue (upserted, single instance)',
+                });
+              } catch (_) { /* label exists */ }
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['auditor-controller'],
+              });
+              core.info(`Created #${created.data.number}`);
+            }
+
+      - name: Fail PR if any check is red (so the audit gates merges)
+        if: github.event_name == 'pull_request' && steps.audit.outputs.check_exit != '0'
+        run: |
+          echo "::error::Auditor Controller has failing assertions — see job summary"
+          exit 1
+    timeout-minutes: 10
