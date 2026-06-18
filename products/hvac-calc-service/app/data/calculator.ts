@@ -357,6 +357,19 @@ export interface EquipmentRecommendation {
  */
 export function recommendEquipment(coolingLoadBtu: number): EquipmentRecommendation {
   const standardSizes = [0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0];
+
+  // Guard against a non-positive load. calculateLoad always produces a positive
+  // cooling load (solar + internal gains), but recommendEquipment is exported
+  // and may be called directly — without this, oversizeRatio would be Infinity.
+  if (!Number.isFinite(coolingLoadBtu) || coolingLoadBtu <= 0) {
+    return {
+      nominalTons: standardSizes[0],
+      nominalBtu: standardSizes[0] * 12000,
+      verdict: "oversized",
+      note: "No meaningful cooling load — equipment recommendation not applicable.",
+    };
+  }
+
   const targetTons = coolingLoadBtu / 12000;
 
   let nominalTons = standardSizes[standardSizes.length - 1];

@@ -62,10 +62,14 @@ export async function POST(req: NextRequest) {
   const duct = calculateDuctSize({ coolingLoadBtu: load.sensibleCoolingLoad });
 
   const seer2 = parseNum(body.seer2, 16);
-  const hspf2 = parseNum(body.hspf2, 8.5);
+  const isFurnace = body.isFurnace === true;
+  // `hspf2` is overloaded: HSPF2 for heat pumps (~8.5) or AFUE decimal for gas
+  // furnaces (~0.95). Use a furnace-appropriate default so an omitted value is
+  // not silently interpreted as an absurd AFUE. calculateEnergy() still guards
+  // the value, but the correct default keeps the API contract honest.
+  const hspf2 = parseNum(body.hspf2, isFurnace ? 0.95 : 8.5);
   const elecRate = parseNum(body.electricityRateCentsKwh, 16);
   const gasRate = parseNum(body.gasRateDollarsTherm, 1.5);
-  const isFurnace = body.isFurnace === true;
 
   const energy = calculateEnergy({
     coolingLoadBtu: load.sensibleCoolingLoad,

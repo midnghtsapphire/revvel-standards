@@ -244,7 +244,14 @@ export default function HomePage() {
                 id="furnace-toggle"
                 type="checkbox"
                 checked={isFurnace}
-                onChange={(e) => setIsFurnace(e.target.checked)}
+                onChange={(e) => {
+                  const furnace = e.target.checked;
+                  setIsFurnace(furnace);
+                  // The hspf2 field is reused for AFUE in furnace mode. Reset it
+                  // to a sensible default for the selected mode so the previous
+                  // mode's value (e.g. 8.5 HSPF2) isn't read as an absurd AFUE.
+                  setHspf2(furnace ? 0.95 : 8.5);
+                }}
                 className="w-4 h-4 accent-blue-500"
               />
               <label htmlFor="furnace-toggle" className="text-sm text-gray-300">
