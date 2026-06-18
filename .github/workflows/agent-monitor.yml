@@ -104,9 +104,9 @@ jobs:
       contents: read
       issues: write
     env:
-      # Prefer the ADMIN PAT secret (falls back to the built-in token) so the
-      # WR it files can trigger downstream automation.
-      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      # Prefer the ADMIN PAT (triggers downstream automation); fall back to the
+      # built-in github.token so the step always has a valid credential.
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
     steps:
       - name: Check for existing WR
         id: existing
@@ -146,11 +146,12 @@ jobs:
           | Perplexity | CHECK | Verify billing |
           | Jules | CHECK | Enable if disabled |
 
-          This WR auto-closes when agents recover.
+          This WR auto-closes when agents recover (next scheduled run).
           EOF
           )
 
           gh issue create \
+            --repo ${{ github.repository }} \
             --title "[AGENT-FAILURE] Agent health check failed" \
             --body "$BODY" \
             --label "needs-human,agent-failure,automation-failure"
@@ -163,6 +164,39 @@ jobs:
           EXISTING="${{ steps.existing.outputs.existing_wr }}"
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
           
-          gh issue comment "$EXISTING" --body "⚠️ Agent health check still failing: $ISSUES"
+          gh issue comment "$EXISTING" \
+            --repo ${{ github.repository }} \
+            --body "⚠️ Agent health check still failing: $ISSUES"
           
           echo "✅ Updated existing WR #$EXISTING"
+
+  # Self-heal: auto-close failure WRs when agents are healthy again
+  self-heal:
+    needs: check-agent-health
+    if: needs.check-agent-health.outputs.agents_status == 'healthy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
+    steps:
+      - name: Close resolved agent-failure WRs
+        run: |
+          # Find all open [AGENT-FAILURE] issues
+          OPEN_WRS=$(gh search issues --repo ${{ github.repository }} \
+            --state open --json number,title \
+            -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null || echo "")
+
+          if [[ -z "$OPEN_WRS" ]]; then
+            echo "ℹ️ No open agent-failure WRs to close"
+            exit 0
+          fi
+
+          for WR in $OPEN_WRS; do
+            gh issue close "$WR" \
+              --repo ${{ github.repository }} \
+              --comment "✅ All agents have recovered. Closing this WR automatically (self-healing)."
+            echo "✅ Closed resolved WR #$WR"
+          done
