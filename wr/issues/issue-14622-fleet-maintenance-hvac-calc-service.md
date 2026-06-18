@@ -24,10 +24,18 @@ The `midnghtsapphire/hvac-calc-service` target repository did not exist at resea
 ## Research Findings
 
 ### Market
-- US residential HVAC market: $15B+, 5M+ installs/year
-- No free standards-based (ACCA Manual J) online calculator exists
-- Paid alternatives: Wrightsoft ($400–$2,000/yr), Elite RHVAC, Manual J Online ($99/yr)
-- SEO keywords: "HVAC load calculator" (14,800/mo), "Manual J online free" (2,400/mo), "BTU calculator house" (40,500/mo) — CPCs $3–12
+
+> ⚠️ **Unverified — pending citation.** The market sizes, install counts, keyword
+> search volumes, CPCs, and competitor pricing below are agent estimates that have
+> **not** yet been backed by primary sources. Per `docs/WEEKLY_RESEARCH_PROCESS.md`,
+> each numeric claim must carry a source link before the WR is considered auditable.
+> Treat these as directional only until citations are added (see related WR
+> `wr/issues/issue-14024-add-source-citations-for-seo-keyword-volume-and-cp.md`).
+
+- US residential HVAC market: $15B+, 5M+ installs/year _(source needed)_
+- No free standards-based (ACCA Manual J) online calculator exists _(source needed)_
+- Paid alternatives: Wrightsoft ($400–$2,000/yr), Elite RHVAC, Manual J Online ($99/yr) _(source needed)_
+- SEO keywords: "HVAC load calculator" (14,800/mo), "Manual J online free" (2,400/mo), "BTU calculator house" (40,500/mo) — CPCs $3–12 _(source needed)_
 
 ### Technical Improvements Implemented
 - ACCA Manual J 8th Ed. simplified load calc with full breakdown (wall/ceiling/floor/window transmission, solar gain, infiltration, internal/occupant gains)

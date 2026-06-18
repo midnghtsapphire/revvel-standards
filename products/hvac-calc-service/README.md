@@ -103,8 +103,8 @@ npm run build    # production build
 
 ## Monetization
 
-- **Free tier:** unlimited calculations, report export, API access (rate-limited).
-- **Pro tier (via Polar.sh):** unlimited API calls, white-label PDF reports, team workspaces, saved projects. Target: $29/mo individual, $99/mo team.
+- **Free tier:** unlimited calculations, report export, and API access. (API rate limiting is planned but not yet implemented — see the roadmap.)
+- **Pro tier (via Polar.sh):** higher API limits, white-label PDF reports, team workspaces, saved projects. Target: $29/mo individual, $99/mo team.
 - **Affiliate:** link contractors to HVAC equipment retailers (Amazon Associates, Carrier/Trane dealer programs) from the equipment recommendation card.
 - **SEO / organic:** targets high-intent keywords ("HVAC sizing calculator," "Manual J online free") with CPCs $3–12; organic traffic converts to Pro at 2–4%.
 

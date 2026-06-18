@@ -10,7 +10,14 @@ import {
   normalizeLoadInputs,
   recommendEquipment,
 } from './data/calculator';
-import { CLIMATE_ZONES, INSULATION_LEVELS } from './data/constants';
+import { CLIMATE_ZONES, INSULATION_LEVELS, REFRIGERANTS } from './data/constants';
+
+// Display refrigerants low-GWP first, then transitional, then phased-out.
+const REFRIGERANT_STATUS_ORDER = ['low-gwp', 'transitional', 'phased-out'] as const;
+const REFRIGERANTS_BY_STATUS = [...REFRIGERANTS].sort(
+  (a, b) =>
+    REFRIGERANT_STATUS_ORDER.indexOf(a.status) - REFRIGERANT_STATUS_ORDER.indexOf(b.status)
+);
 
 export default function HomePage() {
   // ── Input state ─────────────────────────────────────
@@ -370,13 +377,7 @@ export default function HomePage() {
                     <p className="text-sm text-gray-400 mb-3">
                       Common refrigerants and phase-out status (AIM Act / EPA).
                     </p>
-                    {[
-                      { id: 'r454b', name: 'R-454B (Puron Advance™)', gwp: 466, status: 'low-gwp', note: 'Primary R-410A replacement for 2025+ equipment.' },
-                      { id: 'r32', name: 'R-32', gwp: 675, status: 'low-gwp', note: 'Used in mini-splits globally; lower GWP than R-410A.' },
-                      { id: 'r290', name: 'R-290 (Propane)', gwp: 3, status: 'low-gwp', note: 'Excellent efficiency; A3 flammable — safe in small charges.' },
-                      { id: 'r410a', name: 'R-410A', gwp: 2088, status: 'transitional', note: 'New residential equipment ban from Jan 2025.' },
-                      { id: 'r22', name: 'R-22 (HCFC-22)', gwp: 1810, status: 'phased-out', note: 'Banned since 2020. Reclaimed stock only.' },
-                    ].map((r) => (
+                    {REFRIGERANTS_BY_STATUS.map((r) => (
                       <div key={r.id} className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg">
                         <span className={`mt-0.5 px-2 py-0.5 rounded text-xs font-semibold flex-shrink-0 ${
                           r.status === 'low-gwp' ? 'bg-emerald-900 text-emerald-300' :
@@ -385,7 +386,7 @@ export default function HomePage() {
                         }`}>{r.status}</span>
                         <div>
                           <p className="font-medium text-white text-sm">{r.name}</p>
-                          <p className="text-xs text-gray-400">GWP: {r.gwp.toLocaleString()} · {r.note}</p>
+                          <p className="text-xs text-gray-400">GWP: {r.gwp.toLocaleString()} · {r.notes}</p>
                         </div>
                       </div>
                     ))}

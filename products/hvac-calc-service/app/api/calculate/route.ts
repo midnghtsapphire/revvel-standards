@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  // TODO: wire rate limiter (e.g. @upstash/ratelimit) before public deploy — README promises this on the free tier.
 
   const inputs = normalizeLoadInputs(body as Parameters<typeof normalizeLoadInputs>[0]);
   const load = calculateLoad(inputs);
