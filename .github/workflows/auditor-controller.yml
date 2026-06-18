@@ -55,9 +55,15 @@ jobs:
             const marker = '<!-- auditor-controller -->';
             const title = '🛡️ Auditor Controller — recurring-failure audit';
 
+            // Identified by cubic — the prior version used listForRepo
+            // with per_page: 100 and no pagination. This repo has 3k+
+            // open issues, so the tracker could sit on page 2+ and the
+            // upsert would silently create a duplicate every day. The
+            // label-filtered search returns only the auditor-controller
+            // tracker(s), so a single call always finds it if it exists.
             const { data: open } = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
-              state: 'open', per_page: 100,
+              state: 'open', labels: 'auditor-controller', per_page: 10,
             });
             const existing = open.find(i => !i.pull_request && i.title === title);
 
