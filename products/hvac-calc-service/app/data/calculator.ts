@@ -136,10 +136,10 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
   const indoorHeat = inputs.indoorHeatingSetpoint!;
 
   // ── Geometric assumptions ─────────────────────────────
-  const perimeter = 4 * Math.sqrt(inputs.floorArea);         // ft
-  const wallArea = perimeter * inputs.ceilingHeight;          // ft²
-  const windowArea = inputs.floorArea * inputs.windowFraction; // ft²
-  const netWallArea = wallArea - windowArea;                   // ft²
+  const perimeter = 4 * Math.sqrt(inputs.floorArea);            // ft
+  const wallArea = perimeter * inputs.ceilingHeight;            // ft²
+  const windowArea = Math.min(wallArea, inputs.floorArea * inputs.windowFraction); // ft²
+  const netWallArea = wallArea - windowArea;                    // ft²
   const ceilingArea = inputs.floorArea;                        // ft²
   const floorArea = inputs.floorArea;                          // ft²
   const volume = inputs.floorArea * inputs.ceilingHeight;      // ft³ (conditioned volume)
