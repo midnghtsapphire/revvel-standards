@@ -99,21 +99,25 @@ export interface HeatingBreakdown {
  */
 export function normalizeLoadInputs(raw: Partial<LoadInputs>): LoadInputs {
   return {
-    floorArea: Math.max(100, typeof raw.floorArea === "number" ? raw.floorArea : 1500),
-    ceilingHeight: clamp(typeof raw.ceilingHeight === "number" ? raw.ceilingHeight : 9, 7, 20),
-    windowFraction: clamp(typeof raw.windowFraction === "number" ? raw.windowFraction : 0.15, 0.05, 0.50),
-    occupants: clamp(Math.round(typeof raw.occupants === "number" ? raw.occupants : 2), 0, 50),
-    climateZoneId: CLIMATE_ZONES.find((z) => z.id === raw.climateZoneId) ? raw.climateZoneId! : "3a",
-    insulationLevelId: INSULATION_LEVELS.find((l) => l.id === raw.insulationLevelId)
-      ? raw.insulationLevelId!
-      : "good",
+    floorArea: Math.max(100, Number.isFinite(raw.floorArea) ? raw.floorArea : 1500),
+    ceilingHeight: clamp(Number.isFinite(raw.ceilingHeight) ? raw.ceilingHeight : 9, 7, 20),
+    windowFraction: clamp(Number.isFinite(raw.windowFraction) ? raw.windowFraction : 0.15, 0.05, 0.50),
+    occupants: clamp(Math.round(Number.isFinite(raw.occupants) ? raw.occupants : 2), 0, 50),
+    climateZoneId:
+      typeof raw.climateZoneId === "string" && CLIMATE_ZONES.some((z) => z.id === raw.climateZoneId)
+        ? raw.climateZoneId
+        : "3a",
+    insulationLevelId:
+      typeof raw.insulationLevelId === "string" && INSULATION_LEVELS.some((l) => l.id === raw.insulationLevelId)
+        ? raw.insulationLevelId
+        : "good",
     indoorCoolingSetpoint: clamp(
-      typeof raw.indoorCoolingSetpoint === "number" ? raw.indoorCoolingSetpoint : 75,
+      Number.isFinite(raw.indoorCoolingSetpoint) ? raw.indoorCoolingSetpoint : 75,
       68,
       80
     ),
     indoorHeatingSetpoint: clamp(
-      typeof raw.indoorHeatingSetpoint === "number" ? raw.indoorHeatingSetpoint : 70,
+      Number.isFinite(raw.indoorHeatingSetpoint) ? raw.indoorHeatingSetpoint : 70,
       60,
       78
     ),
