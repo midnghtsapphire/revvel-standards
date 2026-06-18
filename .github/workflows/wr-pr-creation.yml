@@ -1,14 +1,16 @@
 name: WR PR Creation
 on:
-  # `issue_comment` and `issues: labeled` triggers are intentionally removed:
-  # sibling automation re-applies labels (incl. research:complete) and posts
-  # comments constantly, which regenerated duplicate skeleton WR PRs for the
-  # same issues every sweep. WR PRs are now created only when an issue is first
-  # opened/reopened, or deliberately via workflow_dispatch.
+  # `issue_comment` trigger is intentionally omitted: sibling automation posts
+  # comments constantly which would regenerate duplicate skeleton WR PRs.
+  # `issues: labeled` is re-enabled ONLY for `wr:reset`, which is applied
+  # exclusively by the self-heal system to force a fresh PR creation pass.
+  # Generic label-churn (research:complete, wr:complete, etc.) is still filtered
+  # out in the detect-completion step to prevent retrigger storms.
   issues:
     types:
       - opened
       - reopened
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
@@ -98,9 +100,11 @@ jobs:
             // the real PR-creation run. Only labels that genuinely signal
             // research/WR completion should advance here; `opened`,
             // `issue_comment`, and `workflow_dispatch` paths are unaffected.
+            // `wr:reset` is also allowed through — it is applied by the
+            // self-heal system to force a fresh PR creation pass.
             if (context.eventName === 'issues' && context.payload.action === 'labeled') {
               const triggerLabel = context.payload.label?.name || '';
-              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research']);
+              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research', 'wr:reset']);
               if (!COMPLETION_LABELS.has(triggerLabel)) {
                 skip(`labeled_noise:${triggerLabel}`, { notify: false });
                 return;
@@ -252,13 +256,23 @@ jobs:
               return isWrSkeleton && refsThisIssue && blocks;
             });
 
-            if (existingPR) {
+            // `wr:reset` bypasses the existing-PR guard so the self-heal system
+            // can force a fresh PR creation pass even when a skeleton already
+            // exists (e.g. after it was manually closed/abandoned).
+            const isResetTriggered =
+              (context.eventName === 'issues' &&
+               context.payload.action === 'labeled' &&
+               context.payload.label?.name === 'wr:reset') ||
+              labelSet.has('wr:reset');
+
+            if (existingPR && !isResetTriggered) {
               core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
               skip('existing_wr_pr');
               return;
             }
 
             const isComplete =
+              isResetTriggered ||
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
               context.eventName === 'workflow_dispatch';
@@ -284,6 +298,7 @@ jobs:
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
             core.info(`Is Complete: ${isComplete}`);
+            core.info(`Reset triggered: ${isResetTriggered}`);
             core.info(`Research-ready comment: ${researchReadyComment}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
@@ -842,10 +857,13 @@ jobs:
 
             // Remove completion and auto-healer labels once the PR exists so
             // the issue no longer appears stuck after recovery.
+            // `wr:reset` is also removed here so it can be re-applied cleanly
+            // on the next manual or self-heal reset.
             const labelsToRemove = currentLabels
               .map(label => label.name)
               .filter(name =>
                 name === 'wr:complete' ||
+                name === 'wr:reset' ||
                 name === 'lifecycle:stuck' ||
                 name === 'wr-stuck' ||
                 name.startsWith('wr:retrigger-attempts-')

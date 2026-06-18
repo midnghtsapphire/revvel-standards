@@ -12,20 +12,21 @@ on:
   #      between */30 runs), so a just-completed WR could sit ~1h with no PR
   #      (this is exactly what stranded WR #14545).
   #
-  # ── NEW APPROACH (why it's better) ─────────────────────────────────────────
-  # We still keep the cron as a backstop, but we no longer DEPEND on it for
-  # timeliness, and we no longer depend on label-churn events for timing. The
-  # `workflow_run` trigger fires the sweep the moment research actually
-  # completes, so a ready WR with no PR is healed within minutes regardless of
-  # how badly GitHub is throttling cron. Labels (research:complete/wr:complete)
-  # are still used — but only as a *completion signal* (a state marker), never
-  # as the timing mechanism. That's the "don't rely on labels" point: relying on
-  # a label to EXIST is fine; relying on label-event timing + a throttled cron
-  # is what burned us.
-  # Auto-triggers (schedule cron + workflow_run) are intentionally disabled:
-  # the */30 sweep and Research-Engine-completion retriggers caused retrigger
-  # storms that escalated stuck WRs into [AUTO-ERROR] issues (e.g. #14592,
-  # #14599). The detector is now manual-only — run it deliberately when needed.
+  # ── CURRENT APPROACH ─────────────────────────────────────────────────────────
+  # The `*/30` cron + `workflow_run` combo was causing retrigger storms that
+  # escalated stuck WRs into [AUTO-ERROR] issues (#14592, #14599). Both
+  # auto-triggers were disabled and the detector became manual-only.
+  #
+  # Re-enabling a SAFE cron: `0 */6 * * *` (every 6 hours) is conservative
+  # enough to avoid storms — the `wr:retrigger-attempts-N` label system caps
+  # retries per issue and the new `wr:reset` label gives the heal path a clean
+  # signal rather than repeated workflow_dispatch calls. The `workflow_run`
+  # trigger is intentionally NOT re-enabled to avoid the original storm pattern.
+  #
+  # For cron-triggered runs, MAX_AGE_HOURS is capped at 48h so the sweep only
+  # catches recently stuck WRs instead of scanning the full 7-day window.
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours — safe backstop, not storm-prone
   workflow_dispatch:
     inputs:
       max_age_hours:
@@ -56,7 +57,9 @@ jobs:
       - name: Detect stuck WRs and heal
         uses: actions/github-script@v9.0.0
         env:
-          MAX_AGE_HOURS: ${{ inputs.max_age_hours || 168 }}
+          # For cron runs: cap at 48h so the sweep targets recently stuck WRs only.
+          # For manual dispatch: use the provided value (default 168h = 7 days).
+          MAX_AGE_HOURS: ${{ github.event_name == 'schedule' && '48' || inputs.max_age_hours || '168' }}
           DRY_RUN: ${{ inputs.dry_run || false }}
         with:
           script: |
