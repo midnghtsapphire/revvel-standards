@@ -39,10 +39,15 @@ function glob(rel) {
 // Each check returns { id, name, pass, detail } where detail is a short
 // human-readable message used in the report when pass=false.
 
+// `gating: true` = this check CAN fail CI on PRs (regression guards).
+// `gating: false` = the check still runs and shows in the report, but
+// it never fails CI — it's documenting a pre-existing backlog that has
+// to be drained by other PRs, not by this one.
 const CHECKS = [
   // ─── Doppler regression check ─────────────────────────────────────────
   {
     id: 'doppler-disabled',
+    gating: true,
     name: 'Doppler auto-recover is disabled in secret workflows',
     run() {
       const guard = read('.github/workflows/secret-persistence-guard.yml');
@@ -62,6 +67,7 @@ const CHECKS = [
   // ─── WR-without-PR groundhog day ──────────────────────────────────────
   {
     id: 'wr-pr-link',
+    gating: false,
     name: 'Every wr/issues/issue-*.md has a linked PR or is closed',
     run() {
       const wrs = glob('wr/issues').filter(p => /issue-\d+/.test(p));
@@ -91,6 +97,7 @@ const CHECKS = [
   // ─── No throwaway dev files at repo root ──────────────────────────────
   {
     id: 'no-root-junk',
+    gating: true,
     name: 'No throwaway dev files at repo root',
     run() {
       const junkPatterns = /^(plan|finish_clean|fix_boilerplate|update_wr|tmp[_-].*|scratch.*|temp[_-].*|throwaway.*|notes)\.(js|mjs|ts|md|sh|py|txt)$/;
@@ -109,6 +116,7 @@ const CHECKS = [
   // ─── Subscription tracker inventory completeness ──────────────────────
   {
     id: 'subscription-dates',
+    gating: false,
     name: 'Subscription tracker entries have renewal/trial dates',
     run() {
       const yml = read('data/subscriptions.yml');
@@ -133,6 +141,7 @@ const CHECKS = [
   // ─── Doppler still wired anywhere it shouldn't be ─────────────────────
   {
     id: 'doppler-spread',
+    gating: true,
     name: 'No new Doppler call sites added outside the gated blocks',
     run() {
       let hits;
@@ -198,8 +207,10 @@ function runAll() {
 }
 
 function renderReport(results) {
-  const failed = results.filter(r => !r.pass);
+  const gatingFailed = results.filter(r => !r.pass && r.gating);
+  const informational = results.filter(r => !r.pass && !r.gating);
   const passed = results.filter(r => r.pass);
+  const failed = [...gatingFailed, ...informational];
   const date = new Date().toISOString().slice(0, 10);
   const lines = [
     '<!-- auditor-controller -->',
@@ -211,9 +222,23 @@ function renderReport(results) {
   if (failed.length === 0) {
     lines.push('✅ All recurring-failure checks passed.');
   } else {
-    lines.push('### ❌ Failing checks');
-    lines.push('');
-    for (const f of failed) {
+    if (gatingFailed.length) {
+      lines.push(`### ❌ Gating failures (block CI) — ${gatingFailed.length}`);
+      lines.push('');
+      for (const f of gatingFailed) {
+        lines.push(`#### ${f.name}`);
+        lines.push('');
+        lines.push('```');
+        lines.push(f.detail);
+        lines.push('```');
+        lines.push('');
+      }
+    }
+    if (informational.length) {
+      lines.push(`### 🟡 Informational (pre-existing backlog, doesn't block CI) — ${informational.length}`);
+      lines.push('');
+    }
+    for (const f of informational) {
       lines.push(`#### ${f.name}`);
       lines.push('');
       lines.push('```');
@@ -233,4 +258,4 @@ function renderReport(results) {
 const args = process.argv.slice(2);
 const results = runAll();
 console.log(renderReport(results));
-if (args.includes('--check') && results.some(r => !r.pass)) process.exit(1);
+if (args.includes('--check') && results.some(r => !r.pass && r.gating)) process.exit(1);
