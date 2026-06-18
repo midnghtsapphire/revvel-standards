@@ -36,11 +36,12 @@ jobs:
         id: audit
         run: |
           set +e
+          # First run renders the markdown report (always exits 0).
           node scripts/auditor-controller.js > /tmp/audit-report.md
-          rc=$?
-          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
           cat /tmp/audit-report.md >> "$GITHUB_STEP_SUMMARY"
-          # Also run with --check so exit_code reflects failures
+          # Second run with --check is the gate: exits non-zero only
+          # when a `gating: true` assertion failed. PR step below reads
+          # this output.
           node scripts/auditor-controller.js --check
           echo "check_exit=$?" >> "$GITHUB_OUTPUT"
           exit 0

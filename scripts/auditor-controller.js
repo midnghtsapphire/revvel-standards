@@ -96,7 +96,8 @@ const CHECKS = [
       const wrs = glob('wr/issues').filter(p => /issue-\d+/.test(p));
       const missing = [];
       for (const wr of wrs) {
-        const body = read(wr.replace(REPO_ROOT + '/', ''));
+        // glob() already returns paths relative to REPO_ROOT.
+        const body = read(wr);
         // Heuristic: a WR is "active and unlinked" if it has neither
         // a PR ref (^Implementation PR:, `PR #`, `pull/<n>`) nor a
         // ✅/closed marker.
@@ -222,7 +223,10 @@ function runAll() {
   return CHECKS.map(c => {
     let r;
     try { r = c.run(); } catch (e) { r = { pass: false, detail: `Check errored: ${e.message}` }; }
-    return { id: c.id, name: c.name, ...r };
+    // `gating` lives on the CHECK definition, not on the run() result —
+    // forward it explicitly so the gating filter in --check actually
+    // sees it. (Identified by cubic.)
+    return { id: c.id, name: c.name, gating: c.gating === true, ...r };
   });
 }
 
