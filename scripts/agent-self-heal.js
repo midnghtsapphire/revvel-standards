@@ -41,6 +41,7 @@ const FALLBACK_MAP = {
 const CONTEXT_LABELS = {
   'weekly-research': ['weekly-research', 'wr:in-progress', 'deep-research'],
   wr: ['work-request', 'wr:in-progress'],
+  'agent-factory': ['work-request', 'wr:in-progress', 'agent:fallback', 'route:retry'],
 };
 
 function parseArgs(argv) {

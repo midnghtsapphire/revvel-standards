@@ -100,7 +100,7 @@ jobs:
             // `issue_comment`, and `workflow_dispatch` paths are unaffected.
             if (context.eventName === 'issues' && context.payload.action === 'labeled') {
               const triggerLabel = context.payload.label?.name || '';
-              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research']);
+              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research', 'wr:reset']);
               if (!COMPLETION_LABELS.has(triggerLabel)) {
                 skip(`labeled_noise:${triggerLabel}`, { notify: false });
                 return;
@@ -253,14 +253,21 @@ jobs:
             });
 
             if (existingPR) {
-              core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
-              skip('existing_wr_pr');
-              return;
+              // wr:reset forces a fresh PR even when a skeleton already exists.
+              // This lets operators unblock a stuck WR without manual branch cleanup.
+              if (labelSet.has('wr:reset')) {
+                core.info(`wr:reset detected on issue #${issueNumber} — bypassing existing-PR guard (${existingPR.html_url})`);
+              } else {
+                core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
+                skip('existing_wr_pr');
+                return;
+              }
             }
 
             const isComplete =
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
+              labelSet.has('wr:reset') ||
               context.eventName === 'workflow_dispatch';
 
             // Treat both direct research findings and the research-engine handoff
@@ -842,10 +849,13 @@ jobs:
 
             // Remove completion and auto-healer labels once the PR exists so
             // the issue no longer appears stuck after recovery.
+            // wr:reset is also removed here — it is a one-shot signal that must
+            // be cleared after the forced re-generation completes successfully.
             const labelsToRemove = currentLabels
               .map(label => label.name)
               .filter(name =>
                 name === 'wr:complete' ||
+                name === 'wr:reset' ||
                 name === 'lifecycle:stuck' ||
                 name === 'wr-stuck' ||
                 name.startsWith('wr:retrigger-attempts-')
