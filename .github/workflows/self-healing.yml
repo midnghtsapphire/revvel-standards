@@ -15,6 +15,11 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  actions: write
+
+env:
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
@@ -96,7 +101,7 @@ jobs:
             BROKEN+=("Missing workflows: $AGENTS")
           fi
           
-          echo "broken=$(printf '; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
+          echo "broken=$(printf '%s; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
 
       - name: Compile system health
         id: health
