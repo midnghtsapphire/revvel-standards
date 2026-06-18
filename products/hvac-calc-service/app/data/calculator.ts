@@ -136,7 +136,11 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
   const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId)!;
   const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId)!;
 
-  const indoorCool = inputs.indoorCoolingSetpoint!;
+const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId);
+const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId);
+if (!zone || !ins) {
+  throw new Error(`Unknown climateZoneId=${inputs.climateZoneId} or insulationLevelId=${inputs.insulationLevelId}`);
+}
   const indoorHeat = inputs.indoorHeatingSetpoint!;
 
   // ── Geometric assumptions ─────────────────────────────
