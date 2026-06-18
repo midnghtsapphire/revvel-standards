@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
+if (body.floorArea > 1_000_000) {
+  return NextResponse.json({ error: "floorArea must be <= 1,000,000 sq ft" }, { status: 400 });
+}
+// TODO: wire rate limiter (e.g. @upstash/ratelimit) before public deploy — README promises this on the free tier.
 
   if (
     typeof body.floorArea !== "number" ||
