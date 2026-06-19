@@ -78,10 +78,14 @@ jobs:
                 continue;
               }
 
-              // This issue slipped: it has the fork-audit label but @oaudrey
-              // was never assigned, meaning openrouter-assignee.yml skipped it
-              // (it found the pre-applied 'openrouter' label and treated the
-              // issue as already-routed).
+              const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+              if (!labels.includes('openrouter')) {
+                core.info(`  skip #${issue.number} missing openrouter label — not a known slip case`);
+                continue;
+              }
+
+              // This issue slipped: it has both fork-audit + openrouter labels but @oaudrey
+              // was never assigned, meaning openrouter-assignee.yml likely skipped it.
               core.info(`  healing slipped issue #${issue.number}: ${issue.title}`);
 
               if (isDryRun) {
