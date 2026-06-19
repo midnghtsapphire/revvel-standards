@@ -80,7 +80,7 @@ jobs:
 
               const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
               if (!labels.includes('openrouter')) {
-                core.info(`  skip #${issue.number} missing openrouter label — not a known slip case`);
+                core.info(`  skip #${issue.number} — no openrouter label, likely a brand-new issue awaiting openrouter-assignee.yml processing`);
                 continue;
               }
 
