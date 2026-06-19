@@ -111,7 +111,7 @@ if command -v git >/dev/null && [[ -d "$REPO_ROOT/.git" ]]; then
     if ! git diff --cached --quiet 2>/dev/null; then
       git -c user.name='Claude Code (save-transcript hook)' \
           -c user.email='claude-code-hooks@noreply.local' \
-          commit --no-verify -m "chore(transcripts): auto-archive ${DATE} session" >/dev/null 2>&1 || true
+          commit --no-verify -m "chore(transcripts): auto-archive ${DATE} session" >/dev/null 2>&1 && git push --quiet 2>/dev/null || true
     fi
   )
 fi
