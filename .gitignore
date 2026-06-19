@@ -52,3 +52,10 @@ wr/memory/last-remediation-plan.json
 !.claude/hooks/
 !.claude/hooks/**
 !.claude/settings.json
+
+# Captured Claude sessions stay on local disk under
+# docs/agents/claude/transcripts/ but aren't committed by default. Force-add
+# (`git add -f`) any session worth preserving in the repo. Per stop-hook race
+# observed on PR #14684.
+docs/agents/*/transcripts/*.jsonl
+docs/agents/*/transcripts/*.md
