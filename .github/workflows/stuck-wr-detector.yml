@@ -18,10 +18,10 @@ on:
   # auto-triggers were disabled and the detector became manual-only.
   #
   # Re-enabling a SAFE cron: `0 */6 * * *` (every 6 hours) is conservative
-  # enough to avoid storms — the `wr:retrigger-attempts-N` label system caps
-  # retries per issue and the new `wr:reset` label gives the heal path a clean
-  # signal rather than repeated workflow_dispatch calls. The `workflow_run`
-  # trigger is intentionally NOT re-enabled to avoid the original storm pattern.
+  # enough to avoid storms — and the `wr:retrigger-attempts-N` label system caps
+  # retries per issue. Recovery retriggers `wr-pr-creation.yml` via
+  # `workflow_dispatch`; the `workflow_run` trigger stays disabled to avoid the
+  # original storm pattern.
   #
   # For cron-triggered runs, MAX_AGE_HOURS is capped at 48h so the sweep only
   # catches recently stuck WRs instead of scanning the full 7-day window.
