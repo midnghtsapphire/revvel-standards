@@ -12,6 +12,8 @@ by what each agent leaves behind and what each one is actually good at.
 | Lovable | scaffold + UI | [PROFILE.md](lovable/PROFILE.md) | — |
 | Replit | scaffold + dev env | [PROFILE.md](replit/PROFILE.md) | — |
 | Manus | code + deploy SOP | [PROFILE.md](manus/PROFILE.md) | — |
+| RadioChaser | backup orchestrator (phantom — not yet wired) | [PROFILE.md](radiochaser/PROFILE.md) | — |
+| Goap | planning methodology / persona | [PROFILE.md](goap/PROFILE.md) | (folded into invoking persona) |
 | Devin (Cognition) | session-based fix | TBD | `devin/` (via Sessions API) |
 | Cursor | inline coder | TBD | TBD |
 | GitHub Copilot | inline + review | TBD | TBD |
