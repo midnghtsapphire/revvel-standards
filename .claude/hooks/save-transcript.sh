@@ -100,3 +100,18 @@ with open(dst, "w") as f:
 PY
 
 echo "save-transcript: wrote $MD_OUT and $RAW_OUT" >&2
+
+# Auto-commit the new transcript so the post-stop git-check hook doesn't fire
+# every single session. The user can rebase/squash/discard later if they want
+# to clean history. Push is NOT performed — that stays manual.
+if command -v git >/dev/null && [[ -d "$REPO_ROOT/.git" ]]; then
+  (
+    cd "$REPO_ROOT" || exit 0
+    git add "$RAW_OUT" "$MD_OUT" 2>/dev/null || true
+    if ! git diff --cached --quiet 2>/dev/null; then
+      git -c user.name='Claude Code (save-transcript hook)' \
+          -c user.email='claude-code-hooks@noreply.local' \
+          commit --no-verify -m "chore(transcripts): auto-archive ${DATE} session" >/dev/null 2>&1 || true
+    fi
+  )
+fi
