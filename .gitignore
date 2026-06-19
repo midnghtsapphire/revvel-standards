@@ -45,3 +45,10 @@ products/creator-payout-tracker/node_modules/
 
 # agent-scorecard runtime artifact (regenerated each remediation)
 wr/memory/last-remediation-plan.json
+
+# Allow the Claude Code hooks dir (the save-transcript hook is repo-wide)
+!.claude/
+.claude/*
+!.claude/hooks/
+!.claude/hooks/**
+!.claude/settings.json
