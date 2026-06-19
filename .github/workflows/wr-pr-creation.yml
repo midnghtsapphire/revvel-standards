@@ -256,16 +256,16 @@ jobs:
               return isWrSkeleton && refsThisIssue && blocks;
             });
 
-            // `wr:reset` bypasses the existing-PR guard so the self-heal system
-            // can force a fresh PR creation pass even when a skeleton already
-            // exists (e.g. after it was manually closed/abandoned).
+            // `wr:reset` allows recovery after an abandoned (closed-unmerged)
+            // skeleton PR. Open or merged skeleton PRs always block, even with
+            // wr:reset, to prevent duplicate in-flight or re-shipped WRs.
             const isResetTriggered =
               (context.eventName === 'issues' &&
                context.payload.action === 'labeled' &&
                context.payload.label?.name === 'wr:reset') ||
               labelSet.has('wr:reset');
 
-            if (existingPR && !isResetTriggered) {
+            if (existingPR) {
               core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
               skip('existing_wr_pr');
               return;
