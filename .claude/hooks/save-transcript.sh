@@ -3,7 +3,7 @@
 # JSONL transcript into docs/agents/claude/transcripts/ so the thinking blocks
 # survive after the UI throws them away.
 #
-# Wire it in `.claude/settings.local.json` or `.claude/settings.json`:
+# Wire it in `.claude/settings.json` (committed, repo-wide):
 #   {
 #     "hooks": {
 #       "Stop": [{ "matcher": "", "hooks": [
@@ -67,34 +67,46 @@ with open(src) as f:
         except json.JSONDecodeError as e:
             sys.stderr.write(f"save-transcript: skipping malformed line {i}: {e}\n")
 
+import re as _re
+_SECRET_PATTERNS = [
+    _re.compile(r'\b(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|ghs_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z\-_]{20,}|xox[abposr]-[A-Za-z0-9\-]{10,})\b'),
+    _re.compile(r'(?i)(api[_-]?key|secret|token|password|bearer)[\s:=]+["\']?([A-Za-z0-9\-_]{16,})'),
+]
+def _redact(t):
+    if not isinstance(t, str): return t
+    for r in _SECRET_PATTERNS:
+        t = r.sub("[REDACTED]", t)
+    return t
+
 out = ["# Claude session transcript", "", f"_source: `{src}`_", ""]
+out += ["> 🔒 Tool inputs and results pass through a secret-pattern redactor before rendering. The raw JSONL alongside this file is NOT redacted — treat it as sensitive.", ""]
 for ev in events:
     typ = ev.get("type")
     if typ == "user":
         msg = ev.get("message", {})
         content = msg.get("content")
         if isinstance(content, str):
-            out += ["## 🧑 user", "", content, ""]
+            out += ["## 🧑 user", "", _redact(content), ""]
         elif isinstance(content, list):
             for c in content:
                 if c.get("type") == "text":
-                    out += ["## 🧑 user", "", c.get("text",""), ""]
+                    out += ["## 🧑 user", "", _redact(c.get("text","")), ""]
                 elif c.get("type") == "tool_result":
                     body = c.get("content", "")
                     if isinstance(body, list):
                         body = "\n".join(x.get("text", "") for x in body if isinstance(x, dict))
-                    out += ["### 🛠️ tool_result", "", "```", str(body)[:4000], "```", ""]
+                    out += ["### 🛠️ tool_result", "", "```", _redact(str(body))[:4000], "```", ""]
     elif typ == "assistant":
         msg = ev.get("message", {})
         for c in msg.get("content", []):
             if c.get("type") == "thinking":
-                out += ["### 🧠 thinking", "", "> " + (c.get("thinking","") or "").replace("\n", "\n> "), ""]
+                out += ["### 🧠 thinking", "", "> " + _redact((c.get("thinking","") or "")).replace("\n", "\n> "), ""]
             elif c.get("type") == "text":
-                out += ["## 🤖 assistant", "", c.get("text",""), ""]
+                out += ["## 🤖 assistant", "", _redact(c.get("text","")), ""]
             elif c.get("type") == "tool_use":
                 name = c.get("name","")
                 inp = c.get("input", {})
-                out += [f"### 🛠️ tool_use: {name}", "", "```json", json.dumps(inp, indent=2)[:4000], "```", ""]
+                out += [f"### 🛠️ tool_use: {name}", "", "```json", _redact(json.dumps(inp, indent=2))[:4000], "```", ""]
 with open(dst, "w") as f:
     f.write("\n".join(out))
 PY
