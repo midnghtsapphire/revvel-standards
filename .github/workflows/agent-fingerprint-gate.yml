@@ -42,5 +42,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" \
+          # --no-renames forces git to emit one path per change instead of
+          # rename pairs, so the scanner gets predictable input. Per Octopus
+          # review on this PR.
+          git diff --name-only --no-renames --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" \
             | node scripts/agent-fingerprint-scan.js --changed

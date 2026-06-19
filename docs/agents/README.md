@@ -34,6 +34,14 @@ docs/agents/<name>/
                            (lifted out of its sandbox before the UI throws them away)
 ```
 
+## Transcript files are committed on purpose
+
+Captured Claude sessions land under `docs/agents/claude/transcripts/` and are
+**checked into the repo by design** — the whole point is to keep the thinking
+blocks visible in the same place as the standards and PR diffs they relate to.
+If you ever want to stop committing them, add `docs/agents/*/transcripts/` to
+`.gitignore`. Per Octopus review (intent was ambiguous before this note).
+
 ## Capture pipeline (incremental)
 
 - **Claude Code**: `.claude/hooks/save-transcript.sh` lifts the JSONL transcript

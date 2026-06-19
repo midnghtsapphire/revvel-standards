@@ -51,11 +51,21 @@ cp -f "$SRC" "$RAW_OUT"
 # Render a readable Markdown version. We pull the thinking blocks out because
 # those are the most useful for learning the model's pattern.
 python3 - "$SRC" "$MD_OUT" <<'PY'
-import json, sys, textwrap
+import json, sys
 
 src, dst = sys.argv[1], sys.argv[2]
+# Per Octopus review: a single malformed JSONL line (truncated write, partial
+# event written mid-flush) used to abort the whole hook. Now we skip bad
+# lines, log them to stderr, and keep going so the raw JSONL is never lost.
+events = []
 with open(src) as f:
-    events = [json.loads(l) for l in f if l.strip()]
+    for i, l in enumerate(f, 1):
+        if not l.strip():
+            continue
+        try:
+            events.append(json.loads(l))
+        except json.JSONDecodeError as e:
+            sys.stderr.write(f"save-transcript: skipping malformed line {i}: {e}\n")
 
 out = ["# Claude session transcript", "", f"_source: `{src}`_", ""]
 for ev in events:

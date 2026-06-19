@@ -78,7 +78,13 @@ function shouldScan(p) {
 
 function scan(file) {
   let text;
-  try { text = fs.readFileSync(file, 'utf8'); } catch { return []; }
+  try { text = fs.readFileSync(file, 'utf8'); }
+  catch (e) {
+    // Per Octopus review: log unreadable paths instead of silently treating
+    // as clean. Submodule pointers, dangling symlinks, etc. should surface.
+    console.error(`warning: cannot read ${file}: ${e.code || e.message}`);
+    return [];
+  }
   const hits = [];
   for (const rule of BANNED) {
     if (rule.allowedFiles && rule.allowedFiles.some(r => r.test(file))) continue;
@@ -105,10 +111,18 @@ function readChangedFromStdin() {
 (async function main() {
   const args = process.argv.slice(2);
   let files;
-  if (args.includes('--changed')) {
+  const useStdin = args.includes('--changed');
+  const positional = args.filter(a => a !== '--changed');
+  if (useStdin && positional.length) {
+    // Per Octopus review: silently dropping positional args when --changed is
+    // also present was confusing. Error out instead.
+    console.error('error: --changed cannot be combined with positional file args');
+    process.exit(2);
+  }
+  if (useStdin) {
     files = (await readChangedFromStdin()).map(f => f.trim()).filter(Boolean);
-  } else if (args.length) {
-    files = args;
+  } else if (positional.length) {
+    files = positional;
   } else {
     console.error('usage: node scripts/agent-fingerprint-scan.js <file...> | --changed');
     process.exit(2);
