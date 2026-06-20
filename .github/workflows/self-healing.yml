@@ -15,8 +15,9 @@ on:
 
 permissions:
   contents: read
-  issues: write      # self-heal job re-labels stuck issues + files healing journal
-  actions: write     # self-heal job re-runs failed workflow runs
+  issues: write        # self-heal job re-labels stuck issues + files healing journal
+  actions: write       # self-heal job re-runs failed workflow runs
+  pull-requests: write # update-main job adds auto-merge label to qualifying PRs
 
 env:
   # Without this, every `gh` call runs unauthenticated and fails. Prefer the
@@ -188,3 +189,168 @@ jobs:
             --title "[SELF-HEAL] System healing completed" \
             --body "$BODY" \
             --label "self-healing,automation" 2>/dev/null || echo "No new issue created"
+
+  # PHASE 3: UPDATE MAIN — advance approved+green PRs by enabling auto-merge
+  # Runs independently of PHASE 2 (does not require needs-healing condition).
+  # Playbook: docs/playbooks/branch-update-guide.md
+  # Manual-processes ref: docs/playbooks/wr-manual-processes.md (§14)
+  update-main:
+    # Run after research-state so we know system health, but always attempt the
+    # update pass — PR advancement should happen even when the system is healthy.
+    needs: research-state
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Advance approved and green PRs toward main
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            // ---------------------------------------------------------------
+            // WHAT THIS DOES
+            // Lists all open, non-draft PRs. For each one it checks:
+            //   1. At least one approving review.
+            //   2. All required commit status checks are passing (green).
+            //   3. The PR does not carry a "won't-merge" label.
+            //   4. The PR is not in draft state.
+            // Qualifying PRs get the "auto-merge" label added, which triggers
+            // auto-merge.yml to squash-merge them into main.
+            //
+            // GOOD: zero-click merges for approved backlog, consistent squash.
+            // RISK: merges PRs you forgot to hold — always use "won't-merge" on
+            //       PRs you are not ready to land.
+            //
+            // Full trade-off discussion: docs/playbooks/branch-update-guide.md
+            // ---------------------------------------------------------------
+
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+
+            // Fetch all open PRs (paginated to catch repos with many PRs).
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            let advanced = 0;
+            let skipped  = 0;
+
+            for (const pr of prs) {
+              const num    = pr.number;
+              const labels = pr.labels.map(l => l.name);
+
+              // Skip drafts — they cannot be auto-merged.
+              if (pr.draft) {
+                core.info(`PR #${num}: SKIP — draft`);
+                skipped++;
+                continue;
+              }
+
+              // Skip PRs explicitly held back.
+              if (labels.includes("won't-merge")) {
+                core.info(`PR #${num}: SKIP — "won't-merge" label present`);
+                skipped++;
+                continue;
+              }
+
+              // Already queued — don't add the label twice.
+              if (labels.includes('auto-merge')) {
+                core.info(`PR #${num}: SKIP — already has "auto-merge" label`);
+                skipped++;
+                continue;
+              }
+
+              // Check for at least one approving review.
+              const { data: reviews } = await github.rest.pulls.listReviews({
+                owner,
+                repo,
+                pull_number: num,
+              });
+              const approved = reviews.some(r => r.state === 'APPROVED');
+              if (!approved) {
+                core.info(`PR #${num}: SKIP — no approving review`);
+                skipped++;
+                continue;
+              }
+
+              // Check that no changes have been requested since the last approval.
+              const changesRequested = reviews.some(r => r.state === 'CHANGES_REQUESTED');
+              if (changesRequested) {
+                core.info(`PR #${num}: SKIP — changes requested`);
+                skipped++;
+                continue;
+              }
+
+              // Check combined commit status for the head SHA.
+              const sha = pr.head.sha;
+              const { data: statusData } = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: sha,
+              });
+
+              // Also check check-runs (GitHub Actions show up here).
+              const checkRuns = await github.paginate(
+                github.rest.checks.listForRef,
+                { owner, repo, ref: sha, per_page: 100 }
+              );
+
+              // A PR is "green" when:
+              //  - combined commit status is "success" or "pending" (no explicit failures), AND
+              //  - no check-run is in a failed/action_required/cancelled/timed_out state.
+              const combinedOk = ['success', 'pending'].includes(statusData.state);
+              const badRuns = checkRuns.filter(
+                r => r.status === 'completed' &&
+                     ['failure', 'action_required', 'cancelled', 'timed_out'].includes(r.conclusion)
+              );
+
+              if (!combinedOk || badRuns.length > 0) {
+                core.info(
+                  `PR #${num}: SKIP — CI not green ` +
+                  `(combined=${statusData.state}, failed_runs=${badRuns.length})`
+                );
+                skipped++;
+                continue;
+              }
+
+              // Check for merge conflicts.
+              const { data: prDetail } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: num,
+              });
+              if (prDetail.mergeable === false) {
+                core.warning(
+                  `PR #${num}: SKIP — conflicts with main. ` +
+                  `See docs/playbooks/branch-update-guide.md to resolve.`
+                );
+                skipped++;
+                continue;
+              }
+
+              // All checks passed — add auto-merge label.
+              try {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: num,
+                  labels: ['auto-merge'],
+                });
+                core.notice(
+                  `PR #${num} ("${pr.title}"): ✅ Added "auto-merge" label — ` +
+                  `will squash-merge once branch protection allows.`
+                );
+                advanced++;
+              } catch (err) {
+                core.warning(`PR #${num}: Could not add label — ${err.message}`);
+              }
+            }
+
+            core.notice(
+              `update-main complete: ${advanced} PR(s) advanced, ` +
+              `${skipped} skipped. ` +
+              `See docs/playbooks/branch-update-guide.md for trade-offs.`
+            );

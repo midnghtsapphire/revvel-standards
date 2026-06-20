@@ -105,6 +105,18 @@ These workflows **attempt to fix** problems:
 | **Checks** | Failed actions, stuck issues, missing workflows |
 | **Heals** | Re-runs failed workflows, labels stuck issues |
 | **Threshold** | >3 failed actions in 24h, >5 stuck issues |
+| **Also runs** | `update-main` job (always, even when system is healthy) |
+
+### `self-healing.yml` — `update-main` job
+| Property | Value |
+|----------|-------|
+| **Purpose** | Advance approved + green PRs into `main` automatically |
+| **Trigger** | Part of `self-healing.yml` (4h cron + manual dispatch) |
+| **Eligibility criteria** | Non-draft, approved, CI green, no `won't-merge`, not conflicted |
+| **Action** | Adds `auto-merge` label → `auto-merge.yml` squash-merges |
+| **Skips** | Drafts, `won't-merge` PRs, conflicted branches, unapproved PRs |
+| **Playbook** | `docs/playbooks/branch-update-guide.md` (§5) |
+| **Manual processes** | `docs/playbooks/wr-manual-processes.md` (§14) |
 
 ### `wr-pr-creation.yml`
 | Property | Value |
@@ -274,6 +286,9 @@ gh run list --workflow=wr-pr-creation.yml --limit 10
 | `skills/openrouter-swarms/SKILL.md` | OpenRouter orchestrator |
 | `docs/AUTOMATION_AND_AUTOHEAL_STANDARD.md` | Auto-heal standards |
 | `.github/workflows/stuck-wr-detector.yml` | WR stuck detection |
+| `docs/playbooks/wr-novice-playbook.md` | End-to-end WR guide for novice users |
+| `docs/playbooks/wr-manual-processes.md` | Every manual process with caveats |
+| `docs/playbooks/branch-update-guide.md` | Pros/cons of updating branches from main |
 
 ---
 
