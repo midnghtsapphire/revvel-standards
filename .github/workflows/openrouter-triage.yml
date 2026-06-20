@@ -172,6 +172,17 @@ jobs:
     if: needs.sweep-discover.outputs.count != '0'
     needs: sweep-discover
     runs-on: ubuntu-latest
+    # Per-item concurrency: match the group used by route-new so a sweep job and
+    # a simultaneous route-new job for the same item never run in parallel.
+    # route-new uses: openrouter-triage-<event_name>-<number>
+    #   issues event    → openrouter-triage-issues-<number>
+    #   pull_request_target → openrouter-triage-pull_request_target-<number>
+    concurrency:
+      group: >-
+        openrouter-triage-${{
+          matrix.event_kind == 'pull_request' && 'pull_request_target' || 'issues'
+        }}-${{ matrix.issue_number }}
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       max-parallel: 3
