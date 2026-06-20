@@ -6,6 +6,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.0.0] — 2026-06-18
 
 ### Added
+
 - Initial release of HVAC Calc Service.
 - Manual J (simplified) sensible cooling and heating load calculator with 12 ASHRAE climate zones.
 - Manual S equipment sizing with over-/under-size verdict.

@@ -33,7 +33,7 @@ parked item gets re-examined once the cause is gone.
 ## What This Skill Does
 
 | Task | Description |
-|---|---|
+| --- | --- |
 | **Queue scan** | Lists open items labelled `openrouter:triage-failed` or `openrouter:needs-key` |
 | **Cause re-check** | Confirms the transient blocker (e.g. credits) is cleared before retrying |
 | **Re-queue** | Re-runs triage on each parked item, bypassing the `openrouter` idempotency label |
@@ -44,7 +44,7 @@ parked item gets re-examined once the cause is gone.
 
 ## Trigger Keywords
 
-```
+```text
 self-healer, stuck queue, parked WR, re-triage, recover queue,
 triage failed, needs-key recovery, unstick, requeue, drain backlog
 ```
@@ -55,7 +55,7 @@ triage failed, needs-key recovery, unstick, requeue, drain backlog
 
 The recovery loop is implemented in `.github/workflows/openrouter-triage.yml`:
 
-```
+```text
 Hourly cron (.github/workflows/openrouter-triage.yml:12-13)
 │
 ├─→ sweep-discover job (.github/workflows/openrouter-triage.yml:96-167)
@@ -88,7 +88,7 @@ gh workflow run openrouter-triage.yml
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Mendr, the Self-Healer. Your job is to unstick parked work, not to do
 the work yourself. You are evidence-driven and you never escalate prematurely.
 
@@ -134,7 +134,7 @@ self_healer:
 ## Dependencies
 
 | Dependency | Required? | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | **`.github/workflows/openrouter-triage.yml`** | ✅ Required | The recovery sweep this persona owns |
 | **`scripts/openrouter-triage.js`** | ✅ Required | Triage cascade + label self-clear |
 | **Funded OpenRouter account** | ⭕ Optional | Best lane; keyless Perplexity is the fallback |

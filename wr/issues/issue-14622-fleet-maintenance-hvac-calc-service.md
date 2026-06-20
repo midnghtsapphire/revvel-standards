@@ -38,6 +38,7 @@ The `midnghtsapphire/hvac-calc-service` target repository did not exist at resea
 - SEO keywords: "HVAC load calculator" (14,800/mo), "Manual J online free" (2,400/mo), "BTU calculator house" (40,500/mo) — CPCs $3–12 _(source needed)_
 
 ### Technical Improvements Implemented
+
 - ACCA Manual J 8th Ed. simplified load calc with full breakdown (wall/ceiling/floor/window transmission, solar gain, infiltration, internal/occupant gains)
 - Manual S equipment sizing with over-size detection (>115% triggers warning per ACCA standards)
 - Manual D main-trunk duct sizing (CFM, round diameter, rectangular equivalent)
@@ -45,6 +46,7 @@ The `midnghtsapphire/hvac-calc-service` target repository did not exist at resea
 - SEER2/HSPF2 per DOE 2023 test procedure (replaces legacy SEER/HSPF)
 
 ### Security
+
 - All user inputs sanitized via `normalizeLoadInputs()` with `clamp()` guards
 - API validates `floorArea` presence and returns 400 on invalid JSON
 - No secrets, no external API calls, no user data stored
