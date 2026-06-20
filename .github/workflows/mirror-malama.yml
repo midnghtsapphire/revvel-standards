@@ -1,0 +1,65 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# MIRROR MĀLAMA ENGINE → PUBLIC REPO
+# Who: Audrey Evans (midnghtsapphire)
+# When: 2026-06-20
+# Why: Publish the AGPLv3 open-core engine (skills/malama/) so it can serve as
+#      the adoption funnel for oAudrey, without exposing the rest of the repo.
+# What: Syncs ONLY skills/malama/ to a separate public repo. No-ops until the
+#       MALAMA_MIRROR_TOKEN secret and MALAMA_MIRROR_REPO variable are set, so
+#       nothing publishes by accident.
+# ═══════════════════════════════════════════════════════════════════════════
+name: Mirror Mālama Engine
+
+on:
+  workflow_dispatch: {}        # manual trigger
+  push:
+    branches: [main]
+    paths: ["skills/malama/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check mirror is configured
+        id: gate
+        run: |
+          if [ -z "${{ secrets.MALAMA_MIRROR_TOKEN }}" ] || [ -z "${{ vars.MALAMA_MIRROR_REPO }}" ]; then
+            echo "Mirror not configured (set MALAMA_MIRROR_TOKEN secret + MALAMA_MIRROR_REPO var). Skipping."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/checkout@v4
+
+      - name: Secret scan (refuse to publish credentials)
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          if grep -rniE 'sk-[a-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|xox[baprs]-|BEGIN [A-Z ]*PRIVATE KEY' skills/malama/; then
+            echo "::error::Credential-shaped string found in skills/malama/ — aborting publish."
+            exit 1
+          fi
+          echo "No credential-shaped strings found."
+
+      - name: Push skills/malama → public repo
+        if: steps.gate.outputs.go == 'true'
+        env:
+          TOKEN: ${{ secrets.MALAMA_MIRROR_TOKEN }}
+          TARGET: ${{ vars.MALAMA_MIRROR_REPO }}   # e.g. midnghtsapphire/malama
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          cp -R skills/malama/. "$tmp"/
+          cd "$tmp"
+          git init -b main
+          git config user.name  "oAudrey Mirror Bot"
+          git config user.email "angelreporters@gmail.com"
+          git add .
+          git commit -m "Sync Mālama engine from revvel-standards@${GITHUB_SHA:0:7}"
+          git push --force "https://x-access-token:${TOKEN}@github.com/${TARGET}.git" main
+          echo "Mirrored to https://github.com/${TARGET}"

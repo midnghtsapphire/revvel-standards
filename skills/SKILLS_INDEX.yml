@@ -111,6 +111,20 @@ skills:
       - "agent operating loop"
       - "session constitution"
 
+  - name: project_router
+    title: "Project Router — Auto-Load the Right Master Docs by Project Type"
+    version: "1.0.0"
+    path: "skills/project-router/"
+    skill_file: "skills/project-router/project-router.skill.yml"
+    category: "Agent Operations"
+    access: all
+    triggers:
+      - "project router"
+      - "detect project type"
+      - "which standard"
+      - "shape router"
+      - "session start router"
+
   - name: gbrain
     title: "GBrain — Persistent Agent Memory"
     version: "1.0.0"
