@@ -1,0 +1,49 @@
+name: Agent Fingerprint Gate
+# Blocks PRs that ship agent watermarks, default starter scaffolding, unsolicited
+# README boilerplate, or CRA/Vite test placeholders. Standard:
+# standards/AGENT_SCAFFOLDING_BAN.md.
+#
+# Escape hatch: include `agent-fingerprint:allow <reason>` in the PR body.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-fingerprint-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Scan changed files for agent fingerprints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with: { fetch-depth: 0 }
+
+      - name: Check PR body for escape hatch
+        id: escape
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s' "$PR_BODY" | grep -qiE 'agent-fingerprint:allow'; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::PR body contains agent-fingerprint:allow — gate skipped."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run fingerprint scanner on changed files
+        if: steps.escape.outputs.skip != 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail   # per Copilot review: don't let git failures slip past
+          # --no-renames forces git to emit one path per change instead of
+          # rename pairs, so the scanner gets predictable input.
+          git diff --name-only --no-renames --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" \
+            | node scripts/agent-fingerprint-scan.js --changed

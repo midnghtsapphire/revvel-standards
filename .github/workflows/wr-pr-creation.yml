@@ -373,18 +373,18 @@ jobs:
       - name: Log workflow trigger
         run: |
           echo "=== WR PR Creation Debug ==="
-          echo "::notice::ISSUE_NUMBER: '${{ env.ISSUE_NUMBER }}'"
+          echo "::notice::ISSUE_NUMBER: '${ISSUE_NUMBER}'"
           echo "::notice::Event: ${{ github.event_name }}"
           echo "::notice::Action: ${{ github.event.action }}"
-          echo "::notice::Issue Title: '${{ env.ISSUE_TITLE }}'"
-          
+          echo "::notice::Issue Title: '${ISSUE_TITLE}'"
+
           # Validate ISSUE_NUMBER is not empty
-          if [ -z "${{ env.ISSUE_NUMBER }}" ]; then
+          if [ -z "${ISSUE_NUMBER}" ]; then
             echo "::error::ISSUE_NUMBER is empty! This will cause failures downstream."
             echo "::error::Failing workflow to prevent partial execution."
             exit 1
           fi
-          
+
           echo "=== Debug complete ==="
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -581,9 +581,9 @@ jobs:
 
           # Insert issue information at the top
           cat > temp_header.md <<EOF
-          # WR: ${{ env.ISSUE_TITLE }}
+          # WR: ${ISSUE_TITLE}
 
-          **Issue:** #${{ env.ISSUE_NUMBER }}  
+          **Issue:** #${ISSUE_NUMBER}  
           **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
           **Research Date:** $(date -u +%Y-%m-%d)  
           **Researcher:** Jules (Google) + OpenRouter  
