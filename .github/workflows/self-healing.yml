@@ -219,7 +219,9 @@ jobs:
             //
             // GOOD: zero-click merges for approved backlog, consistent squash.
             // RISK: merges PRs you forgot to hold — always use "won't-merge" on
-            //       PRs you are not ready to land.
+            //       PRs you are not ready to land. Only PRs where ALL CI checks
+            //       have succeeded (status=success) are touched; pending checks
+            //       are treated as not-yet-green.
             //
             // Full trade-off discussion: docs/playbooks/branch-update-guide.md
             // ---------------------------------------------------------------
@@ -299,9 +301,9 @@ jobs:
               );
 
               // A PR is "green" when:
-              //  - combined commit status is "success" or "pending" (no explicit failures), AND
+              //  - combined commit status is exactly "success" (not pending/failure), AND
               //  - no check-run is in a failed/action_required/cancelled/timed_out state.
-              const combinedOk = ['success', 'pending'].includes(statusData.state);
+              const combinedOk = statusData.state === 'success';
               const badRuns = checkRuns.filter(
                 r => r.status === 'completed' &&
                      ['failure', 'action_required', 'cancelled', 'timed_out'].includes(r.conclusion)
