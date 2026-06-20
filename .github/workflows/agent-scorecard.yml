@@ -1,0 +1,181 @@
+# Fleet Trust Scorecard — scores every agent PR for quality + hallucination,
+# updates the durable ledger/leaderboard, and emits a self-heal remediation plan
+# when a PR falls short. See docs/AGENT_SCORECARD_STANDARD.md.
+name: Agent Scorecard
+
+on:
+  # pull_request_target:[closed] removed: it scored EVERY closed PR and opened a
+  # "Self-heal: ... fell short" remediation issue for unmerged closes — so routine
+  # cleanup of junk/stub PRs spawned a fresh auto-fix issue each time (e.g. #14638).
+  # Score deliberately via workflow_dispatch instead.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to score
+        required: true
+        type: number
+      cross_model:
+        description: Run the cross-model adversarial review (needs an LLM key)
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: agent-scorecard-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: read
+  checks: read
+  issues: write
+
+jobs:
+  score:
+    name: Score agent PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Gather PR signals
+        id: signals
+        uses: actions/github-script@v9.0.0
+        env:
+          INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const prNumber = Number(process.env.INPUT_PR_NUMBER) || context.payload.pull_request.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber,
+            });
+
+            // Infer which agent produced this PR: labels first, then branch prefix.
+            const KNOWN = ['openrouter','openhands','cursor','claude','jules','copilot','perplexity'];
+            const labels = (pr.labels || []).map(l => l.name.toLowerCase());
+            let agent = KNOWN.find(a => labels.includes(a) || labels.includes(`agent:${a}`));
+            if (!agent) {
+              const head = (pr.head && pr.head.ref || '').toLowerCase();
+              agent = KNOWN.find(a => head.startsWith(`${a}/`) || head.includes(a)) || 'unknown';
+            }
+
+            // Changed files + unified diff.
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber, per_page: 100,
+            });
+            const changedFiles = files.map(f => f.filename).join('\n');
+            const newFiles = files.filter(f => f.status === 'added').map(f => f.filename).join('\n');
+            const { data: diff } = await github.rest.pulls.get({
+              owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber,
+              mediaType: { format: 'diff' },
+            });
+            fs.writeFileSync('/tmp/pr.diff', typeof diff === 'string' ? diff : '');
+            fs.writeFileSync('/tmp/pr-body.txt', pr.body || '');
+
+            // CI signals from check runs on the head sha.
+            let redRuns = 0;
+            try {
+              const runs = await github.paginate(github.rest.checks.listForRef, {
+                owner: context.repo.owner, repo: context.repo.repo, ref: pr.head.sha, per_page: 100,
+              });
+              redRuns = runs.filter(r => ['failure','timed_out','cancelled'].includes(r.conclusion)).length;
+            } catch (e) { core.warning(`check runs unavailable: ${e.message}`); }
+
+            core.setOutput('agent', agent);
+            core.setOutput('pr_title', pr.title || '');
+            core.setOutput('changed_files', changedFiles);
+            core.setOutput('new_files', newFiles);
+            core.setOutput('ci_green', redRuns === 0 ? 'true' : 'false');
+            core.setOutput('red_runs', String(redRuns));
+            core.setOutput('merged', pr.merged ? 'true' : 'false');
+            core.setOutput('pr_number', String(prNumber));
+
+      - name: Run scorecard
+        id: score
+        env:
+          AGENT: ${{ steps.signals.outputs.agent }}
+          PR_NUMBER: ${{ steps.signals.outputs.pr_number }}
+          PR_TITLE: ${{ steps.signals.outputs.pr_title }}
+          DIFF_FILE: /tmp/pr.diff
+          BODY_FILE: /tmp/pr-body.txt
+          CHANGED_FILES: ${{ steps.signals.outputs.changed_files }}
+          NEW_FILES: ${{ steps.signals.outputs.new_files }}
+          CI_GREEN: ${{ steps.signals.outputs.ci_green }}
+          RED_RUNS: ${{ steps.signals.outputs.red_runs }}
+          CROSS_MODEL: ${{ (github.event.inputs.cross_model == 'true') && '1' || '0' }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node scripts/agent-scorecard/index.js
+
+      - name: Commit ledger + leaderboard
+        if: steps.signals.outputs.merged == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wr/memory/agent-scorecard.jsonl docs/AGENT_SCORECARD.md
+          if git diff --cached --quiet; then
+            echo "No scorecard changes to commit."
+          else
+            git commit -m "chore(scorecard): score PR #${{ steps.signals.outputs.pr_number }} by ${{ steps.signals.outputs.agent }} [skip ci]"
+            for i in 1 2 3 4; do git push origin HEAD:${{ github.event.repository.default_branch }} && break || sleep $((2**i)); done
+          fi
+
+      - name: Open remediation tracking issue
+        if: steps.score.outputs.needs_remediation == 'true'
+        uses: actions/github-script@v9.0.0
+        env:
+          AGENT: ${{ steps.signals.outputs.agent }}
+          PR_NUMBER: ${{ steps.signals.outputs.pr_number }}
+          TIER: ${{ steps.score.outputs.remediation_tier }}
+          TRUST: ${{ steps.score.outputs.trust }}
+          HALLU: ${{ steps.score.outputs.hallucinations }}
+        with:
+          script: |
+            const fs = require('fs');
+            let plan = {};
+            try { plan = JSON.parse(fs.readFileSync('wr/memory/last-remediation-plan.json','utf8')); } catch {}
+            const marker = `<!-- scorecard-remediation:${process.env.PR_NUMBER} -->`;
+            const body = [
+              marker,
+              `## Self-heal remediation — PR #${process.env.PR_NUMBER} (agent: \`${process.env.AGENT}\`)`,
+              '',
+              `**Tier:** \`${process.env.TIER}\` · **Trust now:** ${process.env.TRUST} · **Hallucinations:** ${process.env.HALLU}`,
+              '',
+              '### What to fix',
+              ...(plan.problems || []).map(p => `- ${p}`),
+              '',
+              '### Corrective prompt for the re-run',
+              '```',
+              plan.correctivePrompt || '(none)',
+              '```',
+              plan.handoffTo ? `\n**Handoff target:** \`${plan.handoffTo}\`` : '',
+              plan.escalateModel ? `\n**Escalate to:** \`${plan.escalateModel}\`` : '',
+              '',
+              '_Apply the fix, then this PR/issue is re-scored on the next run. Recovery is tracked in the scorecard ledger._',
+            ].join('\n');
+
+            // De-dupe: update an existing remediation issue for this PR if present.
+            const found = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} in:body "${marker}" type:issue state:open`,
+            });
+            if (found.data.total_count > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: found.data.items[0].number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: `Self-heal: PR #${process.env.PR_NUMBER} fell short (${process.env.TIER})`,
+                body, labels: ['auto-fix', 'ralph-loop', 'scorecard'],
+              });
+            }

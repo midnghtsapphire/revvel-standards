@@ -1,6 +1,8 @@
 # Revvel PromptForge
 
-Static Next.js app that turns rough WR/product ideas into source-backed prompt packets with market facts, competitor gaps, blue/red-ocean scoring, legal OSINT boundaries, implementation prompts, and reviewer prompts.
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/prompt-generation-app/)**
 
 ## Mission Alignment
 

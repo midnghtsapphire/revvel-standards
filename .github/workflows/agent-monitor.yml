@@ -12,6 +12,9 @@ on:
   # Can also be triggered manually
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   CHECK_INTERVAL_MINUTES: 15
 
@@ -25,6 +28,8 @@ jobs:
     steps:
       - name: Check OpenRouter agent
         id: openrouter
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Test if OpenRouter is accessible
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://openrouter.ai/api/v1/models" \
@@ -95,13 +100,20 @@ jobs:
     if: needs.check-agent-health.outputs.agents_status == 'unhealthy'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    env:
+      # Prefer the ADMIN PAT secret (falls back to the built-in token) so the
+      # WR it files can trigger downstream automation.
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
     steps:
       - name: Check for existing WR
         id: existing
         run: |
           # Search for recent unhandled agent failure WR
-          EXISTING=$(gh rep search issues --repo ${{ github.repository }} \
-            --state open --json number \
+          EXISTING=$(gh search issues --repo ${{ github.repository }} \
+            --state open --json number,title \
             -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null | head -1 || echo "")
           
           if [[ -n "$EXISTING" ]]; then

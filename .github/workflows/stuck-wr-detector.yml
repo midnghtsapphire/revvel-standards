@@ -1,7 +1,31 @@
 name: Stuck WR Detector & Auto-Healer
 on:
-  schedule:
-    - cron: "*/30 * * * *"
+  # ── PREVIOUS APPROACH (kept for the record, intentionally not removed) ──────
+  # Originally this healer relied ONLY on the cron sweep below. That routine was
+  # added back when OpenRouter was live and many agents worked in PARALLEL on
+  # the same WRs at once — label churn and racing runs meant a WR could get its
+  # PR-creation run cancelled/skipped, so a periodic sweep was the safety net
+  # that caught those errors. It worked, but it leaned on two fragile things:
+  #   1. label *timing* — a WR is only "ready" once research:complete lands, and
+  #      the event that set it could race the sweep; and
+  #   2. GitHub's schedule — which is throttled under load (observed ~50–70 min
+  #      between */30 runs), so a just-completed WR could sit ~1h with no PR
+  #      (this is exactly what stranded WR #14545).
+  #
+  # ── NEW APPROACH (why it's better) ─────────────────────────────────────────
+  # We still keep the cron as a backstop, but we no longer DEPEND on it for
+  # timeliness, and we no longer depend on label-churn events for timing. The
+  # `workflow_run` trigger fires the sweep the moment research actually
+  # completes, so a ready WR with no PR is healed within minutes regardless of
+  # how badly GitHub is throttling cron. Labels (research:complete/wr:complete)
+  # are still used — but only as a *completion signal* (a state marker), never
+  # as the timing mechanism. That's the "don't rely on labels" point: relying on
+  # a label to EXIST is fine; relying on label-event timing + a throttled cron
+  # is what burned us.
+  # Auto-triggers (schedule cron + workflow_run) are intentionally disabled:
+  # the */30 sweep and Research-Engine-completion retriggers caused retrigger
+  # storms that escalated stuck WRs into [AUTO-ERROR] issues (e.g. #14592,
+  # #14599). The detector is now manual-only — run it deliberately when needed.
   workflow_dispatch:
     inputs:
       max_age_hours:
@@ -40,6 +64,7 @@ jobs:
             const {
               findAssociatedPr,
               getIssueBaseTitle,
+              DEFAULT_MIN_STUCK_AGE_MS,
             } = require(path.join(process.env.GITHUB_WORKSPACE, 'scripts', 'stuck-wr-detector.js'));
 
             const owner = context.repo.owner;
@@ -47,7 +72,15 @@ jobs:
             const maxAgeMs = parseInt(process.env.MAX_AGE_HOURS, 10) * 3600 * 1000;
             const dryRun = process.env.DRY_RUN === 'true';
             const cutoff = Date.now() - maxAgeMs;
-            const minStuckAgeMs = 15 * 60 * 1000;  // 15 minutes
+            // PREVIOUS: const minStuckAgeMs = 15 * 60 * 1000;  // 15 minutes
+            // The 15-min grace made sense when the cron was the only sweeper —
+            // give the parallel-agent path time to win before re-triggering.
+            // But combined with throttled cron it left a ~1h dead zone (#14545).
+            // Now that `workflow_run` sweeps right after research completes, a
+            // 5-min grace is plenty of headroom for the normal path to win the
+            // race first, and the dead zone is gone. Threshold is a shared SSOT
+            // in scripts/stuck-wr-detector.js so the script and workflow agree.
+            const minStuckAgeMs = DEFAULT_MIN_STUCK_AGE_MS;  // 5 min
 
             core.info(`Scanning open work-request issues younger than ${process.env.MAX_AGE_HOURS}h.`);
             core.info(`Dry-run mode: ${dryRun}`);
@@ -63,6 +96,18 @@ jobs:
             const stuck = [];
             for (const issue of issues) {
               if (issue.pull_request) continue;  // already a PR, not an issue
+              const labelNames = new Set((issue.labels || []).map(l => typeof l === 'string' ? l : l.name));
+              if (labelNames.has('duplicate')) {
+                core.info(`#${issue.number}: duplicate issue; skipping stuck-WR retries.`);
+                continue;
+              }
+              const readyForWrPr =
+                labelNames.has('wr:complete') ||
+                labelNames.has('research:complete');
+              if (!readyForWrPr) {
+                core.info(`#${issue.number}: WR not ready for PR creation (missing wr:complete/research:complete).`);
+                continue;
+              }
               const ageMs = Date.now() - new Date(issue.created_at).getTime();
               if (ageMs < minStuckAgeMs) continue;     // give it time to run normally
               if (ageMs > maxAgeMs) continue;          // ignore ancient WRs

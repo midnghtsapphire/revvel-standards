@@ -176,6 +176,24 @@ test('openrouter-triage.yml listens for issue-open triage', () => {
   }
 });
 
+test('pdf-work-request-router.yml keeps issue/workflow_dispatch triggers under on', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pdf-work-request-router.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const on = doc.on || {};
+  const issueTypes = Array.isArray(on.issues?.types) ? on.issues.types : [];
+  const permissions = doc.permissions || {};
+
+  if (!issueTypes.includes('opened') || !issueTypes.includes('edited') || !issueTypes.includes('labeled')) {
+    throw new Error('pdf-work-request-router.yml must listen for opened/edited/labeled issue events');
+  }
+  if (!on.workflow_dispatch || !on.workflow_dispatch.inputs?.issue_number) {
+    throw new Error('pdf-work-request-router.yml must expose workflow_dispatch issue_number input');
+  }
+  if ('issues' in permissions || 'workflow_dispatch' in permissions) {
+    throw new Error('pdf-work-request-router.yml must not nest trigger config under permissions');
+  }
+});
+
 test('agent-fallback.yml is triggered by routed repair issues', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-fallback.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -221,6 +239,37 @@ test('stuck-label-watchdog.yml routes conflicts to agent repair issues', () => {
   }
 });
 
+test('stuck-label-watchdog.yml clears lifecycle:stuck once a PR recovers', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  if (!/removeLabel\([^)]*name:\s*'lifecycle:stuck'/.test(script)) {
+    throw new Error('watchdog must remove lifecycle:stuck so PRs do not stay stuck permanently');
+  }
+  if (!script.includes('stillStuck')) {
+    throw new Error('watchdog must only clear lifecycle:stuck when no stuck condition remains');
+  }
+});
+
+test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  if (doc.permissions?.issues !== 'write') {
+    throw new Error('stuck-check-watchdog must have issues: write to remove lifecycle:stuck');
+  }
+
+  const job = doc.jobs['find-stuck-issues'];
+  const script = job.steps.map(s => s.with?.script || '').join('\n');
+  if (!script.includes("name: 'lifecycle:stuck'") || !script.includes('removeLabel')) {
+    throw new Error('stuck-check-watchdog must remove lifecycle:stuck once an issue recovers');
+  }
+  if (!script.includes('RESOLVED_ACTIONS')) {
+    throw new Error('stuck-check-watchdog must only clear lifecycle:stuck for resolved diagnoses');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -235,33 +284,27 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   }
 });
 
-test('agent-audit-logger.yml retries non-fast-forward push before summary fallback', () => {
+test('agent-audit-logger.yml persists audit entries without committing to main', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
-  const commitStep = doc.jobs['log-agent-action'].steps.find(
-    (step) => step.name === 'Commit audit log'
-  );
+  const steps = doc.jobs['log-agent-action'].steps;
 
-  if (!commitStep) throw new Error('Commit audit log step not found');
+  // The old commit-and-push-to-main step was the source of push contention
+  // and a flood of "chore: log agent action" commits. It must be gone.
+  const hasGitPush = steps.some((step) => (step.run || '').includes('git push'));
+  if (hasGitPush) {
+    throw new Error('log-agent-action must not push the audit log to main');
+  }
 
-  const script = commitStep.run || '';
-  if (!script.includes('for attempt in 1 2 3')) {
-    throw new Error('Commit step must retry git push attempts');
+  const persistStep = steps.find((step) => step.name === 'Persist audit entry');
+  if (!persistStep) throw new Error('Persist audit entry step not found');
+  if (!(persistStep.run || '').includes('GITHUB_STEP_SUMMARY')) {
+    throw new Error('Persist step must write the entry to the job summary');
   }
-  if (!script.includes('fetch first|non-fast-forward')) {
-    throw new Error('Commit step must detect non-fast-forward push errors');
-  }
-  if (!script.includes('git pull --rebase origin main')) {
-    throw new Error('Commit step must rebase before retrying push');
-  }
-  if (!script.includes('Rebase failed; audit log push aborted.')) {
-    throw new Error('Commit step must log rebase failure details');
-  }
-  if (!script.includes('Push failed with non-rebaseable error; audit log push aborted.')) {
-    throw new Error('Commit step must log non-rebaseable push failures');
-  }
-  if (!script.includes('exit 0')) {
-    throw new Error('Commit step must exit cleanly when push remains blocked');
+
+  const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
+  if (!uploadStep || !String(uploadStep.uses || '').startsWith('actions/upload-artifact')) {
+    throw new Error('Audit entry must be retained via upload-artifact');
   }
 });
 
@@ -384,6 +427,24 @@ test('stuck-wr-detector.yml routes exhausted WR retries to agent fallback and Op
   }
 });
 
+test('stuck-wr-detector.yml only retries WRs that are PR-ready and not duplicates', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-wr-detector.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const healStep = doc.jobs.scan.steps.find((step) => step.name === 'Detect stuck WRs and heal');
+
+  if (!healStep) {
+    throw new Error('Detect stuck WRs and heal step not found');
+  }
+
+  const script = healStep.with?.script || '';
+  if (!script.includes("labelNames.has('duplicate')")) {
+    throw new Error('stuck detector must skip duplicate issues before retriggering');
+  }
+  if (!script.includes("labelNames.has('wr:complete')") || !script.includes("labelNames.has('research:complete')")) {
+    throw new Error('stuck detector must require wr:complete or research:complete before retriggering');
+  }
+});
+
 test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'research-engine.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
@@ -393,11 +454,20 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
   const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
 
-  if (!Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
-    throw new Error('research-engine.yml must support issue_comment triggers');
+  // Loop-prevention (WR retrigger storms on #14572/#14579): research-engine must
+  // NOT auto-run on issue_comment or issues:labeled churn — sibling automation
+  // fires those constantly, which re-ran the orchestrator on a loop. It runs on a
+  // new issue (opened/reopened) or deliberate workflow_dispatch only.
+  void issueCommentTypes;
+  const issuesTypes = on.issues?.types || [];
+  if (Object.prototype.hasOwnProperty.call(on, 'issue_comment')) {
+    throw new Error('research-engine.yml must NOT auto-trigger on issue_comment (loop risk)');
   }
-  if (!issueCommentTypes.includes('created') || !issueCommentTypes.includes('edited')) {
-    throw new Error('research-engine.yml issue_comment trigger must include created and edited');
+  if (issuesTypes.includes('labeled')) {
+    throw new Error('research-engine.yml must NOT auto-trigger on issues:labeled (loop risk)');
+  }
+  if (!issuesTypes.includes('opened') || !Object.prototype.hasOwnProperty.call(on, 'workflow_dispatch')) {
+    throw new Error('research-engine.yml must run on issues:opened + workflow_dispatch');
   }
   if (!routeScript.includes('isPullRequestComment')) {
     throw new Error('Research engine route must detect pull request comments');
@@ -483,6 +553,27 @@ test('morty-post-mortems.yml stays automated with required write scopes', () => 
   }
   if (permissions['pull-requests'] !== 'write') {
     throw new Error('morty-post-mortems.yml must grant pull-requests: write for PR comment/update operations');
+  }
+});
+
+test('secret-persistence-guard.yml auto-recover supports force_recovery manual dispatch', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'secret-persistence-guard.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const ifCondition = String(doc.jobs?.['auto-recover']?.if || '');
+  const normalizedCondition = ifCondition.replace(/\s+/g, ' ').trim();
+
+  if (!normalizedCondition.includes("needs.monitor-secret-health.outputs.has_missing == 'true'")) {
+    throw new Error('auto-recover must still run when missing secrets are detected');
+  }
+  if (!normalizedCondition.includes('inputs.force_recovery')) {
+    throw new Error('auto-recover must allow workflow_dispatch force_recovery overrides');
+  }
+  if (!normalizedCondition.includes("github.event_name == 'workflow_dispatch'")) {
+    throw new Error('force_recovery override must be limited to workflow_dispatch runs');
+  }
+  const expectedOrPattern = /^needs\.monitor-secret-health\.outputs\.has_missing == 'true' \|\| \(github\.event_name == 'workflow_dispatch' && inputs\.force_recovery\)$/;
+  if (!expectedOrPattern.test(normalizedCondition)) {
+    throw new Error('auto-recover condition must preserve OR logic between missing-secrets and force_recovery paths');
   }
 });
 

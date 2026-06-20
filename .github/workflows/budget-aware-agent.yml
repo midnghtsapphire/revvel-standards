@@ -16,9 +16,11 @@ on:
       budget_priority:
         description: "high|medium|low - affects agent selection"
         default: "medium"
-  # Also run on issue label
   issues:
     types: [labeled]
+
+permissions:
+  contents: read
 
 env:
   # Budget tracking - set these in repo secrets/vars
@@ -30,7 +32,7 @@ jobs:
   # PHASE 1: Check budget and select agents
   assess-budget:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     outputs:
       budget_status: ${{ steps.budget.outputs.status }}
       selected_agent: ${{ steps.routing.outputs.agent }}
@@ -136,7 +138,7 @@ jobs:
     needs: execute-task
     if: failure()
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Try next cheapest agent
         run: |

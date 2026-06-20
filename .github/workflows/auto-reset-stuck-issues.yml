@@ -1,0 +1,147 @@
+name: 🔄 Auto-Reset Stuck Issues
+
+description: >
+  Cron job that detects stuck self-heal issues and auto-resets them.
+  Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:  # Manual trigger
+
+permissions:
+  issues: write
+  actions: write
+
+jobs:
+  find-and-reset-stuck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Find stuck self-heal issues
+        id: find-stuck
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const OWNER = context.repo.owner;
+            const REPO = context.repo.repo;
+            
+            // Find issues with triage:new label that are older than 1 hour
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+            
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: OWNER,
+              repo: REPO,
+              state: 'open',
+              labels: 'triage:new',
+              since: oneHourAgo,
+              per_page: 100,
+            });
+            
+            // Filter for self-heal related issues
+            const selfHealLabels = ['auto-fix', 'ralph-loop', 'wr-stuck', 'auto-error'];
+            const stuckIssues = issues.filter(issue => {
+              const labelNames = issue.labels.map(l => l.name);
+              const isSelfHeal = labelNames.some(l => selfHealLabels.includes(l));
+              const createdAt = new Date(issue.created_at);
+              const isOldEnough = createdAt < new Date(Date.now() - 60 * 60 * 1000);
+              return isSelfHeal && isOldEnough;
+            });
+            
+            console.log(`Found ${stuckIssues.length} stuck self-heal issues`);
+            core.setOutput('count', String(stuckIssues.length));
+            core.setOutput('issues', JSON.stringify(stuckIssues.map(i => i.number)));
+
+      - name: Reset stuck issues
+        if: steps.find-stuck.outputs.count != '0'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const OWNER = context.repo.owner;
+            const REPO = context.repo.repo;
+            const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
+            
+            const issueNumbers = JSON.parse('${{ steps.find-stuck.outputs.issues }}');
+            
+            for (const issueNumber of issueNumbers) {
+              console.log(`Processing issue #${issueNumber}...`);
+              
+              // Get current labels
+              const { data: issue } = await github.rest.issues.get({
+                owner: OWNER,
+                repo: REPO,
+                issue_number: issueNumber,
+              });
+              
+              const currentLabels = issue.labels.map(l => l.name);
+              
+              // Remove self-heal labels
+              for (const label of SELF_HEAL_LABELS) {
+                if (currentLabels.includes(label)) {
+                  try {
+                    await github.rest.issues.removeLabel({
+                      owner: OWNER,
+                      repo: REPO,
+                      issue_number: issueNumber,
+                      name: label,
+                    });
+                    console.log(`  Removed: ${label}`);
+                  } catch (e) {
+                    if (e.status !== 404) console.log(`  Error removing ${label}: ${e.message}`);
+                  }
+                }
+              }
+              
+              // Re-add labels after a brief pause
+              await new Promise(r => setTimeout(r, 500));
+              
+              await github.rest.issues.addLabels({
+                owner: OWNER,
+                repo: REPO,
+                issue_number: issueNumber,
+                labels: SELF_HEAL_LABELS,
+              });
+              console.log(`  Re-added: ${SELF_HEAL_LABELS.join(', ')}`);
+              
+              // Post reset comment
+              const resetComment = [
+                '## 🔄 Auto-Reset by Stale Issue Sweep',
+                '',
+                `This issue was automatically reset (stuck in \`triage:new\` for >1 hour).`,
+                '',
+                '**Actions taken:**',
+                `- Removed self-heal labels: \`${SELF_HEAL_LABELS.join('`, `')}\``,
+                `- Re-added self-heal labels`,
+                `- Triggered OpenRouter assignee workflow`,
+                '',
+                '_Auto-reset by `auto-reset-stuck-issues.yml` workflow — ' + new Date().toISOString() + '_',
+              ].join('\n');
+              
+              await github.rest.issues.createComment({
+                owner: OWNER,
+                repo: REPO,
+                issue_number: issueNumber,
+                body: resetComment,
+              });
+              console.log(`  Posted reset comment`);
+              
+              // Small delay between issues
+              await new Promise(r => setTimeout(r, 1000));
+            }
+            
+            console.log(`\n✅ Reset ${issueNumbers.length} stuck issues`);
+
+      - name: Summary
+        if: steps.find-stuck.outputs.count == '0'
+        run: |
+          echo "No stuck issues found. System looks healthy! ✅"
+
+      - name: Summary
+        if: steps.find-stuck.outputs.count != '0'
+        run: |
+          echo "=========================================="
+          echo "✅ Auto-Reset Complete"
+          echo "=========================================="
+          echo ""
+          echo "Reset ${{ steps.find-stuck.outputs.count }} stuck issue(s)"
+          echo "Issues: ${{ steps.find-stuck.outputs.issues }}"

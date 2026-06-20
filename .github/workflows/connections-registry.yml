@@ -1,0 +1,51 @@
+# Regenerates the connections views from the SSOT (config/connections.yml) so the
+# registry doc, README block, and HTML dashboard can never go stale. Also fails on
+# drift when run in strict mode. See docs/CONNECTIONS_REGISTRY_STANDARD.md.
+name: Connections Registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - config/connections.yml
+      - scripts/connections-registry.js
+  pull_request:
+    paths:
+      - config/connections.yml
+      - .env.example
+      - scripts/connections-registry.js
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Drift check (warn on PRs)
+        run: node scripts/connections-registry.js --drift
+      - name: Regenerate views
+        run: node scripts/connections-registry.js --markdown --html
+      - name: Commit refreshed views (main only)
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/CONNECTIONS_REGISTRY.md connections-dashboard.html README.md
+          if git diff --cached --quiet; then
+            echo "Registry views already fresh."
+          else
+            git commit -m "chore(connections): regenerate registry views [skip ci]"
+            for i in 1 2 3 4; do git push && break || sleep $((2**i)); done
+          fi

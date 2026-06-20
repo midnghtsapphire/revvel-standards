@@ -19,6 +19,10 @@ on:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: research-module-${{ github.run_id }}
   cancel-in-progress: false

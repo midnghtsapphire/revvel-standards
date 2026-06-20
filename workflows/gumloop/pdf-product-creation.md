@@ -470,3 +470,32 @@ For better tracking, add an Airtable node after Step 8:
   - Campaign Ready: Yes
 
 This gives you a centralized dashboard to track all products created by the automation.
+
+---
+
+## Executable Implementation (in-repo, WR #14451)
+
+The no-code Gumloop flow above has a runnable, in-repo equivalent so the same
+pipeline can run in CI without the Gumloop platform:
+
+- **Script:** [`scripts/gumloop_pdf_pipeline.py`](../../scripts/gumloop_pdf_pipeline.py)
+  — Research → AI title → AI content → PDF (reportlab) → product/campaign
+  manifest. Uses `OPENROUTER_API_KEY` for the AI steps (mirrors
+  `scripts/openrouter-routing.js`) and falls back to deterministic copy when no
+  key is set, so it always produces an artifact.
+- **Workflow:** [`.github/workflows/gumloop-pdf-pipeline.yml`](../../.github/workflows/gumloop-pdf-pipeline.yml)
+  — `workflow_dispatch` with `niche` / `keywords` / `output_name` inputs;
+  uploads the `.pdf` and `.manifest.json` as run artifacts.
+
+Run locally:
+
+```bash
+python scripts/gumloop_pdf_pipeline.py --niche "ADHD productivity" \
+  --keywords "focus,planner,dopamine" --out artifacts/pdf
+```
+
+The emitted `*.manifest.json` carries the product price/description plus
+declarative `channels` (Gumroad/Canva/Shopify) and `campaign` metadata, so it
+can drive the same downstream nodes the Gumloop flow targets — i.e. it wires
+into the existing PDF product processes (`standards/shapes/PDF.md`,
+`standards/AUTOMATED_PRODUCT_PIPELINE.md`) rather than replacing them.

@@ -6,6 +6,7 @@ const path = require('node:path');
 const {
   generatePromptPacket,
   packetToMarkdown,
+  clampScore,
 } = require(path.join(__dirname, '..', 'products', 'prompt-generation-app', 'lib', 'prompt-generator.js'));
 
 function run(name, fn) {
@@ -99,4 +100,31 @@ run('does not add music-link prompts for non-music social requests', () => {
   const joined = nonMusicPacket.implementationPrompts.join('\n');
   assert.equal(nonMusicPacket.implementationPrompts.length, baseline.implementationPrompts.length);
   assert.ok(!joined.includes('cannot contain clickable hyperlinks'));
+});
+
+run('red-ocean scoring baseline, incremental keyword match, and case-insensitivity', () => {
+  // Base score without any red-ocean keywords
+  const basePacket = generatePromptPacket({ idea: 'A simple utility for organizing files' });
+  assert.equal(basePacket.scores.redOcean, 30);
+
+  // Single keyword match (+10)
+  const singleMatch = generatePromptPacket({ idea: 'A generic utility for organizing files' });
+  assert.equal(singleMatch.scores.redOcean, 40);
+
+  // Two keywords match (+20)
+  const doubleMatch = generatePromptPacket({ idea: 'A generic CRM utility for organizing files' });
+  assert.equal(doubleMatch.scores.redOcean, 50);
+
+  // Case-insensitive match (+10)
+  const caseMatch = generatePromptPacket({ idea: 'A gEnErIc utility for organizing files' });
+  assert.equal(caseMatch.scores.redOcean, 40);
+});
+
+run('red-ocean scoring exact-100 and over-100 clamping', () => {
+  // All 7 keywords match: 30 + (7 * 10) = 100
+  const allKeywords = generatePromptPacket({ idea: 'social chat todo note crm generic crypto utility' });
+  assert.equal(allKeywords.scores.redOcean, 100);
+
+  // clampScore correctly clamps values above 100
+  assert.equal(clampScore(105), 100);
 });

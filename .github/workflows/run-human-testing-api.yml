@@ -28,6 +28,10 @@ on:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: human-testing-api-${{ github.run_id }}
   cancel-in-progress: false

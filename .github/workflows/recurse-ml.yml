@@ -1,5 +1,11 @@
 name: RecurseML — Autonomous Code Review
 on:
+  # RecurseML reviews PRs (its primary job) as well as pushes to protected
+  # branches. The pull_request trigger was missing here, so the step that
+  # builds a PR-scoped diff (github.event_name == "pull_request") never ran on
+  # PRs — restored to match templates/cicd/recurse-ml.yml.
+  pull_request:
+    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
@@ -11,6 +17,9 @@ on:
         description: Branch or SHA to scan
         required: false
         default: main
+
+permissions:
+  contents: read
 concurrency:
   group: recurse-ml-${{ github.ref }}
   cancel-in-progress: true
@@ -126,5 +135,42 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_For full findings, visit the [RecurseML Dashboard](https://app.recurse.ml)._" >> $GITHUB_STEP_SUMMARY
     timeout-minutes: 30
+
+  # Backup reviewer: if the primary RecurseML scan fails (API error, outage,
+  # missing/invalid key), fall back to an OpenRouter multi-model review so the
+  # change still gets an autonomous review instead of going unreviewed.
+  openrouter-fallback:
+    name: OpenRouter Backup Review (RecurseML failed)
+    needs: recurse-ml-review
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: OpenRouter backup code review
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          echo "RecurseML failed — running OpenRouter backup review."
+
+          # Resolve a base ref to diff against (push: event.before; otherwise HEAD~1).
+          BASE="${{ github.event.before }}"
+          if [ -z "$BASE" ] || ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="$(git rev-parse HEAD~1 2>/dev/null || echo "")"
+          fi
+
+          if [ -n "$BASE" ]; then
+            git diff "$BASE" "${{ github.sha }}" > /tmp/review-diff.txt 2>/dev/null || true
+          else
+            git show "${{ github.sha }}" > /tmp/review-diff.txt 2>/dev/null || true
+          fi
+
+          node scripts/openrouter-backup-review.js /tmp/review-diff.txt
+    timeout-minutes: 15
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -214,6 +214,18 @@ labels:
     color: "ff6b35"
     description: "Managed by the Ralph Loop self-healing workflow"
 
+  - name: scorecard
+    color: "ff6b35"
+    description: "Agent scorecard self-heal / trust tracking"
+
+  - name: self-heal
+    color: "ff6b35"
+    description: "Self-heal remediation in progress (reset + rerun)"
+
+  - name: hallucination
+    color: "d73a4a"
+    description: "Agent referenced something that doesn't exist"
+
   - name: openrouter
     color: "6f42c1"
     description: "Routed to the OpenRouter orchestrator (first line of sight)"
@@ -780,3 +792,8 @@ labels:
   - name: "deliver:marketplace"
     color: "e4e669"
     description: "Draft app store listing (human review required)"
+
+  # ── Operations / Subscriptions ────────────────────────────────────────────────
+  - name: "subscriptions"
+    color: "0e8a16"
+    description: "Third-party subscription / trial tracking"

@@ -1,0 +1,49 @@
+name: LLM Router
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: Test prompt
+        required: true
+        type: string
+  workflow_call:
+
+jobs:
+  route:
+    name: Route LLM Call
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check OpenRouter credits
+        id: check_credits
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"google/gemma-2-27b-it:free","messages":[{"role":"user","content":"hi"}],"max_tokens":5}')
+          if echo "$RESPONSE" | jq -e '.error' > /dev/null 2>&1; then
+            echo "status=exhausted" >> $GITHUB_OUTPUT
+          else
+            echo "status=available" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Try OpenRouter
+        if: steps.check_credits.outputs.status == 'available'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          echo "Using OpenRouter free model"
+          RESULT=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"google/gemma-4-31b-it:free","messages":[{"role":"user","content":"test"}],"max_tokens":100}')
+          echo "$RESULT" | jq -r '.choices[0].message.content // "failed"'
+
+      - name: Use Perplexity No-Key
+        if: steps.check_credits.outputs.status != 'available'
+        run: |
+          echo "OpenRouter exhausted, using Perplexity No-Key"
+          pip3 install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
+          python3 -c "from perplexity import LabsClient; import asyncio; asyncio.run(LabsClient().search(query='test', mode='auto'))"

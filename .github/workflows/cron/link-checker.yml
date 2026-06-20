@@ -26,8 +26,7 @@ jobs:
           for url in $LINKS; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
             if [ "$status" != "200" ]; then
-              WARNINGS="$WARNINGS
-- $url: HTTP $status"
+              WARNINGS="${WARNINGS}"$'\n'"- $url: HTTP $status"
             fi
           done
           

@@ -309,6 +309,109 @@ When a task is complex:
 - **Synthesize results** — combine outputs into cohesive whole
 - **Verify quality** — ensure all pieces work together
 
+### Agent Fleet Architecture — how the 400+ agents are composed
+
+The fleet is **400+ agents, but they are NOT 400 massive pre-canned agent
+definitions.** Do not build or expect a giant static roster of hardcoded
+agents. The count is reached by **dynamic composition** at run time:
+
+- **Sub-agents** — spawned per task to handle independent subtasks, then retired.
+- **On-demand agents** — created when a task needs one and torn down after;
+  never persisted as a permanent canned agent.
+- **OpenRouter routing across 3 LLMs** — model selection (not 400 separate
+  brains) is what gives each agent its capability; route via
+  `scripts/openrouter-routing.js` / the `openrouter-swarms` skill.
+- **~300 swarms** — parallel micro-agent groups for large fan-out work. Keep
+  each swarm small (≤10 agents without explicit approval, per
+  `skills/openrouter-swarms/SKILL.md`); scale by spawning more swarms, not by
+  inflating a single one.
+
+**Rule of thumb:** reach for the lightest topology that works — single agent →
+sub-agents → MAS → swarm — and compose on demand. A new permanent "canned"
+agent is the exception, not the default; prefer a sub-agent, an on-demand
+agent, or a swarm. See `skills/openrouter-swarms/SKILL.md` for the topology
+decision tree and spawn protocol.
+
+### Use every available agent — for every kind of artifact or asset
+
+Do not hand-build what an agent or agent-team can produce. For **every** kind
+of artifact or asset — code, PDF, video, image, slide deck, audio/music, docs,
+data, MCP / CLI / API — reach for the most capable agent or tool available and
+let it do the work. Match the agent to the asset, and stack them:
+
+- **Roo (Roo Code) — free, and a whole team.** It ships a full set of modes
+  (Architect, Code, Debug, Orchestrator, Ask + custom modes). Because it is
+  **free**, use it liberally — especially for coding, testing, and multi-step
+  orchestration. Roo already owns the Testing lane in the reviewer roster.
+- **GitHub Agent Factory — wired in.** Use it to spin up agents on demand:
+  `agent-factory/` (commands, hooks, plugins, settings), the Copilot coding
+  agent (`.github/workflows/copilot-setup-steps.yml`), and `swe-agent.yml`.
+  See `docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`.
+- **Jules (Google) — best at orchestration & PR rewrites.** Hand Jules the
+  refine/rewrite-the-PR job: it restructures and refines the WR doc and the PR
+  itself, and orchestrates the work. Wired via `jules-invoke.yml`,
+  `jules-coding-agent.yml`, and the review/feedback lane
+  (`jules-pr-reviewer.yml`, `jules-feedback.yml`, `jules-pr-comment.yml`).
+  Route PR rewriting/refinement and multi-step orchestration to Jules by default.
+- **OpenRouter swarms / sub-agents / on-demand agents** (above) for fan-out and
+  model routing across the 3 LLMs.
+- **Specialist skills** in the vault (`skills/REGISTRY.md`) — e.g.
+  `ui-creation-engine`, `content-automation`, video/music publishing — pick the
+  one that already does the asset type instead of reinventing it.
+- **Octopus Review — best-in-class code review.** Codebase-aware AI review;
+  findings auto-route to the coder via `octopus-route.yml` (with Bito,
+  OpenRouter, and CodeRabbit alongside). Treat Octopus as the default reviewer
+  on every PR, not just research.
+
+**Rule:** if a free or wired-in agent/team can make the asset, route it there
+first; only build by hand when no agent covers it. Cost-rank: free (Roo,
+no-key OpenRouter lanes) → wired-in (Agent Factory / Copilot) → paid.
+
+### Research Fleet — the most important phase, best-in-class
+
+**Research is the highest-priority phase of every WR.** Depth wins over speed:
+invest the best agents and tools here, and never truncate or rush research to
+save time or tokens. This is the one place where **paid APIs are justified**
+(unlike the build phase, which prefers FOSS/free).
+
+**Composition — run the best research team available:**
+
+- **Paid research APIs where they win** — Perplexity `sonar-pro` (the
+  *Professor / citer* persona) for sourced, citation-backed facts;
+  `.github/workflows/perplexity-research-agent.yml`.
+- **OpenRouter across the 3 LLMs** for synthesis, cross-validation, and
+  competing takes on the same question.
+- **openclaw skills** — `skills/openclaw-eeat` (E-E-A-T validation) and
+  `skills/openclaw-self-eval` to grade the research before it ships.
+- **Sub-agents + the 4 on-demand agents + swarms** spread across the research
+  lanes: `research:marketing`, `research:seo`, `research:competitors`,
+  `research:chatter`, `research:facts`, `research:technical`,
+  `research:revenue`, `research:reviewer`. Engines: `research-engine.yml`,
+  `weekly-research.yml`, `research-module.yml`.
+
+**Time & PR policy:** research may legitimately run for **hours**, and a single
+WR's research may **fan out into multiple PRs on the same WR** — that is
+encouraged, not a problem. Break it up by lane/surface rather than shipping
+shallow findings. (Depth-over-speed applies to research; the *build* still
+ships in one iteration — see below.)
+
+**Then review the results.** Research output is **code-reviewed before any
+implementation** — **Octopus Review** (best-in-class, codebase-aware; findings
+auto-route to the coder via `octopus-route.yml`), Bito, OpenRouter, and
+CodeRabbit per the *Research Engine Review Request* flow — checking factual
+validation, gaps, fabricated references, and implementation risk. No
+implementation starts on unreviewed research.
+
+### Build Methodology — one iteration, multiple PRs (every project, every size)
+
+**This applies to big builds too.** Every project — no matter how large — ships
+in a **single iteration** (no "Phase 1 / MVP-first / 30-day"; see
+`docs/DEFINITION_OF_DONE.md`). When the work spans multiple surfaces
+(app / cli / api / pdf / mcp / docs), **fan out into multiple PRs** — one per
+surface — rather than one monster PR or a partial patch. The bundle defined by
+the WR is the deliverable; do not silently defer parts of it. A large build is
+still one iteration: many parallel agents/swarms, many PRs, one shipped outcome.
+
 ### The Bottom Line
 
 **You do not wait. You do not escalate. You do not accept "I don't know" as an answer.**

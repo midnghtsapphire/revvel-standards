@@ -2,6 +2,11 @@
 
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
+> **Visiting / transient agent?** (OpenHands, Cursor Cloud, Lovable, Replit, a one-off
+> API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
+> short guest contract: where you may write, where setup/API info lives, and how not to
+> scaffold over the repo.
+
 ## PRIME DIRECTIVE
 
 **Start at $10k/month → Scale to $10M total by year 3**
@@ -26,6 +31,35 @@ Every change should be evaluated against this north star. Prefer work that:
 2. **OSINT tools** — Productized intelligence utilities
 3. **Automated product pipeline** — Templates, scaffolding, CI/CD
 
+## ⛔ ORCHESTRATOR DISCIPLINE — stay in your lane (read this every time)
+
+> **The #1 failure mode, learned the hard way:** a capable agent (e.g. Manus)
+> kept *doing the work itself* instead of assigning it out and recording who did
+> what. It reverted to "I'll just do it" every time it wasn't reminded — because
+> it *could*. That destroys the two things that matter most: **parallelism** and
+> **provenance** (the record of who proposed what, who executed, which LLM/route
+> performed — the data we actually measure and monetize).
+
+**If you are an orchestrator / controller / overseer, your job is to DELEGATE and
+RECORD — not to do the task.** Specifically:
+
+1. **Do only YOUR job.** The moment you hit a *specialty task* or a *roadblock*,
+   **immediately delegate** it to the right agent/LLM (via OpenRouter / the
+   fallback chain / a sub-agent) — and **do not come back to do it yourself**.
+2. **"You can do it" is not "you should do it."** Capability is the trap. Even
+   when doing it yourself looks faster right now, delegating + measuring is the
+   job and compounds.
+3. **Record provenance for everything:** who proposed the idea, who executed,
+   which model/route was used, how long it took, and how it scored. That ledger
+   (`logs/agent-audit/`, the scorecard, `wr/memory/decisions.jsonl`) IS the product.
+4. **Re-anchor often.** If you notice yourself writing code/content that belongs
+   to another agent's lane, **stop, hand it off, and log it.** Re-read this
+   section — it's the sticky note. Everyone forgets this under load; the reminder
+   is what snaps the behavior back.
+
+Exception: a task explicitly *scoped to you* (you are the assigned specialist) —
+then do it well, fast, and hand the result + provenance back to the orchestrator.
+
 ## Conventional Commits
 
 All commits and PR titles must use [Conventional Commits](https://www.conventionalcommits.org/):
@@ -48,7 +82,7 @@ in this repository. Keep this section updated as the layout evolves.
 This is a **monorepo** that combines repo-wide standards with individual
 revenue-generating products:
 
-```
+```text
 /                       # Root: standards, shared tooling, CI workflows
 ├── .github/            # GitHub Actions workflows and issue templates
 ├── AGENTS.md           # This file
@@ -71,15 +105,15 @@ dependencies, build, and deploy pipeline.
 When running multiple products locally, use the assigned ports below to avoid
 collisions:
 
-| Product                  | Path                                  | Dev port | Notes                                                                 |
-| ------------------------ | ------------------------------------- | -------- | --------------------------------------------------------------------- |
-| Music Video Creator      | `products/music-video-creator`        | 3000     | Next.js. Requires API keys for full functionality (see product README). |
-| Affiliate Hub            | `products/affiliate-hub`              | 3001     | Next.js. May require `npm install --legacy-peer-deps` (see gotchas).  |
-| AI Video Toolkit         | `products/ai-video-toolkit`           | 3002     | Next.js.                                                              |
-| Screen Recorder Finder   | `products/screen-recorder-finder`     | 3003     | Next.js.                                                              |
-| Revvel Skill Runner      | `products/revvel-skill-runner`        | 3004     | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution.         |
-| Creator Payout Tracker   | `products/creator-payout-tracker`     | 3005     | Next.js. Shippable deep-research product for creator payout rankings. |
-| CLI Engine               | `products/cli-engine`                 | 3008     | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
+| Product | Path | Dev port | Notes |
+| --- | --- | --- | --- |
+| Music Video Creator | `products/music-video-creator` | 3000 | Next.js. Requires API keys for full functionality (see product README). |
+| Affiliate Hub | `products/affiliate-hub` | 3001 | Next.js. May require `npm install --legacy-peer-deps` (see gotchas). |
+| AI Video Toolkit | `products/ai-video-toolkit` | 3002 | Next.js. |
+| Screen Recorder Finder | `products/screen-recorder-finder` | 3003 | Next.js. |
+| Revvel Skill Runner | `products/revvel-skill-runner` | 3004 | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution. |
+| Creator Payout Tracker | `products/creator-payout-tracker` | 3005 | Next.js. Shippable deep-research product for creator payout rankings. |
+| CLI Engine | `products/cli-engine` | 3008 | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
 
 Start a specific product on its assigned port:
 
@@ -129,3 +163,17 @@ npm test             # product-specific tests (if defined)
   error paths. Treat the suite as green if only those known cases fail.
 - **Port conflicts:** Always pass `-- -p <port>` to `npm run dev` when running
   more than one product simultaneously; defaults all collide on 3000.
+- **OpenRouter is NOT free-for-all:** `OPENROUTER_API_KEY` must belong to a
+  **funded/verified** OpenRouter account. Even `:free` models need credits, so a
+  missing or unfunded key returns `401/402/403/429`, not a completion. Automation
+  must therefore always fall back to a keyless lane (e.g. the keyless Perplexity
+  bridge in `scripts/openrouter-triage.js` → `triageWithFallback()`). If triage
+  or research "isn't processing," check the key **and** the balance at
+  <https://openrouter.ai/credits> before assuming a code bug.
+
+## Commenting
+
+Comment **robustly, for the next human** (who may not be you and can't skim code
+as fast as an agent): explain *why*, document external-service gotchas at the
+call site, and always state the fallback / "what to check if it fails." See
+`standards/CODE_COMMENTING_STANDARD.md`.

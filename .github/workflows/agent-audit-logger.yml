@@ -1,26 +1,26 @@
 name: Agent Audit Logger
 on:
+  # Triggers trimmed 2026-06-13 — previously fired on every label/assign/
+  # comment-edit event, which (combined with the per-event commit to main
+  # below) produced constant push contention and a flood of
+  # "chore: log agent action [skip ci]" commits and failure issues. Only
+  # the meaningful, low-frequency state transitions are logged now.
   issues:
     types:
       - opened
-      - edited
       - closed
-      - labeled
-      - unlabeled
-      - assigned
-      - unassigned
   pull_request_review:
     types:
       - submitted
-      - edited
-      - dismissed
   issue_comment:
     types:
       - created
-      - edited
-      - deleted
-  schedule:
-    - cron: 0 * * * *
+  # Cron paused 2026-06-02 — was firing hourly and filing a new
+  # "[FAILURE] Agent Audit Logger failed" issue per failure with no
+  # backoff or dedup, creating ~1k duplicate issues. Re-enable only
+  # after the root failure is fixed AND dedup is in place.
+  # schedule:
+  #   - cron: 0 * * * *
   workflow_dispatch:
     inputs:
       action:
@@ -117,61 +117,29 @@ jobs:
             fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
 
             console.log('✅ Audit entry logged:', entry.entry_hash.substring(0, 8));
-      - name: Commit audit log
-        continue-on-error: true
+      # Persist the audit entry WITHOUT committing to main. Pushing to main on
+      # every event caused constant rebase/branch-protection failures and a
+      # flood of "chore: log agent action [skip ci]" commits. The entry is
+      # written to the job summary and uploaded as a retained artifact instead.
+      - name: Persist audit entry
+        if: always()
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          if [[ -n $(git status --porcelain logs/agent-audit/) ]]; then
-            git add logs/agent-audit/
-            git commit -m "chore: log agent action [skip ci]"
-            push_ok=false
-            for attempt in 1 2 3; do
-              if push_output=$(git push 2>&1); then
-                echo "$push_output"
-                push_ok=true
-                break
-              fi
-              echo "$push_output"
-              if echo "$push_output" | grep -qiE "fetch first|non-fast-forward"; then
-                echo "::notice::Audit log push was out-of-date on attempt ${attempt}; rebasing and retrying."
-                git pull --rebase origin main || {
-                  echo "::error::Rebase failed; audit log push aborted."
-                  break
-                }
-                continue
-              fi
-              echo "::error::Push failed with non-rebaseable error; audit log push aborted."
-              break
-            done
-            if [[ "$push_ok" == "true" ]]; then
-              echo "✅ Audit log committed"
-              {
-                echo "## Audit Log"
-                echo ""
-                echo "Latest audit entry committed to \`main\`."
-              } >> "$GITHUB_STEP_SUMMARY"
-            else
-              echo "::notice::Audit log push blocked by branch protection — entry logged to job summary instead."
-              {
-                echo "## Audit Log (not committed)"
-                echo ""
-                echo "Push to \`main\` is blocked by branch protection rules. The audit entry"
-                echo "for this run is preserved here in the job summary instead:"
-                echo ""
-                echo '```jsonl'
-                cat logs/agent-audit/audit.jsonl | tail -1
-                echo '```'
-                echo ""
-                echo "_Long-term, route audit entries to a dedicated destination instead of \`main\`. See \`REMINDERS.md\`._"
-              } >> "$GITHUB_STEP_SUMMARY"
-              # Exit cleanly — branch-protection block is expected.
-              exit 0
-            fi
-          else
-            echo "ℹ No changes to commit"
-          fi
+          {
+            echo "## Audit Log Entry"
+            echo ""
+            echo "Logged for this run (not committed to \`main\`)."
+            echo ""
+            echo '```jsonl'
+            tail -1 logs/agent-audit/audit.jsonl
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload audit entry artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-audit-${{ github.run_id }}
+          path: logs/agent-audit/audit.jsonl
+          retention-days: 90
     timeout-minutes: 30
   health-check:
     runs-on: ubuntu-latest

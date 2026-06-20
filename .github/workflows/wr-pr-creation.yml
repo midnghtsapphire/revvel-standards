@@ -1,25 +1,32 @@
 name: WR PR Creation
 on:
-  issue_comment:
-    types:
-      - created
+  # `issue_comment` and `issues: labeled` triggers are intentionally removed:
+  # sibling automation re-applies labels (incl. research:complete) and posts
+  # comments constantly, which regenerated duplicate skeleton WR PRs for the
+  # same issues every sweep. WR PRs are now created only when an issue is first
+  # opened/reopened, or deliberately via workflow_dispatch.
   issues:
     types:
       - opened
       - reopened
-      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
         description: Issue number to create WR PR for
         required: true
-        type: number
+        type: string
 permissions:
   contents: write
   issues: write
   pull-requests: write
+# Split the concurrency group by event/action so that label-churn `issues`
+# runs cannot cancel the `workflow_dispatch` run that research-engine fires to
+# actually create the PR. Previously all of them shared `wr-pr-<issue>`, and
+# because runs sit pending under heavy queue load, each new labeled event
+# cancelled the still-pending PR-creation run — so recent WR issues normalized
+# their labels but never got a PR.
 concurrency:
-  group: wr-pr-${{ github.event.issue.number || github.event.inputs.issue_number }}
+  group: wr-pr-${{ github.event.issue.number || github.event.inputs.issue_number }}-${{ github.event_name }}-${{ github.event.action }}
   cancel-in-progress: false
 jobs:
   detect-completion:
@@ -45,7 +52,29 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            // Parse issue number from multiple possible sources:
+            // 1. context.payload.issue.number - for issue-triggered events
+            // 2. context.payload.inputs.issue_number - for workflow_dispatch (string or number)
+            // 3. Extract from run URL as last resort fallback
+            let issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
+            
+            // Ensure we have a string for regex operations
+            const rawIssueNumber = String(issueNumber || '');
+            
+            // If issue_number is in format "14569" (plain number string), use it directly
+            // If it's in format "#14569" or "issue-14569", extract the numeric part
+            const numericMatch = rawIssueNumber.match(/#?(\d+)/);
+            if (numericMatch) {
+              issueNumber = numericMatch[1];
+            } else {
+              // Try to extract from run URL as fallback (format: .../runs/27566386345/jobs/...)
+              const runUrl = process.env.GITHUB_RUN_URL || '';
+              const runIdMatch = runUrl.match(/\/runs\/(\d+)\//);
+              if (runIdMatch) {
+                core.warning(`Could not get issue number from event/inputs, falling back to run ID extraction`);
+              }
+            }
+            
             function skip(reason, { notify = context.eventName !== 'issue_comment' } = {}) {
               core.info(`Skipping WR PR creation: ${reason}`);
               core.setOutput('should_create_pr', 'false');
@@ -55,8 +84,27 @@ jobs:
 
             if (!issueNumber) {
               core.notice('No issue number found');
+              core.notice(`Raw inputs: ${JSON.stringify(context.payload.inputs)}`);
+              core.notice(`Event: ${context.eventName}, Action: ${context.payload.action}`);
               skip('no_issue_number', { notify: false });
               return;
+            }
+
+            // Ignore label-churn from sibling workflows AND from this job's own
+            // normalization step below (it adds work-request, weekly-research,
+            // wr:in-progress, deep-research, openrouter, role:orchestrator —
+            // each firing a fresh `labeled` event). Reacting to every one of
+            // them piles redundant runs into the concurrency group and cancels
+            // the real PR-creation run. Only labels that genuinely signal
+            // research/WR completion should advance here; `opened`,
+            // `issue_comment`, and `workflow_dispatch` paths are unaffected.
+            if (context.eventName === 'issues' && context.payload.action === 'labeled') {
+              const triggerLabel = context.payload.label?.name || '';
+              const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research']);
+              if (!COMPLETION_LABELS.has(triggerLabel)) {
+                skip(`labeled_noise:${triggerLabel}`, { notify: false });
+                return;
+              }
             }
 
             const commentBody = context.payload.comment?.body || '';
@@ -103,6 +151,17 @@ jobs:
               return;
             }
 
+            // Do not (re)create skeleton PRs for finished WRs. A closed issue
+            // — or one explicitly marked `issue:done` — has already been
+            // delivered; re-triggers here only spawn duplicate skeleton PRs
+            // (this is what happened on #14451, which kept generating new
+            // skeleton PRs every time a label changed after it was closed).
+            if (issue.state === 'closed' || labelSet.has('issue:done')) {
+              core.info(`Issue #${issueNumber} is closed/done; not creating a WR PR.`);
+              skip('issue_closed_or_done', { notify: false });
+              return;
+            }
+
             // Skip bot-created issues (defensive — bot-spam should be filtered
             // by the job-level `if:` already).
             if (issue.user && issue.user.login === 'github-actions[bot]') {
@@ -113,6 +172,7 @@ jobs:
 
             // Normalize labels immediately so BASIC WR / issue-type intake cannot
             // get stuck waiting for another workflow to add the routing labels.
+            // BATCH: add all missing labels in a single API call for efficiency.
             const requiredWrLabels = [
               'work-request',
               'weekly-research',
@@ -121,19 +181,21 @@ jobs:
               'openrouter',
               'role:orchestrator',
             ];
-            for (const label of requiredWrLabels) {
-              if (labelSet.has(label)) continue;
+            const missingLabels = requiredWrLabels.filter(label => !labelSet.has(label));
+            if (missingLabels.length > 0) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
-                  labels: [label],
+                  labels: missingLabels,
                 });
-                labelSet.add(label);
-                core.info(`Normalized missing WR label: ${label}`);
+                missingLabels.forEach(label => {
+                  labelSet.add(label);
+                  core.info(`Normalized missing WR label: ${label}`);
+                });
               } catch (error) {
-                core.notice(`Could not normalize WR label "${label}": ${error.message}`);
+                core.notice(`Could not normalize WR labels: ${error.message}`);
               }
             }
 
@@ -157,13 +219,20 @@ jobs:
             // the dedup is correct even if a different workflow ever
             // applied one of the others.
             //
-            // Search OPEN PRs only — a previously-closed/merged WR-skeleton
-            // PR doesn't block a fresh WR-skeleton PR; that's a re-trigger
-            // of the same WR after the original was abandoned.
+            // Search ALL PRs (open + closed) so we can tell apart the three
+            // cases. An OPEN skeleton means one is already in flight — this
+            // also closes the few-minutes race where two triggers fire before
+            // either PR is visible (#14451 got #14497 and #14502 three minutes
+            // apart this way). A MERGED skeleton means the WR doc already
+            // shipped, so the WR is done — do not spawn another. Only a
+            // CLOSED-but-unmerged skeleton (genuinely abandoned) leaves the
+            // door open for a fresh re-trigger.
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open',
+              state: 'all',
+              sort: 'created',
+              direction: 'desc',
               per_page: 100,
             });
 
@@ -177,7 +246,10 @@ jobs:
                 prLabels.includes('weekly-research') &&
                 prLabels.includes('wr:in-progress');
               const refsThisIssue = pr.body && issueRefRegex.test(pr.body);
-              return isWrSkeleton && refsThisIssue;
+              // Block on an in-flight (open) or already-shipped (merged)
+              // skeleton; allow re-trigger after an abandoned (closed-unmerged) one.
+              const blocks = pr.state === 'open' || Boolean(pr.merged_at);
+              return isWrSkeleton && refsThisIssue && blocks;
             });
 
             if (existingPR) {
@@ -285,10 +357,20 @@ jobs:
           fetch-depth: 0
       - name: Log workflow trigger
         run: |
-          echo "::notice::WR PR Creation triggered for issue #${ISSUE_NUMBER}"
+          echo "=== WR PR Creation Debug ==="
+          echo "::notice::ISSUE_NUMBER: '${ISSUE_NUMBER}'"
           echo "::notice::Event: ${{ github.event_name }}"
           echo "::notice::Action: ${{ github.event.action }}"
-          echo "::notice::Issue Title: ${ISSUE_TITLE}"
+          echo "::notice::Issue Title: '${ISSUE_TITLE}'"
+
+          # Validate ISSUE_NUMBER is not empty
+          if [ -z "${ISSUE_NUMBER}" ]; then
+            echo "::error::ISSUE_NUMBER is empty! This will cause failures downstream."
+            echo "::error::Failing workflow to prevent partial execution."
+            exit 1
+          fi
+
+          echo "=== Debug complete ==="
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -406,10 +488,21 @@ jobs:
 
           echo "WR_FILE=${WR_FILE}" >> "$GITHUB_ENV"
 
+          # Classify the WR: bug/fix/chore/docs-style issues use the BASIC
+          # template (no market-research sections); everything else uses FULL.
+          # Previously every WR used FULL, so fix-class WRs tripped wr-lint
+          # rule 4 ("product section in a bug WR") and the PR stuck. Mirrors the
+          # classification in wr/scripts/generate-wr.sh (grep -wiE; ERE has no \b).
+          if printf '%s' "${ISSUE_TITLE}" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+            TEMPLATE_PREF="wr/WR_TEMPLATE_BASIC.md"
+          else
+            TEMPLATE_PREF="wr/WR_TEMPLATE_FULL.md"
+          fi
+
           # Copy the canonical WR template. The old path, wr/WR_TEMPLATE.md,
           # was removed when the WR template set was split into BASIC/FULL.
           TEMPLATE_FILE=""
-          for candidate in wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
+          for candidate in "$TEMPLATE_PREF" wr/WR_TEMPLATE_FULL.md wr/WR_TEMPLATE_BASIC.md WR_TEMPLATE_FULL.md WR_TEMPLATE_BASIC.md; do
             if [ -f "$candidate" ]; then
               TEMPLATE_FILE="$candidate"
               break
@@ -441,16 +534,33 @@ jobs:
           replacements = {
               "{REPO_NAME}": "midnghtsapphire/revvel-standards",
               "{REPO_URL}": "https://github.com/midnghtsapphire/revvel-standards",
+              "{REPO}": "midnghtsapphire/revvel-standards",
               "{CREATED_DATE}": today,
               "{UPDATED_DATE}": today,
+              "{DATE}": today,
               "{RESEARCH_DATE}": today,
               "{PRIMARY_LANGUAGE}": "JavaScript",
+              "{LANGUAGE}": "JavaScript",
               "{TITLE}": clean_title,
               "{DESCRIPTION}": body,
+              "{ISSUE_BODY}": body or "_No issue body provided._",
+              "{RESEARCHER}": "Jules (Google) + OpenRouter",
+              "{STATUS}": "🟡 In Progress",
+              "{IS_PRIVATE}": "No",
+              "{IS_ARCHIVED}": "No",
+              "{STARS}": "N/A",
+              "{OPEN_ISSUES}": "N/A",
           }
           text = wr_file.read_text(encoding="utf8")
           for key, value in replacements.items():
               text = text.replace(key, value)
+          # Catch-all: any generator token still left (e.g. {EXECUTIVE_SUMMARY},
+          # {DEEP_WEB_RESEARCH}, {RISKS}, {RECOMMENDATIONS}, {REQUIREMENTS},
+          # {PRODUCT_SELECTIONS}, {TOKEN}) becomes an explicit N/A marker rather
+          # than shipping a raw {TOKEN}. Unsubstituted tokens like {STARS},
+          # {OPEN_ISSUES}, {IS_PRIVATE}, {IS_ARCHIVED} were failing wr-lint and
+          # jamming every generated WR PR. Mirrors wr/scripts/generate-wr.sh.
+          text = re.sub(r"\{[A-Z_]+\}", "N/A — pending Jules refinement", text)
           wr_file.write_text(text, encoding="utf8")
           PY
 
@@ -643,17 +753,18 @@ jobs:
                 ))
             ]));
 
-            for (const label of labels) {
+            // BATCH: add all labels in a single API call for efficiency
+            if (labels.length > 0) {
               try {
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: prNumber,
-                  labels: [label],
+                  labels: labels,
                 });
-                core.info(`Added label: ${label}`);
+                core.info(`Added ${labels.length} labels to PR`);
               } catch (error) {
-                core.notice(`Could not add label "${label}": ${error.message}`);
+                core.notice(`Could not add labels: ${error.message}`);
               }
             }
       - name: Request Jules review

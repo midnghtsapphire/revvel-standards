@@ -25,4 +25,10 @@ for dir in assets static css js img images fonts; do
   fi
 done
 
+# Publish the docs site so each app is reachable at /docs/<app>/ (its generated
+# index.html test page). Markdown is copied alongside for direct linking.
+if [ -d docs ]; then
+  cp -R docs public/docs
+fi
+
 echo "Static site assembled in public/"

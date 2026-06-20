@@ -24,6 +24,10 @@ on:
         description: Fetch emails before (YYYY-MM-DD) — optional
         required: false
         type: string
+
+permissions:
+  contents: read
+
 jobs:
   fetch-and-post:
     name: Fetch Emails + Post New Products

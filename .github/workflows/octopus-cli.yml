@@ -125,7 +125,7 @@ jobs:
           # Reads issue-numbers from "Closes #N" / "Fixes #N" markers in the
           # PR body. If any closed issue's author is octopus-review[bot],
           # kick off `octopus pr review` so Octopus verifies its own ask.
-          BODY=$(gh pr view "$PR_NUMBER" --json body --jq .body)
+          BODY=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json body --jq .body)
           ISSUE_NUMS=$(echo "$BODY" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+' \
             | grep -oE '[0-9]+' | sort -u)
 

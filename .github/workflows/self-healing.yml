@@ -13,6 +13,9 @@ on:
   # Can be manually triggered
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
   research-state:

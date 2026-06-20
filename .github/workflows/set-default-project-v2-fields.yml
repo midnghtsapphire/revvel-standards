@@ -24,22 +24,43 @@ jobs:
         env:
           APP_ID: ${{ vars.PROJECTS_APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.PROJECTS_APP_PRIVATE_KEY }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+          PRIORITY_FIELD_ID: ${{ vars.PRIORITY_FIELD_ID }}
+          STATUS_FIELD_ID: ${{ vars.STATUS_FIELD_ID }}
+          RESEARCH_MODE_FIELD_ID: ${{ vars.RESEARCH_MODE_FIELD_ID }}
+          PRIORITY_MEDIUM_OPTION_ID: ${{ vars.PRIORITY_MEDIUM_OPTION_ID }}
+          STATUS_INBOX_OPTION_ID: ${{ vars.STATUS_INBOX_OPTION_ID }}
+          RESEARCH_MODE_STANDARD_OPTION_ID: ${{ vars.RESEARCH_MODE_STANDARD_OPTION_ID }}
         run: |
           set -euo pipefail
-          if [ -n "${APP_ID}" ] && [ -n "${APP_PRIVATE_KEY}" ]; then
-            echo "has_creds=true" >> "$GITHUB_OUTPUT"
-            echo "App credentials configured (PROJECTS_APP_ID + PROJECTS_APP_PRIVATE_KEY)."
-          elif [ -n "${APP_ID}" ] || [ -n "${APP_PRIVATE_KEY}" ]; then
+          # Graceful degradation (fail over, don't dead-end): default-field setting
+          # is OPTIONAL polish. Run ONLY when App auth AND every Project v2
+          # field/option ID is configured; otherwise SKIP cleanly so a new-issue
+          # event never hard-fails over optional project automation. List what is
+          # missing so a human can wire it up later.
+          missing=""
+          # Name each credential separately so the notice tells a human EXACTLY
+          # which one to set (e.g. half-configured App auth) rather than a vague pair.
+          [ -z "${APP_ID}" ] && missing="${missing} PROJECTS_APP_ID(var)"
+          [ -z "${APP_PRIVATE_KEY}" ] && missing="${missing} PROJECTS_APP_PRIVATE_KEY(secret)"
+          for v in PROJECT_ID PRIORITY_FIELD_ID STATUS_FIELD_ID RESEARCH_MODE_FIELD_ID \
+                   PRIORITY_MEDIUM_OPTION_ID STATUS_INBOX_OPTION_ID RESEARCH_MODE_STANDARD_OPTION_ID; do
+            [ -z "${!v}" ] && missing="${missing} ${v}(var)"
+          done
+          if [ -n "${missing}" ]; then
             echo "has_creds=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::App auth is half-configured: only one of PROJECTS_APP_ID / PROJECTS_APP_PRIVATE_KEY is set. Skipping default-field setter; configure both to enable, or unset both to silence this warning."
+            echo "::notice::Skipping App default-field setter — not fully configured. Missing:${missing}. Configure these to enable; ignore to keep it disabled."
           else
-            echo "has_creds=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::PROJECTS_APP_ID and PROJECTS_APP_PRIVATE_KEY not configured; skipping App default-field setter."
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+            echo "App credentials + all Project v2 field/option IDs configured."
           fi
   set-project-defaults:
     name: Add issue to Project v2 and set default fields
     needs: preflight
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.preflight.outputs.has_creds == 'true' }}
+    # Run only when fully configured (App auth + all field/option IDs). Manual
+    # workflow_dispatch no longer bypasses this — without the IDs the job can only
+    # fail, so it skips cleanly instead of dead-ending.
+    if: ${{ needs.preflight.outputs.has_creds == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:

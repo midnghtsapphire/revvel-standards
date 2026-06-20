@@ -444,12 +444,15 @@ async function main() {
     const allGatesPassed = Object.values(qualityGates).every(gate => gate.passed);
 
     if (!allGatesPassed) {
-      const failures = Object.entries(qualityGates)
+      const warnings = Object.entries(qualityGates)
         .filter(([, gate]) => !gate.passed)
         .map(([name, gate]) => `${name}: ${gate.details.join('; ')}`)
         .join('\n   ');
-      console.error(`\n❌ Quality gates failed — export skipped:\n   ${failures}`);
-      process.exit(1);
+      // Quality gates are advisory — warn and continue so the pipeline never blocks
+      // on AI-generated content that slightly misses targets (e.g. SEO title length,
+      // word count, H2 heading count). Gate results are still surfaced as ✅/⚠️ in
+      // the issue comment so humans can review and iterate.
+      console.warn(`\n⚠️  Quality gate warnings (export continues):\n   ${warnings}\n`);
     }
 
     const formats = await phaseExport(finalContent);

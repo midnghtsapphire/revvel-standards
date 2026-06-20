@@ -16,7 +16,7 @@ geopandas==1.1.2
 pandas==2.2.2
 xarray==2024.5.0
 rioxarray==0.15.5
-python-multipart==0.0.27
+python-multipart==0.0.31
 python-jose[cryptography]==3.4.0
 passlib[bcrypt]==1.7.4
 sqlalchemy==2.0.30

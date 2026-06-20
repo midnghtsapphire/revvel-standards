@@ -68,7 +68,7 @@
 
 ## Resources
 
-- Blueprint: [`docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](../../docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
+- Blueprint: [`docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`](../../docs/30Dayiteration/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md)
 - Project folder: `projects/agent-generated/demo-product/`
 - Research: `research/`
 - Build: `build/`

@@ -8,6 +8,10 @@ on:
       issue_id:
         description: Issue number
         required: false
+
+permissions:
+  contents: read
+
 jobs:
   prosecute:
     if: |

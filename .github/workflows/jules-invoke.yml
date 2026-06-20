@@ -26,6 +26,10 @@ on:
       - opened
       - reopened
       - closed
+
+permissions:
+  contents: read
+
 concurrency:
   group: jules-invoke-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false

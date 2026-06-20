@@ -8,6 +8,10 @@ on:
       - docs/COMPLIANCE_TRACKER.md
       - docs/MEDICAID_WATCHDOG.md
       - docs/GRANT_READINESS.md
+
+permissions:
+  contents: read
+
 jobs:
   compliance-check:
     runs-on: ubuntu-latest

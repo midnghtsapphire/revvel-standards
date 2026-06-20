@@ -230,7 +230,7 @@ export default function Home() {
       {/* ── SHIP PLAN ── */}
       <section className="relative mx-auto max-w-6xl px-6 pb-14">
         <div className="rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-md">
-          <h2 className="text-2xl font-black text-white">30-Day Ship Plan</h2>
+          <h2 className="text-2xl font-black text-white">Ship Plan</h2>
           <ul className="mt-6 space-y-4">
             {shipSteps.map((step) => (
               <li key={step} className="flex items-start gap-3 text-slate-200">

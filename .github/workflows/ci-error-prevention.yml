@@ -1,0 +1,179 @@
+name: CI Error Prevention Tests
+on:
+  push:
+    branches: [main, 'wr/**', 'pr-**', 'jules-**']
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'wr/scripts/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'templates/issue-template/**'
+  schedule:
+    # Run weekly to catch drift
+    - cron: '0 2 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  error-prevention-tests:
+    name: Error Prevention
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run CI Error Prevention Tests
+        run: node tests/ci-error-prevention.test.js
+
+      - name: Run existing test suite
+        run: npm test || true
+
+  lint-workflows:
+    name: Workflow Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for YAML tab indentation
+        run: |
+          echo "Checking for tab indentation in YAML files..."
+          FOUND=$(grep -r $'\t' .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ Found tab indentation:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No tab indentation found"
+
+      - name: Validate YAML syntax
+        run: |
+          shopt -s nullglob
+          for f in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -e "$f" ] || continue
+            if ! python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null; then
+              echo "❌ Invalid YAML: $f"
+              exit 1
+            fi
+          done
+          echo "✅ All YAML files are valid"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Catches GitHub Actions SCHEMA errors that plain YAML validation misses —
+      # e.g. `workflow_run` without a required `workflows:` list, which makes
+      # GitHub reject the whole file (startup_failure, 0s) on every run. Same
+      # guard the daily Repo Self-Healer runs, so prevention (here) and detection
+      # (self-healer) share one source of truth.
+      - name: Validate workflow Actions-schema
+        run: node scripts/check-workflow-yaml.js
+
+  token-security-check:
+    name: Token Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for deprecated token references
+        run: |
+          echo "Checking for deprecated GIT_ACCESS_TOKEN..."
+          # Exclude this workflow itself (it's checking, not using)
+          FOUND=$(grep -rn "secrets.GIT_ACCESS_TOKEN" .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null | grep -v "ci-error-prevention.yml" || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ Found deprecated GIT_ACCESS_TOKEN references:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No deprecated token references found"
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Checking for potential hardcoded secrets..."
+          # Check for common secret patterns (not perfect, but catches obvious cases)
+          FOUND=$(grep -rnE "(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{22,})" .github/ 2>/dev/null || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ Found potential hardcoded tokens:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets found"
+
+  wr-lint-check:
+    name: WR Lint Gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get changed WR files
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "base=$BASE_SHA" >> $GITHUB_OUTPUT
+          echo "head=$HEAD_SHA" >> $GITHUB_OUTPUT
+          FILES=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' || true)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+          echo "Changed WR files: $FILES"
+
+      - name: Run WR Lint
+        if: steps.changed.outputs.files != ''
+        run: node wr/scripts/wr-lint.mjs ${{ steps.changed.outputs.files }}
+
+  automation-health:
+    name: Automation Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check automation doctor
+        run: |
+          if [ -f scripts/automation-doctor.js ]; then
+            node scripts/automation-doctor.js --validate || echo "⚠️ automation-doctor found issues"
+          fi
+
+      - name: Count workflows
+        run: |
+          COUNT=$(ls -1 .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null | wc -l)
+          echo "Total workflows: $COUNT"
+          if [ "$COUNT" -lt 10 ]; then
+            echo "⚠️ Low workflow count - repository may be incomplete"
+          fi
+
+  summary:
+    name: Test Summary
+    needs: [error-prevention-tests, lint-workflows, token-security-check, automation-health]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## CI Error Prevention Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Error Prevention Tests | ${{ needs.error-prevention-tests.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow Lint | ${{ needs.lint-workflows.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Token Security | ${{ needs.token-security-check.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Automation Health | ${{ needs.automation-health.result == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY

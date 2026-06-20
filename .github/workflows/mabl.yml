@@ -69,6 +69,10 @@ on:
         options:
           - "true"
           - "false"
+
+permissions:
+  contents: read
+
 concurrency:
   group: mabl-${{ github.ref }}
   cancel-in-progress: true

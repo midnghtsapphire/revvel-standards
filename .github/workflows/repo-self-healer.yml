@@ -1,0 +1,104 @@
+name: Repo Self-Healer
+# Autonomous cleanup - runs daily, keeps repo clean
+# Part of the self-healing system
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 3 AM daily
+  workflow_dispatch:  # Manual trigger
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: read
+
+env:
+  REPO: ${{ github.repository }}
+  # Prefer the ADMIN PAT secret so label/PR changes can cascade to downstream
+  # workflows (the default GITHUB_TOKEN cannot trigger other workflows). Falls
+  # back to the built-in token when the secret isn't configured.
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  self-heal:
+    name: 🔧 Repo Self-Healer
+    runs-on: ubuntu-latest
+    outputs:
+      closed: ${{ steps.cleanup.outputs.closed }}
+      labeled: ${{ steps.cleanup.outputs.labeled }}
+      duplicates: ${{ steps.cleanup.outputs.duplicates }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/self-heal-repo.js
+            scripts/check-workflow-yaml.js
+
+      - name: Run self-healing
+        id: cleanup
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/self-heal-repo.js
+          node scripts/self-heal-repo.js
+
+      - name: Report
+        if: always()
+        run: |
+          echo "═══════════════════════════════════════"
+          echo "🔧 Self-Heal Complete"
+          echo "═══════════════════════════════════════"
+          echo "Closed: ${{ steps.cleanup.outputs.closed }}"
+          echo "Labeled: ${{ steps.cleanup.outputs.labeled }}"
+          echo "Duplicates: ${{ steps.cleanup.outputs.duplicates }}"
+          echo "═══════════════════════════════════════"
+
+  # If cleanup needed attention, create a report issue
+  report-if-needed:
+    name: 📋 Cleanup Report
+    needs: self-heal
+    if: needs.self-heal.outputs.closed != '0' || needs.self-heal.outputs.duplicates != '0'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create daily cleanup report
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const closed = '${{ needs.self-heal.outputs.closed }}';
+            const duplicates = '${{ needs.self-heal.outputs.duplicates }}';
+            const labeled = '${{ needs.self-heal.outputs.labeled }}';
+            
+            const body = [
+              `## 🔧 Daily Self-Heal Report`,
+              ``,
+              `| Metric | Count |`,
+              `|--------|-------|`,
+              `| Closed | ${closed} |`,
+              `| Labeled stale | ${labeled} |`,
+              `| Duplicates merged | ${duplicates} |`,
+              ``,
+              `_Ran at: ${new Date().toISOString()}_`,
+            ].join('\n');
+
+            // Check if we already posted today
+            const { data: issues } = await github.rest.issues.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              since: new Date(Date.now() - 86400000).toISOString()
+            });
+            
+            const todayReport = issues.find(i => 
+              i.title.includes('Daily Self-Heal Report')
+            );
+            
+            if (!todayReport) {
+              await github.rest.issues.create({
+                title: `[AUTO] Daily Self-Heal Report - ${new Date().toLocaleDateString()}`,
+                body: body,
+                labels: ['self-heal', 'auto-generated']
+              });
+            }

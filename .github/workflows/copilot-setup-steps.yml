@@ -15,6 +15,9 @@ on:
       - package.json
       - package-lock.json
 
+permissions:
+  contents: read
+
 jobs:
   # Job MUST be named `copilot-setup-steps` to be picked up by Copilot cloud agent.
   copilot-setup-steps:

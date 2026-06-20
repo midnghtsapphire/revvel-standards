@@ -65,17 +65,23 @@ jobs:
             }
 
             core.setOutput('skip_triage', 'false');
-      - name: Verify OPENROUTER_API_KEY
+      - name: Report OPENROUTER_API_KEY status
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
+          # NOTE: OpenRouter is NOT free-for-all — its key must belong to a
+          # FUNDED/verified account (even ":free" models need credits). A missing
+          # or unfunded key just means triage cuts over to the keyless Perplexity
+          # lane below; it is no longer a reason to skip triage entirely.
           if [ -z "${OPENROUTER_API_KEY}" ]; then
-            echo "::warning::OPENROUTER_API_KEY is not set. Skipping OpenRouter triage."
+            echo "::warning::OPENROUTER_API_KEY not set — triage will use the keyless Perplexity fallback lane."
           else
-            echo "OPENROUTER_API_KEY is configured."
+            echo "OPENROUTER_API_KEY is configured (ensure the OpenRouter account is funded)."
           fi
-      - name: Run OpenRouter triage
-        if: env.OPENROUTER_API_KEY != '' && steps.labels.outputs.skip_triage != 'true'
+      # Runs WITH or WITHOUT a key: scripts/openrouter-triage.js cascades
+      # OpenRouter → keyless Perplexity so triage never dead-ends.
+      - name: Run triage (OpenRouter → keyless Perplexity fallback)
+        if: steps.labels.outputs.skip_triage != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,58 +94,82 @@ jobs:
         run: node scripts/openrouter-triage.js
     timeout-minutes: 30
   sweep-discover:
-    name: Discover triage:new items needing routing
+    name: Discover items needing routing or triage-recovery
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.collect.outputs.matrix }}
       count: ${{ steps.collect.outputs.count }}
     steps:
-      - name: Collect open triage:new items missing openrouter label
+      - name: Collect triage:new items + previously-failed triage for recovery
         id: collect
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            const items = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'triage:new',
-              per_page: 100,
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // 1) Fresh items awaiting first routing: triage:new without openrouter.
+            const fresh = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'triage:new', per_page: 100,
             });
 
-            const triageTargets = [];
-            for (const item of items) {
+            // 2) SELF-HEALING RECOVERY — re-triage items whose triage previously
+            // failed or skipped for lack of a key. Now that triage always falls
+            // back to the keyless Perplexity lane, these can succeed. Without this,
+            // an item keeps the `openrouter` label forever and the fresh-sweep above
+            // (which skips anything labelled `openrouter`) can NEVER retry it — a
+            // permanent dead-end. On success, scripts/openrouter-triage.js clears
+            // the `openrouter:triage-failed` / `openrouter:needs-key` labels itself.
+            const failed = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'openrouter:triage-failed', per_page: 100,
+            });
+            const needsKey = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'openrouter:needs-key', per_page: 100,
+            });
+
+            const byNumber = new Map();
+
+            for (const item of fresh) {
               const labels = (item.labels || []).map((l) => typeof l === 'string' ? l : l.name);
               if (labels.includes('openrouter') || labels.includes('no-triage')) continue;
 
               for (const label of ['openrouter', 'role:orchestrator', 'triage:new']) {
                 try {
-                  await github.rest.issues.addLabels({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: item.number,
-                    labels: [label],
-                  });
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: item.number, labels: [label] });
                 } catch (error) {
                   core.notice(`Could not add label "${label}" to #${item.number}: ${error.message}`);
                 }
               }
-
-              triageTargets.push({
-                issue_number: String(item.number),
-                issue_title: item.title || '',
-                issue_body: item.body || '',
-                event_kind: item.pull_request ? 'pull_request' : 'issue',
-              });
+              byNumber.set(item.number, item);
             }
+
+            // Recovery items: re-queue regardless of the openrouter label (that label
+            // is exactly why they were stranded); only `no-triage` opts out.
+            for (const item of [...failed, ...needsKey]) {
+              const labels = (item.labels || []).map((l) => typeof l === 'string' ? l : l.name);
+              if (labels.includes('no-triage')) continue;
+              byNumber.set(item.number, item);
+            }
+
+            // GitHub Actions hard-caps a matrix at 256 jobs; stay safely under it.
+            // Any overflow is picked up on the next hourly sweep (idempotent).
+            const MAX_PER_SWEEP = 200;
+            const triageTargets = [...byNumber.values()].slice(0, MAX_PER_SWEEP).map((item) => ({
+              issue_number: String(item.number),
+              issue_title: item.title || '',
+              issue_body: item.body || '',
+              event_kind: item.pull_request ? 'pull_request' : 'issue',
+            }));
 
             core.setOutput('count', String(triageTargets.length));
             core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
     timeout-minutes: 45
   sweep-triage:
-    name: Sweep triage via OpenRouter
-    if: needs.sweep-discover.outputs.count != '0' && secrets.OPENROUTER_API_KEY != ''
+    name: Sweep triage (OpenRouter → keyless fallback)
+    # Runs whenever there are queued items — even with no OpenRouter key, the
+    # script cuts over to the keyless Perplexity lane (never dead-end).
+    if: needs.sweep-discover.outputs.count != '0'
     needs: sweep-discover
     runs-on: ubuntu-latest
     strategy:
