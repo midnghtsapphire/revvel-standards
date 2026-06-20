@@ -296,14 +296,51 @@ test('WR PR creation uses an existing template and clears recovered stuck labels
     'WR PR creation must clear auto-healer stuck labels after a PR is created'
   );
 
+  // wr:reset must be stripped after success (one-shot signal)
+  assert(
+    wrPrCreation.includes("name === 'wr:reset'"),
+    'WR PR creation must remove wr:reset label after successful PR generation'
+  );
+
   for (const label of [
     'wr:retrigger-attempts-1',
     'wr:retrigger-attempts-2',
     'wr:retrigger-attempts-3',
     'wr-stuck',
+    'wr:reset',
   ]) {
     assertLabelDefinition(labelsYaml, label);
   }
+});
+
+test('wr:reset bypasses existing-PR guard and is allowed as a trigger label', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+
+  // wr:reset must appear in the COMPLETION_LABELS allowlist so labeled events
+  // carrying it are not dropped as label noise before the check runs.
+  assert(
+    wrPrCreation.includes("'wr:reset'") &&
+      wrPrCreation.includes('COMPLETION_LABELS'),
+    'wr:reset must be included in the COMPLETION_LABELS trigger allowlist'
+  );
+
+  // The bypass block must reference wr:reset and the existing-PR variable
+  // so operators can force a fresh PR even when a skeleton already exists.
+  assert(
+    wrPrCreation.includes("labelSet.has('wr:reset')") &&
+      wrPrCreation.includes('wr:reset detected'),
+    'wr:reset must bypass the existing-PR guard with a clear log message'
+  );
+
+  // wr:reset must count as a completion signal so should_create_pr becomes true
+  // even when no other completion label is present.
+  assert(
+    wrPrCreation.includes("labelSet.has('wr:reset')"),
+    'wr:reset must be treated as a completion signal in the isComplete check'
+  );
 });
 
 test('Work Request Output Type options match wr-auto-classify DROPDOWN_FIELDS', () => {
