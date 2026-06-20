@@ -52,8 +52,9 @@ disables protection.
    module in the same commit.
 3. If you have the DB backend in use, append an
    `INSERT INTO credential_modules_audit (...)` row reflecting the flip.
-4. Open a PR; the `agent-fingerprint-gate` + `auditor-controller`
-   workflows will run.
+4. Open a PR. The `agent-fingerprint-gate` workflow (landed in PR #14684)
+   runs on changed files. The `auditor-controller` workflow (proposed in
+   PR #14679) will also gate this surface once that PR merges.
 
 ## Re-enabling `doppler-recover` (special case)
 
@@ -82,13 +83,13 @@ GitHub secrets via the auto-recover loop. Re-enable only after:
 
 ## Auditor coverage
 
-The auditor in `scripts/auditor-controller.js` (PR #14679) already
-checks:
+`scripts/auditor-controller.js` (proposed in PR #14679; not yet on `main`)
+will check:
 
 - `doppler-disabled` — kill switches present in
   `secret-persistence-guard.yml` and `secrets-sentinel.yml`.
 - `doppler-spread` — no new Doppler call sites outside the allowlist.
 
-A future assertion can read this YAML and verify that every workflow
-listed under a module's `governs_workflows` actually calls
-`credential-module-check.sh` with the right id.
+Once that lands, a follow-up assertion can read this YAML and verify
+that every workflow listed under a module's `governs_workflows` actually
+calls `credential-module-check.sh` with the right id.

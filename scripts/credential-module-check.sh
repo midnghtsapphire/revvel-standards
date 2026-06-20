@@ -3,7 +3,12 @@
 #
 # Reads config/credential-modules.yml and exits 0 if the module is
 # enabled (workflow may proceed), 78 if disabled (workflow should
-# skip gracefully), 2 on usage/parse error.
+# skip gracefully), 2 on usage error.
+#
+# Note: parse errors (corrupted YAML, missing config, unknown value)
+# intentionally **fail open** with exit 0 + stderr warning, so a
+# broken config never silently disables protection. Only USAGE errors
+# return 2.
 #
 # Usage in a workflow step:
 #   - name: Skip if doppler-recover module is disabled
@@ -34,19 +39,28 @@ if [[ ! -f "$CONFIG" ]]; then
 fi
 
 # Find the module's `enabled:` value with awk:
-#   - look for `  - id: <module-id>`
+#   - look for `  - id: <module-id>` (strip inline YAML comments + trailing
+#     whitespace before comparing so `- id: foo  # note` still matches)
 #   - then within that record (until the next `  - id:` or EOF),
-#     pick up the first `    enabled: true|false`.
+#     pick up the first `    enabled: true|false` (same strip applied).
+# Per Copilot review: the prior version compared the whole remainder of
+# the line, so an inline comment on either line caused fail-open even
+# when the operator typed `enabled: false  # keep off`.
 ENABLED=$(awk -v want="$MODULE_ID" '
+  function strip(s) {
+    sub(/[[:space:]]*#.*$/, "", s)   # drop inline comment
+    sub(/[[:space:]]+$/, "", s)      # drop trailing whitespace
+    return s
+  }
   BEGIN { inblock = 0 }
   /^  - id:[[:space:]]+/ {
     sub(/^  - id:[[:space:]]+/, "", $0)
-    inblock = ($0 == want) ? 1 : 0
+    inblock = (strip($0) == want) ? 1 : 0
     next
   }
   inblock && /^    enabled:[[:space:]]+/ {
     sub(/^    enabled:[[:space:]]+/, "", $0)
-    print $0
+    print strip($0)
     exit
   }
 ' "$CONFIG")

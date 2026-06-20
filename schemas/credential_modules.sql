@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS credential_modules_audit (
 CREATE INDEX IF NOT EXISTS idx_credential_modules_audit_module
   ON credential_modules_audit (module_id, changed_at DESC);
 
--- Seed the two modules + the backup harness module to match the YAML SSOT.
+-- Seed the three modules to match the YAML SSOT.
 INSERT INTO credential_modules (id, description, enabled, change_reason) VALUES
   ('credential-gate',
    'Enforces deletion protection and existence checks on critical repo secrets.',

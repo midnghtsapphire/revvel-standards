@@ -80,7 +80,7 @@ You are working on the credential-management subsystem of
 | Workflow gate helper | `scripts/credential-module-check.sh` |
 | Doppler-using workflows | listed under `doppler-recover.governs_workflows` in the YAML |
 | Backup harness | `scripts/credential-backup-harness.js` |
-| Auditor that watches this surface | `scripts/auditor-controller.js` (PR #14679) |
+| Auditor that watches this surface | `scripts/auditor-controller.js` (proposed in PR #14679 — not yet on `main`) |
 
 ## What to output
 
