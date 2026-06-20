@@ -15,6 +15,18 @@ on:
 
 permissions:
   contents: read
+  issues: write      # self-heal job re-labels stuck issues + files healing journal
+  actions: write     # self-heal job re-runs failed workflow runs
+
+env:
+  # Without this, every `gh` call runs unauthenticated and fails. Prefer the
+  # ADMIN PAT (so healing actions can cascade to downstream workflows) and fall
+  # back to the built-in token.
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  # No job here runs actions/checkout, so gh has no local git remote to infer
+  # the repo from. GH_REPO targets every gh command at the right repo and
+  # avoids "fatal: not a git repository".
+  GH_REPO: ${{ github.repository }}
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
