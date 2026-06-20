@@ -49,7 +49,9 @@ def _exists(root: str, *names: str) -> bool:
 
 
 def _glob(root: str, pattern: str) -> list[str]:
-    return glob.glob(os.path.join(root, pattern)) + glob.glob(os.path.join(root, "**", pattern), recursive=False)
+    # recursive=True so the "**" segment actually expands into nested dirs
+    # (root/**/<pattern> also matches root-level files, so this covers both).
+    return glob.glob(os.path.join(root, "**", pattern), recursive=True)
 
 
 def _read(root: str, name: str) -> str:

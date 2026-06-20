@@ -23,8 +23,12 @@ fi
 
 # 1. Secret scan — refuse to package if anything looks like a credential.
 echo "→ Scanning for secrets…"
-if grep -rniE 'sk-[a-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|xox[baprs]-|-----BEGIN [A-Z ]*PRIVATE KEY-----' "$SRC"; then
-  echo "✗ Potential secret found in skills/malama/ — aborting. Remove it before publishing." >&2
+# -l lists only matching FILE PATHS, never the matched content, so a real
+# credential is never echoed to stdout/CI logs.
+hits="$(grep -rliE 'sk-[a-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|xox[baprs]-|-----BEGIN [A-Z ]*PRIVATE KEY-----' "$SRC" || true)"
+if [ -n "$hits" ]; then
+  echo "✗ Potential secret found in these files — aborting (remove before publishing):" >&2
+  echo "$hits" >&2
   exit 2
 fi
 echo "  ✓ no credential-shaped strings found"

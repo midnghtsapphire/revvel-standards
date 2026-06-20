@@ -40,8 +40,11 @@ jobs:
       - name: Secret scan (refuse to publish credentials)
         if: steps.gate.outputs.go == 'true'
         run: |
-          if grep -rniE 'sk-[a-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|xox[baprs]-|BEGIN [A-Z ]*PRIVATE KEY' skills/malama/; then
-            echo "::error::Credential-shaped string found in skills/malama/ — aborting publish."
+          # -l lists only matching FILE PATHS, never the matched content, so a
+          # real credential is never leaked into the Actions logs.
+          if grep -rliE 'sk-[a-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|xox[baprs]-|BEGIN [A-Z ]*PRIVATE KEY' skills/malama/ > /tmp/secret_hits; then
+            echo "::error::Credential-shaped string found in skills/malama/ — aborting publish. Offending files:"
+            cat /tmp/secret_hits
             exit 1
           fi
           echo "No credential-shaped strings found."
