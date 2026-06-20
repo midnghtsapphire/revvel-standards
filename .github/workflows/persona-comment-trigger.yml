@@ -34,6 +34,7 @@ jobs:
        contains(github.event.comment.body, '/oaudrey') ||
        contains(github.event.comment.body, '/mindmappr') ||
        contains(github.event.comment.body, '/openrouter') ||
+       contains(github.event.comment.body, '/dragnet') ||
        contains(github.event.comment.body, '/persona'))
     steps:
       - name: Checkout
