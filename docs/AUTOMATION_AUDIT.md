@@ -364,3 +364,21 @@ Two core self-healing workflows were silently failing on every run because of
 The recurring gotchas behind these (gh repo target without checkout, gh auth,
 job permissions, shell injection) are now documented in `CLAUDE.md` so future
 agents don't re-discover them.
+
+---
+
+## Update — June 20, 2026: Mālama engine mirror workflow
+
+Added **`.github/workflows/mirror-malama.yml`** as part of the oAudrey open-core
+rollout. It syncs ONLY the AGPLv3 engine directory `skills/malama/` to a separate
+public repo, so the open core can act as an adoption funnel without exposing the
+rest of the proprietary repo.
+
+Safety properties:
+- **No-ops by default** — does nothing unless both the `MALAMA_MIRROR_TOKEN`
+  secret and the `MALAMA_MIRROR_REPO` variable are configured, so nothing
+  publishes by accident.
+- **Refuses to publish credentials** — runs a secret scan over `skills/malama/`
+  and fails the job if a credential-shaped string is found.
+- Triggers: `workflow_dispatch` (manual) and `push` to `main` touching
+  `skills/malama/**`. Companion local tool: `scripts/publish-malama.sh`.
