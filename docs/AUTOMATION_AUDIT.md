@@ -341,3 +341,26 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 **Report Status:** ✅ Complete  
 **Automation Health:** 🟢 Green (58 workflows active, 61 labels well-organized)  
 **Action Required:** Implement enhancements listed above
+
+---
+
+## Update — June 20, 2026: Self-healing loop runtime fixes
+
+Two core self-healing workflows were silently failing on every run because of
+`gh` CLI environment mistakes. Fixed so the loop can run unattended:
+
+- **`self-healing.yml`** — added a workflow-level `env:` block with the standard
+  `GH_TOKEN` (ADMIN PAT with `GITHUB_TOKEN` fallback) and `GH_REPO`, and granted
+  `issues: write` + `actions: write`. Previously it had no token (every `gh`
+  call ran unauthenticated) and only `contents: read` (could not re-label issues
+  or re-run failed workflows), and `gh issue create` failed with `fatal: not a
+  git repository` because the job has no `actions/checkout`.
+- **`agent-monitor.yml`** — added `GH_REPO` to the checkoutless `create-failure-wr`
+  job so `gh issue create`/`comment` resolve a repo target.
+- **`wr-pr-creation.yml`** — switched `${{ env.ISSUE_* }}` interpolation in `run:`
+  blocks to `${VAR}` shell expansion, closing a shell-injection surface from
+  attacker-controlled issue titles.
+
+The recurring gotchas behind these (gh repo target without checkout, gh auth,
+job permissions, shell injection) are now documented in `CLAUDE.md` so future
+agents don't re-discover them.
