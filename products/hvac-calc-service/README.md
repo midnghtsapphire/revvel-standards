@@ -73,6 +73,7 @@ See `app/api/calculate/route.ts` for full request/response schema.
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Pro checkout URL. Falls back to email contact when unset. |
 
 Create local config (optional): create a `.env.local` file and set `NEXT_PUBLIC_POLAR_CHECKOUT_URL` if you want the Pro CTA to link somewhere.
+
 ---
 
 ## Calculations Reference
