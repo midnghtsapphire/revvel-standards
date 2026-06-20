@@ -261,12 +261,28 @@ function gatherContext(repo, issueNumber) {
   ].join("\n");
 }
 
+// Common low-signal words to strip before building a duplicate-search query.
+// Kept at module level for clarity; extend as needed.
+const DEDUP_STOPWORDS = new Set([
+  "please", "that", "this", "with", "from", "perm", "including",
+  "checking", "there", "already", "error", "issue", "problem",
+]);
+
+// GitHub issue titles are capped at 256 chars by the API; we use 120 to keep
+// them readable in list views and avoid mid-word truncation in UI previews.
+const MAX_ISSUE_TITLE_LENGTH = 120;
+
 /**
  * Extract the most distinctive keywords from a free-text error description.
- * Returns up to 6 tokens that are likely to appear in a matching WR/PR title.
+ *
+ * Strategy: lowercase, strip punctuation, remove very short tokens (<= 3 chars)
+ * and high-frequency filler words (DEDUP_STOPWORDS), then take the first 6
+ * survivors. Six terms give enough signal for a GitHub full-text search while
+ * staying under the search query length limit and avoiding false-negative misses
+ * caused by over-specifying a rare multi-word phrase.
  *
  * @param {string} text - Free-text error description or comment body.
- * @returns {string[]}
+ * @returns {string[]} Up to 6 keyword tokens.
  */
 function errorKeywords(text) {
   return (text || "")
@@ -274,7 +290,7 @@ function errorKeywords(text) {
     .split(/\s+/)
     .map((t) => t.toLowerCase())
     .filter((t) => t.length > 3)
-    .filter((t) => !["please", "that", "this", "with", "from", "perm", "including", "checking", "there", "already"].includes(t))
+    .filter((t) => !DEDUP_STOPWORDS.has(t))
     .slice(0, 6);
 }
 
@@ -291,7 +307,13 @@ function errorKeywords(text) {
  * @returns {{type: string, number: number, title: string, url: string} | null}
  */
 function findExistingWrOrPr(repo, kws) {
-  if (!kws || kws.length === 0) return null;
+  if (!kws || kws.length === 0) {
+    // No usable keywords extracted — skip duplicate check rather than running
+    // a vacuous search that would return arbitrary results. A new WR will be
+    // created; this is the safe default when the error description is too short.
+    console.log("DRAGNET: no keywords extracted from error — skipping duplicate search.");
+    return null;
+  }
   const query = kws.join(" ");
   try {
     // Search open WR issues first.
@@ -362,7 +384,7 @@ function dragnetFixRequest({ repo, task, requestedOn }) {
   }
 
   // No duplicate — file a fresh permanent-fix WR.
-  const title = `[WR][perm-fix] ${task}`.slice(0, 120);
+  const title = `[WR][perm-fix] ${task}`.slice(0, MAX_ISSUE_TITLE_LENGTH);
   const body = [
     `Permanent-fix Work Request filed by the **DRAGNET** persona from a comment on #${requestedOn}.`,
     "",
