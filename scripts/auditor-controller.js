@@ -145,13 +145,21 @@ const CHECKS = [
     run() {
       const yml = read('data/subscriptions.yml');
       if (!yml) return { pass: true, detail: 'no data/subscriptions.yml' };
-      const entries = yml.split(/^  - name:/m).slice(1);
+      // Parse robustly per Octopus review: split AFTER `- name: `, take the
+      // name from line 1 explicitly, and scope each entry's body to its own
+      // block (everything up to the next `- name:`). The prior version's
+      // multiline `^...$` non-greedy regex captured unpredictable text and
+      // its date regexes scanned across the next entry, causing false
+      // negatives plus `- undefined` rows.
+      const entries = yml.split(/^  - name:\s*/m).slice(1);
       const missing = [];
       for (const e of entries) {
-        const name = (e.match(/^\s*(.+?)\s*$/m) || [])[1];
-        const hasTrial = /trial_end:\s*\d{4}-\d{2}-\d{2}/.test(e);
-        const hasRenewal = /renewal_date:\s*\d{4}-\d{2}-\d{2}/.test(e);
-        const usagePriced = /billing_cycle:\s*(usage|free)/i.test(e);
+        const firstLine = e.split('\n', 1)[0].trim();
+        const name = firstLine || '(unnamed)';
+        const block = e.split(/^  - name:/m)[0];
+        const hasTrial = /^\s{4,}trial_end:\s*\d{4}-\d{2}-\d{2}/m.test(block);
+        const hasRenewal = /^\s{4,}renewal_date:\s*\d{4}-\d{2}-\d{2}/m.test(block);
+        const usagePriced = /^\s{4,}billing_cycle:\s*(usage|free)/im.test(block);
         if (!hasTrial && !hasRenewal && !usagePriced) missing.push(name);
       }
       return {
