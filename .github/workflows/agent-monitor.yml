@@ -107,6 +107,10 @@ jobs:
       # Prefer the ADMIN PAT secret (falls back to the built-in token) so the
       # WR it files can trigger downstream automation.
       GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      # This job has no checkout, so gh has no local git remote to infer the
+      # repo from. GH_REPO targets every gh command (issue create/comment) at
+      # the right repo and avoids "fatal: not a git repository".
+      GH_REPO: ${{ github.repository }}
     steps:
       - name: Check for existing WR
         id: existing
