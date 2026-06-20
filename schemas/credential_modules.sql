@@ -17,8 +17,12 @@ CREATE TABLE IF NOT EXISTS credential_modules (
   enabled         BOOLEAN     NOT NULL DEFAULT FALSE,
 
   -- ── What this module governs (string arrays serialized as JSON) ─────
-  governs_workflows  JSONB    NOT NULL DEFAULT '[]'::jsonb,
-  governs_scripts    JSONB    NOT NULL DEFAULT '[]'::jsonb,
+  -- CHECK constraints enforce array shape so non-array payloads (object,
+  -- string, null) can't sneak in. Per cubic review.
+  governs_workflows  JSONB    NOT NULL DEFAULT '[]'::jsonb
+                              CHECK (jsonb_typeof(governs_workflows) = 'array'),
+  governs_scripts    JSONB    NOT NULL DEFAULT '[]'::jsonb
+                              CHECK (jsonb_typeof(governs_scripts) = 'array'),
 
   -- ── Audit ───────────────────────────────────────────────────────────
   last_changed    TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -33,6 +37,23 @@ CREATE TABLE IF NOT EXISTS credential_modules (
 
 CREATE INDEX IF NOT EXISTS idx_credential_modules_enabled
   ON credential_modules (enabled);
+
+-- Per cubic review: keep updated_at fresh on every row update so audit
+-- metadata doesn't go stale. Postgres pattern — replace the function
+-- safely and attach a BEFORE UPDATE trigger.
+CREATE OR REPLACE FUNCTION credential_modules_touch_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS credential_modules_set_updated_at ON credential_modules;
+CREATE TRIGGER credential_modules_set_updated_at
+  BEFORE UPDATE ON credential_modules
+  FOR EACH ROW
+  EXECUTE FUNCTION credential_modules_touch_updated_at();
 
 -- Append-only audit trail of every flip; the main table holds current state.
 CREATE TABLE IF NOT EXISTS credential_modules_audit (
