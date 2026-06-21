@@ -94,6 +94,37 @@ skills:
 
   # ─── Agent Operations ──────────────────────────────────────────────────────
 
+  - name: malama
+    title: "Mālama — Self-Healing Autonomous Agent Operating Loop"
+    version: "1.0.0"
+    path: "skills/malama/"
+    skill_file: "skills/malama/malama.skill.yml"
+    category: "Agent Operations"
+    standard: "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md"
+    system_prompt: "skills/malama/SYSTEM_PROMPT.md"
+    access: all
+    triggers:
+      - "malama"
+      - "self-healing agent"
+      - "autonomous loop"
+      - "plan act verify learn"
+      - "agent operating loop"
+      - "session constitution"
+
+  - name: project_router
+    title: "Project Router — Auto-Load the Right Master Docs by Project Type"
+    version: "1.0.0"
+    path: "skills/project-router/"
+    skill_file: "skills/project-router/project-router.skill.yml"
+    category: "Agent Operations"
+    access: all
+    triggers:
+      - "project router"
+      - "detect project type"
+      - "which standard"
+      - "shape router"
+      - "session start router"
+
   - name: gbrain
     title: "GBrain — Persistent Agent Memory"
     version: "1.0.0"
