@@ -144,18 +144,6 @@ const CHECKS = [
     name: 'Subscription tracker entries have renewal/trial dates',
     run() {
       const yml = read('data/subscriptions.yml');
-// Parse more robustly: split into per-entry blocks, then read name from line 1 explicitly.
-const entries = yml.split(/^  - name:\s*/m).slice(1);
-for (const e of entries) {
-  const firstLine = e.split('\n', 1)[0].trim();
-  const name = firstLine || '(unnamed)';
-  // Only scan THIS entry's block (stop at next top-level key or EOF)
-  const block = e.split(/^  - name:/m)[0];
-  const hasTrial = /^\s{4,}trial_end:\s*\d{4}-\d{2}-\d{2}/m.test(block);
-  const hasRenewal = /^\s{4,}renewal_date:\s*\d{4}-\d{2}-\d{2}/m.test(block);
-  const usagePriced = /^\s{4,}billing_cycle:\s*(usage|free)/im.test(block);
-  if (!hasTrial && !hasRenewal && !usagePriced) missing.push(name);
-}
       // Parse robustly per Octopus review: split AFTER `- name: `, take the
       // name from line 1 explicitly, and scope each entry's body to its own
       // block (everything up to the next `- name:`). The prior version's
