@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      broken_areas: ${{ steps.scan.outputs.broken }}
+      broken: ${{ steps.scan.outputs.broken }}
       system_health: ${{ steps.health.outputs.status }}
     steps:
       - name: Check GitHub Actions status
@@ -108,11 +108,16 @@ jobs:
             BROKEN+=("Missing workflows: $AGENTS")
           fi
           
-          # Use %s so each array element is actually emitted. Without it the
-          # format string has no conversion spec, so the broken descriptions are
-          # dropped and `broken` never reflects real failures (the self-heal
-          # phase then can't match "Stuck issues"/"GitHub Actions" to act on).
-          echo "broken=$(printf '%s; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
+          # Emit each broken-area element with %s. Guard on array length: a bare
+          # `printf '%s; '` with no args still prints "; " (non-empty), which
+          # would mark the system needs-healing on every healthy run. An empty
+          # array must yield an empty value so Compile system health sees healthy.
+          if [[ ${#BROKEN[@]} -gt 0 ]]; then
+            BROKEN_STR="$(printf '%s; ' "${BROKEN[@]}")"
+          else
+            BROKEN_STR=""
+          fi
+          echo "broken=$BROKEN_STR" >> "$GITHUB_OUTPUT"
 
       - name: Compile system health
         id: health
