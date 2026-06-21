@@ -108,7 +108,11 @@ jobs:
             BROKEN+=("Missing workflows: $AGENTS")
           fi
           
-          echo "broken=$(printf '; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
+          # Use %s so each array element is actually emitted. Without it the
+          # format string has no conversion spec, so the broken descriptions are
+          # dropped and `broken` never reflects real failures (the self-heal
+          # phase then can't match "Stuck issues"/"GitHub Actions" to act on).
+          echo "broken=$(printf '%s; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
 
       - name: Compile system health
         id: health
