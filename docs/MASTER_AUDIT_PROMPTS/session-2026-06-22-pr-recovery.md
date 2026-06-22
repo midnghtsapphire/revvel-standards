@@ -18,7 +18,7 @@ self healing scripts holding everything up.
 
 ## Session Context (Pre-Session State)
 
-### Completed Actions Before Session:
+### Completed Actions Before Session
 - Explored repository structure and identified self-healing workflows
 - Ran self-heal-repo.js successfully (validated YAML, reprocessed PR labels, no stale issues)
 - Verified self-healing.yml workflow YAML structure is valid
@@ -27,7 +27,7 @@ self healing scripts holding everything up.
 - Merged PR #14678: feat(dragnet) /dragnet persona with WR/PR dedup
 - Merged PR #14677: fix(triage) sweep/route-new collisions
 
-### Pending at Session Start:
+### Pending at Session Start
 - PR #14679: auditor-controller kill switch (blocked, needs human intervention)
 - Monitor self-healing workflow for next successful run
 - Verify no conflicts on remaining PRs

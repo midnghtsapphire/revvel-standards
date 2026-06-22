@@ -31,5 +31,20 @@
 
   // MD060: Table column style - disabled because separator rows (|---|) and
   // content rows (| text |) use different spacing by convention in all our docs
-  "MD060": false
+  "MD060": false,
+
+  // Relaxed rules for audit prompts and checklists
+  "MD022": {
+    "lines_above": 0,
+    "lines_below": 0
+  },
+  "MD031": false,
+  "MD032": false,
+  "MD036": false,
+  "MD040": false,
+  "MD009": false,
+  "MD026": {
+    "punctuation": ".,:!?\""
+  },
+  "MD058": false
 }
