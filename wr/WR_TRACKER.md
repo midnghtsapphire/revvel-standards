@@ -1,12 +1,12 @@
 # WR Tracker - All midnghtsapphire Repositories
 
 **Total Repositories:** 140
-**WRs Created:** 1
-**WRs In Progress:** 1
+**WRs Created:** 2
+**WRs In Progress:** 2
 **WRs Completed:** 0
 **Ship-to-Market Ready:** 0
 
-**Last Updated:** 2026-05-02
+**Last Updated:** 2026-06-22
 **Tracking Issue:** [Link to be added]
 
 ---
@@ -18,7 +18,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ### Status Indicators
 
 | Icon | Status | Description |
-|------|--------|-------------|
+| --- | --- | --- |
 | ⭕ | Not Started | WR not yet initiated |
 | 🟡 | In Progress | WR actively being researched |
 | ✅ | Complete | WR finished, recommendations documented |
@@ -30,7 +30,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ### Priority Levels
 
 | Level | Description | Revenue Potential | Timeline |
-|-------|-------------|-------------------|----------|
+| --- | --- | --- | --- |
 | P0 | Critical - Immediate revenue impact | $500+/month | This week |
 | P1 | High - Near-term revenue opportunity | $100-500/month | 1-2 weeks |
 | P2 | Medium - Strategic growth | $50-100/month | 1-2 months |
@@ -42,9 +42,9 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 ## Repository Status Table
 
 | # | Repository | Created | Last Updated | Status | Priority | Revenue Potential | WR Link | Notes |
-|---|------------|---------|--------------|--------|----------|-------------------|---------|-------|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY) | 2021-10-22 | 2026-04-28 | ⭕ | P2 | TBD | - | XPRIZE project |
-| 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-04-28 | ⭕ | P3 | TBD | - | Community site |
+| 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-06-22 | 🟡 | P3 | Memberships + partners | [WR](issues/issue-14705-fleet-maintenance-k9-community-site.md) | Vite/React/TS dog-community site; fleet WR #14705 — wire review workflows |
 | 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
 | 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
 | 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | - | TypeScript |
@@ -103,7 +103,7 @@ cd wr
 ### Current State (as of 2026-05-02)
 
 | Category | Count | Est. Monthly Revenue | Notes |
-|----------|-------|---------------------|-------|
+| --- | --- | --- | --- |
 | Ship-Ready | 0 | $0 | Target: 5 repos by end of May |
 | In Progress | 1 | $0 (potential) | neurooz WR being completed |
 | Identified P0 | ~10 | $5000+ (potential) | High-value opportunities |
