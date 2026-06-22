@@ -20,7 +20,7 @@ The self-healing system is an automated infrastructure that detects failures, st
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           SELF-HEALING ECOSYSTEM                           │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -65,32 +65,36 @@ The self-healing system is an automated infrastructure that detects failures, st
 These workflows **detect** problems:
 
 ### `stuck-wr-detector.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (1h) + Issue events |
-| **Detects** | Work Requests without PRs after extended time |
-| **Action** | Creates tracking issue, dispatches wr-pr-creation.yml |
+
+| Property    | Value                                                 |
+| ----------- | ----------------------------------------------------- |
+| **Trigger** | Cron (1h) + Issue events                              |
+| **Detects** | Work Requests without PRs after extended time         |
+| **Action**  | Creates tracking issue, dispatches wr-pr-creation.yml |
 
 ### `stuck-label-watchdog.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (1h) |
+
+| Property    | Value                              |
+| ----------- | ---------------------------------- |
+| **Trigger** | Cron (1h)                          |
 | **Detects** | Issues stuck in any label for >24h |
-| **Action** | Posts warning, escalates priority |
+| **Action**  | Posts warning, escalates priority  |
 
 ### `stuck-check-watchdog.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (30m) |
-| **Detects** | Issues stuck in `wr:checking` for >2h |
-| **Action** | Labels with `wr:check-failed`, re-triggers |
+
+| Property    | Value                                      |
+| ----------- | ------------------------------------------ |
+| **Trigger** | Cron (30m)                                 |
+| **Detects** | Issues stuck in `wr:checking` for >2h      |
+| **Action**  | Labels with `wr:check-failed`, re-triggers |
 
 ### `stuck-label-automation.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (30m) |
-| **Detects** | Label-progression violations |
-| **Action** | Auto-advances labels, posts comments |
+
+| Property    | Value                                |
+| ----------- | ------------------------------------ |
+| **Trigger** | Cron (30m)                           |
+| **Detects** | Label-progression violations         |
+| **Action**  | Auto-advances labels, posts comments |
 
 ---
 
@@ -99,19 +103,34 @@ These workflows **detect** problems:
 These workflows **attempt to fix** problems:
 
 ### `self-healing.yml` (Main Healer)
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (4h) |
-| **Checks** | Failed actions, stuck issues, missing workflows |
-| **Heals** | Re-runs failed workflows, labels stuck issues |
-| **Threshold** | >3 failed actions in 24h, >5 stuck issues |
+
+| Property      | Value                                                   |
+| ------------- | ------------------------------------------------------- |
+| **Trigger**   | Cron (4h)                                               |
+| **Checks**    | Failed actions, stuck issues, missing workflows         |
+| **Heals**     | Re-runs failed workflows, labels stuck issues           |
+| **Threshold** | >3 failed actions in 24h, >5 stuck issues               |
+| **Also runs** | `update-main` job (always, even when system is healthy) |
+
+### `self-healing.yml` — `update-main` job
+
+| Property                 | Value                                                           |
+| ------------------------ | --------------------------------------------------------------- |
+| **Purpose**              | Advance approved + green PRs into `main` automatically          |
+| **Trigger**              | Part of `self-healing.yml` (4h cron + manual dispatch)          |
+| **Eligibility criteria** | Non-draft, approved, CI green, no `won't-merge`, not conflicted |
+| **Action**               | Adds `auto-merge` label → `auto-merge.yml` squash-merges        |
+| **Skips**                | Drafts, `won't-merge` PRs, conflicted branches, unapproved PRs  |
+| **Playbook**             | `docs/playbooks/branch-update-guide.md` (§5)                    |
+| **Manual processes**     | `docs/playbooks/wr-manual-processes.md` (§14)                   |
 
 ### `wr-pr-creation.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | workflow_dispatch, issues |
-| **Action** | Creates PR from WR template |
-| **Retry** | Up to 3 attempts before escalation |
+
+| Property    | Value                              |
+| ----------- | ---------------------------------- |
+| **Trigger** | workflow_dispatch, issues          |
+| **Action**  | Creates PR from WR template        |
+| **Retry**   | Up to 3 attempts before escalation |
 
 ---
 
@@ -120,54 +139,60 @@ These workflows **attempt to fix** problems:
 When detection + healing fails, these **orchestrate human intervention**:
 
 ### `auto-reset-stuck-issues.yml` ⭐ NEW
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (30m) |
-| **Detects** | Issues stuck in `triage:new` > 1h |
-| **Target Labels** | `auto-fix`, `ralph-loop`, `wr-stuck`, `auto-error` |
-| **Action** | Removes/re-adds labels, posts comment, triggers assignee |
-| **Use Case** | Auto-recovery without manual intervention |
+
+| Property          | Value                                                    |
+| ----------------- | -------------------------------------------------------- |
+| **Trigger**       | Cron (30m)                                               |
+| **Detects**       | Issues stuck in `triage:new` > 1h                        |
+| **Target Labels** | `auto-fix`, `ralph-loop`, `wr-stuck`, `auto-error`       |
+| **Action**        | Removes/re-adds labels, posts comment, triggers assignee |
+| **Use Case**      | Auto-recovery without manual intervention                |
 
 ### `reset-self-heal-issue.yml` ⭐ NEW
-| Property | Value |
-|----------|-------|
-| **Trigger** | workflow_dispatch (manual) |
-| **Input** | Issue number |
-| **Action** | Full reset cycle + OpenRouter trigger |
+
+| Property     | Value                                     |
+| ------------ | ----------------------------------------- |
+| **Trigger**  | workflow_dispatch (manual)                |
+| **Input**    | Issue number                              |
+| **Action**   | Full reset cycle + OpenRouter trigger     |
 | **Use Case** | Manual recovery for specific stuck issues |
 
 ### `openrouter-assignee.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Cron (1h) + Issues + PRs |
-| **Action** | Routes to OpenRouter orchestrator |
-| **Labels** | `openrouter`, `copilot`, `role:orchestrator` |
+
+| Property    | Value                                        |
+| ----------- | -------------------------------------------- |
+| **Trigger** | Cron (1h) + Issues + PRs                     |
+| **Action**  | Routes to OpenRouter orchestrator            |
+| **Labels**  | `openrouter`, `copilot`, `role:orchestrator` |
 
 ### `agent-fallback.yml`
-| Property | Value |
-|----------|-------|
-| **Trigger** | Label `agent-fallback` |
-| **Fallback Chain** | OpenHands → Cursor → OpenRouter |
-| **Action** | Attempts fix with each agent in sequence |
+
+| Property           | Value                                    |
+| ------------------ | ---------------------------------------- |
+| **Trigger**        | Label `agent-fallback`                   |
+| **Fallback Chain** | OpenHands → Cursor → OpenRouter          |
+| **Action**         | Attempts fix with each agent in sequence |
 
 ---
 
 ## Ralph Loop (The Self-Healing Agent)
 
 The **Ralph Loop** is the core self-healing agent that:
+
 1. Receives issues via `openrouter-assignee.yml`
 2. Analyzes the problem
 3. Attempts fixes
 4. Tracks attempts via `scorecard` label
 5. Escalates after 3 failed attempts
 
-### Ralph Loop Labels:
-| Label | Purpose |
-|-------|---------|
-| `auto-fix` | Identifies self-healing issue |
-| `ralph-loop` | Managed by Ralph Loop |
-| `scorecard` | Trust/tracking metrics |
-| `needs-human` | Escalation required |
+### Ralph Loop Labels
+
+| Label         | Purpose                       |
+| ------------- | ----------------------------- |
+| `auto-fix`    | Identifies self-healing issue |
+| `ralph-loop`  | Managed by Ralph Loop         |
+| `scorecard`   | Trust/tracking metrics        |
+| `needs-human` | Escalation required           |
 
 ---
 
@@ -175,7 +200,7 @@ The **Ralph Loop** is the core self-healing agent that:
 
 ### Example 1: WR Stuck (Auto-Resolution)
 
-```
+```text
 1. WR issue created, research runs, PR not created
 2. stuck-wr-detector.yml fires (1h cron)
 3. Detects: no PR for 4h
@@ -186,7 +211,7 @@ The **Ralph Loop** is the core self-healing agent that:
 
 ### Example 2: WR Stuck (Manual Reset)
 
-```
+```text
 1. WR stuck, tried 3 times, no PR
 2. stuck-wr-detector.yml creates #14647
 3. auto-reset-stuck-issues.yml fires (30m cron)
@@ -200,7 +225,7 @@ The **Ralph Loop** is the core self-healing agent that:
 
 ### Example 3: Human Escalation
 
-```
+```text
 1. WR stuck, automation cannot fix
 2. Ralph Loop: 3 attempts failed
 3. Labels: `needs-human`, `wr-stuck`
@@ -217,6 +242,7 @@ The **Ralph Loop** is the core self-healing agent that:
 ## Quick Reference
 
 ### Auto-Reset (No Human Needed)
+
 ```bash
 # Any stuck issue - automatic
 gh workflow run auto-reset-stuck-issues.yml \
@@ -224,6 +250,7 @@ gh workflow run auto-reset-stuck-issues.yml \
 ```
 
 ### Manual Reset (Specific Issue)
+
 ```bash
 # Specific stuck issue
 gh workflow run reset-self-heal-issue.yml \
@@ -232,6 +259,7 @@ gh workflow run reset-self-heal-issue.yml \
 ```
 
 ### Force Re-Run Wr-Pr-Creation
+
 ```bash
 # Directly trigger PR creation
 gh workflow run wr-pr-creation.yml \
@@ -244,6 +272,7 @@ gh workflow run wr-pr-creation.yml \
 ## Monitoring
 
 ### Check System Health
+
 ```bash
 # View recent self-healing runs
 gh run list --workflow=self-healing.yml --limit 5
@@ -256,6 +285,7 @@ gh issue list --label ralph-loop --state open
 ```
 
 ### Debug a Specific Issue
+
 ```bash
 # View issue timeline
 gh issue view 14592 --timeline
@@ -268,12 +298,15 @@ gh run list --workflow=wr-pr-creation.yml --limit 10
 
 ## Related Documentation
 
-| Document | Description |
-|----------|-------------|
-| `skills/ralph-loop/SKILL.md` | Ralph Loop agent instructions |
-| `skills/openrouter-swarms/SKILL.md` | OpenRouter orchestrator |
-| `docs/AUTOMATION_AND_AUTOHEAL_STANDARD.md` | Auto-heal standards |
-| `.github/workflows/stuck-wr-detector.yml` | WR stuck detection |
+| Document                                   | Description                              |
+| ------------------------------------------ | ---------------------------------------- |
+| `skills/ralph-loop/SKILL.md`               | Ralph Loop agent instructions            |
+| `skills/openrouter-swarms/SKILL.md`        | OpenRouter orchestrator                  |
+| `docs/AUTOMATION_AND_AUTOHEAL_STANDARD.md` | Auto-heal standards                      |
+| `.github/workflows/stuck-wr-detector.yml`  | WR stuck detection                       |
+| `docs/playbooks/wr-novice-playbook.md`     | End-to-end WR guide for novice users     |
+| `docs/playbooks/wr-manual-processes.md`    | Every manual process with caveats        |
+| `docs/playbooks/branch-update-guide.md`    | Pros/cons of updating branches from main |
 
 ---
 

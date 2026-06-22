@@ -98,7 +98,7 @@ function isWrIssue(title, labels, issueType) {
 }
 
 function isCompletionLabel(labelName) {
-  const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research']);
+  const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research', 'wr:reset']);
   return COMPLETION_LABELS.has(labelName);
 }
 
@@ -247,6 +247,10 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isCompletionLabel('wr:research'), true);
   });
 
+  await test('isCompletionLabel detects wr:reset (self-heal force-create)', () => {
+    assert.equal(isCompletionLabel('wr:reset'), true);
+  });
+
   await test('isCompletionLabel rejects non-completion labels', () => {
     assert.equal(isCompletionLabel('work-request'), false);
     assert.equal(isCompletionLabel('needs-action'), false);
@@ -331,6 +335,13 @@ function isCompletionTrigger(eventName, action, labelName) {
   await test('isCompletionTrigger allows wr:complete labeled event', () => {
     assert.equal(
       isCompletionTrigger('issues', 'labeled', 'wr:complete'),
+      true
+    );
+  });
+
+  await test('isCompletionTrigger allows wr:reset labeled event (self-heal)', () => {
+    assert.equal(
+      isCompletionTrigger('issues', 'labeled', 'wr:reset'),
       true
     );
   });

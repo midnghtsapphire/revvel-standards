@@ -1,14 +1,16 @@
 name: WR PR Creation
 on:
-  # `issue_comment` and `issues: labeled` triggers are intentionally removed:
-  # sibling automation re-applies labels (incl. research:complete) and posts
-  # comments constantly, which regenerated duplicate skeleton WR PRs for the
-  # same issues every sweep. WR PRs are now created only when an issue is first
-  # opened/reopened, or deliberately via workflow_dispatch.
+  # `issue_comment` trigger is intentionally omitted: sibling automation posts
+  # comments constantly which would regenerate duplicate skeleton WR PRs.
+  # `issues: labeled` is re-enabled ONLY for `wr:reset`, which is applied
+  # exclusively by the self-heal system to force a fresh PR creation pass.
+  # Generic label-churn (research:complete, wr:complete, etc.) is still filtered
+  # out in the detect-completion step to prevent retrigger storms.
   issues:
     types:
       - opened
       - reopened
+      - labeled
   workflow_dispatch:
     inputs:
       issue_number:
@@ -98,6 +100,8 @@ jobs:
             // the real PR-creation run. Only labels that genuinely signal
             // research/WR completion should advance here; `opened`,
             // `issue_comment`, and `workflow_dispatch` paths are unaffected.
+            // `wr:reset` is also allowed through — it is applied by the
+            // self-heal system to force a fresh PR creation pass.
             if (context.eventName === 'issues' && context.payload.action === 'labeled') {
               const triggerLabel = context.payload.label?.name || '';
               const COMPLETION_LABELS = new Set(['research:complete', 'wr:complete', 'wr:research', 'wr:reset']);
@@ -252,6 +256,15 @@ jobs:
               return isWrSkeleton && refsThisIssue && blocks;
             });
 
+            // `wr:reset` allows recovery after an abandoned (closed-unmerged)
+            // skeleton PR. Open or merged skeleton PRs always block, even with
+            // wr:reset, to prevent duplicate in-flight or re-shipped WRs.
+            const isResetTriggered =
+              (context.eventName === 'issues' &&
+               context.payload.action === 'labeled' &&
+               context.payload.label?.name === 'wr:reset') ||
+              labelSet.has('wr:reset');
+
             if (existingPR) {
               // wr:reset forces a fresh PR even when a skeleton already exists.
               // This lets operators unblock a stuck WR without manual branch cleanup.
@@ -265,6 +278,7 @@ jobs:
             }
 
             const isComplete =
+              isResetTriggered ||
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
               labelSet.has('wr:reset') ||
@@ -291,6 +305,7 @@ jobs:
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
             core.info(`Is Complete: ${isComplete}`);
+            core.info(`Reset triggered: ${isResetTriggered}`);
             core.info(`Research-ready comment: ${researchReadyComment}`);
             core.info(`Should Create PR: ${shouldCreate}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
@@ -849,8 +864,8 @@ jobs:
 
             // Remove completion and auto-healer labels once the PR exists so
             // the issue no longer appears stuck after recovery.
-            // wr:reset is also removed here — it is a one-shot signal that must
-            // be cleared after the forced re-generation completes successfully.
+            // `wr:reset` is also removed here so it can be re-applied cleanly
+            // on the next manual or self-heal reset.
             const labelsToRemove = currentLabels
               .map(label => label.name)
               .filter(name =>
