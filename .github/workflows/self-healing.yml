@@ -15,6 +15,18 @@ on:
 
 permissions:
   contents: read
+  issues: write      # self-heal job re-labels stuck issues + files healing journal
+  actions: write     # self-heal job re-runs failed workflow runs
+
+env:
+  # Without this, every `gh` call runs unauthenticated and fails. Prefer the
+  # ADMIN PAT (so healing actions can cascade to downstream workflows) and fall
+  # back to the built-in token.
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  # No job here runs actions/checkout, so gh has no local git remote to infer
+  # the repo from. GH_REPO targets every gh command at the right repo and
+  # avoids "fatal: not a git repository".
+  GH_REPO: ${{ github.repository }}
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
@@ -22,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      broken_areas: ${{ steps.scan.outputs.broken }}
+      broken: ${{ steps.scan.outputs.broken }}
       system_health: ${{ steps.health.outputs.status }}
     steps:
       - name: Check GitHub Actions status
@@ -96,7 +108,16 @@ jobs:
             BROKEN+=("Missing workflows: $AGENTS")
           fi
           
-          echo "broken=$(printf '; ' "${BROKEN[@]}")" >> $GITHUB_OUTPUT
+          # Emit each broken-area element with %s. Guard on array length: a bare
+          # `printf '%s; '` with no args still prints "; " (non-empty), which
+          # would mark the system needs-healing on every healthy run. An empty
+          # array must yield an empty value so Compile system health sees healthy.
+          if [[ ${#BROKEN[@]} -gt 0 ]]; then
+            BROKEN_STR="$(printf '%s; ' "${BROKEN[@]}")"
+          else
+            BROKEN_STR=""
+          fi
+          echo "broken=$BROKEN_STR" >> "$GITHUB_OUTPUT"
 
       - name: Compile system health
         id: health
