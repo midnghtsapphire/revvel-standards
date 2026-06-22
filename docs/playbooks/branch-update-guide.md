@@ -34,7 +34,7 @@ When you (or automation) create a WR branch (`wr/issue-N-title`), it forks from
 A new "merge commit" is created on your branch that combines `main`'s latest
 state with your branch's state.
 
-```
+```text
 main:       A -- B -- C -- D
                             \
 your-branch: A -- B -- X -- [merge commit]
@@ -94,7 +94,7 @@ already closed/merged, there's nothing to update.
 Your branch's commits are "replayed" on top of the latest `main`, as if you had
 started from the current `main` instead of the old one.
 
-```
+```text
 Before:
   main:       A -- B -- C -- D
   your-branch: A -- B -- X -- Y
@@ -155,15 +155,15 @@ safer when there are many conflicts.
 
 ## 4. When to Update vs. When to Wait
 
-| Situation | Recommendation |
-|-----------|---------------|
-| GitHub shows "Update branch" (no conflicts) | Click the button — safe and fast |
-| Your PR has conflicts | Update is required before merge can proceed |
-| Your branch is 1–2 commits behind main, no conflicts | Optional — wait until you're ready to merge |
-| Your branch is 50+ commits behind main | Update now — the longer you wait, the harder it gets |
-| Two WRs touch the same file | Coordinate — one should merge first, then the other updates |
-| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges |
-| Your branch has automated commits (Jules) | Use merge, not rebase |
+| Situation                                                | Recommendation                                              |
+| -------------------------------------------------------- | ----------------------------------------------------------- |
+| GitHub shows "Update branch" (no conflicts)              | Click the button — safe and fast                            |
+| Your PR has conflicts                                    | Update is required before merge can proceed                 |
+| Your branch is 1–2 commits behind main, no conflicts     | Optional — wait until you're ready to merge                 |
+| Your branch is 50+ commits behind main                   | Update now — the longer you wait, the harder it gets        |
+| Two WRs touch the same file                              | Coordinate — one should merge first, then the other updates |
+| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges                  |
+| Your branch has automated commits (Jules)                | Use merge, not rebase                                       |
 
 ---
 
@@ -207,7 +207,8 @@ The `update-main` job in `self-healing.yml` runs every 4 hours and:
 When `git merge` or `git rebase` reports a conflict:
 
 1. Open the conflicted file. Look for:
-   ```
+
+```text
    <<<<<<< HEAD (your branch)
    your change here
    =======
@@ -215,23 +216,24 @@ When `git merge` or `git rebase` reports a conflict:
    >>>>>>> origin/main
    ```
 
-2. Decide which version to keep (or combine both).
+1. Decide which version to keep (or combine both).
 
-3. Remove the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
+2. Remove the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
 
-4. Save the file.
+3. Save the file.
 
-5. Stage the resolved file:
+4. Stage the resolved file:
+
    ```bash
    git add path/to/file.md
    ```
 
-6. If merging: `git commit`  
+5. If merging: `git commit`  
    If rebasing: `git rebase --continue`
 
-7. Repeat for each conflicted file.
+6. Repeat for each conflicted file.
 
-8. Push when done.
+7. Push when done.
 
 ### When conflicts are in auto-generated files
 
@@ -246,7 +248,7 @@ by `npm test`. If these are conflicted:
 
 ## 7. Quick Decision Tree
 
-```
+```text
 Is my branch conflicted with main?
   ├─ YES → Update branch is required before merge
   │         └─ Use: git merge origin/main (recommended)

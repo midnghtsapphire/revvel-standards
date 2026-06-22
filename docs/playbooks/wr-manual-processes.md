@@ -42,11 +42,13 @@ template, and opens a pull request.
 ### How
 
 **Via GitHub UI:**
+
 1. Go to **Actions** → **wr-pr-creation** → **"Run workflow"**
 2. Enter the issue number in the `issue_number` field
 3. Click **"Run workflow"**
 
 **Via CLI:**
+
 ```bash
 gh workflow run wr-pr-creation.yml \
   --field issue_number=<NUMBER> \
@@ -89,11 +91,13 @@ triggers `openrouter-assignee.yml` so Ralph Loop picks it up again.
 ### How
 
 **Via GitHub UI:**
+
 1. Go to **Actions** → **reset-self-heal-issue** → **"Run workflow"**
 2. Enter the issue number
 3. Click **"Run workflow"**
 
 **Via CLI:**
+
 ```bash
 gh workflow run reset-self-heal-issue.yml \
   --field issue_number=<NUMBER> \
@@ -133,9 +137,11 @@ the reset completes.
 ### How
 
 **Via GitHub UI:**
+
 1. Go to **Actions** → **auto-reset-stuck-issues** → **"Run workflow"**
 
 **Via CLI:**
+
 ```bash
 gh workflow run auto-reset-stuck-issues.yml \
   --repo midnghtsapphire/revvel-standards
@@ -148,7 +154,7 @@ are stuck intentionally (e.g., you're waiting for a review), they will also be
 reset. Review what's currently stuck before firing.
 
 ⚠️ **API budget** — Each reset calls OpenRouter. A batch of 20 resets = 20
-API calls. Check the OpenRouter balance at https://openrouter.ai/credits before
+API calls. Check the OpenRouter balance at <https://openrouter.ai/credits> before
 running if you're near a limit.
 
 ⚠️ **Cron conflict** — If the 30-minute cron fires at the same time as your
@@ -393,11 +399,13 @@ Asks CircleCI (or GitHub Actions) to retry a failed job without pushing new code
 ### How
 
 **Via GitHub UI:**
+
 1. Open the PR or commit.
 2. Click **"Details"** next to the failing check.
 3. On CircleCI, click **"Re-run failed jobs"** or **"Re-run workflow from start"**.
 
 **For GitHub Actions jobs:**
+
 1. Go to **Actions** → find the run.
 2. Click **"Re-run failed jobs"** or **"Re-run all jobs"**.
 
@@ -466,6 +474,7 @@ your branch."
 ### How
 
 **Option A — Merge (safer, preserves history):**
+
 ```bash
 git fetch origin main
 git checkout wr/issue-N-your-title
@@ -475,6 +484,7 @@ git push origin wr/issue-N-your-title
 ```
 
 **Option B — Rebase (cleaner history, higher risk):**
+
 ```bash
 git fetch origin main
 git checkout wr/issue-N-your-title
@@ -515,9 +525,11 @@ workflows — then attempts automated fixes.
 ### How
 
 **Via GitHub UI:**
+
 1. Go to **Actions** → **Self-Healing Agent** → **"Run workflow"**
 
 **Via CLI:**
+
 ```bash
 gh workflow run self-healing.yml \
   --repo midnghtsapphire/revvel-standards
@@ -543,6 +555,7 @@ cause hasn't been fixed (e.g., secret still missing), the re-run will fail again
 ### What it does
 
 `self-healing.yml` includes an `update-main` job that scans for PRs that are:
+
 - Approved (at least one approving review)
 - All required CI checks passing (green)
 - Not in draft state
@@ -564,6 +577,7 @@ The `update-main` job runs automatically as part of `self-healing.yml` (every
 4 hours) and whenever you trigger self-healing manually (see §13).
 
 To run only the update-main pass (without the rest of the healer):
+
 ```bash
 # Manual trigger — runs update-main as part of self-healing
 gh workflow run self-healing.yml \

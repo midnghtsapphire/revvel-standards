@@ -38,10 +38,10 @@ it will be reshaped or rejected by the research engine. That is by design.
 
 ### 3.1 Choose a template
 
-| Template | When to use |
-|----------|-------------|
-| **`WR_TEMPLATE_BASIC.md`** | 95% of requests — just write a title + description |
-| **`WR_TEMPLATE_FULL.md`** | You have strict requirements, deadlines, or compliance needs |
+| Template                   | When to use                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| **`WR_TEMPLATE_BASIC.md`** | 95% of requests — just write a title + description           |
+| **`WR_TEMPLATE_FULL.md`**  | You have strict requirements, deadlines, or compliance needs |
 
 Copy the right template to `wr/WR-<issue-number>.md` after the issue is created.
 
@@ -71,7 +71,7 @@ Once submitted, automation picks it up within 1–2 minutes and applies labels.
 
 ## 4. What Happens Automatically (You Don't Need to Do Anything)
 
-```
+```text
 T+0:00  You create the [WR] issue
 T+0:01  weekly-research.yml detects it, applies routing labels
 T+0:02  Jules (AI researcher) is invoked
@@ -93,17 +93,17 @@ T+4:01  PR merges, issue closes, WR is complete
 
 ## 5. Labels You'll See (and What They Mean)
 
-| Label | What it means | What you do |
-|-------|--------------|-------------|
-| `wr:in-progress` | Research or PR generation running | Wait |
-| `wr:checking` | Automation is verifying something | Wait |
-| `deep-research` | Jules is doing research | Wait |
-| `wr:complete` | WR successfully closed | Nothing — you're done |
-| `wr:check-failed` | A check step failed | See §7 |
-| `wr-stuck` | WR has been stuck for a while | See §7 |
-| `needs-human` | Automation cannot fix this alone | See §8 |
-| `auto-fix` | Ralph Loop self-healer is active | Wait, monitor |
-| `ralph-loop` | Ralph is attempting automated repair | Wait |
+| Label             | What it means                        | What you do           |
+| ----------------- | ------------------------------------ | --------------------- |
+| `wr:in-progress`  | Research or PR generation running    | Wait                  |
+| `wr:checking`     | Automation is verifying something    | Wait                  |
+| `deep-research`   | Jules is doing research              | Wait                  |
+| `wr:complete`     | WR successfully closed               | Nothing — you're done |
+| `wr:check-failed` | A check step failed                  | See §7                |
+| `wr-stuck`        | WR has been stuck for a while        | See §7                |
+| `needs-human`     | Automation cannot fix this alone     | See §8                |
+| `auto-fix`        | Ralph Loop self-healer is active     | Wait, monitor         |
+| `ralph-loop`      | Ralph is attempting automated repair | Wait                  |
 
 ---
 
@@ -149,6 +149,7 @@ gh workflow run wr-pr-creation.yml \
 ```
 
 Or via the GitHub UI:
+
 1. Go to **Actions** → **wr-pr-creation**
 2. Click **"Run workflow"**
 3. Enter your issue number
@@ -170,6 +171,7 @@ gh workflow run reset-self-heal-issue.yml \
 The PR exists but the branch is empty or has placeholder content.
 
 **Fix:**
+
 1. Check the PR for error comments from Jules.
 2. If Jules has no comment, trigger Jules manually via the `jules` label:
    - Go to your issue → Labels → add `jules`
@@ -177,6 +179,7 @@ The PR exists but the branch is empty or has placeholder content.
 ### 7.4 PR has been open > 24 hours and not merged
 
 Check the PR status:
+
 - **Conflicts** → you need to resolve them (see Branch Update Guide: `docs/playbooks/branch-update-guide.md`).
 - **Failing CI** → read the CircleCI logs. The only real gate is `ci/circleci: lint-and-test`.
 - **Waiting for review** → add the `auto-merge` label if you're ready.
@@ -190,6 +193,7 @@ If after trying the above you still can't progress, apply the label
 `needs-human` to your issue. A team member will be notified.
 
 Common reasons automation can't fix:
+
 - Missing or expired API key (`OPENROUTER_API_KEY`, `JULES_API_KEY`).
 - Branch protection misconfiguration.
 - A bug in the WR template itself.
@@ -201,16 +205,16 @@ Common reasons automation can't fix:
 
 > Full details for each process live in `docs/playbooks/wr-manual-processes.md`.
 
-| Process | When to use | Command / Action |
-|---------|-------------|-----------------|
-| Trigger PR creation | WR done, no PR appeared | `gh workflow run wr-pr-creation.yml --field issue_number=N` |
-| Reset stuck issue | Issue stuck > 1h | `gh workflow run reset-self-heal-issue.yml --field issue_number=N` |
-| Force auto-reset all stuck | Many issues stuck | `gh workflow run auto-reset-stuck-issues.yml` |
-| Trigger Jules on issue | Research stalled | Add label `jules` to issue |
-| Trigger Jules on PR | PR needs more refinement | Add label `jules` to PR |
-| Enable auto-merge | PR approved, want auto-merge | Add label `auto-merge` to PR |
-| Block merge | Don't merge this PR | Add label `won't-merge` to PR |
-| Force re-run health check | Want fresh self-healing scan | `gh workflow run self-healing.yml` |
+| Process                    | When to use                  | Command / Action                                                   |
+| -------------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| Trigger PR creation        | WR done, no PR appeared      | `gh workflow run wr-pr-creation.yml --field issue_number=N`        |
+| Reset stuck issue          | Issue stuck > 1h             | `gh workflow run reset-self-heal-issue.yml --field issue_number=N` |
+| Force auto-reset all stuck | Many issues stuck            | `gh workflow run auto-reset-stuck-issues.yml`                      |
+| Trigger Jules on issue     | Research stalled             | Add label `jules` to issue                                         |
+| Trigger Jules on PR        | PR needs more refinement     | Add label `jules` to PR                                            |
+| Enable auto-merge          | PR approved, want auto-merge | Add label `auto-merge` to PR                                       |
+| Block merge                | Don't merge this PR          | Add label `won't-merge` to PR                                      |
+| Force re-run health check  | Want fresh self-healing scan | `gh workflow run self-healing.yml`                                 |
 
 ---
 
@@ -234,30 +238,30 @@ the engine will override them. Trust the auto-fill.
 
 ## 11. Common Mistakes (And How to Avoid Them)
 
-| Mistake | What happens | Fix |
-|---------|-------------|-----|
-| Forgetting `[WR]` prefix | Issue is treated as a standard bug | Edit the title to add `[WR]` |
-| Too vague a description | Research engine guesses wrong | Edit the issue body with more detail |
-| Requesting non-Prime-Directive work | WR is reshaped or rejected | Reframe around revenue impact |
-| Editing the "Auto-filled" section | Your edits get overwritten | Don't edit below the auto-fill line |
-| Approving without reading | Scope creep or missed requirements merge | Read the WR document before approving |
-| Adding conflicting labels | Automation loops | Remove conflicting labels, keep only the correct one |
+| Mistake                             | What happens                             | Fix                                                  |
+| ----------------------------------- | ---------------------------------------- | ---------------------------------------------------- |
+| Forgetting `[WR]` prefix            | Issue is treated as a standard bug       | Edit the title to add `[WR]`                         |
+| Too vague a description             | Research engine guesses wrong            | Edit the issue body with more detail                 |
+| Requesting non-Prime-Directive work | WR is reshaped or rejected               | Reframe around revenue impact                        |
+| Editing the "Auto-filled" section   | Your edits get overwritten               | Don't edit below the auto-fill line                  |
+| Approving without reading           | Scope creep or missed requirements merge | Read the WR document before approving                |
+| Adding conflicting labels           | Automation loops                         | Remove conflicting labels, keep only the correct one |
 
 ---
 
 ## 12. Definitions
 
-| Term | Definition |
-|------|------------|
-| **WR** | Work Request — an issue that starts the automated pipeline |
-| **Jules** | Google's AI coding/research agent integrated as a GitHub Action |
-| **OpenRouter** | LLM routing layer — sends tasks to the best available model |
-| **Ralph Loop** | Self-healing agent — attempts automated fixes for stuck issues |
-| **Main** | The `main` branch — the stable, shipped version of the repo |
-| **PR** | Pull Request — the code/doc change proposed by the pipeline |
-| **Artifact** | Any deliverable: code, PDF, doc, dashboard |
+| Term                | Definition                                                       |
+| ------------------- | ---------------------------------------------------------------- |
+| **WR**              | Work Request — an issue that starts the automated pipeline       |
+| **Jules**           | Google's AI coding/research agent integrated as a GitHub Action  |
+| **OpenRouter**      | LLM routing layer — sends tasks to the best available model      |
+| **Ralph Loop**      | Self-healing agent — attempts automated fixes for stuck issues   |
+| **Main**            | The `main` branch — the stable, shipped version of the repo      |
+| **PR**              | Pull Request — the code/doc change proposed by the pipeline      |
+| **Artifact**        | Any deliverable: code, PDF, doc, dashboard                       |
 | **Prime Directive** | $10k/mo → $10M in 3 years — the North Star all WRs are judged by |
-| **Polar.sh** | GitHub funding/product platform used for revenue |
+| **Polar.sh**        | GitHub funding/product platform used for revenue                 |
 
 ---
 
