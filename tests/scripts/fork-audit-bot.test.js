@@ -22,6 +22,7 @@ const {
   buildAuditBody,
   loadConfig,
   ROUTING_LABELS,
+  MIRROR_LABELS,
 } = require('../../scripts/fork-audit-bot.js');
 require.main = originalMain;
 
@@ -185,6 +186,9 @@ test('buildAuditBody contains required routing references', () => {
   assert.ok(body.includes('foo/bar'));
   assert.ok(body.includes('OPENROUTER_ASSIGNEE_PROCESS.md'));
   assert.ok(body.includes('Rubric breakdown'));
+  // Footer must reference @oaudrey, not stale @Copilot (see issue #14523).
+  assert.ok(body.includes('@oaudrey'), 'footer must reference @oaudrey');
+  assert.ok(!body.includes('@Copilot'), 'footer must not contain stale @Copilot reference');
 });
 
 // ─── ROUTING_LABELS ──────────────────────────────────────────
@@ -207,6 +211,40 @@ test('ROUTING_LABELS includes every required routing signal', () => {
 
 test('ROUTING_LABELS is frozen', () => {
   assert.ok(Object.isFrozen(ROUTING_LABELS));
+});
+
+// ─── MIRROR_LABELS ───────────────────────────────────────────
+// Mirror issues must NOT include 'openrouter' at creation time.
+// openrouter-assignee.yml uses that label as its sole idempotency key:
+// if present it skips the issue entirely, leaving it unassigned and
+// unprocessed ("the slip" — see issue #14523).
+
+test('MIRROR_LABELS excludes openrouter so openrouter-assignee.yml routes the issue', () => {
+  assert.ok(
+    !MIRROR_LABELS.includes('openrouter'),
+    'MIRROR_LABELS must NOT contain openrouter — it is the idempotency key in openrouter-assignee.yml',
+  );
+});
+
+test('MIRROR_LABELS includes fork-audit and upstream-contribution', () => {
+  assert.ok(MIRROR_LABELS.includes('fork-audit'), 'MIRROR_LABELS must include fork-audit');
+  assert.ok(MIRROR_LABELS.includes('upstream-contribution'), 'MIRROR_LABELS must include upstream-contribution');
+});
+
+test('MIRROR_LABELS is frozen', () => {
+  assert.ok(Object.isFrozen(MIRROR_LABELS));
+});
+
+test('MIRROR_LABELS is a proper subset of ROUTING_LABELS plus upstream-contribution', () => {
+  // Every label in MIRROR_LABELS (except upstream-contribution) must exist in ROUTING_LABELS.
+  const nonRouting = MIRROR_LABELS.filter(
+    (l) => l !== 'upstream-contribution' && !ROUTING_LABELS.includes(l),
+  );
+  assert.strictEqual(
+    nonRouting.length,
+    0,
+    `MIRROR_LABELS contains unknown labels not in ROUTING_LABELS: ${nonRouting.join(', ')}`,
+  );
 });
 
 // ─── loadConfig ──────────────────────────────────────────────
