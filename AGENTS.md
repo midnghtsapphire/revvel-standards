@@ -93,7 +93,8 @@ revenue-generating products:
     ├── ai-video-toolkit/
     ├── screen-recorder-finder/
     ├── revvel-skill-runner/
-    └── creator-payout-tracker/
+    ├── creator-payout-tracker/
+    └── hvac-calc-service/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -113,6 +114,7 @@ collisions:
 | Screen Recorder Finder | `products/screen-recorder-finder` | 3003 | Next.js. |
 | Revvel Skill Runner | `products/revvel-skill-runner` | 3004 | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution. |
 | Creator Payout Tracker | `products/creator-payout-tracker` | 3005 | Next.js. Shippable deep-research product for creator payout rankings. |
+| HVAC Calc Service | `products/hvac-calc-service` | 3006 | Next.js. ACCA Manual J/S/D HVAC load calculator with Markdown/CSV export. |
 | CLI Engine | `products/cli-engine` | 3008 | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
 
 Start a specific product on its assigned port:

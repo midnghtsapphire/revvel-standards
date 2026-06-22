@@ -507,9 +507,12 @@ async function main() {
   ].join("\n");
 
   await postGitHubComment(commentBody);
-  // Success — clear any failure labels left over from a previous run so the
-  // signal on the issue/PR stays honest (self-heal).
-  await removeGitHubLabels([FAILURE_LABELS.TRIAGE_FAILED, FAILURE_LABELS.NEEDS_KEY]);
+  // Success — clear failure labels from a previous run and remove triage:new
+  // now that the item has been processed. Removing triage:new prevents the
+  // stuck-label monitors (auto-reset-stuck-issues, stuck-label-automation)
+  // from treating a successfully-triaged item as stuck, and stops the hourly
+  // sweep from picking it up as a fresh candidate again.
+  await removeGitHubLabels([FAILURE_LABELS.TRIAGE_FAILED, FAILURE_LABELS.NEEDS_KEY, "triage:new"]);
   console.log(`Posted triage comment to #${ISSUE_NUMBER}.`);
 }
 
