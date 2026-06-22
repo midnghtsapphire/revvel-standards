@@ -38,7 +38,8 @@
 ### ✅ Known Failure Points (These Break CI Most Often)
 
 #### 1. YAML Indentation Issues
-```
+
+```text
 ❌ BAD:  key: value
 ❌ BAD:      nested: value  (inconsistent indent)
 ✅ GOOD: key: value
@@ -46,27 +47,29 @@
 ```
 
 #### 2. GitHub Actions Multi-line Scripts
-```
-❌ BAD (flush left terminates block scalar):
+
+```yaml
+# ❌ BAD (flush left terminates block scalar):
 script: |
   line1
 line2  # <- This terminates the script!
 
-✅ GOOD (keep all content indented):
+# ✅ GOOD (keep all content indented):
 script: |
   line1
   line2
 ```
 
 #### 3. Template Literal Multi-line in github-script
-```
-❌ BAD (continuation at column 0):
+
+```javascript
+// ❌ BAD (continuation at column 0):
 body: [
   `Line 1`,
-`Line 2`  # <- Flush left, terminates the array!
+`Line 2`  // <- Flush left, terminates the array!
 ]
 
-✅ GOOD (all indented):
+// ✅ GOOD (all indented):
 body: [
   `Line 1`,
   `Line 2`
@@ -74,13 +77,14 @@ body: [
 ```
 
 #### 4. workflow_run Without workflows List
-```
-❌ BAD:
+
+```yaml
+# ❌ BAD:
 on:
   workflow_run:
     workflows: [Workflow Name]  # WRONG - this is not valid!
 
-✅ GOOD:
+# ✅ GOOD:
 on:
   workflow_run:
     workflows:
@@ -88,17 +92,20 @@ on:
 ```
 
 #### 5. Missing Git Identity
-```
-❌ BAD: fatal: unable to auto-detect email address
-✅ GOOD: Set git config before operations:
+
+```bash
+# ❌ BAD: fatal: unable to auto-detect email address
+# ✅ GOOD: Set git config before operations:
 git config user.email "you@example.com"
 git config user.name "Your Name"
 ```
 
 #### 6. Stale Rebase State
-```
-❌ BAD: fatal: It seems that there is already a rebase-merge directory
-✅ FIX: git rebase --abort
+
+```bash
+# ❌ BAD: fatal: It seems that there is already a rebase-merge directory
+# ✅ FIX:
+git rebase --abort
 ```
 
 ### ✅ Dependencies & Imports
@@ -140,18 +147,22 @@ When reviewers request changes, address each item:
 If you need to force-merge without full review completion:
 
 ### When Allowed
+
 1. Hotfix that unblocks other work
 2. Time-sensitive fix that can't wait
 3. Reviewer explicitly approved with minor suggestions
 4. Emergency production fix
 
 ### How to Request Authorization
+
 Comment on PR:
-```
+
+```bash
 /force-merge reason: <brief explanation>
 ```
 
 ### Required Before Force-Merge
+
 - [ ] All CI checks passing
 - [ ] At least one approval (unless hotfix)
 - [ ] No unresolved blocking issues
