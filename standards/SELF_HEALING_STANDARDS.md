@@ -364,3 +364,96 @@ All changes should:
   PR is **both approved and passing**, so the contradiction self-corrects.
 - **Requires:** `checks: read` on the self-healer token and
   `scripts/check-workflow-yaml.js` in its sparse-checkout (both added 2026-06-17).
+
+### 10.7 Label Sync Issue (Stale Labels vs Actual CI State)
+
+> **Added:** 2026-06-22 · **Who:** OpenHands Agent · **Why:** Session recovery discovered labels showing `status:checks-failing` while CI was actually passing
+
+- **Symptom:** PR shows `status:checks-failing` label but actual CI status is `success`
+- **Root Cause:** Self-healing workflows update labels asynchronously, state can drift when:
+  - Label update workflow runs before CI completes
+  - Event hooks are missed during high-traffic periods
+  - Workflow runs fail before updating labels
+- **Detection:**
+  ```bash
+  # Check actual CI status via API
+  curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+    "https://api.github.com/repos/{owner}/{repo}/commits/{sha}/status" | jq '{state, total_count}'
+  ```
+- **Fix Pattern:**
+  1. Check actual CI status via API before trusting labels
+  2. Get check runs: `curl .../commits/{sha}/check-runs?per_page=100`
+  3. Directly fix labels via API:
+     ```bash
+     # Remove incorrect labels
+     curl -X DELETE "...issues/{PR}/labels/{label}"
+     # Add correct labels
+     curl -X POST "...issues/{PR}/labels" -d '{"labels":["status:checks-passing"]}'
+     ```
+- **Prevention:** `self-heal-repo.js` already handles this via `reprocessPRLabels()`
+
+### 10.8 Merge Conflict Resolution (Dirty PR State)
+
+> **Added:** 2026-06-22 · **Who:** OpenHands Agent · **Why:** PR #14702 had conflicts with main causing `mergeable_state: dirty`
+
+- **Symptom:** PR shows `mergeable_state: dirty` or `mergeable: false`
+- **Root Cause:** PR branch diverges from main while waiting for review — other PRs merge
+- **Fix Pattern:**
+  ```bash
+  # 1. Fetch main and PR branch
+  git fetch origin main:refs/heads/main-temp
+  git fetch origin {pr-branch}:{local-branch}
+
+  # 2. Rebase PR onto main
+  git checkout {local-branch}
+  git rebase main-temp
+
+  # 3. Resolve conflicts (prefer PR version if CI passed)
+  # Edit conflicting files, then:
+  git add .
+  git cherry-pick --continue --no-edit
+
+  # 4. Force push to update PR
+  git push origin {local}:{remote-branch} --force
+
+  # 5. Merge via API
+  curl -X PUT "...pulls/{PR}/merge" \
+    -d '{"merge_method":"squash","commit_title":"..."}'
+  ```
+- **Prevention:** Enable "Always update branches" in repo settings, or use "Update branch" button
+
+### 10.9 Git Identity Not Set During Operations
+
+> **Added:** 2026-06-22 · **Who:** OpenHands Agent · **Why:** Rebase/cherry-pick failed with `fatal: unable to auto-detect email address`
+
+- **Symptom:** `fatal: unable to auto-detect email address` during rebase, cherry-pick, or commit
+- **Root Cause:** Git identity not configured in environment
+- **Fix Pattern:**
+  ```bash
+  git config user.email "openhands@all-hands.dev"
+  git config user.name "OpenHands Agent"
+  # Or for session:
+  export GIT_AUTHOR_NAME="OpenHands Agent"
+  export GIT_AUTHOR_EMAIL="openhands@all-hands.dev"
+  export GIT_COMMITTER_NAME="OpenHands Agent"
+  export GIT_COMMITTER_EMAIL="openhands@all-hands.dev"
+  ```
+- **Prevention:** Set in environment or `.gitconfig` before operations
+
+### 10.10 Rebase State Conflicts (Stale rebase-merge Directory)
+
+> **Added:** 2026-06-22 · **Who:** OpenHands Agent · **Why:** Previous incomplete rebase left stale state blocking new operations
+
+- **Symptom:** `fatal: It seems that there is already a rebase-merge directory`
+- **Root Cause:** Previous rebase was interrupted (failed, killed, timeout)
+- **Fix Pattern:**
+  ```bash
+  # Abort any pending rebase/merge
+  git rebase --abort
+  git merge --abort
+
+  # Or manually remove stale state
+  rm -rf .git/rebase-merge
+  rm -rf .git/merge-info
+  ```
+- **Prevention:** Always wait for rebase to complete or explicitly abort

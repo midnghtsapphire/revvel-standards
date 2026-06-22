@@ -1,0 +1,8 @@
+# Markdownlint ignores for this project
+# These files don't need to follow strict markdown formatting rules
+
+# Session audit prompts - documentation, not process docs
+docs/MASTER_AUDIT_PROMPTS/**
+
+# Transcript files - generated content
+docs/agents/**/transcripts/**
