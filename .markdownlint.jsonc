@@ -15,10 +15,9 @@
   "MD041": false,
   
   // MD024: Multiple headings with the same content - disabled
-  // because we have multiple "Usage" or "Example" sections in some docs
-  "MD024": {
-    "siblings_only": true
-  },
+  // because docs intentionally use repeated section headers (What it does,
+  // When to use, How, Caveats) across multiple process entries
+  "MD024": false,
   
   // MD026: Trailing punctuation in heading - allow for questions
   "MD026": {
@@ -28,5 +27,9 @@
   // MD046: Code block style - consistent fenced style
   "MD046": {
     "style": "fenced"
-  }
+  },
+
+  // MD060: Table column style - disabled because separator rows (|---|) and
+  // content rows (| text |) use different spacing by convention in all our docs
+  "MD060": false
 }

@@ -155,15 +155,15 @@ safer when there are many conflicts.
 
 ## 4. When to Update vs. When to Wait
 
-| Situation                                                | Recommendation                                              |
-| -------------------------------------------------------- | ----------------------------------------------------------- |
-| GitHub shows "Update branch" (no conflicts)              | Click the button — safe and fast                            |
-| Your PR has conflicts                                    | Update is required before merge can proceed                 |
-| Your branch is 1–2 commits behind main, no conflicts     | Optional — wait until you're ready to merge                 |
-| Your branch is 50+ commits behind main                   | Update now — the longer you wait, the harder it gets        |
-| Two WRs touch the same file                              | Coordinate — one should merge first, then the other updates |
-| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges                  |
-| Your branch has automated commits (Jules)                | Use merge, not rebase                                       |
+| Situation | Recommendation |
+|-----------|---------------|
+| GitHub shows "Update branch" (no conflicts) | Click the button — safe and fast |
+| Your PR has conflicts | Update is required before merge can proceed |
+| Your branch is 1–2 commits behind main, no conflicts | Optional — wait until you're ready to merge |
+| Your branch is 50+ commits behind main | Update now — the longer you wait, the harder it gets |
+| Two WRs touch the same file | Coordinate — one should merge first, then the other updates |
+| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges |
+| Your branch has automated commits (Jules) | Use merge, not rebase |
 
 ---
 
@@ -208,7 +208,7 @@ When `git merge` or `git rebase` reports a conflict:
 
 1. Open the conflicted file. Look for:
 
-```text
+   ```text
    <<<<<<< HEAD (your branch)
    your change here
    =======
@@ -216,24 +216,24 @@ When `git merge` or `git rebase` reports a conflict:
    >>>>>>> origin/main
    ```
 
-1. Decide which version to keep (or combine both).
+2. Decide which version to keep (or combine both).
 
-2. Remove the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
+3. Remove the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
 
-3. Save the file.
+4. Save the file.
 
-4. Stage the resolved file:
+5. Stage the resolved file:
 
    ```bash
    git add path/to/file.md
    ```
 
-5. If merging: `git commit`  
+6. If merging: `git commit`  
    If rebasing: `git rebase --continue`
 
-6. Repeat for each conflicted file.
+7. Repeat for each conflicted file.
 
-7. Push when done.
+8. Push when done.
 
 ### When conflicts are in auto-generated files
 
