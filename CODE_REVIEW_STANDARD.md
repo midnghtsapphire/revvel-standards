@@ -90,6 +90,63 @@ Regardless of AI review outcome:
 - Security-sensitive changes require approval from a member of the security review group.
 - Database migrations require approval from a member of the data platform group.
 
+## Force-Merge Authorization
+
+When a coder requests to bypass normal merge requirements, reviewers should leave a comment approving or denying the request.
+
+### When Force-Merge May Be Requested
+
+1. **Hotfix** — Unblocks other critical work
+2. **Time-sensitive** — Cannot wait for full review cycle
+3. **Already reviewed** — Reviewer approved with minor suggestions
+4. **Emergency** — Production incident requiring immediate fix
+
+### How to Request Force-Merge
+
+Coder comments on PR:
+```
+/force-merge reason: <brief explanation>
+```
+
+### Reviewer Response Template
+
+When a force-merge request is made, reviewers should respond with:
+
+**To APPROVE:**
+```markdown
+/lgtm force-merge approved
+
+Reason: [accepts coder's explanation]
+Prerequisites verified:
+- [x] CI checks passing
+- [x] At least one review approval (or emergency exception)
+- [x] No unresolved blocking issues
+```
+
+**To DENY:**
+```markdown
+/force-merge denied
+
+Reason: [specific concern or missing prerequisite]
+Required action: [what needs to happen before reconsideration]
+```
+
+### Prerequisites for Force-Merge Approval
+
+Before approving force-merge, verify:
+- [ ] All CI checks passing
+- [ ] At least one approval (unless emergency)
+- [ ] No unresolved `CHANGES_REQUESTED` reviews
+- [ ] No blocking security issues
+- [ ] Reason documented in PR comments
+
+### Emergency Exception
+
+For production incidents requiring immediate action:
+- Any team member can approve force-merge
+- Must document in incident channel within 1 hour
+- Retroactive review within 48 hours required
+
 ## References
 
 - [Bito AI on GitHub Marketplace](https://github.com/marketplace/bito-ai-code-review-agent)
