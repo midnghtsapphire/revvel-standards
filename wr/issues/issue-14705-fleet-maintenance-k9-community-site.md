@@ -198,7 +198,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: 15 4 * * 1
+    - cron: '15 4 * * 1'
   workflow_dispatch:
 permissions:
   contents: read
