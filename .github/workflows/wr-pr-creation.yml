@@ -266,15 +266,22 @@ jobs:
               labelSet.has('wr:reset');
 
             if (existingPR) {
-              core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
-              skip('existing_wr_pr');
-              return;
+              // wr:reset forces a fresh PR even when a skeleton already exists.
+              // This lets operators unblock a stuck WR without manual branch cleanup.
+              if (labelSet.has('wr:reset')) {
+                core.info(`wr:reset detected on issue #${issueNumber} — bypassing existing-PR guard (${existingPR.html_url})`);
+              } else {
+                core.info(`WR-skeleton PR already exists for issue #${issueNumber}: ${existingPR.html_url}`);
+                skip('existing_wr_pr');
+                return;
+              }
             }
 
             const isComplete =
               isResetTriggered ||
               labelSet.has('wr:complete') ||
               labelSet.has('research:complete') ||
+              labelSet.has('wr:reset') ||
               context.eventName === 'workflow_dispatch';
 
             // Treat both direct research findings and the research-engine handoff

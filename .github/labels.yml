@@ -448,6 +448,10 @@ labels:
     color: "b60205"
     description: "WR auto-healer escalation tracking"
 
+  - name: "wr:reset"
+    color: "e11d48"
+    description: "Force a fresh WR PR/artifact pass even if a skeleton PR already exists; cleared automatically after success"
+
   # -- Research Engine Orchestrator --------------------------------------------
   - name: research-engine
     color: "6f42c1"

@@ -1,0 +1,51 @@
+# Mālama Project-Type Router — routing table (human-readable source of truth)
+#
+# detect.py embeds this same table as a Python dict so the engine stays
+# zero-dependency. If you edit routes here, mirror the change in detect.py.
+#
+# Winner = highest score; ties broken by `priority` order (earlier = stronger).
+# Every match also loads the Mālama system prompt + repo rules as a base.
+
+base_load:
+  - skills/malama/SYSTEM_PROMPT.md   # base agent prompt (always)
+  - AGENTS.md                        # repo rules (always)
+
+priority: [mcp, skill, cli, api, app, data, pdf, infra]
+
+shapes:
+  mcp:
+    label: MCP server
+    standard: standards/shapes/MCP.md
+    signals: [".mcp.json or mcp-servers/", "@modelcontextprotocol/sdk dep"]
+  skill:
+    label: Agent skill
+    standard: standards/shapes/SKILL.md
+    signals: ["*.skill.yml", "SKILL.md"]
+  cli:
+    label: CLI tool
+    standard: standards/shapes/CLI.md
+    signals: ["package.json 'bin'", "python console_scripts", "Cargo [[bin]]"]
+  api:
+    label: API service
+    standard: standards/shapes/API.md
+    signals: ["express/fastify/fastapi/flask/django dep", "openapi/swagger spec"]
+  app:
+    label: Full app
+    standard: standards/shapes/APP.md
+    signals: ["next/react/vue/svelte/angular dep", "index.html"]
+  data:
+    label: Data / spreadsheet
+    standard: standards/shapes/EXCEL.md
+    signals: ["*.ipynb", "*.csv / *.parquet / *.xlsx", "pandas/numpy/polars dep"]
+  pdf:
+    label: PDF / booklet
+    standard: standards/shapes/PDF.md
+    signals: ["*.tex", "booklet/ dir"]
+  infra:
+    label: Infrastructure
+    standard: standards/DOCKER.md
+    signals: ["Dockerfile / compose", "*.tf terraform"]
+
+fallback:
+  label: Generic (no clear shape)
+  standard: standards/shapes/README.md

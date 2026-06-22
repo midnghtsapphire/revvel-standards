@@ -38,5 +38,120 @@ jobs:
           SELF_REPO: ${{ github.repository }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
         run: node scripts/fork-audit-bot.js "${{ inputs.config_path }}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # Self-healing job: detects fork-audit issues that were created with the
+  # 'openrouter' label pre-applied (before the fix in scripts/fork-audit-bot.js)
+  # which caused openrouter-assignee.yml to skip them — leaving them unassigned
+  # and never processed by the orchestrator. For every such "slipped" issue
+  # (fork-audit label present, @oaudrey missing from assignees) this job assigns
+  # @oaudrey and posts a routing comment so the orchestrator is triggered.
+  heal-slipped:
+    name: Self-heal slipped fork-audit issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: audit
+    if: always()
+    steps:
+      - name: Find and heal unassigned fork-audit issues
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const isDryRun = '${{ inputs.dry_run }}' === 'true';
+
+            // Fetch all open issues carrying the fork-audit label.
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'fork-audit',
+              per_page: 100,
+            });
+
+            core.info(`fork-audit open issues found: ${issues.length}`);
+
+            let healed = 0;
+            for (const issue of issues) {
+              const assignees = (issue.assignees || []).map(a => a.login);
+              if (assignees.includes('oaudrey')) {
+                core.info(`  ok #${issue.number} already assigned — skip`);
+                continue;
+              }
+
+              const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+              if (!labels.includes('openrouter')) {
+                core.info(`  skip #${issue.number} — no openrouter label, likely a brand-new issue awaiting openrouter-assignee.yml processing`);
+                continue;
+              }
+
+              // This issue slipped: it has both fork-audit + openrouter labels but @oaudrey
+              // was never assigned, meaning openrouter-assignee.yml likely skipped it.
+              core.info(`  healing slipped issue #${issue.number}: ${issue.title}`);
+
+              if (isDryRun) {
+                core.info(`    [dry-run] would assign @oaudrey and post routing comment`);
+                healed++;
+                continue;
+              }
+
+              let assignSucceeded = false;
+              try {
+                await github.rest.issues.addAssignees({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  assignees: ['oaudrey'],
+                });
+                assignSucceeded = true;
+                core.info(`    assigned @oaudrey`);
+              } catch (e) {
+                core.warning(`    could not assign @oaudrey to #${issue.number}: ${e.message}`);
+              }
+
+              try {
+                const assignLine = assignSucceeded
+                  ? '- ✅ Assigned `@oaudrey` — OpenRouter / oAudrey orchestrator'
+                  : '- ⚠️ Assignment of `@oaudrey` failed (non-fatal); labels are present and the orchestrator will pick it up on the next sweep';
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: [
+                    '🔁 **Fork-Audit Self-Heal** — routing slip detected and corrected.',
+                    '',
+                    'This issue was originally created with the `openrouter` label pre-applied, which caused `openrouter-assignee.yml` to skip it (it uses that label as its idempotency key). As a result the orchestrator was never triggered.',
+                    '',
+                    '**Self-heal actions taken:**',
+                    assignLine,
+                    '',
+                    '**What happens next:**',
+                    '1. `@oaudrey` / OpenRouter will triage this fork-audit report',
+                    '2. An upstream issue or PR will be opened on the candidate repository if the band warrants it',
+                    '3. `needs-human` will be applied if the orchestrator cannot complete the task',
+                    '',
+                    '_Automated by `.github/workflows/fork-audit-bot.yml` `heal-slipped` job. ' +
+                    'Root-cause fix: `scripts/fork-audit-bot.js` no longer pre-applies the ' +
+                    '`openrouter` label so new mirror issues are routed correctly._',
+                  ].join('\n'),
+                });
+                core.info(`    posted self-heal comment`);
+              } catch (e) {
+                core.warning(`    could not post comment on #${issue.number}: ${e.message}`);
+              }
+
+              healed++;
+            }
+
+            core.info(`\nHeal summary: ${healed} issue(s) healed${isDryRun ? ' [DRY RUN]' : ''}`);
+
+            await core.summary
+              .addHeading('Fork-Audit Self-Heal')
+              .addTable([
+                [{data: 'Metric', header: true}, {data: 'Count', header: true}],
+                ['fork-audit issues scanned', String(issues.length)],
+                ['Issues healed', String(healed)],
+                ['Dry run?', isDryRun ? 'Yes' : 'No'],
+              ])
+              .write();
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

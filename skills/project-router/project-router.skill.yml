@@ -1,0 +1,55 @@
+name: project_router
+title: "Project Router — Auto-Load the Right Master Docs by Project Type"
+version: 1.0.0
+description: "At session start, detect the project's shape (MCP / skill / CLI / API / app / data / PDF / infra) from filesystem signals and load the matching standards/shapes doc plus the Mālama system prompt. Auto-detect front end for the Solution-Shape Router."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Agent Operations"
+  tags: [router, project-type, shape, session-start, detection, malama]
+  created_at: "2026-06-20"
+  updated_at: "2026-06-20"
+
+dependencies:
+  skills: [malama]
+  tools: []
+  pip_packages: []   # zero-dependency, stdlib only
+
+related:
+  detector: "skills/project-router/detect.py"
+  routes: "skills/project-router/routes.yml"
+  shapes: "standards/shapes/README.md"
+
+triggers:
+  - "project router"
+  - "detect project type"
+  - "which standard"
+  - "shape router"
+  - "session start router"
+  - "what should I load"
+
+implementation:
+  type: "python_script"
+  language: "python"
+  entrypoint: "skills/project-router/detect.py"
+  invoke: "python3 skills/project-router/detect.py . --json"
+  content: |
+    # Project Router Skill
+
+    ## Purpose
+    Detect a project's shape at session start and load the right playbook:
+    always the Mālama system prompt (base) + the matching standards/shapes
+    standard + AGENTS.md (repo rules). Avoids loading every standard.
+
+    ## Run
+    python3 skills/project-router/detect.py .          # human
+    python3 skills/project-router/detect.py . --json   # for hooks
+
+    ## Shapes -> standard
+    mcp -> MCP.md | skill -> SKILL.md | cli -> CLI.md | api -> API.md |
+    app -> APP.md | data -> EXCEL.md | pdf -> PDF.md | infra -> DOCKER.md |
+    none -> shapes/README.md
+
+    ## Editing routes
+    routes.yml is the human source of truth; detect.py embeds the same table
+    so the engine has no external dependencies. Keep them in sync.
