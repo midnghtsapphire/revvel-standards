@@ -7,6 +7,7 @@
  * Lets a new issue/PR comment summon a persona on demand:
  *   - "/professor <task>" / "/oaudrey ..." / "/mindmappr ..." / "/openrouter ..."
  *   - "/persona <name> <task>"
+ *   - "/dragnet <error context>"  — deduplicates against open WR/PR, then files a perm-fix WR
  *
  * NOTE: triggers use a leading slash, NOT "@name". GitHub treats "@name" as a
  * mention of the real user account with that username and emails them — so the
@@ -15,17 +16,24 @@
  *
  * Two modes:
  *   - ADVISORY (a question): instantiates the persona and posts a text reply.
- *   - EXECUTION (an action verb like build/implement/create/fix/ship): instead of
+ *   - EXECUTION (an action verb like build/implement/create/fix/ship/do): instead of
  *     talking, the persona files a real Work Request issue and triggers the
  *     working coder (openrouter-coder) — so the persona DOES instead of describes.
+ *
+ * DRAGNET special behavior (EXECUTION mode):
+ *   Before filing a new WR, DRAGNET searches open issues (label: work-request) and
+ *   open PRs for an existing match. If a duplicate is found it links to it and
+ *   skips creation; otherwise it files a permanent-fix WR.
  *
  * No-ops cleanly when the comment contains no persona trigger.
  *
  * 2026-05-21 (Claude): created for the comment-trigger persona lane.
  * 2026-05-22 (Claude): added EXECUTION mode so action comments produce a real
- * artifact (a Work Request that the pipeline implements), not just a reply.
+ *   artifact (a Work Request that the pipeline implements), not just a reply.
  * 2026-05-23 (Claude): switched triggers from "@name" to "/name" so summoning a
- * persona no longer notifies the real GitHub user with that username.
+ *   persona no longer notifies the real GitHub user with that username.
+ * 2026-06-20 (Claude): added /dragnet persona with WR/PR dedup-before-create logic
+ *   and "do" as an execution verb so "do a perm fix" enters EXECUTION mode.
  *
  * Env: COMMENT_BODY, ISSUE_NUMBER, REPO (owner/repo), OPENROUTER_API_KEY, GH_TOKEN
  */
@@ -35,10 +43,12 @@ const { execFileSync } = require("child_process");
 const { instantiate, getPersonas } = require("./openrouter-personas");
 
 // Verbs that mean "do the thing" rather than "tell me about it".
-const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add"];
+// "do" is included so "/dragnet do a perm fix" and "/dragnet please do a fix"
+// enter EXECUTION mode without requiring a more explicit verb.
+const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add", "do"];
 
 function detectAction(task) {
-  const m = (task || "").match(/^\s*(build|implement|create|fix|ship|make|add)\b/i);
+  const m = (task || "").match(/^\s*(build|implement|create|fix|ship|make|add|do)\b/i);
   return m ? m[1].toLowerCase() : null;
 }
 
@@ -251,6 +261,168 @@ function gatherContext(repo, issueNumber) {
   ].join("\n");
 }
 
+// Common low-signal words to strip before building a duplicate-search query.
+// Kept at module level for clarity; extend as needed.
+const DEDUP_STOPWORDS = new Set([
+  "please", "that", "this", "with", "from", "perm", "including",
+  "checking", "there", "already", "error", "issue", "problem",
+]);
+
+// GitHub issue titles are capped at 256 chars by the API; we use 120 to keep
+// them readable in list views and avoid mid-word truncation in UI previews.
+const MAX_ISSUE_TITLE_LENGTH = 120;
+
+/**
+ * Extract the most distinctive keywords from a free-text error description.
+ *
+ * Strategy: lowercase, strip punctuation, remove very short tokens (<= 3 chars)
+ * and high-frequency filler words (DEDUP_STOPWORDS), then take the first 6
+ * survivors. Six terms give enough signal for a GitHub full-text search while
+ * staying under the search query length limit and avoiding false-negative misses
+ * caused by over-specifying a rare multi-word phrase.
+ *
+ * @param {string} text - Free-text error description or comment body.
+ * @returns {string[]} Up to 6 keyword tokens.
+ */
+function errorKeywords(text) {
+  return (text || "")
+    .replace(/[^\w\s-]/g, " ")
+    .split(/\s+/)
+    .map((t) => t.toLowerCase())
+    .filter((t) => t.length > 3)
+    .filter((t) => !DEDUP_STOPWORDS.has(t))
+    .slice(0, 6);
+}
+
+/**
+ * Search open issues (with label work-request) and open PRs for an existing
+ * item that likely targets the same error. Returns the first match object
+ * `{type: "issue"|"pr", number, title, url}` or `null` when nothing is found.
+ *
+ * Uses `gh search` so it works without extra credentials — falls through
+ * gracefully on any CLI error so a search failure never blocks WR creation.
+ *
+ * @param {string} repo   - "owner/repo"
+ * @param {string[]} kws  - Keywords to search for.
+ * @returns {{type: string, number: number, title: string, url: string} | null}
+ */
+function findExistingWrOrPr(repo, kws) {
+  if (!kws || kws.length === 0) {
+    // No usable keywords extracted — skip duplicate check rather than running
+    // a vacuous search that would return arbitrary results. A new WR will be
+    // created; this is the safe default when the error description is too short.
+    console.log("DRAGNET: no keywords extracted from error — skipping duplicate search.");
+    return null;
+  }
+  const query = kws.join(" ");
+  try {
+    // Search open WR issues first.
+    const issueOut = execFileSync(
+      "gh",
+      [
+        "search", "issues",
+        `${query} repo:${repo} label:work-request is:issue is:open`,
+        "--json", "number,title,url",
+        "--limit", "5",
+      ],
+      { encoding: "utf8" }
+    );
+    const issues = JSON.parse(issueOut || "[]");
+    if (issues.length > 0) {
+      return { type: "issue", ...issues[0] };
+    }
+  } catch (_) {
+    // gh search unavailable or returned no match — fall through to PR check.
+  }
+  try {
+    // Search open PRs.
+    const prOut = execFileSync(
+      "gh",
+      [
+        "search", "prs",
+        `${query} repo:${repo} is:pr is:open`,
+        "--json", "number,title,url",
+        "--limit", "5",
+      ],
+      { encoding: "utf8" }
+    );
+    const prs = JSON.parse(prOut || "[]");
+    if (prs.length > 0) {
+      return { type: "pr", ...prs[0] };
+    }
+  } catch (_) {
+    // gh search unavailable — fall through.
+  }
+  return null;
+}
+
+/**
+ * DRAGNET EXECUTION mode: check for an existing WR/PR before filing a new one.
+ *
+ * Returns an object `{action: "linked"|"created", ref: string, url?: string}`
+ * so the caller can post an appropriate comment.
+ *
+ * @param {Object} opts
+ * @param {string} opts.repo         - "owner/repo"
+ * @param {string} opts.task         - The full DRAGNET task string.
+ * @param {number|string} opts.requestedOn - Issue/PR number the command came from.
+ * @returns {{action: string, ref: string, url: string | undefined}}
+ */
+function dragnetFixRequest({ repo, task, requestedOn }) {
+  const kws = errorKeywords(task);
+  const existing = findExistingWrOrPr(repo, kws);
+
+  if (existing) {
+    // A duplicate WR or PR already covers this error — link to it instead.
+    return {
+      action: "linked",
+      ref: `#${existing.number}`,
+      url: existing.url,
+      type: existing.type,
+      title: existing.title,
+    };
+  }
+
+  // No duplicate — file a fresh permanent-fix WR.
+  const title = `[WR][perm-fix] ${task}`.slice(0, MAX_ISSUE_TITLE_LENGTH);
+  const body = [
+    `Permanent-fix Work Request filed by the **DRAGNET** persona from a comment on #${requestedOn}.`,
+    "",
+    "## Error / Problem",
+    "",
+    task,
+    "",
+    "## Requirements",
+    "",
+    "- Root cause must be identified (not symptom-patching).",
+    "- Fix must be permanent — no workarounds, no feature flags that mask the error.",
+    "- Include regression test or CI assertion that would have caught this.",
+    "",
+    "_Duplicate check performed before filing: no matching open WR or PR was found._",
+    "_Routed into the build pipeline via labels (`wr:code` → openrouter-coder)._",
+    "_The coder will implement this and open a pull request._",
+  ].join("\n");
+  const tmpFile = "/tmp/dragnet-workrequest.md";
+  fs.writeFileSync(tmpFile, body);
+  const out = execFileSync(
+    "gh",
+    [
+      "issue", "create",
+      "--repo", repo,
+      "--title", title,
+      "--body-file", tmpFile,
+      "--label", "work-request",
+      "--label", "openrouter",
+      "--label", "wr:code",
+      "--label", "perm-fix",
+    ],
+    { encoding: "utf8" }
+  );
+  const m = out.match(/\/issues\/(\d+)/);
+  const num = m ? m[1] : out.trim();
+  return { action: "created", ref: `#${num}`, url: out.trim().split(/\s+/).find((t) => t.startsWith("http")) };
+}
+
 /**
  * EXECUTION mode: file a real Work Request issue and trigger the working coder.
  * Returns the new issue number (or the raw gh output if it can't be parsed).
@@ -295,6 +467,39 @@ async function main() {
 
   // EXECUTION mode: an action verb means "do it", so file real work instead of replying.
   if (command.action) {
+    // DRAGNET special path: deduplicate against open WRs and PRs before filing.
+    if (command.handle === "dragnet") {
+      const result = dragnetFixRequest({
+        repo,
+        task: command.task,
+        requestedOn: issueNumber,
+      });
+      if (result.action === "linked") {
+        postComment(
+          repo,
+          issueNumber,
+          `🕵️ **DRAGNET** found an existing ${result.type} that already covers this error.\n\n` +
+            `**Duplicate:** ${result.ref} — _${result.title}_\n` +
+            (result.url ? `${result.url}\n\n` : "\n") +
+            `No new WR created. Track progress in the existing ${result.type} above.\n\n` +
+            `_Duplicate check performed with keywords from the error description._`
+        );
+        console.log(`🕵️ DRAGNET found duplicate ${result.type} ${result.ref} — no new WR filed.`);
+      } else {
+        postComment(
+          repo,
+          issueNumber,
+          `🕵️ **DRAGNET** checked for duplicates (no open WR or PR found) and filed a ` +
+            `permanent-fix Work Request ${result.ref}.\n\n` +
+            (result.url ? `${result.url}\n\n` : "") +
+            `The build pipeline (\`wr:code\` → openrouter-coder) will implement the fix and open a PR.\n\n` +
+            `_This is a permanent fix request — no workarounds, root cause required._`
+        );
+        console.log(`🕵️ DRAGNET filed perm-fix Work Request ${result.ref} for issue #${issueNumber}`);
+      }
+      return;
+    }
+
     const num = openWorkRequest({
       repo,
       handle: command.handle,
@@ -311,6 +516,13 @@ async function main() {
     );
     console.log(`✅ ${command.handle} filed Work Request #${num} for issue #${issueNumber}`);
     return;
+  }
+
+  // ADVISORY mode for DRAGNET (no action verb): gather context and diagnose.
+  // For DRAGNET advisory, always inject context so it can run the PLATO→JUDGE
+  // pipeline against the live issue/PR state even without an explicit task.
+  if (command.handle === "dragnet" && (!command.task || command.task.trim() === "")) {
+    command.task = "Diagnose the error in this thread, check for an existing WR or PR, and recommend the permanent fix.";
   }
 
   const task =
