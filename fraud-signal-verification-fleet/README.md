@@ -46,6 +46,18 @@ python3 dashboard/serve.py         # live HTML at http://localhost:8088
 python3 -m unittest discover -s tests   # tests (stdlib only)
 ```
 
+### Standalone dashboard (no server, use anywhere)
+`dashboard/standalone.html` is a single self-contained file — **double-click to
+open** (works from `file://`, email it, host it anywhere). The full confidence
+scorer is ported to JavaScript and runs in your browser, so you can:
+- **Use the embedded seed**, **upload** a case JSON, or **paste** one,
+- score it live with the identical tier/stage/refusal rules as `src/confidence.py`
+  (cross-checked: same numbers),
+- **export** the scored ledger as JSON.
+
+No network, no build, no Python needed. The case JSON schema is in the file's
+"Schema" button and matches `data/seed/*.json`.
+
 ## Seed case
 `data/seed/newsom_case.json` — the 2026 Newsom/DOJ claims from NY Post (editorial,
 tier 2), BBC (reporting, tier 3), C-SPAN (transcript, tier 4). The system scores
