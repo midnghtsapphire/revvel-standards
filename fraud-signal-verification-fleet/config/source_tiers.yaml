@@ -1,0 +1,55 @@
+# Source-tier weights. Higher tier = stronger evidentiary standing.
+# A claim's confidence is capped by the best source supporting it.
+tiers:
+  5:
+    name: adjudicated_record
+    desc: Court judgment, guilty plea, conviction, sworn filing entered on a docket.
+    weight: 1.00
+    examples: [court_docket, guilty_plea, indictment_signed_by_grand_jury, sec_final_order]
+  4:
+    name: primary_official
+    desc: First-party official record or named on-the-record official statement.
+    weight: 0.80
+    examples: [doj_press_release, fec_filing, financial_disclosure, gov_transcript_cspan]
+  3:
+    name: direct_reporting
+    desc: Named-byline reporting from an outlet with a corrections policy, citing sources.
+    weight: 0.60
+    examples: [bbc_news, ap, reuters, named_wire_report]
+  2:
+    name: opinion_or_secondary
+    desc: Editorial, opinion, analysis, or reporting that restates others' claims.
+    weight: 0.35
+    examples: [editorial_board, op_ed, partisan_blog_with_byline]
+  1:
+    name: social_or_anonymous
+    desc: Social post, anonymous leak, unattributed screenshot, "report claims".
+    weight: 0.15
+    examples: [linkedin_post, x_post, anonymous_pdf, screenshot]
+
+# Adjudication-stage ceilings. No volume of low-tier sourcing can lift a claim
+# above the ceiling for its legal stage. This is what stops allegation->verdict drift.
+adjudication_ceilings:
+  unknowable:   0.20   # not checkable from public sources
+  alleged:      0.45   # someone asserts it; not charged
+  investigated: 0.55   # confirmed open investigation; no charges
+  charged:      0.75   # formal charges / indictment filed
+  plea_or_settled: 0.90 # guilty plea or settlement on record
+  convicted:    0.98   # adjudicated guilt
+
+# Modifiers
+corroboration:
+  # independent same-or-higher-tier sources that agree
+  per_source_bonus: 0.06
+  max_bonus: 0.24
+contradiction:
+  # independent same-or-higher-tier sources that conflict
+  per_source_penalty: 0.12
+  max_penalty: 0.48
+provenance:
+  # how the fact reached the public — affects trust, see docs/PROVENANCE.md
+  filing: 1.00          # pulled from an official docket/registry
+  on_record_statement: 0.95
+  official_leak: 0.70   # confirmed leak from a party with standing
+  unattributed_leak: 0.40
+  anonymous_report: 0.25
