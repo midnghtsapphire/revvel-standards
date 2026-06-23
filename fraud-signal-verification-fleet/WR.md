@@ -1,7 +1,7 @@
 # WR: Fraud-Signal Verification Fleet
 
 - **Status:** v0.1 shipped
-- **Owner:** angelreporters@gmail.com
+- **Owner:** `angelreporters@gmail.com`
 - **Branch:** claude/youthful-maxwell-4bdk4q
 - **Labels:** research, multi-agent, verification
 

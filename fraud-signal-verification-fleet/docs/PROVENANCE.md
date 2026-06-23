@@ -1,4 +1,4 @@
-# Provenance — "How did the news channel get it?"
+# Provenance — How the News Channel Got It
 
 Turning the user's question into a rule. The *route* a fact takes to the public
 changes how much we trust it, independent of who published it.

@@ -50,7 +50,7 @@ unattributed_leak 0.40 · anonymous_report 0.25`
 A claim sourced to "a report claims" (anonymous) is discounted to a quarter of
 its tier weight even before the ceilings apply.
 
-## What gives "enough" confidence?
+## What gives "enough" confidence
 Only this combination: a **tier ≥3 source**, **corroborated**, with **filing or
 on-record provenance**, at a **charged-or-higher stage**. Anything short of that
 is, by construction, capped below SUBSTANTIATED. That is the whole point.

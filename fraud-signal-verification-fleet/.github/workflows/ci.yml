@@ -16,7 +16,13 @@ jobs:
       - name: pipeline smoke test
         run: |
           python3 src/orchestrator.py
-          python3 -c "import json,sys; d=json.load(open('dashboard/dashboard-data.json')); \
+          # Invariant (not a magic number): an all-"alleged" case cannot reach the
+          # SUPPORTED band. 0.55 is the SUPPORTED floor in confidence.py/CONFIDENCE_FRAMEWORK.md,
+          # and the alleged stage ceiling (0.45) sits below it. If the seed case is
+          # recalibrated, this should still hold for alleged-stage claims.
+          python3 -c "import json; d=json.load(open('dashboard/dashboard-data.json')); \
+            SUPPORTED_FLOOR=0.55; \
             assert any(c['refused'] for c in d['claims']), 'refusal gate missing'; \
-            assert d['case_evidentiary_integrity']<0.55, 'integrity should stay low for alleged case'; \
+            assert d['case_evidentiary_integrity'] < SUPPORTED_FLOOR, \
+              'alleged-stage case must stay below the SUPPORTED band'; \
             print('smoke OK')"

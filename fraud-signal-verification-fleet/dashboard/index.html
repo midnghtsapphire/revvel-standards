@@ -86,6 +86,13 @@ async function load(){
   let d;
   try{ d = await (await fetch('dashboard-data.json?'+Date.now())).json(); }
   catch(e){ document.getElementById('title').textContent='Could not load dashboard-data.json — run src/orchestrator.py'; return; }
+  // Validate shape: a partial/corrupt JSON must fail loudly, not render an empty page.
+  const missing = ['case_id','claims','case_evidentiary_integrity'].filter(k=>!(k in d));
+  if(missing.length || !Array.isArray(d.claims)){
+    document.getElementById('title').textContent =
+      'dashboard-data.json is malformed (missing/invalid: '+(missing.join(', ')||'claims')+') — re-run src/orchestrator.py';
+    return;
+  }
   document.getElementById('title').textContent = d.title;
   document.getElementById('disclaimer').textContent = '⚠ ' + d.disclaimer;
   document.getElementById('meta').innerHTML =

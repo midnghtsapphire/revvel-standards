@@ -32,7 +32,7 @@ A claim's score = (best source-tier weight × provenance discount) + corroborati
 adjudication stage. A tier-1 social post can never substantiate. An "alleged"
 claim can never read as "convicted." See [docs/CONFIDENCE_FRAMEWORK.md](docs/CONFIDENCE_FRAMEWORK.md).
 
-## "How did the news channel get it?"
+## How the news channel got it
 `agent-media-trace` answers exactly this and turns it into a trust weight:
 a document the outlet *obtained* (filing) outranks a claim it merely *repeats*
 (anonymous report). Provenance is a first-class input, not a footnote.

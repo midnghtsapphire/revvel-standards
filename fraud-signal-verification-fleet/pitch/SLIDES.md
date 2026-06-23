@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD025 MD026 -->
 # Slides (Marp / reveal-ready, one slide per ---)
 
 ---
