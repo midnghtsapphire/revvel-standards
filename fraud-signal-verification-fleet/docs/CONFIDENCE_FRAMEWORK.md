@@ -1,0 +1,65 @@
+# Confidence Framework
+
+A calibrated scale designed so that **no amount of weak sourcing can manufacture
+certainty**, and so that an allegation can never silently become a verdict.
+
+## The bands
+| Band | Range | Meaning |
+|---|---|---|
+| SUBSTANTIATED | 0.85–1.00 | Backed by primary/adjudicated record |
+| SUPPORTED | 0.55–0.84 | Multiple credible sources; not adjudicated |
+| WEAK | 0.30–0.54 | Some support; treat as unverified |
+| UNSUBSTANTIATED | 0.01–0.29 | Asserted, thin/no sourcing |
+| REFUSED/UNKNOWABLE | 0.00 | Refused verdict, or not checkable from public sources |
+
+## The pipeline (in order)
+1. **Refusal gate.** Fraud/guilt-of-a-named-person → score 0, REFUSED. Stop.
+2. **Base.** `base = tier_weight(best source) × provenance_discount`.
+3. **Corroboration.** `+0.06` per independent source at ≥ (best_tier − 1), cap `+0.24`.
+4. **Contradiction.** `−0.12` per conflicting independent source, cap `−0.48`.
+5. **Tier cap.** Result ≤ best source-tier weight.
+6. **Stage ceiling.** Result ≤ adjudication-stage ceiling.
+
+## Source tiers (config/source_tiers.yaml)
+| Tier | Weight | Example |
+|---|---|---|
+| 5 adjudicated record | 1.00 | guilty plea, conviction, signed indictment |
+| 4 primary official | 0.80 | DOJ release, FEC filing, C-SPAN transcript |
+| 3 direct reporting | 0.60 | BBC/AP/Reuters named byline |
+| 2 opinion/secondary | 0.35 | editorial board, op-ed |
+| 1 social/anonymous | 0.15 | LinkedIn/X post, anonymous PDF |
+
+## Adjudication ceilings — the anti-drift mechanism
+| Stage | Ceiling |
+|---|---|
+| unknowable | 0.20 |
+| alleged | 0.45 |
+| investigated | 0.55 |
+| charged | 0.75 |
+| plea_or_settled | 0.90 |
+| convicted | 0.98 |
+
+**Why two caps?** Tier protects against weak *sources*; stage protects against
+weak *legal standing*. A perfectly-sourced fact about an *alleged* matter still
+tops out at 0.45 — because "well-reported allegation" is not "proven."
+
+## Provenance discount (how the fact reached the public)
+`filing 1.00 · on_record_statement 0.95 · official_leak 0.70 ·
+unattributed_leak 0.40 · anonymous_report 0.25`
+
+A claim sourced to "a report claims" (anonymous) is discounted to a quarter of
+its tier weight even before the ceilings apply.
+
+## What gives "enough" confidence?
+Only this combination: a **tier ≥3 source**, **corroborated**, with **filing or
+on-record provenance**, at a **charged-or-higher stage**. Anything short of that
+is, by construction, capped below SUBSTANTIATED. That is the whole point.
+
+## Worked example (seed case)
+- *"Newsom said the DOJ is investigating him"* — C-SPAN transcript (tier 4,
+  on-record). True that he *said* it, but the underlying matter is `alleged` →
+  ceiling 0.45 → **WEAK**. Correct: we verified the utterance, not the
+  investigation.
+- *"A former staffer pleaded guilty"* — needs a docket (tier 5) before it leaves
+  the editorial ceiling. Adjudicated, but about a **different person**.
+- *"Newsom committed fraud"* — **REFUSED**, 0.

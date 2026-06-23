@@ -1,0 +1,22 @@
+name: fleet-ci
+on:
+  push: { paths: ['fraud-signal-verification-fleet/**'] }
+  pull_request: { paths: ['fraud-signal-verification-fleet/**'] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: fraud-signal-verification-fleet } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt
+      - name: unit tests (stdlib, no yaml needed)
+        run: python3 -m unittest discover -s tests -v
+      - name: pipeline smoke test
+        run: |
+          python3 src/orchestrator.py
+          python3 -c "import json,sys; d=json.load(open('dashboard/dashboard-data.json')); \
+            assert any(c['refused'] for c in d['claims']), 'refusal gate missing'; \
+            assert d['case_evidentiary_integrity']<0.55, 'integrity should stay low for alleged case'; \
+            print('smoke OK')"

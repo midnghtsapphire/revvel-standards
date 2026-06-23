@@ -1,0 +1,35 @@
+# Fleet dispatch configuration.
+orchestrator:
+  default_mode: parallel        # parallel | sequential
+  publish_to: dashboard/dashboard-data.json
+  require_human_review: false   # flip true before any live (non-seed) publish
+
+agents:
+  - name: agent-primary-source
+    prompt: prompts/agent_primary_source.md
+    allowed_tiers: [4, 5]
+    parallel: true
+  - name: agent-financial
+    prompt: prompts/agent_financial.md
+    allowed_tiers: [3, 4, 5]
+    parallel: true
+  - name: agent-media-trace
+    prompt: prompts/agent_media_trace.md
+    allowed_tiers: [1, 2, 3]
+    parallel: true
+  - name: agent-counter
+    prompt: prompts/agent_counter.md
+    role: adversarial
+    parallel: true
+  - name: agent-legal
+    prompt: prompts/agent_legal.md
+    allowed_tiers: [3, 4, 5]
+    sets_stage: true
+    parallel: true
+
+judge:
+  prompt: prompts/JUDGE_PROMPT.md
+  runs_after: all_agents
+
+refusal:
+  block_verdicts_on_named_persons: true   # never disable
