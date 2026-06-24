@@ -26,9 +26,10 @@ on:
       research_depth:
         description: Research depth
         required: false
-        default: triangulated
+        default: deep_search
         type: choice
         options:
+          - deep_search
           - standard
           - triangulated
           - swarm
