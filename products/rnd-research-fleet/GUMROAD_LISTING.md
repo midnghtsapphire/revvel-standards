@@ -3,9 +3,18 @@
 ## Product Details
 
 **Product Name:** R&D Research Fleet
-**Price:** $400 (one-time)
 **License:** Perpetual, commercial use allowed
 **Version:** 1.0.0
+
+---
+
+## Pricing Tiers
+
+| Product | Price |
+|---------|-------|
+| **Single Persona** - Drop into any LLM | $47 |
+| **Master Prompt** - All 5 frameworks in one | $199 |
+| **Full Fleet** - Everything + scripts + auto-setup | $299 |
 
 ---
 
@@ -25,26 +34,28 @@ The R&D Research Fleet transforms any LLM into an autonomous deep research engin
 
 ## What You Get
 
-### 🔬 The Master Prompt ($400 value)
-A complete R&D engineering prompt that forces rigorous evaluation:
-- Paste into any LLM (Claude, GPT, etc.)
-- 6-phase framework: Deconstruct → TRIZ → Screen → LCA → BNAT → Verdict
-- Includes all reference templates
+### 🔬 Single Persona - $47
+Pick ONE research mode:
+- DOE Screener (evaluation)
+- TRIZ Specialist (problem solving)
+- BNAT Hunter (technology scouting)
+- Freestyle Perplexity Agent (web-grounded with attitude)
 
-### 🤖 Auto-Install Agent Fleet ($200 value)
-- Perplexity Research Agent - No API key needed (FREE research)
-- Deep Search Router - Sonnet 3.5 + OpenRouter Fusion
-- 6 Research Personas - Switch between modes instantly
-- Auto GitHub Join - Creates your branded fork in one click
+### Master Prompt - $199
+All 5 frameworks in ONE prompt:
+- DOE + TRIZ + MEErP + LCA + BNAT
+- Paste into any LLM
+- Complete R&D evaluation system
 
-### 📚 Complete Framework Library ($150 value)
-- DOE 5-Point Screening Guide (PDF-ready)
-- TRIZ Analysis Handbook
-- MEErP Assessment Template
-- LCA Report Generator
-- BNAT Discovery Playbook
-
-**Total Value: $450+ | Your Price: $400**
+### Full Fleet - $299 (Best Value)
+Everything plus automation:
+- ✅ All 5 Personas (drop into any LLM)
+- ✅ Master Prompt (all frameworks combined)
+- ✅ Perplexity Research Agent - No API key needed (FREE!)
+- ✅ Auto-Install Script (one command setup)
+- ✅ Deep Search Router (Sonnet 3.5 + OpenRouter)
+- ✅ Auto GitHub Join (creates branded fork)
+- ✅ Complete Framework Library (PDF-ready guides)
 
 ---
 
