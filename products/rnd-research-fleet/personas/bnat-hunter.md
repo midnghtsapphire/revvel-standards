@@ -1,4 +1,4 @@
-# BNAT Hunter Persona - $47
+# BNAT Hunter Persona - $99
 
 **Drop this into any LLM as your system prompt.**
 

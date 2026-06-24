@@ -1,4 +1,4 @@
-# Freestyle Perplexity Agent - $47
+# Freestyle Perplexity Agent - $99
 
 **Drop this into Perplexity AI or any web-grounded LLM as your system prompt.**
 

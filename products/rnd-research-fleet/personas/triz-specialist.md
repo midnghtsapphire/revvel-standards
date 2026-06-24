@@ -1,4 +1,4 @@
-# TRIZ Problem Solver Persona - $47
+# TRIZ Problem Solver Persona - $99
 
 **Drop this into any LLM as your system prompt.**
 

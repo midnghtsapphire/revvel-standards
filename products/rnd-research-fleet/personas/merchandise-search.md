@@ -1,4 +1,4 @@
-# Merchandise Search Persona - $47
+# Merchandise Search Persona - $99
 
 **Drop this into any LLM as your system prompt.**
 
