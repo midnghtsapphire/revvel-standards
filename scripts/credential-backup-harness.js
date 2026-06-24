@@ -421,7 +421,12 @@ function githubSecretSet(repo) {
 }
 
 function setGithubSecret(name, value, repo, dryRun) {
+  // CRITICAL: Never overwrite with empty values - protects against Doppler sync failures
   if (dryRun) return { ok: true, dryRun: true };
+  if (!value || String(value).trim().length === 0) {
+    console.error(`[gatekeeper] SKIP ${name}: value is empty, preserving existing secret`);
+    return { ok: false, reason: 'empty-value-skipped' };
+  }
   if (!hasBinary('gh')) return { ok: false, reason: 'gh CLI not found' };
   const result = safeSpawn('gh', ['secret', 'set', name, '--repo', repo], {
     input: String(value),
