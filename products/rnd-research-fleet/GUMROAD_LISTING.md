@@ -12,7 +12,7 @@
 
 | Product | Price |
 |---------|-------|
-| **Single Persona** - Drop into any LLM | $0.99 |
+| **Single Persona** - Drop into any LLM | $99 |
 | **Research Fleet Bundle** - 6 Personas + Master Prompt | $199 |
 | **Self-Exploding Fleet** - Everything, auto-install, auto-run | $399 |
 
@@ -36,7 +36,7 @@ The R&D Research Fleet transforms any LLM into an autonomous deep research engin
 
 ## What You Get
 
-### 🔬 Single Persona - $0.99
+### 🔬 Single Persona - $99
 Pick ONE research mode:
 - DOE Screener (evaluation)
 - TRIZ Specialist (problem solving)
