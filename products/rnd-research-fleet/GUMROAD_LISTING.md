@@ -13,8 +13,8 @@
 | Product | Price |
 |---------|-------|
 | **Single Persona** - Drop into any LLM | $0.99 |
-| **Research Fleet Bundle** - 4 Personas + Master Prompt | $199 |
-| **Self-Exploding Fleet** - Everything, auto-install, auto-run | $400 |
+| **Research Fleet Bundle** - 6 Personas + Master Prompt | $199 |
+| **Self-Exploding Fleet** - Everything, auto-install, auto-run | $399 |
 
 ---
 
@@ -54,7 +54,7 @@ Everything you need for deep research:
 - ✅ Complete Framework Library (PDF-ready guides)
 - Paste into any LLM - no scripts needed!
 
-### 💥 Self-Exploding Fleet - $400 (Maximum Power)
+### 💥 Self-Exploding Fleet - $399 (Maximum Power)
 The full automation suite - runs itself:
 - ✅ Everything in Bundle PLUS:
 - ✅ Perplexity Research Agent - No API key needed (FREE!)
