@@ -108,7 +108,7 @@ jobs:
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('pr_number', String(prNumber));
             core.setOutput('research_query', inputs.research_query || querySource || '');
-            core.setOutput('research_depth', inputs.research_depth || 'triangulated');
+            core.setOutput('research_depth', inputs.research_depth || 'deep_search');
     timeout-minutes: 15
   research:
     name: Run layered research engine
