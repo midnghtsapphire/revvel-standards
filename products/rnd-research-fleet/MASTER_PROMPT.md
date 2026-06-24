@@ -1,5 +1,7 @@
 # Master R&D Engineering Prompt
-## DOE Screening + TRIZ + MEErP + LCA + BNAT Framework
+## DOE Screening + TRIZ + MEErP + LCA + BNAT + Lead Search + Merchandise Framework
+
+*7 Powerful Frameworks in 1 Prompt*
 
 ---
 
@@ -40,7 +42,19 @@ breaks down, and either rebuilds or replaces your concept with a superior paradi
 > *   Identify **BNAT (Best Not Yet Available Technology)**—cutting-edge solutions currently in lab research, patent phases, or early development that relate to this problem.
 > *   If my initial idea is obsolete or highly inefficient compared to a BNAT concept, **discard my idea entirely** and explain why the new paradigm is the better path forward.
 >
-> **Phase 6: Final Verdict & Actionable Blueprint**
+> **Phase 6: Lead Generation & Partner Search**
+> *   Identify potential **customers, partners, and investors** for the validated solution.
+> *   Define the Ideal Customer Profile (ICP): industry, company size, budget, pain points, authority level.
+> *   Find warm outreach targets: who's hiring (growing = budget), who's funded, who's speaking about this problem.
+> *   Identify investor targets: which VCs/angels fund this space, who's on competitor boards.
+>
+> **Phase 7: Merchandising & Product Opportunities**
+> *   Identify **products to sell** alongside or based on the validated solution.
+> *   Research trending products, dropshipping opportunities, white-label potential.
+> *   Calculate profit margins: selling price, product cost, shipping, platform fees, ad spend.
+> *   Find suppliers: AliExpress hot products, Alibaba factories, print-on-demand options.
+>
+> **Phase 8: Final Verdict & Actionable Blueprint**
 > *   Deliver a final, definitive verdict: Should we **Refine** my idea, **Repurpose** existing tech, or **Pivot** to a completely new solution?
 > *   Provide a high-level Bill of Materials (BOM) and a Cost-Benefit Analysis identifying the specific steps, components, and potential risks to execute the superior solution.
 >

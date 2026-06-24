@@ -13,8 +13,8 @@
 | Product | Price |
 |---------|-------|
 | **Single Persona** - Drop into any LLM | $47 |
-| **Master Prompt** - All 5 frameworks in one | $199 |
-| **Full Fleet** - Everything + scripts + auto-setup | $299 |
+| **Research Fleet Bundle** - 4 Personas + Master Prompt | $199 |
+| **Self-Exploding Fleet** - Everything, auto-install, auto-run | $400 |
 
 ---
 
@@ -29,6 +29,8 @@ The R&D Research Fleet transforms any LLM into an autonomous deep research engin
 - **MEErP Framework** - European Commission's ecodesign standard
 - **Life Cycle Assessment (LCA)** - Cradle-to-grave environmental analysis
 - **BNAT Discovery** - Hunt bleeding-edge lab research and patents
+- **Lead Search** - Find potential customers, partners, investors
+- **Merchandising Search** - Find products to sell, dropship, or white-label
 
 ---
 
@@ -41,21 +43,24 @@ Pick ONE research mode:
 - BNAT Hunter (technology scouting)
 - Freestyle Perplexity Agent (web-grounded with attitude)
 
-### Master Prompt - $199
-All 5 frameworks in ONE prompt:
-- DOE + TRIZ + MEErP + LCA + BNAT
-- Paste into any LLM
-- Complete R&D evaluation system
-
-### Full Fleet - $299 (Best Value)
-Everything plus automation:
-- ✅ All 5 Personas (drop into any LLM)
-- ✅ Master Prompt (all frameworks combined)
-- ✅ Perplexity Research Agent - No API key needed (FREE!)
-- ✅ Auto-Install Script (one command setup)
-- ✅ Deep Search Router (Sonnet 3.5 + OpenRouter)
-- ✅ Auto GitHub Join (creates branded fork)
+### 🚀 Research Fleet Bundle - $199 (Most Popular)
+Everything you need for deep research:
+- ✅ All 4 Personas (drop into any LLM)
+- ✅ Master Prompt (7 frameworks: DOE + TRIZ + MEErP + LCA + BNAT + Lead + Merchandise)
+- ✅ Lead Search Persona - Find customers, partners, investors
+- ✅ Merchandise Search Persona - Find products to sell
 - ✅ Complete Framework Library (PDF-ready guides)
+- Paste into any LLM - no scripts needed!
+
+### 💥 Self-Exploding Fleet - $400 (Maximum Power)
+The full automation suite - runs itself:
+- ✅ Everything in Bundle PLUS:
+- ✅ Perplexity Research Agent - No API key needed (FREE!)
+- ✅ Auto-Install Script (one command: `curl | bash`)
+- ✅ Deep Search Router (Sonnet 3.5 + OpenRouter Fusion)
+- ✅ Auto GitHub Join (creates branded fork automatically)
+- ✅ Auto-Update (stays current with new frameworks)
+- ✅ No subscription - one-time payment, yours forever
 
 ---
 
