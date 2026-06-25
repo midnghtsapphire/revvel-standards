@@ -270,6 +270,19 @@ test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with w
   }
 });
 
+test('stuck-label-automation.yml can dispatch recovery workflows', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!script.includes('createWorkflowDispatch')) {
+    throw new Error('stuck-label-automation must keep workflow dispatch recovery actions');
+  }
+  if (doc.permissions?.actions !== 'write') {
+    throw new Error('stuck-label-automation must have actions: write to dispatch recovery workflows');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
