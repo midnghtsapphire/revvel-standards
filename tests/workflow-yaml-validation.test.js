@@ -359,6 +359,31 @@ test('wr-pr-creation.yml uses existing WR templates and preserves issue body', (
   }
 });
 
+test('wr-pr-creation.yml validates local references in generated WR documents', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const createJob = doc.jobs['create-wr-pr'];
+  const validateStep = createJob.steps.find((step) => step.name === 'Validate WR local references');
+
+  if (!validateStep) {
+    throw new Error('Validate WR local references step not found');
+  }
+
+  const script = validateStep.run || '';
+  const requiredSnippets = [
+    'WR_FILE',
+    're.finditer',
+    'Missing local references',
+    'Validated local references',
+    "target.split('#', 1)[0]",
+  ];
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`WR local-reference validation missing ${snippet}`);
+    }
+  }
+});
+
 test('wr-pr-creation.yml suppresses operational issue_comment retry loops', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
