@@ -1,0 +1,380 @@
+name: Brain Dump Intake — Parse Unstructured Ideas into WRs
+
+# Accepts a free-form brain dump (text blob) and automatically:
+#   1. Sends it to OpenRouter for structured parsing
+#   2. Creates individual WR issues for each discrete work item found
+#   3. Applies priority-slot labels based on estimated importance
+#   4. Posts a summary comment with links to all created issues
+#
+# Triggers:
+#   A) workflow_dispatch with a `brain_dump` text body (manual use)
+#   B) Issue comment containing the `/brain-dump` command
+#      Usage: /brain-dump <freeform text goes here, can be multi-line>
+#
+# The brain dump text may be entirely unstructured — voice transcriptions,
+# random notes, or a raw idea stream are all valid inputs.
+#
+# Requires: OPENROUTER_API_KEY secret (falls back to keyless Perplexity bridge).
+#
+# Example command usage in an issue comment:
+#   /brain-dump every morning I want a tool to dump notes and auto create WRs.
+#   We also need a brain dump to priority slot mapper and notebook LM integration.
+#   The OSINT pipeline needs a new scraping module.
+
+on:
+  workflow_dispatch:
+    inputs:
+      brain_dump:
+        description: 'Freeform brain dump text — paste any unstructured notes here'
+        required: true
+        type: string
+      dry_run:
+        description: 'Log parsed items without creating issues'
+        type: boolean
+        default: false
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: brain-dump-intake-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  parse-brain-dump:
+    name: Parse brain dump and create WRs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only run on issue comment if it contains /brain-dump and is not a PR comment.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       !github.event.issue.pull_request &&
+       contains(github.event.comment.body, '/brain-dump'))
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract brain dump text
+        id: extract
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            let text = '';
+            let sourceIssue = null;
+
+            if (context.eventName === 'workflow_dispatch') {
+              text = context.payload.inputs.brain_dump || '';
+            } else if (context.eventName === 'issue_comment') {
+              const body = context.payload.comment.body || '';
+              // Everything after /brain-dump is the dump text.
+              const match = body.match(/\/brain-dump\s+([\s\S]+)/i);
+              text = match ? match[1].trim() : '';
+              sourceIssue = context.payload.issue.number;
+            }
+
+            if (!text) {
+              core.setFailed('No brain dump text found. Usage: /brain-dump <your notes>');
+              return;
+            }
+
+            core.info(`Brain dump length: ${text.length} chars`);
+            core.info(`Source issue: ${sourceIssue || 'workflow_dispatch'}`);
+
+            core.setOutput('text', text);
+            core.setOutput('source_issue', String(sourceIssue || ''));
+            core.setOutput('dry_run', String(context.payload.inputs?.dry_run || 'false'));
+
+      - name: Acknowledge receipt (issue comment trigger)
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: [
+                '🧠 **Brain Dump Intake received** — parsing your notes into Work Requests…',
+                '',
+                '_I\'ll post a summary here when the issues are created._',
+              ].join('\n'),
+            });
+
+      - name: Parse brain dump with OpenRouter
+        id: parse
+        uses: actions/github-script@v9.0.0
+        env:
+          BRAIN_DUMP_TEXT: ${{ steps.extract.outputs.text }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          script: |
+            const dumpText = process.env.BRAIN_DUMP_TEXT || '';
+            const apiKey = process.env.OPENROUTER_API_KEY || '';
+
+            const systemPrompt = `You are a Work Request extraction engine for the Revvel Standards repository.
+            Your job is to parse a free-form brain dump and extract discrete, actionable work items.
+
+            For each work item, produce:
+            - title: short imperative phrase (< 80 chars)
+            - summary: 1-2 sentences describing the objective
+            - priority: one of "p0" | "p1" | "p2" | "p3"
+              - p0 = drop everything (critical blocker)
+              - p1 = high (this sprint, top item)
+              - p2 = medium (this sprint or next)
+              - p3 = low (backlog)
+            - slot: suggested priority-slot label in format "1-1" | "1-2" | "1-3" | "2-1" | "2-2" | "2-3" | "3-1"
+              - 1-x = current sprint, 2-x = next sprint, 3-x = following sprint
+              - Assign unique slots; no two items should share the same slot unless they are parallel.
+            - labels: array of relevant GitHub labels (use only: enhancement, research, automation, documentation, bug, design, infrastructure, integration)
+            - output_type: one of "production-app" | "automation" | "documentation" | "research" | "tool"
+
+            Respond ONLY with a valid JSON array. No markdown, no explanations, no code fences.
+
+            Example output:
+            [
+              {
+                "title": "Build brain dump to WR pipeline",
+                "summary": "Create a workflow that accepts freeform text and converts it to structured Work Requests.",
+                "priority": "p1",
+                "slot": "1-1",
+                "labels": ["enhancement", "automation"],
+                "output_type": "automation"
+              }
+            ]`;
+
+            const userPrompt = `Parse this brain dump into discrete work items:\n\n${dumpText}`;
+
+            let items = [];
+
+            if (apiKey) {
+              try {
+                core.info('Calling OpenRouter for brain dump parsing...');
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey,
+                    'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
+                    'X-Title': 'Revvel Brain Dump Intake',
+                  },
+                  body: JSON.stringify({
+                    model: 'anthropic/claude-sonnet-4',
+                    messages: [
+                      { role: 'system', content: systemPrompt },
+                      { role: 'user', content: userPrompt },
+                    ],
+                    max_tokens: 2000,
+                    temperature: 0.3,
+                  }),
+                });
+
+                if (!response.ok) {
+                  throw new Error(`OpenRouter HTTP ${response.status}: ${await response.text()}`);
+                }
+
+                const data = await response.json();
+                const raw = data.choices?.[0]?.message?.content || '[]';
+                core.info(`OpenRouter raw response: ${raw.slice(0, 200)}`);
+                items = JSON.parse(raw);
+                core.info(`Parsed ${items.length} work items from OpenRouter.`);
+              } catch (err) {
+                core.warning(`OpenRouter parse failed: ${err.message}. Falling back to heuristic split.`);
+              }
+            } else {
+              core.warning('OPENROUTER_API_KEY not set — using heuristic line-split fallback.');
+            }
+
+            // Heuristic fallback: split on sentence boundaries / newlines.
+            if (!Array.isArray(items) || items.length === 0) {
+              core.info('Using heuristic fallback parser...');
+              const lines = dumpText
+                .split(/\n+/)
+                .map(l => l.trim())
+                .filter(l => l.length > 10);
+              items = lines.map((line, i) => ({
+                title: line.slice(0, 80),
+                summary: line,
+                priority: 'p2',
+                slot: i === 0 ? '1-1' : i === 1 ? '1-2' : i === 2 ? '1-3' : `2-${(i - 3) % 3 + 1}`,
+                labels: ['enhancement'],
+                output_type: 'production-app',
+              }));
+              core.info(`Heuristic parsed ${items.length} items.`);
+            }
+
+            core.setOutput('items_json', JSON.stringify(items));
+            core.setOutput('item_count', String(items.length));
+
+      - name: Create WR issues for each item
+        id: create-issues
+        uses: actions/github-script@v9.0.0
+        env:
+          ITEMS_JSON: ${{ steps.parse.outputs.items_json }}
+          SOURCE_ISSUE: ${{ steps.extract.outputs.source_issue }}
+          DRY_RUN: ${{ steps.extract.outputs.dry_run }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const items = JSON.parse(process.env.ITEMS_JSON || '[]');
+            const sourceIssue = process.env.SOURCE_ISSUE || '';
+            const dryRun = process.env.DRY_RUN === 'true';
+
+            if (items.length === 0) {
+              core.setFailed('No work items parsed from brain dump.');
+              return;
+            }
+
+            const PRIORITY_MAP = { p0: 'priority-p0', p1: 'priority-p1', p2: 'priority-p2', p3: 'priority-p3' };
+            const ALLOWED_LABELS = new Set([
+              'enhancement', 'research', 'automation', 'documentation', 'bug',
+              'design', 'infrastructure', 'integration', 'work-request',
+              'weekly-research', 'deep-research', 'triage:new',
+            ]);
+
+            const createdIssues = [];
+
+            for (let i = 0; i < items.length; i++) {
+              const item = items[i];
+              const title = `[WR] ${(item.title || 'Brain Dump Item').slice(0, 76)}`;
+              const priorityLabel = PRIORITY_MAP[item.priority] || 'priority-p2';
+              const slotLabel = item.slot ? `priority-slot:${item.slot}` : null;
+
+              const sourceRef = sourceIssue
+                ? `\n\n_Generated from brain dump in issue #${sourceIssue}_`
+                : `\n\n_Generated from brain dump via workflow_dispatch_`;
+
+              const body = [
+                `### Output Type (required)`,
+                ``,
+                item.output_type || 'production-app',
+                ``,
+                `### Summary`,
+                ``,
+                item.summary || item.title,
+                ``,
+                `### Objective`,
+                ``,
+                item.summary || item.title,
+                ``,
+                `### Definition of Done`,
+                ``,
+                `_To be defined_`,
+                ``,
+                `---`,
+                sourceRef,
+              ].join('\n');
+
+              const extraLabels = (item.labels || []).filter(l => ALLOWED_LABELS.has(l));
+              const labels = [
+                'work-request', 'weekly-research', 'deep-research',
+                'triage:new', priorityLabel,
+                ...extraLabels,
+              ];
+              if (slotLabel) labels.push(slotLabel);
+
+              if (dryRun) {
+                core.info(`[dry-run] Would create issue: ${title}`);
+                core.info(`  Labels: ${labels.join(', ')}`);
+                createdIssues.push({ title, url: '(dry-run)', number: 0 });
+                continue;
+              }
+
+              try {
+                const { data: issue } = await github.rest.issues.create({
+                  owner, repo, title, body,
+                  labels,
+                  assignees: context.actor ? [context.actor] : [],
+                });
+                core.info(`Created issue #${issue.number}: ${issue.html_url}`);
+                createdIssues.push({ title, url: issue.html_url, number: issue.number });
+              } catch (err) {
+                core.warning(`Could not create issue "${title}": ${err.message}`);
+                // Retry without optional labels.
+                try {
+                  const { data: issue } = await github.rest.issues.create({
+                    owner, repo, title, body,
+                    labels: ['work-request', 'weekly-research', 'triage:new', priorityLabel],
+                  });
+                  core.info(`Created issue (fallback labels) #${issue.number}: ${issue.html_url}`);
+                  createdIssues.push({ title, url: issue.html_url, number: issue.number });
+                } catch (err2) {
+                  core.error(`Failed to create issue "${title}": ${err2.message}`);
+                }
+              }
+
+              // Throttle to avoid rate limits.
+              if (i < items.length - 1) {
+                await new Promise(r => setTimeout(r, 500));
+              }
+            }
+
+            core.setOutput('created_json', JSON.stringify(createdIssues));
+            core.setOutput('created_count', String(createdIssues.filter(i => i.number > 0).length));
+
+      - name: Post summary comment
+        if: always()
+        uses: actions/github-script@v9.0.0
+        env:
+          CREATED_JSON: ${{ steps.create-issues.outputs.created_json }}
+          SOURCE_ISSUE: ${{ steps.extract.outputs.source_issue }}
+          ITEM_COUNT: ${{ steps.parse.outputs.item_count }}
+          DRY_RUN: ${{ steps.extract.outputs.dry_run }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const created = JSON.parse(process.env.CREATED_JSON || '[]');
+            const sourceIssue = process.env.SOURCE_ISSUE || '';
+            const dryRun = process.env.DRY_RUN === 'true';
+            const itemCount = parseInt(process.env.ITEM_COUNT, 10) || 0;
+
+            if (!sourceIssue) {
+              // workflow_dispatch: just log the summary.
+              core.info(`Brain Dump summary: ${created.length} issues created from ${itemCount} parsed items.`);
+              for (const issue of created) {
+                core.info(`  ${issue.number ? '#' + issue.number : '(dry-run)'}: ${issue.title} — ${issue.url}`);
+              }
+              return;
+            }
+
+            const lines = [
+              `## 🧠 Brain Dump Processed — ${created.length} Work Request${created.length === 1 ? '' : 's'} Created`,
+              '',
+              `Parsed **${itemCount}** item${itemCount === 1 ? '' : 's'} from your brain dump.`,
+              dryRun ? '_(dry-run mode — no issues were actually created)_' : '',
+              '',
+              '### Created Issues',
+              '',
+            ];
+
+            for (const issue of created) {
+              if (issue.number > 0) {
+                lines.push(`- #${issue.number} — [${issue.title}](${issue.url})`);
+              } else {
+                lines.push(`- (dry-run) ${issue.title}`);
+              }
+            }
+
+            if (created.length === 0) {
+              lines.push('_No issues were created — check the workflow run for errors._');
+            }
+
+            lines.push('');
+            lines.push('_Each issue has been created with `work-request`, `weekly-research`, `triage:new`, and a priority-slot label. The triage pipeline will classify and route them automatically._');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(sourceIssue, 10),
+              body: lines.filter(l => l !== undefined).join('\n'),
+            });

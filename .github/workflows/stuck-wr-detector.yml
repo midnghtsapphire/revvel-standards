@@ -96,6 +96,13 @@ jobs:
             });
             core.info(`Found ${issues.length} open work-request issues.`);
 
+            // A WR is also considered stuck — even without a completion label —
+            // if it has been open for more than 7 days without an associated PR.
+            // This catches WRs blocked on research (research:blocked) or whose
+            // research engine simply never fired.  We force a PR skeleton by
+            // applying wr:reset so wr-pr-creation can build the document.
+            const LONG_STUCK_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
             const stuck = [];
             for (const issue of issues) {
               if (issue.pull_request) continue;  // already a PR, not an issue
@@ -104,14 +111,52 @@ jobs:
                 core.info(`#${issue.number}: duplicate issue; skipping stuck-WR retries.`);
                 continue;
               }
+              const ageMs = Date.now() - new Date(issue.created_at).getTime();
               const readyForWrPr =
                 labelNames.has('wr:complete') ||
                 labelNames.has('research:complete');
+              // Long-stuck path: WR open > 7 days, no completion signal, no PR.
+              // Apply wr:reset to force a PR skeleton regardless of research state.
               if (!readyForWrPr) {
-                core.info(`#${issue.number}: WR not ready for PR creation (missing wr:complete/research:complete).`);
+                if (ageMs >= LONG_STUCK_MS) {
+                  // Check if a PR already exists before forcing wr:reset.
+                  const baseTitle = getIssueBaseTitle(issue);
+                  if (baseTitle) {
+                    const existingPr = await findAssociatedPr({ github, owner, repo, issue, core });
+                    if (!existingPr) {
+                      core.warning(`#${issue.number}: WR open ${Math.round(ageMs / 86400000)}d without completion signal or PR — forcing wr:reset to unblock.`);
+                      if (!dryRun) {
+                        await addLabelsBestEffort(issue.number, ['wr:reset', 'lifecycle:stuck', 'wr-stuck']);
+                        await github.rest.issues.createComment({
+                          owner, repo, issue_number: issue.number,
+                          body: [
+                            '## 🚨 VEINS: Long-Stuck WR — Forced PR Creation',
+                            '',
+                            `This Work Request has been open for **${Math.round(ageMs / 86400000)} days** without a`,
+                            'completion signal (`wr:complete` / `research:complete`) or associated PR.',
+                            '',
+                            '**Root cause:** ' + (labelNames.has('research:blocked')
+                              ? '`research:blocked` was applied, halting the research engine before it could signal completion.'
+                              : 'No completion label was ever applied — research engine may not have run.'),
+                            '',
+                            '**Auto-fix applied:** `wr:reset` label added to force `wr-pr-creation.yml` to',
+                            'generate a PR skeleton even without full research.',
+                            '',
+                            '**Labels added:** `wr:reset`, `lifecycle:stuck`, `wr-stuck`',
+                            '',
+                            '_Detected by `stuck-wr-detector.yml` (long-stuck path) — ' + new Date().toISOString() + '_',
+                          ].join('\n'),
+                        });
+                      } else {
+                        core.info(`[dry-run] Would apply wr:reset to #${issue.number}`);
+                      }
+                    }
+                  }
+                } else {
+                  core.info(`#${issue.number}: WR not ready for PR creation (missing wr:complete/research:complete).`);
+                }
                 continue;
               }
-              const ageMs = Date.now() - new Date(issue.created_at).getTime();
               if (ageMs < minStuckAgeMs) continue;     // give it time to run normally
               if (ageMs > maxAgeMs) continue;          // ignore ancient WRs
 
