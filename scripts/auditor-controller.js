@@ -214,7 +214,6 @@ const CHECKS = [
         '.github/workflows/bito-ai.yml',
         '.github/workflows/eeat-trust-cron.yml',
         'scripts/gatekeeper-cli.md',
-        '.github/workflows/secret-backup.yml',        // intentional backup workflow
         '.github/workflows/secrets-backup-daily.yml', // intentional daily backup workflow
       ]);
       const unexpected = hits.filter(p => !allowed.has(p));
