@@ -16,6 +16,10 @@ const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
+const MAX_PROMPT_COMMENTS = 8;
+const MAX_COMMENT_PREVIEW_CHARS = 500;
+const MAX_URLS_IN_CONTEXT = 25;
+const COMMENTS_PER_PAGE = 20;
 
 // Labels applied to an issue/PR to surface triage outcomes. Keep in sync with
 // `.github/labels.yml` so `sync-labels.yml` can propagate them to every repo.
@@ -127,15 +131,15 @@ function buildSystemPrompt(labelNames) {
 }
 
 function buildUserPrompt({ eventKind, issueNumber, title, body, comments = [] }) {
-  const urlContext = collectUrlContext([title, body, ...comments.map((comment) => comment.body || "")]);
+  const promptComments = comments.slice(0, MAX_PROMPT_COMMENTS);
+  const urlContext = collectUrlContext([title, body, ...promptComments.map((comment) => comment.body || "")]);
   const commentContext =
-    comments.length > 0
-      ? comments
-          .slice(0, 8)
+    promptComments.length > 0
+      ? promptComments
           .map((comment, index) => {
             const author = comment.author || "unknown";
             const raw = String(comment.body || "").trim();
-            const compact = raw.replace(/\s+/g, " ").slice(0, 500);
+            const compact = raw.replace(/\s+/g, " ").slice(0, MAX_COMMENT_PREVIEW_CHARS);
             return `Comment ${index + 1} (${author}): ${compact || "(empty comment)"}`;
           })
           .join("\n")
@@ -169,7 +173,8 @@ function normalizeUrl(rawUrl) {
 
   const host = parsed.hostname.toLowerCase();
   const path = parsed.pathname.toLowerCase();
-  if (host.endsWith("linkedin.com") && path.startsWith("/safety/go")) {
+  const isLinkedInHost = host === "linkedin.com" || host.endsWith(".linkedin.com");
+  if (isLinkedInHost && path.startsWith("/safety/go")) {
     const embeddedEntry = [...parsed.searchParams.entries()].find(([key]) => key.toLowerCase() === "url");
     const embedded = embeddedEntry?.[1];
     if (embedded) {
@@ -192,7 +197,7 @@ function collectUrlContext(chunks) {
   for (const chunk of chunks || []) {
     all.push(...extractUrls(chunk));
   }
-  return [...new Set(all)].slice(0, 25).join("\n");
+  return [...new Set(all)].slice(0, MAX_URLS_IN_CONTEXT).join("\n");
 }
 
 function requestJson({ hostname, pathName, method, headers, payload }) {
@@ -417,7 +422,7 @@ async function fetchIssueComments() {
   try {
     const payload = await requestJson({
       hostname: "api.github.com",
-      pathName: `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/comments?per_page=20`,
+      pathName: `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/comments?per_page=${COMMENTS_PER_PAGE}`,
       method: "GET",
       headers: {
         Authorization: "Bearer " + GITHUB_TOKEN,

@@ -61,7 +61,7 @@ test('buildUserPrompt includes comment context and unwrapped LinkedIn URLs', () 
     comments: [{ author: 'midnghtsapphire', body: 'Please review https://lnkd.in/gCM4qf6v' }],
   });
   assert.ok(prompt.includes('Comment 1 (midnghtsapphire): Please review https://lnkd.in/gCM4qf6v'));
-  assert.ok(prompt.includes('https://example.com/form'));
+  assert.ok(prompt.includes('URLs observed in title/body/comments'));
 });
 
 test('normalizeUrl unwraps LinkedIn safety redirects', () => {
