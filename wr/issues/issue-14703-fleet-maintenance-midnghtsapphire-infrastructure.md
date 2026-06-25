@@ -33,7 +33,7 @@
 
 ## Executive Summary
 
-The target repository `midnghtsapphire/infrastructure` returned HTTP 404 at research time — it does not exist as a public GitHub repository. This WR documents the skills, personas, and standards from revvel-standards that are most applicable to standing up and maintaining an infrastructure repository in the MIDNGHTSAPPHIRE fleet. The recommended path is to bootstrap an `infrastructure/` product inside the revvel-standards monorepo (matching the established pattern for `hvac-calc-service`, `cli-engine`, etc.) with IaC definitions, fleet-wide secret provisioning scripts, and the full revvel-standards review jury wired in from day one.
+The target repository `midnghtsapphire/infrastructure` returned HTTP 404 at research time — it does not exist as a public GitHub repository. This WR documents the skills, personas, and standards from revvel-standards that are most applicable to standing up and maintaining an infrastructure repository in the MIDNGHTSAPPHIRE fleet. The recommended operating model is **incubate first in `products/infrastructure/` inside the revvel-standards monorepo, then extract to `github.com/midnghtsapphire/infrastructure` later if it becomes a sellable or reusable standalone asset**. That preserves the existing review jury, skills context, and monitoring on day one while keeping the folder structure split-ready for a future standalone repo.
 
 ---
 
@@ -43,7 +43,8 @@ The target repository `midnghtsapphire/infrastructure` returned HTTP 404 at rese
 | --- | --- |
 | Target repo | `midnghtsapphire/infrastructure` |
 | HTTP status at research time | **404 — does not exist** |
-| Recommended path | Bootstrap as `infrastructure/` in revvel-standards monorepo |
+| Recommended path | Bootstrap as `products/infrastructure/` in revvel-standards monorepo |
+| Future extraction target | `github.com/midnghtsapphire/infrastructure` once the shape stabilizes |
 | Primary language | HCL / YAML / Shell |
 | Proposed dev port | 3009 (next available after CLI Engine on 3008) |
 
@@ -119,6 +120,32 @@ The following **Persona Engine** personas (`skills/persona-engine/`) are the rig
 
 ---
 
+## 🎛 Persona Trigger & Capability Reference
+
+### Engine-wide triggers and termination behavior
+
+| Layer | Trigger / rule | Effect |
+| --- | --- | --- |
+| Persona Engine activation | `persona`, `character`, `guide`, `who are you`, `greeting`, `activate persona`, `start persona`, `ephemeral identity`, `persona engine`, `skill guide` | Loads the Persona Engine and picks the best persona for the session |
+| Persona fallback | No explicit persona requested | Defaults to **Scout** per `persona-engine.skill.yml` |
+| Persona termination | `review complete`, `done reviewing`, `wrap up`, `close session`, `task complete`, `all done`, `finished` | Persona signs off, summarizes, and dissolves |
+| Persona safety rule | User confusion or capability mismatch | Break character, help directly, then resume if appropriate |
+
+### Built-in persona profiles
+
+| Persona | Role / categories | Persona-specific activation keywords | What it does in practice | Infrastructure use | Revvel Hail use |
+| --- | --- | --- | --- | --- | --- |
+| **Scout** 🔭 | Research / brainstorming | `scout`, `research`, `brainstorm` | Surveys options, maps the landscape, frames first questions, and finds precedent before implementation | Compare OpenTofu vs Pulumi, find remote-state patterns, review competitor infra setups | Research hail-data providers, insurance/compliance APIs, and market gaps |
+| **Vault** 🔐 | Security & credential management | `vault`, `credential`, `security`, `secrets` | Drives secrets handling, IAM review, safe provisioning, and no-hardcode enforcement | Provision cloud creds, state backend tokens, CI secrets, Vault paths | Protect weather API keys, webhook secrets, Stripe/auth tokens |
+| **Aria** 🎯 | Code quality / security / testing | `aria`, `code review`, `PR review` | Reviews diffs, flags logic/security gaps, and tightens test expectations | Review HCL/YAML/workflow changes and CI guardrails | Review billing, lead-routing, severe-weather alert logic |
+| **Sage** 📚 | Documentation / content | `sage`, `documentation`, `changelog` | Turns rough notes into clean docs, runbooks, changelogs, and handoff material | Write infra runbooks, architecture docs, deploy notes, incident postmortems | Produce operator docs, onboarding docs, claims/alert runbooks |
+| **Nexus** 🚀 | DevOps & deployment | `nexus`, `deploy`, `CI/CD`, `ship` | Runs the deploy checklist, verifies rollout, and keeps changes systematic under pressure | Handle plan/apply workflows, rollout order, smoke checks, rollback notes | Ship app deploys, alerting pipelines, cron jobs, and uptime verification |
+| **Forge** 🔨 | Skill building / scaffolding | `forge`, `build skill`, `scaffold` | Packages reusable templates, codifies patterns, and turns repeatable work into skills | Create reusable infra templates, bootstrap scripts, and team standards | Create hail-specific automations, templates, and reusable issue/PR flows |
+
+**Revvel Hail note:** no public revvel-hail repository appeared in this workspace or GitHub search during this pass, so the mapping above is a transfer pattern rather than a repo-specific audit. The same personas still fit cleanly if Revvel Hail is a weather/alerts, insurance, or field-ops app.
+
+---
+
 ## Step 1 — Repository Discovery
 
 ### Status
@@ -126,7 +153,7 @@ The following **Persona Engine** personas (`skills/persona-engine/`) are the rig
 `midnghtsapphire/infrastructure` returned **HTTP 404** at research time (2026-06-25). The repository does not exist as a public GitHub repo. Two valid interpretations exist:
 
 1. **Private repo** — the infrastructure repo exists but is private. In this case, the fleet-maintenance tasks are still valid (add review workflows, refresh docs, add security scanning).
-2. **Does not exist yet** — bootstrap it as a monorepo product (`infrastructure/`) following the `hvac-calc-service` / `cli-engine` pattern.
+2. **Does not exist yet** — bootstrap it as a monorepo product (`products/infrastructure/`) following the `hvac-calc-service` / `cli-engine` pattern.
 
 Per the WR Instruction Resilience principle, the agent must not halt on a 404 — it should proceed with option 2 (bootstrap) unless a private repo access token is available.
 
@@ -134,37 +161,45 @@ Per the WR Instruction Resilience principle, the agent must not halt on a 404 �
 
 | | Option A — Standalone repo | Option B — Monorepo product |
 | --- | --- | --- |
-| **Location** | `github.com/midnghtsapphire/infrastructure` | `revvel-standards/infrastructure/` |
+| **Location** | `github.com/midnghtsapphire/infrastructure` | `revvel-standards/products/infrastructure/` |
 | **Review workflows** | Must be duplicated into the new repo | Inherited from root `.github/workflows/` |
 | **Secret provisioning** | Separate GitHub Actions secrets | Shared `scripts/provision-repo-secrets.sh` |
 | **Skill context** | Must copy / reference `skills/` manually | `skills/` is already in path |
 | **CI gate** | Independent CircleCI / Actions config | Inherits root CircleCI `lint-and-test` job |
 | **Infrastructure changes block other products** | No | Yes (monorepo trade-off) |
 | **Precedent** | No existing example | `hvac-calc-service`, `cli-engine`, `creator-payout-tracker` |
+| **Sell-alone / reuse later** | Native fit | Good if kept extraction-ready from the start |
 
-**Recommended: Option B (monorepo product)** — consistent with the established `products/` pattern. Every existing product in this fleet is a monorepo product; infrastructure is no different. Review workflows, secret provisioning, and skill context are all ready to use without duplication. The only downside (infra changes potentially blocking other product CI) is mitigated by path-scoped workflow triggers.
+**Recommended: Option B now, Option A later if needed** — incubate in `products/infrastructure/` first, but keep the directory self-contained so it can be extracted into `midnghtsapphire/infrastructure` later without redesign. That satisfies both goals: immediate use inside revvel-standards and a clean future path to a sellable or reusable standalone repo.
 
 ### Recommended Bootstrap Structure
 
 ```text
-infrastructure/
-├── README.md
-├── CHANGELOG.md
-├── AGENTS.md               # Inherits from root; add infra-specific rules
-├── .github/
-│   └── workflows/
-│       ├── ai-pr-review-openrouter.yml   # Copy from root .github/workflows/
-│       ├── codeql.yml
-│       ├── semgrep.yml
-│       └── dependabot-auto-merge.yml
-├── terraform/              # IaC definitions (if Terraform)
-├── scripts/
-│   ├── provision-secrets.sh  # Calls Vault Agent pattern
-│   └── bootstrap.sh
-└── docs/
-    ├── ARCHITECTURE.md
-    └── RUNBOOK.md
+products/
+└── infrastructure/
+    ├── README.md
+    ├── CHANGELOG.md
+    ├── AGENTS.md               # Inherits from root; add infra-specific rules
+    ├── opentofu/               # IaC definitions (preferred over Terraform OSS)
+    ├── ansible/                # Optional config-management layer
+    ├── scripts/
+    │   ├── provision-secrets.sh  # Calls Vault Agent pattern
+    │   └── bootstrap.sh
+    └── docs/
+        ├── ARCHITECTURE.md
+        └── RUNBOOK.md
+
+.github/
+└── workflows/
+    ├── ai-pr-review-openrouter.yml   # root workflow, add paths filter for products/infrastructure/**
+    ├── bito-ai.yml
+    ├── codeql.yml
+    ├── docs-freshness-check.yml
+    ├── ralph-loop.yml
+    └── semgrep.yml
 ```
+
+**Important correction:** GitHub Actions only reads workflows from the repository-root `.github/workflows/`. A nested `products/infrastructure/.github/workflows/` folder would be documentation-only and would not execute. For the monorepo shape, keep the runnable workflows at the root and scope them to `products/infrastructure/**`.
 
 ---
 
@@ -203,12 +238,12 @@ The full jury required by revvel-standards (`docs/AGENTS.md`) for any target rep
 
 | Workflow | File | Status for `infrastructure` |
 | --- | --- | --- |
-| OpenRouter AI PR Review | `ai-pr-review-openrouter.yml` | ❌ Missing (repo does not exist) |
-| Jules deep research | `jules-invoke.yml` | ❌ Missing |
-| Semgrep SAST | `semgrep.yml` | ❌ Missing |
-| CodeQL | `codeql.yml` | ❌ Missing |
-| Bito AI code review | `bito-ai.yml` | ❌ Missing |
-| Ralph Loop self-healing | `ralph-loop.yml` | ❌ Missing |
+| OpenRouter AI PR Review | `ai-pr-review-openrouter.yml` | ❌ Missing as a standalone repo; ✅ already present at revvel-standards root |
+| Jules deep research | `jules-invoke.yml` | ❌ Missing as a standalone repo |
+| Semgrep SAST | `semgrep.yml` | ❌ Missing as a standalone repo; ✅ already present at revvel-standards root |
+| CodeQL | `codeql.yml` | ❌ Missing as a standalone repo; ✅ already present at revvel-standards root |
+| Bito AI code review | `bito-ai.yml` | ❌ Missing as a standalone repo; ✅ already present at revvel-standards root |
+| Ralph Loop self-healing | `ralph-loop.yml` | ❌ Missing as a standalone repo; ✅ already present at revvel-standards root |
 
 All six must be wired on day one before any other PR is opened against the repo.
 
@@ -218,14 +253,15 @@ All six must be wired on day one before any other PR is opened against the repo.
 
 ### P0 — Immediate (before any infra code is written)
 
-1. **Bootstrap the repo** — create `midnghtsapphire/infrastructure` or scaffold as `infrastructure/` in revvel-standards monorepo.
-2. **Wire the full review jury** — copy the six workflows above from `.github/workflows/`. PR must not merge without all six passing.
+1. **Bootstrap the repo** — start in `products/infrastructure/` and keep it extraction-ready for `midnghtsapphire/infrastructure` later.
+2. **Wire the full review jury** — for the monorepo path, scope the existing six root workflows to `products/infrastructure/**`; if later extracted, copy those workflows into the standalone repo before opening more PRs.
 3. **Load `skills/vault-agent/`** — provision infra credentials through Vault; never commit `.tfvars` with secrets.
 4. **Run `skills/openclaw-self-eval/`** — pre-flight audit before any agent executes changes.
+5. **Add path-scoped monitoring now** — wire `docs-freshness-check.yml`, `ship-quality.yml`, `ralph-loop.yml`, `codeql.yml`, `semgrep.yml`, and `bito-ai.yml` to watch `products/infrastructure/**` plus any root workflow files that touch infra. In practice that means adding `paths:` filters such as `products/infrastructure/**` under each workflow trigger so the existing root workflows automatically re-review infra changes instead of waiting for a manual revisit.
 
 ### P1 — High Priority (first sprint)
 
-1. **Scaffold Terraform/OpenTofu structure** — remote state backend, variable files pattern, module structure.
+1. **Scaffold OpenTofu structure** — remote state backend, variable files pattern, module structure.
 2. **Add `scripts/provision-secrets.sh`** — uses the Vault Agent pattern from `skills/vault-agent/SKILL.md`.
 3. **Enable `skills/patch-agent/`** — wire `scripts/patch-agent.js` to run on every PR that touches `package.json`.
 4. **Document architecture** — `docs/ARCHITECTURE.md` covering services, networks, IAM boundaries.
@@ -243,9 +279,9 @@ All six must be wired on day one before any other PR is opened against the repo.
 
 | Artifact Shape | Existing engine / standard | Status | Required action |
 | --- | --- | --- | --- |
-| IaC definitions (HCL/YAML) | OpenTofu / Terraform | Gap | Bootstrap `infrastructure/terraform/` |
-| Secret provisioning | `skills/vault-agent/` + `scripts/provision-repo-secrets.sh` | Exists in revvel-standards | Copy pattern to `infrastructure/scripts/` |
-| CI/CD workflows | `.github/workflows/` (revvel-standards fleet) | Exists | Copy 6 review workflows to target repo |
+| IaC definitions (HCL/YAML) | OpenTofu / Terraform | Gap | Bootstrap `products/infrastructure/opentofu/` |
+| Secret provisioning | `skills/vault-agent/` + `scripts/provision-repo-secrets.sh` | Exists in revvel-standards | Copy pattern to `products/infrastructure/scripts/` |
+| CI/CD workflows | `.github/workflows/` (revvel-standards fleet) | Exists | Scope the 6 root review workflows to `products/infrastructure/**` now; copy them only if the repo is later extracted |
 | Documentation (README, CHANGELOG) | `skills/auto-documentation/` | Exists | Enable on infra repo |
 | Security scanning | `skills/security/` + Semgrep + CodeQL | Exists | Wire workflows on target repo |
 | Deploy report | `DEPLOY_REPORT.md` pattern (`skills/deployment/`) | Exists | Generate on every infra deploy |
@@ -262,6 +298,7 @@ All six must be wired on day one before any other PR is opened against the repo.
 | WR document was generated with all-placeholder content; no skills or personas were loaded by the automated pipeline | Agent (Copilot) manually filled all sections by reading `skills/REGISTRY.md`, `SKILLS_INDEX.yml`, `docs/WEEKLY_RESEARCH_PROCESS.md`, and reference WRs | This WR now demonstrates the full expected format, including skills table and personas table, for fleet-maintenance WRs | Fleet-maintenance WR template should pre-populate the Skills Vault and Persona tables — add them to `WR_TEMPLATE_BASIC.md` |
 | Target repo `midnghtsapphire/infrastructure` returned HTTP 404 | Agent proceeded per Instruction Resilience principle — bootstrapped recommended structure rather than halting | Consistent with `wr/issues/issue-14622-fleet-maintenance-hvac-calc-service.md` 404 pattern | When a fleet-maintenance target 404s, always bootstrap the recommended structure; document in Agent Self-Healing Journal |
 | WR pipeline did not auto-load skills or reference personas | Skills Vault (`skills/REGISTRY.md`, `SKILLS_INDEX.yml`) exists but is not referenced by `wr-pr-creation.yml` | Open follow-up issue to add Skills Vault auto-injection to `wr-pr-creation.yml` workflow | Every auto-generated WR should include a skills table populated from `SKILLS_INDEX.yml` based on task type |
+| Early bootstrap recommendation mixed a top-level `infrastructure/` folder with nested `.github/workflows/` under the product tree | Corrected the WR to use `products/infrastructure/` and documented that runnable GitHub Actions workflows must stay at repo root | This WR now matches the actual monorepo layout in `AGENTS.md` and avoids a non-functional nested workflow path | Keep monorepo product examples aligned with the real repo layout; never document nested GitHub Actions workflows as executable |
 
 ---
 
