@@ -181,6 +181,15 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
   });
 }
 
+// OpenRouter free-tier models to try as lane 2 when the primary model fails.
+// These ":free" models still need a real (possibly unfunded) OR account key,
+// but they do not consume credits, so they work when the account has run dry.
+const OR_FREE_MODELS = [
+  "deepseek/deepseek-r1:free",
+  "google/gemma-3-27b-it:free",
+  "mistralai/mistral-small-3.2-24b-instruct:free",
+];
+
 // IMPORTANT — OpenRouter "free" is not actually keyless/free-for-all:
 // OpenRouter requires an API key tied to a FUNDED/verified account. Even the
 // models tagged ":free" need a real account with credits (and have tight rate
@@ -189,9 +198,8 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
 //
 // Fleet rule (per owner): every failure must cascade to a working fallback —
 // "every failure is where our agent fleet rises above the best because we
-// planned for it." Triage therefore ALWAYS falls back to the keyless Perplexity
-// lane (callPerplexityNoKey) on ANY OpenRouter failure, and skips OpenRouter
-// entirely when no key is configured. See docs/OPENROUTER_TRIAGE_PROCESS.md.
+// planned for it." Triage ALWAYS cascades through all 6 lanes before surfacing
+// a failure. Lane 6 (static rule-based) never fails. See docs/OPENROUTER_TRIAGE_PROCESS.md.
 async function callOpenRouter(systemPrompt, userPrompt) {
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
 
@@ -215,8 +223,128 @@ async function callOpenRouter(systemPrompt, userPrompt) {
   });
 
   // Let ANY failure (402/credits, 401 bad key, 429 rate-limit, 5xx, network)
-  // propagate to triageWithFallback(), which cascades to the keyless lane.
+  // propagate to triageWithFallback(), which cascades to the next lane.
   return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
+}
+
+// Lane 2: OpenRouter free-tier models — OR_FREE_MODELS don't consume credits,
+// so this can succeed even when the primary model hits a 402/balance error.
+// Requires a valid OPENROUTER_API_KEY (even unfunded).
+async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
+  if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY not configured");
+  const referer = `https://github.com/${GITHUB_REPOSITORY}`;
+  const response = await requestJson({
+    hostname: OPENROUTER_HOST,
+    pathName: OPENROUTER_PATH,
+    method: "POST",
+    headers: {
+      Authorization: `******      "HTTP-Referer": referer,
+      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (free-tier)`,
+    },
+    payload: {
+      models: OR_FREE_MODELS,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+    },
+  });
+  const text = response?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("No triage output from OpenRouter free-tier models.");
+  return text;
+}
+
+// Lane 4: OpenRouter multi-provider fusion — routes across multiple providers;
+// may succeed when single-provider lanes fail due to provider-side outages.
+async function callOpenRouterFusion(systemPrompt, userPrompt) {
+  if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY not configured");
+  const referer = `https://github.com/${GITHUB_REPOSITORY}`;
+  const response = await requestJson({
+    hostname: OPENROUTER_HOST,
+    pathName: OPENROUTER_PATH,
+    method: "POST",
+    headers: {
+      Authorization: `******      "HTTP-Referer": referer,
+      Authorization: `******      "HTTP-Referer": referer,
+    },
+    payload: {
+      models: ["openrouter/fusion", "anthropic/claude-haiku-4.5:beta", "deepseek/deepseek-v3:free"],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+    },
+  });
+  const text = response?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("No triage output from OpenRouter fusion.");
+  return text;
+}
+
+// Lane 5: GitHub Models API — uses GITHUB_TOKEN (always present in Actions).
+// Calls gpt-4o-mini via Azure-hosted GitHub Models inference endpoint.
+// This lane never requires OPENROUTER_API_KEY.
+async function callGitHubModels(systemPrompt, userPrompt) {
+  if (!GITHUB_TOKEN) throw new Error("GITHUB_TOKEN not available");
+  const response = await requestJson({
+    hostname: "models.inference.ai.azure.com",
+    pathName: "/chat/completions",
+    method: "POST",
+    headers: {
+      Authorization: `******      "User-Agent": "revvel-openrouter-triage-script",
+    payload: {
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+      max_tokens: 1500,
+    },
+  });
+  const text = response?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("No triage output from GitHub Models.");
+  return text;
+}
+
+// Lane 6: Static rule-based fallback — keyword matching on the issue text.
+// Never throws. Used as the last resort when all AI lanes are unavailable.
+function callStaticFallback(systemPrompt, userPrompt) {
+  try {
+    const text = (userPrompt || "").toLowerCase();
+    const labels = [];
+    if (/\bbug\b|error|fail|crash|broken|exception|traceback/.test(text)) labels.push("bug");
+    if (/feature|request|add|new|implement|support/.test(text)) labels.push("enhancement");
+    if (/doc|readme|wiki|typo|spelling/.test(text)) labels.push("documentation");
+    if (/question|\bhow\b|\bwhy\b|\bwhat\b|help/.test(text)) labels.push("question");
+    if (/security|vuln|cve|exploit|injection/.test(text)) labels.push("security");
+    if (/perf|slow|latency|timeout|speed/.test(text)) labels.push("performance");
+    if (/ci|workflow|action|pipeline|deploy/.test(text)) labels.push("ci");
+    const classification = labels.length ? labels.join(", ") : "needs-triage";
+    return [
+      "## 1) Classification",
+      `${classification} (rule-based — all AI lanes unavailable)`,
+      "",
+      "## 2) Suggested Labels",
+      labels.length
+        ? labels.map((l) => `- \`${l}\``).join("\n")
+        : "- `needs-triage`",
+      "",
+      "## 3) Next Actions",
+      "- Human review required — all AI triage lanes were unavailable.",
+      "- Check OpenRouter account balance at <https://openrouter.ai/credits>,",
+      "  Perplexity bridge installation, and GITHUB_TOKEN permissions.",
+      "",
+      "## 4) Human Attention",
+      "**Yes** — all automated AI triage failed. This is a rule-based stub.",
+      "",
+      "## 5) Marketing & SEO Signals",
+      "N/A — static fallback mode.",
+    ].join("\n");
+  } catch (_) {
+    return "## Triage\n\nAll AI lanes failed. Manual review required.\n\n- `needs-human`";
+  }
 }
 
 async function callPerplexityNoKey(systemPrompt, userPrompt) {
