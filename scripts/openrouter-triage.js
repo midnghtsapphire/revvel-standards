@@ -223,13 +223,42 @@ async function callPerplexityNoKey(systemPrompt, userPrompt) {
   // Use the Perplexity No-Key Python bridge
   const { execSync, execFileSync } = require("child_process");
   const installHint = 'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+  const pythonScript = buildPerplexityTriageScript(installHint);
+
+  // Passed as argv (not through a shell) below, so no shell-escaping is needed.
+  const combinedPrompt = `${systemPrompt}\n\n---\n\n${userPrompt}`;
+
+  const scriptPath = "/tmp/perplexity_triage.py";
+  require("fs").writeFileSync(scriptPath, pythonScript);
   
-  const pythonScript = `
+  try {
+    // Install if needed
+    execSync(`${installHint} 2>/dev/null || true`, { stdio: "pipe" });
+    
+    // No shell: pass the script path and prompt as argv so prompt content
+    // cannot be interpreted by a shell (no quoting/escaping required).
+    // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); scriptPath is a fixed constant; prompt passed as argv
+    const result = execFileSync("python3", [scriptPath, combinedPrompt], {
+      maxBuffer: 10 * 1024 * 1024,
+      timeout: 120000,
+    }).toString().trim();
+    
+    return result || "Perplexity returned empty response.";
+  } catch (err) {
+    const errorOutput = err.stdout?.toString() || err.stderr?.toString() || err.message;
+    throw new Error(`Perplexity No-Key fallback failed: ${errorOutput}`);
+  }
+}
+
+function buildPerplexityTriageScript(installHint) {
+  const installHintLiteral = JSON.stringify(installHint);
+  return `
 import sys
+INSTALL_HINT = ${installHintLiteral}
 try:
     from perplexity import LabsClient, Client
 except Exception as exc:
-    raise SystemExit(f"Missing no-key Perplexity dependency ({exc}). Install with: ${installHint}")
+    raise SystemExit(f"Missing no-key Perplexity dependency ({exc}). Install with: {INSTALL_HINT}")
 
 def normalize(value):
     if isinstance(value, str):
@@ -259,30 +288,6 @@ if not response_text:
 
 print(response_text)
 `;
-
-  // Passed as argv (not through a shell) below, so no shell-escaping is needed.
-  const combinedPrompt = `${systemPrompt}\n\n---\n\n${userPrompt}`;
-
-  const scriptPath = "/tmp/perplexity_triage.py";
-  require("fs").writeFileSync(scriptPath, pythonScript);
-  
-  try {
-    // Install if needed
-    execSync(`${installHint} 2>/dev/null || true`, { stdio: "pipe" });
-    
-    // No shell: pass the script path and prompt as argv so prompt content
-    // cannot be interpreted by a shell (no quoting/escaping required).
-    // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); scriptPath is a fixed constant; prompt passed as argv
-    const result = execFileSync("python3", [scriptPath, combinedPrompt], {
-      maxBuffer: 10 * 1024 * 1024,
-      timeout: 120000,
-    }).toString().trim();
-    
-    return result || "Perplexity returned empty response.";
-  } catch (err) {
-    const errorOutput = err.stdout?.toString() || err.stderr?.toString() || err.message;
-    throw new Error(`Perplexity No-Key fallback failed: ${errorOutput}`);
-  }
 }
 
 async function postGitHubComment(commentBody) {
@@ -528,6 +533,7 @@ module.exports = {
   buildUserPrompt,
   parseLabelNamesFromYaml,
   buildFailureComment,
+  buildPerplexityTriageScript,
   truncateForComment,
   FAILURE_LABELS,
 };
