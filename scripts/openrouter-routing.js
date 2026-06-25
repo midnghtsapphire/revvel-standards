@@ -56,7 +56,7 @@ if (lookupData && lookupData.profiles && lookupData.models) {
     deep_search: {
       description: "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
       models: [
-        "anthropic/claude-sonnet-4.6",
+        "anthropic/claude-3.5-sonnet",
         "openrouter/fusion"
       ]
     },
