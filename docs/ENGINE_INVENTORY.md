@@ -25,7 +25,7 @@ artifacts, receipts, and state patches for the orchestrator to aggregate.
 | intake | existing | `docs/inbox/TEMPLATE.md`; `parseIntake`/`normalizeIntake` in `engines/runner-orchestrator/orchestrate.js`; `scripts/email_error_intake.py` | Extended frontmatter added in `docs/inbox/TEMPLATE.revvel.md` (additive). |
 | evaluator | existing | `standards/DECISION_SCORING_ENGINE_STANDARD.md`; `docs/HIGH_VALUE_OPPORTUNITY_SELECTION_STANDARD.md`; research engine `scripts/research-engine.js` | None — reuse. |
 | shape-router | existing | `deliverChannelFor` / `SHAPE_TO_CHANNEL` / `OUTPUT_TYPE_TO_CHANNEL` in `orchestrate.js`; `standards/shapes/*.md` | None — routing already classifies output_type/shape. |
-| BOM | existing | `writeBom` in `orchestrate.js`; `docs/Universal-BOM_List/*`; `docs/projects/life-insurance-lead-saas/BOM*.md`; `BOM_TEMPLATE.md` | Lead-vendor specifics added in `BOM.revvel.md` (additive). |
+| BOM | existing | `writeBom` in `orchestrate.js`; `docs/Universal-BOM_List/*`; `docs/projects/life-insurance-lead-saas/BOM*.md` (incl. `docs/projects/life-insurance-lead-saas/BOM_TEMPLATE.md`) | Lead-vendor specifics added in `BOM.revvel.md` (additive). |
 | orchestrator | existing | `orchestrate()` + `runEngineLoop()` in `orchestrate.js`; `docs/orchestration/project-orchestration-standard.md` | None — owns `state.json`, preserves revenue goal. |
 | runner-orchestrator | existing | `engines/runner-orchestrator/README.md` + `orchestrate.js` | None. |
 | build-app | existing | `products/cli-engine/*` (Next.js); `docs/DEFAULT_APP_TEMPLATE.md`; `standards/shapes/APP.md` | None. |

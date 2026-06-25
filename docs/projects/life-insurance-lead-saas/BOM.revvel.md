@@ -29,6 +29,19 @@ relationship: >-
 - Phase 1 target: `revenue_target_monthly_usd: 10000` (see `GOAL.md`).
 - This addendum changes **no** goal/stat values; it only lists procurement.
 
+## Human Approval Required (no self-procurement / no spend)
+
+**Explicit human approval is REQUIRED before any procurement, purchase, paid API
+activation, lead buying, or live outreach.** The agent does **not** self-procure and
+does **not** spend money. Everything below is a **dry-run procurement plan** only.
+
+- No account creation, credential purchase, or contract sign-up without human sign-off.
+- No activation of paid APIs (Compulife, TrustedForm, Jornaya, ScrubLock, BatchData, etc.).
+- No buying, selling, or live delivery of leads.
+- No live outreach (email/SMS/calls) to consumers or agents.
+- A human operator must review this BOM and explicitly authorize each blocking item
+  before it is acquired or enabled.
+
 ## Lead Vendor Categories
 
 | Category | What it provides | Example vendors |

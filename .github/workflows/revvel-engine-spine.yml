@@ -53,8 +53,10 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build engine flags
-        id: flags
+      - name: Run engine spine (intake → route → bom → orchestrate)
+        # Workflow inputs are passed via env only and assembled into a bash argv
+        # array — never interpolated into the shell or eval'd — so user-controlled
+        # values cannot be parsed as shell syntax.
         env:
           INTAKE_PATH: ${{ github.event.inputs.intake_path }}
           SLUG: ${{ github.event.inputs.slug }}
@@ -63,29 +65,26 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: |
           set -euo pipefail
-          FLAGS=""
+          ARGS=()
           if [ -n "$INTAKE_PATH" ]; then
-            FLAGS="--wr \"$INTAKE_PATH\""
+            ARGS+=(--wr "$INTAKE_PATH")
           else
             if [ -z "$SLUG" ] || [ -z "$REVENUE" ]; then
               echo "::error::Provide intake_path, or both slug and revenue (CONTRACT Rule 4)."
               exit 1
             fi
-            FLAGS="--slug \"$SLUG\" --revenue \"$REVENUE\""
+            ARGS+=(--slug "$SLUG" --revenue "$REVENUE")
             if [ -n "$OUTPUT_TYPE" ]; then
-              FLAGS="$FLAGS --output-type \"$OUTPUT_TYPE\""
+              ARGS+=(--output-type "$OUTPUT_TYPE")
             fi
           fi
           # Default safe mode: dry-run. Only execute the engine loop when explicitly false.
           if [ "$DRY_RUN" = "false" ]; then
-            FLAGS="$FLAGS --run"
+            ARGS+=(--run)
           else
-            FLAGS="$FLAGS --dry-run"
+            ARGS+=(--dry-run)
           fi
-          echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
-
-      - name: Run engine spine (intake → route → bom → orchestrate)
-        run: |
-          set -euo pipefail
-          echo "Running: npm run engine -- ${{ steps.flags.outputs.flags }}"
-          eval "npm run engine -- ${{ steps.flags.outputs.flags }}"
+          printf 'Running: npm run engine --'
+          printf ' %q' "${ARGS[@]}"
+          printf '\n'
+          npm run engine -- "${ARGS[@]}"
