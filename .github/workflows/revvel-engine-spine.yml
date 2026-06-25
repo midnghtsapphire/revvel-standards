@@ -1,0 +1,91 @@
+name: 🦴 Revvel Engine Spine
+# Additive workflow. Invokes the EXISTING runner-orchestrator CLI
+# (engines/runner-orchestrator/orchestrate.js via `npm run engine`).
+# Dry-run by default — no live paid APIs, no publishing, no destructive actions.
+# Does not modify or replace any existing workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      intake_path:
+        description: Path to a JSON intake file (preferred). Leave blank to use slug/revenue inputs.
+        required: false
+        default: ""
+      slug:
+        description: product_slug (used when intake_path is blank)
+        required: false
+        default: ""
+      revenue:
+        description: revenue_target_monthly_usd (required by CONTRACT Rule 4 when using slug)
+        required: false
+        default: ""
+      output_type:
+        description: WR Output Type (e.g. sellable-pdf, api-product, cli-product)
+        required: false
+        default: ""
+      dry_run:
+        description: Plan only, no writes (true) or execute engine loop (false)
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  engine-spine:
+    name: Intake → Router → BOM → Orchestrator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build engine flags
+        id: flags
+        env:
+          INTAKE_PATH: ${{ github.event.inputs.intake_path }}
+          SLUG: ${{ github.event.inputs.slug }}
+          REVENUE: ${{ github.event.inputs.revenue }}
+          OUTPUT_TYPE: ${{ github.event.inputs.output_type }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ -n "$INTAKE_PATH" ]; then
+            FLAGS="--wr \"$INTAKE_PATH\""
+          else
+            if [ -z "$SLUG" ] || [ -z "$REVENUE" ]; then
+              echo "::error::Provide intake_path, or both slug and revenue (CONTRACT Rule 4)."
+              exit 1
+            fi
+            FLAGS="--slug \"$SLUG\" --revenue \"$REVENUE\""
+            if [ -n "$OUTPUT_TYPE" ]; then
+              FLAGS="$FLAGS --output-type \"$OUTPUT_TYPE\""
+            fi
+          fi
+          # Default safe mode: dry-run. Only execute the engine loop when explicitly false.
+          if [ "$DRY_RUN" = "false" ]; then
+            FLAGS="$FLAGS --run"
+          else
+            FLAGS="$FLAGS --dry-run"
+          fi
+          echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
+
+      - name: Run engine spine (intake → route → bom → orchestrate)
+        run: |
+          set -euo pipefail
+          echo "Running: npm run engine -- ${{ steps.flags.outputs.flags }}"
+          eval "npm run engine -- ${{ steps.flags.outputs.flags }}"
