@@ -104,18 +104,18 @@ The following skills from `skills/` in revvel-standards are directly applicable 
 
 ## 🎭 Personas
 
-The following **Persona Engine** personas (`skills/persona-engine/`) are the right fit for each phase of this work:
+The following **Persona Engine** personas (`skills/persona-engine/`) are the right fit for each phase of this work. All six are **fully integrated** in `skills/persona-engine/persona-engine.skill.yml` with greeting, farewell, voice, category mapping, and termination triggers. The Persona Engine itself is triggered by: `persona`, `character`, `guide`, `"who are you"`, `"activate persona"`, `"start persona"`, `ephemeral identity`, `persona engine`, `skill guide`.
 
-| Phase | Persona | Voice | Why |
-| --- | --- | --- | --- |
-| **Research & discovery** | 🔭 **Scout** | Curious, energetic | Mapping what infra tooling exists and what the repo needs |
-| **Security & secrets setup** | 🔐 **Vault** | Serious, cautious, thorough | Credentials, secrets, and IAM — zero tolerance for shortcuts |
-| **PR review & CI gates** | 🎯 **Aria** | Direct, precise, kind | Code review of HCL/YAML changes against Revvel standards |
-| **Documentation & reports** | 📖 **Sage** | Patient, methodical | Writing CHANGELOG, DEPLOY_REPORT, and architecture diagrams |
-| **Deployment & rollout** | 🌐 **Nexus** | Strategic, decisive | Deploy Agent checklist and live verification |
-| **Skill/template building** | 🔨 **Forge** | Creative, hands-on | If new skills or templates need to be scaffolded from this work |
+| Phase | Persona | Emoji | Voice | Activation trigger | Why |
+| --- | --- | --- | --- | --- | --- |
+| **Research & discovery** | **Scout** | 🔭 | Curious, energetic | `scout`, `research`, `brainstorm` | Mapping what infra tooling exists and what the repo needs |
+| **Security & secrets setup** | **Vault** | 🔐 | Serious, cautious, thorough | `vault`, `credential`, `security`, `secrets` | Credentials, secrets, and IAM — zero tolerance for shortcuts |
+| **PR review & CI gates** | **Aria** | 🎯 | Direct, precise, kind | `aria`, `code review`, `PR review` | Code review of HCL/YAML changes against Revvel standards |
+| **Documentation & reports** | **Sage** | 📚 | Patient, organized, clear | `sage`, `documentation`, `changelog` | Writing CHANGELOG, DEPLOY_REPORT, and architecture diagrams |
+| **Deployment & rollout** | **Nexus** | 🚀 | Calm under pressure, systematic | `nexus`, `deploy`, `CI/CD`, `ship` | Deploy Agent checklist and live verification |
+| **Skill/template building** | **Forge** | 🔨 | Creative, hands-on, encouraging | `forge`, `build skill`, `scaffold` | If new skills or templates need to be scaffolded from this work |
 
-**To activate a persona:** load `skills/persona-engine/SKILL.md` and reference the persona name in the session prompt. All personas are ephemeral — session-scoped, terminate at end.
+**To activate a persona:** load `skills/persona-engine/SKILL.md` (or `skills/persona-engine/persona-engine.skill.yml`) and reference the persona name in the session prompt. All personas are ephemeral — session-scoped, terminate on `"task complete"`, `"wrap up"`, or `"all done"`.
 
 ---
 
@@ -129,6 +129,20 @@ The following **Persona Engine** personas (`skills/persona-engine/`) are the rig
 2. **Does not exist yet** — bootstrap it as a monorepo product (`infrastructure/`) following the `hvac-calc-service` / `cli-engine` pattern.
 
 Per the WR Instruction Resilience principle, the agent must not halt on a 404 — it should proceed with option 2 (bootstrap) unless a private repo access token is available.
+
+### Bootstrap Location Decision
+
+| | Option A — Standalone repo | Option B — Monorepo product |
+| --- | --- | --- |
+| **Location** | `github.com/midnghtsapphire/infrastructure` | `revvel-standards/infrastructure/` |
+| **Review workflows** | Must be duplicated into the new repo | Inherited from root `.github/workflows/` |
+| **Secret provisioning** | Separate GitHub Actions secrets | Shared `scripts/provision-repo-secrets.sh` |
+| **Skill context** | Must copy / reference `skills/` manually | `skills/` is already in path |
+| **CI gate** | Independent CircleCI / Actions config | Inherits root CircleCI `lint-and-test` job |
+| **Infrastructure changes block other products** | No | Yes (monorepo trade-off) |
+| **Precedent** | No existing example | `hvac-calc-service`, `cli-engine`, `creator-payout-tracker` |
+
+**Recommended: Option B (monorepo product)** — consistent with the established `products/` pattern. Every existing product in this fleet is a monorepo product; infrastructure is no different. Review workflows, secret provisioning, and skill context are all ready to use without duplication. The only downside (infra changes potentially blocking other product CI) is mitigated by path-scoped workflow triggers.
 
 ### Recommended Bootstrap Structure
 
