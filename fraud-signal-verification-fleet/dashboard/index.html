@@ -82,6 +82,8 @@
 
 <script>
 const COLORS={SUBSTANTIATED:'#5bbf8a',SUPPORTED:'#5bbf8a',WEAK:'#d4a23f',UNSUBSTANTIATED:'#9aa6b2','REFUSED/UNKNOWABLE':'#c95b5b'};
+// Escape untrusted JSON fields before innerHTML to prevent XSS from pasted/tampered cases.
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 async function load(){
   let d;
   try{ d = await (await fetch('dashboard-data.json?'+Date.now())).json(); }
@@ -96,12 +98,12 @@ async function load(){
   document.getElementById('title').textContent = d.title;
   document.getElementById('disclaimer').textContent = '⚠ ' + d.disclaimer;
   document.getElementById('meta').innerHTML =
-    `<span>case <b>${d.case_id}</b></span>`+
-    `<span>generated <b>${d.generated_at||'—'}</b></span>`+
-    `<span>mode <b>${d.mode||'offline'}</b></span>`+
-    `<span>refused <b>${d.refused_count}</b></span>`;
+    `<span>case <b>${esc(d.case_id)}</b></span>`+
+    `<span>generated <b>${esc(d.generated_at||'—')}</b></span>`+
+    `<span>mode <b>${esc(d.mode||'offline')}</b></span>`+
+    `<span>refused <b>${esc(d.refused_count)}</b></span>`;
   document.getElementById('fleet').innerHTML =
-    (d.fleet||[]).map(f=>`<span class="chip" title="${f.mission.replace(/"/g,'&quot;')}">${f.name}</span>`).join('');
+    (d.fleet||[]).map(f=>`<span class="chip" title="${esc(f.mission)}">${esc(f.name)}</span>`).join('');
   const ig=document.getElementById('integrity');
   ig.textContent=(d.case_evidentiary_integrity*100).toFixed(0)+'%';
   ig.style.color = d.case_evidentiary_integrity>=.55?COLORS.SUPPORTED:d.case_evidentiary_integrity>=.3?COLORS.WEAK:COLORS.UNSUBSTANTIATED;
@@ -114,20 +116,20 @@ async function load(){
       : `<div class="meter"><i style="width:${pct}%;background:${col}"></i></div>`;
     return `<div class="card ${c.refused?'refused':''}">
       <div class="chead">
-        <div><div class="cid">${c.id}</div><div class="ctext">${c.refused?'<span class="lock">⛔</span>':''}${c.text}</div></div>
-        <div class="band b-${c.band.replace(/[^A-Z]/g,'')}" style="color:${col}">${c.band}</div>
+        <div><div class="cid">${esc(c.id)}</div><div class="ctext">${c.refused?'<span class="lock">⛔</span>':''}${esc(c.text)}</div></div>
+        <div class="band b-${String(c.band).replace(/[^A-Z]/g,'')}" style="color:${col}">${esc(c.band)}</div>
       </div>
       ${meter}
       <div class="body">
-        <span class="conf" style="color:${col}">${c.refused?'REFUSED':pct+'% confidence'}</span> · ${c.verdict}
-        <ul class="rat">${c.rationale.map(r=>`<li>${r}</li>`).join('')}</ul>
-        ${c.analyst_note?`<div class="note">${c.analyst_note}</div>`:''}
+        <span class="conf" style="color:${col}">${c.refused?'REFUSED':pct+'% confidence'}</span> · ${esc(c.verdict)}
+        <ul class="rat">${(c.rationale||[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+        ${c.analyst_note?`<div class="note">${esc(c.analyst_note)}</div>`:''}
       </div>
     </div>`;
   }).join('');
 
   document.getElementById('sources').innerHTML = (d.sources||[]).map(s=>
-    `<div class="src"><span class="tier">T${s.tier}</span><span><b>${s.outlet}</b> · ${s.kind} · ${s.date||''}</span><span style="color:var(--mut)">${s.title||''}</span></div>`
+    `<div class="src"><span class="tier">T${esc(s.tier)}</span><span><b>${esc(s.outlet)}</b> · ${esc(s.kind)} · ${esc(s.date||'')}</span><span style="color:var(--mut)">${esc(s.title||'')}</span></div>`
   ).join('');
   document.getElementById('foot').textContent = d.headline_finding+'  ·  Auto-refreshes every 15s.';
 }

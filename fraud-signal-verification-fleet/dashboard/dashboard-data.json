@@ -92,7 +92,7 @@
   "case_evidentiary_integrity": 0.377,
   "headline_finding": "Strongest verified item: 'Gavin Newsom publicly stated the DOJ is investigating him.' (45%, WEAK). 1 claim(s) refused.",
   "disclaimer": "This output scores the evidentiary strength of public claims. It is NOT a finding of fraud, guilt, or wrongdoing by any person.",
-  "generated_at": "2026-06-23T02:28:25.957118Z",
+  "generated_at": "2026-06-25T02:19:54.889210Z",
   "mode": "offline",
   "fleet": [
     {

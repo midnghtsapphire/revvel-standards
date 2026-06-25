@@ -9,8 +9,11 @@ certainty**, and so that an allegation can never silently become a verdict.
 | SUBSTANTIATED | 0.85–1.00 | Backed by primary/adjudicated record |
 | SUPPORTED | 0.55–0.84 | Multiple credible sources; not adjudicated |
 | WEAK | 0.30–0.54 | Some support; treat as unverified |
-| UNSUBSTANTIATED | 0.01–0.29 | Asserted, thin/no sourcing |
-| REFUSED/UNKNOWABLE | 0.00 | Refused verdict, or not checkable from public sources |
+| UNSUBSTANTIATED | 0.00–0.29 | Asserted, thin/no sourcing (incl. a scored claim driven to 0 by contradiction or no sources) |
+| REFUSED/UNKNOWABLE | 0.00 | Refused verdict, or not checkable from public sources — set by the `refused` flag, **not** inferred from a 0 score |
+
+Confidence `0.00` alone does not mean "refused." Refusal is carried by the separate
+`refused` boolean; a non-refused claim that scores 0 is UNSUBSTANTIATED.
 
 ## The pipeline (in order)
 1. **Refusal gate.** Fraud/guilt-of-a-named-person → score 0, REFUSED. Stop.

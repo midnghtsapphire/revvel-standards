@@ -9,7 +9,7 @@ No agent here self-modifies, self-heals, or formally verifies anything. They
 gather and annotate evidence; the judge weighs it; the scorer caps it.
 """
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 
 @dataclass(frozen=True)
@@ -50,4 +50,5 @@ FLEET = [
 
 
 def fleet_manifest() -> list[dict]:
-    return [a.__dict__ for a in FLEET]
+    # asdict() returns fresh dicts so callers can't mutate the frozen AgentSpec instances.
+    return [asdict(a) for a in FLEET]

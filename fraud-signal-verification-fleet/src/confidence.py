@@ -41,15 +41,16 @@ def is_refused(text: str) -> bool:
 
 
 def band_for(conf: float) -> str:
+    # Note: REFUSED/UNKNOWABLE is set explicitly on the refusal/unscored paths via the
+    # `refused` flag — never inferred from conf==0 here. A scored claim driven to 0 by
+    # contradiction is UNSUBSTANTIATED, not refused.
     if conf >= 0.85:
         return "SUBSTANTIATED"
     if conf >= 0.55:
         return "SUPPORTED"
     if conf >= 0.30:
         return "WEAK"
-    if conf > 0.0:
-        return "UNSUBSTANTIATED"
-    return "REFUSED/UNKNOWABLE"
+    return "UNSUBSTANTIATED"
 
 
 def score_claim(claim: dict, sources: dict, cfg: dict) -> ClaimScore:
@@ -71,6 +72,13 @@ def score_claim(claim: dict, sources: dict, cfg: dict) -> ClaimScore:
     if not supporting:
         return ClaimScore(cid, 0.0, "UNSUBSTANTIATED", False,
                           ["No supporting sources provided."])
+
+    # Guard: arbitrary/pasted JSON may reference source ids that don't exist.
+    # Fail safe to UNSUBSTANTIATED with an explanation rather than KeyError.
+    unknown = [s["source"] for s in supporting if s["source"] not in sources]
+    if unknown:
+        return ClaimScore(cid, 0.0, "UNSUBSTANTIATED", False,
+                          [f"Unknown source id(s): {unknown}. Cannot score; add them to sources[]."])
 
     # Rule 1: best supporting tier sets the base + the cap.
     def tier_of(s):
@@ -124,7 +132,13 @@ def score_case(case: dict, cfg: dict) -> list[ClaimScore]:
 
 
 def load_config(path: str) -> dict:
-    import yaml  # optional dependency
+    try:
+        import yaml  # optional dependency
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            "load_config() needs PyYAML: `pip install pyyaml`. Alternatively, build the "
+            "config dict yourself and pass it straight to score_case()/score_claim() — "
+            "the scorer itself has no yaml dependency.") from e
     with open(path) as f:
         raw = yaml.safe_load(f)
     return {

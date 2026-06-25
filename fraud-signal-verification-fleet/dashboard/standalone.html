@@ -126,7 +126,9 @@ const VERDICT={SUBSTANTIATED:"substantiated by primary/adjudicated record",SUPPO
   WEAK:"weakly supported; treat as unverified",UNSUBSTANTIATED:"asserted but unsubstantiated in provided sources",
   "REFUSED/UNKNOWABLE":"refused or unknowable from public sources"};
 
-function bandFor(c){return c>=.85?"SUBSTANTIATED":c>=.55?"SUPPORTED":c>=.30?"WEAK":c>0?"UNSUBSTANTIATED":"REFUSED/UNKNOWABLE";}
+// REFUSED is set explicitly via the refused flag, never inferred from c==0 (a scored
+// claim driven to 0 by contradiction is UNSUBSTANTIATED, not refused).
+function bandFor(c){return c>=.85?"SUBSTANTIATED":c>=.55?"SUPPORTED":c>=.30?"WEAK":"UNSUBSTANTIATED";}
 function isRefused(t){return REFUSAL.some(r=>r.test(t));}
 
 function scoreClaim(claim, srcById, refusedIds){

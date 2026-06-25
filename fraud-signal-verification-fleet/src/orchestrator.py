@@ -31,6 +31,12 @@ def run(seed_path: str, out_path: str, mode: str = "offline") -> dict:
         raise NotImplementedError(
             "live mode requires LLM API keys and human-in-the-loop review; "
             "run offline against curated seed data for CI/demo.")
+    if mode != "offline":
+        # Don't silently run offline while reporting a misleading mode. Agent-dispatch
+        # styles ('parallel'/'sequential') belong to the prompt layer, not this runner.
+        raise ValueError(
+            f"unknown mode {mode!r}; this runner supports 'offline' (and 'live' is stubbed). "
+            "Parallel/sequential dispatch is configured in prompts/MASTER_PROMPT.md.")
 
     report = adjudicate(case, cfg)
     report["generated_at"] = datetime.datetime.utcnow().isoformat() + "Z"

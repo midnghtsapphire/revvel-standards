@@ -65,6 +65,26 @@ class TestCaps(unittest.TestCase):
         self.assertEqual(r.band, "SUBSTANTIATED")
 
 
+class TestRobustness(unittest.TestCase):
+    def test_unknown_source_id_does_not_crash(self):
+        claim = {"id": "C", "text": "x", "stage": "alleged",
+                 "supporting": [{"source": "nope", "provenance": "filing"}]}
+        r = score_claim(claim, {"s": {"id": "s", "tier": 5}}, dict(CFG))
+        self.assertFalse(r.refused)
+        self.assertEqual(r.band, "UNSUBSTANTIATED")
+        self.assertEqual(r.confidence, 0.0)
+
+    def test_contradiction_to_zero_is_unsubstantiated_not_refused(self):
+        # Heavy contradiction drives a non-refused claim to 0 -> must NOT read as REFUSED.
+        claim = {"id": "C", "text": "x", "stage": "alleged",
+                 "supporting": [{"source": "s", "provenance": "anonymous_report"}],
+                 "contradicting": [{"source": "s"}] * 5}
+        r = score_claim(claim, {"s": {"id": "s", "tier": 1}}, dict(CFG))
+        self.assertFalse(r.refused)
+        self.assertEqual(r.confidence, 0.0)
+        self.assertEqual(r.band, "UNSUBSTANTIATED")
+
+
 class TestSeedCase(unittest.TestCase):
     def test_seed_case_runs(self):
         p = os.path.join(os.path.dirname(__file__), "..", "data", "seed", "newsom_case.json")
