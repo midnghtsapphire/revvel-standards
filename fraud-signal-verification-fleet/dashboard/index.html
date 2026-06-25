@@ -82,6 +82,8 @@
 
 <script>
 const COLORS={SUBSTANTIATED:'#5bbf8a',SUPPORTED:'#5bbf8a',WEAK:'#d4a23f',UNSUBSTANTIATED:'#9aa6b2','REFUSED/UNKNOWABLE':'#c95b5b'};
+// Explicit band -> CSS class map (no fragile regex on the band string).
+const BAND_CLASS={SUBSTANTIATED:'b-SUBSTANTIATED',SUPPORTED:'b-SUPPORTED',WEAK:'b-WEAK',UNSUBSTANTIATED:'b-UNSUBSTANTIATED','REFUSED/UNKNOWABLE':'b-REFUSED'};
 // Escape untrusted JSON fields before innerHTML to prevent XSS from pasted/tampered cases.
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 async function load(){
@@ -94,6 +96,16 @@ async function load(){
     document.getElementById('title').textContent =
       'dashboard-data.json is malformed (missing/invalid: '+(missing.join(', ')||'claims')+') — re-run src/orchestrator.py';
     return;
+  }
+  // Per-claim validation: a claim missing required fields must fail loudly, not render blank.
+  const REQ=['id','text','confidence','band','refused','verdict'];
+  for(let i=0;i<d.claims.length;i++){
+    const bad=REQ.filter(f=>!(f in d.claims[i]));
+    if(bad.length){
+      document.getElementById('title').textContent =
+        `Claim ${i} (${esc(d.claims[i].id||'?')}) is malformed — missing: ${esc(bad.join(', '))}`;
+      return;
+    }
   }
   document.getElementById('title').textContent = d.title;
   document.getElementById('disclaimer').textContent = '⚠ ' + d.disclaimer;
@@ -117,7 +129,7 @@ async function load(){
     return `<div class="card ${c.refused?'refused':''}">
       <div class="chead">
         <div><div class="cid">${esc(c.id)}</div><div class="ctext">${c.refused?'<span class="lock">⛔</span>':''}${esc(c.text)}</div></div>
-        <div class="band b-${String(c.band).replace(/[^A-Z]/g,'')}" style="color:${col}">${esc(c.band)}</div>
+        <div class="band ${BAND_CLASS[c.band]||'b-UNSUBSTANTIATED'}" style="color:${col}">${esc(c.band)}</div>
       </div>
       ${meter}
       <div class="body">
