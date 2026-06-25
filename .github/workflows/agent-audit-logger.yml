@@ -124,13 +124,23 @@ jobs:
       - name: Persist audit entry
         if: always()
         run: |
+          # Runs with if: always(), so it may execute even when an earlier step
+          # (e.g. checkout) failed and the "Set up audit log directory" step was
+          # skipped. Re-ensure the dir/file exist and guard the tail so a missing
+          # or empty log never turns this best-effort logging job red.
+          mkdir -p logs/agent-audit
+          touch logs/agent-audit/audit.jsonl
           {
             echo "## Audit Log Entry"
             echo ""
             echo "Logged for this run (not committed to \`main\`)."
             echo ""
             echo '```jsonl'
-            tail -1 logs/agent-audit/audit.jsonl
+            if [ -s logs/agent-audit/audit.jsonl ]; then
+              tail -1 logs/agent-audit/audit.jsonl
+            else
+              echo "(no audit entry written this run)"
+            fi
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload audit entry artifact
@@ -139,6 +149,7 @@ jobs:
         with:
           name: agent-audit-${{ github.run_id }}
           path: logs/agent-audit/audit.jsonl
+          if-no-files-found: ignore
           retention-days: 90
     timeout-minutes: 30
   health-check:
