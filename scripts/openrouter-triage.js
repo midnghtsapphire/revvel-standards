@@ -422,7 +422,9 @@ async function fetchIssueComments() {
   try {
     const payload = await requestJson({
       hostname: "api.github.com",
-      pathName: `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/comments?per_page=${COMMENTS_PER_PAGE}`,
+      pathName:
+        `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/comments` +
+        `?per_page=${COMMENTS_PER_PAGE}&sort=created&direction=desc`,
       method: "GET",
       headers: {
         Authorization: "Bearer " + GITHUB_TOKEN,
