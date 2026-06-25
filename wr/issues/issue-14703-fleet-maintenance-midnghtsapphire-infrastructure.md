@@ -142,7 +142,7 @@ The following **Persona Engine** personas (`skills/persona-engine/`) are the rig
 | **Nexus** 🚀 | DevOps & deployment | `nexus`, `deploy`, `CI/CD`, `ship` | Runs the deploy checklist, verifies rollout, and keeps changes systematic under pressure | Handle plan/apply workflows, rollout order, smoke checks, rollback notes | Ship app deploys, alerting pipelines, cron jobs, and uptime verification |
 | **Forge** 🔨 | Skill building / scaffolding | `forge`, `build skill`, `scaffold` | Packages reusable templates, codifies patterns, and turns repeatable work into skills | Create reusable infra templates, bootstrap scripts, and team standards | Create hail-specific automations, templates, and reusable issue/PR flows |
 
-**Revvel Hail note:** no public `revvel-hail` repository appeared in this workspace or GitHub search during this pass, so the mapping above is a transfer pattern rather than a repo-specific audit. The same personas still fit cleanly if Revvel Hail is a weather/alerts, insurance, or field-ops app.
+**Revvel Hail note:** no public revvel-hail repository appeared in this workspace or GitHub search during this pass, so the mapping above is a transfer pattern rather than a repo-specific audit. The same personas still fit cleanly if Revvel Hail is a weather/alerts, insurance, or field-ops app.
 
 ---
 
@@ -257,7 +257,7 @@ All six must be wired on day one before any other PR is opened against the repo.
 2. **Wire the full review jury** — for the monorepo path, scope the existing six root workflows to `products/infrastructure/**`; if later extracted, copy those workflows into the standalone repo before opening more PRs.
 3. **Load `skills/vault-agent/`** — provision infra credentials through Vault; never commit `.tfvars` with secrets.
 4. **Run `skills/openclaw-self-eval/`** — pre-flight audit before any agent executes changes.
-5. **Add path-scoped monitoring now** — wire `docs-freshness-check.yml`, `ship-quality.yml`, `ralph-loop.yml`, `codeql.yml`, `semgrep.yml`, and `bito-ai.yml` to watch `products/infrastructure/**` plus any root workflow files that touch infra. Otherwise the documentation will drift and never get re-reviewed.
+5. **Add path-scoped monitoring now** — wire `docs-freshness-check.yml`, `ship-quality.yml`, `ralph-loop.yml`, `codeql.yml`, `semgrep.yml`, and `bito-ai.yml` to watch `products/infrastructure/**` plus any root workflow files that touch infra. In practice that means adding `paths:` filters such as `products/infrastructure/**` under each workflow trigger so the existing root workflows automatically re-review infra changes instead of waiting for a manual revisit.
 
 ### P1 — High Priority (first sprint)
 
