@@ -20,8 +20,8 @@ Innocent/null explanation for every claim. Finds contradicting sources. May
 return "no credible counter found" — never fabricates one.
 
 ## agent-legal  (tier 3-5)
-Statute + elements + adjudication stage. The stage it sets ceilings the score.
-Strict: investigation ≠ charge ≠ conviction.
+Statute + elements + adjudication stage. The stage it sets caps the score.
+Strict: investigation ≠ charge ≠ conviction; guilty plea ≠ no-admission settlement.
 
 ## judge
 Merges, resolves conflict by tier/provenance/recency, writes verdict language and

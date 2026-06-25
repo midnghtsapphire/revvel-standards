@@ -35,7 +35,7 @@
     {
       "id": "C4",
       "text": "Dana Williamson, a former Newsom staffer, pleaded guilty.",
-      "stage": "plea_or_settled",
+      "stage": "guilty_plea",
       "supporting": [{"source": "src-nypost", "provenance": "anonymous_report"}],
       "contradicting": [],
       "notes": "If true this is the only adjudicated item in the set and concerns a DIFFERENT person, not Newsom. Flagged for primary-source pull (docket) before any confidence above the editorial ceiling is granted. Do NOT impute Williamson's plea to Newsom."

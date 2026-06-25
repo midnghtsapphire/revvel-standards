@@ -122,7 +122,7 @@ async function load(){
       ${meter}
       <div class="body">
         <span class="conf" style="color:${col}">${c.refused?'REFUSED':pct+'% confidence'}</span> · ${esc(c.verdict)}
-        <ul class="rat">${(c.rationale||[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+        <ul class="rat">${(Array.isArray(c.rationale)?c.rationale:[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
         ${c.analyst_note?`<div class="note">${esc(c.analyst_note)}</div>`:''}
       </div>
     </div>`;

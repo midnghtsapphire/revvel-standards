@@ -39,8 +39,14 @@ Confidence `0.00` alone does not mean "refused." Refusal is carried by the separ
 | alleged | 0.45 |
 | investigated | 0.55 |
 | charged | 0.75 |
-| plea_or_settled | 0.90 |
+| guilty_plea | 0.90 |
+| settled_no_admission | 0.65 |
 | convicted | 0.98 |
+
+A **guilty plea** (admission on a docket) and a **no-admission civil settlement** are
+deliberately separated: a "no-admit, no-deny" settlement is not an admission of guilt
+and is capped lower (0.65) so it cannot inflate evidentiary strength. `plea_or_settled`
+remains as a deprecated alias (0.90) for older datasets.
 
 **Why two caps?** Tier protects against weak *sources*; stage protects against
 weak *legal standing*. A perfectly-sourced fact about an *alleged* matter still

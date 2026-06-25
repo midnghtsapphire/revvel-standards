@@ -1,4 +1,9 @@
-# Fleet dispatch configuration.
+# Fleet dispatch configuration — REFERENCE/SPECIFICATION ONLY.
+# This file documents the intended live-mode dispatch contract for the prompt layer
+# (prompts/MASTER_PROMPT.md). The offline runner (src/orchestrator.py) does NOT read it;
+# the authoritative agent definitions live in src/agents.py. When live mode (FSV-09) is
+# wired, the orchestrator should load this file so the two can't drift. Until then, treat
+# it as documentation, not executed config.
 orchestrator:
   default_mode: parallel        # parallel | sequential
   publish_to: dashboard/dashboard-data.json

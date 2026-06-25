@@ -26,7 +26,6 @@ VERDICT_LANGUAGE = {
 
 def adjudicate(case: dict, cfg: dict) -> dict:
     scores: list[ClaimScore] = score_case(case, cfg)
-    by_id = {s.claim_id: s for s in scores}
     claim_text = {c["id"]: c["text"] for c in case["claims"]}
     claim_notes = {c["id"]: c.get("notes", "") for c in case["claims"]}
 
@@ -64,8 +63,9 @@ def _headline(claims: list[dict]) -> str:
                key=lambda c: c["confidence"], default=None)
     if not best:
         return "No claim could be scored; all refused or unsourced."
-    return (f"Strongest verified item: '{best['text']}' "
-            f"({best['confidence']:.0%}, {best['band']}). "
+    # "scored", not "verified" — a low-band best item is not verified, just the strongest.
+    return (f"Strongest scored item ({best['band']}): '{best['text']}' "
+            f"at {best['confidence']:.0%} confidence. "
             f"{sum(1 for c in claims if c['refused'])} claim(s) refused.")
 
 

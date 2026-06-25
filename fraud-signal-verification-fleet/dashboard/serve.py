@@ -11,6 +11,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 subprocess.run([sys.executable, os.path.join(HERE, "..", "src", "orchestrator.py")], check=True)
 
 os.chdir(HERE)
-with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
+# Bind localhost only — this serves an evidence ledger, not a public service.
+# Override with HOST=0.0.0.0 deliberately if you really want network exposure.
+HOST = os.environ.get("HOST", "127.0.0.1")
+with socketserver.TCPServer((HOST, PORT), http.server.SimpleHTTPRequestHandler) as httpd:
     print(f"Evidence Ledger live at http://localhost:{PORT}")
     httpd.serve_forever()

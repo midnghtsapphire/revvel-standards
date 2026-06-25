@@ -11,8 +11,10 @@ Turn prose into a list of atomic claims the fleet can verify one at a time.
 1. Read the source. Strip rhetoric; keep assertions of fact.
 2. Split compound sentences — one verifiable proposition per claim.
 3. For each claim record: `text`, `who/what`, candidate `stage`
-   (unknowable|alleged|investigated|charged|plea_or_settled|convicted),
-   and the `source_id` it came from.
+   (unknowable|alleged|investigated|charged|guilty_plea|settled_no_admission|convicted),
+   and the `source_id` it came from. Distinguish a **guilty plea** (admission of guilt,
+   high ceiling) from a **no-admission civil settlement** (`settled_no_admission`, lower
+   ceiling) — a settlement is not an admission and must not score like a plea.
 4. Tag any claim that asserts a named person is GUILTY / committed fraud →
    mark for the REFUSAL gate (it will score 0).
 5. Never merge two people's acts into one claim.

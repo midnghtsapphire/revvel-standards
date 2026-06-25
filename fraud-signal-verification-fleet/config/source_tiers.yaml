@@ -34,16 +34,18 @@ adjudication_ceilings:
   alleged:      0.45   # someone asserts it; not charged
   investigated: 0.55   # confirmed open investigation; no charges
   charged:      0.75   # formal charges / indictment filed
-  plea_or_settled: 0.90 # guilty plea or settlement on record
+  guilty_plea:  0.90   # admission of guilt entered on a docket
+  settled_no_admission: 0.65  # civil settlement w/ no admission of liability — NOT an admission of guilt
+  plea_or_settled: 0.90 # DEPRECATED alias of guilty_plea; prefer the two specific stages above
   convicted:    0.98   # adjudicated guilt
 
 # Modifiers
 corroboration:
-  # independent same-or-higher-tier sources that agree
+  # independent sources within one tier of the best (>= best_tier - 1) that agree
   per_source_bonus: 0.06
   max_bonus: 0.24
 contradiction:
-  # independent same-or-higher-tier sources that conflict
+  # independent sources that conflict with the claim (any tier)
   per_source_penalty: 0.12
   max_penalty: 0.48
 provenance:

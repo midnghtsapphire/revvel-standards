@@ -44,7 +44,9 @@ Each returns structured evidence: {claim_id, source_id, tier, provenance,
 supports|contradicts, quote}.
 
 ### Phase 2 — Score  (src/confidence.py)
-Apply tier cap → provenance discount → corroboration/contradiction → stage ceiling.
+Apply provenance discount to the tier weight → add corroboration / subtract
+contradiction → cap at tier ceiling → cap at stage ceiling. (Tier capping is the
+last-but-one step, not the first — matches src/confidence.py.)
 
 ### Phase 3 — Judge  (prompts/JUDGE_PROMPT.md, src/judge.py)
 Merge, resolve contradictions, write per-claim verdict language + case integrity.

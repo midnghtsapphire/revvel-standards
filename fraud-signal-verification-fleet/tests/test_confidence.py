@@ -13,7 +13,8 @@ CFG = {
     },
     "adjudication_ceilings": {
         "unknowable": 0.20, "alleged": 0.45, "investigated": 0.55,
-        "charged": 0.75, "plea_or_settled": 0.90, "convicted": 0.98,
+        "charged": 0.75, "guilty_plea": 0.90, "settled_no_admission": 0.65,
+        "plea_or_settled": 0.90, "convicted": 0.98,
     },
     "corroboration": {"per_source_bonus": 0.06, "max_bonus": 0.24},
     "contradiction": {"per_source_penalty": 0.12, "max_penalty": 0.48},
@@ -58,11 +59,21 @@ class TestCaps(unittest.TestCase):
         self.assertIn(r.band, ("WEAK", "UNSUBSTANTIATED"))
 
     def test_adjudicated_plea_scores_high(self):
-        claim = {"id": "C", "text": "x pleaded guilty", "stage": "plea_or_settled",
+        claim = {"id": "C", "text": "x pleaded guilty", "stage": "guilty_plea",
                  "supporting": [{"source": "s", "provenance": "filing"}]}
         r = score_claim(claim, {"s": {"id": "s", "tier": 5}}, dict(CFG))
         self.assertGreaterEqual(r.confidence, 0.85)
         self.assertEqual(r.band, "SUBSTANTIATED")
+
+    def test_no_admission_settlement_capped_below_guilty_plea(self):
+        # Same tier-5 filing, but a no-admission settlement must not score like a plea.
+        src = {"s": {"id": "s", "tier": 5}}
+        plea = score_claim({"id": "P", "text": "x", "stage": "guilty_plea",
+                            "supporting": [{"source": "s", "provenance": "filing"}]}, src, dict(CFG))
+        settled = score_claim({"id": "S", "text": "x", "stage": "settled_no_admission",
+                               "supporting": [{"source": "s", "provenance": "filing"}]}, src, dict(CFG))
+        self.assertLess(settled.confidence, plea.confidence)
+        self.assertLessEqual(settled.confidence, 0.65)
 
 
 class TestRobustness(unittest.TestCase):

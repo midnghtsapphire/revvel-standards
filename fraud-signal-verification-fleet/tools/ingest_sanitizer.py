@@ -14,7 +14,7 @@ INJECTION = [
     r"ignore (?:all )?previous instructions",
     r"disregard (?:the )?(?:above|prior|system)",
     r"you are now",
-    r"output that .*\bis guilty\b",
+    r"output that .*?\bis guilty\b",
     r"confirm (?:the )?fraud",
     r"override (?:the )?refusal",
 ]

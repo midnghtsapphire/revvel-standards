@@ -39,7 +39,7 @@ def run(seed_path: str, out_path: str, mode: str = "offline") -> dict:
             "Parallel/sequential dispatch is configured in prompts/MASTER_PROMPT.md.")
 
     report = adjudicate(case, cfg)
-    report["generated_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+    report["generated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
     report["mode"] = mode
     report["fleet"] = [{"name": a["name"], "mission": a["mission"]} for a in fleet_manifest()]
     report["sources"] = case["sources"]
