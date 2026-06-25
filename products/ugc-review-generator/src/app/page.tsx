@@ -1,161 +1,445 @@
 "use client";
 
-import React, { useState } from "react";
-import { Copy, Accessibility, Mail, ShoppingBag } from "lucide-react";
+import { useMemo, useState } from "react";
+import creativeSystem from "../lib/creative-system";
+
+const MODES = [
+  { id: "default", label: "Default" },
+  { id: "aaa", label: "Enhanced contrast" },
+  { id: "dyslexia", label: "Dyslexia-friendly" },
+  { id: "focus", label: "Focus mode" },
+  { id: "contrast", label: "High contrast" },
+  { id: "large", label: "Large text" },
+  { id: "mono", label: "Monospace" },
+] as const;
+
+type ModeId = (typeof MODES)[number]["id"];
+type UseCase = "local-leads" | "amazon-ugc";
+
+const { buildAmazonReviewPacket, buildLocalLeadPacket, packetToMarkdown } = creativeSystem;
 
 export default function Home() {
+  const [mode, setMode] = useState<ModeId>("default");
+  const [useCase, setUseCase] = useState<UseCase>("local-leads");
   const [productName, setProductName] = useState("");
   const [problem, setProblem] = useState("");
   const [hookType, setHookType] = useState("unboxing");
   const [affiliateLink, setAffiliateLink] = useState("");
-  const [highContrast, setHighContrast] = useState(false);
+  const [brandName, setBrandName] = useState("Lead Hook System");
+  const [businessType, setBusinessType] = useState("real estate");
+  const [audience, setAudience] = useState("Real estate agents");
+  const [painPoint, setPainPoint] = useState("what to post on social media");
+  const [proofMetric, setProofMetric] = useState("120 organic buyer leads");
+  const [offer, setOffer] = useState("Unlimited AI ad generation");
+  const [freeTrialDays, setFreeTrialDays] = useState("7");
+  const [urgencyHours, setUrgencyHours] = useState("3");
+  const [copyState, setCopyState] = useState("Copy packet");
 
-  const getVisualPrompt = () => {
-    if (hookType === "unboxing") {
-      return `A vertical 9:16 cinematic shot mimicking a high-end smartphone camera style for a TikTok product review. A charismatic reviewer is sitting at a clean, modern wooden desk illuminated by soft, natural window light. In the center, a sleek, premium ${productName || "Amazon tech gadget or lifestyle product"} is being unboxed. The camera glides closer in a smooth, handheld tracking motion, capturing crisp, close-up details of the product's texture and glossy surfaces. As the reviewer interacts with the product, subtle atmospheric haze catches faint light leaks in the background, creating depth. The vibe is casual, authentic, and highly engaging, perfectly tailored for a viral UGC review. Photorealistic, 4k resolution, natural lighting, lifelike skin textures, seamless handheld movement.`;
+  const packet = useMemo(() => {
+    if (useCase === "amazon-ugc") {
+      return buildAmazonReviewPacket({
+        productName,
+        problem,
+        hookType,
+        affiliateLink,
+      });
     }
-    return `A close-up, dynamic vertical 9:16 tracking shot of an Amazon viral product being used in a real-world scenario, like a moody, modern kitchen or a sleek home office. The camera follows a person's hands demonstrating a clever, satisfying product feature (e.g., using the ${productName || "product"}). Brilliant rim lighting catches the crisp edges of the product, while a soft-focus background keeps total emphasis on the demonstration. The lighting shifts dynamically to emphasize the "before and after" effect of using the item. Hyper-realistic, 8k resolution, ray-traced reflections, high-energy pacing, premium commercial aesthetic.`;
-  };
 
-  const getScript = () => {
-    return `
-🚀 Script for HeyGen (Viral TikTok Review Formula):
+    return buildLocalLeadPacket({
+      brandName,
+      businessType,
+      audience,
+      painPoint,
+      proofMetric,
+      offer,
+      freeTrialDays,
+      urgencyHours,
+    });
+  }, [
+    affiliateLink,
+    audience,
+    brandName,
+    businessType,
+    freeTrialDays,
+    hookType,
+    offer,
+    painPoint,
+    problem,
+    productName,
+    proofMetric,
+    urgencyHours,
+    useCase,
+  ]);
 
-1. The 2-Second Anti-Ad Hook:
-"I almost threw this Amazon find in the trash until I realized I was using it completely wrong..."
-
-2. The Agitation:
-"If you’re tired of ${problem || "messy cables destroying your desk setup"}, you need to see this."
-
-3. The Payoff (The Product):
-"This viral ${productName || "magnetic hub"} completely solves it. It literally took me 5 seconds to set up."
-
-4. The Call to Action (CTA):
-"I dropped the exact link in my bio if you want to grab it before it sells out again."
-${affiliateLink ? `\n(Link to use: ${affiliateLink})` : ""}
-    `.trim();
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
-  };
+  async function copyPacket() {
+    try {
+      await navigator.clipboard.writeText(packetToMarkdown(packet));
+      setCopyState("Copied");
+      window.setTimeout(() => setCopyState("Copy packet"), 1600);
+    } catch (error) {
+      console.error("Clipboard write failed:", error);
+      setCopyState("Copy unavailable");
+      window.setTimeout(() => setCopyState("Copy packet"), 1600);
+    }
+  }
 
   return (
-    <div className={`min-h-screen p-8 font-[family-name:var(--font-geist-sans)] ${highContrast ? "bg-black text-white" : "bg-gray-50 text-gray-900"}`}>
-      <main className="max-w-4xl mx-auto space-y-8">
-        <header className="flex justify-between items-center pb-6 border-b border-gray-200">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+    <div className={`mode-${mode} min-h-screen bg-slate-950 text-slate-100`}>
+      <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-10">
+        <header className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/30">
+          <p className="mb-2 text-xs uppercase tracking-[0.35em] text-cyan-300">
             UGC Review Generator
-          </h1>
-          <button
-            onClick={() => setHighContrast(!highContrast)}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
-            aria-label="Toggle High Contrast"
-          >
-            <Accessibility className="w-6 h-6" />
-          </button>
+          </p>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl space-y-3">
+              <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+                Reverse-engineer Zeely-style lead ads and UGC scripts in one workspace.
+              </h1>
+              <p className="max-w-2xl text-base text-slate-300">
+                Use the new Local Lead mode to turn one offer into overlay copy, a proof-led
+                script, landing-page messaging, and a 30-day content plan inspired by the
+                screenshot workflow. Keep the original Amazon/HeyGen UGC flow for product demos.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={copyPacket}
+              className="rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200"
+            >
+              {copyState}
+            </button>
+          </div>
         </header>
 
-        <section className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Inputs</h2>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Product Name</label>
-              <input
-                type="text"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                placeholder="e.g., magnetic cable hub"
-                className="w-full p-2 border rounded text-black"
-              />
+        <section className="grid gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 md:grid-cols-3">
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-semibold text-slate-200">Generator mode</span>
+            <select
+              value={useCase}
+              onChange={(event) => setUseCase(event.target.value as UseCase)}
+              className="rounded-xl border border-white/15 bg-slate-900 p-3"
+            >
+              <option value="local-leads">Zeely-style local lead ads</option>
+              <option value="amazon-ugc">Amazon UGC / HeyGen</option>
+            </select>
+          </label>
+          <div className="md:col-span-2">
+            <span className="mb-2 block text-sm font-semibold text-slate-200">
+              Accessibility modes
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {MODES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={mode === item.id}
+                  onClick={() => setMode(item.id)}
+                  className={`rounded-full border px-3 py-1 text-sm ${
+                    mode === item.id
+                      ? "border-cyan-300 bg-cyan-300 text-slate-950"
+                      : "border-white/15 bg-white/5"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
+          </div>
+        </section>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">The Annoying Problem</label>
+        <section className="grid gap-8 lg:grid-cols-[0.95fr_1.35fr]">
+          <aside className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">
+            {useCase === "amazon-ugc" ? (
+              <>
+                <div>
+                  <h2 className="text-xl font-bold">Amazon UGC inputs</h2>
+                  <p className="mt-1 text-sm text-slate-300">
+                    Keep the original product-review flow for avatar tools like HeyGen.
+                  </p>
+                </div>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Product name</span>
+                  <input
+                    type="text"
+                    value={productName}
+                    onChange={(event) => setProductName(event.target.value)}
+                    placeholder="e.g. magnetic cable hub"
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Problem</span>
+                  <input
+                    type="text"
+                    value={problem}
+                    onChange={(event) => setProblem(event.target.value)}
+                    placeholder="e.g. messy cables destroying your desk"
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Hook type</span>
+                  <select
+                    value={hookType}
+                    onChange={(event) => setHookType(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  >
+                    <option value="unboxing">Unboxing &amp; first impression</option>
+                    <option value="problem">Problem-solving demo</option>
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Affiliate link</span>
+                  <input
+                    type="url"
+                    value={affiliateLink}
+                    onChange={(event) => setAffiliateLink(event.target.value)}
+                    placeholder="https://amzn.to/..."
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+              </>
+            ) : (
+              <>
+                <div>
+                  <h2 className="text-xl font-bold">Local lead inputs</h2>
+                  <p className="mt-1 text-sm text-slate-300">
+                    Rebuild the proof + urgency + CTA system shown in the Zeely screenshot.
+                  </p>
+                </div>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Brand name</span>
+                  <input
+                    type="text"
+                    value={brandName}
+                    onChange={(event) => setBrandName(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Business type</span>
+                  <input
+                    type="text"
+                    value={businessType}
+                    onChange={(event) => setBusinessType(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Audience</span>
+                  <input
+                    type="text"
+                    value={audience}
+                    onChange={(event) => setAudience(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Pain point</span>
+                  <input
+                    type="text"
+                    value={painPoint}
+                    onChange={(event) => setPainPoint(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Proof metric</span>
+                  <input
+                    type="text"
+                    value={proofMetric}
+                    onChange={(event) => setProofMetric(event.target.value)}
+                    placeholder="e.g. 120 organic buyer leads"
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium">Offer</span>
+                    <input
+                      type="text"
+                      value={offer}
+                      onChange={(event) => setOffer(event.target.value)}
+                      className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium">Free-trial days</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={freeTrialDays}
+                      onChange={(event) => setFreeTrialDays(event.target.value)}
+                      className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                    />
+                  </label>
+                </div>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium">Urgency window (hours)</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="72"
+                    value={urgencyHours}
+                    onChange={(event) => setUrgencyHours(event.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
+                  />
+                </label>
+              </>
+            )}
+          </aside>
+
+          <section className="space-y-5">
+            {packet.useCase === "amazon-ugc" ? (
+              <>
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">Visual prompt</h2>
+                  <p className="mt-4 text-sm leading-7 text-slate-200">{packet.visualPrompt}</p>
+                </article>
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">HeyGen script</h2>
+                  <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-7 text-slate-200">
+                    {packet.script}
+                  </pre>
+                </article>
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">Publish checklist</h2>
+                  <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-200">
+                    {packet.checklist.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              </>
+            ) : (
+              <>
+                <article className="rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-500/10 to-fuchsia-500/10 p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold">Overlay copy</h2>
+                      <p className="text-sm text-slate-300">
+                        Short stacked captions modeled on the screenshot structure.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-cyan-300/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
+                      Zeely-style
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {packet.overlayLines.map((line) => (
+                      <p
+                        key={line}
+                        className="inline-block rounded-2xl bg-black/75 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-black/20"
+                      >
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">3-part short script</h2>
+                  <p className="mt-4 text-sm leading-7 text-slate-200">{packet.shortScript}</p>
+                  <div className="mt-5 grid gap-4 md:grid-cols-3">
+                    {packet.hooks.map((hook) => (
+                      <div key={hook} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                        <p className="text-sm leading-6 text-slate-200">{hook}</p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">Landing-page hero</h2>
+                  <h3 className="mt-4 text-2xl font-black">{packet.landingPage.hero}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">{packet.landingPage.subhead}</p>
+                  <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-200">
+                    {packet.landingPage.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 inline-flex rounded-full bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950">
+                    {packet.landingPage.cta}
+                  </p>
+                </article>
+
+                <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <h2 className="text-xl font-bold">30-day content plan</h2>
+                  <div className="mt-4 overflow-x-auto">
+                    <table className="min-w-full text-left text-sm text-slate-200">
+                      <thead className="border-b border-white/10 text-xs uppercase tracking-[0.2em] text-slate-400">
+                        <tr>
+                          <th className="px-3 py-2">Day</th>
+                          <th className="px-3 py-2">Format</th>
+                          <th className="px-3 py-2">Angle</th>
+                          <th className="px-3 py-2">Hook</th>
+                          <th className="px-3 py-2">CTA</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {packet.contentCalendar.map((entry) => (
+                          <tr key={entry.day} className="border-b border-white/5 align-top">
+                            <td className="px-3 py-3 font-semibold">{entry.day}</td>
+                            <td className="px-3 py-3">{entry.format}</td>
+                            <td className="px-3 py-3">{entry.angle}</td>
+                            <td className="px-3 py-3">{entry.hook}</td>
+                            <td className="px-3 py-3">{entry.cta}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+
+                <article className="rounded-3xl border border-amber-300/20 bg-amber-500/5 p-6">
+                  <h2 className="text-xl font-bold text-amber-100">Compliance checks</h2>
+                  <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-amber-50">
+                    {packet.complianceNotes.map((note) => (
+                      <li key={note}>{note}</li>
+                    ))}
+                  </ul>
+                </article>
+              </>
+            )}
+          </section>
+        </section>
+
+        <section className="grid gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 md:grid-cols-2">
+          <article className="rounded-2xl bg-slate-950/50 p-5">
+            <h2 className="text-lg font-bold">Newsletter capture</h2>
+            <p className="mt-2 text-sm text-slate-300">
+              Offer weekly hooks, proof templates, and CTA experiments for local-service ads.
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
               <input
-                type="text"
-                value={problem}
-                onChange={(e) => setProblem(e.target.value)}
-                placeholder="e.g., messy cables destroying your desk"
-                className="w-full p-2 border rounded text-black"
+                type="email"
+                placeholder="your@email.com"
+                className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Hook Type</label>
-              <select
-                value={hookType}
-                onChange={(e) => setHookType(e.target.value)}
-                className="w-full p-2 border rounded text-black"
+              <button
+                type="button"
+                className="rounded-xl bg-white px-4 py-3 font-semibold text-slate-950"
               >
-                <option value="unboxing">Unboxing & First Impression</option>
-                <option value="problem">Problem-Solving Demo</option>
-              </select>
+                Subscribe
+              </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Affiliate Link (Optional)</label>
-              <input
-                type="url"
-                value={affiliateLink}
-                onChange={(e) => setAffiliateLink(e.target.value)}
-                placeholder="https://amzn.to/..."
-                className="w-full p-2 border rounded text-black"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Visual Prompt</h2>
-                <button onClick={() => copyToClipboard(getVisualPrompt())} className="text-blue-600 hover:text-blue-800">
-                  <Copy className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-sm leading-relaxed">{getVisualPrompt()}</p>
-            </div>
-
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">HeyGen Script</h2>
-                <button onClick={() => copyToClipboard(getScript())} className="text-blue-600 hover:text-blue-800">
-                  <Copy className="w-5 h-5" />
-                </button>
-              </div>
-              <pre className="text-sm whitespace-pre-wrap font-sans">{getScript()}</pre>
-            </div>
-          </div>
-        </section>
-
-        {/* Mandatory Modules per EXRUP methodology */}
-        <section className="grid md:grid-cols-2 gap-8 pt-8 border-t border-gray-200">
-          <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <h3 className="flex items-center gap-2 font-semibold mb-2">
-              <Mail className="w-5 h-5" />
-              Subscribe for More Prompts
-            </h3>
-            <p className="text-sm mb-4">Join our newsletter to get weekly viral video hooks.</p>
-            <div className="flex gap-2">
-              <input type="email" placeholder="Enter your email" className="flex-1 p-2 border rounded text-black" />
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Subscribe</button>
-            </div>
-          </div>
-
-          <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <h3 className="flex items-center gap-2 font-semibold mb-2">
-              <ShoppingBag className="w-5 h-5" />
-              Recommended Gear
-            </h3>
-            <p className="text-sm mb-4">Get the best lighting and mics for UGC videos.</p>
-            <a href="https://amazon.com" target="_blank" rel="noopener noreferrer" className="text-green-700 dark:text-green-400 font-medium hover:underline">
-              Shop our affiliate store →
+          </article>
+          <article className="rounded-2xl bg-slate-950/50 p-5">
+            <h2 className="text-lg font-bold">Affiliate module</h2>
+            <p className="mt-2 text-sm text-slate-300">
+              Pair these scripts with creator gear, lighting kits, or CRM recommendations.
+            </p>
+            <a
+              href="https://www.amazon.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex rounded-xl border border-cyan-300/40 px-4 py-3 text-sm font-semibold text-cyan-200"
+            >
+              Open gear list
             </a>
-          </div>
+          </article>
         </section>
-
       </main>
     </div>
   );
