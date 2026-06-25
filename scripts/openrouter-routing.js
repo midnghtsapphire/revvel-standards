@@ -51,6 +51,15 @@ if (lookupData && lookupData.profiles && lookupData.models) {
 } else {
   // Fallback if config is missing
   ROUTING_PROFILES = {
+    // Deep search profile - uses Sonnet + Fusion for rigorous R&D research
+    // Based on Audrey's master prompt: DOE Screening, TRIZ, MEErP, LCA, BNAT
+    deep_search: {
+      description: "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
+      models: [
+        "anthropic/claude-sonnet-4.6",
+        "openrouter/fusion"
+      ]
+    },
     repo_surgery: {
       description: "Multi-file edits, bug fixing, refactors, and 'take initiative' tasks",
       models: [

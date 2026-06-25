@@ -32,7 +32,8 @@ const { execFileSync } = require('child_process');
 const CONFIG = {
   model: 'sonar',                          // LabsClient model for the no-key bridge
   fallbackMode: 'auto',                    // Client.search mode inside the bridge
-  openrouterModel: 'perplexity/sonar-pro', // backup lane via OpenRouter
+  // 2026-06-23: Use deep_search profile (Sonnet 3.5 + Fusion) for all research
+  openrouterModel: 'deep_search',          // Uses deep_search profile in openrouter-routing.js
   maxTokens: 4000,
   temperature: 0.3,
   outputFile: '/tmp/perplexity-research.md',
@@ -232,39 +233,35 @@ async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
  * Backup lane: route through OpenRouter using perplexity/sonar-pro.
  * Used when the no-key bridge fails but OPENROUTER_API_KEY is present.
  */
+// 2026-06-23: Use deep_search profile for all OpenRouter research
+const { callOpenRouter, ROUTING_PROFILES } = require('./openrouter-routing');
+
 async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${openrouterKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-      'X-Title': 'revvel-standards perplexity research'
+  // Get deep_search profile models (Sonnet 3.5 + Fusion)
+  const profile = ROUTING_PROFILES.deep_search || { models: ['anthropic/claude-sonnet-4.6', 'openrouter/fusion'] };
+  
+  const messages = [
+    {
+      role: 'system',
+      content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
     },
-    body: JSON.stringify({
-      model: CONFIG.openrouterModel,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
+    {
+      role: 'user',
+      content: prompt
+    }
+  ];
+
+  try {
+    const result = await callOpenRouter({
+      models: profile.models,
+      messages: messages,
       max_tokens: CONFIG.maxTokens,
       temperature: CONFIG.temperature
-    })
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`OpenRouter/Perplexity API error (${response.status}): ${error}`);
+    });
+    return result;
+  } catch (err) {
+    throw new Error(`Deep search failed: ${err.message}`);
   }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
 }
 
 async function fetchGitHubIssue(repo, issueNumber) {
