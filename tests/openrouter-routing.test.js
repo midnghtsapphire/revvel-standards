@@ -70,6 +70,7 @@ async function runTests() {
   assertEqual(
     Object.keys(profiles).sort(),
     ["cheap_batch_edits", "deep_search", "hard_debug", "repo_surgery"],
+    "Should have expected routing profiles"
     "Should have exactly 4 routing profiles"
   );
 
@@ -118,6 +119,7 @@ async function runTests() {
   assertEqual(
     deepSearchModels,
     ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
+    "deep_search should have Sonnet 3.5 + Fusion chain"
     "deep_search should have Sonnet 3.5 + Fusion model chain"
   );
   assertTrue(
