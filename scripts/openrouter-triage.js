@@ -573,27 +573,69 @@ async function reportTriageFailure({ kind, detail }) {
 //   1. OpenRouter — best models, but ONLY if a key is set AND the account is
 //      funded/verified (see the note on callOpenRouter; "free" still needs a
 //      real, credited account).
-//   2. Keyless Perplexity bridge — the universal safety net; needs no API key
-//      (python3 + the perplexity-ai bridge, which the workflow installs).
-// Only if BOTH lanes fail does triage surface a failure (handled by caller).
-// FOR WHOEVER TROUBLESHOOTS THIS NEXT: to harden the fleet further, add more
-// keyless lanes here (e.g. a no-API Gemini or Cohere bridge) BEFORE the final
-// throw — the rule is "always fall back to something," never dead-end.
+//   2. OpenRouter free-tier models — OR_FREE_MODELS; still needs a valid key
+//      but does not consume paid credits.
+//   3. Keyless Perplexity bridge — needs no API key (python3 + perplexity-ai).
+//   4. OpenRouter fusion — multi-provider routing; may succeed when single-
+//      provider lanes are down.
+//   5. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN (always set
+//      in Actions), no OpenRouter key required.
+//   6. Static rule-based fallback — never throws; keyword-only stub so that
+//      every issue always receives some triage output.
+// Lane 6 never fails, so triageWithFallback always returns a result.
 async function triageWithFallback(systemPrompt, userPrompt) {
+  // Lane 1: OpenRouter primary model
   if (OPENROUTER_API_KEY) {
     try {
       const text = await callOpenRouter(systemPrompt, userPrompt);
       return { text, lane: "OpenRouter", model: MODEL };
     } catch (err) {
-      // 401/402/403/429 here almost always means the OpenRouter account is not
-      // funded/verified — not a code bug. Cut over instead of dead-ending.
-      console.log(`::warning::OpenRouter triage failed (${err.message}). Cutting over to the keyless Perplexity lane.`);
+      // 401/402/403/429 almost always means the account is not funded/verified.
+      console.log(`::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`);
     }
   } else {
-    console.log("::warning::OPENROUTER_API_KEY not configured — cutting over to the keyless Perplexity lane.");
+    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lane 1.");
   }
-  const text = await callPerplexityNoKey(systemPrompt, userPrompt);
-  return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
+
+  // Lane 2: OpenRouter free-tier models
+  if (OPENROUTER_API_KEY) {
+    try {
+      const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
+      return { text, lane: "OpenRouter free-tier", model: "OR_FREE_MODELS" };
+    } catch (err) {
+      console.log(`::warning::Lane 2 (OpenRouter free-tier) failed (${err.message}). Trying lane 3.`);
+    }
+  }
+
+  // Lane 3: Keyless Perplexity bridge
+  try {
+    const text = await callPerplexityNoKey(systemPrompt, userPrompt);
+    return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
+  } catch (err) {
+    console.log(`::warning::Lane 3 (Perplexity keyless) failed (${err.message}). Trying lane 4.`);
+  }
+
+  // Lane 4: OpenRouter fusion
+  if (OPENROUTER_API_KEY) {
+    try {
+      const text = await callOpenRouterFusion(systemPrompt, userPrompt);
+      return { text, lane: "OpenRouter fusion", model: "openrouter/fusion" };
+    } catch (err) {
+      console.log(`::warning::Lane 4 (OpenRouter fusion) failed (${err.message}). Trying lane 5.`);
+    }
+  }
+
+  // Lane 5: GitHub Models (gpt-4o-mini via Azure; always available in Actions)
+  try {
+    const text = await callGitHubModels(systemPrompt, userPrompt);
+    return { text, lane: "GitHub Models", model: "gpt-4o-mini" };
+  } catch (err) {
+    console.log(`::warning::Lane 5 (GitHub Models) failed (${err.message}). Falling back to lane 6.`);
+  }
+
+  // Lane 6: Static rule-based fallback — never throws
+  const text = callStaticFallback(systemPrompt, userPrompt);
+  return { text, lane: "static-fallback", model: "rule-based" };
 }
 
 async function main() {
