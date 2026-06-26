@@ -105,7 +105,9 @@ personas:
     must_check:
       - Each connector call degrades gracefully when access is missing (fail-soft).
       - Missing access emitted as bom finding, never a hard failure.
-    must_not_do: [authenticate-live-paid-services, spend-credits]
+      - n8n and Gumloop are treated as already-paid runner capacity (operator pays ~$60/mo total); prefer them before recommending new spend.
+      - Any new API/subscription/tier-upgrade is an advisory subscription_upgrade_recommendation in the procurement BOM with approval_required:true (see docs/standards/RUNNER_TARGETS.md).
+    must_not_do: [authenticate-live-paid-services, spend-credits, recommend-new-spend-without-bom-and-human-approval]
     blocking_rule: connector-failure-hard-breaks-loop-no-failsoft
 
   - id: implementation

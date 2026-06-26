@@ -27,7 +27,9 @@
 ## Hard Rules
 
 1. **No descriptive-only output.** An engine either produces an artifact (file, deploy, API call, ticket) or it routes to a runner.
-2. **Procurement BOM rule.** If a runner cannot execute due to missing credentials, APIs, accounts, or infrastructure, it MUST emit a `BOM.md` (Bill of Materials) listing exactly what is needed, with cost, source, and acquisition steps. Vague failures are forbidden.
+2. **Procurement BOM rule.** If a runner cannot execute due to missing credentials, APIs, accounts, or infrastructure, it MUST emit a `BOM.md` (Bill of Materials) listing exactly what is needed, with cost, source, and acquisition steps. Vague failures are forbidden. See `docs/standards/RUNNER_TARGETS.md` for the full rule and service schema.
+   - **Already-paid capacity first.** `n8n` and `gumloop` are already-paid runner capacity (operator pays ~$60/mo total). Engines MUST prefer them for automation work and MUST NOT recommend new spend to replicate capability already paid for.
+   - **Subscription gaps are recommendations, not silent failures.** When a service is missing or its current subscription/plan is insufficient, the runner MUST surface a `subscription_upgrade_recommendation` in the procurement BOM (`upgrade_or_purchase_needed` ≠ `none`, `approval_required: true`). Agents MUST NOT silently fail, assume spend, purchase, raise a tier, or change secrets — spend always requires explicit human approval.
 3. **State integrity.** All state writes MUST validate against `schemas/state.schema.json`.
 4. **Revenue preservation.** Every step in `state.json` must carry the `revenue_target_monthly_usd` and `goal_phase` fields from intake. The orchestrator MUST refuse work that does not declare a revenue target.
 5. **Idempotency.** Engines and runners must be safe to re-run; side effects must be guarded by step IDs.
