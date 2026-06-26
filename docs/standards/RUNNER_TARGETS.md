@@ -53,12 +53,19 @@ surface and dispatch to them **before** recommending any new spend.
 1. **Prefer existing paid capacity first.** If n8n or Gumloop (or any other
    already-provisioned target) can do the job within current plan limits, use it.
    Do not recommend new spend to replicate capability you already pay for.
-2. **Recommend new API / subscription / upgrade only when it:**
-   - provides a **unique capability** not available on existing capacity, or
-   - **saves meaningful time** versus the already-paid path, or
-   - **improves reliability or quality** in a material, demonstrable way, or
-   - is **required for compliance or revenue** that cannot otherwise be unblocked.
-3. **Always produce a BOM** for any recommended spend, and **require explicit
+2. **Prefer free tiers, trials, and token-limited plans next.** Most tools and
+   APIs offer a free tier with token/usage limits or a time-limited trial. When
+   no already-paid capacity fits, agents MUST check for and prefer these
+   no-cost options first when practical, and **record their limits in the BOM**
+   (free-tier quotas, token/credit caps, trial expiry). Operating within a free
+   tier or trial is **never** a `needs_procurement` event by itself.
+3. **Recommend a paid upgrade only when:**
+   - **expected usage exceeds** the free-tier / trial / token-or-credit limits, or
+   - it provides a **unique capability** not available on existing or free capacity, or
+   - it **saves meaningful time** versus the already-paid or free path, or
+   - **reliability, quality, or compliance** materially requires it, or
+   - **project goals** (e.g. a revenue-phase target) justify the spend.
+4. **Always produce a BOM** for any recommended spend, and **require explicit
    human approval before any spend.** Agents never authenticate live paid
    services, purchase, raise a subscription tier, or change secrets on their own
    authority — those are **advisory recommendations** until a human approves.
@@ -97,8 +104,15 @@ human approver**; emitting it never triggers spend.
 | Field                         | Meaning                                                                 |
 |-------------------------------|-------------------------------------------------------------------------|
 | `service`                     | The service / API / subscription (e.g. `n8n`, `gumloop`, `twilio`).     |
-| `current_status`              | `already_paid` \| `free_tier` \| `not_subscribed` \| `unknown`.         |
+| `current_status`              | `already_paid` \| `free_tier` \| `trial` \| `not_subscribed` \| `unknown`. |
 | `current_monthly_cost_if_known` | Known monthly spend in USD, or `unknown`.                             |
+| `free_tier_available`         | `true` \| `false` \| `unknown` — does the service offer a free tier?    |
+| `free_tier_limits`            | The free-tier quotas/limits (requests, rows, seats, etc.), or `unknown`. |
+| `trial_available`             | `true` \| `false` \| `unknown` — is a time-limited free trial offered?  |
+| `expected_usage`              | Projected usage for `needed_for` (volume/tokens/runs), to compare against limits. |
+| `upgrade_trigger`             | What would force a paid upgrade: `usage_exceeds_limits` \| `capability_gap` \| `reliability` \| `compliance` \| `goal_justified` \| `none`. |
+| `token_or_credit_limit`       | Free-tier/trial token or credit cap (e.g. `200k tokens/mo`), or `none`/`unknown`. |
+| `overage_risk`                | `low` \| `medium` \| `high` — likelihood expected usage breaches the free/trial limit. |
 | `needed_for`                  | The step / capability / revenue target this unblocks.                   |
 | `upgrade_or_purchase_needed`  | `none` \| `new_subscription` \| `tier_upgrade` \| `api_purchase`.       |
 | `reason`                      | Why spend is justified: unique capability / time saved / reliability / compliance / revenue. |
@@ -119,9 +133,32 @@ procurement_bom:
     expected_benefit: "No incremental cost; reuses already-paid runner."
     approval_required: false
     credential_store: "secrets://n8n/api_key"
+  - service: some_ai_api
+    current_status: free_tier
+    current_monthly_cost_if_known: "$0 (free tier)"
+    free_tier_available: true
+    free_tier_limits: "200k tokens/mo, 60 req/min"
+    trial_available: false
+    expected_usage: "~120k tokens/mo for enrichment step"
+    upgrade_trigger: none
+    token_or_credit_limit: "200k tokens/mo"
+    overage_risk: low
+    needed_for: "lead enrichment summaries"
+    upgrade_or_purchase_needed: none
+    reason: "Free tier covers projected usage within token limit; no spend needed."
+    expected_benefit: "Capability at $0 within free-tier limits."
+    approval_required: false
+    credential_store: "secrets://some_ai_api/key"
   - service: gumloop
     current_status: already_paid
     current_monthly_cost_if_known: "~$30 (part of ~$60/mo n8n+Gumloop)"
+    free_tier_available: false
+    free_tier_limits: "n/a (already on paid plan)"
+    trial_available: false
+    expected_usage: "projected volume exceeds current tier run quota"
+    upgrade_trigger: usage_exceeds_limits
+    token_or_credit_limit: none
+    overage_risk: high
     needed_for: "AI enrichment step"
     upgrade_or_purchase_needed: tier_upgrade
     reason: "Current tier's monthly run quota is insufficient for projected volume; upgrade improves reliability at scale."
