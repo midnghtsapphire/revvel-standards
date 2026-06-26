@@ -91,12 +91,15 @@ jobs:
             }
 
             async function alreadyCommentedRecently(issueNumber) {
-              // Only scan up to 30 most-recent comments to keep it fast.
-              const comments = await github.paginate(github.rest.issues.listComments, {
-                owner, repo, issue_number: issueNumber, per_page: 100,
-              });
               // Deduplicate: don't post if VEINS already commented in the last 6h.
               const sixHoursAgo = Date.now() - 6 * 60 * 60 * 1000;
+              const { data: comments } = await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                since: new Date(sixHoursAgo).toISOString(),
+                per_page: 100,
+              });
               return comments.some(c =>
                 c.body && c.body.includes(VEINS_MARKER) &&
                 new Date(c.created_at).getTime() > sixHoursAgo
