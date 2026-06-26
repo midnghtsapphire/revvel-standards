@@ -294,7 +294,10 @@ async function callGitHubModels(systemPrompt, userPrompt) {
     pathName: "/chat/completions",
     method: "POST",
     headers: {
-      Authorization: `******      "User-Agent": "revvel-openrouter-triage-script",
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json",
+      "User-Agent": "revvel-openrouter-triage-script",
+    },
     payload: {
       model: "gpt-4o-mini",
       messages: [
