@@ -258,7 +258,7 @@ async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
       max_tokens: CONFIG.maxTokens,
       temperature: CONFIG.temperature
     });
-    return result;
+    return result.text;
   } catch (err) {
     throw new Error(`Deep search failed: ${err.message}`);
   }
