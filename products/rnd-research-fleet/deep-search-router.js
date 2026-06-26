@@ -8,14 +8,14 @@ const ROUTING_PROFILES = {
   deep_search: {
     description: "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, BNAT",
     models: [
-      "anthropic/claude-sonnet-4.6",
+      "anthropic/claude-3.5-sonnet",
       "openrouter/fusion"
     ]
   },
   market_research: {
     description: "Market analysis, TAM, competitors, trends",
     models: [
-      "anthropic/claude-sonnet-4.6",
+      "anthropic/claude-3.5-sonnet",
       "openrouter/fusion",
       "deepseek/deepseek-v3.2"
     ]
@@ -23,7 +23,7 @@ const ROUTING_PROFILES = {
   technical: {
     description: "Technical feasibility, architecture, implementation",
     models: [
-      "anthropic/claude-sonnet-4.6",
+      "anthropic/claude-3.5-sonnet",
       "openai/gpt-5.2-codex"
     ]
   }
@@ -134,7 +134,7 @@ Profiles:
   technical            - Feasibility, architecture
 
 Models:
-  Primary: anthropic/claude-sonnet-4.6
+  Primary: anthropic/claude-3.5-sonnet
   Fallback: openrouter/fusion
 `);
   process.exit(0);
