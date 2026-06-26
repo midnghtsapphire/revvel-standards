@@ -266,8 +266,9 @@ async function callOpenRouterFusion(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: `******      "HTTP-Referer": referer,
-      Authorization: `******      "HTTP-Referer": referer,
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "HTTP-Referer": referer,
+      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (fusion)`,
     },
     payload: {
       models: ["openrouter/fusion", "anthropic/claude-haiku-4.5:beta", "deepseek/deepseek-v3:free"],
