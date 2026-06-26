@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evidence Ledger · Fraud-Signal Verification Fleet</title>
+<style>
+  :root{
+    --ink:#0d1117; --panel:#141b24; --panel2:#1b2530; --line:#24313f;
+    --txt:#dce4ec; --mut:#7c8a9a; --mono:'SFMono-Regular',Consolas,'Liberation Mono',monospace;
+    --sub:#3fa7d6; --sup:#5bbf8a; --weak:#d4a23f; --un:#9aa6b2; --ref:#c95b5b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--txt);
+    font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{padding:28px 32px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .sub{color:var(--mut);font-size:13px;margin-top:6px;max-width:78ch}
+  .disclaimer{margin:14px 32px 0;padding:12px 16px;border:1px solid #43321f;
+    background:#1d160c;color:#e6c98c;border-radius:8px;font-size:13px}
+  .wrap{padding:24px 32px;max-width:1100px;margin:0 auto}
+  .meta{display:flex;gap:24px;flex-wrap:wrap;color:var(--mut);font:12px/1.4 var(--mono);margin-bottom:20px}
+  .meta b{color:var(--txt)}
+  .integrity{display:flex;align-items:center;gap:14px;margin:8px 0 26px;
+    padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+  .integrity .num{font:600 30px/1 var(--mono)}
+  .card{border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    margin-bottom:14px;overflow:hidden}
+  .card.refused{border-color:#5a2b2b;background:#1a1011}
+  .chead{display:flex;justify-content:space-between;align-items:flex-start;
+    gap:16px;padding:16px 18px}
+  .cid{font:600 12px/1 var(--mono);color:var(--mut)}
+  .ctext{font-size:15px;margin-top:6px;max-width:62ch}
+  .band{font:600 11px/1 var(--mono);letter-spacing:.6px;padding:5px 9px;
+    border-radius:5px;white-space:nowrap}
+  .b-SUBSTANTIATED{background:#16271d;color:var(--sup)}
+  .b-SUPPORTED{background:#16271d;color:var(--sup)}
+  .b-WEAK{background:#2a230f;color:var(--weak)}
+  .b-UNSUBSTANTIATED{background:#1c2128;color:var(--un)}
+  .meter{height:8px;background:#0c1218;border-top:1px solid var(--line)}
+  .meter > i{display:block;height:100%}
+  .meter.refused-bar{background:repeating-linear-gradient(45deg,#3a1a1a,#3a1a1a 8px,#241011 8px,#241011 16px)}
+  .body{padding:14px 18px;border-top:1px solid var(--line);font-size:13px}
+  .conf{font:600 13px/1 var(--mono)}
+  .rat{margin:10px 0 0;padding-left:18px;color:var(--mut)}
+  .rat li{margin:3px 0}
+  .note{margin-top:10px;padding:10px 12px;background:var(--panel2);border-left:3px solid var(--sub);
+    border-radius:0 6px 6px 0;color:#aebccb;font-size:12.5px}
+  .lock{display:inline-block;margin-right:6px}
+  .sources{margin-top:28px;font-size:13px}
+  .sources h3{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+  .src{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font:12px/1.4 var(--mono)}
+  .tier{padding:2px 7px;border-radius:4px;background:#1c2733;color:var(--sub)}
+  footer{padding:24px 32px;color:var(--mut);font-size:12px;border-top:1px solid var(--line)}
+  .fleet{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .chip{font:11px/1 var(--mono);padding:5px 8px;border:1px solid var(--line);border-radius:20px;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Evidence Ledger <span style="color:var(--mut);font-weight:400">· Fraud-Signal Verification Fleet</span></h1>
+  <div class="sub" id="title">Loading…</div>
+  <div class="fleet" id="fleet"></div>
+</header>
+<div class="disclaimer" id="disclaimer"></div>
+<div class="wrap">
+  <div class="meta" id="meta"></div>
+  <div class="integrity">
+    <div class="num" id="integrity">–</div>
+    <div>
+      <div style="font-weight:600">Case evidentiary integrity</div>
+      <div style="color:var(--mut);font-size:12px">Mean confidence across scored (non-refused) claims. Not a guilt score.</div>
+    </div>
+  </div>
+  <div id="claims"></div>
+  <div class="sources">
+    <h3>Sources</h3>
+    <div id="sources"></div>
+  </div>
+</div>
+<footer id="foot"></footer>
+
+<script>
+const COLORS={SUBSTANTIATED:'#5bbf8a',SUPPORTED:'#5bbf8a',WEAK:'#d4a23f',UNSUBSTANTIATED:'#9aa6b2','REFUSED/UNKNOWABLE':'#c95b5b'};
+// Explicit band -> CSS class map (no fragile regex on the band string).
+const BAND_CLASS={SUBSTANTIATED:'b-SUBSTANTIATED',SUPPORTED:'b-SUPPORTED',WEAK:'b-WEAK',UNSUBSTANTIATED:'b-UNSUBSTANTIATED','REFUSED/UNKNOWABLE':'b-REFUSED'};
+// Escape untrusted JSON fields before innerHTML to prevent XSS from pasted/tampered cases.
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+async function load(){
+  let d;
+  try{ d = await (await fetch('dashboard-data.json?'+Date.now())).json(); }
+  catch(e){ document.getElementById('title').textContent='Could not load dashboard-data.json — run src/orchestrator.py'; return; }
+  // Validate shape: a partial/corrupt JSON must fail loudly, not render an empty page.
+  const missing = ['case_id','claims','case_evidentiary_integrity'].filter(k=>!(k in d));
+  if(missing.length || !Array.isArray(d.claims)){
+    document.getElementById('title').textContent =
+      'dashboard-data.json is malformed (missing/invalid: '+(missing.join(', ')||'claims')+') — re-run src/orchestrator.py';
+    return;
+  }
+  // Per-claim validation: a claim missing required fields must fail loudly, not render blank.
+  const REQ=['id','text','confidence','band','refused','verdict'];
+  for(let i=0;i<d.claims.length;i++){
+    const bad=REQ.filter(f=>!(f in d.claims[i]));
+    if(bad.length){
+      document.getElementById('title').textContent =
+        `Claim ${i} (${esc(d.claims[i].id||'?')}) is malformed — missing: ${esc(bad.join(', '))}`;
+      return;
+    }
+  }
+  document.getElementById('title').textContent = d.title;
+  document.getElementById('disclaimer').textContent = '⚠ ' + d.disclaimer;
+  document.getElementById('meta').innerHTML =
+    `<span>case <b>${esc(d.case_id)}</b></span>`+
+    `<span>generated <b>${esc(d.generated_at||'—')}</b></span>`+
+    `<span>mode <b>${esc(d.mode||'offline')}</b></span>`+
+    `<span>refused <b>${esc(d.refused_count)}</b></span>`;
+  document.getElementById('fleet').innerHTML =
+    (d.fleet||[]).map(f=>`<span class="chip" title="${esc(f.mission)}">${esc(f.name)}</span>`).join('');
+  const ig=document.getElementById('integrity');
+  ig.textContent=(d.case_evidentiary_integrity*100).toFixed(0)+'%';
+  ig.style.color = d.case_evidentiary_integrity>=.55?COLORS.SUPPORTED:d.case_evidentiary_integrity>=.3?COLORS.WEAK:COLORS.UNSUBSTANTIATED;
+
+  document.getElementById('claims').innerHTML = d.claims.map(c=>{
+    const pct=(c.confidence*100).toFixed(0);
+    const col=COLORS[c.band]||'#888';
+    const meter = c.refused
+      ? `<div class="meter refused-bar"></div>`
+      : `<div class="meter"><i style="width:${pct}%;background:${col}"></i></div>`;
+    return `<div class="card ${c.refused?'refused':''}">
+      <div class="chead">
+        <div><div class="cid">${esc(c.id)}</div><div class="ctext">${c.refused?'<span class="lock">⛔</span>':''}${esc(c.text)}</div></div>
+        <div class="band ${BAND_CLASS[c.band]||'b-UNSUBSTANTIATED'}" style="color:${col}">${esc(c.band)}</div>
+      </div>
+      ${meter}
+      <div class="body">
+        <span class="conf" style="color:${col}">${c.refused?'REFUSED':pct+'% confidence'}</span> · ${esc(c.verdict)}
+        <ul class="rat">${(Array.isArray(c.rationale)?c.rationale:[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+        ${c.analyst_note?`<div class="note">${esc(c.analyst_note)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('sources').innerHTML = (d.sources||[]).map(s=>
+    `<div class="src"><span class="tier">T${esc(s.tier)}</span><span><b>${esc(s.outlet)}</b> · ${esc(s.kind)} · ${esc(s.date||'')}</span><span style="color:var(--mut)">${esc(s.title||'')}</span></div>`
+  ).join('');
+  document.getElementById('foot').textContent = d.headline_finding+'  ·  Auto-refreshes every 15s.';
+}
+load(); setInterval(load,15000);
+</script>
+</body>
+</html>
