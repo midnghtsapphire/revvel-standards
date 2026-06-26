@@ -48,10 +48,20 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: prNumber
-            });
-            let currentLabels = labelData.map(l => l.name);
+            // Guard the initial read: with a set-but-invalid ADMIN_GITHUB_TOKEN
+            // (the fallback only swaps to GITHUB_TOKEN when the PAT is empty),
+            // this call returns 401 Bad credentials. Degrade gracefully instead
+            // of failing the whole "PR Lifecycle Labels" check; full behavior is
+            // preserved whenever the credentials are valid.
+            let currentLabels = [];
+            try {
+              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
+                owner, repo, issue_number: prNumber
+              });
+              currentLabels = labelData.map(l => l.name);
+            } catch (e) {
+              core.warning(`listLabelsOnIssue failed for PR #${prNumber}: ${e.message}`);
+            }
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
@@ -68,7 +78,13 @@ jobs:
                 'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
                 'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
               };
-              const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+              let repoLabels = [];
+              try {
+                ({ data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }));
+              } catch (e) {
+                core.warning(`listLabelsForRepo failed: ${e.message}`);
+                return;
+              }
               const existing = new Set(repoLabels.map(l => l.name));
               for (const label of labels) {
                 if (!existing.has(label) && palette[label]) {
