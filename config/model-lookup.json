@@ -41,6 +41,22 @@
       "name": "llama3",
       "mode": "ollama",
       "description": "Local Ollama fallback"
+    },
+    {
+      "id": 7,
+      "provider": "anthropic",
+      "name": "claude-3.5-sonnet",
+      "mode": "openrouter",
+      "description": "Deep search primary model"
+      "description": "Deep search lead model"
+    },
+    {
+      "id": 8,
+      "provider": "openrouter",
+      "name": "fusion",
+      "mode": "openrouter",
+      "description": "Fusion synthesis model"
+      "description": "OpenRouter fusion synthesis model"
     }
   ],
   "domains": [
@@ -95,6 +111,11 @@
       "id": 103,
       "description": "Difficult failures, ambiguous root-cause analysis, and second-opinion patches",
       "models": [4, 2, 3]
+    },
+    "deep_search": {
+      "id": 104,
+      "description": "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
+      "models": [7, 8]
     }
   },
   "fallback_chain": [1, 2, 3, 6]

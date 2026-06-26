@@ -69,8 +69,9 @@ async function runTests() {
   const profiles = getProfiles();
   assertEqual(
     Object.keys(profiles).sort(),
-    ["cheap_batch_edits", "hard_debug", "repo_surgery"],
-    "Should have exactly 3 routing profiles"
+    ["cheap_batch_edits", "deep_search", "hard_debug", "repo_surgery"],
+    "Should have expected routing profiles"
+    "Should have exactly 4 routing profiles"
   );
 
   // Test 2: Verify repo_surgery profile
@@ -112,14 +113,28 @@ async function runTests() {
     "hard_debug should have correct description"
   );
 
-  // Test 5: Error handling for unknown profile
+  // Test 5: Verify deep_search profile
+  console.log("\nTest Group: deep_search Profile");
+  const deepSearchModels = getProfileModels("deep_search");
+  assertEqual(
+    deepSearchModels,
+    ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
+    "deep_search should have Sonnet 3.5 + Fusion chain"
+    "deep_search should have Sonnet 3.5 + Fusion model chain"
+  );
+  assertTrue(
+    profiles.deep_search.description.includes("Deep R&D research"),
+    "deep_search should have correct description"
+  );
+
+  // Test 6: Error handling for unknown profile
   console.log("\nTest Group: Error Handling");
   assertThrows(
     () => getProfileModels("invalid_profile"),
     "Should throw error for unknown profile with available profiles listed"
   );
 
-  // Test 6: Silent mode
+  // Test 7: Silent mode
   console.log("\nTest Group: Silent Mode");
   process.env.OPENROUTER_API_KEY = "test-key";
   await assertRejects(
@@ -131,7 +146,7 @@ async function runTests() {
     "Should work in silent mode (no console output)"
   );
 
-  // Test 7: routedChat validation
+  // Test 8: routedChat validation
   console.log("\nTest Group: routedChat Validation");
   
   // Save original API key
@@ -173,7 +188,7 @@ async function runTests() {
     delete process.env.OPENROUTER_API_KEY;
   }
 
-  // Test 8: Integration test (only if API key is available)
+  // Test 9: Integration test (only if API key is available)
   if (process.env.OPENROUTER_API_KEY) {
     console.log("\nTest Group: Integration Tests (with API key)");
     console.log("⚠️  Skipping live API tests to avoid costs. To test manually, run:");

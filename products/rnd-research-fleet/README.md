@@ -47,6 +47,7 @@ node perplexity-research.js "Your question"
 rnd-research-fleet/
 ├── README.md                    # This file
 ├── MASTER_PROMPT.md             # The core R&D prompt
+├── MASTER_PROMPT_DOE_TRIZ_MeerP_LCA_BNAT.md # Exact DOE/TRIZ/MEErP prompt
 ├── install.sh                   # One-command installer
 ├── auto-github-join.js         # Auto fork setup
 ├── perplexity-research.js        # No-API Perplexity

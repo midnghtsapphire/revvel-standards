@@ -238,7 +238,7 @@ const { callOpenRouter, ROUTING_PROFILES } = require('./openrouter-routing');
 
 async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
   // Get deep_search profile models (Sonnet 3.5 + Fusion)
-  const profile = ROUTING_PROFILES.deep_search || { models: ['anthropic/claude-sonnet-4.6', 'openrouter/fusion'] };
+  const profile = ROUTING_PROFILES.deep_search || { models: ['anthropic/claude-3.5-sonnet', 'openrouter/fusion'] };
   
   const messages = [
     {
@@ -258,7 +258,7 @@ async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
       max_tokens: CONFIG.maxTokens,
       temperature: CONFIG.temperature
     });
-    return result;
+    return result.text;
   } catch (err) {
     throw new Error(`Deep search failed: ${err.message}`);
   }
