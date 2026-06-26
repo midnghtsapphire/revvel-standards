@@ -24,7 +24,15 @@ const https = require("https");
 const { callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
 
 const PROFILE_NAME = process.env.PROFILE || "deep_search";
-const profile = ROUTING_PROFILES[PROFILE_NAME] || ROUTING_PROFILES.deep_search;
+
+const profile =
+  ROUTING_PROFILES[PROFILE_NAME] ||
+  ROUTING_PROFILES.deep_search || {
+    description:
+      "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
+    models: ["anthropic/claude-sonnet-4.6", "openrouter/fusion"],
+  };
+
 const models = profile.models;
 
 const SYSTEM_PROMPT = `You are an autonomous Lead Systems Engineer, Market Analyst, and R&D Director. You are conducting deep R&D research using rigorous engineering frameworks.
@@ -79,7 +87,9 @@ async function postGitHubComment(issueNumber, repo, body) {
         path: `/repos/${owner}/${repoName}/issues/${issueNumber}/comments`,
         method: "POST",
         headers: {
-          Authorization: `token ${token}`,
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
           "Content-Type": "application/json",
           "User-Agent": "revvel-deep-search",
           "Content-Length": Buffer.byteLength(payload),
@@ -138,12 +148,14 @@ async function main() {
     process.exit(1);
   }
 
+  const resultText = result.text;
+
   console.log("\n=== RESEARCH RESULTS ===\n");
-  console.log(result);
+  console.log(resultText);
   console.log("\n=== END RESULTS ===\n");
 
   // Save to temp file for the workflow to read
-  fs.writeFileSync("/tmp/deep-research-results.md", result);
+  fs.writeFileSync("/tmp/deep-research-results.md", resultText, "utf8");
   console.log("Results saved to /tmp/deep-research-results.md");
 
   // Post to GitHub issue if configured
@@ -152,7 +164,7 @@ async function main() {
 
 > Using **${models.join(" + ")}** with DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks.
 
-${result}
+${resultText}
 
 ---
 *Research powered by Deep Search with R&D Engineering Framework*`;
@@ -167,4 +179,7 @@ ${result}
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
