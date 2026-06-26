@@ -99,7 +99,15 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
+const maxLength = 5000;
+if (text.length > maxLength) {
+  core.setFailed(`Brain dump text exceeds ${maxLength} chars (got ${text.length}). Please split into smaller notes.`);
+  return;
+}
+if (!text.match(/^[\s\S]*$/)) {
+  core.setFailed('Brain dump contains invalid characters.');
+  return;
+}
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
