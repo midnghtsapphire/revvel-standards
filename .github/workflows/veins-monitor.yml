@@ -188,6 +188,18 @@ jobs:
               owner, repo, state: 'open', labels: 'work-request', per_page: 100,
             });
 
+            // Pre-fetch the open PR list once so every issue check in Case 1
+            // reuses the same data instead of making one API call per issue.
+            let openPrs = [];
+            try {
+              openPrs = await github.paginate(github.rest.pulls.list, {
+                owner, repo, state: 'open', per_page: 100,
+              });
+              core.info(`Pre-fetched ${openPrs.length} open PRs for Case 1 checks.`);
+            } catch (e) {
+              core.warning(`Could not pre-fetch open PRs: ${e.message}`);
+            }
+
             for (const issue of wrIssues) {
               if (issue.pull_request) continue;
               const labels = labelNames(issue);
@@ -207,16 +219,10 @@ jobs:
                 continue;
               }
 
-              // Determine if a PR already exists by checking open PRs.
+              // Determine if a PR already exists using the pre-fetched list.
               let prExists = false;
               try {
-                if (!globalThis.__veinsOpenPrs) {
-                  globalThis.__veinsOpenPrs = await github.paginate(github.rest.pulls.list, {
-                    owner, repo, state: 'open', per_page: 100,
-                  });
-                }
-                const prs = globalThis.__veinsOpenPrs;
-                prExists = prs.some(pr => {
+                prExists = openPrs.some(pr => {
                   const ref = pr.head && pr.head.ref ? pr.head.ref : '';
                   const body = pr.body || '';
                   const issueRef = new RegExp(
