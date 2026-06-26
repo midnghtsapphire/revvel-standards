@@ -319,11 +319,11 @@ function callStaticFallback(systemPrompt, userPrompt) {
     if (/\bbug\b|error|fail|crash|broken|exception|traceback/.test(text)) labels.push("bug");
     if (/feature|request|add|new|implement|support/.test(text)) labels.push("enhancement");
     if (/doc|readme|wiki|typo|spelling/.test(text)) labels.push("documentation");
-    if (/question|\bhow\b|\bwhy\b|\bwhat\b|help/.test(text)) labels.push("question");
+    if (/question|\bhow\b|\bwhy\b|\bwhat\b|help/.test(text)) labels.push("triage:needs-info");
     if (/security|vuln|cve|exploit|injection/.test(text)) labels.push("security");
-    if (/perf|slow|latency|timeout|speed/.test(text)) labels.push("performance");
-    if (/ci|workflow|action|pipeline|deploy/.test(text)) labels.push("ci");
-    const classification = labels.length ? labels.join(", ") : "needs-triage";
+    if (/perf|slow|latency|timeout|speed/.test(text)) labels.push("bug");
+    if (/ci|workflow|action|pipeline|deploy/.test(text)) labels.push("workflow-failure");
+    const classification = labels.length ? labels.join(", ") : "triage";
     return [
       "## 1) Classification",
       `${classification} (rule-based — all AI lanes unavailable)`,
@@ -331,8 +331,7 @@ function callStaticFallback(systemPrompt, userPrompt) {
       "## 2) Suggested Labels",
       labels.length
         ? labels.map((l) => `- \`${l}\``).join("\n")
-        : "- `needs-triage`",
-      "",
+        : "- `triage`",
       "## 3) Next Actions",
       "- Human review required — all AI triage lanes were unavailable.",
       "- Check OpenRouter account balance at <https://openrouter.ai/credits>,",
