@@ -210,9 +210,12 @@ jobs:
               // Determine if a PR already exists by checking open PRs.
               let prExists = false;
               try {
-                const prs = await github.paginate(github.rest.pulls.list, {
-                  owner, repo, state: 'open', per_page: 100,
-                });
+                if (!globalThis.__veinsOpenPrs) {
+                  globalThis.__veinsOpenPrs = await github.paginate(github.rest.pulls.list, {
+                    owner, repo, state: 'open', per_page: 100,
+                  });
+                }
+                const prs = globalThis.__veinsOpenPrs;
                 prExists = prs.some(pr => {
                   const ref = pr.head && pr.head.ref ? pr.head.ref : '';
                   const body = pr.body || '';
