@@ -182,8 +182,8 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
 }
 
 // OpenRouter free-tier models to try as lane 2 when the primary model fails.
-// These ":free" models still need a real (possibly unfunded) OR account key,
-// but they do not consume credits, so they work when the account has run dry.
+// These ":free" models still need a real OR account + API key, and are often
+// heavily rate-limited; treat this lane as "may work" rather than guaranteed.
 const OR_FREE_MODELS = [
   "deepseek/deepseek-r1:free",
   "google/gemma-3-27b-it:free",
