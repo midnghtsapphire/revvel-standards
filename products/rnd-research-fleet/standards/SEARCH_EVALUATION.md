@@ -177,5 +177,145 @@ deep-search / Perplexity wiring:
 
 ---
 
+## Strategies (multi-strategy comparison)
+
+The evaluator recognizes named **search strategies**, compared offline against
+the same fixture set:
+
+| Strategy | Meaning |
+| --- | --- |
+| `baseline` | Current production search prompt / routing (`v1`). |
+| `candidate` | A proposed single-path change (the new search prompt). |
+| `fable` | The Fable single-model search path - the bar a fancier strategy must clear. |
+| `twin_llm` | Send the SAME query to two independent model/search paths, then synthesize one source-backed answer. |
+| `twin_llm_adjudicated` | `twin_llm` plus an explicit third adjudicator model that resolves disagreements and drops unsupported claims. |
+
+`baseline` vs `candidate` uses the original 2-way comparator. `fable`,
+`twin_llm`, and `twin_llm_adjudicated` are evaluated by the multi-strategy
+comparator (`evaluateStrategies` / `compareTwinToFable`). When both twin runs are
+provided, `twin_llm_adjudicated` is the one compared against Fable/baseline.
+
+---
+
+## Twin-LLM search: how it should work
+
+A twin-LLM run is **not** "ask one model twice." It is:
+
+1. **Two independent runs.** The same query goes to two different model/search
+   paths (`model_a`, `model_b`) - ideally different providers - so their failure
+   modes are uncorrelated.
+2. **Agreement / disagreement extraction.** Compare the two answers and their
+   sources. Claims both runs make (and cite) are high-confidence; claims only one
+   run makes are `disagreements` to resolve.
+3. **Adjudicator / synthesizer.** A merge step (optionally a third model in
+   `twin_llm_adjudicated`) keeps agreed, source-backed claims, resolves
+   disagreements toward the better-cited side, and **drops unsupported claims**
+   (counted as `hallucination_or_unsupported_claim_flags`).
+4. **Source-backed merge.** The final answer's citations are the union of the two
+   runs' sources, de-duplicated. `unique_sources_added` measures the breadth the
+   second run contributed; `source_overlap` measures how redundant the two runs
+   were.
+5. **Decision on measured quality / cost / latency - not vibes.** Twin costs ~2x
+   tokens and adds latency, so it only earns its place if it measurably beats
+   Fable/baseline.
+
+### Twin-LLM scoring dimensions
+
+Computed per run when results carry a `twin` block (see schema below):
+
+| Dimension | Meaning |
+| --- | --- |
+| `model_pair` | The two model/search paths used. |
+| `agreement_score` | Mean how-much-the-two-runs-agreed (0..1). |
+| `disagreement_count` | Total substantive disagreements across queries. |
+| `adjudication_quality` | Mean quality of the synthesizer's merge (0..1). |
+| `source_overlap` | Mean domain overlap between the two runs' sources (lower = more diverse). |
+| `unique_sources_added` | Distinct domains the second run added beyond the first. |
+| `hallucination_or_unsupported_claim_flags` | Total unsupported/hallucinated claims flagged. |
+| `cost_delta_vs_fable` | Twin total cost minus Fable total cost (USD). |
+| `latency_delta_vs_fable` | Twin mean latency minus Fable mean latency (ms). |
+
+### Twin decision rubric
+
+The twin comparator emits exactly one decision:
+
+| Decision | When |
+| --- | --- |
+| `keep_twin` | Twin beats Fable/baseline on rubric by `>= minQualityGain`, with no error/citation regression, adjudication quality above floor, no unsupported-claim flags, and cost/latency within budget. Twin earns its place. |
+| `tune_twin` | Better quality but cost/latency over budget, or the two runs are largely redundant (`source_overlap` too high), or the gain is positive but below the keep threshold. De-dupe models, trim the second run, or cache shared sources, then re-run. |
+| `rollback_twin` | Twin does **not** beat Fable/baseline on rubric, or it regresses error rate / citation coverage beyond threshold. Not worth its extra cost/latency - stay on Fable/baseline. |
+| `needs_human_review` | Too few queries to decide. |
+
+Twin thresholds live in `TWIN_THRESHOLDS` in `eval/search-eval.js`:
+
+- rubric gain vs Fable `>= +0.05` -> eligible to keep
+- cost ratio vs Fable `<= 2.0x` -> within budget
+- latency ratio vs Fable `<= 2.0x` -> within budget
+- mean adjudication quality `>= 0.6` -> trustworthy merge
+- source overlap `<= 0.85` -> the two runs are not redundant
+- unsupported-claim flags `<= 0` -> no hallucinated claims survived the merge
+
+### How to run the twin comparison (offline)
+
+```bash
+cd products/rnd-research-fleet
+
+# Twin-LLM vs Fable (and baseline), fully offline:
+node eval/search-eval.js \
+  --fixtures eval/fixtures/queries.json \
+  --baseline eval/fixtures/baseline.example.json \
+  --fable    eval/fixtures/fable.example.json \
+  --twin     eval/fixtures/twin-llm.example.json \
+  --twin-adjudicated eval/fixtures/twin-llm-adjudicated.example.json \
+  --out /tmp/strategy-report.json \
+  --md  /tmp/strategy-report.md
+
+# Or via npm:
+npm run eval:strategies
+```
+
+Example decision on the bundled fixtures: **`keep_twin`** - twin beats Fable on
+rubric by `+0.15` within a `~1.6x` cost and `~1.5x` latency budget, with high
+adjudication quality and zero unsupported-claim flags. (Against the already-strong
+baseline the same twin run scores `tune_twin`, since its rubric edge there is
+below the keep threshold - exactly the kind of nuance this report surfaces.)
+
+### Twin run JSON schema (per result)
+
+```json
+{
+  "label": "twin_llm",
+  "strategy": "twin_llm",
+  "search_prompt_version": "twin-llm-v1",
+  "router_profile": "twin_dual_model",
+  "results": [
+    {
+      "query_id": "repo-automation-gh-repo",
+      "answer": "merged, source-backed answer",
+      "citations": ["https://example.com/a", "https://example.com/b"],
+      "latency_ms": 2100,
+      "cost_usd": 0.0032,
+      "twin": {
+        "model_a": "openai/gpt-4o-search",
+        "model_b": "anthropic/claude-sonnet-search",
+        "adjudicator": "openai/gpt-4o",
+        "agreement_score": 0.85,
+        "disagreements": 0,
+        "adjudication_quality": 0.9,
+        "sources_a": ["https://example.com/a"],
+        "sources_b": ["https://example.com/b"],
+        "unsupported_claims": 0
+      }
+    }
+  ]
+}
+```
+
+> **Green CI is not proof of search quality.** A twin-LLM strategy must **beat
+> Fable/baseline on this evaluation report** before it becomes the default. CI
+> only proves the measurement layer runs - it never proves twin is better.
+
+---
+
 **Built with enterprise standards from MIDNGHTSAPPHIRE**
 **(c) 2026 Freedom Angel Corp.**

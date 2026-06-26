@@ -9,7 +9,8 @@
     "persona": "node persona-loader.js",
     "install-all": "./install.sh",
     "setup": "node auto-github-join.js",
-    "eval:search": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --candidate eval/fixtures/candidate.example.json"
+    "eval:search": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --candidate eval/fixtures/candidate.example.json",
+    "eval:strategies": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --fable eval/fixtures/fable.example.json --twin eval/fixtures/twin-llm.example.json --twin-adjudicated eval/fixtures/twin-llm-adjudicated.example.json"
   },
   "keywords": [
     "research",

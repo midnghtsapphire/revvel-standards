@@ -59,6 +59,29 @@ const THRESHOLDS = {
 };
 
 // ---------------------------------------------------------------------------
+// Known search strategies. `baseline` / `candidate` drive the original 2-way
+// comparison; `fable`, `twin_llm`, and `twin_llm_adjudicated` are evaluated by
+// the multi-strategy comparator (compareTwinToFable / evaluateStrategies).
+// ---------------------------------------------------------------------------
+const STRATEGIES = ['baseline', 'candidate', 'fable', 'twin_llm', 'twin_llm_adjudicated'];
+
+// ---------------------------------------------------------------------------
+// Twin-LLM decision thresholds (documented in standards/SEARCH_EVALUATION.md).
+// A twin run sends the SAME query to two independent models/search paths, then
+// an adjudicator/synthesizer merges agreements and resolves disagreements into
+// a single source-backed answer. Twin is only worth its extra cost/latency if
+// it BEATS Fable/baseline on measured quality - never on vibes.
+// ---------------------------------------------------------------------------
+const TWIN_THRESHOLDS = {
+  minQualityGain: 0.05, // twin rubric must beat Fable by >= this to "keep"
+  maxCostRatio: 2.0, // twin total cost / Fable total cost ceiling for "keep"
+  maxLatencyRatio: 2.0, // twin mean latency / Fable mean latency ceiling for "keep"
+  adjudicationFloor: 0.6, // mean adjudication_quality required for "keep"
+  maxSourceOverlap: 0.85, // above this the two runs are redundant -> tune
+  maxUnsupportedClaims: 0 // hallucination/unsupported-claim flags allowed for "keep"
+};
+
+// ---------------------------------------------------------------------------
 // Small helpers
 // ---------------------------------------------------------------------------
 function round(n, d = 4) {
@@ -82,6 +105,82 @@ function domainOf(url) {
 
 function loadJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function domainSet(urls) {
+  const s = new Set();
+  for (const u of Array.isArray(urls) ? urls : []) {
+    const d = domainOf(u);
+    if (d) s.add(d);
+  }
+  return s;
+}
+
+function countOf(v) {
+  if (typeof v === 'number' && isFinite(v)) return v;
+  if (Array.isArray(v)) return v.length;
+  return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Twin-LLM specific metrics. Only computed when results carry a `twin` block:
+//   "twin": {
+//     "model_a": "openai/gpt-4o-search",
+//     "model_b": "anthropic/claude-sonnet-search",
+//     "agreement_score": 0.0..1.0,        // how much the two runs agreed
+//     "disagreements": 1 | [...],          // count or list of substantive splits
+//     "adjudication_quality": 0.0..1.0,    // quality of the synthesizer's merge
+//     "sources_a": ["https://..."],        // sources model A cited
+//     "sources_b": ["https://..."],        // sources model B cited
+//     "unsupported_claims": 0 | [...]      // hallucination / unsupported-claim flags
+//   }
+// Returns null when no twin data is present, so non-twin runs are unaffected.
+// cost_delta_vs_fable / latency_delta_vs_fable are inherently comparative and
+// are computed later by compareTwinToFable, not here.
+// ---------------------------------------------------------------------------
+function twinMetricsFor(run) {
+  const results = Array.isArray(run.results) ? run.results : [];
+  const twinResults = results.filter((r) => r && typeof r.twin === 'object' && r.twin !== null);
+  if (twinResults.length === 0) return null;
+
+  const agreement = [];
+  const adjudication = [];
+  const overlaps = [];
+  let disagreementCount = 0;
+  let unsupportedFlags = 0;
+  let uniqueSourcesAdded = 0;
+  const pairs = new Set();
+
+  for (const r of twinResults) {
+    const t = r.twin;
+    if (t.model_a && t.model_b) pairs.add(`${t.model_a} + ${t.model_b}`);
+    if (typeof t.agreement_score === 'number') agreement.push(t.agreement_score);
+    if (typeof t.adjudication_quality === 'number') adjudication.push(t.adjudication_quality);
+    disagreementCount += countOf(t.disagreements);
+    unsupportedFlags += countOf(t.unsupported_claims);
+
+    const a = domainSet(t.sources_a);
+    const b = domainSet(t.sources_b);
+    if (a.size || b.size) {
+      const union = new Set([...a, ...b]);
+      let inter = 0;
+      for (const d of a) if (b.has(d)) inter += 1;
+      overlaps.push(union.size ? inter / union.size : 0);
+      for (const d of b) if (!a.has(d)) uniqueSourcesAdded += 1;
+    }
+  }
+
+  const pairList = [...pairs];
+  return {
+    model_pair: pairList.length === 1 ? pairList[0] : pairList.length ? pairList : null,
+    twin_query_count: twinResults.length,
+    agreement_score: round(mean(agreement)),
+    disagreement_count: disagreementCount,
+    adjudication_quality: round(mean(adjudication)),
+    source_overlap: overlaps.length ? round(mean(overlaps)) : null,
+    unique_sources_added: uniqueSourcesAdded,
+    hallucination_or_unsupported_claim_flags: unsupportedFlags
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -185,8 +284,9 @@ function scoreRun(run, fixtures) {
   const n = results.length || 1;
   const rubricScores = perQuery.map((p) => p.rubric_score).filter((x) => x !== null);
 
-  return {
+  const scored = {
     label: run.label || 'unlabeled',
+    strategy: run.strategy || run.label || null,
     search_prompt_version: run.search_prompt_version || null,
     router_profile: run.router_profile || null,
     result_count: results.length,
@@ -204,6 +304,10 @@ function scoreRun(run, fixtures) {
     usefulness_notes: usefulnessNotes,
     per_query: perQuery
   };
+
+  const twin = twinMetricsFor(run);
+  if (twin) scored.twin_metrics = twin;
+  return scored;
 }
 
 // Freshness: a freshness-required result must carry a recent year (or an
@@ -254,7 +358,7 @@ function compareRuns(baselineScored, candidateScored) {
 }
 
 function summarize(scored) {
-  return {
+  const out = {
     label: scored.label,
     search_prompt_version: scored.search_prompt_version,
     router_profile: scored.router_profile,
@@ -262,6 +366,9 @@ function summarize(scored) {
     metrics: scored.metrics,
     usefulness_notes: scored.usefulness_notes
   };
+  if (scored.strategy) out.strategy = scored.strategy;
+  if (scored.twin_metrics) out.twin_metrics = scored.twin_metrics;
+  return out;
 }
 
 function decide(baseline, candidate, deltas) {
@@ -322,6 +429,183 @@ function decide(baseline, candidate, deltas) {
 }
 
 // ---------------------------------------------------------------------------
+// Twin-LLM vs Fable comparison.
+//
+// Compares a twin-LLM run against a reference run (Fable by default, but the
+// same logic is reused for twin-vs-baseline). Surfaces twin-specific metrics
+// plus cost_delta_vs_fable / latency_delta_vs_fable and emits one decision:
+// keep_twin / tune_twin / rollback_twin / needs_human_review.
+// ---------------------------------------------------------------------------
+function compareTwinToFable(twinScored, fableScored, referenceLabel = 'fable') {
+  const t = twinScored.metrics;
+  const f = fableScored.metrics;
+  const diff = (a, b) => (typeof a === 'number' && typeof b === 'number' ? round(a - b) : null);
+  const ratio = (a, b) =>
+    typeof a === 'number' && typeof b === 'number' && b !== 0 ? round(a / b) : null;
+
+  const twin_metrics = Object.assign({}, twinScored.twin_metrics || {}, {
+    cost_delta_vs_fable: diff(t.total_cost_usd, f.total_cost_usd),
+    latency_delta_vs_fable: diff(t.mean_latency_ms, f.mean_latency_ms)
+  });
+
+  const deltas = {
+    rubric_mean: diff(t.rubric_mean, f.rubric_mean),
+    error_rate: diff(t.error_rate, f.error_rate),
+    citation_coverage: diff(t.citation_coverage, f.citation_coverage),
+    domain_diversity: diff(t.domain_diversity, f.domain_diversity),
+    duplicate_rate: diff(t.duplicate_rate, f.duplicate_rate),
+    freshness_satisfaction: diff(t.freshness_satisfaction, f.freshness_satisfaction),
+    cost_ratio: ratio(t.total_cost_usd, f.total_cost_usd),
+    latency_ratio: ratio(t.mean_latency_ms, f.mean_latency_ms),
+    cost_delta_vs_fable: twin_metrics.cost_delta_vs_fable,
+    latency_delta_vs_fable: twin_metrics.latency_delta_vs_fable
+  };
+
+  const { decision, reasons } = decideTwin(twinScored, fableScored, deltas, referenceLabel);
+
+  return {
+    generated_at: new Date().toISOString(),
+    reference: referenceLabel,
+    twin: summarize(twinScored),
+    fable: summarize(fableScored),
+    deltas,
+    twin_metrics,
+    decision,
+    reasons,
+    thresholds: TWIN_THRESHOLDS
+  };
+}
+
+function decideTwin(twin, fable, deltas, referenceLabel = 'fable') {
+  const reasons = [];
+  const T = TWIN_THRESHOLDS;
+  const tm = twin.twin_metrics || {};
+
+  const lowData =
+    twin.result_count < THRESHOLDS.minResultsForConfidence ||
+    fable.result_count < THRESHOLDS.minResultsForConfidence;
+  if (lowData) {
+    reasons.push(
+      `Low sample size (twin=${twin.result_count}, ${referenceLabel}=${fable.result_count}; ` +
+        `need >= ${THRESHOLDS.minResultsForConfidence}).`
+    );
+    return { decision: 'needs_human_review', reasons };
+  }
+
+  // Not better than the reference (Fable/baseline) -> rollback. Twin must earn
+  // its extra cost/latency with measured quality, not vibes.
+  if (deltas.rubric_mean !== null && deltas.rubric_mean <= 0) {
+    reasons.push(
+      `Twin rubric does not beat ${referenceLabel} (delta ${deltas.rubric_mean} <= 0); ` +
+        'twin is not worth its extra cost/latency.'
+    );
+    return { decision: 'rollback_twin', reasons };
+  }
+  if (deltas.error_rate !== null && deltas.error_rate >= THRESHOLDS.errorRateRegression) {
+    reasons.push(`Twin error rate rose by ${deltas.error_rate} vs ${referenceLabel} (>= ${THRESHOLDS.errorRateRegression}).`);
+    return { decision: 'rollback_twin', reasons };
+  }
+  if (deltas.citation_coverage !== null && deltas.citation_coverage <= THRESHOLDS.citationRegression) {
+    reasons.push(`Twin citation coverage dropped by ${deltas.citation_coverage} vs ${referenceLabel} (<= ${THRESHOLDS.citationRegression}).`);
+    return { decision: 'rollback_twin', reasons };
+  }
+
+  const qualityGain = deltas.rubric_mean !== null && deltas.rubric_mean >= T.minQualityGain;
+  const costOk = deltas.cost_ratio === null || deltas.cost_ratio <= T.maxCostRatio;
+  const latencyOk = deltas.latency_ratio === null || deltas.latency_ratio <= T.maxLatencyRatio;
+  const adjudicationOk =
+    typeof tm.adjudication_quality !== 'number' || tm.adjudication_quality >= T.adjudicationFloor;
+  const sourcesOk = typeof tm.source_overlap !== 'number' || tm.source_overlap <= T.maxSourceOverlap;
+  const hallucinationsOk = countOf(tm.hallucination_or_unsupported_claim_flags) <= T.maxUnsupportedClaims;
+
+  if (qualityGain && costOk && latencyOk && adjudicationOk && sourcesOk && hallucinationsOk) {
+    reasons.push(
+      `Twin beats ${referenceLabel} on rubric by ${deltas.rubric_mean} (>= ${T.minQualityGain}) ` +
+        `within cost (${fmt(deltas.cost_ratio)}x) and latency (${fmt(deltas.latency_ratio)}x) budget; ` +
+        `adjudication quality ${fmt(tm.adjudication_quality)}, unsupported-claim flags ${countOf(tm.hallucination_or_unsupported_claim_flags)}.`
+    );
+    return { decision: 'keep_twin', reasons };
+  }
+
+  // Better quality but too expensive / too redundant -> tune (de-dupe models,
+  // trim the second run, or cache shared sources).
+  if (qualityGain && (!costOk || !latencyOk || !sourcesOk)) {
+    if (!costOk) reasons.push(`Cost ${deltas.cost_ratio}x ${referenceLabel} exceeds budget ${T.maxCostRatio}x.`);
+    if (!latencyOk) reasons.push(`Latency ${deltas.latency_ratio}x ${referenceLabel} exceeds budget ${T.maxLatencyRatio}x.`);
+    if (!sourcesOk) reasons.push(`Source overlap ${tm.source_overlap} > ${T.maxSourceOverlap}: the two runs are largely redundant.`);
+    return { decision: 'tune_twin', reasons };
+  }
+
+  // Positive but below keep threshold, or adjudication/hallucination concerns.
+  if (!qualityGain && deltas.rubric_mean !== null) {
+    reasons.push(`Rubric gain ${deltas.rubric_mean} is positive but below keep threshold ${T.minQualityGain}.`);
+  }
+  if (!adjudicationOk) reasons.push(`Adjudication quality ${tm.adjudication_quality} below floor ${T.adjudicationFloor}.`);
+  if (!hallucinationsOk) {
+    reasons.push(`Unsupported-claim flags (${countOf(tm.hallucination_or_unsupported_claim_flags)}) exceed allowance ${T.maxUnsupportedClaims}.`);
+  }
+  reasons.push('No hard regression vs reference, but twin is not a clean win. Tune and re-run.');
+  return { decision: 'tune_twin', reasons };
+}
+
+// ---------------------------------------------------------------------------
+// Multi-strategy evaluation: score every provided strategy run, then run the
+// relevant comparisons (twin vs Fable, twin vs baseline, candidate vs baseline)
+// and surface an overall recommendation. Fully offline.
+// `runs` is an object keyed by strategy name, e.g.
+//   { baseline, fable, twin_llm, twin_llm_adjudicated, candidate }
+// ---------------------------------------------------------------------------
+function evaluateStrategies(fixtures, runs) {
+  const scored = {};
+  for (const [strategy, run] of Object.entries(runs)) {
+    if (!run) continue;
+    const s = scoreRun(Object.assign({ strategy }, run), fixtures);
+    s.strategy = strategy;
+    scored[strategy] = s;
+  }
+
+  const report = {
+    generated_at: new Date().toISOString(),
+    strategies: {},
+    comparisons: {}
+  };
+  for (const [k, s] of Object.entries(scored)) {
+    report.strategies[k] = summarize(s);
+    report.strategies[k].per_query = s.per_query;
+  }
+
+  const twinKey = scored.twin_llm_adjudicated ? 'twin_llm_adjudicated' : scored.twin_llm ? 'twin_llm' : null;
+  if (twinKey && scored.fable) {
+    report.comparisons.twin_vs_fable = compareTwinToFable(scored[twinKey], scored.fable, 'fable');
+  }
+  if (twinKey && scored.baseline) {
+    report.comparisons.twin_vs_baseline = compareTwinToFable(scored[twinKey], scored.baseline, 'baseline');
+  }
+  if (scored.candidate && scored.baseline) {
+    report.comparisons.candidate_vs_baseline = compareRuns(scored.baseline, scored.candidate);
+  }
+
+  // Overall recommendation: prefer the twin-vs-Fable verdict (the question the
+  // user actually asked); fall back to the candidate comparison.
+  const primary =
+    report.comparisons.twin_vs_fable ||
+    report.comparisons.candidate_vs_baseline ||
+    null;
+  report.decision = primary ? primary.decision : 'needs_human_review';
+  report.primary_comparison = report.comparisons.twin_vs_fable
+    ? 'twin_vs_fable'
+    : report.comparisons.candidate_vs_baseline
+      ? 'candidate_vs_baseline'
+      : null;
+  if (!primary) {
+    report.reasons = ['Not enough strategies provided to compare (need twin+fable or candidate+baseline).'];
+  } else {
+    report.reasons = primary.reasons;
+  }
+  return report;
+}
+
+// ---------------------------------------------------------------------------
 // Markdown report
 // ---------------------------------------------------------------------------
 function fmt(v) {
@@ -376,6 +660,83 @@ function renderMarkdown(report) {
   return lines.join('\n');
 }
 
+function renderTwinMarkdown(cmp) {
+  const t = cmp.twin;
+  const f = cmp.fable;
+  const d = cmp.deltas;
+  const tm = cmp.twin_metrics || {};
+  const lines = [];
+  lines.push(`## Twin-LLM vs ${cmp.reference}: \`${cmp.decision}\``);
+  lines.push('');
+  for (const r of cmp.reasons) lines.push(`- ${r}`);
+  lines.push('');
+  lines.push(`| Metric | Twin | ${cmp.reference} | Delta |`);
+  lines.push('| --- | --- | --- | --- |');
+  const rows = [
+    ['Rubric mean', t.metrics.rubric_mean, f.metrics.rubric_mean, d.rubric_mean],
+    ['Error rate', t.metrics.error_rate, f.metrics.error_rate, d.error_rate],
+    ['Citation coverage', t.metrics.citation_coverage, f.metrics.citation_coverage, d.citation_coverage],
+    ['Duplicate rate', t.metrics.duplicate_rate, f.metrics.duplicate_rate, d.duplicate_rate],
+    ['Freshness satisfaction', t.metrics.freshness_satisfaction, f.metrics.freshness_satisfaction, d.freshness_satisfaction],
+    ['Mean latency (ms)', t.metrics.mean_latency_ms, f.metrics.mean_latency_ms, d.latency_delta_vs_fable],
+    ['Total cost (USD)', t.metrics.total_cost_usd, f.metrics.total_cost_usd, d.cost_delta_vs_fable]
+  ];
+  for (const [name, tv, fv, dv] of rows) lines.push(`| ${name} | ${fmt(tv)} | ${fmt(fv)} | ${fmt(dv)} |`);
+  lines.push('');
+  lines.push('### Twin-LLM dimensions');
+  lines.push('');
+  lines.push('| Dimension | Value |');
+  lines.push('| --- | --- |');
+  lines.push(`| Model pair | ${fmt(Array.isArray(tm.model_pair) ? tm.model_pair.join(', ') : tm.model_pair)} |`);
+  lines.push(`| Agreement score | ${fmt(tm.agreement_score)} |`);
+  lines.push(`| Disagreement count | ${fmt(tm.disagreement_count)} |`);
+  lines.push(`| Adjudication quality | ${fmt(tm.adjudication_quality)} |`);
+  lines.push(`| Source overlap | ${fmt(tm.source_overlap)} |`);
+  lines.push(`| Unique sources added | ${fmt(tm.unique_sources_added)} |`);
+  lines.push(`| Hallucination / unsupported-claim flags | ${fmt(tm.hallucination_or_unsupported_claim_flags)} |`);
+  lines.push(`| Cost delta vs ${cmp.reference} (USD) | ${fmt(tm.cost_delta_vs_fable)} |`);
+  lines.push(`| Latency delta vs ${cmp.reference} (ms) | ${fmt(tm.latency_delta_vs_fable)} |`);
+  lines.push(`| Cost ratio vs ${cmp.reference} | ${fmt(d.cost_ratio)}x |`);
+  lines.push(`| Latency ratio vs ${cmp.reference} | ${fmt(d.latency_ratio)}x |`);
+  lines.push('');
+  return lines.join('\n');
+}
+
+function renderStrategyMarkdown(report) {
+  const lines = [];
+  lines.push('# Search Evaluation Report - Strategy Comparison');
+  lines.push('');
+  lines.push(`Generated: ${report.generated_at}`);
+  lines.push('');
+  lines.push(`## Overall decision: \`${report.decision}\` (from \`${fmt(report.primary_comparison)}\`)`);
+  lines.push('');
+  for (const r of report.reasons || []) lines.push(`- ${r}`);
+  lines.push('');
+  lines.push('## Strategies measured');
+  lines.push('');
+  lines.push('| Strategy | Version | Rubric | Error | Citations | Dup | Latency (ms) | Cost (USD) |');
+  lines.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
+  for (const [name, s] of Object.entries(report.strategies)) {
+    const m = s.metrics;
+    lines.push(
+      `| ${name} | ${fmt(s.search_prompt_version)} | ${fmt(m.rubric_mean)} | ${fmt(m.error_rate)} | ` +
+        `${fmt(m.citation_coverage)} | ${fmt(m.duplicate_rate)} | ${fmt(m.mean_latency_ms)} | ${fmt(m.total_cost_usd)} |`
+    );
+  }
+  lines.push('');
+  if (report.comparisons.twin_vs_fable) lines.push(renderTwinMarkdown(report.comparisons.twin_vs_fable));
+  if (report.comparisons.twin_vs_baseline) lines.push(renderTwinMarkdown(report.comparisons.twin_vs_baseline));
+  if (report.comparisons.candidate_vs_baseline) {
+    lines.push(renderMarkdown(report.comparisons.candidate_vs_baseline));
+  }
+  lines.push('');
+  lines.push('> Green CI is not proof of search quality. CI proves the measurement layer runs.');
+  lines.push('> A twin-LLM strategy must beat Fable/baseline on this evaluation report before it');
+  lines.push('> becomes the default. See standards/SEARCH_EVALUATION.md.');
+  lines.push('');
+  return lines.join('\n');
+}
+
 function evaluate(fixtures, baselineRun, candidateRun) {
   const baselineScored = scoreRun(baselineRun, fixtures);
   const candidateScored = scoreRun(candidateRun, fixtures);
@@ -408,10 +769,48 @@ function parseArgs(argv) {
 
 function main() {
   const args = parseArgs(process.argv);
+
+  // Strategy mode: any of --fable / --twin / --twin-adjudicated triggers the
+  // multi-strategy comparator (twin-LLM vs Fable/baseline).
+  const strategyMode = !!(args.fable || args.twin || args['twin-adjudicated']);
+  if (strategyMode) {
+    if (!args.fixtures || (!args.twin && !args['twin-adjudicated']) || (!args.fable && !args.baseline)) {
+      console.log(
+        'Usage (strategy mode): node search-eval.js --fixtures <queries.json> ' +
+          '--twin <run.json> [--twin-adjudicated <run.json>] --fable <run.json> ' +
+          '[--baseline <run.json>] [--candidate <run.json>] [--out report.json] [--md report.md]'
+      );
+      process.exit(1);
+    }
+    const fixtures = loadJson(args.fixtures);
+    const runs = {};
+    if (args.baseline) runs.baseline = loadJson(args.baseline);
+    if (args.candidate) runs.candidate = loadJson(args.candidate);
+    if (args.fable) runs.fable = loadJson(args.fable);
+    if (args.twin) runs.twin_llm = loadJson(args.twin);
+    if (args['twin-adjudicated']) runs.twin_llm_adjudicated = loadJson(args['twin-adjudicated']);
+    const report = evaluateStrategies(fixtures, runs);
+
+    if (args.out) {
+      fs.writeFileSync(args.out, JSON.stringify(report, null, 2));
+      console.log(`JSON report -> ${args.out}`);
+    }
+    const md = renderStrategyMarkdown(report);
+    if (args.md) {
+      fs.writeFileSync(args.md, md);
+      console.log(`Markdown report -> ${args.md}`);
+    }
+    if (!args.out && !args.md) console.log(md);
+    console.log(`\nDecision: ${report.decision}`);
+    return;
+  }
+
   if (!args.fixtures || !args.baseline || !args.candidate) {
     console.log(
       'Usage: node search-eval.js --fixtures <queries.json> --baseline <run.json> ' +
-        '--candidate <run.json> [--out report.json] [--md report.md]'
+        '--candidate <run.json> [--out report.json] [--md report.md]\n' +
+        'Strategy mode: add --twin <run.json> and --fable <run.json> to compare a ' +
+        'twin-LLM strategy against Fable/baseline.'
     );
     process.exit(args.fixtures || args.baseline || args.candidate ? 1 : 0);
   }
@@ -442,12 +841,19 @@ if (require.main === module) {
 
 module.exports = {
   THRESHOLDS,
+  TWIN_THRESHOLDS,
+  STRATEGIES,
   rubricScore,
   scoreRun,
+  twinMetricsFor,
   compareRuns,
+  compareTwinToFable,
   decide,
+  decideTwin,
   evaluate,
+  evaluateStrategies,
   renderMarkdown,
+  renderStrategyMarkdown,
   domainOf,
   loadJson
 };
