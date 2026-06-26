@@ -52,11 +52,33 @@ jobs:
         (startsWith(github.event.issue.title, '[FAILURE]') ||
          startsWith(github.event.issue.title, '[ALERT]')))
     steps:
+      # Best-effort checkout. The audit entry is never committed to main (it is
+      # written to the job summary and uploaded as an artifact below), so the
+      # only thing this checkout buys us is the previously-committed audit.jsonl
+      # for prev_hash chaining. Guard it so a misconfigured optional
+      # ADMIN_GITHUB_TOKEN (set-but-invalid: expired/wrong-scope -> 401) cannot
+      # hard-fail and turn an otherwise-green PR red. The token expression only
+      # falls back to GITHUB_TOKEN when ADMIN_GITHUB_TOKEN is the empty string;
+      # continue-on-error covers the set-but-invalid case. Downstream steps
+      # re-create the log dir/file, and github-script uses the auto-provided
+      # GITHUB_TOKEN for API calls regardless of this checkout's outcome.
       - name: Checkout main
+        id: checkout_main
+        continue-on-error: true
         uses: actions/checkout@v6.0.2
         with:
           ref: main
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      # Fallback checkout using the always-valid default GITHUB_TOKEN, only if the
+      # admin-token checkout above failed. Preserves audit/chain behavior when the
+      # admin token is misconfigured, without wiring any new credentials.
+      - name: Checkout main (fallback)
+        if: steps.checkout_main.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: main
+          token: ${{ github.token }}
       - name: Set up audit log directory
         run: |
           mkdir -p logs/agent-audit
