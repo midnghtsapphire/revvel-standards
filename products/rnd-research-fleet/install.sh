@@ -97,7 +97,7 @@ MAX_TOKENS=8000
 TEMPERATURE=0.7
 
 # Model routing
-PRIMARY_MODEL=anthropic/claude-sonnet-4.6
+PRIMARY_MODEL=anthropic/claude-3.5-sonnet
 FALLBACK_MODEL=openrouter/fusion
 EOF
     cp .env.example .env
