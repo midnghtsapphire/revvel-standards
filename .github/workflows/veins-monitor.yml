@@ -1,0 +1,369 @@
+name: VEINS Monitor — Vital Engine INtelligence Surveillance
+
+# VEINS is the standing watch that ensures NOTHING sits idle for 7+ days.
+# It diagnoses every open issue and WR, explains exactly why something is stuck,
+# posts a human-readable fix comment, and attempts automated recovery.
+#
+# Why VEINS exists:
+#   • The existing stuck-wr-detector catches WRs that already have a completion
+#     signal — it misses WRs with research:blocked or issues where no pipeline
+#     ever fired.
+#   • Nothing guaranteed a 7-day SLA across ALL issue types.
+#   • Users need a visible, standardised explanation of WHY something is stuck
+#     and WHAT to do about it, not just a silent label change.
+#
+# Recovery actions by diagnosis:
+#   1. WR without completion label > 7d    → apply wr:reset to force PR skeleton
+#   2. WR with research:blocked > 7d       → apply wr:reset + comment
+#   3. Any issue with lifecycle:stuck > 7d → re-apply auto-fix + comment
+#   4. Any issue in triage:new > 7d        → remove/re-add triage:new to re-trigger
+#
+# Safe guard: VEINS only posts ONE "VEINS: still stuck" comment per issue per
+# run (de-duplicates by checking for its own marker in recent comments).
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # hourly — fast enough to catch the 7-day wall
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log findings without posting comments or changing labels'
+        type: boolean
+        default: false
+      max_age_days:
+        description: 'Alert threshold in days (default 7)'
+        type: string
+        default: '7'
+
+permissions:
+  issues: write
+  pull-requests: read
+  actions: write
+
+concurrency:
+  group: veins-monitor
+  cancel-in-progress: false
+
+jobs:
+  veins-scan:
+    name: VEINS — scan for stuck issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan for stuck issues and diagnose
+        uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '7' }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const dryRun = process.env.DRY_RUN === 'true';
+            const maxAgeDays = parseInt(process.env.MAX_AGE_DAYS, 10) || 7;
+            const thresholdMs = maxAgeDays * 24 * 60 * 60 * 1000;
+            const VEINS_MARKER = '<!-- veins-monitor-comment -->';
+
+            core.info(`VEINS scanning for issues stuck > ${maxAgeDays} days. dry_run=${dryRun}`);
+
+            // ── helpers ────────────────────────────────────────────────────────
+
+            function labelNames(issue) {
+              return new Set((issue.labels || []).map(l =>
+                typeof l === 'string' ? l : l.name
+              ));
+            }
+
+            function ageMs(issue) {
+              return Date.now() - new Date(issue.created_at).getTime();
+            }
+
+            function ageDays(issue) {
+              return Math.round(ageMs(issue) / 86400000);
+            }
+
+            async function alreadyCommentedRecently(issueNumber) {
+              // Deduplicate: don't post if VEINS already commented in the last 6h.
+              const sixHoursAgo = Date.now() - 6 * 60 * 60 * 1000;
+              const { data: comments } = await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                since: new Date(sixHoursAgo).toISOString(),
+                per_page: 100,
+              });
+              return comments.some(c =>
+                c.body && c.body.includes(VEINS_MARKER) &&
+                new Date(c.created_at).getTime() > sixHoursAgo
+              );
+            }
+
+            async function postComment(issueNumber, body) {
+              if (dryRun) {
+                core.info(`[dry-run] Would post VEINS comment to #${issueNumber}`);
+                return;
+              }
+              if (await alreadyCommentedRecently(issueNumber)) {
+                core.info(`#${issueNumber}: VEINS already commented in last 6h; skipping.`);
+                return;
+              }
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issueNumber, body,
+              });
+              core.info(`#${issueNumber}: VEINS comment posted.`);
+            }
+
+            async function addLabelSafe(issueNumber, label) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner, repo, issue_number: issueNumber, labels: [label],
+                });
+                core.info(`#${issueNumber}: added label ${label}`);
+              } catch (e) {
+                core.notice(`#${issueNumber}: could not add label "${label}": ${e.message}`);
+              }
+            }
+
+            async function removeLabelSafe(issueNumber, label) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner, repo, issue_number: issueNumber, name: label,
+                });
+                core.info(`#${issueNumber}: removed label ${label}`);
+              } catch (e) {
+                if (e.status !== 404) {
+                  core.notice(`#${issueNumber}: could not remove label "${label}": ${e.message}`);
+                }
+              }
+            }
+
+            async function dispatchRecovery(workflowId, inputs = {}) {
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: workflowId, ref: 'main', inputs,
+                });
+                core.info(`Dispatched ${workflowId}`);
+              } catch (e) {
+                core.notice(`Could not dispatch ${workflowId}: ${e.message}`);
+              }
+            }
+
+            function buildVeinsComment({ issueNumber, ageDays, diagnosis, rootCause, autoFix, manualFix }) {
+              return [
+                VEINS_MARKER,
+                `## 🩺 VEINS Monitor — Issue #${issueNumber} is Stuck (${ageDays}d)`,
+                '',
+                `> **VEINS** _(Vital Engine INtelligence Surveillance)_ detected this item`,
+                `> has been open for **${ageDays} days** without progressing.`,
+                '',
+                `### Diagnosis`,
+                diagnosis,
+                '',
+                `### Root Cause`,
+                rootCause,
+                '',
+                `### Auto-Fix Applied`,
+                autoFix || '_None — see manual fix below._',
+                '',
+                `### Manual Fix`,
+                manualFix,
+                '',
+                '---',
+                `_VEINS scan — ${new Date().toISOString()} — threshold: ${maxAgeDays} days_`,
+              ].join('\n');
+            }
+
+            // ── Case 1: Work Requests without a PR ────────────────────────────
+
+            core.info('=== Case 1: Work Requests missing PR ===');
+            const wrIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'work-request', per_page: 100,
+            });
+
+            // Pre-fetch the open PR list once so every issue check in Case 1
+            // reuses the same data instead of making one API call per issue.
+            let openPrs = [];
+            try {
+              openPrs = await github.paginate(github.rest.pulls.list, {
+                owner, repo, state: 'open', per_page: 100,
+              });
+              core.info(`Pre-fetched ${openPrs.length} open PRs for Case 1 checks.`);
+            } catch (e) {
+              core.warning(`Could not pre-fetch open PRs: ${e.message}`);
+            }
+
+            for (const issue of wrIssues) {
+              if (issue.pull_request) continue;
+              const labels = labelNames(issue);
+              if (labels.has('duplicate') || labels.has('issue:done')) continue;
+
+              const age = ageMs(issue);
+              if (age < thresholdMs) continue;  // not yet past threshold
+
+              const days = ageDays(issue);
+              const hasCompletion = labels.has('wr:complete') || labels.has('research:complete');
+              const isBlocked = labels.has('research:blocked');
+              const hasWrReset = labels.has('wr:reset');
+
+              // Skip if wr:reset was already applied (recovery in-flight).
+              if (hasWrReset) {
+                core.info(`#${issue.number}: wr:reset already applied; skipping.`);
+                continue;
+              }
+
+              // Determine if a PR already exists using the pre-fetched list.
+              let prExists = false;
+              try {
+                prExists = openPrs.some(pr => {
+                  const ref = pr.head && pr.head.ref ? pr.head.ref : '';
+                  const body = pr.body || '';
+                  const issueRef = new RegExp(
+                    String.raw`(^|[/_-])issue-${issue.number}($|[-_/])|#${issue.number}\b`, 'i'
+                  );
+                  return issueRef.test(ref) || issueRef.test(body);
+                });
+              } catch (_) { /* ignore */ }
+
+              if (prExists) {
+                core.info(`#${issue.number}: PR found; VEINS skipping.`);
+                continue;
+              }
+
+              const diagnosis = isBlocked
+                ? '`research:blocked` was set — the research engine was halted before it could produce a completion signal.'
+                : hasCompletion
+                  ? '`wr:complete` / `research:complete` is present but `wr-pr-creation` has not yet generated a PR.'
+                  : 'No completion label (`wr:complete` / `research:complete`) was ever applied — the research pipeline may not have run.';
+
+              const rootCause = isBlocked
+                ? 'The Research Engine requires a valid prompt, API key, or prerequisite that was not available when it ran. It set `research:blocked` and stopped.'
+                : hasCompletion
+                  ? '`wr-pr-creation.yml` may have been cancelled by a concurrency storm or GitHub event throttling.'
+                  : 'The Research Engine orchestrator workflow was never triggered, or it ran and silently skipped this issue.';
+
+              const autoFix = !dryRun
+                ? '`wr:reset` label applied → `wr-pr-creation.yml` will now generate a PR skeleton even without full research findings.'
+                : '_dry-run: `wr:reset` would be applied._';
+
+              const manualFix = [
+                '1. Check the **Actions** tab for recent `wr-pr-creation` runs tied to this issue.',
+                '2. If none exist, trigger manually:',
+                '   ```',
+                `   gh workflow run wr-pr-creation.yml --field issue_number=${issue.number} --repo ${owner}/${repo}`,
+                '   ```',
+                '3. If research is truly blocked, provide the missing context and remove `research:blocked`,',
+                '   then re-trigger the Research Engine.',
+              ].join('\n');
+
+              await postComment(issue.number, buildVeinsComment({
+                issueNumber: issue.number,
+                ageDays: days,
+                diagnosis,
+                rootCause,
+                autoFix,
+                manualFix,
+              }));
+
+              if (!dryRun) {
+                await addLabelSafe(issue.number, 'wr:reset');
+                await addLabelSafe(issue.number, 'lifecycle:stuck');
+                // Dispatch wr-pr-creation as a safety net.
+                await dispatchRecovery('wr-pr-creation.yml', {
+                  issue_number: String(issue.number),
+                });
+              }
+            }
+
+            // ── Case 2: Issues stuck in triage:new > threshold ────────────────
+
+            core.info('=== Case 2: Issues stuck in triage:new ===');
+            const triageNewIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'triage:new', per_page: 100,
+            });
+
+            for (const issue of triageNewIssues) {
+              if (issue.pull_request) continue;
+              const labels = labelNames(issue);
+              if (labels.has('duplicate') || labels.has('issue:done')) continue;
+
+              const age = ageMs(issue);
+              if (age < thresholdMs) continue;
+
+              const days = ageDays(issue);
+
+              await postComment(issue.number, buildVeinsComment({
+                issueNumber: issue.number,
+                ageDays: days,
+                diagnosis: `This issue has been stuck in \`triage:new\` for ${days} days — the triage pipeline never processed it.`,
+                rootCause: 'The OpenRouter triage workflow likely did not trigger (missing API key, throttle, or event race), or it ran but failed silently.',
+                autoFix: dryRun
+                  ? '_dry-run: `triage:new` would be cycled to re-trigger triage._'
+                  : '`triage:new` label removed and re-added to force a fresh triage run.',
+                manualFix: [
+                  '1. Manually trigger the triage workflow:',
+                  '   ```',
+                  `   gh workflow run openrouter-triage.yml --field issue_number=${issue.number} --repo ${owner}/${repo}`,
+                  '   ```',
+                  '2. Or remove and re-add the `triage:new` label.',
+                ].join('\n'),
+              }));
+
+              if (!dryRun) {
+                // Cycle triage:new to re-trigger the triage pipeline.
+                await removeLabelSafe(issue.number, 'triage:new');
+                await new Promise(r => setTimeout(r, 1000));
+                await addLabelSafe(issue.number, 'triage:new');
+                await addLabelSafe(issue.number, 'lifecycle:stuck');
+              }
+            }
+
+            // ── Case 3: Issues with lifecycle:stuck > threshold ───────────────
+
+            core.info('=== Case 3: Issues already marked lifecycle:stuck ===');
+            const stuckIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'lifecycle:stuck', per_page: 100,
+            });
+
+            for (const issue of stuckIssues) {
+              if (issue.pull_request) continue;
+              const labels = labelNames(issue);
+              if (labels.has('duplicate') || labels.has('issue:done')) continue;
+
+              const age = ageMs(issue);
+              if (age < thresholdMs) continue;
+
+              const days = ageDays(issue);
+
+              // Only re-comment if VEINS hasn't already said something in the
+              // last 6 hours (checked inside postComment).
+              await postComment(issue.number, buildVeinsComment({
+                issueNumber: issue.number,
+                ageDays: days,
+                diagnosis: `This issue has carried \`lifecycle:stuck\` for ${days} days — automation has not been able to resolve the blockage.`,
+                rootCause: 'A previous recovery attempt was made but the issue remains unresolved. Human attention may be required.',
+                autoFix: '_Re-escalated: `auto-fix` label re-applied to retry automation._',
+                manualFix: [
+                  '1. Review recent comments on this issue for specific error messages.',
+                  '2. Check the **Actions** tab for failed workflows.',
+                  '3. Re-run the relevant workflow manually, or close and re-open the issue.',
+                  '4. If blocked on an external dependency, add the `blocked` label and a comment explaining why.',
+                ].join('\n'),
+              }));
+
+              if (!dryRun) {
+                // Re-apply auto-fix to retry automation.
+                if (!labels.has('auto-fix')) {
+                  await addLabelSafe(issue.number, 'auto-fix');
+                }
+              }
+            }
+
+            core.info('VEINS scan complete.');
