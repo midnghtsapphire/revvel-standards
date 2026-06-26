@@ -22,8 +22,8 @@
 - [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
 - [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [ ] **Factual citations** — verify market/repo claims with source links; mark N/A only with justification
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — license, ToS, data handling, attribution obligations
 - [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
 - [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
 - [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
