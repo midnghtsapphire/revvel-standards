@@ -1,0 +1,61 @@
+{
+  "case_id": "newsom-doj-2026",
+  "title": "DOJ investigation claims surrounding Gov. Gavin Newsom (2026)",
+  "scope_note": "Seed dataset only. This file holds discrete, individually checkable claims extracted from public sources. The system scores evidentiary strength of each claim. It does NOT and cannot output a 'fraud' verdict on any person. Fraud is a legal determination requiring intent, materiality, and adjudication.",
+  "sources": [
+    {"id": "src-nypost", "outlet": "New York Post", "kind": "editorial", "tier": 2, "title": "The Gavin Newsom probe is serious, and he knows it", "date": "2026-06-20", "url": "user-provided"},
+    {"id": "src-bbc", "outlet": "BBC News", "kind": "news_report", "tier": 3, "byline": "Kayla Epstein", "title": "California's Newsom alleges justice department is investigating wife and ex-staff", "date": "2026-06-16", "url": "user-provided"},
+    {"id": "src-cspan", "outlet": "C-SPAN", "kind": "primary_transcript", "tier": 4, "title": "California Governor Gavin Newsom Remarks on Justice Department", "date": "2026-06-15", "url": "user-provided"}
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Gavin Newsom publicly stated the DOJ is investigating him.",
+      "stage": "alleged",
+      "supporting": [{"source": "src-cspan", "provenance": "on_record_statement"}, {"source": "src-bbc", "provenance": "on_record_statement"}, {"source": "src-nypost", "provenance": "on_record_statement"}],
+      "contradicting": [],
+      "notes": "What is well-supported is that Newsom SAID this on the record (C-SPAN transcript, tier 4). The existence/scope of the investigation itself is a separate claim (C2)."
+    },
+    {
+      "id": "C2",
+      "text": "An active DOJ investigation into Gavin Newsom exists.",
+      "stage": "alleged",
+      "supporting": [{"source": "src-bbc", "provenance": "on_record_statement"}, {"source": "src-nypost", "provenance": "anonymous_report"}],
+      "contradicting": [],
+      "notes": "Sourced primarily to Newsom's own characterization plus editorial assertion. DOJ does not confirm or deny investigations as a rule. No filing/docket. Stays at 'alleged'."
+    },
+    {
+      "id": "C3",
+      "text": "The DOJ is investigating Newsom's wife and former staff.",
+      "stage": "alleged",
+      "supporting": [{"source": "src-bbc", "provenance": "on_record_statement"}, {"source": "src-cspan", "provenance": "on_record_statement"}],
+      "contradicting": [],
+      "notes": "Attributed to Newsom's own remarks. No independent primary confirmation in the provided sources."
+    },
+    {
+      "id": "C4",
+      "text": "Dana Williamson, a former Newsom staffer, pleaded guilty.",
+      "stage": "guilty_plea",
+      "supporting": [{"source": "src-nypost", "provenance": "anonymous_report"}],
+      "contradicting": [],
+      "notes": "If true this is the only adjudicated item in the set and concerns a DIFFERENT person, not Newsom. Flagged for primary-source pull (docket) before any confidence above the editorial ceiling is granted. Do NOT impute Williamson's plea to Newsom."
+    },
+    {
+      "id": "C5",
+      "text": "Newsom committed fraud.",
+      "stage": "alleged",
+      "supporting": [],
+      "contradicting": [],
+      "notes": "REFUSED CLAIM. No source in the set adjudicates fraud by Newsom. The system will not score a confidence for a fraud verdict on a named person. Output is a hard refusal with rationale."
+    },
+    {
+      "id": "C6",
+      "text": "Newsom characterized the investigation as politically motivated retaliation tied to a potential presidential run.",
+      "stage": "alleged",
+      "supporting": [{"source": "src-bbc", "provenance": "on_record_statement"}, {"source": "src-cspan", "provenance": "on_record_statement"}],
+      "contradicting": [],
+      "notes": "Well-supported that he SAID this. Whether the characterization is accurate is unknowable from public sources."
+    }
+  ],
+  "refused_claims": ["C5"]
+}
