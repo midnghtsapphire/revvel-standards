@@ -189,7 +189,16 @@ const OR_FREE_MODELS = [
   "google/gemma-3-27b-it:free",
   "mistralai/mistral-small-3.2-24b-instruct:free",
 ];
+Add runtime validation: Before trying to use a model, check it against the OpenRouter models list API, or document in a comment which models are known-good as of the last verification date. Alternatively, add a feature flag or config file for model names so operators can update them without code deployment:
 
+const OR_FREE_MODELS = process.env.OR_FREE_MODELS?.split(',') || [
+  'deepseek/deepseek-r1:free',
+  'google/gemma-3-27b-it:free',
+  'mistralai/mistral-small-3.2-24b-instruct:free',
+];
+
+Or add a comment with a link to verify models are still available:
+// Last verified: 2025-01-15 at https://openrouter.ai/docs#models
 // IMPORTANT — OpenRouter "free" is not actually keyless/free-for-all:
 // OpenRouter requires an API key tied to a FUNDED/verified account. Even the
 // models tagged ":free" need a real account with credits (and have tight rate
