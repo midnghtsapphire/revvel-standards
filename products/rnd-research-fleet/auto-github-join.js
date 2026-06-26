@@ -4,7 +4,7 @@
  * Creates branded fork and sets up workflows on first run
  */
 
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -147,9 +147,10 @@ function initGit(token) {
     // Initialize if not already
     execSync('git init', { stdio: 'pipe' });
     
-    // Set remote
+    // Set remote. Pass the URL as an argv element (no shell) so the token and
+    // any user-derived path segment cannot be interpreted as shell syntax.
     const remoteUrl = `https://x-access-token:${token}@github.com/${process.env.USER || 'user'}/${CONFIG.repoName}.git`;
-    execSync(`git remote add origin ${remoteUrl}`, { stdio: 'pipe' });
+    execFileSync('git', ['remote', 'add', 'origin', remoteUrl], { stdio: 'pipe' });
     
     // Configure git
     execSync('git config user.email "research@rnd-fleet.com"', { stdio: 'pipe' });

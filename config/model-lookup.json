@@ -48,6 +48,7 @@
       "name": "claude-3.5-sonnet",
       "mode": "openrouter",
       "description": "Deep search primary model"
+      "description": "Deep search lead model"
     },
     {
       "id": 8,
@@ -55,6 +56,7 @@
       "name": "fusion",
       "mode": "openrouter",
       "description": "Fusion synthesis model"
+      "description": "OpenRouter fusion synthesis model"
     }
   ],
   "domains": [

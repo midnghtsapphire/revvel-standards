@@ -71,6 +71,7 @@ async function runTests() {
     Object.keys(profiles).sort(),
     ["cheap_batch_edits", "deep_search", "hard_debug", "repo_surgery"],
     "Should have expected routing profiles"
+    "Should have exactly 4 routing profiles"
   );
 
   // Test 2: Verify repo_surgery profile
@@ -119,6 +120,7 @@ async function runTests() {
     deepSearchModels,
     ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
     "deep_search should have Sonnet 3.5 + Fusion chain"
+    "deep_search should have Sonnet 3.5 + Fusion model chain"
   );
   assertTrue(
     profiles.deep_search.description.includes("Deep R&D research"),

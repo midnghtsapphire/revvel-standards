@@ -5,8 +5,8 @@
  * OpenRouter Model Routing Module
  * 
  * Provides task-based model routing with automatic fallback for coding workflows.
- * Supports four routing profiles:
- * - deep_search: Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks
+ * Supports routing profiles including:
+ * - deep_search: Deep R&D research using DOE/TRIZ/MEErP/LCA/BNAT
  * - repo_surgery: Multi-file edits, bug fixing, refactors
  * - cheap_batch_edits: Repetitive transforms, test generation, lint-fix loops
  * - hard_debug: Difficult failures, ambiguous root-cause analysis
