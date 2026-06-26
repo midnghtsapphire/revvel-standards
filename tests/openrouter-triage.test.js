@@ -2,10 +2,12 @@
 'use strict';
 
 const assert = require('assert');
+const { execFileSync } = require('child_process');
 const {
   buildSystemPrompt,
   buildUserPrompt,
   buildFailureComment,
+  buildPerplexityTriageScript,
   truncateForComment,
   normalizeUrl,
   extractUrls,
@@ -128,6 +130,14 @@ test('FAILURE_LABELS are aligned with .github/labels.yml names', () => {
   assert.strictEqual(FAILURE_LABELS.NEEDS_KEY, 'openrouter:needs-key');
   assert.strictEqual(FAILURE_LABELS.TRIAGE_FAILED, 'openrouter:triage-failed');
   assert.strictEqual(FAILURE_LABELS.NEEDS_HUMAN, 'needs-human');
+});
+
+test('buildPerplexityTriageScript emits Python that parses with quoted install hints', () => {
+  const installHint = 'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+  const script = buildPerplexityTriageScript(installHint);
+  execFileSync('python3', ['-c', 'import ast,sys; ast.parse(sys.stdin.read())'], { input: script });
+  assert.ok(script.includes('INSTALL_HINT = '));
+  assert.ok(script.includes('Install with: {INSTALL_HINT}'));
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
