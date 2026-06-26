@@ -132,11 +132,11 @@ jobs:
                 });
 
                 console.log('\\n=== RESEARCH RESULTS ===\\n');
-                console.log(result);
+                console.log(result.text);
                 console.log('\\n=== END RESULTS ===\\n');
 
                 // Save results
-                require('fs').writeFileSync('/tmp/deep-research-results.md', result);
+                require('fs').writeFileSync('/tmp/deep-research-results.md', result.text);
 
               } catch (err) {
                 console.error('Research failed:', err.message);
