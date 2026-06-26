@@ -462,3 +462,182 @@ this standard at [`config/review-fleet-personas.yml`](../config/review-fleet-per
 It mirrors the personas, severities, routing, and connector BOM lines so a future
 `review-fleet.yml` workflow can load them directly. The YAML wires nothing on its
 own — it is data, not an action.
+
+## 11. PR-prep agents (pre-review readiness)
+
+The reviewer personas in [Section 5](#5-reviewer-personas) judge a PR; the
+**PR-prep agents** get a PR *ready to be judged*. They run **before** (or
+alongside) the review fleet to clear mechanical blockers — failing checks, scope
+drift, conflicts — so a human or the review fleet spends its attention on
+substance, not on a red CI badge or a mistitled PR.
+
+This is the same "who does what and how" contract style as the reviewer personas:
+Revvel **owns the PR-prep contract** (the two roles, their checks, their output
+schema). A *runner* executes a role. **Jules is one such runner — not the standard
+itself.** Any runner that satisfies the contract below is acceptable:
+
+- **Jules** (the runner the original question referred to),
+- **Claude Code**,
+- **GitHub Copilot** / Copilot Workspace,
+- a **GitHub Actions** workflow,
+- a **local CLI** invocation.
+
+> Like every other actor in this standard, PR-prep agents are **additive and
+> non-destructive**. They never delete files or content, never change a goal value
+> (`$10M`, Phase targets, pricing — see
+> [`PRESERVE_GOALS_AND_HISTORY.md`](PRESERVE_GOALS_AND_HISTORY.md),
+> RVS-PRESERVE-001), and never wire a live paid API, change a secret, or take an
+> irreversible/external action. Anything requiring such access is emitted as a
+> `bom` follow-up (see [Section 6](#6-connector-aware-review-guidance)). Retiring
+> content is comment/archive only, per
+> [`COMMENT-DONT-DELETE.md`](COMMENT-DONT-DELETE.md) (RVS-AGENT-001).
+
+### 11.1 PR Prep Agent A — CI / Checks Prep
+
+- **Role:** Get the PR's automated checks green (or honestly accounted for) so the
+  review fleet and merge gate aren't blocked by mechanical failures.
+- **Persona:** CI mechanic / build-cop; trusts nothing it cannot reproduce locally;
+  distinguishes a *real* failure from an *environmental* one (missing token, paid
+  connector, sandbox limit).
+- **Allowed tools/connectors:** repo read/write **on the PR branch only**, the
+  repo's own validators/linters/test runner via local CLI (`npm test`,
+  `markdownlint-cli2`, `python3 -c "import yaml…"`, `node --check`, `bash -n`),
+  GitHub (read checks; re-run *safe* checks). No write connectors, no paid APIs, no
+  secret changes.
+- **must_check / must_do:**
+  - Validate workflow YAML for every changed/added `*.yml`/`*.yaml`
+    (`yaml.safe_load`) and the repo "gotchas" (`GH_REPO`/`--repo` on `gh` jobs
+    without checkout, token-with-fallback, narrowest `permissions:`).
+  - Run the **targeted** tests for the change and the repo gate semantics
+    (`npm test`, changed-Markdown `markdownlint-cli2`).
+  - Fix mechanical failures that are clearly in scope (lint nits, YAML indentation,
+    a broken targeted test the PR caused) — **on the PR branch, additively**.
+  - **Detect external / token failures** — a check red only because a connector is
+    unreachable, a key is unfunded, or a secret is absent in the sandbox — and
+    classify them as `external_blockers`, not PR defects.
+  - **Re-run only safe checks** (idempotent, read-only, no external mutation, no
+    spend). Never re-run a check that deploys, charges, or mutates external state.
+  - Produce a **check-status summary**: each check → pass / fixed / still-failing /
+    external-blocker, with evidence.
+- **must_not_do:** Do not weaken or stub a gate to make it pass; do not delete code
+  to silence a failure; do not change goal values; do not wire/authenticate paid
+  services; do not re-run unsafe/mutating/charging checks; do not expand scope
+  beyond making checks honest.
+- **Blocking rule:** Recommends **hold** while a *real, in-scope* check is red and
+  fixable; records `external_blockers` as `bom` follow-ups that do **not** block.
+
+### 11.2 PR Prep Agent B — Merge-Readiness Prep
+
+- **Role:** Get the PR's *metadata and merge posture* ready — scope, title, body,
+  conflict status, checklist, labels/reviews — and produce a merge recommendation.
+- **Persona:** Release manager / merge-coordinator; cares that the PR is correctly
+  scoped, correctly described, and sequenced safely against sibling PRs.
+- **Allowed tools/connectors:** repo read, git history (read), GitHub (read PR
+  scope, labels, reviews, conflict/mergeability, sibling PRs). May *propose* title/
+  body/label edits; applies metadata-only edits on the PR (never code, never
+  deletes).
+- **must_check:**
+  - **Scope / title / body:** PR title and body describe what changed; scope
+    matches a stated goal/standard and isn't unrequested creep (see
+    [`AGENT_SCAFFOLDING_BAN.md`](AGENT_SCAFFOLDING_BAN.md)).
+  - **No-delete / no-goal-change:** diff deletes no file/content without an
+    archive/comment, and changes no goal value — cross-checks RVS-PRESERVE-001 and
+    RVS-AGENT-001 (blocking authority still rests with the No-delete/goals persona,
+    [Section 5.3](#53-no-delete--goals-reviewer)).
+  - **Conflict / superseded status:** branch is mergeable (no conflicts), and the
+    PR is not superseded by — or superseding — a sibling PR.
+  - **PR checklist:** the repo's PR checklist items are present and satisfied
+    (draft status, linked WR/issue, validation evidence).
+  - **Labels / reviews:** required labels applied; required reviewers / review-fleet
+    personas for the PR type ([Section 8.1](#81-required-reviewers-by-pr-type)) are
+    requested.
+  - **Merge recommendation:** emit one of **merge / close / split / hold** (see
+    table below).
+- **must_not_do:** Do not merge, close, or delete on its own authority (recommends;
+  a human owner or the merge gate acts); do not edit code; do not change goals; do
+  not remove content.
+- **Blocking rule:** Recommends **hold** or **request-changes** while a no-delete /
+  goal-change / unresolved-conflict / missing-required-review condition is open.
+
+| Recommendation | When | Effect |
+| --- | --- | --- |
+| **merge** | Scope/title/body sound, no conflicts, not superseded, checklist satisfied, Agent A green or only `external_blockers`, no open `blocking` review finding | Eligible to merge (subject to CircleCI/`wr-lint` + human/auto-merge gate) |
+| **close** | PR is fully superseded by another merged PR, or its goal is already met elsewhere | Recommend close (a human/automerge actor closes); never auto-deletes the branch |
+| **split** | PR mixes unrelated concerns or exceeds reviewable scope | Recommend splitting into follow-up PRs (listed in `follow_up_prs`) |
+| **hold** | A real check is red (Agent A), a conflict is unresolved, or a `blocking` review finding is open | Blocked until resolved or a human owner waives |
+
+### 11.3 Output schema (both PR-prep agents)
+
+Each PR-prep agent emits a single JSON object with this shape. It reuses the
+finding objects from [Section 4](#4-shared-output-schema) inside `findings`.
+
+```json
+{
+  "agent": "pr-prep-ci-checks",
+  "pr": 14748,
+  "findings": [
+    {
+      "persona": "pr-prep-ci-checks",
+      "severity": "advisory",
+      "scope": ".github/workflows/agent-monitor.yml",
+      "rule": "yaml-valid",
+      "summary": "Workflow parses; gh job sets GH_REPO and token-with-fallback.",
+      "evidence": "yaml.safe_load OK; env.GH_REPO present.",
+      "recommendation": "No action.",
+      "blocking": false,
+      "out_of_scope": false,
+      "bom": null
+    }
+  ],
+  "checks_run": [
+    { "name": "npm test", "result": "pass", "evidence": "node --test: 0 failures" },
+    { "name": "markdownlint-cli2 (changed)", "result": "fixed", "evidence": "MD040 added language to fence" }
+  ],
+  "files_changed": ["standards/REVVEL_CODE_REVIEW_FLEET.md"],
+  "external_blockers": [
+    { "check": "vercel-deploy-preview", "reason": "No Vercel token in sandbox", "bom": "Vercel read token + project ID" }
+  ],
+  "safe_to_merge": false,
+  "recommended_action": "hold",
+  "follow_up_prs": []
+}
+```
+
+Field contract:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `agent` | string | `pr-prep-ci-checks` (A) or `pr-prep-merge-readiness` (B) |
+| `pr` | number | PR number under prep |
+| `findings` | array | [Section 4](#4-shared-output-schema) finding objects |
+| `checks_run` | array | `{name, result: pass\|fixed\|failing\|skipped, evidence}` |
+| `files_changed` | array | Files the agent touched (additive only) |
+| `external_blockers` | array | `{check, reason, bom}` — token/connector/sandbox blocks; never PR defects |
+| `safe_to_merge` | boolean | Agent's machine-readable readiness verdict |
+| `recommended_action` | string | A: `hold`/`ready`; B: `merge`/`close`/`split`/`hold` |
+| `follow_up_prs` | array | Suggested follow-up PRs (e.g. from a `split`) |
+
+### 11.4 Routing the PR-prep agents
+
+When a PR is **blocked** (red checks, unclear merge posture), run **both PR-prep
+agents in parallel** — A clears the checks, B assesses merge posture — then hand
+their combined output to the review fleet ([Section 8](#8-routing-personas-to-a-change)).
+
+- **Parallel by default.** A (CI/Checks) and B (Merge-Readiness) have disjoint
+  write surfaces — A touches branch code/config additively, B touches PR metadata —
+  so they can run concurrently without stepping on each other.
+- **Superseded handshake.** When **one** agent reports a PR is **superseded** (B's
+  `close`, or A finding the same fix already merged), the **other** agent verifies
+  **safe close/merge sequencing** before any close/merge is recommended: confirm the
+  superseding PR is actually merged (or strictly ahead), that no unique commits/
+  content would be lost (RVS-PRESERVE-001 — recommend archive/cherry-pick over
+  close-with-loss), and that closing this PR won't strand a dependent PR. Only after
+  that verification does the combined recommendation settle on `close` or `merge`.
+- **Aggregate.** The combined PR-prep verdict is the **strictest** of A and B
+  (`hold` dominates `ready`/`merge`). PR-prep never merges or closes on its own
+  authority; it produces the recommendation and the human/auto-merge gate acts.
+
+A machine-readable rendering of both PR-prep agents ships in
+[`config/review-fleet-personas.yml`](../config/review-fleet-personas.yml) under
+`pr_prep_agents`. As with the reviewer personas, that YAML is **non-executable
+data** — it wires nothing on its own.

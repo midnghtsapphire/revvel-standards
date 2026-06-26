@@ -207,3 +207,70 @@ external_apps_catalog:
     - { name: BITO, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
     - { name: RecurseML, purpose: ml-regression-review, feeds: implementation, approval: repo-owner }
     - { name: Coderabbit, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
+
+# PR-prep agents (see Section 11 of the standard). These get a PR READY to be
+# judged (clear checks, fix merge posture) BEFORE the reviewer personas judge it.
+# Revvel owns the PR-prep contract; a RUNNER executes a role. Jules is one possible
+# runner, NOT the standard itself. NON-EXECUTABLE DATA — wires nothing.
+pr_prep_agents:
+  contract_owner: revvel
+  runner_options: [jules, claude-code, copilot, github-actions, local-cli]
+  run_mode: parallel              # A and B run concurrently; disjoint write surfaces.
+  aggregate: strictest            # hold dominates ready/merge.
+  additive_only: true             # no deletes, no goal changes, no paid/irreversible actions.
+
+  # Output schema emitted by each PR-prep agent (see Section 11.3).
+  output_schema:
+    agent: string                 # pr-prep-ci-checks | pr-prep-merge-readiness
+    pr: number
+    findings: array               # Section 4 finding objects
+    checks_run: array             # {name, result: pass|fixed|failing|skipped, evidence}
+    files_changed: array
+    external_blockers: array      # {check, reason, bom} — never PR defects
+    safe_to_merge: boolean
+    recommended_action: string    # A: hold|ready ; B: merge|close|split|hold
+    follow_up_prs: array
+
+  agents:
+    - id: pr_prep_ci_checks
+      title: PR Prep Agent A — CI / Checks Prep
+      role: get-automated-checks-green-or-accounted-for
+      runs_before: review-fleet
+      allowed_tools: [repo-write-on-pr-branch, local-cli-validators, "node --check", "python3 py_compile", "bash -n", markdownlint, "yaml.safe_load", github-read-checks, github-rerun-safe-checks]
+      must_check:
+        - Validate workflow YAML + repo gotchas (GH_REPO/--repo, token-with-fallback, narrow permissions).
+        - Run targeted tests and repo gate semantics (npm test, changed-Markdown markdownlint-cli2).
+        - Fix in-scope mechanical failures additively on the PR branch.
+        - Detect external/token failures and classify as external_blockers, not PR defects.
+        - Re-run only safe (idempotent, read-only, no-spend, no-mutation) checks.
+        - Produce check-status summary (pass/fixed/still-failing/external-blocker).
+      must_not_do: [weaken-or-stub-a-gate, delete-code-to-silence-failure, change-goal-values, wire-paid-services, rerun-unsafe-mutating-checks, expand-scope]
+      recommended_action_values: [ready, hold]
+      blocking_rule: hold-while-real-in-scope-check-red; external_blockers-are-bom-not-blocking
+
+    - id: pr_prep_merge_readiness
+      title: PR Prep Agent B — Merge-Readiness Prep
+      role: get-pr-metadata-and-merge-posture-ready
+      runs_before: review-fleet
+      allowed_tools: [repo-read, git-history-read, github-read-pr-scope-labels-reviews-mergeability, github-propose-metadata-edits]
+      must_check:
+        - Scope/title/body describe the change; not unrequested creep (AGENT_SCAFFOLDING_BAN).
+        - No-delete / no-goal-change cross-check (RVS-PRESERVE-001, RVS-AGENT-001; blocking authority stays with no_delete_goals).
+        - Conflict/superseded status (mergeable; not superseded by/superseding a sibling PR).
+        - PR checklist present and satisfied (draft, linked WR/issue, validation evidence).
+        - Required labels applied; required reviewers/personas for PR type requested.
+        - Emit merge recommendation: merge|close|split|hold.
+      must_not_do: [merge-on-own-authority, close-on-own-authority, delete-content, edit-code, change-goals]
+      recommended_action_values: [merge, close, split, hold]
+      blocking_rule: hold-or-request-changes-while-no-delete/goal-change/conflict/missing-required-review-open
+
+  # When a PR is blocked, run A and B in parallel; on a superseded report, the other
+  # agent verifies safe close/merge sequencing before close/merge is recommended.
+  superseded_handshake:
+    trigger: one-agent-reports-superseded
+    verifier: the-other-agent
+    verify:
+      - superseding-PR-is-merged-or-strictly-ahead
+      - no-unique-commits-or-content-lost (prefer archive/cherry-pick over close-with-loss, RVS-PRESERVE-001)
+      - closing-this-PR-strands-no-dependent-PR
+    settle_only_after_verification: [close, merge]
