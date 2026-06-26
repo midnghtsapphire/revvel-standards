@@ -14,7 +14,7 @@ name: Brain Dump Intake — Parse Unstructured Ideas into WRs
 # The brain dump text may be entirely unstructured — voice transcriptions,
 # random notes, or a raw idea stream are all valid inputs.
 #
-# Requires: OPENROUTER_API_KEY secret (falls back to keyless Perplexity bridge).
+# Requires: OPENROUTER_API_KEY secret (falls back to heuristic line-split parsing when unavailable).
 #
 # Example command usage in an issue comment:
 #   /brain-dump every morning I want a tool to dump notes and auto create WRs.
