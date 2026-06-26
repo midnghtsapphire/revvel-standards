@@ -1,7 +1,7 @@
 # WR: [WR] Research the "OpenClaw" Web Agent (nikola66/web-agent) for us to use
 
 **Issue:** #14723
-**Closes:** #14723
+Closes #14723
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
 **Source repo under review:** [nikola66/web-agent](https://github.com/nikola66/web-agent)
 **Live demo:** <https://webagent.aratech.ae>
@@ -23,7 +23,7 @@
 - [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
 - [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Factual citations** — verify market/repo claims with source links; mark N/A only with justification
+- [x] **Factual citations** — verify market/repo claims with source links; mark N/A only with justification
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
 - [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
 - [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
@@ -176,7 +176,7 @@ Not required (no new product shipped). If the borrowed WebContainer capability b
 ---
 
 [^s1]: `nikola66/web-agent` README and docs: <https://github.com/nikola66/web-agent>
-[^s2]: StackBlitz WebContainers overview: <https://webcontainers.io/>
+[^s2]: StackBlitz WebContainers overview + commercial terms context: <https://webcontainers.io/>, <https://developer.stackblitz.com/platform/pricing>, <https://developer.stackblitz.com/platform/terms>
 [^s3]: OpenHands/OpenDevin-style local setup docs (Docker/runtime requirements): <https://github.com/All-Hands-AI/OpenHands>
 [^s4]: Aider install docs (local runtime/tooling prerequisites): <https://aider.chat/docs/install.html>
 [^s5]: DigitalOcean Droplet pricing reference (VPS baseline used for estimate range): <https://www.digitalocean.com/pricing/droplets>
