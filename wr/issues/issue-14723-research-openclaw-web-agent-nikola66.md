@@ -1,6 +1,7 @@
 # WR: [WR] Research the "OpenClaw" Web Agent (nikola66/web-agent) for us to use
 
 **Issue:** #14723
+**Closes:** #14723
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
 **Source repo under review:** [nikola66/web-agent](https://github.com/nikola66/web-agent)
 **Live demo:** <https://webagent.aratech.ae>
@@ -117,7 +118,7 @@ No new website/UI is shipped by this WR (research + decision only), so Vercel/Di
 
 ### Market Opportunity Analysis
 
-Browser-native / "no-install" autonomous agents are an emerging 2025–2026 category sitting between hosted SaaS agents (Manus, Devin, OpenAI Operator) and local CLI agents (Claude Code, OpenCode, Aider). Web Agent's wedge — **"open the URL and the agent is already running, with files, shell, memory, and skills, all local to your browser"** — directly attacks the #1 friction of agent adoption: setup (Docker/VPS/VM/Python stacks).
+Browser-native / "no-install" autonomous agents are an emerging 2025–2026 category sitting between hosted SaaS agents (Manus, Devin, OpenAI Operator) and local CLI agents (Claude Code, OpenCode, Aider). This category framing is based on public product positioning and documentation from the listed tools.[^s1][^s2][^s3][^s4] Web Agent's wedge — **"open the URL and the agent is already running, with files, shell, memory, and skills, all local to your browser"** — directly targets setup friction visible across install-heavy agent workflows (Docker/VPS/VM/Python stacks).[^s1][^s3][^s4]
 
 **Keyword / SEO landscape (intent buckets):**
 
@@ -133,17 +134,19 @@ Browser-native / "no-install" autonomous agents are an emerging 2025–2026 cate
 
 ### Community chatter (what users want)
 
-- **Setup friction is the universal complaint** about Devin/Manus/Aider clones — Docker, API keys, VPS cost, "won't run on my machine." Web Agent's zero-install pitch is a direct answer.
-- **Privacy/local-first** is a recurring ask: developers distrust hosted agents that exfiltrate their codebase. Web Agent keeps files/memory/keys in the browser (encrypted) — a strong trust signal.
-- **Skill reuse / portability** ("I don't want to re-teach my agent every session") — addressed via exportable `.webagent/` workspaces and `SKILL.md` skills.
+The following are **directional / anecdotal** themes inferred from public issue-discussion patterns and project docs, not formal survey data:
+
+- **Setup friction is a frequent complaint** in install-heavy agent ecosystems — Docker, API keys, VPS cost, "won't run on my machine." Web Agent's zero-install pitch is a direct answer.[^s3][^s4][^s6][^s7]
+- **Privacy/local-first** is a recurring ask in agent tooling discussions. Web Agent's local/browser persistence model is positioned as a trust signal.[^s1][^s8]
+- **Skill reuse / portability** ("I don't want to re-teach my agent every session") is addressed in Web Agent via workspace/skill packaging conventions (`.webagent/`, `SKILL.md`).[^s1]
 
 ### Category: Agent Runtime / Sandbox (BOM)
 
 | Option | What it is | Cost | Verdict |
 |--------|-----------|------|---------|
-| **WebContainers / Nodebox** (Web Agent's choice) | Node.js in-browser, no server | Free OSS / StackBlitz terms apply for WebContainers | **Best for zero-install UX**; the capability we lack |
-| Docker + VPS (Devin/Manus-style) | Server sandbox per session | $5–$40/mo/instance | Highest control, highest friction + cost |
-| E2B / Daytona cloud sandboxes | Hosted ephemeral sandboxes | Usage-based | Good for backend agents, not "open-a-URL" UX |
+| **WebContainers / Nodebox** (Web Agent's choice) | Node.js in-browser, no server | Free OSS / StackBlitz terms apply for WebContainers[^s2] | **Best for zero-install UX**; the capability we lack |
+| Docker + VPS (Devin/Manus-style) | Server sandbox per session | ~$5–$40+/mo/instance (provider-dependent estimate)[^s5] | Highest control, highest friction + cost |
+| E2B / Daytona cloud sandboxes | Hosted ephemeral sandboxes | Usage-based[^s9][^s10] | Good for backend agents, not "open-a-URL" UX |
 | Local CLI (Claude Code/OpenCode/Aider) | Runs on dev machine | Free + model cost | No browser UX; install friction |
 
 ### Category: Model Routing (BOM)
@@ -171,6 +174,17 @@ Browser-native / "no-install" autonomous agents are an emerging 2025–2026 cate
 Not required (no new product shipped). If the borrowed WebContainer capability becomes a shippable surface, recommended patterns: `*-agent.dev`, `browseragent.*`, or a subdomain under an existing revvel property; `.dev`/`.ai` for the dev-tool audience, exact-match on "browser agent" intent keywords.
 
 ---
+
+[^s1]: `nikola66/web-agent` README and docs: <https://github.com/nikola66/web-agent>
+[^s2]: StackBlitz WebContainers overview: <https://webcontainers.io/>
+[^s3]: OpenHands/OpenDevin-style local setup docs (Docker/runtime requirements): <https://github.com/All-Hands-AI/OpenHands>
+[^s4]: Aider install docs (local runtime/tooling prerequisites): <https://aider.chat/docs/install.html>
+[^s5]: DigitalOcean Droplet pricing reference (VPS baseline used for estimate range): <https://www.digitalocean.com/pricing/droplets>
+[^s6]: OpenHands issue discussions (setup friction examples): <https://github.com/All-Hands-AI/OpenHands/issues?q=is%3Aissue+docker>
+[^s7]: Aider issue discussions (install/setup friction examples): <https://github.com/Aider-AI/aider/issues?q=is%3Aissue+install>
+[^s8]: Open-source agent privacy/security discussion context: <https://github.com/Significant-Gravitas/AutoGPT/issues?q=privacy>
+[^s9]: E2B pricing: <https://e2b.dev/pricing>
+[^s10]: Daytona pricing/docs: <https://www.daytona.io/pricing>
 
 ## Step 3: Requirements from revvel-standards
 
