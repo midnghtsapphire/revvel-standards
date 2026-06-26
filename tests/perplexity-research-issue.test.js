@@ -129,6 +129,15 @@ async function run() {
     assert.ok(doc.includes('oAudrey'));
   });
 
+  await test('OpenRouter deep_search fallback keeps Sonnet 3.5 + Fusion and returns text content', () => {
+    const script = fs.readFileSync(
+      path.join(REPO_ROOT, 'scripts', 'perplexity-research-issue.js'),
+      'utf8'
+    );
+    assert.ok(script.includes("['anthropic/claude-3.5-sonnet', 'openrouter/fusion']"));
+    assert.ok(script.includes('return result.text;'));
+  });
+
   console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
   if (failed > 0) {
     process.exit(1);
