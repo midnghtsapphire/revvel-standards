@@ -229,7 +229,7 @@ import sys
 try:
     from perplexity import LabsClient, Client
 except Exception as exc:
-    raise SystemExit(f"Missing no-key Perplexity dependency ({exc}). Install with: ${installHint}")
+    raise SystemExit(f'Missing no-key Perplexity dependency ({exc}). Install with: ${installHint}')
 
 def normalize(value):
     if isinstance(value, str):

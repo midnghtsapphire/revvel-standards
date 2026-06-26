@@ -203,6 +203,11 @@ jobs:
 
           ---
           *Research powered by Deep Search with R&D Engineering Framework*"
+
+          $(cat /tmp/deep-research-results.md)
+
+          ---
+          *Research powered by Deep Search with R&D Engineering Framework*"
             > Using **Sonnet 3.5 + OpenRouter Fusion** with DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks.
 
             $(cat /tmp/deep-research-results.md)
