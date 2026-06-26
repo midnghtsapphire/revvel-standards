@@ -237,9 +237,9 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
     hostname: OPENROUTER_HOST,
     pathName: OPENROUTER_PATH,
     method: "POST",
+    headers: {
       Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
-      Authorization: `******      "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (free-tier)`,
     },
     payload: {
