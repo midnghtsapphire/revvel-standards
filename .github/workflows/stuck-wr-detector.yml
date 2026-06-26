@@ -119,8 +119,12 @@ jobs:
               // Apply wr:reset to force a PR skeleton regardless of research state.
               if (!readyForWrPr) {
                 if (ageMs >= LONG_STUCK_MS) {
+                  if (labelNames.has('wr:reset')) {
+                    core.info(`#${issue.number}: wr:reset already applied; skipping long-stuck path.`);
+                    continue;
+                  }
                   // Check if a PR already exists before forcing wr:reset.
-                  const baseTitle = getIssueBaseTitle(issue);
+                  const baseTitle = getIssueBaseTitle(issue) || issue.title || String(issue.number);
                   if (baseTitle) {
                     const existingPr = await findAssociatedPr({ github, owner, repo, issue, core });
                     if (!existingPr) {
