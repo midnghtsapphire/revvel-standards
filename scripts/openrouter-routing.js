@@ -5,7 +5,8 @@
  * OpenRouter Model Routing Module
  * 
  * Provides task-based model routing with automatic fallback for coding workflows.
- * Supports three routing profiles:
+ * Supports routing profiles including:
+ * - deep_search: Deep R&D research using DOE/TRIZ/MEErP/LCA/BNAT
  * - repo_surgery: Multi-file edits, bug fixing, refactors
  * - cheap_batch_edits: Repetitive transforms, test generation, lint-fix loops
  * - hard_debug: Difficult failures, ambiguous root-cause analysis
@@ -56,7 +57,7 @@ if (lookupData && lookupData.profiles && lookupData.models) {
     deep_search: {
       description: "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
       models: [
-        "anthropic/claude-sonnet-4.6",
+        "anthropic/claude-3.5-sonnet",
         "openrouter/fusion"
       ]
     },
@@ -210,7 +211,7 @@ async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens 
  * Execute a routed chat completion using a named profile
  * 
  * @param {Object} params - Request parameters
- * @param {string} params.profile - Routing profile name (repo_surgery, cheap_batch_edits, hard_debug)
+ * @param {string} params.profile - Routing profile name (deep_search, repo_surgery, cheap_batch_edits, hard_debug)
  * @param {Array<{role: string, content: string}>} params.messages - Chat messages
  * @param {number} [params.temperature] - Sampling temperature (profile-specific defaults)
  * @param {number} [params.max_tokens] - Maximum tokens to generate
