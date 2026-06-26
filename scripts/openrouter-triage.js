@@ -579,14 +579,13 @@ async function reportTriageFailure({ kind, detail }) {
 }
 
 // Always-fall-back triage cascade. Returns { text, lane, model }.
-//   1. OpenRouter — best models, but ONLY if a key is set AND the account is
-//      funded/verified (see the note on callOpenRouter; "free" still needs a
-//      real, credited account).
-//   2. OpenRouter free-tier models — OR_FREE_MODELS; still needs a valid key
-//      but does not consume paid credits.
+// Cascades through all 6 lanes in order; lane 6 (static rule-based) never
+// throws, so this function always returns successfully.
+//   1. OpenRouter primary model — best quality, needs funded account key.
+//   2. OpenRouter free-tier models — no credits consumed, but needs valid key.
 //   3. Keyless Perplexity bridge — needs no API key (python3 + perplexity-ai).
-//   4. OpenRouter fusion — multi-provider routing; may succeed when single-
-//      provider lanes are down.
+//   4. OpenRouter multi-provider fusion — routes across providers; may succeed
+//      when single-provider lanes fail due to provider-side outages.
 //   5. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN (always set
 //      in Actions), no OpenRouter key required.
 //   6. Static rule-based fallback — never throws; keyword-only stub so that
@@ -602,18 +601,16 @@ async function triageWithFallback(systemPrompt, userPrompt) {
       // 401/402/403/429 almost always means the account is not funded/verified.
       console.log(`::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`);
     }
-  } else {
-    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lane 1.");
-  }
 
-  // Lane 2: OpenRouter free-tier models
-  if (OPENROUTER_API_KEY) {
+    // Lane 2: OpenRouter free-tier models
     try {
       const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
-      return { text, lane: "OpenRouter free-tier", model: "OR_FREE_MODELS" };
+      return { text, lane: "OpenRouter free-tier", model: OR_FREE_MODELS[0] };
     } catch (err) {
       console.log(`::warning::Lane 2 (OpenRouter free-tier) failed (${err.message}). Trying lane 3.`);
     }
+  } else {
+    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lanes 1 & 2.");
   }
 
   // Lane 3: Keyless Perplexity bridge
