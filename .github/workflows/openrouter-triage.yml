@@ -82,6 +82,14 @@ jobs:
       # OpenRouter → keyless Perplexity so triage never dead-ends.
       - name: Run triage (OpenRouter → keyless Perplexity fallback)
         if: steps.labels.outputs.skip_triage != 'true'
+        # Best-effort, fail-soft per this workflow's "never dead-end" design: when
+        # neither lane succeeds (e.g. no funded OPENROUTER_API_KEY *and* the keyless
+        # Perplexity bridge can't install in CI), the script still posts a visible
+        # failure comment and applies `openrouter:triage-failed` + `needs-human`
+        # before exiting non-zero. That escalation — not a red triage check — is the
+        # intended signal, so we tolerate the non-zero exit here. The failure stays
+        # visible in the step log and is not masked.
+        continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -191,6 +199,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Run OpenRouter triage for each queued item
+        # Fail-soft, same rationale as route-new: a per-item triage failure
+        # already self-reports (comment + needs-human) and must not dead-end or
+        # fail the sweep for the remaining matrix items.
+        continue-on-error: true
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
