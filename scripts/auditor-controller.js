@@ -194,6 +194,7 @@ const CHECKS = [
         '.github/workflows/gatekeeper-registry-drift.yml',
         '.github/workflows/sync-secrets-to-repos.yml',
         '.github/workflows/credential-autonomy-agent.yml',
+        '.github/workflows/secrets-backup-daily.yml',
         '.github/workflows/secret-lifecycle.yml',
         '.github/workflows/credential-label-router.yml',
         'scripts/credential-backup-harness.js',
