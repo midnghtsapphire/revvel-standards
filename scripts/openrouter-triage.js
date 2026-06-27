@@ -575,7 +575,7 @@ async function fetchIssueComments() {
         `?per_page=${COMMENTS_PER_PAGE}&sort=created&direction=desc`,
       method: "GET",
       headers: {
-        Authorization: "Bearer " + GITHUB_TOKEN,
+        ...(GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}),
         "User-Agent": "revvel-openrouter-triage-script",
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
