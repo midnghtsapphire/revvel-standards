@@ -270,6 +270,19 @@ test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with w
   }
 });
 
+test('stuck-label-automation.yml can dispatch recovery workflows', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!script.includes('createWorkflowDispatch')) {
+    throw new Error('stuck-label-automation must keep workflow dispatch recovery actions');
+  }
+  if (doc.permissions?.actions !== 'write') {
+    throw new Error('stuck-label-automation must have actions: write to dispatch recovery workflows');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -356,6 +369,31 @@ test('wr-pr-creation.yml uses existing WR templates and preserves issue body', (
   }
   if (!script.includes('printf') || !script.includes('${ISSUE_BODY}') || !script.includes('OUTPUT_TYPE=')) {
     throw new Error('WR generation must parse Output Type from ISSUE_BODY safely');
+  }
+});
+
+test('wr-pr-creation.yml validates local references in generated WR documents', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const createJob = doc.jobs['create-wr-pr'];
+  const validateStep = createJob.steps.find((step) => step.name === 'Validate WR local references');
+
+  if (!validateStep) {
+    throw new Error('Validate WR local references step not found');
+  }
+
+  const script = validateStep.run || '';
+  const requiredSnippets = [
+    'WR_FILE',
+    're.finditer',
+    'Missing local references',
+    'Validated local references',
+    "target.split('#', 1)[0]",
+  ];
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`WR local-reference validation missing ${snippet}`);
+    }
   }
 });
 
