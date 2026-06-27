@@ -302,6 +302,15 @@ test('agent-audit-logger.yml persists audit entries without committing to main',
     throw new Error('Persist step must write the entry to the job summary');
   }
 
+  const checkoutStep = steps.find((step) => step.name === 'Checkout main');
+  const checkoutToken = checkoutStep?.with?.token || '';
+  if (!checkoutToken.includes('github.token')) {
+    throw new Error('Checkout main must fall back to github.token when ADMIN_GITHUB_TOKEN is unavailable');
+  }
+  if (checkoutToken.includes('secrets.GITHUB_TOKEN')) {
+    throw new Error('Checkout main must not rely on secrets.GITHUB_TOKEN fallback');
+  }
+
   const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
   if (!uploadStep || !String(uploadStep.uses || '').startsWith('actions/upload-artifact')) {
     throw new Error('Audit entry must be retained via upload-artifact');
