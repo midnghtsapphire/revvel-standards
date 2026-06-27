@@ -135,6 +135,12 @@ jobs:
           OUTPUT_FILE: docs/research-engine/run-${{ github.run_id }}.md
         run: node scripts/research-engine.js
       - name: Commit research packet
+        # continue-on-error so branch-protection push failures don't cancel the
+        # WR PR creation dispatch below. The packet is already written to the
+        # filesystem for the run; a push failure is non-fatal for the pipeline.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "revvel-automation[bot]"
           git config user.email "revvel-automation[bot]@users.noreply.github.com"
