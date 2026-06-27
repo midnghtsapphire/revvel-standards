@@ -89,7 +89,8 @@ function buildOverlayLines({
   const safeBusinessType = cleanText(businessType, 'real estate');
   const safeBrandName = cleanText(brandName, 'this system');
   const safeOffer = cleanText(offer, 'unlimited AI');
-  const normalizedTrial = Math.max(1, Number.parseInt(String(freeTrialDays ?? '').trim(), 10) || 7);
+  const parsedTrial = Number.parseInt(String(freeTrialDays ?? '').trim(), 10);
+  const normalizedTrial = Number.isNaN(parsedTrial) ? 7 : Math.min(30, Math.max(1, parsedTrial));
   const normalizedUrgency = normalizeUrgencyHours(urgencyHours);
   const safeProofMetric = cleanText(proofMetric);
   const proofLine = safeProofMetric
@@ -290,6 +291,13 @@ function packetToMarkdown(packet) {
     `- **Subhead:** ${packet.landingPage.subhead}`,
     ...packet.landingPage.bullets.map((bullet) => `- ${bullet}`),
     `- **CTA:** ${packet.landingPage.cta}`,
+    '',
+    '## 30-Day Content Plan',
+    '| Day | Format | Angle | Hook | CTA |',
+    '| --- | --- | --- | --- | --- |',
+    ...packet.contentCalendar.map(
+      (entry) => `| ${entry.day} | ${entry.format} | ${entry.angle} | ${entry.hook} | ${entry.cta} |`
+    ),
     '',
     '## Compliance Notes',
     ...packet.complianceNotes.map((note) => `- ${note}`),
