@@ -83,6 +83,10 @@ export default function Home() {
     }
   }
 
+  const isFormEmpty = useCase === 'amazon-ugc'
+    ? !productName?.trim() && !problem?.trim()
+    : !brandName?.trim() && !audience?.trim();
+
   return (
     <div className={`mode-${mode} min-h-screen bg-slate-950 text-slate-100`}>
       <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-10">
@@ -103,25 +107,14 @@ export default function Home() {
             </div>
             <button
               type="button"
+              disabled={isFormEmpty}
               onClick={copyPacket}
-              className="rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200"
+              className="rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {copyState}
+              {isFormEmpty ? 'Complete form to copy' : copyState}
             </button>
           </div>
         </header>
-const isFormEmpty = useCase === 'amazon-ugc' 
-  ? !productName?.trim() && !problem?.trim()
-  : !brandName?.trim() && !audience?.trim();
-
-<button
-  type='button'
-  disabled={isFormEmpty}
-  onClick={copyPacket}
-  className='rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed'
->
-  {isFormEmpty ? 'Complete form to copy' : copyState}
-</button>
         <section className="grid gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 md:grid-cols-3">
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-slate-200">Generator mode</span>
