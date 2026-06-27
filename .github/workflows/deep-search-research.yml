@@ -57,7 +57,6 @@ jobs:
           REPO: ${{ github.repository }}
           RESEARCH_QUERY: ${{ inputs.research_query || github.event.issue.title }}
           PROFILE: ${{ inputs.profile || 'deep_search' }}
-        run: node scripts/deep-search-research.js
         run: |
           node -e "
             const { callOpenRouter, ROUTING_PROFILES } = require('./scripts/openrouter-routing');
