@@ -35,7 +35,7 @@ npm run dev                  # http://localhost:3009
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
-| `OPENROUTER_API_KEY` | Recommended | — | Get one at https://openrouter.ai. If absent, mock copy is returned so the UI stays usable. |
+| `OPENROUTER_API_KEY` | Recommended | — | Get one at <https://openrouter.ai>. If absent, mock copy is returned so the UI stays usable. |
 | `OPENROUTER_MODEL` | Optional | `anthropic/claude-haiku-3` | Any model supported by OpenRouter. Haiku-3 is cheap and fast for ad copy. |
 | `NEXT_PUBLIC_SITE_URL` | Optional | `http://localhost:3009` | Sent as `HTTP-Referer` to OpenRouter for rankings. |
 

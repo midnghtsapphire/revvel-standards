@@ -55,7 +55,9 @@ export interface StaticCreative {
   headline: string;
   cta: string;
   imageUrl?: string;
-  base64Png: string;   // server-rendered PNG as base64 data URI
+  /** Base64 data URI. Check `mimeType` to determine if it's PNG or SVG fallback. */
+  imageData: string;
+  mimeType: 'image/png' | 'image/svg+xml';
   width: number;
   height: number;
   generatedAt: string;

@@ -16,9 +16,13 @@ export async function POST(req: NextRequest): Promise<NextResponse<ScrapeProduct
     return NextResponse.json({ success: false, error: 'url is required' }, { status: 400 });
   }
 
-  // Basic URL validation
+  // Validate URL format
   try {
-    new URL(url);
+    const parsed = new URL(url);
+    // Only allow http/https — no file://, data://, etc.
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return NextResponse.json({ success: false, error: 'Only http/https URLs are supported' }, { status: 400 });
+    }
   } catch {
     return NextResponse.json({ success: false, error: 'Invalid URL format' }, { status: 400 });
   }
@@ -27,8 +31,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<ScrapeProduct
     const data = await scrapeProduct(url);
     return NextResponse.json({ success: true, data });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Scrape failed';
-    console.error('[/api/scrape-product]', message);
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    // Log internal detail server-side; return a generic client-safe message
+    const detail = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[/api/scrape-product]', detail);
+    // Surface SSRF-block and format errors as 400, everything else as 500
+    const isClientError =
+      detail.includes('disallowed destination') ||
+      detail.includes('Only http/https') ||
+      detail.includes('Invalid URL');
+    return NextResponse.json(
+      { success: false, error: isClientError ? detail : 'Scrape failed. Check the URL and try again.' },
+      { status: isClientError ? 400 : 500 }
+    );
   }
 }

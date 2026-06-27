@@ -72,12 +72,18 @@ interface RenderOptions {
 
 /**
  * Server-side ad creative renderer.
- * Returns a base64-encoded PNG data URI.
- * Falls back to a CSS-gradient placeholder if @napi-rs/canvas is unavailable.
+ * Returns a base64-encoded PNG data URI (`imageData` field).
+ * Falls back to an SVG placeholder when @napi-rs/canvas is unavailable;
+ * in that case `imageData` will be a `data:image/svg+xml` URI but the field
+ * name is intentionally generic so callers derive the MIME type from the
+ * data URI prefix rather than assuming PNG.
+ *
+ * SSRF defence: only http/https imageUrls are fetched; private addresses are
+ * blocked by the API route before this function is called.
  */
 export async function renderAdCreative(
   opts: RenderOptions
-): Promise<{ base64Png: string; width: number; height: number }> {
+): Promise<{ imageData: string; mimeType: 'image/png' | 'image/svg+xml'; width: number; height: number }> {
   const {
     templateId,
     productTitle,
@@ -88,6 +94,9 @@ export async function renderAdCreative(
   } = opts;
 
   const template = AD_TEMPLATES[templateId];
+
+  // 'split' layout not yet implemented in the canvas path — treat as image-bg
+  const effectiveLayout = template.layout === 'split' ? 'image-bg' as const : template.layout;
 
   try {
     // Dynamic import — prevents build failure if native binary is missing
@@ -111,27 +120,24 @@ export async function renderAdCreative(
     if (opts.imageUrl) {
       try {
         const img = await loadImage(opts.imageUrl);
-        if (template.layout === 'image-top') {
-          // Top 55% of canvas
+        if (effectiveLayout === 'image-top') {
           ctx.drawImage(img, 0, 0, width, height * 0.55);
-        } else if (template.layout === 'image-left') {
-          // Left half
+        } else if (effectiveLayout === 'image-left') {
           ctx.drawImage(img, 0, 0, width * 0.5, height);
         } else {
-          // Full background with overlay already applied
+          // image-bg: full background with re-applied gradient for readability
           ctx.drawImage(img, 0, 0, width, height);
-          // Re-apply gradient so text is readable
           ctx.fillStyle = grad;
           ctx.fillRect(0, 0, width, height);
         }
       } catch {
-        // Image load failed — continue without it
+        // Image load failed — continue without it (network error or unsupported format)
       }
     }
 
     const padding = width * 0.06;
     const textAreaY =
-      template.layout === 'image-top' ? height * 0.58 : height * 0.55;
+      effectiveLayout === 'image-top' ? height * 0.58 : height * 0.55;
 
     // ── Accent bar ──────────────────────────────────────────────────────────
     ctx.fillStyle = template.accentColor;
@@ -144,7 +150,6 @@ export async function renderAdCreative(
     ctx.shadowColor = 'rgba(0,0,0,0.5)';
     ctx.shadowBlur = 8;
 
-    // Word-wrap headline
     const maxWidth = width - padding * 2 - 20;
     wrapText(ctx, headline, padding + 20, textAreaY + headlineFontSize, maxWidth, headlineFontSize * 1.3);
 
@@ -153,11 +158,7 @@ export async function renderAdCreative(
     ctx.font = `${subFontSize}px sans-serif`;
     ctx.fillStyle = template.accentColor;
     ctx.shadowBlur = 0;
-    ctx.fillText(
-      truncate(productTitle, 40),
-      padding + 20,
-      textAreaY - 24
-    );
+    ctx.fillText(truncate(productTitle, 40), padding + 20, textAreaY - 24);
 
     // ── CTA button ──────────────────────────────────────────────────────────
     const btnY = height * 0.82;
@@ -185,10 +186,10 @@ export async function renderAdCreative(
     ctx.globalAlpha = 1;
 
     const buffer = canvas.toBuffer('image/png');
-    const base64Png = `data:image/png;base64,${buffer.toString('base64')}`;
-    return { base64Png, width, height };
+    const imageData = `data:image/png;base64,${buffer.toString('base64')}`;
+    return { imageData, mimeType: 'image/png', width, height };
   } catch (err: unknown) {
-    // Canvas unavailable — return an SVG placeholder as base64
+    // Canvas unavailable — return an SVG placeholder
     console.warn('[ad-templates] canvas render failed, using SVG placeholder:', err);
     return svgPlaceholder(template, headline, cta, width, height);
   }
@@ -270,23 +271,36 @@ function truncate(str: string, max: number): string {
   return str.length <= max ? str : str.slice(0, max - 3) + '...';
 }
 
+/** Escape special XML/HTML chars so dynamic text is safe inside SVG. */
+function escapeSvgText(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function svgPlaceholder(
   template: AdTemplateConfig,
   headline: string,
   cta: string,
   width: number,
   height: number
-): { base64Png: string; width: number; height: number } {
+): { imageData: string; mimeType: 'image/svg+xml'; width: number; height: number } {
+  const safeHeadline = escapeSvgText(truncate(headline, 50));
+  const safeCta = escapeSvgText(cta);
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
     <rect width="${width}" height="${height}" fill="${template.bgColor}"/>
     <text x="50%" y="42%" text-anchor="middle" font-size="48" font-weight="bold"
-      fill="${template.textColor}" font-family="sans-serif">${truncate(headline, 50)}</text>
+      fill="${template.textColor}" font-family="sans-serif">${safeHeadline}</text>
     <rect x="${width * 0.25}" y="${height * 0.55}" width="${width * 0.5}" height="70" rx="35"
       fill="${template.accentColor}"/>
     <text x="50%" y="${height * 0.55 + 45}" text-anchor="middle" font-size="32"
-      fill="${template.bgColor}" font-family="sans-serif">${cta}</text>
+      fill="${template.bgColor}" font-family="sans-serif">${safeCta}</text>
   </svg>`;
 
-  const base64Png = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-  return { base64Png, width, height };
+  const imageData = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+  return { imageData, mimeType: 'image/svg+xml', width, height };
 }

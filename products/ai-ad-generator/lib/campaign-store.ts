@@ -6,6 +6,7 @@
 import { Campaign, CampaignStatus, StaticCreative } from '../types';
 
 const STORAGE_KEY = 'aig_campaigns';
+const SEEDED_KEY = 'aig_seeded';
 
 function load(): Campaign[] {
   if (typeof window === 'undefined') return [];
@@ -19,7 +20,12 @@ function load(): Campaign[] {
 
 function save(campaigns: Campaign[]): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
+  } catch (err: unknown) {
+    // Storage full or access denied (private mode, security policy, etc.)
+    console.warn('[campaign-store] localStorage write failed:', err instanceof Error ? err.message : err);
+  }
 }
 
 export function listCampaigns(): Campaign[] {
@@ -74,10 +80,14 @@ export function generateCampaignId(): string {
 
 /**
  * Seed demo campaigns for first-run experience.
- * Only seeds if localStorage is empty.
+ * Uses an `aig_seeded` localStorage flag so seeding only runs once,
+ * not on every page load after the user deletes all campaigns.
  */
 export function seedDemoCampaigns(): void {
-  if (load().length > 0) return;
+  if (typeof window === 'undefined') return;
+  if (localStorage.getItem(SEEDED_KEY)) return;
+  // Mark seeded immediately so concurrent/SSR double-calls are safe
+  try { localStorage.setItem(SEEDED_KEY, '1'); } catch { return; }
 
   const demo: Campaign[] = [
     {

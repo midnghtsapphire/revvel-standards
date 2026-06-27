@@ -6,6 +6,9 @@
  *
  * NOTE: This scraper is intended for legitimate competitive research and
  * your own product pages. Respect each site's robots.txt and ToS.
+ *
+ * SSRF defence: private / loopback / link-local addresses are blocked.
+ * Response body is capped at 5 MB to prevent memory exhaustion.
  */
 
 import { fetch } from 'undici';
@@ -16,14 +19,43 @@ const USER_AGENT =
   'Mozilla/5.0 (compatible; RevvelBot/1.0; +https://revvel.ai/bot)';
 
 const TIMEOUT_MS = 15_000;
+const MAX_RESPONSE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+// Private / loopback ranges that must not be fetched server-side (SSRF defence).
+// Covers IPv4 loopback, RFC-1918 private ranges, link-local, and metadata endpoints.
+const BLOCKED_HOSTNAME_RE =
+  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.\d+\.\d+\.\d+|::1|fd[0-9a-f]{2}:|fe80:)/i;
+
+function isBlockedUrl(urlStr: string): boolean {
+  try {
+    const { hostname, protocol } = new URL(urlStr);
+    if (protocol !== 'http:' && protocol !== 'https:') return true;
+    if (BLOCKED_HOSTNAME_RE.test(hostname)) return true;
+    // Block numeric IPs that look like private ranges not caught above
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      const parts = hostname.split('.').map(Number);
+      // Block 100.64-127 (CGNAT + loopback edge), 169.254, 240-255
+      if (parts[0] === 100 && parts[1] >= 64) return true;
+      if (parts[0] === 169 && parts[1] === 254) return true;
+      if (parts[0] >= 240) return true;
+    }
+    return false;
+  } catch {
+    return true; // Unparseable URL → block
+  }
+}
 
 export async function scrapeProduct(url: string): Promise<ProductData> {
+  if (isBlockedUrl(url)) {
+    throw new Error('URL points to a disallowed destination (private/loopback address)');
+  }
+
   let html: string;
 
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
+  try {
     const res = await fetch(url, {
       headers: {
         'User-Agent': USER_AGENT,
@@ -33,16 +65,27 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
       signal: controller.signal,
     });
 
-    clearTimeout(timer);
-
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`);
     }
 
-    html = await res.text();
+    // Guard against huge responses
+    const contentLength = Number(res.headers.get('content-length') || 0);
+    if (contentLength > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large (${contentLength} bytes)`);
+    }
+
+    const buffer = await res.arrayBuffer();
+    if (buffer.byteLength > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large (${buffer.byteLength} bytes)`);
+    }
+
+    html = new TextDecoder().decode(buffer);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     throw new Error(`Scrape failed for ${url}: ${msg}`);
+  } finally {
+    clearTimeout(timer);
   }
 
   const $ = cheerio.load(html);

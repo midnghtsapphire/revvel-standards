@@ -119,23 +119,33 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
 
   let raw: string;
   try {
-    const res = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        // Required headers for OpenRouter rankings
-        'HTTP-Referer':
-          process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3009',
-        'X-Title': 'AI Ad Generator',
-      },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.8,
-        max_tokens: 1200,
-      }),
-    });
+    // 30-second timeout so a stalled provider doesn't block the API route indefinitely
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30_000);
+
+    let res: Response;
+    try {
+      res = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          // Required headers for OpenRouter rankings
+          'HTTP-Referer':
+            process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3009',
+          'X-Title': 'AI Ad Generator',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.8,
+          max_tokens: 1200,
+        }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!res.ok) {
       const body = await res.text();
@@ -152,22 +162,40 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
     return mockAdCopy(product);
   }
 
-  // Parse JSON — strip any accidental markdown fences
+  // Parse JSON — strip any accidental markdown fences, then validate shape
   try {
     const cleaned = raw.replace(/^```(?:json)?\s*/m, '').replace(/```\s*$/m, '');
-    const parsed = JSON.parse(cleaned) as {
-      primaryHeadline: string;
-      script: string;
-      hashtags: string[];
-      variants: AdCopyVariant[];
-    };
+    const parsed = JSON.parse(cleaned) as Record<string, unknown>;
+
+    // Shape validation — fall back to mock if the model returned unexpected structure
+    if (
+      typeof parsed.primaryHeadline !== 'string' ||
+      typeof parsed.script !== 'string' ||
+      !Array.isArray(parsed.variants) ||
+      parsed.variants.length === 0
+    ) {
+      console.warn('[openrouter] response failed shape validation, using mock');
+      return mockAdCopy(product);
+    }
+
+    const variants = (parsed.variants as Array<Record<string, unknown>>).map((v) => ({
+      headline: typeof v.headline === 'string' ? v.headline : '',
+      body: typeof v.body === 'string' ? v.body : '',
+      cta: typeof v.cta === 'string' ? v.cta : 'Shop Now',
+      hook: typeof v.hook === 'string' ? v.hook : undefined,
+      framework: (['AIDA', 'PAS', 'BAB', 'Direct'].includes(v.framework as string)
+        ? v.framework
+        : 'Direct') as AdCopyVariant['framework'],
+    }));
 
     return {
       productTitle: product.title,
-      primaryHeadline: parsed.primaryHeadline,
-      script: parsed.script,
-      variants: parsed.variants,
-      hashtags: parsed.hashtags || [],
+      primaryHeadline: parsed.primaryHeadline as string,
+      script: parsed.script as string,
+      variants,
+      hashtags: Array.isArray(parsed.hashtags)
+        ? (parsed.hashtags as unknown[]).filter((h): h is string => typeof h === 'string')
+        : [],
       generatedAt: new Date().toISOString(),
       model,
     };

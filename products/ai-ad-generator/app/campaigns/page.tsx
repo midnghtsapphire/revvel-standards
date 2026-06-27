@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import CampaignCard from '../../components/CampaignCard';
 import { Campaign } from '../../types';
 import { listCampaigns, seedDemoCampaigns } from '../../lib/campaign-store';
@@ -40,12 +41,12 @@ export default function CampaignsPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Campaigns</h1>
           <p className="text-gray-500 text-sm mt-1">{campaigns.length} total campaigns</p>
         </div>
-        <a
+        <Link
           href="/create"
           className="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors text-sm"
         >
           + New Campaign
-        </a>
+        </Link>
       </div>
 
       {/* Aggregate stats */}

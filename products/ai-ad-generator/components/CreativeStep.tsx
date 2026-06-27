@@ -55,9 +55,10 @@ export default function CreativeStep({ product, adCopy, onComplete, onBack }: Cr
 
   function handleDownload() {
     if (!creative) return;
+    const ext = creative.mimeType === 'image/svg+xml' ? 'svg' : 'png';
     const a = document.createElement('a');
-    a.href = creative.base64Png;
-    a.download = `ad-creative-${selectedTemplate}-${Date.now()}.png`;
+    a.href = creative.imageData;
+    a.download = `ad-creative-${creative.templateId}-${Date.now()}.${ext}`;
     a.click();
   }
 
@@ -152,7 +153,7 @@ export default function CreativeStep({ product, adCopy, onComplete, onBack }: Cr
             <div className="space-y-3">
               <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700">
                 <Image
-                  src={creative.base64Png}
+                  src={creative.imageData}
                   alt="Ad creative preview"
                   fill
                   className="object-contain"
@@ -167,7 +168,7 @@ export default function CreativeStep({ product, adCopy, onComplete, onBack }: Cr
                   onClick={handleDownload}
                   className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl text-sm transition-colors"
                 >
-                  ⬇ Download PNG
+                  ⬇ Download {creative.mimeType === 'image/svg+xml' ? 'SVG' : 'PNG'}
                 </button>
                 <button
                   onClick={() => onComplete(creative)}

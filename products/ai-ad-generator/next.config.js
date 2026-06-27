@@ -6,7 +6,6 @@ const nextConfig = {
       { protocol: 'http', hostname: '**' },
     ],
   },
-  // Allow @napi-rs/canvas native binary
   experimental: {
     serverComponentsExternalPackages: ['@napi-rs/canvas'],
   },

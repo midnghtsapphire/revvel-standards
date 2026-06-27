@@ -9,11 +9,22 @@ interface AdCopyStepProps {
   onBack: () => void;
 }
 
-const FRAMEWORK_COLORS: Record<string, string> = {
-  AIDA: 'blue',
-  PAS: 'purple',
-  BAB: 'green',
-  Direct: 'orange',
+/**
+ * Static Tailwind class maps for variant buttons.
+ * Dynamic class interpolation (e.g. `bg-${color}-600`) is not supported by
+ * Tailwind JIT — the full class strings must appear literally in source.
+ */
+const FRAMEWORK_BTN_ACTIVE: Record<string, string> = {
+  AIDA: 'bg-blue-600 text-white',
+  PAS: 'bg-purple-600 text-white',
+  BAB: 'bg-green-600 text-white',
+  Direct: 'bg-orange-600 text-white',
+};
+const FRAMEWORK_BTN_IDLE: Record<string, string> = {
+  AIDA: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100',
+  PAS: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 hover:bg-purple-100',
+  BAB: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100',
+  Direct: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 hover:bg-orange-100',
 };
 
 export default function AdCopyStep({ product, onComplete, onBack }: AdCopyStepProps) {
@@ -116,20 +127,16 @@ export default function AdCopyStep({ product, onComplete, onBack }: AdCopyStepPr
             </p>
             <div className="flex gap-2 mb-4">
               {adCopy.variants.map((v, i) => {
-                const color = FRAMEWORK_COLORS[v.framework] || 'blue';
+                const fw = v.framework || 'Direct';
                 return (
                   <button
                     key={i}
                     onClick={() => setSelectedVariant(i)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       selectedVariant === i
-                        ? `bg-${color}-600 text-white`
-                        : `bg-${color}-50 dark:bg-${color}-900/20 text-${color}-700 dark:text-${color}-300 hover:bg-${color}-100`
+                        ? (FRAMEWORK_BTN_ACTIVE[fw] || FRAMEWORK_BTN_ACTIVE.Direct)
+                        : (FRAMEWORK_BTN_IDLE[fw] || FRAMEWORK_BTN_IDLE.Direct)
                     }`}
-                    style={{
-                      background: selectedVariant === i ? (color === 'blue' ? '#2563eb' : color === 'purple' ? '#7c3aed' : '#16a34a') : undefined,
-                      color: selectedVariant === i ? 'white' : undefined,
-                    }}
                   >
                     {v.framework}
                   </button>

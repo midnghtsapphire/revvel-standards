@@ -23,12 +23,15 @@ const PLATFORM_ICONS: Record<string, string> = {
 };
 
 export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps) {
-  const roas = campaign.revenue && campaign.spend
-    ? (campaign.revenue / campaign.spend).toFixed(2)
-    : null;
-  const ctr = campaign.clicks && campaign.impressions
-    ? ((campaign.clicks / campaign.impressions) * 100).toFixed(2)
-    : null;
+  // Use != null so zero-value metrics are shown, not hidden
+  const roas =
+    campaign.revenue != null && campaign.spend != null && campaign.spend > 0
+      ? (campaign.revenue / campaign.spend).toFixed(2)
+      : null;
+  const ctr =
+    campaign.clicks != null && campaign.impressions != null && campaign.impressions > 0
+      ? ((campaign.clicks / campaign.impressions) * 100).toFixed(2)
+      : null;
 
   function handleStatusChange(status: CampaignStatus) {
     updateCampaignStatus(campaign.id, status);
@@ -68,23 +71,23 @@ export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps)
 
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <Metric label="Spend" value={campaign.spend ? `$${campaign.spend.toLocaleString()}` : '—'} />
-        <Metric label="Impressions" value={campaign.impressions ? campaign.impressions.toLocaleString() : '—'} />
-        <Metric label="CTR" value={ctr ? `${ctr}%` : '—'} highlight={Number(ctr) >= 2} />
-        <Metric label="ROAS" value={roas ? `${roas}x` : '—'} highlight={Number(roas) >= 2} />
+        <Metric label="Spend" value={campaign.spend != null ? `$${campaign.spend.toLocaleString()}` : '—'} />
+        <Metric label="Impressions" value={campaign.impressions != null ? campaign.impressions.toLocaleString() : '—'} />
+        <Metric label="CTR" value={ctr != null ? `${ctr}%` : '—'} highlight={Number(ctr) >= 2} />
+        <Metric label="ROAS" value={roas != null ? `${roas}x` : '—'} highlight={Number(roas) >= 2} />
       </div>
 
-      {/* Budget bar */}
-      {campaign.budget && campaign.spend ? (
+      {/* Budget bar — only requires budget to be set; spend may be 0 */}
+      {campaign.budget != null ? (
         <div className="mb-4">
           <div className="flex justify-between text-xs text-gray-400 mb-1">
             <span>Budget used</span>
-            <span>${campaign.spend} / ${campaign.budget}</span>
+            <span>${campaign.spend ?? 0} / ${campaign.budget}</span>
           </div>
           <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-500 rounded-full"
-              style={{ width: `${Math.min(100, (campaign.spend / campaign.budget) * 100)}%` }}
+              style={{ width: `${Math.min(100, ((campaign.spend ?? 0) / campaign.budget) * 100)}%` }}
             />
           </div>
         </div>

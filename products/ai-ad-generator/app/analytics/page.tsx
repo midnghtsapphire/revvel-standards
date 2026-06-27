@@ -116,10 +116,15 @@ export default function AnalyticsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {campaigns.map((c) => {
-                  const roas = c.spend && c.revenue ? (c.revenue / c.spend).toFixed(2) : '—';
-                  const ctr = c.impressions && c.clicks
-                    ? ((c.clicks / c.impressions) * 100).toFixed(2)
-                    : '—';
+                  // Use != null / > 0 guards so zero values display correctly
+                  const roas =
+                    c.spend != null && c.spend > 0 && c.revenue != null
+                      ? (c.revenue / c.spend).toFixed(2)
+                      : '—';
+                  const ctr =
+                    c.impressions != null && c.impressions > 0 && c.clicks != null
+                      ? ((c.clicks / c.impressions) * 100).toFixed(2)
+                      : '—';
 
                   return (
                     <tr key={c.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -135,11 +140,11 @@ export default function AnalyticsPage() {
                           {c.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{c.spend ? `$${c.spend}` : '—'}</td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{c.revenue ? `$${c.revenue}` : '—'}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{c.spend != null ? `$${c.spend}` : '—'}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{c.revenue != null ? `$${c.revenue}` : '—'}</td>
                       <td className={`px-4 py-3 font-semibold ${Number(roas) >= 2 ? 'text-green-600' : 'text-gray-700 dark:text-gray-300'}`}>{roas !== '—' ? `${roas}x` : '—'}</td>
-                      <td className="px-4 py-3 text-gray-500">{c.impressions?.toLocaleString() || '—'}</td>
-                      <td className="px-4 py-3 text-gray-500">{c.clicks?.toLocaleString() || '—'}</td>
+                      <td className="px-4 py-3 text-gray-500">{c.impressions != null ? c.impressions.toLocaleString() : '—'}</td>
+                      <td className="px-4 py-3 text-gray-500">{c.clicks != null ? c.clicks.toLocaleString() : '—'}</td>
                       <td className="px-4 py-3 text-gray-500">{ctr !== '—' ? `${ctr}%` : '—'}</td>
                     </tr>
                   );
