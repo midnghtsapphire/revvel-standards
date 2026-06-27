@@ -1,6 +1,10 @@
 # Deep Search Research - R&D Engineering Framework
 # Uses Sonnet 3.5 + OpenRouter Fusion with DOE Screening, TRIZ, MEErP, LCA, BNAT
 # Based on Audrey's Master Prompt for rigorous R&D research
+#
+# The inline JS was extracted to scripts/deep-search-research.js to keep this
+# YAML file valid (multi-line template literals inside run: blocks cause parse
+# errors in strict YAML validators).
 
 name: Deep Search Research
 
@@ -27,9 +31,6 @@ permissions:
   issues: write
   contents: read
 
-env:
-  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-
 jobs:
   deep-research:
     name: Deep R&D Research (DOE/TRIZ/MEErP/LCA/BNAT)
@@ -50,187 +51,13 @@ jobs:
       - name: Run Deep Research
         id: research
         env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
           RESEARCH_QUERY: ${{ inputs.research_query || github.event.issue.title }}
           PROFILE: ${{ inputs.profile || 'deep_search' }}
-        run: |
-          node -e "
-            const { callOpenRouter, ROUTING_PROFILES } = require('./scripts/openrouter-routing');
-
-            const profile = ROUTING_PROFILES[process.env.PROFILE] || ROUTING_PROFILES.deep_search;
-            const models = profile.models;
-
-            const issueNumber = process.env.ISSUE_NUMBER;
-            const repo = process.env.REPO;
-            const query = process.env.RESEARCH_QUERY;
-
-            const systemPrompt = [
-              'You are an autonomous Lead Systems Engineer, Market Analyst, and R&D Director. You are conducting deep R&D research using rigorous engineering frameworks.',
-              '',
-              'NEVER accept the initial idea at face value. Your goal is to deconstruct the root problem, research the current state-of-the-art, and determine if the idea should be refined, repurposed, or completely pivoted.',
-              '',
-              'Walk through these frameworks:',
-              '',
-              '**Phase 1: Core Problem Deconstruction & Market Assessment**',
-              '- Strip away the specific proposed solution. What is the fundamental problem?',
-              '- What is the current Best Available Technology (BAT) solving this?',
-              '- What emerging trends and paradigm shifts are disrupting this space?',
-              '',
-              '**Phase 2: TRIZ (Theory of Inventive Problem Solving)**',
-              '- Identify contradictions in the idea',
-              '- Find existing COTS components or cross-industry solutions that can be repurposed',
-              '',
-              '**Phase 3: DOE 5-Point Screening Analysis**',
-              '1. Technological Feasibility - Is it viable based on current science?',
-              '2. Practicability - Can it be manufactured/installed/serviced at scale?',
-              '3. Utility Impacts - Does it negatively impact user experience?',
-              '4. Safety - Any adverse health or environmental impacts?',
-              '5. Proprietary Roadblocks - Does it rely on un-usable proprietary tech?',
-              '',
-              '**Phase 4: Life Cycle Assessment (LCA)**',
-              '- Cradle-to-grave environmental impact',
-              '- Resource depletion, energy efficiency, EoL recyclability',
-              '- Sustainable material alternatives',
-              '',
-              '**Phase 5: BNAT (Best Not Yet Available Technology)**',
-              '- Identify cutting-edge lab research, patents, and early development',
-              '- If initial idea is obsolete, discard and explain the better paradigm',
-              '',
-              '**Phase 6: Final Verdict & Actionable Blueprint**',
-              '- Refine, Repurpose, or Pivot?',
-              '- Bill of Materials (BOM) and Cost-Benefit Analysis',
-              '- Specific steps, components, and execution risks',
-              '',
-              'Output your research in structured markdown with clear headers for each phase.',
-            ].join('\n');
-
-            const userPrompt = [
-              'Research this issue/request:',
-              '',
-              query,
-              '',
-              'Provide a comprehensive deep research report following all 6 phases above.',
-            ].join('\n');
-            const systemPrompt = \`You are an autonomous Lead Systems Engineer, Market Analyst, and R&D Director. You are conducting deep R&D research using rigorous engineering frameworks.
-
-          NEVER accept the initial idea at face value. Your goal is to deconstruct the root problem, research the current state-of-the-art, and determine if the idea should be refined, repurposed, or completely pivoted.
-
-          Walk through these frameworks:
-
-          **Phase 1: Core Problem Deconstruction & Market Assessment**
-          - Strip away the specific proposed solution. What is the fundamental problem?
-          - What is the current Best Available Technology (BAT) solving this?
-          - What emerging trends and paradigm shifts are disrupting this space?
-
-          **Phase 2: TRIZ (Theory of Inventive Problem Solving)**
-          - Identify contradictions in the idea
-          - Find existing COTS components or cross-industry solutions that can be repurposed
-
-          **Phase 3: DOE 5-Point Screening Analysis**
-          1. Technological Feasibility - Is it viable based on current science?
-          2. Practicability - Can it be manufactured/installed/serviced at scale?
-          3. Utility Impacts - Does it negatively impact user experience?
-          4. Safety - Any adverse health or environmental impacts?
-          5. Proprietary Roadblocks - Does it rely on un-usable proprietary tech?
-
-          **Phase 4: Life Cycle Assessment (LCA)**
-          - Cradle-to-grave environmental impact
-          - Resource depletion, energy efficiency, EoL recyclability
-          - Sustainable material alternatives
-
-          **Phase 5: BNAT (Best Not Yet Available Technology)**
-          - Identify cutting-edge lab research, patents, and early development
-          - If initial idea is obsolete, discard and explain the better paradigm
-
-          **Phase 6: Final Verdict & Actionable Blueprint**
-          - Refine, Repurpose, or Pivot?
-          - Bill of Materials (BOM) and Cost-Benefit Analysis
-          - Specific steps, components, and execution risks
-
-          Output your research in structured markdown with clear headers for each phase.\`;
-
-            const userPrompt = \`Research this issue/request:
-
-          \${query}
-
-          Provide a comprehensive deep research report following all 6 phases above.\`;
-            NEVER accept the initial idea at face value. Your goal is to deconstruct the root problem, research the current state-of-the-art, and determine if the idea should be refined, repurposed, or completely pivoted.
-
-            Walk through these frameworks:
-
-            **Phase 1: Core Problem Deconstruction & Market Assessment**
-            - Strip away the specific proposed solution. What is the fundamental problem?
-            - What is the current Best Available Technology (BAT) solving this?
-            - What emerging trends and paradigm shifts are disrupting this space?
-
-            **Phase 2: TRIZ (Theory of Inventive Problem Solving)**
-            - Identify contradictions in the idea
-            - Find existing COTS components or cross-industry solutions that can be repurposed
-
-            **Phase 3: DOE 5-Point Screening Analysis**
-            1. Technological Feasibility - Is it viable based on current science?
-            2. Practicability - Can it be manufactured/installed/serviced at scale?
-            3. Utility Impacts - Does it negatively impact user experience?
-            4. Safety - Any adverse health or environmental impacts?
-            5. Proprietary Roadblocks - Does it rely on un-usable proprietary tech?
-
-            **Phase 4: Life Cycle Assessment (LCA)**
-            - Cradle-to-grave environmental impact
-            - Resource depletion, energy efficiency, EoL recyclability
-            - Sustainable material alternatives
-
-            **Phase 5: BNAT (Best Not Yet Available Technology)**
-            - Identify cutting-edge lab research, patents, and early development
-            - If initial idea is obsolete, discard and explain the better paradigm
-
-            **Phase 6: Final Verdict & Actionable Blueprint**
-            - Refine, Repurpose, or Pivot?
-            - Bill of Materials (BOM) and Cost-Benefit Analysis
-            - Specific steps, components, and execution risks
-
-            Output your research in structured markdown with clear headers for each phase.\`;
-
-            const userPrompt = \`Research this issue/request:
-
-            \${query}
-
-            Provide a comprehensive deep research report following all 6 phases above.\`;
-
-            async function run() {
-              console.log('Starting deep research with profile:', process.env.PROFILE);
-              console.log('Models:', models);
-
-              const messages = [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-              ];
-
-              try {
-                const result = await callOpenRouter({
-                  models: models,
-                  messages: messages,
-                  temperature: 0.7,
-                  max_tokens: 8000
-                });
-
-                console.log('\\n=== RESEARCH RESULTS ===\\n');
-                console.log(result.text);
-                console.log('\\n=== END RESULTS ===\\n');
-
-                // Save results
-                require('fs').writeFileSync('/tmp/deep-research-results.md', result.text);
-
-              } catch (err) {
-                console.error('Research failed:', err.message);
-                process.exit(1);
-              }
-            }
-
-            run();
-          "
-
+        run: node scripts/deep-search-research.js
       - name: Post research to issue
         if: env.ISSUE_NUMBER
         env:
@@ -268,7 +95,7 @@ jobs:
           fi
 
       - name: Update issue labels
-        if: env.ISSUE_NUMBER
+        if: ${{ github.event.issue.number || inputs.issue_number }}
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
@@ -277,10 +104,3 @@ jobs:
             --remove-label "deep-search" \
             --add-label "deep-search:complete" \
             --add-label "needs-review" 2>/dev/null || true
-
-      - name: Add to project
-        if: env.ISSUE_NUMBER
-        env:
-          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Research complete. Results posted to issue."
