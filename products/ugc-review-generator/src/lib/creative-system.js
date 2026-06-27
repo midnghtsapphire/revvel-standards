@@ -17,7 +17,17 @@ function normalizeUrgencyHours(value) {
 }
 
 function toSingularAudience(audience) {
-  return audience.replace(/s$/i, '') || audience;
+  const words = audience.split(' ');
+  const last = words[words.length - 1];
+  // Only strip the trailing 's' from the last word when it ends in a non-vowel,
+  // non-'s' consonant followed by 's' (e.g. "agents" → "agent", "dentists" →
+  // "dentist").  Words ending in 'ss', 'es', 'is', 'us', etc. are left
+  // untouched to avoid broken copy like "busines" or "coache".
+  if (last && /[bcdfghjklmnpqrtvwxyz]s$/i.test(last)) {
+    words[words.length - 1] = last.slice(0, -1);
+    return words.join(' ');
+  }
+  return audience;
 }
 
 function buildAmazonVisualPrompt({ productName, hookType }) {
