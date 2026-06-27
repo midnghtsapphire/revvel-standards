@@ -6,7 +6,7 @@ Closes #14753
 **Target under review:** <https://console.neyox.ai/login> (the `console.` app sub-domain of `neyox.ai`)
 **Output Type:** `production-app` · **Research Mode:** `standard` · **Lifecycle:** `new-build`
 **Research Date:** 2026-06-27
-**Researcher:** Copilot Coding Agent (mindmappr) + OpenRouter
+**Researcher:** Copilot Coding Agent (mind-mappr) + OpenRouter
 **WR Status:** ✅ Complete (flow map + reproducible scrape harness delivered; live capture deferred — see Blocker)
 
 ---
@@ -158,7 +158,7 @@ These are inferable only **after auth** (or from public marketing/docs). The map
 
 ## Step 4: Reproducible Scrape Harness (BOM)
 
-Run this when network access to `console.neyox.ai` is available. It produces the concrete evidence that fills Step 3's tables. It is **read-only, unauthenticated, public-surface only** — it does not attempt credentials, brute force, or ToS-restricted areas.
+This is a **reproducible recipe**, not a committed script. To run it, an operator first **creates** `scripts/scrape/neyox-login-map.mjs` from the code below, then executes it from an environment with network access. It produces the concrete evidence that fills Step 3's tables. It is **read-only, unauthenticated, public-surface only** — it does not attempt credentials, brute force, or ToS-restricted areas. (It is intentionally not committed as runnable code because it cannot be exercised in this sandbox and would otherwise ship untested.)
 
 ### Ranked tool BOM
 
@@ -172,7 +172,7 @@ Run this when network access to `console.neyox.ai` is available. It produces the
 ### Playwright capture recipe (public surface only)
 
 ```js
-// scripts/scrape/neyox-login-map.mjs  (illustrative; run only with network access + ToS review)
+// Recipe to save as scripts/scrape/neyox-login-map.mjs (run only with network access + ToS review)
 import { chromium } from 'playwright';
 
 const TARGET = 'https://console.neyox.ai/login';
@@ -248,7 +248,7 @@ This WR ships **competitive recon + a reusable scrape harness**, not a sellable 
 | Selected artifact | Repo engine / standard | Status |
 |-------------------|------------------------|--------|
 | Flow-map research dossier | `docs/WEEKLY_RESEARCH_PROCESS.md` | ✅ Produced (this file) |
-| Reproducible Playwright scrape harness | `skills/` (Playwright testing skill) | ✅ Recipe delivered (Step 4); run on network access |
+| Reproducible Playwright scrape recipe | `skills/` (Playwright testing skill) | ✅ Recipe delivered (Step 4); operator saves to `scripts/scrape/` + runs on network access |
 | Login/onboarding flow map | this doc (Step 3) | ✅ Structure delivered; ⏳ live values pending |
 | AI-process / agent map | this doc (Step 3.3) | ⏳ Gap — needs public docs or authorized access |
 | "Competitor stack & flow report" product | *no existing engine* | ⚠️ Gap — candidate OSINT productization (Focus Area #2) |
@@ -281,4 +281,4 @@ Durable findings institutionalized back into revvel-standards:
 | WR Status | ✅ Complete (flow-map structure + reproducible scrape harness delivered) |
 | Deliverable | Recon dossier + ToS-aware Playwright capture recipe + flow/dependency/AI-process map skeleton |
 | Live capture | ⏳ Deferred — run harness when network access to `console.neyox.ai` is available |
-| Blocker | **Sandbox network/browser limit** — `neyox.ai`/`console.neyox.ai` DNS did not resolve in this automation run (`ENOTFOUND`), and the shared Playwright browser was locked by a prior session. **Re-run:** execute `scripts/scrape/neyox-login-map.mjs` (Step 4) from an environment with outbound network + an isolated browser; paste captured `final-url`, `headers`, `auth-options`, and `hosts` into the Step 3 tables. |
+| Blocker | **Sandbox network/browser limit** — `neyox.ai`/`console.neyox.ai` DNS did not resolve in this automation run (`ENOTFOUND`), and the shared Playwright browser was locked by a prior session. **Re-run:** save the Step 4 recipe to `scripts/scrape/neyox-login-map.mjs`, then execute it from an environment with outbound network + an isolated browser; paste captured `final-url`, `headers`, `auth-options`, and `hosts` into the Step 3 tables. |
