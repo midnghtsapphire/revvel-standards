@@ -77,7 +77,8 @@ export default function AnalyticsChart({ data, type = 'roas' }: AnalyticsChartPr
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="date" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(v: number) => [`$${v.toFixed(0)}`]} />
+          {/* Return [value, name] so recharts can display both Spend and Revenue labels in the tooltip */}
+          <Tooltip formatter={(v: number, name: string) => [`$${v.toFixed(0)}`, name]} />
           <Legend />
           <Bar dataKey="spend" fill="#94a3b8" name="Spend" radius={[2, 2, 0, 0]} />
           <Bar dataKey="revenue" fill="#2563eb" name="Revenue" radius={[2, 2, 0, 0]} />

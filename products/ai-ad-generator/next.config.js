@@ -6,9 +6,8 @@ const nextConfig = {
       { protocol: 'http', hostname: '**' },
     ],
   },
-  experimental: {
-    serverComponentsExternalPackages: ['@napi-rs/canvas'],
-  },
+  // serverExternalPackages replaces experimental.serverComponentsExternalPackages in Next.js 15
+  serverExternalPackages: ['@napi-rs/canvas'],
 };
 
 module.exports = nextConfig;

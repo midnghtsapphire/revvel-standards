@@ -56,7 +56,7 @@ export default function ProductScrapeStep({ onComplete }: ProductScrapeStepProps
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && url && handleScrape()}
+          onKeyDown={(e) => { if (e.key === 'Enter' && url && !loading) handleScrape(); }}
           placeholder="https://yourstore.com/products/awesome-product"
           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />

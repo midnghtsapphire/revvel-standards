@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'AI Ad Generator — Zeely-Style Ad Automation',
   description:
     'Generate high-converting UGC video scripts, static ad creatives, and full campaign copy from any product URL — powered by AI.',
+  icons: { icon: '/favicon.ico' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

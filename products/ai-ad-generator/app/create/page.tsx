@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import WizardStepper from '../../components/WizardStepper';
 import ProductScrapeStep from '../../components/ProductScrapeStep';
 import AdCopyStep from '../../components/AdCopyStep';
@@ -69,12 +70,12 @@ export default function CreateAdPage() {
           Your ad assets have been saved to the campaign manager. Ready to launch!
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/campaigns"
             className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
           >
             View Campaigns →
-          </a>
+          </Link>
           <button
             onClick={() => {
               setStep(1);
