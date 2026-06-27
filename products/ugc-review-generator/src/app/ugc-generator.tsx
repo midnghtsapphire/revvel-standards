@@ -84,8 +84,8 @@ export default function UgcGenerator() {
   }
 
   const isFormEmpty = useCase === 'amazon-ugc'
-    ? !productName?.trim() && !problem?.trim()
-    : !brandName?.trim() && !audience?.trim();
+    ? !productName?.trim() || !problem?.trim()
+    : !brandName?.trim() || !audience?.trim();
 
   return (
     <div className={`mode-${mode} min-h-screen bg-slate-950 text-slate-100`}>
