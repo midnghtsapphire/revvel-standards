@@ -1,4 +1,5 @@
 'use client';
+// description: Analytics dashboard showing ROAS, CTR, conversions, and spend trends across all campaigns.
 
 import { useEffect, useMemo, useState } from 'react';
 import AnalyticsChart from '../../components/AnalyticsChart';

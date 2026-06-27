@@ -22,9 +22,18 @@ const TIMEOUT_MS = 15_000;
 const MAX_RESPONSE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 // Private / loopback ranges that must not be fetched server-side (SSRF defence).
-// Covers IPv4 loopback, RFC-1918 private ranges, link-local, and metadata endpoints.
+// Covers IPv4 loopback, RFC-1918 private ranges, link-local, metadata endpoints,
+// and IPv6 ULA (fc00::/7 = fc + fd prefixes).
 const BLOCKED_HOSTNAME_RE =
-  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.\d+\.\d+\.\d+|::1|fd[0-9a-f]{2}:|fe80:)/i;
+  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.\d+\.\d+\.\d+|::1|f[cd][0-9a-f]{2}:|fe80:)/i;
+
+/** Typed error for bad-URL inputs that should be surfaced to the caller as 4xx. */
+export class ScraperClientError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ScraperClientError';
+  }
+}
 
 function isBlockedUrl(urlStr: string): boolean {
   try {
@@ -34,8 +43,8 @@ function isBlockedUrl(urlStr: string): boolean {
     // Block numeric IPs that look like private ranges not caught above
     if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
       const parts = hostname.split('.').map(Number);
-      // Block 100.64-127 (CGNAT + loopback edge), 169.254, 240-255
-      if (parts[0] === 100 && parts[1] >= 64) return true;
+      // Block RFC 6598 CGNAT (100.64.0.0/10 = second octet 64–127), 169.254, 240-255
+      if (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) return true;
       if (parts[0] === 169 && parts[1] === 254) return true;
       if (parts[0] >= 240) return true;
     }
@@ -47,7 +56,7 @@ function isBlockedUrl(urlStr: string): boolean {
 
 export async function scrapeProduct(url: string): Promise<ProductData> {
   if (isBlockedUrl(url)) {
-    throw new Error('URL points to a disallowed destination (private/loopback address)');
+    throw new ScraperClientError('URL points to a disallowed destination (private/loopback address)');
   }
 
   let html: string;
@@ -63,25 +72,55 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
         'Accept-Language': 'en-US,en;q=0.9',
       },
       signal: controller.signal,
+      // Do not silently follow redirects to private addresses; re-check final URL
+      redirect: 'follow',
     });
+
+    // Re-validate the resolved URL after any redirect hops
+    if (isBlockedUrl(res.url)) {
+      throw new ScraperClientError('URL redirected to a disallowed destination');
+    }
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`);
     }
 
-    // Guard against huge responses
+    // Guard against huge responses — fast-path via Content-Length header
     const contentLength = Number(res.headers.get('content-length') || 0);
     if (contentLength > MAX_RESPONSE_BYTES) {
       throw new Error(`Response too large (${contentLength} bytes)`);
     }
 
-    const buffer = await res.arrayBuffer();
-    if (buffer.byteLength > MAX_RESPONSE_BYTES) {
-      throw new Error(`Response too large (${buffer.byteLength} bytes)`);
+    // Stream the body with a byte counter so we never buffer more than MAX_RESPONSE_BYTES
+    const reader = res.body!.getReader();
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          totalBytes += value.byteLength;
+          if (totalBytes > MAX_RESPONSE_BYTES) {
+            throw new Error(`Response too large (>${MAX_RESPONSE_BYTES} bytes)`);
+          }
+          chunks.push(value);
+        }
+      }
+    } finally {
+      reader.releaseLock();
     }
 
-    html = new TextDecoder().decode(buffer);
+    const merged = new Uint8Array(totalBytes);
+    let offset = 0;
+    for (const chunk of chunks) {
+      merged.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    html = new TextDecoder().decode(merged);
   } catch (err: unknown) {
+    // Preserve typed client errors so route.ts can return 4xx without string-matching
+    if (err instanceof ScraperClientError) throw err;
     const msg = err instanceof Error ? err.message : String(err);
     throw new Error(`Scrape failed for ${url}: ${msg}`);
   } finally {

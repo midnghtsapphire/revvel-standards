@@ -179,8 +179,14 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
     }
 
     const variants = (parsed.variants as Array<Record<string, unknown>>).map((v) => ({
-      headline: typeof v.headline === 'string' ? v.headline : '',
-      body: typeof v.body === 'string' ? v.body : '',
+      headline:
+        typeof v.headline === 'string' && v.headline.trim() !== ''
+          ? v.headline.trim()
+          : (parsed.primaryHeadline as string),
+      body:
+        typeof v.body === 'string' && v.body.trim() !== ''
+          ? v.body.trim()
+          : (parsed.script as string),
       cta: typeof v.cta === 'string' ? v.cta : 'Shop Now',
       hook: typeof v.hook === 'string' ? v.hook : undefined,
       framework: (['AIDA', 'PAS', 'BAB', 'Direct'].includes(v.framework as string)

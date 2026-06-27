@@ -85,7 +85,7 @@ export function generateCampaignId(): string {
  */
 export function seedDemoCampaigns(): void {
   if (typeof window === 'undefined') return;
-  if (localStorage.getItem(SEEDED_KEY)) return;
+  try { if (localStorage.getItem(SEEDED_KEY)) return; } catch { return; }
   // Mark seeded immediately so concurrent/SSR double-calls are safe
   try { localStorage.setItem(SEEDED_KEY, '1'); } catch { return; }
 

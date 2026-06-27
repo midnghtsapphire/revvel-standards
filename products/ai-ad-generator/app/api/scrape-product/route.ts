@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scrapeProduct } from '../../../lib/scraper';
+import { scrapeProduct, ScraperClientError } from '../../../lib/scraper';
 import { ScrapeProductResponse } from '../../../types';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ScrapeProductResponse>> {
@@ -34,11 +34,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<ScrapeProduct
     // Log internal detail server-side; return a generic client-safe message
     const detail = err instanceof Error ? err.message : 'Unknown error';
     console.error('[/api/scrape-product]', detail);
-    // Surface SSRF-block and format errors as 400, everything else as 500
-    const isClientError =
-      detail.includes('disallowed destination') ||
-      detail.includes('Only http/https') ||
-      detail.includes('Invalid URL');
+    // Use typed ScraperClientError to distinguish 4xx (bad URL) from 5xx (infra)
+    const isClientError = err instanceof ScraperClientError;
     return NextResponse.json(
       { success: false, error: isClientError ? detail : 'Scrape failed. Check the URL and try again.' },
       { status: isClientError ? 400 : 500 }

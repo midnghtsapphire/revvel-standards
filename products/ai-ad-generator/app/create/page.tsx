@@ -1,4 +1,5 @@
 'use client';
+// description: Ad creation wizard — scrape a product URL, generate AI ad copy, build static creatives, and launch campaigns.
 
 import { useState } from 'react';
 import Link from 'next/link';

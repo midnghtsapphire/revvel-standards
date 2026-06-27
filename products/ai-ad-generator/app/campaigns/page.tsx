@@ -1,4 +1,5 @@
 'use client';
+// description: Campaign manager — view, filter, and manage all active ad campaigns and their metrics.
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
