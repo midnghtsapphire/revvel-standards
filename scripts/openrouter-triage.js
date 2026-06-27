@@ -16,6 +16,10 @@ const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
+const MAX_PROMPT_COMMENTS = 8;
+const MAX_COMMENT_PREVIEW_CHARS = 500;
+const MAX_URLS_IN_CONTEXT = 25;
+const COMMENTS_PER_PAGE = 20;
 
 // Labels applied to an issue/PR to surface triage outcomes. Keep in sync with
 // `.github/labels.yml` so `sync-labels.yml` can propagate them to every repo.
@@ -126,7 +130,21 @@ function buildSystemPrompt(labelNames) {
   ].join("\n");
 }
 
-function buildUserPrompt({ eventKind, issueNumber, title, body }) {
+function buildUserPrompt({ eventKind, issueNumber, title, body, comments = [] }) {
+  const promptComments = comments.slice(0, MAX_PROMPT_COMMENTS);
+  const urlContext = collectUrlContext([title, body, ...promptComments.map((comment) => comment.body || "")]);
+  const commentContext =
+    promptComments.length > 0
+      ? promptComments
+          .map((comment, index) => {
+            const author = comment.author || "unknown";
+            const raw = String(comment.body || "").trim();
+            const compact = raw.replace(/\s+/g, " ").slice(0, MAX_COMMENT_PREVIEW_CHARS);
+            return `Comment ${index + 1} (${author}): ${compact || "(empty comment)"}`;
+          })
+          .join("\n")
+      : "(no comments provided)";
+
   return [
     `Repository: ${GITHUB_REPOSITORY}`,
     `Event kind: ${eventKind}`,
@@ -134,7 +152,59 @@ function buildUserPrompt({ eventKind, issueNumber, title, body }) {
     `Title: ${title || "(no title)"}`,
     "Body:",
     body && body.trim().length > 0 ? body : "(no body provided)",
+    "",
+    "Recent comments (for Q&A/context):",
+    commentContext,
+    "",
+    "URLs observed in title/body/comments (LinkedIn safety redirects unwrapped when possible):",
+    urlContext || "(no URLs detected)",
   ].join("\n\n");
+}
+
+function normalizeUrl(rawUrl) {
+  if (!rawUrl) return "";
+  const trimmed = String(rawUrl).trim().replace(/[),.;!?]+$/g, "");
+  let parsed;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return trimmed;
+  }
+
+  const host = parsed.hostname.toLowerCase();
+  const path = parsed.pathname.toLowerCase();
+  const isLinkedInHost = host === "linkedin.com" || host.endsWith(".linkedin.com");
+  if (isLinkedInHost && path.startsWith("/safety/go")) {
+    const embeddedEntry = [...parsed.searchParams.entries()].find(([key]) => key.toLowerCase() === "url");
+    const embedded = embeddedEntry?.[1];
+    if (embedded) {
+      let unwrapped = embedded;
+      if (embedded.includes("%")) {
+        try {
+          unwrapped = decodeURIComponent(embedded);
+        } catch {
+          unwrapped = embedded;
+        }
+      }
+      return unwrapped.trim();
+    }
+  }
+
+  return trimmed;
+}
+
+function extractUrls(text) {
+  if (!text) return [];
+  const matches = String(text).match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  return [...new Set(matches.map((candidate) => normalizeUrl(candidate)).filter(Boolean))];
+}
+
+function collectUrlContext(chunks) {
+  const all = [];
+  for (const chunk of chunks || []) {
+    all.push(...extractUrls(chunk));
+  }
+  return [...new Set(all)].slice(0, MAX_URLS_IN_CONTEXT).join("\n");
 }
 
 function requestJson({ hostname, pathName, method, headers, payload }) {
@@ -494,6 +564,34 @@ async function removeGitHubLabels(labels) {
   }
 }
 
+async function fetchIssueComments() {
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo || !ISSUE_NUMBER) return [];
+  try {
+    const payload = await requestJson({
+      hostname: "api.github.com",
+      pathName:
+        `/repos/${owner}/${repo}/issues/${ISSUE_NUMBER}/comments` +
+        `?per_page=${COMMENTS_PER_PAGE}&sort=created&direction=desc`,
+      method: "GET",
+      headers: {
+        ...(GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}),
+        "User-Agent": "revvel-openrouter-triage-script",
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    if (!Array.isArray(payload)) return [];
+    return payload.map((comment) => ({
+      author: comment?.user?.login || "unknown",
+      body: String(comment?.body || ""),
+    }));
+  } catch (err) {
+    console.log(`::warning::Could not fetch comments for #${ISSUE_NUMBER}: ${err.message}`);
+    return [];
+  }
+}
+
 async function triggerAutoErrorWorkflow({ errorType, errorMessage, errorContext, attemptedFixes }) {
   // Trigger the auto-error-handler workflow to create an issue and attempt recovery
   // This implements the obsessive self-healing protocol from AGENTS.md
@@ -650,12 +748,14 @@ async function main() {
   }
 
   const labelNames = parseLabelNamesFromYaml(path.resolve(process.cwd(), ".github/labels.yml"));
+  const comments = await fetchIssueComments();
   const systemPrompt = buildSystemPrompt(labelNames);
   const userPrompt = buildUserPrompt({
     eventKind: EVENT_KIND,
     issueNumber: ISSUE_NUMBER,
     title: ISSUE_TITLE,
     body: ISSUE_BODY,
+    comments,
   });
 
   let triage;
@@ -710,5 +810,8 @@ module.exports = {
   buildFailureComment,
   buildPerplexityTriageScript,
   truncateForComment,
+  normalizeUrl,
+  extractUrls,
+  collectUrlContext,
   FAILURE_LABELS,
 };

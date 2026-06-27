@@ -1,6 +1,10 @@
 # Deep Search Research - R&D Engineering Framework
 # Uses Sonnet 3.5 + OpenRouter Fusion with DOE Screening, TRIZ, MEErP, LCA, BNAT
 # Based on Audrey's Master Prompt for rigorous R&D research
+#
+# The inline JS was extracted to scripts/deep-search-research.js to keep this
+# YAML file valid (multi-line template literals inside run: blocks cause parse
+# errors in strict YAML validators).
 
 name: Deep Search Research
 
@@ -27,9 +31,6 @@ permissions:
   issues: write
   contents: read
 
-env:
-  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-
 jobs:
   deep-research:
     name: Deep R&D Research (DOE/TRIZ/MEErP/LCA/BNAT)
@@ -50,11 +51,13 @@ jobs:
       - name: Run Deep Research
         id: research
         env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           REPO: ${{ github.repository }}
           RESEARCH_QUERY: ${{ inputs.research_query || github.event.issue.title }}
           PROFILE: ${{ inputs.profile || 'deep_search' }}
+        run: node scripts/deep-search-research.js
         run: |
           node -e "
             const { callOpenRouter, ROUTING_PROFILES } = require('./scripts/openrouter-routing');
@@ -268,7 +271,7 @@ jobs:
           fi
 
       - name: Update issue labels
-        if: env.ISSUE_NUMBER
+        if: ${{ github.event.issue.number || inputs.issue_number }}
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
@@ -277,10 +280,3 @@ jobs:
             --remove-label "deep-search" \
             --add-label "deep-search:complete" \
             --add-label "needs-review" 2>/dev/null || true
-
-      - name: Add to project
-        if: env.ISSUE_NUMBER
-        env:
-          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Research complete. Results posted to issue."

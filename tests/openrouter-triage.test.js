@@ -9,6 +9,9 @@ const {
   buildFailureComment,
   buildPerplexityTriageScript,
   truncateForComment,
+  normalizeUrl,
+  extractUrls,
+  collectUrlContext,
   FAILURE_LABELS,
 } = require('../scripts/openrouter-triage.js');
 
@@ -42,11 +45,44 @@ test('buildUserPrompt includes event kind and fallback body behavior', () => {
     issueNumber: '123',
     title: 'Fix workflow',
     body: '',
+    comments: [],
   });
   assert.ok(prompt.includes('Event kind: pull_request'));
   assert.ok(prompt.includes('Number: #123'));
   assert.ok(prompt.includes('Title: Fix workflow'));
   assert.ok(prompt.includes('(no body provided)'));
+  assert.ok(prompt.includes('(no comments provided)'));
+});
+
+test('buildUserPrompt includes comment context and unwrapped LinkedIn URLs', () => {
+  const prompt = buildUserPrompt({
+    eventKind: 'issue',
+    issueNumber: '14696',
+    title: '[WR] example',
+    body: 'See https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fexample.com%2Fform&foo=1',
+    comments: [{ author: 'midnghtsapphire', body: 'Please review https://lnkd.in/gCM4qf6v' }],
+  });
+  assert.ok(prompt.includes('Comment 1 (midnghtsapphire): Please review https://lnkd.in/gCM4qf6v'));
+  assert.ok(prompt.includes('URLs observed in title/body/comments'));
+  assert.ok(prompt.includes('https://example.com/form'));
+
+test('normalizeUrl unwraps LinkedIn safety redirects', () => {
+  const normalized = normalizeUrl(
+    'https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fexample.com%2Fform%3Fa%3D1&urlhash=abc'
+  );
+  assert.strictEqual(normalized, 'https://example.com/form?a=1');
+});
+
+test('extractUrls and collectUrlContext dedupe normalized URLs', () => {
+  const text = [
+    'Primary https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fexample.com%2Fx',
+    'Secondary https://example.com/x and https://example.com/y.',
+  ].join(' ');
+  assert.deepStrictEqual(extractUrls(text), ['https://example.com/x', 'https://example.com/y']);
+  assert.strictEqual(
+    collectUrlContext([text, 'repeat https://example.com/x']),
+    'https://example.com/x\nhttps://example.com/y'
+  );
 });
 
 test('truncateForComment truncates long bodies and leaves short ones untouched', () => {
