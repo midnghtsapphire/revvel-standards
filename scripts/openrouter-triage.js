@@ -178,7 +178,14 @@ function normalizeUrl(rawUrl) {
     const embeddedEntry = [...parsed.searchParams.entries()].find(([key]) => key.toLowerCase() === "url");
     const embedded = embeddedEntry?.[1];
     if (embedded) {
-      const unwrapped = embedded.includes("%") ? decodeURIComponent(embedded) : embedded;
+      let unwrapped = embedded;
+      if (embedded.includes("%")) {
+        try {
+          unwrapped = decodeURIComponent(embedded);
+        } catch {
+          unwrapped = embedded;
+        }
+      }
       return unwrapped.trim();
     }
   }
