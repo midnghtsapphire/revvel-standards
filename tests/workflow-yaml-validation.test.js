@@ -521,8 +521,8 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
   }
 
-  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
-    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  if (dispatchStep.if !== "always() && needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must still run after non-fatal packet persistence failures');
   }
 
   const script = dispatchStep.with?.script || '';
@@ -612,6 +612,32 @@ test('secret-persistence-guard.yml auto-recover supports force_recovery manual d
   const expectedOrPattern = /^needs\.monitor-secret-health\.outputs\.has_missing == 'true' \|\| \(github\.event_name == 'workflow_dispatch' && inputs\.force_recovery\)$/;
   if (!expectedOrPattern.test(normalizedCondition)) {
     throw new Error('auto-recover condition must preserve OR logic between missing-secrets and force_recovery paths');
+  }
+});
+
+// Regression: resync-all-prs job must use GITHUB_TOKEN directly, not an
+// ADMIN_GITHUB_TOKEN fallback.  When ADMIN_GITHUB_TOKEN is set but expired/
+// invalid the fallback expression `secrets.ADMIN_GITHUB_TOKEN != '' &&
+// secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN` still resolves to the
+// bad token, causing 401 Bad credentials on every scheduled re-sync.
+// See: job 83770001732, workflow run 28271626160.
+test('pr-state-orchestrator.yml resync-all-prs uses GITHUB_TOKEN (not ADMIN fallback)', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-state-orchestrator.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+
+  const resyncJob = doc.jobs?.['resync-all-prs'];
+  if (!resyncJob) throw new Error('resync-all-prs job not found in pr-state-orchestrator.yml');
+
+  const steps = resyncJob.steps || [];
+  for (const step of steps) {
+    const token = step.with?.['github-token'] || '';
+    if (token.includes('ADMIN_GITHUB_TOKEN')) {
+      throw new Error(
+        `resync-all-prs step "${step.name}" uses ADMIN_GITHUB_TOKEN — ` +
+        'use ${{ secrets.GITHUB_TOKEN }} directly to avoid 401 when the PAT is set but invalid'
+      );
+    }
   }
 });
 
