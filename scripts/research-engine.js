@@ -11,6 +11,9 @@ const GITHUB_HOST = "api.github.com";
 const GITHUB_PAGE_SIZE = 100;
 const DEFAULT_REPOSITORY = "midnghtsapphire/revvel-standards";
 const ERROR_BODY_LIMIT = 900;
+// Stay under GitHub's ~65k comment limit with headroom for headings/metadata so
+// the findings comment posts reliably and remains consumable by wr-pr-creation.
+const MAX_FINDINGS_COMMENT_LENGTH = 60000;
 
 const MODEL_TRIAD = [
   "anthropic/claude-sonnet-4",
@@ -561,10 +564,7 @@ function buildFindingsComment({ outputFile, synthesis }) {
     "",
     `Source packet: \`${outputFile}\``,
     "",
-    // Keep well under GitHub's max comment size so large synthesis blocks still
-    // post reliably and remain available to wr-pr-creation even when packet
-    // persistence to the repository fails.
-    truncateForComment(synthesis, 60000).trim(),
+    truncateForComment(synthesis, MAX_FINDINGS_COMMENT_LENGTH).trim(),
   ].join("\n");
 }
 
@@ -682,7 +682,7 @@ async function updateStartState(context) {
   }
 }
 
-async function updateCompleteState(context, laneReports, synthesis, status) {
+async function updateCompleteState(context, laneReports, status) {
   if (!context.githubToken) return;
   const targetNumber = context.prNumber || context.issueNumber;
   if (!targetNumber) return;
@@ -725,6 +725,9 @@ async function updateCompleteState(context, laneReports, synthesis, status) {
   }
 
   if (status === "complete" && context.issueNumber) {
+    // Only issues need this fallback. wr-pr-creation reads issue comments when it
+    // builds the WR document; PR review automation already reads the packet/review
+    // comment path and does not need a duplicate findings payload.
     try {
       await postComment({
         githubToken: context.githubToken,
@@ -732,7 +735,7 @@ async function updateCompleteState(context, laneReports, synthesis, status) {
         number: context.issueNumber,
         body: buildFindingsComment({
           outputFile: context.outputFile,
-          synthesis,
+          synthesis: context.synthesis || "",
         }),
       });
     } catch (error) {
@@ -829,9 +832,10 @@ async function runResearchEngine(options, caller = callOpenRouter) {
 
   const document = formatDocument({ context, synthesis, laneReports, status });
   const outputPath = writeDocument(context.outputFile, document);
+  context.synthesis = synthesis;
 
   if (!context.dryRun) {
-    await updateCompleteState(context, laneReports, synthesis, status);
+    await updateCompleteState(context, laneReports, status);
     if (status === "complete") {
       await requestPrReviews(context);
       await findAndRequestLinkedPrReviews(context);
