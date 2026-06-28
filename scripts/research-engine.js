@@ -561,6 +561,9 @@ function buildFindingsComment({ outputFile, synthesis }) {
     "",
     `Source packet: \`${outputFile}\``,
     "",
+    // Keep well under GitHub's max comment size so large synthesis blocks still
+    // post reliably and remain available to wr-pr-creation even when packet
+    // persistence to the repository fails.
     truncateForComment(synthesis, 60000).trim(),
   ].join("\n");
 }
