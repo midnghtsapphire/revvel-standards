@@ -554,6 +554,17 @@ function buildReviewRequestComment({ outputFile, laneReports, includeCoderTrigge
   ].join("\n");
 }
 
+function buildFindingsComment({ outputFile, synthesis }) {
+  return [
+    "<!-- revvel-research-findings -->",
+    "## Research Findings",
+    "",
+    `Source packet: \`${outputFile}\``,
+    "",
+    truncateForComment(synthesis, 60000).trim(),
+  ].join("\n");
+}
+
 function formatDocument({ context, synthesis, laneReports, status }) {
   const date = new Date().toISOString();
   const lines = [
@@ -668,7 +679,7 @@ async function updateStartState(context) {
   }
 }
 
-async function updateCompleteState(context, laneReports, status) {
+async function updateCompleteState(context, laneReports, synthesis, status) {
   if (!context.githubToken) return;
   const targetNumber = context.prNumber || context.issueNumber;
   if (!targetNumber) return;
@@ -708,6 +719,22 @@ async function updateCompleteState(context, laneReports, status) {
     });
   } catch (error) {
     console.log(`::warning::Could not post research review comment on #${targetNumber}: ${error.message}`);
+  }
+
+  if (status === "complete" && context.issueNumber) {
+    try {
+      await postComment({
+        githubToken: context.githubToken,
+        repository: context.repository,
+        number: context.issueNumber,
+        body: buildFindingsComment({
+          outputFile: context.outputFile,
+          synthesis,
+        }),
+      });
+    } catch (error) {
+      console.log(`::warning::Could not post research findings comment on #${context.issueNumber}: ${error.message}`);
+    }
   }
 }
 
@@ -801,7 +828,7 @@ async function runResearchEngine(options, caller = callOpenRouter) {
   const outputPath = writeDocument(context.outputFile, document);
 
   if (!context.dryRun) {
-    await updateCompleteState(context, laneReports, status);
+    await updateCompleteState(context, laneReports, synthesis, status);
     if (status === "complete") {
       await requestPrReviews(context);
       await findAndRequestLinkedPrReviews(context);
@@ -840,6 +867,7 @@ module.exports = {
   MODEL_TRIAD,
   buildLaneSystemPrompt,
   buildLaneUserPrompt,
+  buildFindingsComment,
   buildMissingKeyReport,
   buildReviewRequestComment,
   buildSynthesisPrompt,
