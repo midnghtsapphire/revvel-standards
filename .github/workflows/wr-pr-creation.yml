@@ -629,6 +629,45 @@ jobs:
           fi
 
           echo "Generated WR document: ${WR_FILE}"
+      - name: Validate WR local references
+        run: |
+          export WR_FILE
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+          import sys
+
+          wr_file = pathlib.Path(os.environ["WR_FILE"])
+          repo_root = pathlib.Path.cwd()
+          text = wr_file.read_text(encoding="utf8")
+          missing = []
+
+          for match in re.finditer(r'(?<!\!)\[[^\]]+\]\(([^)]+)\)', text):
+              target = match.group(1).strip().strip('<>')
+              if not target:
+                  continue
+              if re.match(r'^[a-zA-Z][a-zA-Z0-9+.-]*:', target):
+                  continue
+              target = target.split('#', 1)[0]
+              if not target:
+                  continue
+              resolved = (wr_file.parent / target).resolve()
+              if not resolved.exists():
+                  try:
+                      display = resolved.relative_to(repo_root)
+                  except ValueError:
+                      display = resolved
+                  missing.append(f'{target} -> {display}')
+
+          if missing:
+              print(f'::error::Missing local references in {wr_file}:')
+              for item in missing:
+                  print(f'::error::{item}')
+              sys.exit(1)
+
+          print(f'Validated local references in {wr_file}')
+          PY
       - name: Commit WR document
         run: |
           git add "${WR_FILE}"

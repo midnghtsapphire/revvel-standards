@@ -9,6 +9,7 @@ on:
         type: boolean
         default: false
 permissions:
+  actions: write
   issues: write
   pull-requests: write
   contents: read

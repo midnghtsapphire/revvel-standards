@@ -76,6 +76,17 @@ async function run() {
     assert.ok(prComment.includes("Research Findings:"), "PR comment must include the coder trigger phrase");
   });
 
+  queue("findings comment carries synthesis so WR generation can proceed without a committed packet", () => {
+    const comment = engine.buildFindingsComment({
+      outputFile: "docs/research-engine/run-123.md",
+      synthesis: "## Executive Summary\n\nActionable findings live here.",
+    });
+    assert.ok(comment.includes("## Research Findings"));
+    assert.ok(comment.includes("docs/research-engine/run-123.md"));
+    assert.ok(comment.includes("## Executive Summary"));
+    assert.ok(comment.includes("Actionable findings live here."));
+  });
+
   queue("formats missing-key packets as visible infrastructure blockers", () => {
     const packet = engine.buildMissingKeyReport({
       query: "research",
