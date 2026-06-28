@@ -44,7 +44,7 @@ _No response_
 
 Create autofill process- research, creste req specs, build, code, implement, ship to market s2m
 
-https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgCM4qf6v&urlhash=Zn8h&mt=68YNR2jaIRMvokcTaqjwP2krafOTpDBBhwbv5xt-xDsqWbJaCItzljajwyj18XTBZ4v3XMvfPo9U63eedVkWMxNF70KF69KhvgjdMwJQcnS37RMlZWkqJOIlcA&isSdui=true
+<https://www.linkedin.com/safety/go/?url=https%3A%2F%2Flnkd%2Ein%2FgCM4qf6v&urlhash=Zn8h&mt=68YNR2jaIRMvokcTaqjwP2krafOTpDBBhwbv5xt-xDsqWbJaCItzljajwyj18XTBZ4v3XMvfPo9U63eedVkWMxNF70KF69KhvgjdMwJQcnS37RMlZWkqJOIlcA&isSdui=true>
 
 ### Required Bundle
 
