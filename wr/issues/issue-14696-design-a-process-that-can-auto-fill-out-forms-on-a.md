@@ -36,7 +36,7 @@ The recommended approach is a **Next.js production app** with a headless browser
 ### Product Created From This Research
 
 **Product name:** FormPilot  
-**Implementation path:** `products/formpilot`  
+**Implementation path:** `products/form-pilot`  
 **Product type:** Next.js production app (ship-to-market)  
 **Core user outcome:** Paste a URL + your profile data → FormPilot fills every field intelligently and previews or auto-submits the form.
 
@@ -218,7 +218,7 @@ Total infrastructure cost for 100 users/month: **~$25–45/month** (Vercel Pro +
 ## Step 10 — Save This Prompt & Findings
 
 - [x] WR saved to `wr/issues/issue-14696-design-a-process-that-can-auto-fill-out-forms-on-a.md`
-- [ ] Product scaffolded at `products/formpilot`
+- [ ] Product scaffolded at `products/form-pilot`
 - [ ] Product docs completed: `README.md`, `CHANGELOG.md`, `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`
 
 ---
@@ -228,8 +228,8 @@ Total infrastructure cost for 100 users/month: **~$25–45/month** (Vercel Pro +
 | Artifact | Status | Location |
 | --- | --- | --- |
 | WR Research Document | ✅ Complete | `wr/issues/issue-14696-design-a-process-that-can-auto-fill-out-forms-on-a.md` |
-| Product Scaffold | ⬜ Pending | `products/formpilot` |
-| Research Packet | ❌ Lost (branch protection rejection) | `docs/research-engine/run-27888295943.md` — never committed; findings reconstructed here |
+| Product Scaffold | ⬜ Pending | `products/form-pilot` |
+| Research Packet | ❌ Lost (branch protection rejection) | `docs/research-engine/run-27888295943.md` — never committed (see [workflow run `27888295943`](https://github.com/midnghtsapphire/revvel-standards/actions/runs/27888295943)); findings reconstructed here |
 
 ## 🩹 Agent Self-Healing Journal
 
