@@ -186,7 +186,7 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
       body:
         typeof v.body === 'string' && v.body.trim() !== ''
           ? v.body.trim()
-          : (parsed.script as string),
+          : '',
       cta: typeof v.cta === 'string' ? v.cta : 'Shop Now',
       hook: typeof v.hook === 'string' ? v.hook : undefined,
       framework: (['AIDA', 'PAS', 'BAB', 'Direct'].includes(v.framework as string)

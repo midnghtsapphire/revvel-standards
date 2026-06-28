@@ -25,7 +25,7 @@ const MAX_RESPONSE_BYTES = 5 * 1024 * 1024; // 5 MB
 // Covers IPv4 loopback, RFC-1918 private ranges, link-local, metadata endpoints,
 // and IPv6 ULA (fc00::/7 = fc + fd prefixes).
 const BLOCKED_HOSTNAME_RE =
-  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.\d+\.\d+\.\d+|::1|f[cd][0-9a-f]{2}:|fe80:)/i;
+  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.\d+\.\d+\.\d+|\[?::1\]?|\[?f[cd][0-9a-f]{2}:|\[?fe80:)/i;
 
 /** Typed error for bad-URL inputs that should be surfaced to the caller as 4xx. */
 export class ScraperClientError extends Error {
