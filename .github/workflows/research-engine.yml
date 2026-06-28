@@ -134,25 +134,8 @@ jobs:
           RESEARCH_DEPTH: ${{ needs.route.outputs.research_depth }}
           OUTPUT_FILE: docs/research-engine/run-${{ github.run_id }}.md
         run: node scripts/research-engine.js
-      - name: Commit research packet
-        # continue-on-error so branch-protection push failures don't cancel the
-        # WR PR creation dispatch below. The packet is already written to the
-        # filesystem for the run; a push failure is non-fatal for the pipeline.
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "revvel-automation[bot]"
-          git config user.email "revvel-automation[bot]@users.noreply.github.com"
-          git add docs/research-engine
-          if git diff --staged --quiet; then
-            echo "No research packet changes to commit."
-          else
-            git commit -m "research: add research engine packet"
-            git push
-          fi
       - name: Dispatch WR PR creation workflow
-        if: always() && needs.route.outputs.issue_number != ''
+        if: needs.route.outputs.issue_number != ''
         uses: actions/github-script@v9.0.0
         with:
           script: |
@@ -203,6 +186,20 @@ jobs:
                 `Check: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/${workflowId}`
               );
             }
+      - name: Commit research packet
+        # Best-effort archival only: repository rules may reject direct pushes to
+        # main, but that must never block the WR handoff to wr-pr-creation.yml.
+        continue-on-error: true
+        run: |
+          git config user.name "revvel-automation[bot]"
+          git config user.email "revvel-automation[bot]@users.noreply.github.com"
+          git add docs/research-engine
+          if git diff --staged --quiet; then
+            echo "No research packet changes to commit."
+          else
+            git commit -m "research: add research engine packet"
+            git push
+          fi
     timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
