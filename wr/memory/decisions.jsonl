@@ -8,3 +8,4 @@
 {"ts":"2026-04-21","topic":"pr-cadence","decision":"Many small merged PRs over large unmerged ones","locked_by":"audrey"}
 {"ts":"2026-04-21","topic":"irs-backfiling","decision":"Call IRS 1-800-829-4933 to verify fax-filed returns for EIN 86-1209156","locked_by":"audrey"}
 {"ts":"2026-04-21","topic":"domain-plan","decision":"Acquire freedomangelcorp.com/.org/.co at normal pricing; freedomangelcorps.com redirects; no squatter premium","locked_by":"audrey"}
+2026-06-28T03:50:55Z decision: Jules completed agent dispatch logic and custom prompt propagation to all agent workflows.
