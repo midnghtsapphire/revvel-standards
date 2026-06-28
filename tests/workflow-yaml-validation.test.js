@@ -521,8 +521,8 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
   }
 
-  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
-    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  if (dispatchStep.if !== "always() && needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must still run after non-fatal packet persistence failures');
   }
 
   const script = dispatchStep.with?.script || '';
