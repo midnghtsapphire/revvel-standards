@@ -290,7 +290,7 @@ jobs:
                   });
 
                   const reviewers = pr.requested_reviewers?.map(r => `@${r.login}`).join(' ') || '@midnghtsapphire';
-                  comment_body += `This PR has been awaiting approval for over 72 hours.\n\n`;
+                  comment_body += `This PR has been awaiting approval for over ${item.age_hours} hours.\n\n`;
                   comment_body += `**Ping:** ${reviewers} - please review when you have a moment.\n`;
                   break;
 
