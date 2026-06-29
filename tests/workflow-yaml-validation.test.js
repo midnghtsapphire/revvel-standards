@@ -283,6 +283,20 @@ test('stuck-label-automation.yml can dispatch recovery workflows', () => {
   }
 });
 
+test('stuck-label-automation.yml ping-reviewers message uses configured threshold', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const detectScript = doc.jobs['detect-stuck'].steps.map(s => s.with?.script || '').join('\n');
+  const autoProgressScript = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!detectScript.includes('max_age_hours: Math.round(pattern.max_age_ms / MS_PER_HOUR)')) {
+    throw new Error('stuck-label-automation must carry max_age_hours from STUCK_PATTERNS');
+  }
+  if (!autoProgressScript.includes('over ${thresholdHours} hours')) {
+    throw new Error('stuck-label-automation ping-reviewers message must use thresholdHours');
+  }
+});
+
 test('stuck-label-automation.yml keeps awaiting-approval ping threshold text in sync with configured age limit', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
@@ -555,6 +569,12 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
 
   if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
     throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+  if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
+    throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
+  }
+  if (commitStep['continue-on-error'] !== true) {
+    throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
   }
   if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
     throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');

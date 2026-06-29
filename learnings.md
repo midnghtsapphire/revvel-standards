@@ -74,7 +74,6 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Next Action:** None - Work complete
 
-
 ---
 
 ## 2026-05-02: Repository Revvel-Standards Audit
@@ -359,3 +358,22 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Contract schemas must be tested against the exact templates and generated examples they are meant to govern. Use a real JSON Schema validator in CI and include both positive fixtures (template/example/generated shape) and a negative fixture for the deprecated field name. Prefer the canonical `http://json-schema.org/draft-07/schema#` URI for Ajv Draft 7 compatibility.
 
 **Next Action:** Monitor PR #13637 CI/review; keep future product-state field changes synchronized across schema, template, scaffolder, and tests.
+
+---
+
+**Date/Time:** 2026-06-28T17:00:00Z
+
+**Task Attempted:** Review PR #14772 (`codex/fix-blocking-again`) — deep-search workflow cleanup, mislabeled as an image-upload fix for #14771.
+
+**Outcome:** Diff verified valid at head `d624038`. No introduced code blocker found. Multiple verification gaps and process risks identified instead.
+
+**Root Cause of Failure (If any):** Conflicting reviewer verdicts were caused by *staleness*, not by genuine disagreement: (1) `octopus-review` posted a "DO NOT MERGE — three critical syntax errors" verdict against an *earlier* commit whose broken triplicated code was already removed by the head commit, so its findings were stale-by-commit; (2) a DeepWiki search-index snapshot of `scripts/openrouter-routing.js` lacked the `deep_search` profile that actually exists at `scripts/openrouter-routing.js:40-51` (built from `config/model-lookup.json`) and `scripts/openrouter-routing.js:54-87` (hardcoded fallback), causing an initial false "missing profile / dead JSON" conclusion that was stale-by-index. `devin-ai-integration`, Copilot, and Bito were correct against the head commit. Separately, the PR title/scope mismatch (image upload vs. workflow cleanup) was real — there is no image-upload code in the repository to fix; #14771 reads as an external GitHub UI/infra error.
+
+**Self-Healing Fix / Learned Lesson:**
+1. **Re-validate every reviewer/tool verdict against the current head SHA before acting.** A bot verdict outlives the commit it was made against; tag findings with the SHA they target. This repo has no SHA-pinned re-validation gate today (`.github/workflows/ralph-loop.yml:62-90` escalates but does not re-check against head).
+2. **Search-index/tool snapshots can be stale.** Confirm code-structure claims with a direct file read at the head SHA, not from a cached index.
+3. **No supervising "Controller" over orchestrators exists.** oAudrey and OpenRouter are peer personas (`scripts/openrouter-personas.js:60-101`); GOAP is unimplemented (`docs/AUTOMATION_AUDIT.md:168`); the Controller-over-orchestrators model is only a proposal (`wr/issues/issue-13741-review-google-ax-as-a-controller.md:67-75`). Do not assume a fleet controller is watching.
+4. **Single self-approving reviewer + auto-merge is an identified hazard.** Require a non-author approval (second human or CODEOWNERS gate) and branch protection on `main` so a tired/distracted human or a stale bot approval cannot cause "merge havoc." This protects the human, it does not replace them.
+5. **`openrouter/fusion` slug is unverified** against the live OpenRouter catalog — do not assume valid. Confirm before any deep-search routing edit.
+
+**Next Action:** Rebase PR #14772 to clear `has-conflicts`; retitle to match real scope (workflow cleanup, not image upload) or split; confirm `openrouter/fusion` before any model-routing change. Recommend building the SHA-pinned verdict-validation gate and the non-author-approval merge guard before scaling automation to additional repos.

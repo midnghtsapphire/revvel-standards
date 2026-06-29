@@ -35,6 +35,7 @@ jobs:
   deep-research:
     name: Deep R&D Research (DOE/TRIZ/MEErP/LCA/BNAT)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: >-
       (github.event_name == 'workflow_dispatch') ||
       (github.event_name == 'issues' && github.event.action == 'labeled' &&
@@ -80,6 +81,7 @@ jobs:
         if: ${{ github.event.issue.number || inputs.issue_number }}
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
         run: |
           gh issue edit "$ISSUE_NUMBER" \
