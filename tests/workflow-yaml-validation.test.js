@@ -562,6 +562,12 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   if (commitStep['continue-on-error'] !== true) {
     throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
   }
+  if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
+    throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
+  }
+  if (commitStep['continue-on-error'] !== true) {
+    throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
+  }
 
   const script = dispatchStep.with?.script || '';
   if (!script.includes("const workflowId = 'wr-pr-creation.yml'")) {
