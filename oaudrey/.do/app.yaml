@@ -37,8 +37,9 @@ static_sites:
 # Custom domains — declaring these here means `doctl apps create/update` registers
 # them automatically, removing the need for a manual step in the DO dashboard.
 # DNS (Namecheap → DigitalOcean nameservers) must point to the App Platform ingress
-# before these domains become active. The sync-oaudrey-dns.yml workflow handles that
-# automatically after a successful deploy if registrar credentials are provisioned.
+# before these domains become active. The `.github/workflows/sync-oaudrey-dns.yml`
+# workflow handles that automatically after a successful deploy if registrar
+# credentials are provisioned.
 # See: standards/OAUDREY_DEPLOYMENT_STANDARD.md
 domains:
   - domain: oaudrey.com
