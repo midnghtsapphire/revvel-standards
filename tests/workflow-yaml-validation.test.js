@@ -294,6 +294,9 @@ test('stuck-label-automation.yml ping-reviewers message uses configured threshol
   }
   if (!autoProgressScript.includes('over ${thresholdHours} hours')) {
     throw new Error('stuck-label-automation ping-reviewers message must use thresholdHours');
+  }
+});
+
 test('stuck-label-automation.yml keeps awaiting-approval ping threshold text in sync with configured age limit', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
