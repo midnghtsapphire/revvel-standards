@@ -41,7 +41,7 @@ None
 _No response_
 
 ### Objective
-
+Update alt attribute to describe the diagram content and add descriptive text below the image: ![Proposal engine architecture and workflow](...)
 <img width="2752" height="1536" alt="Image" src="https://github.com/user-attachments/assets/c7b55e29-9d19-4431-a364-53cc47c75562" />
 
 ### Required Bundle
