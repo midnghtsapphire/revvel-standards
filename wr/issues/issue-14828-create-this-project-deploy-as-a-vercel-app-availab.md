@@ -1,6 +1,6 @@
-# WR: [WR] Create Proposal Engine
+# WR: [WR] Create this project -deploy as a vercel app available to public
 
-**Issue:** #14811  
+**Issue:** #14828  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-06-29  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -41,8 +41,8 @@ None
 _No response_
 
 ### Objective
-Update alt attribute to describe the diagram content and add descriptive text below the image: ![Proposal engine architecture and workflow](...)
-<img width="2752" height="1536" alt="Image" src="https://github.com/user-attachments/assets/c7b55e29-9d19-4431-a364-53cc47c75562" />
+
+[BNAT-UTEN-Colorado-Complete-Repo.zip](https://github.com/user-attachments/files/29480283/BNAT-UTEN-Colorado-Complete-Repo.zip)
 
 ### Required Bundle
 

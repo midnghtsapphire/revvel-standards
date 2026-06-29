@@ -1,6 +1,6 @@
-# WR: [WR] Create Proposal Engine
+# WR: [WR] Find this guy's github and use it in revvel-standards-he has listed top products listed too https://www.reddit.com/r/SideProject/s/lTZM6uy8OE
 
-**Issue:** #14811  
+**Issue:** #14692  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-06-29  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -41,8 +41,8 @@ None
 _No response_
 
 ### Objective
-Update alt attribute to describe the diagram content and add descriptive text below the image: ![Proposal engine architecture and workflow](...)
-<img width="2752" height="1536" alt="Image" src="https://github.com/user-attachments/assets/c7b55e29-9d19-4431-a364-53cc47c75562" />
+
+_No response_
 
 ### Required Bundle
 

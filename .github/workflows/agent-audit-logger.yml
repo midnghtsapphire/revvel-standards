@@ -69,7 +69,6 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       # Fallback checkout using the always-valid default GITHUB_TOKEN, only if the
       # admin-token checkout above failed. Preserves audit/chain behavior when the
       # admin token is misconfigured, without wiring any new credentials.
