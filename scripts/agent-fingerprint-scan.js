@@ -115,40 +115,44 @@ function readChangedFromStdin() {
   });
 }
 
-(async function main() {
-  const args = process.argv.slice(2);
-  let files;
-  const useStdin = args.includes('--changed');
-  const positional = args.filter(a => a !== '--changed');
-  if (useStdin && positional.length) {
-    // Per Octopus review: silently dropping positional args when --changed is
-    // also present was confusing. Error out instead.
-    console.error('error: --changed cannot be combined with positional file args');
-    process.exit(2);
-  }
-  if (useStdin) {
-    files = (await readChangedFromStdin()).map(f => f.trim()).filter(Boolean);
-  } else if (positional.length) {
-    files = positional;
-  } else {
-    console.error('usage: node scripts/agent-fingerprint-scan.js <file...> | --changed');
-    process.exit(2);
-  }
+module.exports = { scan, shouldScan, skipPath, BANNED };
 
-  files = files.filter(shouldScan);
-  const allHits = [];
-  for (const f of files) allHits.push(...scan(f));
+if (require.main === module) {
+  (async function main() {
+    const args = process.argv.slice(2);
+    let files;
+    const useStdin = args.includes('--changed');
+    const positional = args.filter(a => a !== '--changed');
+    if (useStdin && positional.length) {
+      // Per Octopus review: silently dropping positional args when --changed is
+      // also present was confusing. Error out instead.
+      console.error('error: --changed cannot be combined with positional file args');
+      process.exit(2);
+    }
+    if (useStdin) {
+      files = (await readChangedFromStdin()).map(f => f.trim()).filter(Boolean);
+    } else if (positional.length) {
+      files = positional;
+    } else {
+      console.error('usage: node scripts/agent-fingerprint-scan.js <file...> | --changed');
+      process.exit(2);
+    }
 
-  if (allHits.length === 0) {
-    console.log(`✓ agent-fingerprint-scan: clean (${files.length} file(s) scanned)`);
-    process.exit(0);
-  }
-  console.log(`✗ agent-fingerprint-scan: ${allHits.length} hit(s)`);
-  for (const h of allHits) {
-    console.log(`  ${h.file}:${h.line}  [${h.id}]  ${h.why}`);
-    console.log(`      "${h.snippet}"`);
-  }
-  console.log(`\nStandard: standards/AGENT_SCAFFOLDING_BAN.md`);
-  console.log(`Exception: add 'agent-fingerprint:allow <reason>' to the PR body.`);
-  process.exit(1);
-})();
+    files = files.filter(shouldScan);
+    const allHits = [];
+    for (const f of files) allHits.push(...scan(f));
+
+    if (allHits.length === 0) {
+      console.log(`✓ agent-fingerprint-scan: clean (${files.length} file(s) scanned)`);
+      process.exit(0);
+    }
+    console.log(`✗ agent-fingerprint-scan: ${allHits.length} hit(s)`);
+    for (const h of allHits) {
+      console.log(`  ${h.file}:${h.line}  [${h.id}]  ${h.why}`);
+      console.log(`      "${h.snippet}"`);
+    }
+    console.log(`\nStandard: standards/AGENT_SCAFFOLDING_BAN.md`);
+    console.log(`Exception: add 'agent-fingerprint:allow <reason>' to the PR body.`);
+    process.exit(1);
+  })();
+}
