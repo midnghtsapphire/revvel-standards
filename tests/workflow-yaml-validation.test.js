@@ -270,6 +270,19 @@ test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with w
   }
 });
 
+test('stuck-label-automation.yml can dispatch recovery workflows', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!script.includes('createWorkflowDispatch')) {
+    throw new Error('stuck-label-automation must keep workflow dispatch recovery actions');
+  }
+  if (doc.permissions?.actions !== 'write') {
+    throw new Error('stuck-label-automation must have actions: write to dispatch recovery workflows');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -368,6 +381,31 @@ test('wr-pr-creation.yml uses existing WR templates and preserves issue body', (
   }
 });
 
+test('wr-pr-creation.yml validates local references in generated WR documents', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const createJob = doc.jobs['create-wr-pr'];
+  const validateStep = createJob.steps.find((step) => step.name === 'Validate WR local references');
+
+  if (!validateStep) {
+    throw new Error('Validate WR local references step not found');
+  }
+
+  const script = validateStep.run || '';
+  const requiredSnippets = [
+    'WR_FILE',
+    're.finditer',
+    'Missing local references',
+    'Validated local references',
+    "target.split('#', 1)[0]",
+  ];
+  for (const snippet of requiredSnippets) {
+    if (!script.includes(snippet)) {
+      throw new Error(`WR local-reference validation missing ${snippet}`);
+    }
+  }
+});
+
 test('wr-pr-creation.yml suppresses operational issue_comment retry loops', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
@@ -461,6 +499,9 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const issueCommentTypes = on.issue_comment?.types || [];
   const steps = doc.jobs?.research?.steps || [];
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+  const dispatchIndex = steps.findIndex((step) => step.name === 'Dispatch WR PR creation workflow');
+  const commitIndex = steps.findIndex((step) => step.name === 'Commit research packet');
+  const commitStep = steps[commitIndex];
   const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
 
   // Loop-prevention (WR retrigger storms on #14572/#14579): research-engine must
@@ -491,9 +532,18 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   if (!dispatchStep) {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
   }
+  if (!commitStep) {
+    throw new Error('Commit research packet step not found in research-engine.yml');
+  }
 
   if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
     throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+  if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
+    throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
+  }
+  if (commitStep['continue-on-error'] !== true) {
+    throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
   }
 
   const script = dispatchStep.with?.script || '';
@@ -583,6 +633,32 @@ test('secret-persistence-guard.yml auto-recover supports force_recovery manual d
   const expectedOrPattern = /^needs\.monitor-secret-health\.outputs\.has_missing == 'true' \|\| \(github\.event_name == 'workflow_dispatch' && inputs\.force_recovery\)$/;
   if (!expectedOrPattern.test(normalizedCondition)) {
     throw new Error('auto-recover condition must preserve OR logic between missing-secrets and force_recovery paths');
+  }
+});
+
+// Regression: resync-all-prs job must use GITHUB_TOKEN directly, not an
+// ADMIN_GITHUB_TOKEN fallback.  When ADMIN_GITHUB_TOKEN is set but expired/
+// invalid the fallback expression `secrets.ADMIN_GITHUB_TOKEN != '' &&
+// secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN` still resolves to the
+// bad token, causing 401 Bad credentials on every scheduled re-sync.
+// See: job 83770001732, workflow run 28271626160.
+test('pr-state-orchestrator.yml resync-all-prs uses GITHUB_TOKEN (not ADMIN fallback)', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-state-orchestrator.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+
+  const resyncJob = doc.jobs?.['resync-all-prs'];
+  if (!resyncJob) throw new Error('resync-all-prs job not found in pr-state-orchestrator.yml');
+
+  const steps = resyncJob.steps || [];
+  for (const step of steps) {
+    const token = step.with?.['github-token'] || '';
+    if (token.includes('ADMIN_GITHUB_TOKEN')) {
+      throw new Error(
+        `resync-all-prs step "${step.name}" uses ADMIN_GITHUB_TOKEN — ` +
+        'use ${{ secrets.GITHUB_TOKEN }} directly to avoid 401 when the PAT is set but invalid'
+      );
+    }
   }
 });
 

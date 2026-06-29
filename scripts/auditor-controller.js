@@ -194,6 +194,7 @@ const CHECKS = [
         '.github/workflows/gatekeeper-registry-drift.yml',
         '.github/workflows/sync-secrets-to-repos.yml',
         '.github/workflows/credential-autonomy-agent.yml',
+        '.github/workflows/secrets-backup-daily.yml',
         '.github/workflows/secret-lifecycle.yml',
         '.github/workflows/credential-label-router.yml',
         'scripts/credential-backup-harness.js',
@@ -215,6 +216,7 @@ const CHECKS = [
         '.github/workflows/eeat-trust-cron.yml',
         'scripts/gatekeeper-cli.md',
         '.github/workflows/secrets-backup-daily.yml', // intentional daily backup workflow
+        '.github/workflows/secrets-backup-daily.yml',
       ]);
       const unexpected = hits.filter(p => !allowed.has(p));
       return {

@@ -10,12 +10,12 @@ on:
       - submitted
       - edited
       - dismissed
-concurrency:
-  group: pr-review-status-${{ github.event.pull_request.number || github.event.review.pull_request_number }}
-  cancel-in-progress: false
   pull_request_review_comment:
     types:
       - created
+concurrency:
+  group: pr-review-status-${{ github.event.pull_request.number || github.event.review.pull_request_number }}
+  cancel-in-progress: false
 permissions:
   contents: read
   pull-requests: write

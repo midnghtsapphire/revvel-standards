@@ -1,0 +1,149 @@
+{
+  "case_id": "newsom-doj-2026",
+  "title": "DOJ investigation claims surrounding Gov. Gavin Newsom (2026)",
+  "scope_note": "Seed dataset only. This file holds discrete, individually checkable claims extracted from public sources. The system scores evidentiary strength of each claim. It does NOT and cannot output a 'fraud' verdict on any person. Fraud is a legal determination requiring intent, materiality, and adjudication.",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Gavin Newsom publicly stated the DOJ is investigating him.",
+      "confidence": 0.45,
+      "band": "WEAK",
+      "verdict": "weakly supported; treat as unverified",
+      "refused": false,
+      "rationale": [
+        "Best source tier 4 (primary_official, cap 0.80); provenance 'on_record_statement' x0.95 -> base 0.76.",
+        "+0.06 corroboration (1 independent source(s)).",
+        "Capped at tier ceiling 0.80.",
+        "Capped at adjudication ceiling for stage 'alleged' = 0.45."
+      ],
+      "analyst_note": "What is well-supported is that Newsom SAID this on the record (C-SPAN transcript, tier 4). The existence/scope of the investigation itself is a separate claim (C2)."
+    },
+    {
+      "id": "C2",
+      "text": "An active DOJ investigation into Gavin Newsom exists.",
+      "confidence": 0.45,
+      "band": "WEAK",
+      "verdict": "weakly supported; treat as unverified",
+      "refused": false,
+      "rationale": [
+        "Best source tier 3 (direct_reporting, cap 0.60); provenance 'on_record_statement' x0.95 -> base 0.57.",
+        "+0.06 corroboration (1 independent source(s)).",
+        "Capped at tier ceiling 0.60.",
+        "Capped at adjudication ceiling for stage 'alleged' = 0.45."
+      ],
+      "analyst_note": "Sourced primarily to Newsom's own characterization plus editorial assertion. DOJ does not confirm or deny investigations as a rule. No filing/docket. Stays at 'alleged'."
+    },
+    {
+      "id": "C3",
+      "text": "The DOJ is investigating Newsom's wife and former staff.",
+      "confidence": 0.45,
+      "band": "WEAK",
+      "verdict": "weakly supported; treat as unverified",
+      "refused": false,
+      "rationale": [
+        "Best source tier 4 (primary_official, cap 0.80); provenance 'on_record_statement' x0.95 -> base 0.76.",
+        "+0.06 corroboration (1 independent source(s)).",
+        "Capped at tier ceiling 0.80.",
+        "Capped at adjudication ceiling for stage 'alleged' = 0.45."
+      ],
+      "analyst_note": "Attributed to Newsom's own remarks. No independent primary confirmation in the provided sources."
+    },
+    {
+      "id": "C4",
+      "text": "Dana Williamson, a former Newsom staffer, pleaded guilty.",
+      "confidence": 0.087,
+      "band": "UNSUBSTANTIATED",
+      "verdict": "asserted but unsubstantiated in provided sources",
+      "refused": false,
+      "rationale": [
+        "Best source tier 2 (opinion_or_secondary, cap 0.35); provenance 'anonymous_report' x0.25 -> base 0.09."
+      ],
+      "analyst_note": "If true this is the only adjudicated item in the set and concerns a DIFFERENT person, not Newsom. Flagged for primary-source pull (docket) before any confidence above the editorial ceiling is granted. Do NOT impute Williamson's plea to Newsom."
+    },
+    {
+      "id": "C5",
+      "text": "Newsom committed fraud.",
+      "confidence": 0.0,
+      "band": "REFUSED/UNKNOWABLE",
+      "verdict": "refused or unknowable from public sources",
+      "refused": true,
+      "rationale": [
+        "Refused: request adjudicates fraud/guilt of a named person; no adjudicated record supports a verdict. System reports evidentiary strength only, never a fraud verdict."
+      ],
+      "analyst_note": "REFUSED CLAIM. No source in the set adjudicates fraud by Newsom. The system will not score a confidence for a fraud verdict on a named person. Output is a hard refusal with rationale."
+    },
+    {
+      "id": "C6",
+      "text": "Newsom characterized the investigation as politically motivated retaliation tied to a potential presidential run.",
+      "confidence": 0.45,
+      "band": "WEAK",
+      "verdict": "weakly supported; treat as unverified",
+      "refused": false,
+      "rationale": [
+        "Best source tier 4 (primary_official, cap 0.80); provenance 'on_record_statement' x0.95 -> base 0.76.",
+        "+0.06 corroboration (1 independent source(s)).",
+        "Capped at tier ceiling 0.80.",
+        "Capped at adjudication ceiling for stage 'alleged' = 0.45."
+      ],
+      "analyst_note": "Well-supported that he SAID this. Whether the characterization is accurate is unknowable from public sources."
+    }
+  ],
+  "refused_count": 1,
+  "case_evidentiary_integrity": 0.377,
+  "headline_finding": "Strongest scored item (WEAK): 'Gavin Newsom publicly stated the DOJ is investigating him.' at 45% confidence. 1 claim(s) refused.",
+  "disclaimer": "This output scores the evidentiary strength of public claims. It is NOT a finding of fraud, guilt, or wrongdoing by any person.",
+  "generated_at": "2026-06-25T02:30:07.043460Z",
+  "mode": "offline",
+  "fleet": [
+    {
+      "name": "agent-primary-source",
+      "mission": "Pull adjudicated and first-party records: dockets, indictments, pleas, FEC/state finance filings, official transcripts. Emit tier 4-5 only."
+    },
+    {
+      "name": "agent-financial",
+      "mission": "Map money: behested payments, 990s, conflicts of interest. Tie each assertion to a filing or report. Emit tier 3-5."
+    },
+    {
+      "name": "agent-media-trace",
+      "mission": "Reconstruct provenance: who published, when, sourcing chain, leak vs filing. Classify how each fact reached the public. Emit tier 1-3."
+    },
+    {
+      "name": "agent-counter",
+      "mission": "Adversarial. Argue the innocent/null explanation for every claim. Surface contradicting sources. Emit contradictions only."
+    },
+    {
+      "name": "agent-legal",
+      "mission": "Map each allegation to statutory elements (intent, materiality, adjudication stage). Set the legal stage that ceilings the score."
+    }
+  ],
+  "sources": [
+    {
+      "id": "src-nypost",
+      "outlet": "New York Post",
+      "kind": "editorial",
+      "tier": 2,
+      "title": "The Gavin Newsom probe is serious, and he knows it",
+      "date": "2026-06-20",
+      "url": "user-provided"
+    },
+    {
+      "id": "src-bbc",
+      "outlet": "BBC News",
+      "kind": "news_report",
+      "tier": 3,
+      "byline": "Kayla Epstein",
+      "title": "California's Newsom alleges justice department is investigating wife and ex-staff",
+      "date": "2026-06-16",
+      "url": "user-provided"
+    },
+    {
+      "id": "src-cspan",
+      "outlet": "C-SPAN",
+      "kind": "primary_transcript",
+      "tier": 4,
+      "title": "California Governor Gavin Newsom Remarks on Justice Department",
+      "date": "2026-06-15",
+      "url": "user-provided"
+    }
+  ]
+}
