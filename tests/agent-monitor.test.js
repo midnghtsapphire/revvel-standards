@@ -11,17 +11,26 @@ const workflowPath = path.join(REPO_ROOT, '.github', 'workflows', 'agent-monitor
 const labelsPath = path.join(REPO_ROOT, '.github', 'labels.yml');
 
 test('agent-monitor create-failure-wr uses labels that exist in labels.yml', () => {
-  const workflow = fs.readFileSync(workflowPath, 'utf8');
+  const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
   const labelsDoc = yaml.parse(fs.readFileSync(labelsPath, 'utf8'));
   const knownLabels = new Set((labelsDoc.labels || []).map((label) => label.name));
+  const createStep = workflow.jobs?.['create-failure-wr']?.steps?.find(
+    (step) => (step.run || '').includes('gh issue create')
+  );
 
-  const match = workflow.match(/--label "([^"]+)"/);
-  assert.ok(match, 'agent-monitor.yml must pass labels to gh issue create');
+  assert.ok(createStep, 'agent-monitor.yml must include a create-failure-wr step that runs gh issue create');
 
-  const configuredLabels = match[1]
-    .split(',')
-    .map((label) => label.trim())
-    .filter(Boolean);
+  const labelMatches = Array.from(
+    (createStep.run || '').matchAll(/--label\s+(?:['"]([^'"]+)['"]|(\S+))/g)
+  );
+  assert.ok(labelMatches.length > 0, 'agent-monitor.yml must pass labels to gh issue create');
+
+  const configuredLabels = labelMatches.flatMap((match) =>
+    (match[1] || match[2] || '')
+      .split(',')
+      .map((label) => label.trim())
+      .filter(Boolean)
+  );
 
   assert.ok(configuredLabels.length > 0, 'agent-monitor.yml must configure at least one label');
   for (const label of configuredLabels) {
