@@ -60,6 +60,23 @@ jobs:
           PROFILE: ${{ inputs.profile || 'deep_search' }}
         run: node scripts/deep-search-research.js
 
+      - name: Post research to issue
+        if: env.ISSUE_NUMBER
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+        run: |
+          if [ -f /tmp/deep-research-results.md ]; then
+            {
+              printf '## 🔬 Deep R&D Research Results\n\n'
+              printf '> Using **Sonnet 3.5 + OpenRouter Fusion** with DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks.\n\n'
+              cat /tmp/deep-research-results.md
+              printf '\n\n---\n*Research powered by Deep Search with R&D Engineering Framework*\n'
+            } > /tmp/deep-research-comment.md
+            gh issue comment "$ISSUE_NUMBER" \
+              --body-file /tmp/deep-research-comment.md
+          fi
+
       - name: Update issue labels
         if: ${{ github.event.issue.number || inputs.issue_number }}
         env:

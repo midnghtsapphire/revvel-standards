@@ -48,11 +48,10 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Guard the initial read: with a set-but-invalid ADMIN_GITHUB_TOKEN
-            // (the fallback only swaps to GITHUB_TOKEN when the PAT is empty),
-            // this call returns 401 Bad credentials. Degrade gracefully instead
-            // of failing the whole "PR Lifecycle Labels" check; full behavior is
-            // preserved whenever the credentials are valid.
+            // Guard the initial read so token or permission hiccups degrade
+            // gracefully instead of failing the whole "PR Lifecycle Labels"
+            // check; full behavior is preserved whenever the default
+            // GITHUB_TOKEN is valid for the call.
             let currentLabels = [];
             try {
               const { data: labelData } = await github.rest.issues.listLabelsOnIssue({

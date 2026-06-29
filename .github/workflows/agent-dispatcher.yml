@@ -143,21 +143,26 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           AGENT: ${{ steps.determine.outputs.agent }}
+          PROMPT: ${{ env.prompt }}
         run: |
           echo "Dispatching $AGENT for issue #$ISSUE_NUMBER..."
           
           case "$AGENT" in
             perplexity)
               # Trigger Perplexity workflow
-              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER
+              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
               ;;
             jules)
               # Trigger Jules - uses your JULES_TOKEN
-              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER
+              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
               ;;
             openrouter)
               # Trigger OpenRouter coder
-              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER
+              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
+              ;;
+            triage)
+              # Trigger OpenRouter triage
+              gh workflow run openrouter-triage.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
               ;;
           esac
 
@@ -165,6 +170,7 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
           AGENT: ${{ steps.determine.outputs.agent }}
+          PROMPT: ${{ env.prompt }}
         run: |
           case "$AGENT" in
             perplexity)
@@ -179,6 +185,10 @@ jobs:
             openrouter)
               gh issue edit "$ISSUE_NUMBER" \
                 --add-label "wr:code" 2>/dev/null || true
+              ;;
+            triage)
+              gh issue edit "$ISSUE_NUMBER" \
+                --add-label "openrouter" 2>/dev/null || true
               ;;
           esac
 

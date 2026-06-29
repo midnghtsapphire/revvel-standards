@@ -17,6 +17,10 @@ on:
         required: false
         type: boolean
         default: false
+      prompt:
+        description: Custom Jules prompt
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -68,6 +72,7 @@ jobs:
           ISSUE_BODY: ${{ steps.context.outputs.issue_body }}
           RESEARCH: ${{ steps.context.outputs.research_context }}
           REPO: ${{ github.repository }}
+          PROMPT: ${{ inputs.prompt }}
         run: |
           # Use Jules to process the issue
           # This would integrate with Jules API when available
