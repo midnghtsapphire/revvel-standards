@@ -332,6 +332,15 @@ test('agent-audit-logger.yml persists audit entries without committing to main',
     throw new Error('Persist step must write the entry to the job summary');
   }
 
+  const checkoutStep = steps.find((step) => step.name === 'Checkout main');
+  const checkoutToken = checkoutStep?.with?.token || '';
+  if (!checkoutToken.includes('github.token')) {
+    throw new Error('Checkout main must fall back to github.token when ADMIN_GITHUB_TOKEN is unavailable');
+  }
+  if (checkoutToken.includes('secrets.GITHUB_TOKEN')) {
+    throw new Error('Checkout main must not rely on secrets.GITHUB_TOKEN fallback');
+  }
+
   const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
   if (!uploadStep || !String(uploadStep.uses || '').startsWith('actions/upload-artifact')) {
     throw new Error('Audit entry must be retained via upload-artifact');
@@ -507,6 +516,9 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   const issueCommentTypes = on.issue_comment?.types || [];
   const steps = doc.jobs?.research?.steps || [];
   const dispatchStep = steps.find((step) => step.name === 'Dispatch WR PR creation workflow');
+  const dispatchIndex = steps.findIndex((step) => step.name === 'Dispatch WR PR creation workflow');
+  const commitIndex = steps.findIndex((step) => step.name === 'Commit research packet');
+  const commitStep = steps[commitIndex];
   const routeScript = doc.jobs?.route?.steps?.find((step) => step.name === 'Decide route')?.with?.script || '';
 
   // Loop-prevention (WR retrigger storms on #14572/#14579): research-engine must
@@ -537,9 +549,18 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
   if (!dispatchStep) {
     throw new Error('Dispatch WR PR creation workflow step not found in research-engine.yml');
   }
+  if (!commitStep) {
+    throw new Error('Commit research packet step not found in research-engine.yml');
+  }
 
-  if (dispatchStep.if !== "always() && needs.route.outputs.issue_number != ''") {
-    throw new Error('Dispatch WR PR creation workflow step must still run after non-fatal packet persistence failures');
+  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+  if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
+    throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
+  }
+  if (commitStep['continue-on-error'] !== true) {
+    throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
   }
 
   const script = dispatchStep.with?.script || '';
