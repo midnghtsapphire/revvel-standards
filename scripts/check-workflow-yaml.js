@@ -134,7 +134,7 @@ function findInvalidWorkflows() {
   return bad;
 }
 
-module.exports = { findInvalidWorkflows, listWorkflowFiles };
+module.exports = { findInvalidWorkflows, listWorkflowFiles, heuristicError, workflowRunMissingWorkflows };
 
 // CLI: print report, exit 1 if any invalid (usable as a CI gate too).
 if (require.main === module) {
