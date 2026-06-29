@@ -37,6 +37,7 @@ jobs:
       - name: Post Jules Comment
         if: env.JULES_API_KEY != ''
         uses: BeksOmega/jules-publish@v1.0.0
+        continue-on-error: true
         with:
           pr_number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}

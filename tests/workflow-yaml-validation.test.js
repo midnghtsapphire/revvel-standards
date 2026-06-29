@@ -283,6 +283,23 @@ test('stuck-label-automation.yml can dispatch recovery workflows', () => {
   }
 });
 
+test('stuck-label-automation.yml keeps awaiting-approval ping threshold text in sync with configured age limit', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const detectScript = doc.jobs['detect-stuck'].steps.map(s => s.with?.script || '').join('\n');
+  const progressScript = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!detectScript.includes('threshold_hours: Math.round(pattern.max_age_ms / MS_PER_HOUR)')) {
+    throw new Error('stuck-label-automation must propagate threshold_hours from max_age_ms');
+  }
+  if (!progressScript.includes('over ${item.threshold_hours} hours')) {
+    throw new Error('stuck-label-automation ping-reviewers message must use threshold_hours');
+  }
+  if (progressScript.includes('over 72 hours')) {
+    throw new Error('stuck-label-automation ping-reviewers must not use stale hardcoded 72-hour text');
+  }
+});
+
 test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_requested events', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
   const content = fs.readFileSync(filePath, 'utf8');
@@ -313,6 +330,15 @@ test('agent-audit-logger.yml persists audit entries without committing to main',
   if (!persistStep) throw new Error('Persist audit entry step not found');
   if (!(persistStep.run || '').includes('GITHUB_STEP_SUMMARY')) {
     throw new Error('Persist step must write the entry to the job summary');
+  }
+
+  const checkoutStep = steps.find((step) => step.name === 'Checkout main');
+  const checkoutToken = checkoutStep?.with?.token || '';
+  if (!checkoutToken.includes('github.token')) {
+    throw new Error('Checkout main must fall back to github.token when ADMIN_GITHUB_TOKEN is unavailable');
+  }
+  if (checkoutToken.includes('secrets.GITHUB_TOKEN')) {
+    throw new Error('Checkout main must not rely on secrets.GITHUB_TOKEN fallback');
   }
 
   const uploadStep = steps.find((step) => step.name === 'Upload audit entry artifact');
@@ -527,8 +553,14 @@ test('research-engine.yml dispatches wr-pr-creation after research run', () => {
     throw new Error('Commit research packet step not found in research-engine.yml');
   }
 
-  if (dispatchStep.if !== "always() && needs.route.outputs.issue_number != ''") {
-    throw new Error('Dispatch WR PR creation workflow step must still run after non-fatal packet persistence failures');
+  if (dispatchStep.if !== "needs.route.outputs.issue_number != ''") {
+    throw new Error('Dispatch WR PR creation workflow step must guard on issue_number presence');
+  }
+  if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
+    throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
+  }
+  if (commitStep['continue-on-error'] !== true) {
+    throw new Error('Commit research packet step must be best-effort so archival failures do not block WR dispatch');
   }
   if (!(dispatchIndex !== -1 && commitIndex !== -1 && dispatchIndex < commitIndex)) {
     throw new Error('Dispatch WR PR creation workflow step must run before Commit research packet');
