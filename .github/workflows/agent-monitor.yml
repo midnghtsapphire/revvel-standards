@@ -157,7 +157,7 @@ jobs:
           gh issue create \
             --title "[AGENT-FAILURE] Agent health check failed" \
             --body "$BODY" \
-            --label "needs-human,agent-failure,automation-failure"
+            --label "needs-human,auto-error"
           
           echo "✅ Created WR for agent failure"
 
