@@ -35,6 +35,11 @@ test("ignores deletions outside protected paths", () => {
   assert.strictEqual(r.fail, false);
 });
 
+test("ignores lockfile churn in protected paths", () => {
+  const r = evaluateDiff([{ path: "products/foo/package-lock.json", added: "1", deleted: "900", status: "M" }], opts);
+  assert.strictEqual(r.fail, false);
+});
+
 test("allow-destroy label overrides the guard", () => {
   const r = evaluateDiff(
     [{ path: "products/foo/page.tsx", added: "0", deleted: "9999", status: "D" }],
