@@ -13,6 +13,7 @@ const ISSUE_TITLE = process.env.ISSUE_TITLE || "";
 const ISSUE_BODY = process.env.ISSUE_BODY || "";
 const EVENT_KIND = process.env.EVENT_KIND || "issue";
 const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
+const PROMPT = process.env.PROMPT || "";
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -127,6 +128,7 @@ function buildSystemPrompt(labelNames) {
     "4) Human Attention (Yes/No + reason)",
     "5) Marketing & SEO Signals (keywords, distribution notes, stars)",
     "If `no-triage` should apply, explicitly say so.",
+    PROMPT ? `\n\nADDITIONAL INSTRUCTIONS:\n${PROMPT}` : "",
   ].join("\n");
 }
 

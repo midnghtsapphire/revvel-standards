@@ -12,6 +12,10 @@ on:
         description: Issue number to process
         required: true
         type: number
+      prompt:
+        description: Custom coding prompt
+        required: false
+        type: string
 permissions:
   contents: write
   pull-requests: write
@@ -91,6 +95,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          PROMPT: ${{ inputs.prompt }}
         run: |
           set -euo pipefail
           # ROO_RUN_COMMAND must produce /tmp/openrouter-coder-result.json
@@ -114,6 +119,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          PROMPT: ${{ inputs.prompt }}
           WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
         run: |
           python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
