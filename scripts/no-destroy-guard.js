@@ -23,6 +23,7 @@
 const { execFileSync } = require("child_process");
 
 const DEFAULT_PROTECTED = "products/,apps/,sites/,src/,public/";
+const LOCKFILE_RE = /(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb)$/;
 
 function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
   if (allowDestroy) {
@@ -35,7 +36,7 @@ function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
   for (const f of files) {
     if (!inProtected(f.path)) continue;
     if (f.status === "D") deletedFiles.push(f.path);
-    protectedDeleted += Number(f.deleted) || 0;
+    if (!LOCKFILE_RE.test(f.path)) protectedDeleted += Number(f.deleted) || 0;
   }
   if (deletedFiles.length > 0) {
     reasons.push(`Deletes ${deletedFiles.length} existing file(s) under protected paths:`);
