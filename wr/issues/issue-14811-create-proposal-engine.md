@@ -1,4 +1,4 @@
-# WR: [WR]  Create Proposal Engine
+# WR: [WR] Create Proposal Engine
 
 **Issue:** #14811  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  

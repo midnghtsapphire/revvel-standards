@@ -1,4 +1,4 @@
-# WR: [WR] add this prompt to prompt repository  develop categories and organize
+# WR: [WR] add this prompt to prompt repository develop categories and organize
 
 **Issue:** #14826  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
