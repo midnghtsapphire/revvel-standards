@@ -590,6 +590,37 @@ would be `4xx`/`5xx`). Triage in this order:
 
 ## Retro Log
 
+### 2026-05-03 — Retro Findings & Resolutions
+
+**Issue:** `oAudrey retro — 2026-05-03 — 2 item(s) need attention` ([#575](https://github.com/midnghtsapphire/revvel-standards/issues/575))
+
+| Item | Finding | Resolution | Status |
+|------|---------|------------|--------|
+| `oaudrey.com` not responding (HTTP 000) — DNS resolves to `3.33.130.190` | DNS points to an AWS Global Accelerator IP, not the DigitalOcean App Platform ingress. App Platform ingress and correct ALIAS/CNAME records not yet pushed. | `oaudrey.com` came back online before 2026-05-18 (confirmed by retro update comments). Root cause was deploy + DNS sync completing after the 2026-05-03 retro run. | ✅ Resolved |
+| `fieldwork.oaudrey.com` not responding (HTTP 000) — DNS does not resolve | No CNAME record exists for the `fieldwork` subdomain; the DO App Platform app spec did not declare `fieldwork.oaudrey.com` as a custom domain, so the domain was never registered and `sync-oaudrey-dns.yml` had nothing to sync it against. | Added `domains` block to `oaudrey/.do/app.yaml` (`fieldwork.oaudrey.com` as `ALIAS`) so `doctl apps update` registers it automatically on next deploy, eliminating the manual dashboard step. | ⚠️ Infrastructure pending — resolve on next deploy |
+
+**Root cause — `fieldwork.oaudrey.com` never registering:**
+
+The `oaudrey/.do/app.yaml` app spec defined the `fieldwork-landing` component with a path-level route (`/fieldwork`) but did not include a `domains` section. DigitalOcean App Platform only registers custom domains for a component when they are explicitly listed in the spec OR added manually in the dashboard. Without that registration, DO never provisioned a certificate or ingress route for `fieldwork.oaudrey.com`, and the `sync-oaudrey-dns.yml` DNS sync therefore had no valid target to point the CNAME at.
+
+**Additionally — automation loop fix:**
+
+The weekly retro was updating issue #575 with a new "still open" comment every Monday but the issue was labeled `auto-fix`, causing the OpenRouter assignee workflow to treat it as an auto-fixable task and repeatedly route it. To break this loop, `oaudrey-retro.yml` now adds `needs-human` to the label set when creating retro issues that contain infrastructure health-check failures. This signals to the OpenRouter automation that human intervention is required and prevents the endless routing cycle.
+
+**Actions taken (code):**
+
+- `oaudrey/.do/app.yaml` — added `domains` block registering `oaudrey.com` (PRIMARY), `www.oaudrey.com` (ALIAS), and `fieldwork.oaudrey.com` (ALIAS); fixed `fieldwork-landing` route from `/fieldwork` to `/` so the component serves the subdomain root correctly.
+- `.github/workflows/oaudrey-retro.yml` — retro issues that contain `needsWork` items (infrastructure health failures) now receive `needs-human` label at creation time, preventing the OpenRouter auto-fix loop.
+
+**Remaining actions (infrastructure — requires live secrets):**
+
+1. Trigger `deploy-oaudrey.yml` via `workflow_dispatch` — `doctl apps update` will register `fieldwork.oaudrey.com` as a custom domain in the App Platform
+2. After deploy, run or wait for `sync-oaudrey-dns.yml` (auto-triggers after deploy) — it will push the `fieldwork` CNAME pointing to the App Platform ingress
+3. Allow 5–30 minutes for DNS propagation
+4. Re-run `oaudrey-retro.yml` — both sites should return HTTP 200/301/302 and issue #575 will auto-close
+
+---
+
 ### 2026-04-30 — Retro Findings & Resolutions
 
 **Issue:** `oAudrey retro — 2026-04-30 — 2 item(s) need attention`
