@@ -137,6 +137,7 @@ jobs:
                     title: issue.title,
                     label: pattern.label,
                     age_hours: Math.round(age_ms / MS_PER_HOUR),
+                    threshold_hours: Math.round(pattern.max_age_ms / MS_PER_HOUR),
                     next_action: pattern.next_action,
                     next_label: pattern.next_label,
                     description: pattern.description,
@@ -290,7 +291,7 @@ jobs:
                   });
 
                   const reviewers = pr.requested_reviewers?.map(r => `@${r.login}`).join(' ') || '@midnghtsapphire';
-                  comment_body += `This PR has been awaiting approval for over 72 hours.\n\n`;
+                  comment_body += `This PR has been awaiting approval for over ${item.threshold_hours} hours.\n\n`;
                   comment_body += `**Ping:** ${reviewers} - please review when you have a moment.\n`;
                   break;
 

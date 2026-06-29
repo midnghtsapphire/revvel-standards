@@ -135,7 +135,7 @@ jobs:
           OUTPUT_FILE: docs/research-engine/run-${{ github.run_id }}.md
         run: node scripts/research-engine.js
       - name: Dispatch WR PR creation workflow
-        if: always() && needs.route.outputs.issue_number != ''
+        if: needs.route.outputs.issue_number != ''
         uses: actions/github-script@v9.0.0
         with:
           script: |
