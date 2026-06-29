@@ -283,6 +283,20 @@ test('stuck-label-automation.yml can dispatch recovery workflows', () => {
   }
 });
 
+test('stuck-label-automation.yml ping-reviewers message uses configured threshold', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const detectScript = doc.jobs['detect-stuck'].steps.map(s => s.with?.script || '').join('\n');
+  const autoProgressScript = doc.jobs['auto-progress'].steps.map(s => s.with?.script || '').join('\n');
+
+  if (!detectScript.includes('max_age_hours: Math.round(pattern.max_age_ms / MS_PER_HOUR)')) {
+    throw new Error('stuck-label-automation must carry max_age_hours from STUCK_PATTERNS');
+  }
+  if (!autoProgressScript.includes('over ${thresholdHours} hours')) {
+    throw new Error('stuck-label-automation ping-reviewers message must use thresholdHours');
+  }
+});
+
 test('stuck-label-automation.yml keeps awaiting-approval ping threshold text in sync with configured age limit', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-automation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
