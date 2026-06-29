@@ -190,6 +190,8 @@ jobs:
         # Best-effort archival only: repository rules may reject direct pushes to
         # main, but that must never block the WR handoff to wr-pr-creation.yml.
         continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "revvel-automation[bot]"
           git config user.email "revvel-automation[bot]@users.noreply.github.com"
