@@ -9,7 +9,7 @@
     "google/gemini-2.5-pro"
   ],
   "adjudicator": "openai/gpt-4o",
-  "notes": "Illustrative offline triplet (n=3, k=2 majority) run. No live API called. Third arm corroborates the shared sources, raising consensus; same strong answers as the twin within a ~3x cost budget.",
+  "notes": "Illustrative offline triplet (n=3, k=2 majority). No live API called. The third arm corroborates the shared sources (raising consensus) but reuses the twin’s answers, so it shows no rubric gain over the twin and correctly scores rollback_triplet at ~3x cost. A third arm must measurably improve the answer to earn keep_triplet.",
   "results": [
     {
       "query_id": "repo-automation-gh-repo",
@@ -152,7 +152,7 @@
         "adjudicator": "openai/gpt-4o",
         "n": 3,
         "k": 2,
-        "agreement_score": 0.9500000000000001,
+        "agreement_score": 0.95,
         "consensus_score": 0.5,
         "disagreements": 0,
         "adjudication_quality": 0.96,
@@ -235,7 +235,7 @@
         "adjudicator": "openai/gpt-4o",
         "n": 3,
         "k": 2,
-        "agreement_score": 0.9500000000000001,
+        "agreement_score": 0.95,
         "consensus_score": 0.33,
         "disagreements": 0,
         "adjudication_quality": 0.97,

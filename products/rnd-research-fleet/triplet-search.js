@@ -14,6 +14,11 @@
  * twin on measured quality to earn its place — the runner produces data, the eval
  * makes the call. Reuses twin-search.js helpers (no duplication). Uses
  * OPENROUTER_API_KEY (the product's paid search lane, not the BIOME crew).
+ *
+ * Terminology: the strategy/label is `triplet_llm` (the n=3 default a user runs);
+ * the per-result block and the eval metrics are named `nplet` because the logic
+ * generalizes to any N (set TRIPLET_MODELS to a longer list). triplet = the
+ * common instance, nplet = the general shape.
  */
 
 const {

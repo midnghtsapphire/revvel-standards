@@ -228,6 +228,8 @@ function npletMetricsFor(run) {
     unsupportedFlags += countOf(t.unsupported_claims);
 
     // Recompute consensus from per-model sources when the block didn't carry it.
+    // Honors the block's own `k` (so a k=1 "any agreement" block isn't forced to
+    // strict majority); only defaults to floor(n/2)+1 when k is absent.
     if (typeof t.consensus_score !== 'number' && Array.isArray(t.sources) && t.sources.length) {
       const n = typeof t.n === 'number' ? t.n : t.sources.length;
       const k = typeof t.k === 'number' ? t.k : Math.floor(n / 2) + 1;
@@ -964,7 +966,7 @@ function main() {
 
   // Strategy mode: any of --fable / --twin / --twin-adjudicated triggers the
   // multi-strategy comparator (twin-LLM vs Fable/baseline).
-  const tripletArg = args.triplet || args.nplet;
+  const tripletArg = args.triplet; // single documented flag (no hidden alias)
   const strategyMode = !!(args.fable || args.twin || args['twin-adjudicated'] || tripletArg);
   if (strategyMode) {
     const haveStrategy = args.twin || args['twin-adjudicated'] || tripletArg;
