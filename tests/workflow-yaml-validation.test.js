@@ -699,5 +699,17 @@ test('pr-state-orchestrator.yml resync-all-prs uses GITHUB_TOKEN (not ADMIN fall
   }
 });
 
+test('doppler-secrets-sync.yml summary snippet keeps balanced quote for secrets-fetch-action line', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'doppler-secrets-sync.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  if (!content.includes("echo '  uses: dopplerhq/secrets-fetch-action@v2.0.0' >> \"$GITHUB_STEP_SUMMARY\"")) {
+    throw new Error('doppler-secrets-sync.yml must append a properly quoted secrets-fetch-action line to the step summary');
+  }
+  if (content.includes("echo '  uses: dopplerhq/secrets-fetch-action@v2.0.0 >> \"$GITHUB_STEP_SUMMARY\"")) {
+    throw new Error('doppler-secrets-sync.yml contains the previously broken unbalanced quote variant');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
