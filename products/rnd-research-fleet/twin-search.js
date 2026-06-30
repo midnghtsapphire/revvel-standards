@@ -20,11 +20,23 @@
  * the network orchestration lives under `if (require.main === module)`.
  */
 
+const { MASTER_PROMPT } = require('./deep-search-router');
+
 const DEFAULTS = {
   modelA: process.env.TWIN_MODEL_A || 'openai/gpt-4o-search-preview',
   modelB: process.env.TWIN_MODEL_B || 'anthropic/claude-3.5-sonnet',
   adjudicator: process.env.TWIN_ADJUDICATOR || 'openai/gpt-4o',
 };
+
+// The twin's two arms apply the SAME R&D frameworks as the deep-search lane —
+// DOE Screening, TRIZ, MEErP, LCA, and BNAT (Best Not Yet Available Technology) —
+// so it stays a true deep-research twin, not a generic Q&A. Citations are added
+// on top because the evaluator scores source coverage.
+function buildSearchSystemPrompt() {
+  return `${MASTER_PROMPT}
+
+Additionally, for this search: cite every nontrivial claim with a full source URL inline. Prefer primary/authoritative sources. If unsure, say so rather than guessing.`;
+}
 
 const URL_RE = /\bhttps?:\/\/[^\s)\]"'<>]+/g;
 
@@ -165,6 +177,7 @@ function buildTwinReport(results, models) {
 
 module.exports = {
   DEFAULTS,
+  buildSearchSystemPrompt,
   extractCitations,
   domainOf,
   sourceOverlapScore,
@@ -176,7 +189,7 @@ module.exports = {
 
 // --- CLI / live orchestration ---------------------------------------------
 if (require.main === module) {
-  const SEARCH_SYSTEM = `You are a research assistant. Answer the question accurately and concisely. Cite every nontrivial claim with a full source URL inline. Prefer primary/authoritative sources. If unsure, say so rather than guessing.`;
+  const SEARCH_SYSTEM = buildSearchSystemPrompt();
 
   const ADJUDICATOR_SYSTEM = `You are an adjudicator merging two independent research answers (A and B) to the same question. Keep only claims that at least one answer supports with a cited source; resolve disagreements toward the better-cited side; DROP any claim with no supporting source. Return STRICT JSON only, no prose, with this exact shape:
 {"answer": "<merged source-backed answer>", "citations": ["<url>", ...], "agreement_score": <0..1>, "disagreements": <int>, "adjudication_quality": <0..1>, "unsupported_claims": <int>}`;

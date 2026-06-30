@@ -3,6 +3,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
 const {
+  buildSearchSystemPrompt,
   extractCitations,
   domainOf,
   sourceOverlapScore,
@@ -11,6 +12,15 @@ const {
   buildTwinResult,
   buildTwinReport,
 } = require('../products/rnd-research-fleet/twin-search');
+
+test('twin arms apply the R&D frameworks incl. BNAT (not a generic prompt)', () => {
+  const p = buildSearchSystemPrompt();
+  for (const fw of ['DOE', 'TRIZ', 'MEErP', 'LCA', 'BNAT']) {
+    assert.ok(p.includes(fw), `search prompt missing framework: ${fw}`);
+  }
+  assert.match(p, /Best Not Yet Available Technology/);
+  assert.match(p, /cite every nontrivial claim/i); // citations still required for the evaluator
+});
 
 test('extractCitations pulls + dedupes URLs and strips trailing punctuation', () => {
   const text = 'See https://a.com/x. Also (https://b.com/y) and https://a.com/x again.';
