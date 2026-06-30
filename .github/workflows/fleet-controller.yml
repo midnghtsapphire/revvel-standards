@@ -1,0 +1,65 @@
+name: Fleet Controller
+
+# The grid-level scheduler over every orchestrator (CUDA-style): scans in-progress
+# + queued workflow runs, classifies their health, and for the stalled / runaway
+# ones does CUT + REASSIGN — cancels the run and re-launches its workflow on the
+# next fallback LLM, up to a cap, then escalates to self-healing. Never cuts the
+# fleet's own immune system (protected paths). Credit-free (GITHUB_TOKEN only) and
+# fail-open: a broken controller exits 0 so it can never wedge the fleet. Writes
+# Lovable-consumable feeds (status / stop / ingestion) to docs/controller/.
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *' # every 15 min, offset off the other loops
+  workflow_dispatch:
+    inputs:
+      preempt:
+        description: 'Actually cancel stalled/runaway runs (true) or dry-run (false)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # commit the monitor feed
+  actions: write # cancel stalled / runaway orchestrator runs
+
+concurrency:
+  group: fleet-controller
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  # Scheduled runs preempt by default; a manual dispatch can opt into a dry scan.
+  CONTROLLER_PREEMPT: ${{ github.event_name == 'workflow_dispatch' && inputs.preempt == false && '0' || '1' }}
+
+jobs:
+  schedule-grid:
+    name: Scan + preempt orchestrators
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run fleet controller
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          CONTROLLER_PREEMPT: ${{ env.CONTROLLER_PREEMPT }}
+        run: node scripts/controller/controller.js
+
+      - name: Commit the monitor feed if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/controller/controller-status.json docs/controller/controller-stop.json
+          if git diff --cached --quiet; then
+            echo "feed unchanged"
+          else
+            git commit -m "chore(controller): refresh fleet status feed [skip ci]"
+            git push
+          fi
