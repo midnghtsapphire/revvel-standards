@@ -1,0 +1,45 @@
+{
+  "schema": "biome-status/v1",
+  "generated_at": "2026-06-30T00:00:00Z",
+  "credit_free": true,
+  "overall": "healthy",
+  "workers": {
+    "sentinel": {
+      "status": "healthy",
+      "summary": "bootstrap — awaiting first scheduled scan",
+      "counts": {
+        "failed_runs": 0,
+        "total_runs": 0,
+        "stuck_issues": 0
+      },
+      "detail": {}
+    },
+    "homeostat": {
+      "status": "healthy",
+      "summary": "bootstrap — AI-lane state reported on first run",
+      "counts": {
+        "ai_keys_present": 0,
+        "ai_keys_missing": 0
+      },
+      "detail": {
+        "ai_lanes": "unknown"
+      }
+    },
+    "medic": {
+      "status": "healthy",
+      "summary": "no recent run yet",
+      "counts": {},
+      "detail": {
+        "last_run": null
+      }
+    },
+    "sheaf": {
+      "status": "healthy",
+      "summary": "bootstrap snapshot — replaced by first hourly run",
+      "counts": {
+        "workers": 3
+      },
+      "detail": {}
+    }
+  }
+}

@@ -1,0 +1,55 @@
+name: BIOME Medic
+
+# Credit-free, rule-based remediation (the crew's macrophage). No AI keys.
+# Storm-safe by default: re-surfaces stuck items (adds `self-heal` + comment) and,
+# when AI lanes are offline, clears dead `openrouter:needs-key` blocks so the
+# rule-based lanes can pick the work back up. Never deletes content
+# (COMMENT-DONT-DELETE / RVS-AGENT-001).
+#
+# Re-running failed workflow runs is OFF by default (storm-prone). Enable for a
+# single manual run via the workflow_dispatch input; it excludes BIOME's own
+# workflows to avoid loops. (Enabling reruns also needs `actions: write`.)
+
+on:
+  schedule:
+    - cron: '50 */6 * * *'  # every 6 hours, offset behind sentinel/homeostat
+  workflow_dispatch:
+    inputs:
+      allow_reruns:
+        description: 'Allow rule-based re-runs of failed (non-BIOME) workflow runs'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+concurrency:
+  group: biome-medic
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  remediate:
+    name: Rule-based remediation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run medic
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          BIOME_ALLOW_RERUNS: ${{ github.event.inputs.allow_reruns || 'false' }}
+        run: node scripts/biome/medic.js

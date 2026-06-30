@@ -1,0 +1,56 @@
+name: BIOME Sheaf
+
+# The crew's connective tissue: the monitor feed. Glues each worker's local status
+# section into one globally-consistent fleet-health object and commits it as
+# docs/biome/biome-status.json (+ .html). Credit-free; reads via GITHUB_TOKEN only.
+# Single committer for the feed (avoids commit races with the other workers).
+# An external monitor (e.g. Lovable) can poll the committed JSON.
+
+on:
+  schedule:
+    - cron: '0 */1 * * *'  # hourly
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # commits the status feed
+  issues: read
+  actions: read
+
+concurrency:
+  group: biome-sheaf
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  glue:
+    name: Generate + commit status feed
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate feed
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: node scripts/biome/sheaf.js
+
+      - name: Commit feed if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/biome/biome-status.json docs/biome/biome-status.html
+          if git diff --cached --quiet; then
+            echo "No status change."
+          else
+            git commit -m "chore(biome): refresh crew status feed [skip ci]"
+            git push
+          fi
