@@ -67,6 +67,16 @@ test('buildNpletResult falls back to consensus for agreement + surfaces error', 
   assert.equal(r.answer, 'a'); // first non-empty arm
 });
 
+test('buildNpletResult unions ALL N models citations when adjudicator returns none (no dropped 3rd arm)', () => {
+  const runs = [
+    { answer: 'a', citations: ['https://a.com'], latency_ms: 100, cost_usd: null },
+    { answer: 'b', citations: ['https://b.com'], latency_ms: 100, cost_usd: null },
+    { answer: 'c', citations: ['https://c.com'], latency_ms: 100, cost_usd: null }, // 3rd model's unique source
+  ];
+  const r = buildNpletResult({ queryId: 'q', models: ['m1', 'm2', 'm3'], adjudicator: 'adj', runs, adjudication: null });
+  assert.deepEqual(r.citations.sort(), ['https://a.com', 'https://b.com', 'https://c.com']); // c.com NOT dropped
+});
+
 test('buildNpletReport carries the triplet strategy labels', () => {
   const rep = buildNpletReport([{ query_id: 'q' }], ['m1', 'm2', 'm3'], 'adj');
   assert.equal(rep.strategy, 'triplet_llm');

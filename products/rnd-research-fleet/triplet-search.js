@@ -92,7 +92,9 @@ function buildNpletResult({ queryId, models, adjudicator, runs, adjudication, ad
   const citations =
     Array.isArray(adj.citations) && adj.citations.length
       ? adj.citations.slice()
-      : unionCitations(...perModelSources.length ? perModelSources : [[]]);
+      // Union ALL N model source arrays — unionCitations is binary, so fold over
+      // them (a bare spread would silently drop the 3rd+ model's citations).
+      : perModelSources.reduce((acc, arr) => unionCitations(acc, arr), []);
 
   const latency_ms = Math.max(0, ...runs.map((r) => r.latency_ms || 0)) + (adjudicatorLatencyMs || 0);
   const costs = [...runs.map((r) => r.cost_usd), adjudicatorCostUsd].filter((c) => typeof c === 'number');
