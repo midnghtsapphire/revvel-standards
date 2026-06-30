@@ -470,7 +470,7 @@ Add the new product to the subdomain table in `oaudrey/README.md`.
 
 ## Troubleshooting
 
-### Deploy fails: "App not found"
+### Deploy fails: App not found
 
 The `doctl apps list` grep may fail to match the app name. Check:
 
@@ -669,7 +669,7 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 
 | Item | Finding | Resolution | Status |
 |------|---------|------------|--------|
-| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via `|| echo "000"` pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses `|| true` so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycoms--fieldworkoaudreycoms) | ⚠️ Infrastructure pending |
+| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via \|\| echo pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses \|\| true so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycom--fieldworkoaudreycom) | ⚠️ Infrastructure pending |
 | `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added | ⚠️ Infrastructure pending |
 
 **Actions taken (code):**
