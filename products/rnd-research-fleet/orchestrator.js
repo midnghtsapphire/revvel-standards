@@ -102,7 +102,7 @@ function buildCheckpoint(state) {
       model: a.model,
       status: a.status,
       tried_models: a.triedModels || [],
-      last_progress_at: a.lastProgressAt || null,
+      last_progress_at: typeof a.lastProgressAt === 'number' ? a.lastProgressAt : null,
       has_result: !!a.result,
       error: a.error || null,
     })),
@@ -168,10 +168,14 @@ module.exports = {
 
 /**
  * @param {object} opts
- * @param {Array<{id:string, model:string, profileModels?:string[]}>} opts.armSpecs
+ * @param {Array<{id:string, model:string, kind?:string, profileModels?:string[]}>} opts.armSpecs
  * @param {(arm, ctx)=>Promise<{answer,citations,cost_usd}>} opts.dispatch
+ *        arm is a frozen read-only {id, model, kind} view (not the live arm).
  *        ctx = { onProgress(): void, signal: AbortSignal }. Call onProgress() as
- *        output streams so the monitor sees the arm is alive.
+ *        output streams so the monitor sees the arm is alive; honor `signal` so a
+ *        cut/stopped arm is actually aborted (and its resources freed) rather than
+ *        hanging — the monitor only polls every `tickMs`, so detection of a stall
+ *        lands within `stallMs + tickMs`.
  * @param {(checkpoint, handoffMd)=>void|Promise} [opts.onCheckpoint] persist hook
  * @param {(state)=>Promise<'continue'|'stop'>} [opts.onSoftBudget] 15-min gateway
  * @param {number} [opts.stallMs] @param {number} [opts.softBudgetMs] @param {number} [opts.tickMs]
@@ -203,6 +207,7 @@ async function orchestrate(opts) {
   const arms = armSpecs.map((s) => ({
     id: s.id,
     model: s.model,
+    kind: s.kind, // arm type for the dispatch adapter ('single' | 'twin' | 'triplet')
     profileModels: s.profileModels || [s.model],
     triedModels: [s.model],
     status: 'running',
@@ -228,9 +233,12 @@ async function orchestrate(opts) {
     arm.controller = controller;
     arm.lastProgressAt = now();
     const gen = (arm.generation += 1); // this launch's epoch; guards against stale callbacks
+    // Hand dispatch a frozen read-only view, never the live arm — a misbehaving
+    // dispatch can't corrupt internal state (controller/generation/status/…).
+    const armView = Object.freeze({ id: arm.id, model: arm.model, kind: arm.kind });
     Promise.resolve()
       .then(() =>
-        dispatch(arm, {
+        dispatch(armView, {
           onProgress: () => { if (arm.generation === gen) arm.lastProgressAt = now(); },
           signal: controller.signal,
         })
@@ -291,7 +299,19 @@ async function orchestrate(opts) {
       const decision = await onSoftBudget(state); // the 15-min gateway
       if (decision === 'stop') {
         stopped = true;
-        for (const arm of arms) if (arm.status === 'running' && arm.controller) arm.controller.abort();
+        for (const arm of arms) {
+          if (arm.status !== 'running') continue;
+          // Mark terminal BEFORE aborting and bump the generation, so the abort's
+          // reject doesn't slip into launch()'s catch and reassign to a fallback
+          // (which would keep working after the run was stopped).
+          arm.generation += 1;
+          arm.status = 'failed';
+          arm.error = 'stopped at soft-budget gateway';
+          if (arm.controller) {
+            arm.controller.abort();
+            arm.controller = null;
+          }
+        }
       }
     }
   }
@@ -305,23 +325,44 @@ if (require.main === module) {
   const fs = require('fs');
   const path = require('path');
   const outDir = process.env.ORCH_OUT_DIR || path.join(process.cwd(), 'docs', 'research-engine', 'checkpoints');
-  const armSpecs = [
-    { id: 'arm-1', model: 'model-a', profileModels: ['model-a', 'model-a-fallback'] },
-    { id: 'arm-2', model: 'model-b', profileModels: ['model-b', 'model-b-fallback'] },
-    { id: 'arm-3', model: 'model-c', profileModels: ['model-c', 'model-c-fallback'] },
-  ];
-  // Stub dispatch: resolves after a short delay with a canned answer. Replace
-  // with a real call to twin/triplet/deep-search arms in production wiring.
-  const dispatch = (arm) =>
-    new Promise((resolve) => setTimeout(() => resolve({ answer: `stub answer from ${arm.model}`, citations: [`https://example.com/${arm.id}`], cost_usd: 0 }), 50));
+  const query = process.argv.slice(2).join(' ') || 'demo query';
+  const live = process.env.ORCH_LIVE === '1' || process.env.ORCH_LIVE === 'true';
+
+  // Live wiring: each arm runs a real runner (deep-search / twin / triplet) via
+  // the subprocess dispatcher; arms are heterogeneous so the orchestrator
+  // monitors single-LLM and twin/triplet "swarm" arms side by side. Set
+  // ORCH_LIVE=1 with a funded OPENROUTER_API_KEY. Default is the keyless stub.
+  const armSpecs = live
+    ? [
+        // single deep-search arm; profileModels are deep-search-router profiles it falls back through
+        { id: 'arm-deep', kind: 'single', model: 'deep_search', profileModels: ['deep_search', 'technical', 'market_research'] },
+        { id: 'arm-twin', kind: 'twin', model: '', profileModels: [''] },
+        { id: 'arm-triplet', kind: 'triplet', model: '', profileModels: [''] },
+      ]
+    : [
+        { id: 'arm-1', model: 'model-a', profileModels: ['model-a', 'model-a-fallback'] },
+        { id: 'arm-2', model: 'model-b', profileModels: ['model-b', 'model-b-fallback'] },
+        { id: 'arm-3', model: 'model-c', profileModels: ['model-c', 'model-c-fallback'] },
+      ];
+
+  // Stub dispatch: resolves after a short delay with a canned answer (keyless).
+  // Live dispatch: spawns the real runners via dispatch-arms.js.
+  const dispatch = live
+    ? require('./dispatch-arms').makeDispatch(query)
+    : (arm) =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve({ answer: `stub answer from ${arm.model}`, citations: [`https://example.com/${arm.id}`], cost_usd: 0 }), 50)
+        );
 
   orchestrate({
-    query: process.argv.slice(2).join(' ') || 'demo query',
+    query,
     armSpecs,
     dispatch,
-    stallMs: 1000,
-    softBudgetMs: 10000,
-    tickMs: 100,
+    // Live runs are slow: give arms minutes before calling them stalled and use
+    // the real 15-min soft budget; the stub demo stays snappy.
+    stallMs: live ? 120000 : 1000,
+    softBudgetMs: live ? 900000 : 10000,
+    tickMs: live ? 5000 : 100,
     onCheckpoint: (checkpoint, handoffMd) => {
       fs.mkdirSync(outDir, { recursive: true });
       fs.writeFileSync(path.join(outDir, 'checkpoint.json'), `${JSON.stringify(checkpoint, null, 2)}\n`);

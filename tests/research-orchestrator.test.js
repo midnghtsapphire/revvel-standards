@@ -159,3 +159,29 @@ test('orchestrate: onSoftBudget stop halts the run', async () => {
   assert.equal(asked, true);
   assert.equal(res.stopped, true);
 });
+
+test('orchestrate: soft-budget stop does not reassign an arm whose dispatch rejects on abort', async () => {
+  const dispatched = [];
+  const dispatch = (arm, ctx) => {
+    dispatched.push(arm.model);
+    // Reject when cut — the common case for an aborted in-flight call.
+    return new Promise((_, reject) => {
+      ctx.signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true });
+    });
+  };
+  const res = await orchestrate({
+    query: 'q',
+    armSpecs: [{ id: 'a1', model: 'm', profileModels: ['m', 'm-fallback'] }],
+    dispatch,
+    tickMs: 5,
+    stallMs: 100000, // don't trip stall
+    softBudgetMs: 1, // immediately soft-exceeded
+    onSoftBudget: async () => 'stop',
+  });
+  // Let any stray rejection settle, then confirm no reassignment happened.
+  await new Promise((r) => setTimeout(r, 10));
+  assert.equal(res.stopped, true);
+  assert.deepEqual(dispatched, ['m']); // 'm-fallback' was never launched
+  assert.equal(res.arms[0].status, 'failed');
+  assert.equal(res.arms[0].error, 'stopped at soft-budget gateway');
+});

@@ -61,14 +61,44 @@ This split is why the same core serves both runtimes:
 cd products/rnd-research-fleet
 # Demo with a stubbed dispatch (no API key needed) — writes a checkpoint + handoff:
 ORCH_OUT_DIR=/tmp/orch npm run orchestrate -- "your research question"
+
+# Live: spawn the real runners (needs a funded OPENROUTER_API_KEY):
+ORCH_LIVE=1 OPENROUTER_API_KEY=… ORCH_OUT_DIR=/tmp/orch npm run orchestrate -- "your research question"
 ```
 
-Wire `dispatch` to the twin/triplet/deep-search arms (their fallback model lists
-live in `deep-search-router.js` `ROUTING_PROFILES`) to orchestrate live search.
+## Live wiring (`dispatch-arms.js`)
+
+The twin/triplet/deep-search runners keep their network orchestration under
+`if (require.main === module)` and emit their result on **stdout** (twin/triplet
+print an eval-compatible JSON report; deep-search prints the answer text). They
+expose no in-process run function, so `dispatch-arms.js` drives them the way
+they're built to be driven — as a **subprocess**:
+
+- `makeDispatch(query, opts)` returns a `dispatch(arm, ctx)` that spawns the
+  runner for `arm.kind` (`'single'` → `deep-search-router.js`, `'twin'` →
+  `twin-search.js`, `'triplet'` → `triplet-search.js`), streams `onProgress` on
+  every stdout/stderr chunk, and **SIGTERMs the child when `ctx.signal` aborts** —
+  so the orchestrator's stall/stop genuinely cuts a live arm.
+- `parseRunnerOutput(kind, stdout)` normalizes a runner's output to the
+  `{answer, citations, cost_usd}` arm-result shape (pure; tested without network).
+- Per-arm model overrides map to what each runner reads: `single` → a
+  `--profile` argv (`deep-search-router.js` `ROUTING_PROFILES`); `twin`/`triplet`
+  → `TWIN_MODEL_A` / `TRIPLET_MODEL_1` env. Fallbacks reassign through
+  `profileModels` exactly as for any arm.
+
+`dispatch` is handed a **frozen read-only `{id, model, kind}` view**, never the
+live arm, so a misbehaving runner adapter can't corrupt orchestrator state. A
+runner script that isn't present on the branch yet just fails its arm (clear
+spawn error) and the orchestrator reassigns/marks it failed — additive, no hard
+dependency on the unmerged twin/triplet PRs.
 
 ## Tests
 
 `tests/research-orchestrator.test.js` covers the pure logic (stall detection,
 fallback selection, budget state, progress rollup, incremental merge, and the
-checkpoint/handoff shape) plus two driver integration cases (reassign-on-reject,
-soft-budget `stop`).
+checkpoint/handoff shape) plus driver integration cases: reassign-on-reject,
+`armSpecs` validation, the stale-dispatch race guard, soft-budget `stop`, and
+that a `stop` does not reassign an arm whose dispatch rejects on abort.
+`tests/dispatch-arms.test.js` covers the live adapter — output parsing for each
+runner kind, progress streaming, abort-kills-the-child, and graceful failure —
+all with an injected fake `spawn` (no network).
