@@ -4,9 +4,11 @@ name: Fleet Controller
 # + queued workflow runs, classifies their health, and for the stalled / runaway
 # ones does CUT + REASSIGN — cancels the run and re-launches its workflow on the
 # next fallback LLM, up to a cap, then escalates to self-healing. Never cuts the
-# fleet's own immune system (protected paths). Credit-free (GITHUB_TOKEN only) and
-# fail-open: a broken controller exits 0 so it can never wedge the fleet. Writes
-# Lovable-consumable feeds (status / stop / ingestion) to docs/controller/.
+# fleet's own immune system (protected paths). Credit-free (no paid API keys —
+# the free GITHUB_TOKEN, with the repo-standard ADMIN_GITHUB_TOKEN fallback so a
+# re-dispatch can actually trigger the target workflow) and fail-open: a broken
+# controller exits 0 so it can never wedge the fleet. Writes Lovable-consumable
+# feeds (status / stop / ingestion) to docs/controller/.
 
 on:
   schedule:
@@ -56,7 +58,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/controller/controller-status.json docs/controller/controller-stop.json
+          git add docs/controller/controller-status.json docs/controller/controller-stop.json docs/controller/controller-ingestion.json
           if git diff --cached --quiet; then
             echo "feed unchanged"
           else

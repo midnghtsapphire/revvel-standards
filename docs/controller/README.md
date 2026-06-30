@@ -33,9 +33,12 @@ watches occupancy and **evicts warps that stall** so others make progress.
 
 ## Credit-free & fail-open by design
 
-- **Credit-free** — GITHUB_TOKEN only (the shared BIOME `gh` helper). No
-  OpenRouter / Anthropic / paid key is ever required, so it keeps scheduling even
-  when Doppler wipes the AI-lane secrets.
+- **Credit-free** — no paid API key is ever required (no OpenRouter / Anthropic),
+  so it keeps scheduling even when Doppler wipes the AI-lane secrets. It uses the
+  free `GITHUB_TOKEN` via the shared BIOME `gh` helper, with the repo-standard
+  `ADMIN_GITHUB_TOKEN` fallback when present — needed so a re-dispatch can
+  actually trigger the target workflow (the default `GITHUB_TOKEN` can't trigger
+  other workflows; see CLAUDE.md gotcha #2).
 - **Fail-open** — any error is caught and the process still exits `0`. A broken
   controller can never wedge the fleet — it is *always there, and always fails
   open*.

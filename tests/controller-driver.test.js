@@ -2,7 +2,16 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { listRuns, reassignWorkflow } = require('../scripts/controller/controller');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { listRuns, reassignWorkflow, loadPriorReassigns } = require('../scripts/controller/controller');
+
+function writeFeed(feed) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctrl-'));
+  fs.writeFileSync(path.join(dir, 'controller-status.json'), JSON.stringify(feed));
+  return dir;
+}
 
 test('listRuns pages past 100 so a large fleet is not truncated', async () => {
   const page1 = Array.from({ length: 100 }, (_, i) => ({ id: i, status: 'in_progress' }));
@@ -47,6 +56,35 @@ test('reassignWorkflow: both attempts fail -> reassign-failed (never a false suc
   const api = () => Promise.reject(errs[n++] || errs[1]);
   const out = await reassignWorkflow({ path: '.github/workflows/x.yml', ref: 'main', nextModel: 'm1' }, api);
   assert.match(out, /^reassign-failed:/);
+});
+
+test('reassignWorkflow: a non-422 first error does NOT retry on the default model', async () => {
+  let n = 0;
+  const api = () => { n += 1; return Promise.reject(new Error('429 rate limit exceeded')); };
+  const out = await reassignWorkflow({ path: '.github/workflows/x.yml', ref: 'main', nextModel: 'm1' }, api);
+  assert.match(out, /^reassign-failed:/);
+  assert.equal(n, 1); // did not silently relaunch without the model input
+});
+
+test('loadPriorReassigns persists BOTH reassign and escalate entries from a real feed', () => {
+  const dir = writeFeed({
+    preempt_enabled: true,
+    preemptions: [
+      { path: '.github/workflows/a.yml', planned: 'reassign', reassign_count: 1, tried_models: ['m1'] },
+      { path: '.github/workflows/b.yml', planned: 'escalate', reassign_count: 2, tried_models: ['m1', 'm2'] },
+    ],
+  });
+  const map = loadPriorReassigns(dir);
+  assert.equal(map['.github/workflows/a.yml'].count, 1);
+  assert.deepEqual(map['.github/workflows/b.yml'].tried, ['m1', 'm2']); // escalated stays escalated next tick
+});
+
+test('loadPriorReassigns ignores a dry-run feed (state must not advance from a dry scan)', () => {
+  const dir = writeFeed({
+    preempt_enabled: false,
+    preemptions: [{ path: '.github/workflows/a.yml', planned: 'reassign', reassign_count: 1, tried_models: ['m1'] }],
+  });
+  assert.deepEqual(loadPriorReassigns(dir), {});
 });
 
 test('reassignWorkflow: no workflow path is skipped cleanly', async () => {

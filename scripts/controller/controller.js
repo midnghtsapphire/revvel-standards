@@ -68,9 +68,16 @@ async function discoverRuns(api = repoApi) {
 function loadPriorReassigns(outDir) {
   try {
     const prev = JSON.parse(fs.readFileSync(path.join(outDir, 'controller-status.json'), 'utf8'));
+    // Only a real (preempting) run reflects cuts/reassigns that actually happened.
+    // A dry-scan feed must NOT advance scheduling state, or a manual dry run would
+    // push workflows toward premature escalation on the next scheduled tick.
+    if (!prev.preempt_enabled) return {};
     const map = {};
     for (const p of prev.preemptions || []) {
-      if (p.planned !== 'reassign') continue;
+      // Persist BOTH reassigned AND escalated entries: an escalated workflow must
+      // STAY escalated next tick, not forget its history and loop back to the
+      // first fallback model.
+      if (p.planned !== 'reassign' && p.planned !== 'escalate') continue;
       const key = p.path || String(p.id);
       map[key] = { count: p.reassign_count || 0, tried: p.tried_models || [] };
     }
@@ -91,8 +98,13 @@ async function reassignWorkflow(p, api = repoApi) {
     await api(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref, inputs: { model: p.nextModel } } });
     return 'reassigned';
   } catch (e1) {
-    // The workflow may not declare a `model` input — retry without it. If THAT
-    // also fails, report the failure (never a false "reassigned").
+    // Only retry WITHOUT the model input when the failure was the workflow not
+    // declaring that input (HTTP 422 / "Unexpected inputs"). Any other failure
+    // (rate limit, perms, 5xx) must NOT silently relaunch on the default model —
+    // report it so the feed shows a real failure, not a false "reassigned".
+    if (!/422|unexpected input|inputs/i.test(e1.message || '')) {
+      return `reassign-failed: ${e1.message}`;
+    }
     try {
       await api(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref } });
       return 'reassigned(no-model-input)';
@@ -117,14 +129,17 @@ async function main() {
       p.cut = 'would-cancel'; // dry scan: report the cut + reassign we *would* do
       continue;
     }
-    // 1) cut the stalled/runaway run
+    // 1) cut the stalled/runaway run. No allowError: a failed cancel must NOT be
+    //    recorded as 'cancelled', or we'd relaunch a duplicate while the original
+    //    is still running.
     try {
-      await repoApi(`/actions/runs/${p.id}/cancel`, { method: 'POST', allowError: true });
+      await repoApi(`/actions/runs/${p.id}/cancel`, { method: 'POST' });
       p.cut = 'cancelled';
       console.error(`controller: cut ${p.health} run ${p.id} (${p.name || '?'}) — ${p.reason}`);
     } catch (e) {
       p.cut = 'cancel-failed';
       p.error = e.message;
+      continue; // couldn't cut the original — do NOT reassign/relaunch (avoid duplicate)
     }
     // 2) reassign to a fresh LLM and relaunch (unless the chain/cap is exhausted)
     if (p.action === 'reassign') {
