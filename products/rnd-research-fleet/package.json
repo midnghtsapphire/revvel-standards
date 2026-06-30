@@ -8,6 +8,7 @@
     "deep-search": "node deep-search-router.js",
     "twin:search": "node twin-search.js",
     "triplet:search": "node triplet-search.js",
+    "orchestrate": "node orchestrator.js",
     "persona": "node persona-loader.js",
     "install-all": "./install.sh",
     "setup": "node auto-github-join.js",
