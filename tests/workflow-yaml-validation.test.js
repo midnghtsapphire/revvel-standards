@@ -699,5 +699,37 @@ test('pr-state-orchestrator.yml resync-all-prs uses GITHUB_TOKEN (not ADMIN fall
   }
 });
 
+// Regression: find-stuck-issues job must pass owner/repo to every listForRepo call.
+// Without them, the Octokit REST client constructs GET /repos///issues (empty
+// owner and repo) which returns 404 Not Found and aborts the job.
+// See: job 84184617094, workflow run 28401216956.
+test('stuck-check-watchdog.yml find-stuck-issues passes owner/repo to all listForRepo calls', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  const job = doc.jobs['find-stuck-issues'];
+  if (!job) throw new Error('find-stuck-issues job not found in stuck-check-watchdog.yml');
+
+  const script = job.steps.map(s => s.with?.script || '').join('\n');
+  const callSections = script.split('listForRepo(');
+
+  // Every section after the first is the argument block of a listForRepo call.
+  for (let i = 1; i < callSections.length; i++) {
+    const body = callSections[i];
+    if (!body.includes('context.repo.owner')) {
+      throw new Error(
+        `stuck-check-watchdog listForRepo call #${i} is missing owner: context.repo.owner — ` +
+        'omitting it produces GET /repos///issues and a 404'
+      );
+    }
+    if (!body.includes('context.repo.repo')) {
+      throw new Error(
+        `stuck-check-watchdog listForRepo call #${i} is missing repo: context.repo.repo — ` +
+        'omitting it produces GET /repos///issues and a 404'
+      );
+    }
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
