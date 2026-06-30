@@ -710,23 +710,30 @@ test('stuck-check-watchdog.yml find-stuck-issues passes owner/repo to all listFo
   const job = doc.jobs['find-stuck-issues'];
   if (!job) throw new Error('find-stuck-issues job not found in stuck-check-watchdog.yml');
 
-  const script = job.steps.map(s => s.with?.script || '').join('\n');
-  const callSections = script.split('listForRepo(');
+  // Check each step individually so splits are confined to a single call's argument block.
+  for (const [stepIdx, step] of (job.steps || []).entries()) {
+    const script = step.with?.script || '';
+    if (!script.includes('listForRepo(')) continue;
 
-  // Every section after the first is the argument block of a listForRepo call.
-  for (let i = 1; i < callSections.length; i++) {
-    const body = callSections[i];
-    if (!body.includes('context.repo.owner')) {
-      throw new Error(
-        `stuck-check-watchdog listForRepo call #${i} is missing owner: context.repo.owner — ` +
-        'omitting it produces GET /repos///issues and a 404'
-      );
-    }
-    if (!body.includes('context.repo.repo')) {
-      throw new Error(
-        `stuck-check-watchdog listForRepo call #${i} is missing repo: context.repo.repo — ` +
-        'omitting it produces GET /repos///issues and a 404'
-      );
+    const callSections = script.split('listForRepo(');
+    for (let i = 1; i < callSections.length; i++) {
+      // Capture only the argument object up to the matching closing brace.
+      const body = callSections[i];
+      // Use regex to confirm the param is an actual key assignment, not a comment/string.
+      if (!/owner\s*:\s*context\.repo\.owner/.test(body)) {
+        throw new Error(
+          `stuck-check-watchdog step ${stepIdx + 1}, listForRepo call #${i} ` +
+          'is missing owner: context.repo.owner — ' +
+          'omitting it produces GET /repos///issues and a 404'
+        );
+      }
+      if (!/repo\s*:\s*context\.repo\.repo/.test(body)) {
+        throw new Error(
+          `stuck-check-watchdog step ${stepIdx + 1}, listForRepo call #${i} ` +
+          'is missing repo: context.repo.repo — ' +
+          'omitting it produces GET /repos///issues and a 404'
+        );
+      }
     }
   }
 });
