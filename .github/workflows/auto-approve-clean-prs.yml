@@ -8,6 +8,12 @@
 #      label AND Bito review labels — too narrow, caused PRs to sit in limbo.
 # What: Triggers on check_suite completion, verifies all required checks pass,
 #       then auto-approves if the PR author is trusted.
+# Fix (2026-06-30): the approval is submitted from an identity DIFFERENT from the
+#       PR author. The org owner (midnghtsapphire) is a trusted author, and the
+#       ADMIN_GITHUB_TOKEN PAT is that same account — so approving owner-authored
+#       PRs with the PAT silently failed ("Can not approve your own pull request")
+#       and the job went green without ever approving. Owner PRs are now approved
+#       as github-actions[bot] (the free github.token); other authors keep the PAT.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: Auto-Approve Clean PRs
@@ -42,10 +48,31 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/github-script@v9.0.0
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          BOT_TOKEN: ${{ github.token }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
             const { owner, repo } = context.repo;
+
+            // GitHub forbids approving your OWN PR. The org owner (midnghtsapphire)
+            // is a trusted author AND owns the ADMIN PAT, so approving owner PRs with
+            // the PAT silently fails. Approve from a DIFFERENT identity than the
+            // author: github-actions[bot] (free github.token) for owner-authored PRs,
+            // the admin PAT for everyone else (and for bot-authored PRs).
+            const { getOctokit } = require('@actions/github');
+            const adminToken = process.env.ADMIN_TOKEN || '';
+            const botToken = process.env.BOT_TOKEN || '';
+            const adminClient = adminToken ? getOctokit(adminToken) : github;
+            const botClient = botToken ? getOctokit(botToken) : github;
+            const ADMIN_OWNER = 'midnghtsapphire'; // the account the ADMIN PAT belongs to
+            function approverFor(author) {
+              const a = (author || '').toLowerCase();
+              if (a === 'github-actions[bot]') return { client: adminClient, who: 'admin-pat' };
+              if (a === ADMIN_OWNER.toLowerCase() || !adminToken) return { client: botClient, who: 'github-actions[bot]' };
+              return { client: adminClient, who: 'admin-pat' };
+            }
 
             // Trusted authors: bots and org owner
             const TRUSTED_AUTHORS = [
@@ -157,14 +184,16 @@ jobs:
                   continue;
                 }
 
-                // All checks pass, author is trusted — submit APPROVE
-                await github.rest.pulls.createReview({
+                // All checks pass, author is trusted — submit APPROVE from a
+                // non-author identity so GitHub accepts it (not a silent self-approve).
+                const { client: approver, who } = approverFor(author);
+                await approver.rest.pulls.createReview({
                   owner, repo, pull_number: prNumber,
                   event: 'APPROVE',
-                  body: `🤖 **Auto-Approved** — All CI checks pass and author (${author}) is trusted. Lifecycle automation will handle merge progression.`,
+                  body: `🤖 **Auto-Approved** (by ${who}) — All CI checks pass and author (${author}) is trusted. Lifecycle automation will handle merge progression.`,
                 });
 
-                core.info(`✅ Submitted APPROVE review on PR #${prNumber} (author: ${author})`);
+                core.info(`✅ Submitted APPROVE review on PR #${prNumber} (author: ${author}, approver: ${who})`);
 
                 // Remove stuck/waiting labels if present
                 const CLEANUP_LABELS = ['scaffolding-detected', 'needs-completion', 'lifecycle:stuck', 'status:waiting-for-review', 'awaiting-review'];
