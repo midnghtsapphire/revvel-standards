@@ -61,7 +61,9 @@ jobs:
             // the PAT silently fails. Approve from a DIFFERENT identity than the
             // author: github-actions[bot] (free github.token) for owner-authored PRs,
             // the admin PAT for everyone else (and for bot-authored PRs).
-            const { getOctokit } = require('@actions/github');
+            // NOTE: github-script already provides `getOctokit` in scope — do NOT
+            // redeclare it (const { getOctokit } = require(...) throws "already
+            // been declared"). Use the ambient one.
             const adminToken = process.env.ADMIN_TOKEN || '';
             const botToken = process.env.BOT_TOKEN || '';
             const adminClient = adminToken ? getOctokit(adminToken) : github;
