@@ -711,5 +711,27 @@ test('doppler-secrets-sync.yml summary snippet keeps balanced quote for secrets-
   }
 });
 
+test('self-healing.yml routes step outputs through env and not bare run interpolation', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'self-healing.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs['research-state'].steps;
+
+  const scan = steps.find((s) => s.id === 'scan');
+  if (!scan) throw new Error('Scan for broken areas step (id: scan) not found');
+
+  // Regression for job 84253108720: `AGENTS=${{ steps.agents.outputs.agent_workflows }}`
+  // expanded to `AGENTS=missing: agent-dispatcher ...`, which bash parsed as an
+  // env-assignment prefix + the command `agent-dispatcher` (exit 127). Step
+  // outputs must come through env:, not raw interpolation into the run script.
+  if (/^\s*AGENTS=\$\{\{/m.test(scan.run || '')) {
+    throw new Error('scan step must not assign AGENTS via bare ${{ }} interpolation (causes exit 127)');
+  }
+  for (const key of ['ACTIONS_FAILED', 'STUCK', 'AGENTS']) {
+    if (!scan.env || !(key in scan.env)) {
+      throw new Error(`scan step must expose ${key} via env:`);
+    }
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);

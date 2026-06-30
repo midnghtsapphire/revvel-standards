@@ -91,20 +91,27 @@ jobs:
 
       - name: Scan for broken areas
         id: scan
+        env:
+          # Pass step outputs through env: instead of interpolating ${{ ... }}
+          # directly into the run: script. A raw `AGENTS=${{ ... }}` expands to
+          # e.g. `AGENTS=missing: agent-dispatcher ...`, which bash parses as an
+          # env-assignment prefix followed by the command `agent-dispatcher`
+          # (exit 127, "command not found"). It is also a command-injection
+          # vector. Quoting "$VAR" below keeps multi-word values intact.
+          ACTIONS_FAILED: ${{ steps.actions.outputs.failed_count }}
+          STUCK: ${{ steps.stuck.outputs.stuck_count }}
+          AGENTS: ${{ steps.agents.outputs.agent_workflows }}
         run: |
           BROKEN=()
           
-          ACTIONS_FAILED=${{ steps.actions.outputs.failed_count }}
           if [[ "$ACTIONS_FAILED" -gt 3 ]]; then
             BROKEN+=("GitHub Actions: $ACTIONS_FAILED recent failures")
           fi
           
-          STUCK=${{ steps.stuck.outputs.stuck_count }}
           if [[ "$STUCK" -gt 5 ]]; then
             BROKEN+=("Stuck issues: $STUCK open")
           fi
           
-          AGENTS=${{ steps.agents.outputs.agent_workflows }}
           if ! echo "$AGENTS" | grep -q "healthy"; then
             BROKEN+=("Missing workflows: $AGENTS")
           fi
@@ -122,8 +129,9 @@ jobs:
 
       - name: Compile system health
         id: health
+        env:
+          BROKEN: ${{ steps.scan.outputs.broken }}
         run: |
-          BROKEN="${{ steps.scan.outputs.broken }}"
           if [[ -z "$BROKEN" ]] || [[ "$BROKEN" == "" ]]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
             echo "✅ System healthy - no action needed"
@@ -141,9 +149,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Heal stuck issues
+        env:
+          BROKEN: ${{ needs.research-state.outputs.broken }}
         run: |
-          BROKEN="${{ needs.research-state.outputs.broken }}"
-          
           if echo "$BROKEN" | grep -q "Stuck issues"; then
             echo "=== HEALING STUCK ISSUES ==="
             # Label stuck issues for human review
@@ -156,8 +164,10 @@ jobs:
           fi
 
       - name: Heal failed workflows
+        env:
+          BROKEN: ${{ needs.research-state.outputs.broken }}
         run: |
-          if echo "${{ needs.research-state.outputs.broken }}" | grep -q "GitHub Actions"; then
+          if echo "$BROKEN" | grep -q "GitHub Actions"; then
             echo "=== HEALING FAILED WORKFLOWS ==="
             # Re-run failed workflows
             gh api repos/midnghtsapphire/revvel-standards/actions/runs \
@@ -168,18 +178,21 @@ jobs:
           fi
 
       - name: Log healing
+        env:
+          BROKEN: ${{ needs.research-state.outputs.broken }}
+          SYSTEM_HEALTH: ${{ needs.research-state.outputs.system_health }}
         run: |
           echo "=== SELF-HEALING LOG ==="
           echo "Time: $(date)"
-          echo "Broken areas: ${{ needs.research-state.outputs.broken }}"
+          echo "Broken areas: $BROKEN"
           echo "Actions taken: Labeled stuck issues, re-ran failed workflows"
 
           BODY=$(cat <<EOF
           ## Healing Report
 
           **Time:** $(date)
-          **System was:** ${{ needs.research-state.outputs.system_health }}
-          **Issues found:** ${{ needs.research-state.outputs.broken }}
+          **System was:** $SYSTEM_HEALTH
+          **Issues found:** $BROKEN
 
           ### Actions Taken
           1. Labeled stuck issues as check-failed
