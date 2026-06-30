@@ -124,6 +124,7 @@ agent to exactly the right action without guessing.
 | `ImgBot (ImgBot.net) via the GitHub App` | Image optimization |
 | `Mabl (Mabl Inc., PAUSED) via @mablhq/mabl-cli` | Paused testing tool |
 | `Octopus Review (Octopus Review Inc.) via github.com/apps/octopus-review + @octp/cli` | PR analyzer + issue filer. Secret: `OCTOPUS_TOKEN` (format `oct_...`). CLI wrapped by `.github/workflows/octopus-cli.yml`. Octopus-filed issues are translated into the WR pipeline by `.github/workflows/octopus-route.yml`. |
+| `BIOME (us) via .github/workflows/biome-*.yml` | Credit-free, additive self-healing crew (no AI keys; `GITHUB_TOKEN` only). Workers: `biome-sentinel`, `biome-medic`, `biome-homeostat`, `biome-sheaf`. Status feed: `docs/biome/biome-status.json`. Design + registry: `docs/biome/README.md`, `docs/biome/crew.yml`. |
 
 Extend as we add. Source of truth for costs stays
 `docs/TOOL_COST_INDEX.md`; source of truth for active tools stays

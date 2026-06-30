@@ -33,7 +33,20 @@ async function api(path, options = {}) {
     throw new Error(`GitHub API ${options.method || 'GET'} ${path} -> ${res.status} ${text.slice(0, 300)}`);
   }
   if (res.status === 204) return null;
-  return res.json().catch(() => null);
+  const text = await res.text();
+  if (!text) return null; // empty body (e.g. 204-equivalent)
+  // allowError + non-ok: a 5xx may return an HTML error page. Signal "no data"
+  // (null) rather than throwing, so callers using allowError degrade gracefully.
+  if (!res.ok) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    // A successful response that isn't JSON is a genuine anomaly — surface it
+    // instead of silently masking it as null (which callers read as "no match").
+    throw new Error(
+      `GitHub API ${options.method || 'GET'} ${path} -> ${res.status} returned non-JSON: ${text.slice(0, 200)}`
+    );
+  }
 }
 
 function repoApi(path, options) {
