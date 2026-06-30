@@ -1,4 +1,4 @@
-# WR: [WR]  Review this comment and make sure we got it covered!
+# WR: [WR] Review this comment and make sure we got it covered
 
 **Issue:** #14841  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
