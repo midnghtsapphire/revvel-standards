@@ -282,6 +282,7 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 | `stale-docs-check.yml` | Weekly | Check doc freshness | ✅ Active |
 | `workflow-health-dashboard.yml` | Daily | Monitor workflows | ✅ Active |
 | `ai-weekly-changelog.yml` | Weekly | Generate changelog | ✅ Active |
+| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
 
@@ -382,3 +383,27 @@ Safety properties:
   and fails the job if a credential-shaped string is found.
 - Triggers: `workflow_dispatch` (manual) and `push` to `main` touching
   `skills/malama/**`. Companion local tool: `scripts/publish-malama.sh`.
+
+---
+
+## Update — June 30, 2026: BIOME Inspector (completion auditor)
+
+Added **`.github/workflows/biome-inspector.yml`** (+ `scripts/biome/inspector.js`),
+a fifth credit-free BIOME worker that closes the Definition-of-Done enforcement gap:
+DoD #1 says "every deliverable ships a live Vercel deployment — no live URL = not
+done", `app_artifact_auditor.py` records each URL but never pings it, and
+`deployment-health-check.yml` only checks 4 hardcoded URLs.
+
+Every 6h, `biome-inspector`:
+
+- Reads `docs/app-deployments.yml`, derives each app's live URL
+  (`<base_url>/docs/<app>/` or an explicit `live_url`), and **HTTP-checks it**
+  (2xx = testable-live). Credit-free — plain HTTP + `GITHUB_TOKEN`, no AI keys.
+- Publishes `docs/biome/app-completion.json` (schema `biome-app-completion/v1`) +
+  `app-completion.html` — the "what's actually testable right now" scoreboard,
+  pollable by an external monitor (e.g. Lovable).
+- Files one deduped `[BIOME-INSPECTOR]` worklist issue (labels `biome`, `dod-gap`,
+  `self-heal`) for projects that are missing or unreachable, so the existing
+  self-heal loop drives them to completion; auto-resolves when all apps are live.
+
+Read-only on the registry/auditor; additive; nothing existing was changed.

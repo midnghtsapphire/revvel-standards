@@ -1,0 +1,60 @@
+name: BIOME Inspector
+
+# Credit-free completion auditor (the crew's "is it actually alive?" sense).
+# HTTP-checks every app's live Vercel URL from docs/app-deployments.yml (2xx =
+# testable-live), publishes docs/biome/app-completion.json (+ .html), and files a
+# deduped worklist of projects that are missing or unreachable so the self-heal
+# loop drives them to completion. No AI keys — GITHUB_TOKEN + plain HTTP only.
+
+on:
+  schedule:
+    - cron: '30 */6 * * *'  # every 6 hours, offset from sheaf (hourly :00) to avoid a push race
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # commits the completion scoreboard
+  issues: write     # files/resolves the worklist
+
+concurrency:
+  group: biome-inspector
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  inspect:
+    name: Verify live links + completion
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install deps (for YAML parsing)
+        run: npm ci
+
+      - name: Run inspector
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: node scripts/biome/inspector.js
+
+      - name: Commit scoreboard if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/biome/app-completion.json docs/biome/app-completion.html
+          if git diff --cached --quiet; then
+            echo "No completion change."
+          else
+            git commit -m "chore(biome): refresh app-completion scoreboard [skip ci]"
+            # Rebase onto any concurrent sheaf commit before pushing.
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi

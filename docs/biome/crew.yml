@@ -56,3 +56,14 @@ workers:
     inputs: local status sections from all workers
     outputs: docs/biome/biome-status.json (schema biome-status/v1) + biome-status.html
     handoff_expectations: external monitors (e.g. Lovable) poll the committed JSON
+
+  - name: biome-inspector
+    role: Proprioception — credit-free completion auditor (is each app actually live?)
+    workflow: .github/workflows/biome-inspector.yml
+    script: scripts/biome/inspector.js
+    models: []
+    tools: [github-rest-read, github-issues-write, repo-commit, http-get]
+    triggers: [schedule:every-6h, workflow_dispatch]
+    inputs: docs/app-deployments.yml (apps + base_url); live HTTP status of each app URL
+    outputs: docs/biome/app-completion.json (schema biome-app-completion/v1) + .html; deduped [BIOME-INSPECTOR] worklist issue
+    handoff_expectations: missing/unreachable apps routed into the self-heal loop via biome + dod-gap + self-heal labels; enforces DEFINITION_OF_DONE #1
