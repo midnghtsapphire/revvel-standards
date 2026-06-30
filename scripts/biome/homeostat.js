@@ -77,12 +77,22 @@ function buildStatusBody(assessment, generatedAtIso) {
   return lines.join('\n');
 }
 
+// When AI lanes are offline, homeostat can promptly trigger the EXISTING
+// Doppler->Actions recovery workflow (secret-persistence-guard) instead of
+// waiting for that workflow's own daily cron. Gated behind BIOME_RECOVER_KEYS so
+// it only fires when the workflow explicitly opts in; homeostat never handles
+// secret values itself — it just dispatches the reviewed recovery workflow.
+function shouldTriggerRecovery(assessment, env) {
+  return assessment.aiLanesOffline === true && String((env && env.BIOME_RECOVER_KEYS) || '').toLowerCase() === 'true';
+}
+
 module.exports = {
   TRACKED_KEYS,
   STATUS_MARKER,
   assessKeyHealth,
   buildHomeostatSection,
   buildStatusBody,
+  shouldTriggerRecovery,
 };
 
 // --- CLI -------------------------------------------------------------------
@@ -127,6 +137,18 @@ if (require.main === module) {
         },
       });
       console.log(`[biome-homeostat] opened consolidated status #${created && created.number}`);
+    }
+
+    // Promptly rehydrate the wiped key(s) by dispatching the existing reviewed
+    // Doppler->Actions recovery workflow (no-ops if Doppler has no value).
+    if (shouldTriggerRecovery(assessment, process.env)) {
+      const recoveryWorkflow = process.env.BIOME_RECOVERY_WORKFLOW || 'secret-persistence-guard.yml';
+      await repoApi(`/actions/workflows/${recoveryWorkflow}/dispatches`, {
+        method: 'POST',
+        body: { ref: 'main', inputs: { force_recovery: 'true' } },
+        allowError: true,
+      });
+      console.log(`[biome-homeostat] dispatched ${recoveryWorkflow} to rehydrate keys from Doppler`);
     }
   })().catch((err) => {
     console.error(`[biome-homeostat] error: ${err.message}`);

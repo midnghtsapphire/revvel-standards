@@ -14,6 +14,7 @@ on:
 permissions:
   contents: read
   issues: write
+  actions: write   # dispatch the existing Doppler->Actions recovery workflow when keys are missing
 
 concurrency:
   group: biome-homeostat
@@ -46,4 +47,8 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          # When AI lanes are offline, dispatch the existing reviewed recovery
+          # workflow to pull the key(s) back from Doppler promptly (it no-ops if
+          # Doppler has no value, preserving its don't-overwrite-good-tokens rule).
+          BIOME_RECOVER_KEYS: 'true'
         run: node scripts/biome/homeostat.js
