@@ -51,7 +51,7 @@ This split is why the same core serves both runtimes:
   "progress": { "total": 3, "running": 1, "done": 1, "stalled": 0, "failed": 0, "reassigned": 1 },
   "arms": [{ "id": "arm-1", "model": "…", "status": "running|done|failed|stalled",
              "tried_models": ["…"], "last_progress_at": 0, "has_result": true, "error": null }],
-  "synthesis": { "completed": 1, "pending": 1, "answers": [], "citations": [] }
+  "synthesis": { "completed": 1, "pending": 1, "answers": [], "citations": [], "note": "…" }
 }
 ```
 
