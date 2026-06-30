@@ -24,8 +24,8 @@ function isExternal(meta) {
 
 function deriveLiveUrl(name, meta, baseUrl) {
   const explicit = ((meta && meta.live_url) || '').trim();
-  if (explicit) return explicit;
-  if (!isExternal(meta) && baseUrl) return `${baseUrl.replace(/\/+$/, '')}/docs/${name}/`;
+  if (explicit) return /^https?:\/\//i.test(explicit) ? explicit : ''; // ignore non-http(s) values
+  if (!isExternal(meta) && baseUrl && /^https?:\/\//i.test(baseUrl)) return `${baseUrl.replace(/\/+$/, '')}/docs/${name}/`;
   return '';
 }
 
@@ -62,7 +62,7 @@ function buildScoreboard(apps, generatedAtIso, baseUrl) {
     generated_at: generatedAtIso,
     credit_free: true,
     base_url: baseUrl || '',
-    overall: summary.unreachable + summary.no_link > 0 ? 'incomplete' : 'all-testable-live',
+    overall: apps.length === 0 ? 'pending' : summary.unreachable + summary.no_link > 0 ? 'incomplete' : 'all-testable-live',
     summary,
     apps: apps.slice().sort((a, b) => a.name.localeCompare(b.name)),
   };
@@ -128,9 +128,9 @@ function buildWorklistBody(apps, generatedAtIso) {
   ];
   for (const a of incomplete) {
     if (a.state === 'no-link') {
-      lines.push(`- **${a.name}** — 🟠 no live URL derived. Ensure \`docs/${a.name}/index.html\` exists and the app is in \`docs/app-deployments.yml\`.`);
+      lines.push(`- **${a.name}** — 🟠 no live URL could be derived. Set \`deployment.base_url\` in \`docs/app-deployments.yml\` (or give the app an explicit \`live_url\`).`);
     } else {
-      lines.push(`- **${a.name}** — 🔴 live URL returns \`${a.http_status}\`: ${a.url} . Deploy/fix the page so it serves 2xx.`);
+      lines.push(`- **${a.name}** — 🔴 live URL ${a.url} returns \`${a.http_status}\`; deploy/fix the page so it serves 2xx.`);
     }
   }
   lines.push('');
@@ -164,17 +164,31 @@ if (require.main === module) {
     const baseUrl = (manifest.deployment && manifest.deployment.base_url) || '';
     const appsManifest = manifest.apps || {};
 
-    async function checkUrl(url) {
-      if (!url) return undefined;
+    async function attempt(url, method) {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 8000);
       try {
-        const res = await fetch(url, { method: 'GET', redirect: 'follow', signal: ctrl.signal, headers: { 'User-Agent': 'biome-inspector' } });
+        const res = await fetch(url, { method, redirect: 'follow', signal: ctrl.signal, headers: { 'User-Agent': 'biome-inspector' } });
         return res.status;
-      } catch {
-        return 0; // network error / timeout => unreachable
       } finally {
         clearTimeout(timer);
+      }
+    }
+
+    async function checkUrl(url) {
+      if (!url) return undefined;
+      // HEAD first to avoid downloading full pages every 6h; fall back to GET
+      // when HEAD is unsupported (405/501) or errors.
+      try {
+        const head = await attempt(url, 'HEAD');
+        if (head === 405 || head === 501) return await attempt(url, 'GET');
+        return head;
+      } catch {
+        try {
+          return await attempt(url, 'GET');
+        } catch {
+          return 0; // network error / timeout => unreachable
+        }
       }
     }
 

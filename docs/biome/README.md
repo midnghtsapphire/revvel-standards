@@ -33,9 +33,9 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 | `biome-medic` | macrophage (immune cell) | every 6h | Re-surfaces stuck items (`self-heal` label + comment); when AI lanes are offline, clears dead `openrouter:needs-key` blocks. Storm-safe; never deletes content. |
 | `biome-homeostat` | homeostasis regulator | every 6h | Detects missing AI keys (the Doppler-wipe case); posts ONE consolidated, deduped status note and auto-resolves it when keys return. No `needs-human` spam. |
 | `biome-sheaf` | connective tissue | hourly | Glues every worker's local section into `biome-status.json` + `biome-status.html` and commits them (single committer — no commit races). |
-| `biome-inspector` | proprioception (is it alive?) | every 6h | HTTP-checks every app's live Vercel URL from `docs/app-deployments.yml` (2xx = testable-live), publishes `app-completion.json` (+ `.html`), and files a deduped worklist of missing/unreachable projects so they get finished. Enforces DEFINITION_OF_DONE #1. |
+| `biome-inspector` | proprioception (is it alive?) | every 6h | HTTP-checks every app's live URL from `docs/app-deployments.yml` (2xx = testable-live), publishes `app-completion.json` (+ `.html`), and files a deduped worklist of missing/unreachable projects so they get finished. Enforces DEFINITION_OF_DONE #1. |
 
-## The loop (detect → remediate → monitor → reset)
+## The loop (detect → remediate → regulate → monitor → inspect → reset)
 
 1. **Detect** — `biome-sentinel` finds failures/stuck items via the GitHub API and
    files a deduped incident labeled `biome`, `scorecard`, `self-heal`.
@@ -52,7 +52,8 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 
 ## The monitor feed (for Lovable)
 
-`biome-sheaf` commits a stable, machine-readable feed:
+Two workers commit stable, machine-readable feeds: `biome-sheaf` writes the
+fleet-health status, and `biome-inspector` writes the app-completion scoreboard.
 
 - `docs/biome/biome-status.json` — schema `biome-status/v1` (fleet health)
 - `docs/biome/biome-status.html` — self-contained human view
@@ -94,8 +95,11 @@ AI key keeps `overall` healthy by design.
 - **Token-with-fallback** — every worker uses
   `secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN`.
 - **`GH_REPO`** — set so `gh`/API calls resolve the repo without a remote.
-- **Narrow permissions** — least privilege per worker; only `biome-sheaf` gets
-  `contents: write` (it is the single committer of the feed).
+- **Narrow permissions** — least privilege per worker. Only `biome-sheaf` and
+  `biome-inspector` get `contents: write`, and each commits its *own* feed file
+  (`biome-status.*` vs `app-completion.*`) on offset schedules (sheaf hourly at
+  :00, inspector every 6h at :30); `biome-inspector` also rebases before pushing,
+  so the two never race.
 - **No untrusted interpolation** — no `${{ github.event.* }}` is interpolated into
   any `run:` shell.
 

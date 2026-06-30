@@ -28,6 +28,11 @@ test('deriveLiveUrl: external app with no explicit url derives nothing', () => {
   assert.equal(deriveLiveUrl('sessiono', { path: 'external', repo: 'midnghtsapphire/sessiono', live_url: '' }, BASE), '');
 });
 
+test('deriveLiveUrl: non-http(s) values are ignored (not counted as live)', () => {
+  assert.equal(deriveLiveUrl('x', { live_url: 'ftp://x' }, BASE), '');
+  assert.equal(deriveLiveUrl('x', { path: 'x', live_url: '' }, 'javascript:alert(1)'), '');
+});
+
 test('isExternal detects repo/path/type', () => {
   assert.equal(isExternal({ repo: 'a/b' }), true);
   assert.equal(isExternal({ path: 'external' }), true);
@@ -66,6 +71,12 @@ test('summarize + scoreboard overall reflects incompleteness', () => {
 test('scoreboard overall is all-testable-live when nothing incomplete', () => {
   const apps = [classifyApp({ name: 'a', url: 'u', status: 200 }), classifyApp({ name: 'b', url: '', external: true })];
   assert.equal(buildScoreboard(apps, 't', BASE).overall, 'all-testable-live');
+});
+
+test('scoreboard overall is pending when no apps checked yet (no false-green seed)', () => {
+  const sb = buildScoreboard([], 't', BASE);
+  assert.equal(sb.overall, 'pending');
+  assert.equal(sb.summary.total, 0);
 });
 
 test('worklist body carries marker and lists the gap per app', () => {
