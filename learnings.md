@@ -391,3 +391,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** A line-by-line `gh` scanner produces false positives on multiline commands where `--repo` sits on a continuation line (`reset-self-heal-issue.yml`, `secret-persistence-guard.yml` ×4) and on `echo "...gh issue create..."` strings (`eeat-trust-cron.yml`) — always hand-verify each hit against the full step before claiming a bug. Apply the repo-standard PAT-with-fallback `GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}` (required for any step that uses `gh workflow run` to cascade) and `GH_REPO: ${{ github.repository }}` for checkout-less jobs; grant `issues: write` at the narrowest (job) scope.
 
 **Next Action:** Open the PR for these 5 fixes. Follow-up batch: add `timeout-minutes` to the 19 jobs flagged by `workflows:validate` across the untouched files.
+
+---
+
+**Date/Time:** 2026-06-30T00:00:00Z
+
+**Task Attempted:** Follow-up batch from the gh-CLI audit — add `timeout-minutes` to every job flagged by `npm run workflows:validate` so the fleet-wide validator returns green.
+
+**Outcome:** Success — added `timeout-minutes: 30` to 29 jobs across 19 workflow files. `workflows:validate` now reports `Jobs missing timeout: 0` and exits 0; `npm test` passes (291); all 19 files parse as valid YAML. The diff is purely the 29 timeout additions (verified no other lines changed).
+
+**Root Cause of Failure (If any):** 29 jobs across 19 workflows omitted `timeout-minutes`, so they inherited the GitHub Actions default of 360 minutes — a runaway job could burn 6h of runner time, and the repo's own `automation-doctor --validate` gate counts these as failures (this baseline had been carried for a while; see prior learnings entries citing "jobs without timeout-minutes").
+
+**Self-Healing Fix / Learned Lesson:** When bulk-editing many workflow files, insert via a raw line-based patch (anchor on each target job's `runs-on:` line) rather than a YAML round-trip, which would reflow formatting and strip comments. A column-0 line inside a job's block-scalar `run:` body can fool a naive "am I still inside `jobs:`" tracker into stopping early (it skipped `secrets-guardian.yml`'s `alert-on-failure` job) — always reconcile the patched set against the target set and hand-fix the remainder. `30` is a safe uniform cap for these automation/label/lint/heal jobs (all finish in 1-3 min; well under the 360-min default) and `automation-doctor` only checks for the field's presence.
+
+**Next Action:** Open the PR for these 29 timeout additions. The fleet-wide `workflows:validate` gate is now green end-to-end.
