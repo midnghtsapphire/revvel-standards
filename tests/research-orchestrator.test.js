@@ -103,6 +103,47 @@ test('orchestrate: reassigns a rejecting arm to its fallback, completes', async 
   assert.deepEqual(res.arms[0].triedModels, ['bad', 'good']);
 });
 
+test('orchestrate: rejects empty or malformed armSpecs', async () => {
+  await assert.rejects(
+    () => orchestrate({ query: 'q', armSpecs: [], dispatch: () => Promise.resolve({}) }),
+    /non-empty array/
+  );
+  await assert.rejects(
+    () => orchestrate({ query: 'q', armSpecs: [{ id: 'a1' }], dispatch: () => Promise.resolve({}) }),
+    /id and a model/
+  );
+});
+
+test('orchestrate: a stale dispatch resolving after stall→reassign does not clobber the arm', async () => {
+  // arm-1's first model hangs (never resolves) until aborted, tripping the stall
+  // path -> reassign to the fallback, which resolves cleanly. If the original
+  // (stale) launch later resolved, its result must be ignored.
+  let resolveStale;
+  const dispatch = (arm, ctx) => {
+    if (arm.model === 'slow') {
+      return new Promise((resolve) => {
+        resolveStale = () => resolve({ answer: 'STALE', citations: [] });
+        ctx.signal.addEventListener('abort', () => {}); // ignores abort on purpose
+      });
+    }
+    return Promise.resolve({ answer: `fresh ${arm.model}`, citations: ['https://ok.com'] });
+  };
+  const res = await orchestrate({
+    query: 'q',
+    armSpecs: [{ id: 'a1', model: 'slow', profileModels: ['slow', 'fast'] }],
+    dispatch,
+    tickMs: 5,
+    stallMs: 1, // trip stall almost immediately
+    softBudgetMs: 100000,
+  });
+  // Now fire the stale resolution after the run completed; it must be a no-op.
+  if (resolveStale) resolveStale();
+  await new Promise((r) => setTimeout(r, 10));
+  assert.equal(res.arms[0].status, 'done');
+  assert.equal(res.arms[0].result.answer, 'fresh fast'); // not 'STALE'
+  assert.deepEqual(res.arms[0].triedModels, ['slow', 'fast']);
+});
+
 test('orchestrate: onSoftBudget stop halts the run', async () => {
   let asked = false;
   const dispatch = () => new Promise(() => {}); // never resolves -> stays running

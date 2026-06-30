@@ -189,6 +189,15 @@ async function orchestrate(opts) {
     now = Date.now,
   } = opts;
 
+  if (!Array.isArray(armSpecs) || armSpecs.length === 0) {
+    throw new Error('orchestrate: armSpecs must be a non-empty array');
+  }
+  for (const s of armSpecs) {
+    if (!s || !s.id || !s.model) {
+      throw new Error('orchestrate: each arm spec needs both an id and a model');
+    }
+  }
+
   const startedAt = now();
   const startedAtIso = new Date(startedAt).toISOString();
   const arms = armSpecs.map((s) => ({
@@ -199,6 +208,7 @@ async function orchestrate(opts) {
     status: 'running',
     lastProgressAt: startedAt,
     controller: null,
+    generation: 0, // bumped on each launch; stale callbacks (post-reassign) are ignored
     result: null,
     error: null,
   }));
@@ -217,24 +227,33 @@ async function orchestrate(opts) {
     const controller = new AbortController();
     arm.controller = controller;
     arm.lastProgressAt = now();
+    const gen = (arm.generation += 1); // this launch's epoch; guards against stale callbacks
     Promise.resolve()
-      .then(() => dispatch(arm, { onProgress: () => { arm.lastProgressAt = now(); }, signal: controller.signal }))
+      .then(() =>
+        dispatch(arm, {
+          onProgress: () => { if (arm.generation === gen) arm.lastProgressAt = now(); },
+          signal: controller.signal,
+        })
+      )
       .then((result) => {
-        if (arm.status === 'running') {
-          arm.status = 'done';
-          arm.result = result;
-        }
+        // Ignore a late resolve from a reassigned/aborted launch (race: the arm was
+        // already cut and relaunched, so this result is stale).
+        if (arm.generation !== gen || arm.status !== 'running') return;
+        arm.status = 'done';
+        arm.result = result;
+        arm.controller = null; // terminal: release the abort controller
       })
       .catch((err) => {
-        if (arm.status !== 'running') return; // already reassigned/stopped
+        if (arm.generation !== gen || arm.status !== 'running') return; // stale or already terminal
         const next = nextFallbackModel(arm.profileModels, arm.triedModels);
         if (next) {
           arm.model = next;
           arm.triedModels.push(next);
-          launch(arm); // reassign to the next fallback model
+          launch(arm); // reassign to the next fallback model (bumps generation)
         } else {
           arm.status = 'failed';
           arm.error = err.message;
+          arm.controller = null; // terminal: release the abort controller
         }
       });
   }
@@ -259,6 +278,7 @@ async function orchestrate(opts) {
         } else {
           arm.status = 'failed';
           arm.error = 'stalled, no fallback model left';
+          arm.controller = null; // terminal: already aborted above
         }
       }
     }
@@ -310,9 +330,14 @@ if (require.main === module) {
   })
     .then((r) => {
       console.log(JSON.stringify(r.checkpoint, null, 2));
+      console.error(
+        r.stopped
+          ? 'run STOPPED at the soft-budget gateway (partial result; resume from checkpoint).'
+          : 'run COMPLETE (all arms reached a terminal state).'
+      );
     })
     .catch((e) => {
-      console.error('orchestrator error:', e.message);
+      console.error('orchestrator error:', e.stack || e.message);
       process.exit(1);
     });
 }
