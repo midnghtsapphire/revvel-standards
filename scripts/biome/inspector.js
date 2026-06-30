@@ -181,7 +181,10 @@ if (require.main === module) {
       // when HEAD is unsupported (405/501) or errors.
       try {
         const head = await attempt(url, 'HEAD');
-        if (head === 405 || head === 501) return await attempt(url, 'GET');
+        // Fall back to GET on any non-2xx HEAD — some hosts answer HEAD with
+        // 4xx/5xx (405/501/403/404…) yet serve the page fine via GET, and we
+        // don't want to falsely mark a reachable app unreachable.
+        if (head < 200 || head >= 300) return await attempt(url, 'GET');
         return head;
       } catch {
         try {
