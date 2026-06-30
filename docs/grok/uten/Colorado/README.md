@@ -57,7 +57,9 @@ Detailed profiles for Virginia, Texas, Arizona, Georgia, California + others inc
 
 ## Live Public Dashboard
 
-Open `dashboard.html` directly in a browser. It includes:
+**Live (Vercel):** <https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>
+
+Or open `dashboard.html` directly in a browser. It includes:
 - Interactive state table with filtering
 - Charts for electricity and heat recovery
 - Colorado-specific deep dive

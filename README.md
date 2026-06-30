@@ -56,6 +56,7 @@ Curated reading list — sorted by *when you'll need it*, not by topic. Open the
 | Designing project delivery orchestration and completion gates | [`docs/orchestration/project-orchestration-standard.md`](docs/orchestration/project-orchestration-standard.md) | Standard |
 | Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
 | Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
+| Exploring the BNAT-UTEN data-center waste-heat reuse initiative | [`docs/grok/uten/Colorado/README.md`](docs/grok/uten/Colorado/README.md) · [live dashboard](https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html) | Design + interactive dashboard |
 
 When you add a new reference doc, add a row to this table. The table is the index — keep it short, keep it sorted by *trigger*, and link directly to the source. See [`REMINDERS.md`](./REMINDERS.md) for the matching activity-based reminders index.
 
@@ -168,7 +169,7 @@ Zero-downtime automation when AI agents hit rate limits — the orchestrator can
 📖 **Documentation:**
 - [`docs/DEFINITION_OF_DONE.md`](docs/DEFINITION_OF_DONE.md) — one-iteration build scope
 - [`projects/agent-generated/_examples/`](projects/agent-generated/_examples/) — Example projects
-- [`docs/30Dayiteration/`](docs/30Dayiteration/) — _archived_ 30-day launch framework (superseded, kept for reference)
+- [`docs/30Dayiteration/`](docs/30Dayiteration/) — *archived* 30-day launch framework (superseded, kept for reference)
 
 **Marketing rollout** (the build itself is one iteration; promotion plays out over time):
 - **Research & validate** — confirm demand, build waitlist (30-50 signups)
@@ -197,25 +198,25 @@ Zero-downtime automation when AI agents hit rate limits — the orchestrator can
 
 ### Essential AI & Development Tools
 **Multi-Agent AI Systems:**
-- **OpenRouter** (https://openrouter.ai) - Unified API for multiple LLMs, cost-effective routing
+- **OpenRouter** (<https://openrouter.ai>) - Unified API for multiple LLMs, cost-effective routing
 - **Anthropic Claude** (Sonnet 4, 4.5) - Advanced reasoning, long context windows up to 200k tokens
-- **DeepSeek** (https://deepseek.com) - Cutting-edge open models with competitive performance
-- **Grok** (https://grok.x.ai) - Fast inference, real-time data access
-- **Kimi** (https://kimi.ai) - Long-context Chinese/English model (200k+ tokens)
-- **Venice.ai** (https://venice.ai) - Privacy-focused AI with uncensored models
+- **DeepSeek** (<https://deepseek.com>) - Cutting-edge open models with competitive performance
+- **Grok** (<https://grok.x.ai>) - Fast inference, real-time data access
+- **Kimi** (<https://kimi.ai>) - Long-context Chinese/English model (200k+ tokens)
+- **Venice.ai** (<https://venice.ai>) - Privacy-focused AI with uncensored models
 
 **Development & Coding Assistants:**
-- **Cursor** (https://cursor.sh) - AI-first code editor with GPT-4 integration
+- **Cursor** (<https://cursor.sh>) - AI-first code editor with GPT-4 integration
 - **GitHub Copilot** - Context-aware code completion
-- **Codeium** (https://codeium.com) - Free AI autocomplete for 70+ languages
-- **Tabnine** (https://tabnine.com) - Privacy-focused code completion
+- **Codeium** (<https://codeium.com>) - Free AI autocomplete for 70+ languages
+- **Tabnine** (<https://tabnine.com>) - Privacy-focused code completion
 - **Replit Ghostwriter** - AI pair programmer for collaborative coding
 
 **Research & Knowledge Tools:**
-- **Perplexity no-key research** (https://github.com/helallao/perplexity-ai) - Perplexity-backed issue research without a required official API key
-- **Elicit** (https://elicit.org) - AI research assistant for academic papers
-- **Consensus** (https://consensus.app) - Evidence-based answers from research papers
-- **Scite** (https://scite.ai) - Smart citations showing supporting/contrasting evidence
+- **Perplexity no-key research** (<https://github.com/helallao/perplexity-ai>) - Perplexity-backed issue research without a required official API key
+- **Elicit** (<https://elicit.org>) - AI research assistant for academic papers
+- **Consensus** (<https://consensus.app>) - Evidence-based answers from research papers
+- **Scite** (<https://scite.ai>) - Smart citations showing supporting/contrasting evidence
 
 ### The 8-Phase Lifecycle
 | Phase | Name | Focus | Key Deliverable |
@@ -227,97 +228,96 @@ Zero-downtime automation when AI agents hit rate limits — the orchestrator can
 ### Frontend Frameworks & Libraries
 
 **React Ecosystem:**
-- **React** (https://react.dev) - Component-based UI library
-- **Next.js** (https://nextjs.org) - Full-stack React framework (recommended)
-- **Remix** (https://remix.run) - Full-stack web framework
-- **Gatsby** (https://gatsbyjs.com) - Static site generator
+- **React** (<https://react.dev>) - Component-based UI library
+- **Next.js** (<https://nextjs.org>) - Full-stack React framework (recommended)
+- **Remix** (<https://remix.run>) - Full-stack web framework
+- **Gatsby** (<https://gatsbyjs.com>) - Static site generator
 - **Create React App** (deprecated - use Vite instead)
 
 **Vue Ecosystem:**
-- **Vue 3** (https://vuejs.org) - Progressive JavaScript framework
-- **Nuxt 3** (https://nuxt.com) - Vue meta-framework
-- **Vite** (https://vitejs.dev) - Next-generation build tool
-- **Quasar** (https://quasar.dev) - Vue component framework
+- **Vue 3** (<https://vuejs.org>) - Progressive JavaScript framework
+- **Nuxt 3** (<https://nuxt.com>) - Vue meta-framework
+- **Vite** (<https://vitejs.dev>) - Next-generation build tool
+- **Quasar** (<https://quasar.dev>) - Vue component framework
 
 **Other Frameworks:**
-- **Svelte** (https://svelte.dev) - Compiled framework (no virtual DOM)
-- **SvelteKit** (https://kit.svelte.dev) - Svelte application framework
-- **Solid.js** (https://solidjs.com) - Reactive UI library
-- **Angular** (https://angular.io) - Full-featured framework by Google
-- **Preact** (https://preactjs.com) - 3KB React alternative
-- **Alpine.js** (https://alpinejs.dev) - Lightweight JavaScript framework
-- **Astro** (https://astro.build) - Content-focused web framework
-- **Qwik** (https://qwik.builder.io) - Resumable web framework
+- **Svelte** (<https://svelte.dev>) - Compiled framework (no virtual DOM)
+- **SvelteKit** (<https://kit.svelte.dev>) - Svelte application framework
+- **Solid.js** (<https://solidjs.com>) - Reactive UI library
+- **Angular** (<https://angular.io>) - Full-featured framework by Google
+- **Preact** (<https://preactjs.com>) - 3KB React alternative
+- **Alpine.js** (<https://alpinejs.dev>) - Lightweight JavaScript framework
+- **Astro** (<https://astro.build>) - Content-focused web framework
+- **Qwik** (<https://qwik.builder.io>) - Resumable web framework
 
 **UI Component Libraries:**
-- **shadcn/ui** (https://ui.shadcn.com) - Re-usable components (Radix + Tailwind)
-- **Radix UI** (https://radix-ui.com) - Unstyled, accessible components
-- **Headless UI** (https://headlessui.com) - Unstyled components by Tailwind Labs
-- **Material UI** (https://mui.com) - React components implementing Material Design
-- **Ant Design** (https://ant.design) - Enterprise-class UI design system
-- **Chakra UI** (https://chakra-ui.com) - Simple and modular components
-- **Mantine** (https://mantine.dev) - Fully-featured React components library
-- **Daisy UI** (https://daisyui.com) - Tailwind CSS component library
+- **shadcn/ui** (<https://ui.shadcn.com>) - Re-usable components (Radix + Tailwind)
+- **Radix UI** (<https://radix-ui.com>) - Unstyled, accessible components
+- **Headless UI** (<https://headlessui.com>) - Unstyled components by Tailwind Labs
+- **Material UI** (<https://mui.com>) - React components implementing Material Design
+- **Ant Design** (<https://ant.design>) - Enterprise-class UI design system
+- **Chakra UI** (<https://chakra-ui.com>) - Simple and modular components
+- **Mantine** (<https://mantine.dev>) - Fully-featured React components library
+- **Daisy UI** (<https://daisyui.com>) - Tailwind CSS component library
 
 **CSS Frameworks:**
-- **Tailwind CSS** (https://tailwindcss.com) - Utility-first CSS framework (recommended)
-- **UnoCSS** (https://unocss.dev) - Instant on-demand atomic CSS
-- **Bootstrap** (https://getbootstrap.com) - Classic responsive framework
-- **Bulma** (https://bulma.io) - Modern CSS framework
-- **Foundation** (https://get.foundation) - Responsive front-end framework
+- **Tailwind CSS** (<https://tailwindcss.com>) - Utility-first CSS framework (recommended)
+- **UnoCSS** (<https://unocss.dev>) - Instant on-demand atomic CSS
+- **Bootstrap** (<https://getbootstrap.com>) - Classic responsive framework
+- **Bulma** (<https://bulma.io>) - Modern CSS framework
+- **Foundation** (<https://get.foundation>) - Responsive front-end framework
 | **3** | Development | Rapid Coding | Functional MVP, GitHub Repo |
 | **4** | Testing | QA & Security | Unit/E2E Tests, Security Scan |
 
 ### Testing & Quality Assurance Tools
 
 **Unit Testing:**
-- **Vitest** (https://vitest.dev) - Fast unit test framework (Vite-powered)
-- **Jest** (https://jestjs.io) - JavaScript testing framework
-- **Mocha** (https://mochajs.org) - Feature-rich test framework
-- **Chai** (https://chaijs.com) - BDD/TDD assertion library
-- **AVA** (https://avajs.dev) - Minimalist testing framework
+- **Vitest** (<https://vitest.dev>) - Fast unit test framework (Vite-powered)
+- **Jest** (<https://jestjs.io>) - JavaScript testing framework
+- **Mocha** (<https://mochajs.org>) - Feature-rich test framework
+- **Chai** (<https://chaijs.com>) - BDD/TDD assertion library
+- **AVA** (<https://avajs.dev>) - Minimalist testing framework
 
 **End-to-End Testing:**
-- **Playwright** (https://playwright.dev) - Cross-browser automation (recommended)
-- **Cypress** (https://cypress.io) - Front-end testing tool
-- **Puppeteer** (https://pptr.dev) - Chrome DevTools Protocol automation
-- **WebdriverIO** (https://webdriver.io) - Next-gen browser automation
-- **TestCafe** (https://testcafe.io) - Node.js E2E testing framework
+- **Playwright** (<https://playwright.dev>) - Cross-browser automation (recommended)
+- **Cypress** (<https://cypress.io>) - Front-end testing tool
+- **Puppeteer** (<https://pptr.dev>) - Chrome DevTools Protocol automation
+- **WebdriverIO** (<https://webdriver.io>) - Next-gen browser automation
+- **TestCafe** (<https://testcafe.io>) - Node.js E2E testing framework
 
 **API Testing:**
-- **Postman** (https://postman.com) - API development and testing platform
-- **Insomnia** (https://insomnia.rest) - API client and testing tool
-- **HTTPie** (https://httpie.io) - Human-friendly HTTP client
+- **Postman** (<https://postman.com>) - API development and testing platform
+- **Insomnia** (<https://insomnia.rest>) - API client and testing tool
+- **HTTPie** (<https://httpie.io>) - Human-friendly HTTP client
 - **REST Client** (VS Code extension) - Send HTTP requests from editor
-- **Hoppscotch** (https://hoppscotch.io) - Open-source API development ecosystem
+- **Hoppscotch** (<https://hoppscotch.io>) - Open-source API development ecosystem
 
 **Security Testing:**
-- **OWASP ZAP** (https://zaproxy.org) - Web app security scanner (FREE, open source)
-- **Snyk** (https://snyk.io) - Dependency vulnerability scanning (FREE tier)
-- **Semgrep** (https://semgrep.dev) - Static analysis for code security
+- **OWASP ZAP** (<https://zaproxy.org>) - Web app security scanner (FREE, open source)
+- **Snyk** (<https://snyk.io>) - Dependency vulnerability scanning (FREE tier)
+- **Semgrep** (<https://semgrep.dev>) - Static analysis for code security
 - **npm audit** - Built-in npm vulnerability checker
-- **Trivy** (https://trivy.dev) - Container and dependency scanner
-- **SonarQube** (https://sonarqube.org) - Code quality and security analysis
+- **Trivy** (<https://trivy.dev>) - Container and dependency scanner
+- **SonarQube** (<https://sonarqube.org>) - Code quality and security analysis
 
 **Performance Testing:**
 - **Lighthouse** (Chrome DevTools) - Web performance auditing
-- **WebPageTest** (https://webpagetest.org) - Website performance testing
-- **k6** (https://k6.io) - Load testing tool for developers
-- **Artillery** (https://artillery.io) - Load testing and smoke testing
-- **Locust** (https://locust.io) - Python-based load testing tool
+- **WebPageTest** (<https://webpagetest.org>) - Website performance testing
+- **k6** (<https://k6.io>) - Load testing tool for developers
+- **Artillery** (<https://artillery.io>) - Load testing and smoke testing
+- **Locust** (<https://locust.io>) - Python-based load testing tool
 
 **Code Quality:**
-- **ESLint** (https://eslint.org) - JavaScript linting
-- **Biome** (https://biomejs.dev) - Fast linter/formatter (Rust-based)
-- **Prettier** (https://prettier.io) - Code formatter
+- **ESLint** (<https://eslint.org>) - JavaScript linting
+- **Biome** (<https://biomejs.dev>) - Fast linter/formatter (Rust-based)
+- **Prettier** (<https://prettier.io>) - Code formatter
 - **SonarLint** (VS Code extension) - Real-time code analysis
-- **CodeClimate** (https://codeclimate.com) - Automated code review
+- **CodeClimate** (<https://codeclimate.com>) - Automated code review
 | **5** | Deployment | Production Launch | App Store/Web Deployment |
 | **6** | Compliance | Legal & Ethics | Privacy Policy, SOC2/HIPAA |
 | **7** | Maintenance | Continuous Improvement | Monitoring, Patches, Updates |
 
 ---
-
 
 **For comprehensive lists of AI tools, development frameworks, testing tools, databases, and learning resources, see [PORTFOLIO.md](docs/PORTFOLIO.md).**
 
@@ -341,24 +341,24 @@ Zero-downtime automation when AI agents hit rate limits — the orchestrator can
 
 ### SEO & Trend Research Tools
 **Keyword Research:**
-- **Ahrefs** (https://ahrefs.com) - Comprehensive SEO toolkit, keyword difficulty, backlink analysis
-- **SEMrush** (https://semrush.com) - All-in-one marketing toolkit, competitor analysis
-- **Google Keyword Planner** (https://ads.google.com/keywordplanner) - Free keyword volume data
-- **Ubersuggest** (https://neilpatel.com/ubersuggest) - Free keyword suggestions and SEO data
-- **AnswerThePublic** (https://answerthepublic.com) - Visualize search questions and autocomplete
+- **Ahrefs** (<https://ahrefs.com>) - Comprehensive SEO toolkit, keyword difficulty, backlink analysis
+- **SEMrush** (<https://semrush.com>) - All-in-one marketing toolkit, competitor analysis
+- **Google Keyword Planner** (<https://ads.google.com/keywordplanner>) - Free keyword volume data
+- **Ubersuggest** (<https://neilpatel.com/ubersuggest>) - Free keyword suggestions and SEO data
+- **AnswerThePublic** (<https://answerthepublic.com>) - Visualize search questions and autocomplete
 
 **Trend Analysis:**
-- **Google Trends** (https://trends.google.com) - Real-time search trend data
-- **Exploding Topics** (https://explodingtopics.com) - Identify trending topics before they peak
-- **TrendHunter** (https://trendhunter.com) - Crowdsourced trend spotting
-- **Product Hunt** (https://producthunt.com) - Daily trending products and startups
-- **Hacker News** (https://news.ycombinator.com) - Tech industry trends and discussions
+- **Google Trends** (<https://trends.google.com>) - Real-time search trend data
+- **Exploding Topics** (<https://explodingtopics.com>) - Identify trending topics before they peak
+- **TrendHunter** (<https://trendhunter.com>) - Crowdsourced trend spotting
+- **Product Hunt** (<https://producthunt.com>) - Daily trending products and startups
+- **Hacker News** (<https://news.ycombinator.com>) - Tech industry trends and discussions
 
 **Domain Tools:**
-- **Namecheap** (https://namecheap.com) - Domain registration with privacy protection
+- **Namecheap** (<https://namecheap.com>) - Domain registration with privacy protection
 - **GoDaddy Domain Search** - Bulk domain availability checking
-- **Lean Domain Search** (https://leandomainsearch.com) - Domain name generator
-- **Instant Domain Search** (https://instantdomainsearch.com) - Real-time domain availability
+- **Lean Domain Search** (<https://leandomainsearch.com>) - Domain name generator
+- **Instant Domain Search** (<https://instantdomainsearch.com>) - Real-time domain availability
 
 ---
 
@@ -376,28 +376,28 @@ All Revvel applications must implement the following accessibility modes to serv
 
 ### Accessibility Resources & Tools
 **Accessibility Testing:**
-- **axe DevTools** (https://deque.com/axe) - Browser extension for automated accessibility testing
-- **WAVE** (https://wave.webaim.org) - Web accessibility evaluation tool
+- **axe DevTools** (<https://deque.com/axe>) - Browser extension for automated accessibility testing
+- **WAVE** (<https://wave.webaim.org>) - Web accessibility evaluation tool
 - **Lighthouse** (Chrome DevTools) - Built-in accessibility auditing
-- **Pa11y** (https://pa11y.org) - Automated accessibility testing tool
-- **Tenon.io** (https://tenon.io) - Accessibility as a service API
+- **Pa11y** (<https://pa11y.org>) - Automated accessibility testing tool
+- **Tenon.io** (<https://tenon.io>) - Accessibility as a service API
 
 **Font Resources:**
-- **OpenDyslexic** (https://opendyslexic.org) - Free font for dyslexic readers
-- **Atkinson Hyperlegible** (https://brailleinstitute.org/freefont) - Free, highly readable font
-- **Lexend** (https://lexend.com) - Font family designed to reduce visual stress
-- **Google Fonts** (https://fonts.google.com) - Filter by readability and accessibility
+- **OpenDyslexic** (<https://opendyslexic.org>) - Free font for dyslexic readers
+- **Atkinson Hyperlegible** (<https://brailleinstitute.org/freefont>) - Free, highly readable font
+- **Lexend** (<https://lexend.com>) - Font family designed to reduce visual stress
+- **Google Fonts** (<https://fonts.google.com>) - Filter by readability and accessibility
 
 **Color & Contrast Tools:**
-- **WebAIM Contrast Checker** (https://webaim.org/resources/contrastchecker) - WCAG compliance checking
-- **Contrast Ratio** (https://contrast-ratio.com) - Real-time contrast calculation
-- **Colorable** (https://colorable.jxnblk.com) - Color palette contrast tester
-- **Who Can Use** (https://whocanuse.com) - Vision simulator for color combinations
+- **WebAIM Contrast Checker** (<https://webaim.org/resources/contrastchecker>) - WCAG compliance checking
+- **Contrast Ratio** (<https://contrast-ratio.com>) - Real-time contrast calculation
+- **Colorable** (<https://colorable.jxnblk.com>) - Color palette contrast tester
+- **Who Can Use** (<https://whocanuse.com>) - Vision simulator for color combinations
 
 **Accessibility Guidelines:**
-- **WCAG 2.2 Guidelines** (https://w3.org/WAI/WCAG22/quickref) - Official accessibility standards
-- **A11y Project** (https://a11yproject.com) - Community-driven accessibility resource
-- **Inclusive Components** (https://inclusive-components.design) - Accessible UI patterns
+- **WCAG 2.2 Guidelines** (<https://w3.org/WAI/WCAG22/quickref>) - Official accessibility standards
+- **A11y Project** (<https://a11yproject.com>) - Community-driven accessibility resource
+- **Inclusive Components** (<https://inclusive-components.design>) - Accessible UI patterns
 
 ---
 
@@ -425,12 +425,12 @@ Every Revvel application MUST include a built-in affiliate marketing automation 
 | Platform | URL | Code |
 |---|---|---|
 | **Amazon** | Auto-generated per product | Tag: `meetaudreyeva-20` |
-| **Make.com** | https://www.make.com/en/register?pc=risingaloha | risingaloha |
-| **GoHighLevel** | https://www.gohighlevel.com/?fp_ref=audrey51 | audrey51 |
-| **VideoGen** | https://videogen.io/?fpr=audrey21 | audrey21 |
-| **Chime** | https://www.chime.com/r/audreyevans44/?c=s | audreyevans44 |
-| **DigitalOcean** | https://m.do.co/c/fe8240d60588 | fe8240d60588 |
-| **Monday.com** | https://try.monday.com/9828lfh0uct0 | 9828lfh0uct0 |
+| **Make.com** | <https://www.make.com/en/register?pc=risingaloha> | risingaloha |
+| **GoHighLevel** | <https://www.gohighlevel.com/?fp_ref=audrey51> | audrey51 |
+| **VideoGen** | <https://videogen.io/?fpr=audrey21> | audrey21 |
+| **Chime** | <https://www.chime.com/r/audreyevans44/?c=s> | audreyevans44 |
+| **DigitalOcean** | <https://m.do.co/c/fe8240d60588> | fe8240d60588 |
+| **Monday.com** | <https://try.monday.com/9828lfh0uct0> | 9828lfh0uct0 |
 
 #### Auto-Campaign Generator
 Every app must include a Marketing Dashboard with campaign generation buttons at these tiers:
@@ -450,40 +450,40 @@ Each campaign auto-generates using OpenRouter LLM:
 ### Marketing & Automation Tools
 
 **Marketing Automation:**
-- **Make.com** (https://make.com) - Visual automation platform (FREE tier: 1000 ops/month)
-- **Zapier** (https://zapier.com) - App integration and workflow automation
-- **n8n** (https://n8n.io) - Open-source workflow automation (self-hostable)
-- **Pipedream** (https://pipedream.com) - Developer-first automation platform
-- **ActivePieces** (https://activepieces.com) - Open-source Zapier alternative
+- **Make.com** (<https://make.com>) - Visual automation platform (FREE tier: 1000 ops/month)
+- **Zapier** (<https://zapier.com>) - App integration and workflow automation
+- **n8n** (<https://n8n.io>) - Open-source workflow automation (self-hostable)
+- **Pipedream** (<https://pipedream.com>) - Developer-first automation platform
+- **ActivePieces** (<https://activepieces.com>) - Open-source Zapier alternative
 
 **Email Marketing:**
-- **SendGrid** (https://sendgrid.com) - Email delivery service (FREE: 100 emails/day)
-- **Mailgun** (https://mailgun.com) - Developer-focused email API
-- **Postmark** (https://postmarkapp.com) - Transactional email service
-- **Resend** (https://resend.com) - Modern email API for developers (FREE: 3000/month)
-- **Loops** (https://loops.so) - Email for SaaS products
-- **Brevo** (https://brevo.com) - All-in-one marketing platform (FREE tier)
+- **SendGrid** (<https://sendgrid.com>) - Email delivery service (FREE: 100 emails/day)
+- **Mailgun** (<https://mailgun.com>) - Developer-focused email API
+- **Postmark** (<https://postmarkapp.com>) - Transactional email service
+- **Resend** (<https://resend.com>) - Modern email API for developers (FREE: 3000/month)
+- **Loops** (<https://loops.so>) - Email for SaaS products
+- **Brevo** (<https://brevo.com>) - All-in-one marketing platform (FREE tier)
 
 **Social Media Management:**
-- **Buffer** (https://buffer.com) - Social media scheduling (FREE: 3 channels)
-- **Hootsuite** (https://hootsuite.com) - Social media management suite
-- **Later** (https://later.com) - Visual social media planner
-- **Metricool** (https://metricool.com) - Social media analytics and scheduling
-- **Publer** (https://publer.io) - Multi-platform social media manager
+- **Buffer** (<https://buffer.com>) - Social media scheduling (FREE: 3 channels)
+- **Hootsuite** (<https://hootsuite.com>) - Social media management suite
+- **Later** (<https://later.com>) - Visual social media planner
+- **Metricool** (<https://metricool.com>) - Social media analytics and scheduling
+- **Publer** (<https://publer.io>) - Multi-platform social media manager
 
 **Analytics & Tracking:**
-- **Google Analytics 4** (https://analytics.google.com) - Web analytics (FREE)
-- **Plausible** (https://plausible.io) - Privacy-friendly analytics
-- **Umami** (https://umami.is) - Open-source web analytics
-- **PostHog** (https://posthog.com) - Product analytics platform (FREE tier)
-- **Mixpanel** (https://mixpanel.com) - User behavior analytics
-- **Hotjar** (https://hotjar.com) - Heatmaps and user recordings
+- **Google Analytics 4** (<https://analytics.google.com>) - Web analytics (FREE)
+- **Plausible** (<https://plausible.io>) - Privacy-friendly analytics
+- **Umami** (<https://umami.is>) - Open-source web analytics
+- **PostHog** (<https://posthog.com>) - Product analytics platform (FREE tier)
+- **Mixpanel** (<https://mixpanel.com>) - User behavior analytics
+- **Hotjar** (<https://hotjar.com>) - Heatmaps and user recordings
 
 **Affiliate Management:**
-- **Tapfiliate** (https://tapfiliate.com) - Affiliate tracking software
-- **Rewardful** (https://rewardful.com) - Stripe-based affiliate program
-- **FirstPromoter** (https://firstpromoter.com) - SaaS affiliate management
-- **Refersion** (https://refersion.com) - Affiliate and influencer platform
+- **Tapfiliate** (<https://tapfiliate.com>) - Affiliate tracking software
+- **Rewardful** (<https://rewardful.com>) - Stripe-based affiliate program
+- **FirstPromoter** (<https://firstpromoter.com>) - SaaS affiliate management
+- **Refersion** (<https://refersion.com>) - Affiliate and influencer platform
 
 #### Social Media Distribution
 Campaigns must support posting to ALL platforms or individually:
@@ -597,38 +597,38 @@ Every app must have a deep About section with multiple sub-pages:
 
 ### Deployment & DevOps Tools
 **CI/CD Platforms:**
-- **GitHub Actions** (https://github.com/features/actions) - Native GitHub automation (FREE for public repos)
-- **GitLab CI/CD** (https://gitlab.com) - Comprehensive DevOps platform
-- **CircleCI** (https://circleci.com) - Fast, scalable CI/CD
-- **Travis CI** (https://travis-ci.org) - Classic open-source CI tool
-- **Jenkins** (https://jenkins.io) - Self-hosted automation server
+- **GitHub Actions** (<https://github.com/features/actions>) - Native GitHub automation (FREE for public repos)
+- **GitLab CI/CD** (<https://gitlab.com>) - Comprehensive DevOps platform
+- **CircleCI** (<https://circleci.com>) - Fast, scalable CI/CD
+- **Travis CI** (<https://travis-ci.org>) - Classic open-source CI tool
+- **Jenkins** (<https://jenkins.io>) - Self-hosted automation server
 
 **Mobile Deployment:**
-- **Fastlane** (https://fastlane.tools) - iOS/Android automation toolkit
-- **App Center** (https://appcenter.ms) - Microsoft's mobile DevOps platform
-- **Bitrise** (https://bitrise.io) - Mobile-focused CI/CD
-- **Codemagic** (https://codemagic.io) - Flutter and native app CI/CD
+- **Fastlane** (<https://fastlane.tools>) - iOS/Android automation toolkit
+- **App Center** (<https://appcenter.ms>) - Microsoft's mobile DevOps platform
+- **Bitrise** (<https://bitrise.io>) - Mobile-focused CI/CD
+- **Codemagic** (<https://codemagic.io>) - Flutter and native app CI/CD
 
 **Desktop Packaging:**
-- **Electron Builder** (https://electron.build) - Complete Electron packaging solution
-- **Tauri** (https://tauri.app) - Lightweight alternative to Electron (Rust-based)
-- **Neutralinojs** (https://neutralino.js.org) - Lightweight cross-platform framework
-- **NW.js** (https://nwjs.io) - Node.js + Chromium desktop apps
+- **Electron Builder** (<https://electron.build>) - Complete Electron packaging solution
+- **Tauri** (<https://tauri.app>) - Lightweight alternative to Electron (Rust-based)
+- **Neutralinojs** (<https://neutralino.js.org>) - Lightweight cross-platform framework
+- **NW.js** (<https://nwjs.io>) - Node.js + Chromium desktop apps
 
 **Container & Orchestration:**
-- **Docker** (https://docker.com) - Industry standard containerization
-- **Kubernetes** (https://kubernetes.io) - Container orchestration
+- **Docker** (<https://docker.com>) - Industry standard containerization
+- **Kubernetes** (<https://kubernetes.io>) - Container orchestration
 - **Docker Compose** - Multi-container application deployment
-- **Podman** (https://podman.io) - Daemonless container engine
+- **Podman** (<https://podman.io>) - Daemonless container engine
 
 **Cloud Platforms:**
-- **DigitalOcean** (https://digitalocean.com) - Developer-friendly cloud (from $4/month)
-- **Vercel** (https://vercel.com) - Zero-config deployment for Next.js/React (FREE tier)
-- **Netlify** (https://netlify.com) - JAMstack deployment platform (FREE tier)
-- **Cloudflare Pages** (https://pages.cloudflare.com) - Edge deployment (FREE)
-- **Railway** (https://railway.app) - Modern app deployment with $5/month free credit
-- **Render** (https://render.com) - Alternative to Heroku (FREE tier available)
-- **Fly.io** (https://fly.io) - Global app deployment platform
+- **DigitalOcean** (<https://digitalocean.com>) - Developer-friendly cloud (from $4/month)
+- **Vercel** (<https://vercel.com>) - Zero-config deployment for Next.js/React (FREE tier)
+- **Netlify** (<https://netlify.com>) - JAMstack deployment platform (FREE tier)
+- **Cloudflare Pages** (<https://pages.cloudflare.com>) - Edge deployment (FREE)
+- **Railway** (<https://railway.app>) - Modern app deployment with $5/month free credit
+- **Render** (<https://render.com>) - Alternative to Heroku (FREE tier available)
+- **Fly.io** (<https://fly.io>) - Global app deployment platform
 
 ### Required Artifacts for Every Project
 - **README.md:** Standard project overview.
@@ -650,37 +650,37 @@ Every app must have a deep About section with multiple sub-pages:
 ### Design & Prototyping Tools
 
 **UI/UX Design:**
-- **Figma** (https://figma.com) - Industry-standard collaborative design (FREE for individuals)
-- **Penpot** (https://penpot.app) - Open-source Figma alternative
-- **Sketch** (https://sketch.com) - macOS-native design tool
-- **Adobe XD** (https://adobe.com/xd) - Adobe's UI/UX design platform
-- **Lunacy** (https://icons8.com/lunacy) - Free Sketch alternative for Windows
+- **Figma** (<https://figma.com>) - Industry-standard collaborative design (FREE for individuals)
+- **Penpot** (<https://penpot.app>) - Open-source Figma alternative
+- **Sketch** (<https://sketch.com>) - macOS-native design tool
+- **Adobe XD** (<https://adobe.com/xd>) - Adobe's UI/UX design platform
+- **Lunacy** (<https://icons8.com/lunacy>) - Free Sketch alternative for Windows
 
 **Prototyping:**
-- **Framer** (https://framer.com) - Interactive prototyping with code
-- **ProtoPie** (https://protopie.io) - Advanced interaction prototyping
-- **Principle** (https://principleformac.com) - Animated design tool
-- **InVision** (https://invisionapp.com) - Digital product design platform
+- **Framer** (<https://framer.com>) - Interactive prototyping with code
+- **ProtoPie** (<https://protopie.io>) - Advanced interaction prototyping
+- **Principle** (<https://principleformac.com>) - Animated design tool
+- **InVision** (<https://invisionapp.com>) - Digital product design platform
 
 **Wireframing:**
-- **Excalidraw** (https://excalidraw.com) - Hand-drawn style diagrams (FREE, open source)
-- **Balsamiq** (https://balsamiq.com) - Rapid wireframing tool
-- **Whimsical** (https://whimsical.com) - Visual workspace for diagrams
-- **Draw.io / diagrams.net** (https://diagrams.net) - Free diagramming tool
+- **Excalidraw** (<https://excalidraw.com>) - Hand-drawn style diagrams (FREE, open source)
+- **Balsamiq** (<https://balsamiq.com>) - Rapid wireframing tool
+- **Whimsical** (<https://whimsical.com>) - Visual workspace for diagrams
+- **Draw.io / diagrams.net** (<https://diagrams.net>) - Free diagramming tool
 
 **Design Systems:**
-- **Storybook** (https://storybook.js.org) - Component library documentation
-- **Zero Height** (https://zeroheight.com) - Design system documentation platform
-- **Supernova** (https://supernova.io) - Design system platform with code export
+- **Storybook** (<https://storybook.js.org>) - Component library documentation
+- **Zero Height** (<https://zeroheight.com>) - Design system documentation platform
+- **Supernova** (<https://supernova.io>) - Design system platform with code export
 
 **Asset & Icon Libraries:**
-- **Iconify** (https://iconify.design) - 200,000+ open source icons
-- **Heroicons** (https://heroicons.com) - Beautiful hand-crafted SVG icons
-- **Lucide** (https://lucide.dev) - Community-driven icon library
-- **Phosphor Icons** (https://phosphoricons.com) - Flexible icon family
-- **Feather Icons** (https://feathericons.com) - Simply beautiful icons
-- **Unsplash** (https://unsplash.com) - Free high-resolution photos
-- **Pexels** (https://pexels.com) - Free stock photos and videos
+- **Iconify** (<https://iconify.design>) - 200,000+ open source icons
+- **Heroicons** (<https://heroicons.com>) - Beautiful hand-crafted SVG icons
+- **Lucide** (<https://lucide.dev>) - Community-driven icon library
+- **Phosphor Icons** (<https://phosphoricons.com>) - Flexible icon family
+- **Feather Icons** (<https://feathericons.com>) - Simply beautiful icons
+- **Unsplash** (<https://unsplash.com>) - Free high-resolution photos
+- **Pexels** (<https://pexels.com>) - Free stock photos and videos
 
 ### Auto-Documentation (MANDATORY)
 - Every change to any repo, droplet, config, or deployment MUST be auto-logged with timestamp, what changed, and who/what made the change.
@@ -701,48 +701,48 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 ### Database & Backend Resources
 
 **SQL Databases:**
-- **PostgreSQL** (https://postgresql.org) - Advanced open-source relational database
-- **MySQL** (https://mysql.com) - Popular open-source database
-- **SQLite** (https://sqlite.org) - Embedded database (perfect for small apps)
-- **MariaDB** (https://mariadb.org) - MySQL fork with enhanced features
-- **CockroachDB** (https://cockroachlabs.com) - Distributed SQL database
+- **PostgreSQL** (<https://postgresql.org>) - Advanced open-source relational database
+- **MySQL** (<https://mysql.com>) - Popular open-source database
+- **SQLite** (<https://sqlite.org>) - Embedded database (perfect for small apps)
+- **MariaDB** (<https://mariadb.org>) - MySQL fork with enhanced features
+- **CockroachDB** (<https://cockroachlabs.com>) - Distributed SQL database
 
 **NoSQL Databases:**
-- **MongoDB** (https://mongodb.com) - Document database (FREE tier: Atlas)
-- **Redis** (https://redis.io) - In-memory data store and cache
-- **Cassandra** (https://cassandra.apache.org) - Distributed wide-column database
-- **Couchbase** (https://couchbase.com) - NoSQL cloud database
-- **ArangoDB** (https://arangodb.com) - Multi-model database
+- **MongoDB** (<https://mongodb.com>) - Document database (FREE tier: Atlas)
+- **Redis** (<https://redis.io>) - In-memory data store and cache
+- **Cassandra** (<https://cassandra.apache.org>) - Distributed wide-column database
+- **Couchbase** (<https://couchbase.com>) - NoSQL cloud database
+- **ArangoDB** (<https://arangodb.com>) - Multi-model database
 
 **Modern Database Options:**
-- **Supabase** (https://supabase.com) - Open-source Firebase alternative (Postgres)
-- **PocketBase** (https://pocketbase.io) - Open-source backend in one file (Go + SQLite)
-- **Appwrite** (https://appwrite.io) - Open-source backend server
-- **Firebase** (https://firebase.google.com) - Google's backend platform (FREE tier)
-- **Convex** (https://convex.dev) - Real-time backend with TypeScript
+- **Supabase** (<https://supabase.com>) - Open-source Firebase alternative (Postgres)
+- **PocketBase** (<https://pocketbase.io>) - Open-source backend in one file (Go + SQLite)
+- **Appwrite** (<https://appwrite.io>) - Open-source backend server
+- **Firebase** (<https://firebase.google.com>) - Google's backend platform (FREE tier)
+- **Convex** (<https://convex.dev>) - Real-time backend with TypeScript
 
 **ORMs & Query Builders:**
-- **Prisma** (https://prisma.io) - Next-generation TypeScript ORM
-- **Drizzle** (https://orm.drizzle.team) - TypeScript ORM for edge
-- **Kysely** (https://kysely.dev) - Type-safe SQL query builder
-- **TypeORM** (https://typeorm.io) - ORM for TypeScript and JavaScript
-- **Sequelize** (https://sequelize.org) - Promise-based Node.js ORM
-- **Knex.js** (https://knexjs.org) - SQL query builder for Node.js
+- **Prisma** (<https://prisma.io>) - Next-generation TypeScript ORM
+- **Drizzle** (<https://orm.drizzle.team>) - TypeScript ORM for edge
+- **Kysely** (<https://kysely.dev>) - Type-safe SQL query builder
+- **TypeORM** (<https://typeorm.io>) - ORM for TypeScript and JavaScript
+- **Sequelize** (<https://sequelize.org>) - Promise-based Node.js ORM
+- **Knex.js** (<https://knexjs.org>) - SQL query builder for Node.js
 
 **Backend Frameworks:**
-- **Express.js** (https://expressjs.com) - Minimalist Node.js framework
-- **Fastify** (https://fastify.dev) - Fast and low-overhead web framework
-- **NestJS** (https://nestjs.com) - Progressive Node.js framework
-- **Hono** (https://hono.dev) - Ultrafast web framework for edges
-- **Elysia** (https://elysiajs.com) - Ergonomic Bun framework
-- **tRPC** (https://trpc.io) - End-to-end typesafe APIs
+- **Express.js** (<https://expressjs.com>) - Minimalist Node.js framework
+- **Fastify** (<https://fastify.dev>) - Fast and low-overhead web framework
+- **NestJS** (<https://nestjs.com>) - Progressive Node.js framework
+- **Hono** (<https://hono.dev>) - Ultrafast web framework for edges
+- **Elysia** (<https://elysiajs.com>) - Ergonomic Bun framework
+- **tRPC** (<https://trpc.io>) - End-to-end typesafe APIs
 
 **API Development:**
-- **GraphQL** (https://graphql.org) - Query language for APIs
-- **Apollo Server** (https://apollographql.com/server) - GraphQL server
+- **GraphQL** (<https://graphql.org>) - Query language for APIs
+- **Apollo Server** (<https://apollographql.com/server>) - GraphQL server
 - **REST** (RESTful architecture principles)
-- **gRPC** (https://grpc.io) - High-performance RPC framework
-- **OpenAPI/Swagger** (https://swagger.io) - API documentation standard
+- **gRPC** (<https://grpc.io>) - High-performance RPC framework
+- **OpenAPI/Swagger** (<https://swagger.io>) - API documentation standard
 
 ---
 
@@ -755,7 +755,6 @@ All Revvel projects enforce strict documentation standards:
 - **REPO_CATALOG.md** in revvel-standards catalogs every repository with description and status.
 
 ---
-
 
 ---
 
