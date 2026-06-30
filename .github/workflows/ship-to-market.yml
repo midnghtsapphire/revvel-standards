@@ -451,7 +451,6 @@ jobs:
     permissions:
       contents: write
       pages: write
-      id-token: write
     steps:
       - uses: actions/checkout@v6.0.2
       - name: Detect framework and build
