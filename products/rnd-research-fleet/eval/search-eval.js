@@ -63,7 +63,7 @@ const THRESHOLDS = {
 // comparison; `fable`, `twin_llm`, and `twin_llm_adjudicated` are evaluated by
 // the multi-strategy comparator (compareTwinToFable / evaluateStrategies).
 // ---------------------------------------------------------------------------
-const STRATEGIES = ['baseline', 'candidate', 'fable', 'twin_llm', 'twin_llm_adjudicated'];
+const STRATEGIES = ['baseline', 'candidate', 'fable', 'twin_llm', 'twin_llm_adjudicated', 'triplet_llm'];
 
 // ---------------------------------------------------------------------------
 // Twin-LLM decision thresholds (documented in standards/SEARCH_EVALUATION.md).
@@ -79,6 +79,22 @@ const TWIN_THRESHOLDS = {
   adjudicationFloor: 0.6, // mean adjudication_quality required for "keep"
   maxSourceOverlap: 0.85, // above this the two runs are redundant -> tune
   maxUnsupportedClaims: 0 // hallucination/unsupported-claim flags allowed for "keep"
+};
+
+// ---------------------------------------------------------------------------
+// Triplet / N-model (`triplet_llm`) thresholds. A triplet runs N independent
+// models (default 3) with k-of-n majority consensus, so it costs ~Nx. It must
+// beat its reference (the TWIN if present, else Fable) on rubric to earn the
+// extra cost/latency; budgets are looser than twin's because N>2 is inherently
+// pricier, but the consensus floor guards against three redundant arms.
+// ---------------------------------------------------------------------------
+const NPLET_THRESHOLDS = {
+  minQualityGain: 0.05, // triplet rubric must beat the reference by >= this to "keep"
+  maxCostRatio: 3.5, // triplet total cost / reference cost ceiling for "keep"
+  maxLatencyRatio: 2.5, // triplet mean latency / reference mean latency ceiling for "keep"
+  adjudicationFloor: 0.6, // mean adjudication_quality required for "keep"
+  minConsensus: 0.5, // >= half the source-domains must reach k-of-n consensus, else "tune"
+  maxUnsupportedClaims: 0 // unsupported-claim flags allowed for "keep"
 };
 
 // ---------------------------------------------------------------------------
@@ -179,6 +195,60 @@ function twinMetricsFor(run) {
     adjudication_quality: round(mean(adjudication)),
     source_overlap: overlaps.length ? round(mean(overlaps)) : null,
     unique_sources_added: uniqueSourcesAdded,
+    hallucination_or_unsupported_claim_flags: unsupportedFlags
+  };
+}
+
+// ---------------------------------------------------------------------------
+// N-model (triplet) metrics: read each result's `nplet` block and roll up the
+// consensus/agreement/adjudication signals across the run. Consensus = fraction
+// of distinct source-domains (across all arms) cited by >= k arms (majority).
+// ---------------------------------------------------------------------------
+function npletMetricsFor(run) {
+  const results = Array.isArray(run.results) ? run.results : [];
+  const npResults = results.filter((r) => r && typeof r.nplet === 'object' && r.nplet !== null);
+  if (npResults.length === 0) return null;
+
+  const agreement = [];
+  const adjudication = [];
+  const consensus = [];
+  let disagreementCount = 0;
+  let unsupportedFlags = 0;
+  const nVals = new Set();
+  const modelSets = new Set();
+
+  for (const r of npResults) {
+    const t = r.nplet;
+    if (Array.isArray(t.models)) modelSets.add(t.models.join(' + '));
+    if (typeof t.n === 'number') nVals.add(t.n);
+    if (typeof t.agreement_score === 'number') agreement.push(t.agreement_score);
+    if (typeof t.adjudication_quality === 'number') adjudication.push(t.adjudication_quality);
+    if (typeof t.consensus_score === 'number') consensus.push(t.consensus_score);
+    disagreementCount += countOf(t.disagreements);
+    unsupportedFlags += countOf(t.unsupported_claims);
+
+    // Recompute consensus from per-model sources when the block didn't carry it.
+    if (typeof t.consensus_score !== 'number' && Array.isArray(t.sources) && t.sources.length) {
+      const n = typeof t.n === 'number' ? t.n : t.sources.length;
+      const k = typeof t.k === 'number' ? t.k : Math.floor(n / 2) + 1;
+      const counts = new Map();
+      for (const arr of t.sources) {
+        for (const d of domainSet(arr)) counts.set(d, (counts.get(d) || 0) + 1);
+      }
+      const domains = [...counts.keys()];
+      if (domains.length) consensus.push(domains.filter((d) => counts.get(d) >= k).length / domains.length);
+    }
+  }
+
+  const modelList = [...modelSets];
+  return {
+    models: modelList.length === 1 ? modelList[0] : modelList.length ? modelList : null,
+    n: nVals.size === 1 ? [...nVals][0] : nVals.size ? [...nVals] : null,
+    nplet_query_count: npResults.length,
+    agreement_score: round(mean(agreement)),
+    disagreement_count: disagreementCount,
+    adjudication_quality: round(mean(adjudication)),
+    consensus_score: consensus.length ? round(mean(consensus)) : null,
     hallucination_or_unsupported_claim_flags: unsupportedFlags
   };
 }
@@ -307,6 +377,8 @@ function scoreRun(run, fixtures) {
 
   const twin = twinMetricsFor(run);
   if (twin) scored.twin_metrics = twin;
+  const nplet = npletMetricsFor(run);
+  if (nplet) scored.nplet_metrics = nplet;
   return scored;
 }
 
@@ -368,6 +440,7 @@ function summarize(scored) {
   };
   if (scored.strategy) out.strategy = scored.strategy;
   if (scored.twin_metrics) out.twin_metrics = scored.twin_metrics;
+  if (scored.nplet_metrics) out.nplet_metrics = scored.nplet_metrics;
   return out;
 }
 
@@ -549,6 +622,110 @@ function decideTwin(twin, fable, deltas, referenceLabel = 'fable') {
 }
 
 // ---------------------------------------------------------------------------
+// Triplet / N-model comparison vs a reference run (the TWIN if present, else
+// Fable). Mirrors compareTwinToFable but judges the n-model consensus block and
+// a ~Nx cost/latency budget.
+// ---------------------------------------------------------------------------
+function compareNpletToReference(npletScored, refScored, referenceLabel = 'twin') {
+  const t = npletScored.metrics;
+  const f = refScored.metrics;
+  const diff = (a, b) => (typeof a === 'number' && typeof b === 'number' ? round(a - b) : null);
+  const ratio = (a, b) => (typeof a === 'number' && typeof b === 'number' && b !== 0 ? round(a / b) : null);
+
+  const nplet_metrics = Object.assign({}, npletScored.nplet_metrics || {}, {
+    cost_delta_vs_reference: diff(t.total_cost_usd, f.total_cost_usd),
+    latency_delta_vs_reference: diff(t.mean_latency_ms, f.mean_latency_ms)
+  });
+
+  const deltas = {
+    rubric_mean: diff(t.rubric_mean, f.rubric_mean),
+    error_rate: diff(t.error_rate, f.error_rate),
+    citation_coverage: diff(t.citation_coverage, f.citation_coverage),
+    cost_ratio: ratio(t.total_cost_usd, f.total_cost_usd),
+    latency_ratio: ratio(t.mean_latency_ms, f.mean_latency_ms),
+    cost_delta_vs_reference: nplet_metrics.cost_delta_vs_reference,
+    latency_delta_vs_reference: nplet_metrics.latency_delta_vs_reference
+  };
+
+  const { decision, reasons } = decideNplet(npletScored, refScored, deltas, referenceLabel);
+
+  return {
+    generated_at: new Date().toISOString(),
+    reference: referenceLabel,
+    triplet: summarize(npletScored),
+    [referenceLabel]: summarize(refScored),
+    deltas,
+    nplet_metrics,
+    decision,
+    reasons,
+    thresholds: NPLET_THRESHOLDS
+  };
+}
+
+function decideNplet(nplet, ref, deltas, referenceLabel = 'twin') {
+  const reasons = [];
+  const T = NPLET_THRESHOLDS;
+  const nm = nplet.nplet_metrics || {};
+
+  const lowData =
+    nplet.result_count < THRESHOLDS.minResultsForConfidence ||
+    ref.result_count < THRESHOLDS.minResultsForConfidence;
+  if (lowData) {
+    reasons.push(
+      `Low sample size (triplet=${nplet.result_count}, ${referenceLabel}=${ref.result_count}; ` +
+        `need >= ${THRESHOLDS.minResultsForConfidence}).`
+    );
+    return { decision: 'needs_human_review', reasons };
+  }
+
+  // Must beat the reference on rubric — a triplet's whole point is more
+  // robustness, and it costs ~Nx, so no measured gain => roll back.
+  if (deltas.rubric_mean !== null && deltas.rubric_mean <= 0) {
+    reasons.push(`Triplet rubric does not beat ${referenceLabel} (delta ${deltas.rubric_mean} <= 0); not worth ~Nx cost/latency.`);
+    return { decision: 'rollback_triplet', reasons };
+  }
+  if (deltas.error_rate !== null && deltas.error_rate >= THRESHOLDS.errorRateRegression) {
+    reasons.push(`Triplet error rate rose by ${deltas.error_rate} vs ${referenceLabel} (>= ${THRESHOLDS.errorRateRegression}).`);
+    return { decision: 'rollback_triplet', reasons };
+  }
+  if (deltas.citation_coverage !== null && deltas.citation_coverage <= THRESHOLDS.citationRegression) {
+    reasons.push(`Triplet citation coverage dropped by ${deltas.citation_coverage} vs ${referenceLabel} (<= ${THRESHOLDS.citationRegression}).`);
+    return { decision: 'rollback_triplet', reasons };
+  }
+
+  const qualityGain = deltas.rubric_mean !== null && deltas.rubric_mean >= T.minQualityGain;
+  const costOk = deltas.cost_ratio === null || deltas.cost_ratio <= T.maxCostRatio;
+  const latencyOk = deltas.latency_ratio === null || deltas.latency_ratio <= T.maxLatencyRatio;
+  const adjudicationOk = typeof nm.adjudication_quality !== 'number' || nm.adjudication_quality >= T.adjudicationFloor;
+  const consensusOk = typeof nm.consensus_score !== 'number' || nm.consensus_score >= T.minConsensus;
+  const hallucinationsOk = countOf(nm.hallucination_or_unsupported_claim_flags) <= T.maxUnsupportedClaims;
+
+  if (qualityGain && costOk && latencyOk && adjudicationOk && consensusOk && hallucinationsOk) {
+    reasons.push(
+      `Triplet beats ${referenceLabel} on rubric by ${deltas.rubric_mean} (>= ${T.minQualityGain}) within cost ` +
+        `(${fmt(deltas.cost_ratio)}x) and latency (${fmt(deltas.latency_ratio)}x) budget; consensus ${fmt(nm.consensus_score)}, ` +
+        `adjudication ${fmt(nm.adjudication_quality)}, unsupported flags ${countOf(nm.hallucination_or_unsupported_claim_flags)}.`
+    );
+    return { decision: 'keep_triplet', reasons };
+  }
+
+  if (qualityGain && (!costOk || !latencyOk || !consensusOk)) {
+    if (!costOk) reasons.push(`Cost ${deltas.cost_ratio}x ${referenceLabel} exceeds budget ${T.maxCostRatio}x.`);
+    if (!latencyOk) reasons.push(`Latency ${deltas.latency_ratio}x ${referenceLabel} exceeds budget ${T.maxLatencyRatio}x.`);
+    if (!consensusOk) reasons.push(`Consensus ${nm.consensus_score} < ${T.minConsensus}: the arms rarely corroborate the same sources.`);
+    return { decision: 'tune_triplet', reasons };
+  }
+
+  if (!qualityGain && deltas.rubric_mean !== null) {
+    reasons.push(`Rubric gain ${deltas.rubric_mean} is positive but below keep threshold ${T.minQualityGain}.`);
+  }
+  if (!adjudicationOk) reasons.push(`Adjudication quality ${nm.adjudication_quality} below floor ${T.adjudicationFloor}.`);
+  if (!hallucinationsOk) reasons.push(`Unsupported-claim flags (${countOf(nm.hallucination_or_unsupported_claim_flags)}) exceed allowance ${T.maxUnsupportedClaims}.`);
+  reasons.push('No hard regression vs reference, but triplet is not a clean win. Tune and re-run.');
+  return { decision: 'tune_triplet', reasons };
+}
+
+// ---------------------------------------------------------------------------
 // Multi-strategy evaluation: score every provided strategy run, then run the
 // relevant comparisons (twin vs Fable, twin vs baseline, candidate vs baseline)
 // and surface an overall recommendation. Fully offline.
@@ -584,19 +761,34 @@ function evaluateStrategies(fixtures, runs) {
   if (scored.candidate && scored.baseline) {
     report.comparisons.candidate_vs_baseline = compareRuns(scored.baseline, scored.candidate);
   }
+  // Triplet earns its place only by beating the bar it's meant to raise: the
+  // TWIN if one was provided, otherwise Fable.
+  if (scored.triplet_llm) {
+    const refKey = twinKey || (scored.fable ? 'fable' : null);
+    if (refKey) {
+      report.comparisons.triplet_vs_reference = compareNpletToReference(
+        scored.triplet_llm,
+        scored[refKey],
+        twinKey ? 'twin' : 'fable'
+      );
+    }
+  }
 
-  // Overall recommendation: prefer the twin-vs-Fable verdict (the question the
-  // user actually asked); fall back to the candidate comparison.
+  // Overall recommendation: prefer triplet-vs-reference (the most specific
+  // question when present), then twin-vs-Fable, then the candidate comparison.
   const primary =
+    report.comparisons.triplet_vs_reference ||
     report.comparisons.twin_vs_fable ||
     report.comparisons.candidate_vs_baseline ||
     null;
   report.decision = primary ? primary.decision : 'needs_human_review';
-  report.primary_comparison = report.comparisons.twin_vs_fable
-    ? 'twin_vs_fable'
-    : report.comparisons.candidate_vs_baseline
-      ? 'candidate_vs_baseline'
-      : null;
+  report.primary_comparison = report.comparisons.triplet_vs_reference
+    ? 'triplet_vs_reference'
+    : report.comparisons.twin_vs_fable
+      ? 'twin_vs_fable'
+      : report.comparisons.candidate_vs_baseline
+        ? 'candidate_vs_baseline'
+        : null;
   if (!primary) {
     report.reasons = ['Not enough strategies provided to compare (need twin+fable or candidate+baseline).'];
   } else {
@@ -772,13 +964,17 @@ function main() {
 
   // Strategy mode: any of --fable / --twin / --twin-adjudicated triggers the
   // multi-strategy comparator (twin-LLM vs Fable/baseline).
-  const strategyMode = !!(args.fable || args.twin || args['twin-adjudicated']);
+  const tripletArg = args.triplet || args.nplet;
+  const strategyMode = !!(args.fable || args.twin || args['twin-adjudicated'] || tripletArg);
   if (strategyMode) {
-    if (!args.fixtures || (!args.twin && !args['twin-adjudicated']) || (!args.fable && !args.baseline)) {
+    const haveStrategy = args.twin || args['twin-adjudicated'] || tripletArg;
+    const haveReference = args.fable || args.baseline || args.twin || args['twin-adjudicated'];
+    if (!args.fixtures || !haveStrategy || !haveReference) {
       console.log(
         'Usage (strategy mode): node search-eval.js --fixtures <queries.json> ' +
-          '--twin <run.json> [--twin-adjudicated <run.json>] --fable <run.json> ' +
-          '[--baseline <run.json>] [--candidate <run.json>] [--out report.json] [--md report.md]'
+          '--twin <run.json> [--twin-adjudicated <run.json>] [--triplet <run.json>] --fable <run.json> ' +
+          '[--baseline <run.json>] [--candidate <run.json>] [--out report.json] [--md report.md]\n' +
+          '(--triplet is scored vs the twin if provided, else vs Fable.)'
       );
       process.exit(1);
     }
@@ -789,6 +985,7 @@ function main() {
     if (args.fable) runs.fable = loadJson(args.fable);
     if (args.twin) runs.twin_llm = loadJson(args.twin);
     if (args['twin-adjudicated']) runs.twin_llm_adjudicated = loadJson(args['twin-adjudicated']);
+    if (tripletArg) runs.triplet_llm = loadJson(tripletArg);
     const report = evaluateStrategies(fixtures, runs);
 
     if (args.out) {
@@ -842,14 +1039,18 @@ if (require.main === module) {
 module.exports = {
   THRESHOLDS,
   TWIN_THRESHOLDS,
+  NPLET_THRESHOLDS,
   STRATEGIES,
   rubricScore,
   scoreRun,
   twinMetricsFor,
+  npletMetricsFor,
   compareRuns,
   compareTwinToFable,
+  compareNpletToReference,
   decide,
   decideTwin,
+  decideNplet,
   evaluate,
   evaluateStrategies,
   renderMarkdown,
