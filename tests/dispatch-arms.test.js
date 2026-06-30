@@ -116,6 +116,17 @@ test('makeDispatch single: banner-only output without the completion marker is a
   await assert.rejects(p, /no usable answer/);
 });
 
+test('makeDispatch single: an echoed query containing the phrase cannot spoof completion', async () => {
+  const child = fakeChild();
+  const dispatch = makeDispatch('q', { spawnFn: () => child });
+  const p = dispatch({ id: 'd', kind: 'single', model: 'deep_search' }, {});
+  // The phrase appears only inside the echoed "Query:" banner line, never as the
+  // standalone completion banner — must still be treated as a failure.
+  child.stdout.emit('data', '🔬 Deep Search Router\nQuery: tell me about RESEARCH COMPLETE status');
+  child.emit('close', 1);
+  await assert.rejects(p, /no usable answer/);
+});
+
 test('makeDispatch: unknown arm kind rejects', async () => {
   const dispatch = makeDispatch('q', { spawnFn: () => fakeChild() });
   await assert.rejects(dispatch({ id: 'x', kind: 'nope' }, {}), /unknown arm kind/);

@@ -28,6 +28,11 @@ const ARM_RUNNERS = Object.freeze({
   triplet: 'triplet-search.js',
 });
 
+// deep-search-router's completion banner, as a whole line (optionally prefixed
+// with the ✅). Line-anchored so it can't be spoofed by the phrase appearing
+// inside an echoed query or answer body.
+const SINGLE_DONE_RE = /^[ \t]*✅?[ \t]*RESEARCH COMPLETE[ \t]*$/m;
+
 // --- pure helpers ----------------------------------------------------------
 
 // Local URL extractor (mirrors twin-search.extractCitations) so this module has
@@ -76,10 +81,11 @@ function parseRunnerOutput(kind, stdout) {
     }
     // fall through to text handling if the report wasn't shaped as expected
   }
-  // deep-search-router prints banners + the answer after a marker line.
-  const marker = 'RESEARCH COMPLETE';
-  const idx = text.indexOf(marker);
-  const answer = idx >= 0 ? text.slice(idx + marker.length).replace(/^[\s═✅=]+/, '').trim() : text.trim();
+  // deep-search-router prints banners + the answer after the completion banner.
+  // Anchor to the banner *line* (^…$) so an echoed query containing the phrase
+  // (e.g. "Query: RESEARCH COMPLETE") can't spoof completion.
+  const m = SINGLE_DONE_RE.exec(text);
+  const answer = m ? text.slice(m.index + m[0].length).replace(/^[\s═✅=]+/, '').trim() : text.trim();
   return { answer, citations: extractCitations(text), cost_usd: null };
 }
 
@@ -176,7 +182,7 @@ function makeDispatch(query, opts = {}) {
         // failure, not a false-green. twin/triplet exit 1 on a *degraded* run but
         // still print a usable report, so for them any parseable answer is enough.
         const ok = kind === 'single'
-          ? out.includes('RESEARCH COMPLETE') && Boolean(parsed.answer)
+          ? SINGLE_DONE_RE.test(out) && Boolean(parsed.answer)
           : Boolean(parsed.answer);
         if (ok) return resolve(parsed);
         reject(new Error(`${script} exited ${code} with no usable answer${stderr ? `: ${stderr.slice(0, 200)}` : ''}`));
