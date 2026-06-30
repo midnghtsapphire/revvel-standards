@@ -239,12 +239,17 @@ jobs:
                 core.notice(`Retro: existing open issue #${existing.number} updated with new status comment.`);
                 core.setOutput('issue_url', existing.html_url);
               } else {
+                // Add `needs-human` when the failures are infrastructure-related
+                // (health-check failures / DNS issues) so the OpenRouter automation
+                // does not treat this as an auto-fixable ticket and endlessly cycle.
+                const issueLabels = ['retro', 'oaudrey'];
+                if (needsWork.length > 0) issueLabels.push('needs-human');
                 const { data: issue } = await github.rest.issues.create({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   title: `oAudrey retro — ${date} — ${gaps.length + needsWork.length} item(s) need attention`,
                   body,
-                  labels: ['retro', 'oaudrey'],
+                  labels: issueLabels,
                 });
                 core.notice(`Retro issue created: ${issue.html_url}`);
                 core.setOutput('issue_url', issue.html_url);
