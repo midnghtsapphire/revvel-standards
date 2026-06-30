@@ -6,6 +6,7 @@ const {
   assessKeyHealth,
   buildHomeostatSection,
   buildStatusBody,
+  shouldTriggerRecovery,
   STATUS_MARKER,
   TRACKED_KEYS,
 } = require('../scripts/biome/homeostat');
@@ -39,4 +40,13 @@ test('status body carries dedupe marker and reassures (not an outage)', () => {
   const body = buildStatusBody(a, '2026-06-30T00:00:00Z');
   assert.ok(body.includes(STATUS_MARKER));
   assert.match(body, /not\*\* an outage|not.*outage/i);
+});
+
+test('shouldTriggerRecovery: only when AI lanes offline AND opt-in flag enabled', () => {
+  const offline = { aiLanesOffline: true };
+  const online = { aiLanesOffline: false };
+  assert.equal(shouldTriggerRecovery(offline, { BIOME_RECOVER_KEYS: 'true' }), true);
+  assert.equal(shouldTriggerRecovery(offline, { BIOME_RECOVER_KEYS: 'false' }), false);
+  assert.equal(shouldTriggerRecovery(offline, {}), false); // flag absent => off by default
+  assert.equal(shouldTriggerRecovery(online, { BIOME_RECOVER_KEYS: 'true' }), false);
 });
