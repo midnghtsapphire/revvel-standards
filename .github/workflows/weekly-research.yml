@@ -196,6 +196,7 @@ jobs:
       - name: Trigger 49Agents research (if configured)
         if: env.AGENT_HQ_TOKEN != ''
         env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           AGENT_HQ_TOKEN: ${{ secrets.AGENT_HQ_TOKEN }}
           AGENT_HQ_URL: ${{ secrets.AGENT_HQ_URL || 'https://agent-hq.revvel.co' }}
         run: |

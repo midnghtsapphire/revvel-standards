@@ -58,7 +58,8 @@ jobs:
             echo "status=low" >> $GITHUB_OUTPUT
             echo "budget_remaining=low" >> $GITHUB_OUTPUT
           else
-            echo "status=critical" >> $GITHUB_OUTPUT            echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
+            echo "status=critical" >> $GITHUB_OUTPUT
+            echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
           fi
           
           echo "Budget: $PERCENT% used"
@@ -139,8 +140,14 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Try next cheapest agent
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           FAILED_AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
           

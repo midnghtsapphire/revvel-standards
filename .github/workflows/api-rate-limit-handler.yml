@@ -24,6 +24,11 @@ permissions:
   contents: read
   issues: write
   actions: write
+env:
+  # This workflow has no checkout, so gh cannot infer the repo from a git
+  # remote; set it explicitly or gh issue/workflow calls fail with
+  # "not a git repository" (CLAUDE.md gotcha #1).
+  GH_REPO: ${{ github.repository }}
 jobs:
   handle-rate-limit:
     runs-on: ubuntu-latest
@@ -41,7 +46,7 @@ jobs:
       - name: Create WR if rate limited
         if: steps.check.outputs.is_rate_limit == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Prevent duplicate - check if WR already exists for this workflow
           EXISTING=$(gh search issues --repo ${{ github.repository }} \
@@ -72,7 +77,7 @@ jobs:
       - name: Trigger fallback agent
         if: steps.check.outputs.is_rate_limit == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Trigger OpenRouter fallback workflow
           gh workflow run openrouter-coder.yml \
