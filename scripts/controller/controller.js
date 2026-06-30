@@ -28,22 +28,34 @@ const core = require('./core');
 let repoApi;
 try {
   ({ repoApi } = require('../biome/gh')); // reuse the credit-free GitHub helper
-} catch {
+} catch (e) {
+  // Surface the degradation: a null repoApi makes the fleet *look* empty (zero
+  // runs, zero preemptions) when it's really just invisible — don't fail silent.
+  console.warn(`[WARN] fleet-controller: BIOME gh helper unavailable (${e.message}) — running degraded (read-only, no scan)`);
   repoApi = null;
 }
 
-async function listRuns(status) {
-  if (!repoApi) return [];
-  const data = await repoApi(`/actions/runs?status=${status}&per_page=100`, { allowError: true });
-  return data && Array.isArray(data.workflow_runs) ? data.workflow_runs : [];
+// List every run of a status, paging past 100 so a large fleet (>100 concurrent
+// orchestrators) isn't silently truncated. Bounded (10 pages = 1000/status) so a
+// runaway API can't loop forever. `api` is injectable for tests.
+async function listRuns(status, api = repoApi) {
+  if (!api) return [];
+  const all = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const data = await api(`/actions/runs?status=${status}&per_page=100&page=${page}`, { allowError: true });
+    const runs = data && Array.isArray(data.workflow_runs) ? data.workflow_runs : [];
+    all.push(...runs);
+    if (runs.length < 100) break; // last page
+  }
+  return all;
 }
 
 // Discover orchestrators (in_progress) + triggers (queued); best-effort per list.
-async function discoverRuns() {
+async function discoverRuns(api = repoApi) {
   let runs = [];
   for (const status of ['in_progress', 'queued']) {
     try {
-      runs = runs.concat(await listRuns(status));
+      runs = runs.concat(await listRuns(status, api));
     } catch (e) {
       console.error(`controller: listing ${status} runs failed (continuing): ${e.message}`);
     }
@@ -71,16 +83,18 @@ function loadPriorReassigns(outDir) {
 // Re-launch a cut orchestrator's workflow on its next fallback model. Best-effort:
 // dispatch with the model input, retry without it if the workflow has no such
 // input. Returns the outcome string for the feed.
-async function reassignWorkflow(p) {
+async function reassignWorkflow(p, api = repoApi) {
   const wf = p.path ? p.path.split('/').pop() : null;
   if (!wf) return 'reassign-skipped(no-workflow)';
   const ref = p.ref || 'main';
   try {
-    await repoApi(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref, inputs: { model: p.nextModel } } });
+    await api(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref, inputs: { model: p.nextModel } } });
     return 'reassigned';
   } catch (e1) {
+    // The workflow may not declare a `model` input — retry without it. If THAT
+    // also fails, report the failure (never a false "reassigned").
     try {
-      await repoApi(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref } });
+      await api(`/actions/workflows/${wf}/dispatches`, { method: 'POST', body: { ref } });
       return 'reassigned(no-model-input)';
     } catch (e2) {
       return `reassign-failed: ${e2.message}`;
@@ -169,4 +183,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, ingest, discoverRuns, loadPriorReassigns };
+module.exports = { main, ingest, listRuns, discoverRuns, reassignWorkflow, loadPriorReassigns };
