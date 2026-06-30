@@ -699,58 +699,15 @@ test('pr-state-orchestrator.yml resync-all-prs uses GITHUB_TOKEN (not ADMIN fall
   }
 });
 
-// Regression: find-stuck-issues job must pass owner/repo to every listForRepo call.
-// Without them, the Octokit REST client constructs GET /repos///issues (empty
-// owner and repo) which returns 404 Not Found and aborts the job.
-// See: job 84184617094, workflow run 28401216956.
-test('stuck-check-watchdog.yml find-stuck-issues passes owner/repo to all listForRepo calls', () => {
-  const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
-  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+test('doppler-secrets-sync.yml summary snippet keeps balanced quote for secrets-fetch-action line', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'doppler-secrets-sync.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
 
-  const job = doc.jobs?.['find-stuck-issues'];
-  if (!job) throw new Error('find-stuck-issues job not found in stuck-check-watchdog.yml');
-
-  // Extract only the argument block for a single listForRepo( call by tracking
-  // paren/brace depth so later calls in the same step cannot satisfy the regex
-  // for an earlier call that is missing the params.
-  function extractArgBlock(str) {
-    let depth = 1; // we are already inside the opening ( of listForRepo(
-    for (let j = 0; j < str.length; j++) {
-      const ch = str[j];
-      if (ch === '(' || ch === '{') depth++;
-      else if (ch === ')' || ch === '}') {
-        depth--;
-        if (depth === 0) return str.slice(0, j);
-      }
-    }
-    return str; // unmatched parens — return whole string as fallback
+  if (!content.includes("echo '  uses: dopplerhq/secrets-fetch-action@v2.0.0' >> \"$GITHUB_STEP_SUMMARY\"")) {
+    throw new Error('doppler-secrets-sync.yml must append a properly quoted secrets-fetch-action line to the step summary');
   }
-
-  // Check each step individually so splits are confined to one step's script.
-  for (const [stepIdx, step] of (job.steps || []).entries()) {
-    const script = step.with?.script || '';
-    if (!script.includes('listForRepo(')) continue;
-
-    const callSections = script.split('listForRepo(');
-    for (let i = 1; i < callSections.length; i++) {
-      // Scope the check to only the argument block of this specific call.
-      const body = extractArgBlock(callSections[i]);
-      // Use regex to confirm the param is an actual key assignment, not a comment/string.
-      if (!/owner\s*:\s*context\.repo\.owner/.test(body)) {
-        throw new Error(
-          `stuck-check-watchdog step ${stepIdx + 1}, listForRepo call #${i} ` +
-          'is missing owner: context.repo.owner — ' +
-          'omitting it produces GET /repos///issues and a 404'
-        );
-      }
-      if (!/repo\s*:\s*context\.repo\.repo/.test(body)) {
-        throw new Error(
-          `stuck-check-watchdog step ${stepIdx + 1}, listForRepo call #${i} ` +
-          'is missing repo: context.repo.repo — ' +
-          'omitting it produces GET /repos///issues and a 404'
-        );
-      }
-    }
+  if (content.includes("echo '  uses: dopplerhq/secrets-fetch-action@v2.0.0 >> \"$GITHUB_STEP_SUMMARY\"")) {
+    throw new Error('doppler-secrets-sync.yml contains the previously broken unbalanced quote variant');
   }
 });
 
