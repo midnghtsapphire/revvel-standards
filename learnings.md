@@ -377,3 +377,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 5. **`openrouter/fusion` slug is unverified** against the live OpenRouter catalog — do not assume valid. Confirm before any deep-search routing edit.
 
 **Next Action:** Rebase PR #14772 to clear `has-conflicts`; retitle to match real scope (workflow cleanup, not image upload) or split; confirm `openrouter/fusion` before any model-routing change. Recommend building the SHA-pinned verdict-validation gate and the non-author-approval merge guard before scaling automation to additional repos.
+
+---
+
+**Date/Time:** 2026-06-30T00:00:00Z
+
+**Task Attempted:** Code-review the agent-routing/self-heal workflow fleet for the documented `gh`-CLI failure modes (no auth, no repo target, too-narrow permissions) and fix the real ones via PR.
+
+**Outcome:** Success — scanned all 174 workflows with a verifier script, hand-confirmed 5 genuinely broken workflows, and fixed them. `npm test` (278 pass) and YAML validation are green; `workflows:validate` shows `Invalid workflows: 0` (the pre-existing 19 missing-`timeout-minutes` jobs are in untouched files and are deferred to a follow-up PR).
+
+**Root Cause of Failure (If any):** Five workflows invoked the `gh` CLI without satisfying its runtime requirements: `budget-aware-agent.yml` (`fallback-handler`) ran `gh issue create` with no `GH_TOKEN`, no `GH_REPO`/checkout, and workflow `permissions: contents: read` (missing `issues: write`) — and had two `echo` statements collapsed onto one line, corrupting the `critical` budget output; `credential-label-router.yml` and `weekly-research.yml` each had one step calling `gh api`/`gh issue` with only a vendor token in `env:` (no `GH_TOKEN`); `agent-dispatcher.yml` and `api-rate-limit-handler.yml` ran `gh workflow run`/`gh issue create` with no `GH_REPO` and no checkout (and used the default token, which cannot cascade-trigger downstream workflows).
+
+**Self-Healing Fix / Learned Lesson:** A line-by-line `gh` scanner produces false positives on multiline commands where `--repo` sits on a continuation line (`reset-self-heal-issue.yml`, `secret-persistence-guard.yml` ×4) and on `echo "...gh issue create..."` strings (`eeat-trust-cron.yml`) — always hand-verify each hit against the full step before claiming a bug. Apply the repo-standard PAT-with-fallback `GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}` (required for any step that uses `gh workflow run` to cascade) and `GH_REPO: ${{ github.repository }}` for checkout-less jobs; grant `issues: write` at the narrowest (job) scope.
+
+**Next Action:** Open the PR for these 5 fixes. Follow-up batch: add `timeout-minutes` to the 19 jobs flagged by `workflows:validate` across the untouched files.

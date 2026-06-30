@@ -39,7 +39,12 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  GH_TOKEN: ${{ github.token }}
+  # PAT-with-fallback so `gh workflow run` can cascade-trigger the downstream
+  # agent workflows (the default GITHUB_TOKEN cannot trigger other workflows).
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  # gh infers the repo from the local git remote; this job has no checkout, so
+  # set GH_REPO explicitly or every gh call fails with "not a git repository".
+  GH_REPO: ${{ github.repository }}
 
 jobs:
   dispatch:
