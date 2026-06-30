@@ -171,10 +171,15 @@ function makeDispatch(query, opts = {}) {
           return reject(new Error(`${kind} arm aborted (cut by orchestrator)`));
         }
         const parsed = parseRunnerOutput(kind, out);
-        // twin/triplet exit 1 on a *degraded* run but still print a usable report,
-        // so accept any parseable answer; only fail when there's nothing to use.
-        if (parsed.answer) return resolve(parsed);
-        reject(new Error(`${script} exited ${code} with no parseable answer${stderr ? `: ${stderr.slice(0, 200)}` : ''}`));
+        // deep-search marks a real completion with a "RESEARCH COMPLETE" banner —
+        // require it so a keyless/failed run (banner only, no answer) is a clean
+        // failure, not a false-green. twin/triplet exit 1 on a *degraded* run but
+        // still print a usable report, so for them any parseable answer is enough.
+        const ok = kind === 'single'
+          ? out.includes('RESEARCH COMPLETE') && Boolean(parsed.answer)
+          : Boolean(parsed.answer);
+        if (ok) return resolve(parsed);
+        reject(new Error(`${script} exited ${code} with no usable answer${stderr ? `: ${stderr.slice(0, 200)}` : ''}`));
       });
     });
   };

@@ -87,9 +87,12 @@ they're built to be driven — as a **subprocess**:
   `profileModels` exactly as for any arm.
 
 `dispatch` is handed a **frozen read-only `{id, model, kind}` view**, never the
-live arm, so a misbehaving runner adapter can't corrupt orchestrator state. A
-runner script that isn't present on the branch yet just fails its arm (clear
-spawn error) and the orchestrator reassigns/marks it failed — additive, no hard
+live arm, so a misbehaving runner adapter can't corrupt orchestrator state.
+
+**Runners that aren't merged yet are skipped, not crashed.** The `ORCH_LIVE`
+CLI keeps only the candidate arms whose runner script actually exists on the
+branch (logging any it skips), so today it runs the `single` deep-search arm and
+the `twin`/`triplet` arms auto-activate once their PRs land — additive, no hard
 dependency on the unmerged twin/triplet PRs.
 
 ## Tests

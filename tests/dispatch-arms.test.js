@@ -102,7 +102,18 @@ test('makeDispatch: non-zero exit with no parseable answer rejects', async () =>
   const p = dispatch({ id: 't', kind: 'triplet' }, {});
   child.stderr.emit('data', 'all models failed');
   child.emit('close', 1);
-  await assert.rejects(p, /no parseable answer/);
+  await assert.rejects(p, /no usable answer/);
+});
+
+test('makeDispatch single: banner-only output without the completion marker is a failure, not false-green', async () => {
+  const child = fakeChild();
+  const dispatch = makeDispatch('q', { spawnFn: () => child });
+  const p = dispatch({ id: 'd', kind: 'single', model: 'deep_search' }, {});
+  // deep-search-router prints its banner, then errors (e.g. no API key) before
+  // the "RESEARCH COMPLETE" marker — the banner must not count as an answer.
+  child.stdout.emit('data', '🔬 Deep Search Router\nProfile: …\nQuery: q');
+  child.emit('close', 1);
+  await assert.rejects(p, /no usable answer/);
 });
 
 test('makeDispatch: unknown arm kind rejects', async () => {

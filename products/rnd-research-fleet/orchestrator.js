@@ -332,23 +332,41 @@ if (require.main === module) {
   // the subprocess dispatcher; arms are heterogeneous so the orchestrator
   // monitors single-LLM and twin/triplet "swarm" arms side by side. Set
   // ORCH_LIVE=1 with a funded OPENROUTER_API_KEY. Default is the keyless stub.
-  const armSpecs = live
-    ? [
-        // single deep-search arm; profileModels are deep-search-router profiles it falls back through
-        { id: 'arm-deep', kind: 'single', model: 'deep_search', profileModels: ['deep_search', 'technical', 'market_research'] },
-        { id: 'arm-twin', kind: 'twin', model: '', profileModels: [''] },
-        { id: 'arm-triplet', kind: 'triplet', model: '', profileModels: [''] },
-      ]
-    : [
-        { id: 'arm-1', model: 'model-a', profileModels: ['model-a', 'model-a-fallback'] },
-        { id: 'arm-2', model: 'model-b', profileModels: ['model-b', 'model-b-fallback'] },
-        { id: 'arm-3', model: 'model-c', profileModels: ['model-c', 'model-c-fallback'] },
-      ];
+  const dispatchArms = live ? require('./dispatch-arms') : null;
+  let armSpecs;
+  if (live) {
+    // Every spec carries a real (non-empty) model so orchestrate()'s validation
+    // accepts it; we then keep only arms whose runner script is actually present
+    // on this branch. twin/triplet auto-activate once their PRs land — until
+    // then ORCH_LIVE runs what exists rather than crashing on a missing runner.
+    const DEFAULT_LIVE_MODEL = 'anthropic/claude-3.5-sonnet';
+    const candidates = [
+      { id: 'arm-deep', kind: 'single', model: 'deep_search', profileModels: ['deep_search', 'technical', 'market_research'] },
+      { id: 'arm-twin', kind: 'twin', model: DEFAULT_LIVE_MODEL, profileModels: [DEFAULT_LIVE_MODEL] },
+      { id: 'arm-triplet', kind: 'triplet', model: DEFAULT_LIVE_MODEL, profileModels: [DEFAULT_LIVE_MODEL] },
+    ];
+    armSpecs = candidates.filter((s) => {
+      const script = dispatchArms.ARM_RUNNERS[s.kind];
+      const present = script && fs.existsSync(path.join(__dirname, script));
+      if (!present) console.error(`[orchestrator] live: skipping ${s.id} (${s.kind}) — runner ${script} not present on this branch yet`);
+      return present;
+    });
+    if (!armSpecs.length) {
+      console.error('[orchestrator] live: no runner scripts present; nothing to dispatch.');
+      process.exit(1);
+    }
+  } else {
+    armSpecs = [
+      { id: 'arm-1', model: 'model-a', profileModels: ['model-a', 'model-a-fallback'] },
+      { id: 'arm-2', model: 'model-b', profileModels: ['model-b', 'model-b-fallback'] },
+      { id: 'arm-3', model: 'model-c', profileModels: ['model-c', 'model-c-fallback'] },
+    ];
+  }
 
   // Stub dispatch: resolves after a short delay with a canned answer (keyless).
   // Live dispatch: spawns the real runners via dispatch-arms.js.
   const dispatch = live
-    ? require('./dispatch-arms').makeDispatch(query)
+    ? dispatchArms.makeDispatch(query)
     : (arm) =>
         new Promise((resolve) =>
           setTimeout(() => resolve({ answer: `stub answer from ${arm.model}`, citations: [`https://example.com/${arm.id}`], cost_usd: 0 }), 50)
