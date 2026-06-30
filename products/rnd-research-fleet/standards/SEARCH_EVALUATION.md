@@ -280,6 +280,91 @@ adjudication quality and zero unsupported-claim flags. (Against the already-stro
 baseline the same twin run scores `tune_twin`, since its rubric edge there is
 below the keep threshold - exactly the kind of nuance this report surfaces.)
 
+### Running the twin LIVE (real API)
+
+`twin-search.js` is the live runner. It sends the query to two independent models
+in parallel, adjudicates/synthesizes a source-backed answer, and prints a report
+in the twin JSON schema above — so its output feeds straight into the offline
+comparator. Requires `OPENROUTER_API_KEY` (this is the product's paid search lane,
+not the credit-free BIOME crew).
+
+```bash
+cd products/rnd-research-fleet
+
+# Live twin run -> capture as a fixture
+OPENROUTER_API_KEY=... node twin-search.js "your research question" > /tmp/twin-live.json
+# (override models if desired)
+#   TWIN_MODEL_A=openai/gpt-4o-search-preview TWIN_MODEL_B=anthropic/claude-3.5-sonnet \
+#   TWIN_ADJUDICATOR=openai/gpt-4o node twin-search.js "..."
+
+# Then score it against Fable/baseline with the same comparator:
+node eval/search-eval.js \
+  --fixtures eval/fixtures/queries.json \
+  --baseline eval/fixtures/baseline.example.json \
+  --fable    eval/fixtures/fable.example.json \
+  --twin-adjudicated /tmp/twin-live.json \
+  --md /tmp/strategy-report.md
+```
+
+The live run still has to **earn `keep_twin`** on the comparator before it becomes
+the default — the runner produces the data; the eval makes the call.
+
+## Triplet / N-model search (`triplet_llm`)
+
+A triplet generalizes the twin to **N independent models** (default 3) with
+**k-of-n majority consensus** (k = ⌊n/2⌋+1, i.e. 2-of-3). The extra arm buys
+robustness — a claim corroborated by a *majority* of independent models is
+stronger than a 2-of-2 agreement — at ~N× cost/latency. Like the twin, it only
+earns its place if it **beats its reference on measured quality**. The reference
+is the **twin** when one is provided (the bar the triplet must raise), else Fable.
+
+**Strategy:** `triplet_llm` · **router_profile:** `n_model_adjudicated`
+
+### Triplet scoring (the `nplet` block)
+
+Each result carries an `nplet` block; the comparator (`npletMetricsFor` /
+`compareNpletToReference` / `decideNplet`) rolls these up:
+
+| Field | Meaning |
+|-------|---------|
+| `models` / `n` / `k` | the N model ids, N, and the majority threshold k |
+| `agreement_score` | adjudicator's agreement (falls back to `consensus_score`) |
+| `consensus_score` | fraction of distinct source-domains cited by ≥ k arms |
+| `adjudication_quality` | adjudicator confidence in the merge |
+| `disagreements` / `unsupported_claims` | resolved conflicts / dropped unsourced claims |
+| `sources` | per-model source arrays (`sources[i]` = model i's citations) |
+
+### Triplet decision rubric (`NPLET_THRESHOLDS`)
+
+| Decision | When |
+|----------|------|
+| `keep_triplet` | beats the reference rubric by ≥ `minQualityGain`, within `maxCostRatio` (3.5×) / `maxLatencyRatio` (2.5×), with `consensus_score` ≥ `minConsensus`, adjudication above floor, no unsupported-claim flags, no error/citation regression. |
+| `tune_triplet` | better quality but over cost/latency budget, or `consensus_score` too low (the arms rarely corroborate the same sources), or gain positive but below keep. |
+| `rollback_triplet` | does not beat the reference rubric, or regresses error/citation coverage. Not worth ~N× — stay on the twin/Fable. |
+
+### Running the triplet
+
+```bash
+cd products/rnd-research-fleet
+
+# Live (real API; OPENROUTER_API_KEY required):
+TRIPLET_MODELS="openai/gpt-4o-search-preview,anthropic/claude-3.5-sonnet,google/gemini-2.5-pro" \
+  node triplet-search.js "your research question" > /tmp/triplet-live.json
+
+# Score it vs the twin (and Fable), fully offline:
+npm run eval:triplet
+# or explicitly:
+node eval/search-eval.js --fixtures eval/fixtures/queries.json \
+  --fable eval/fixtures/fable.example.json \
+  --twin-adjudicated eval/fixtures/twin-llm-adjudicated.example.json \
+  --triplet /tmp/triplet-live.json
+```
+
+Decision on the bundled fixtures: **`rollback_triplet`** — the example triplet
+reuses the twin's answers, so it shows no rubric gain over the twin and is
+correctly rejected at ~3× cost. That is the point: a third arm must *measurably
+improve* the answer (not just echo the twin) to earn `keep_triplet`.
+
 ### Twin run JSON schema (per result)
 
 ```json

@@ -1,0 +1,259 @@
+{
+  "label": "triplet_llm",
+  "strategy": "triplet_llm",
+  "search_prompt_version": "triplet-llm-v1",
+  "router_profile": "n_model_adjudicated",
+  "models": [
+    "openai/gpt-4o-search",
+    "anthropic/claude-sonnet-search",
+    "google/gemini-2.5-pro"
+  ],
+  "adjudicator": "openai/gpt-4o",
+  "notes": "Illustrative offline triplet (n=3, k=2 majority). No live API called. The third arm corroborates the shared sources (raising consensus) but reuses the twin’s answers, so it shows no rubric gain over the twin and correctly scores rollback_triplet at ~3x cost. A third arm must measurably improve the answer to earn keep_triplet.",
+  "results": [
+    {
+      "query_id": "repo-automation-gh-repo",
+      "answer": "The gh CLI infers the repo from git remotes. With no actions/checkout step, set GH_REPO to github.repository at the job env, or pass --repo on each gh call.",
+      "citations": [
+        "https://docs.github.com/en/actions",
+        "https://cli.github.com/manual/",
+        "https://stackoverflow.com/q/gh-not-a-git-repository"
+      ],
+      "error": false,
+      "latency_ms": 2990,
+      "cost_usd": 0.0057,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 0.93,
+        "consensus_score": 0.33,
+        "disagreements": 0,
+        "adjudication_quality": 0.98,
+        "sources": [
+          [
+            "https://docs.github.com/en/actions",
+            "https://cli.github.com/manual/"
+          ],
+          [
+            "https://docs.github.com/en/actions",
+            "https://stackoverflow.com/q/gh-not-a-git-repository"
+          ],
+          [
+            "https://docs.github.com/en/actions"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    },
+    {
+      "query_id": "insurance-lead-api-research",
+      "answer": "Several providers expose lead-sourcing APIs with usage-based pricing. Compliance requires TCPA consent capture and data-handling agreements before purchasing leads.",
+      "citations": [
+        "https://www.zillow.com/",
+        "https://www.experian.com/",
+        "https://www.leadspedia.com/",
+        "https://www.ftc.gov/",
+        "https://www.iab.com/"
+      ],
+      "error": false,
+      "latency_ms": 8320,
+      "cost_usd": 0.0156,
+      "freshness_year": 2026,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 0.88,
+        "consensus_score": 0.2,
+        "disagreements": 0,
+        "adjudication_quality": 0.96,
+        "sources": [
+          [
+            "https://www.zillow.com/",
+            "https://www.experian.com/",
+            "https://www.leadspedia.com/"
+          ],
+          [
+            "https://www.experian.com/",
+            "https://www.ftc.gov/",
+            "https://www.iab.com/"
+          ],
+          [
+            "https://www.experian.com/"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    },
+    {
+      "query_id": "workflow-syntax-issue",
+      "answer": "Run actionlint or python yaml.safe_load to validate the workflow; YAML errors are usually indentation. The validator reports the offending line.",
+      "citations": [
+        "https://github.com/rhysd/actionlint",
+        "https://docs.github.com/en/actions/learn-github-actions/workflow-syntax"
+      ],
+      "error": false,
+      "latency_ms": 2340,
+      "cost_usd": 0.0027,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 1,
+        "consensus_score": 0.5,
+        "disagreements": 0,
+        "adjudication_quality": 0.98,
+        "sources": [
+          [
+            "https://github.com/rhysd/actionlint"
+          ],
+          [
+            "https://docs.github.com/en/actions/learn-github-actions/workflow-syntax"
+          ],
+          [
+            "https://github.com/rhysd/actionlint"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    },
+    {
+      "query_id": "code-review-routing-task",
+      "answer": "Route workflow PRs to a code-review profile that prioritizes least-privilege permissions and command-injection risk in run: blocks; routing should reflect the diff's risk.",
+      "citations": [
+        "https://docs.github.com/en/actions/security-guides",
+        "https://owasp.org/www-community/attacks/Command_Injection"
+      ],
+      "error": false,
+      "latency_ms": 2600,
+      "cost_usd": 0.00315,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 0.95,
+        "consensus_score": 0.5,
+        "disagreements": 0,
+        "adjudication_quality": 0.96,
+        "sources": [
+          [
+            "https://docs.github.com/en/actions/security-guides"
+          ],
+          [
+            "https://owasp.org/www-community/attacks/Command_Injection"
+          ],
+          [
+            "https://docs.github.com/en/actions/security-guides"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    },
+    {
+      "query_id": "product-market-research",
+      "answer": "TAM for HVAC BOM SaaS spans contractors and distributors. Competitors target this segment with tiered pricing; recent reports size the serviceable market by segment.",
+      "citations": [
+        "https://www.grandviewresearch.com/",
+        "https://www.statista.com/",
+        "https://www.ahrinet.org/",
+        "https://www.ibisworld.com/",
+        "https://www.mordorintelligence.com/"
+      ],
+      "error": false,
+      "latency_ms": 10270,
+      "cost_usd": 0.018,
+      "freshness_year": 2025,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 0.88,
+        "consensus_score": 0.2,
+        "disagreements": 0,
+        "adjudication_quality": 0.95,
+        "sources": [
+          [
+            "https://www.grandviewresearch.com/",
+            "https://www.statista.com/",
+            "https://www.ahrinet.org/"
+          ],
+          [
+            "https://www.statista.com/",
+            "https://www.ibisworld.com/",
+            "https://www.mordorintelligence.com/"
+          ],
+          [
+            "https://www.statista.com/"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    },
+    {
+      "query_id": "docs-bom-discovery",
+      "answer": "Authoritative BOM standards and component specifications come from standards bodies; documentation lists required components and specification fields.",
+      "citations": [
+        "https://www.ashrae.org/",
+        "https://www.iso.org/",
+        "https://www.ansi.org/"
+      ],
+      "error": false,
+      "latency_ms": 4420,
+      "cost_usd": 0.0057,
+      "nplet": {
+        "models": [
+          "openai/gpt-4o-search",
+          "anthropic/claude-sonnet-search",
+          "google/gemini-2.5-pro"
+        ],
+        "adjudicator": "openai/gpt-4o",
+        "n": 3,
+        "k": 2,
+        "agreement_score": 0.95,
+        "consensus_score": 0.33,
+        "disagreements": 0,
+        "adjudication_quality": 0.97,
+        "sources": [
+          [
+            "https://www.ashrae.org/",
+            "https://www.iso.org/"
+          ],
+          [
+            "https://www.ashrae.org/",
+            "https://www.ansi.org/"
+          ],
+          [
+            "https://www.ashrae.org/"
+          ]
+        ],
+        "unsupported_claims": 0
+      }
+    }
+  ]
+}
