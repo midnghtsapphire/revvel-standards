@@ -40,77 +40,77 @@ The revvel-standards repository has extensive automation infrastructure:
 7. ✅ `jules-feedback.yml` — Jules feedback loop
 
 #### PR & Code Review
-8. ✅ `ai-pr-review-openrouter.yml` — AI-powered PR review
-9. ✅ `pr-review-status.yml` — PR review status automation
-10. ✅ `match-labels.yml` — Label matching for routing
-11. ✅ `ready-for-review.yml` — PR ready state handler
-12. ✅ `close-linked-issue.yml` — Auto-close issues when PR merges
+1. ✅ `ai-pr-review-openrouter.yml` — AI-powered PR review
+2. ✅ `pr-review-status.yml` — PR review status automation
+3. ✅ `match-labels.yml` — Label matching for routing
+4. ✅ `ready-for-review.yml` — PR ready state handler
+5. ✅ `close-linked-issue.yml` — Auto-close issues when PR merges
 
 #### CI/CD & Quality
-13. ✅ `ai-ci-failure-helper.yml` — CI failure auto-fix
-14. ✅ `ralph-loop.yml` — Self-healing loop for failures
-15. ✅ `auto-error-handler.yml` — Automatic error handling
-16. ✅ `compliance-check.yml` — Compliance validation
-17. ✅ `compliance-watcher.yml` — Compliance monitoring
+1. ✅ `ai-ci-failure-helper.yml` — CI failure auto-fix
+2. ✅ `ralph-loop.yml` — Self-healing loop for failures
+3. ✅ `auto-error-handler.yml` — Automatic error handling
+4. ✅ `compliance-check.yml` — Compliance validation
+5. ✅ `compliance-watcher.yml` — Compliance monitoring
 
 #### Label & Triage Management
-18. ✅ `arsc-labels.yml` — ARSC label management (Add/Remove/Set/Clear)
-19. ✅ `sync-labels.yml` — Sync canonical labels across repos
-20. ✅ `priority-router.yml` — Priority-based routing
-21. ✅ `triage-cron.yml` — Scheduled triage sweep
-22. ✅ `credential-label-router.yml` — **NEW** Auto-routes credentials-missing issues to desktop agents
+1. ✅ `arsc-labels.yml` — ARSC label management (Add/Remove/Set/Clear)
+2. ✅ `sync-labels.yml` — Sync canonical labels across repos
+3. ✅ `priority-router.yml` — Priority-based routing
+4. ✅ `triage-cron.yml` — Scheduled triage sweep
+5. ✅ `credential-label-router.yml` — **NEW** Auto-routes credentials-missing issues to desktop agents
 
 #### Branch & Issue Management
-22. ✅ `create-issue-branch.yml` — Auto-create branches from issues
-23. ✅ `stale-branch-cleanup.yml` — Clean up stale branches
-24. ✅ `stale-docs-check.yml` — Check for outdated docs
+1. ✅ `create-issue-branch.yml` — Auto-create branches from issues
+2. ✅ `stale-branch-cleanup.yml` — Clean up stale branches
+3. ✅ `stale-docs-check.yml` — Check for outdated docs
 
 #### Merge & Deployment
-25. ✅ `auto-merge.yml` — Automatic PR merging
-26. ✅ `commit-queue-monitor.yml` — Monitor merge queue
-27. ✅ `mergify-merge-queue-labels-copier.yml` — Mergify integration
+1. ✅ `auto-merge.yml` — Automatic PR merging
+2. ✅ `commit-queue-monitor.yml` — Monitor merge queue
+3. ✅ `mergify-merge-queue-labels-copier.yml` — Mergify integration
 
 #### Security & Secrets
-28. ✅ `credential-gatekeeper.yml` — Credential detection and BOM generation
-29. ✅ `credential-label-router.yml` — **NEW** Auto-assignment to agents with desktop access
-30. ✅ `doppler-secrets-sync.yml` — Doppler secrets sync
-31. ✅ `secret-lifecycle.yml` — Secret rotation management
-32. ✅ `secrets-health-check.yml` — Secret health monitoring
-33. ✅ `saml-sso-registration.yml` — SAML SSO automation
+1. ✅ `credential-gatekeeper.yml` — Credential detection and BOM generation
+2. ✅ `credential-label-router.yml` — **NEW** Auto-assignment to agents with desktop access
+3. ✅ `doppler-secrets-sync.yml` — Doppler secrets sync
+4. ✅ `secret-lifecycle.yml` — Secret rotation management
+5. ✅ `secrets-health-check.yml` — Secret health monitoring
+6. ✅ `saml-sso-registration.yml` — SAML SSO automation
 
 #### Monitoring & Analytics
-33. ✅ `amplitude-events.yml` — Amplitude analytics events
-34. ✅ `amplitude-to-notion.yml` — Amplitude → Notion sync
-35. ⏸ `mabl.yml` — Mabl test automation (PAUSED 2026-05-27; replaced by Keploy. Auto-triggers commented; manual `workflow_dispatch` still works. See header notes in the workflow file for the full evaluation.)
-36. ✅ `workflow-health-dashboard.yml` — Workflow monitoring
-37. ✅ `proof-of-life.yml` — App health checks
+1. ✅ `amplitude-events.yml` — Amplitude analytics events
+2. ✅ `amplitude-to-notion.yml` — Amplitude → Notion sync
+3. ⏸ `mabl.yml` — Mabl test automation (PAUSED 2026-05-27; replaced by Keploy. Auto-triggers commented; manual `workflow_dispatch` still works. See header notes in the workflow file for the full evaluation.)
+4. ✅ `workflow-health-dashboard.yml` — Workflow monitoring
+5. ✅ `proof-of-life.yml` — App health checks
 
 #### Deployment & Infrastructure
-38. ✅ `deploy-oaudrey.yml` — oAudrey deployment
-39. ✅ `oaudrey-retro.yml` — oAudrey retrospective
-40. ✅ `sync-oaudrey-dns.yml` — oAudrey DNS sync
-41. ✅ `durability-mirror.yml` — Backup/mirror automation
-42. ✅ `migration-cron.yml` — Migration scheduling
-43. ✅ `static.yml` — Static site deployment
-44. ✅ `app-artifact-audit.yml` — **NEW** Enforces Definition of Done every 6h: refreshes `docs/<app>/ARTIFACTS.md`, README live-deployment links, and `docs/APP_DELIVERY_STATUS.md` (Vercel auto-fill when `VERCEL_TOKEN` is set)
+1. ✅ `deploy-oaudrey.yml` — oAudrey deployment
+2. ✅ `oaudrey-retro.yml` — oAudrey retrospective
+3. ✅ `sync-oaudrey-dns.yml` — oAudrey DNS sync
+4. ✅ `durability-mirror.yml` — Backup/mirror automation
+5. ✅ `migration-cron.yml` — Migration scheduling
+6. ✅ `static.yml` — Static site deployment
+7. ✅ `app-artifact-audit.yml` — **NEW** Enforces Definition of Done every 6h: refreshes `docs/<app>/ARTIFACTS.md`, README live-deployment links, and `docs/APP_DELIVERY_STATUS.md` (Vercel auto-fill when `VERCEL_TOKEN` is set)
 
 #### Documentation & Changelog
-44. ✅ `ai-weekly-changelog.yml` — Auto-generated changelogs
-45. ✅ `flow-chart-sync.yml` — Flow chart updates
-46. ✅ `template-sync-check.yml` — Template consistency
+1. ✅ `ai-weekly-changelog.yml` — Auto-generated changelogs
+2. ✅ `flow-chart-sync.yml` — Flow chart updates
+3. ✅ `template-sync-check.yml` — Template consistency
 
 #### Special Purpose
-47. ✅ `fork-audit-bot.yml` — Fork evaluation
-48. ✅ `panda-ops.yml` — PandaOps integration
-49. ✅ `proposal-prosecution.yml` — Proposal handling
-50. ✅ `research-module.yml` — Research automation
-51. ✅ `recurse-ml.yml` — RecurseML integration
-52. ✅ `run-human-testing-api.yml` — Human testing API
-53. ✅ `ship-status-audit.yml` — Ship status tracking
-54. ✅ `project-board-sync.yml` — Project board automation
+1. ✅ `fork-audit-bot.yml` — Fork evaluation
+2. ✅ `panda-ops.yml` — PandaOps integration
+3. ✅ `proposal-prosecution.yml` — Proposal handling
+4. ✅ `research-module.yml` — Research automation
+5. ✅ `recurse-ml.yml` — RecurseML integration
+6. ✅ `run-human-testing-api.yml` — Human testing API
+7. ✅ `ship-status-audit.yml` — Ship status tracking
+8. ✅ `project-board-sync.yml` — Project board automation
 
 #### Cron Jobs
-55. ✅ `cron/*` — Multiple scheduled maintenance tasks
+1. ✅ `cron/*` — Multiple scheduled maintenance tasks
 
 ---
 
