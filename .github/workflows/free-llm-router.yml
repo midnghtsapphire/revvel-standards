@@ -13,6 +13,7 @@ jobs:
   route:
     name: Route LLM Call
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check OpenRouter credits
         id: check_credits

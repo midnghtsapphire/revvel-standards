@@ -24,6 +24,7 @@ jobs:
   self-heal:
     name: 🔧 Repo Self-Healer
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       closed: ${{ steps.cleanup.outputs.closed }}
       labeled: ${{ steps.cleanup.outputs.labeled }}
@@ -60,6 +61,7 @@ jobs:
     needs: self-heal
     if: needs.self-heal.outputs.closed != '0' || needs.self-heal.outputs.duplicates != '0'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       issues: write
     steps:
