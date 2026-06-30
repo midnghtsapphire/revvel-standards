@@ -22,11 +22,13 @@
 
 const { MASTER_PROMPT } = require('./deep-search-router');
 
-const DEFAULTS = {
+// Frozen so a consumer mutating the shared export can't bleed into other uses;
+// the CLI spreads a copy (`{ ...DEFAULTS }`) before per-run tweaks.
+const DEFAULTS = Object.freeze({
   modelA: process.env.TWIN_MODEL_A || 'openai/gpt-4o-search-preview',
   modelB: process.env.TWIN_MODEL_B || 'anthropic/claude-3.5-sonnet',
   adjudicator: process.env.TWIN_ADJUDICATOR || 'openai/gpt-4o',
-};
+});
 
 // The twin's two arms apply the SAME R&D frameworks as the deep-search lane —
 // DOE Screening, TRIZ, MEErP, LCA, and BNAT (Best Not Yet Available Technology) —
@@ -198,8 +200,14 @@ if (require.main === module) {
 {"answer": "<merged source-backed answer>", "citations": ["<url>", ...], "agreement_score": <0..1>, "disagreements": <int>, "adjudication_quality": <0..1>, "unsupported_claims": <int>}`;
 
   async function callModel(model, messages) {
+    // OpenRouter needs a FUNDED key — even ":free" models require credits — so a
+    // missing/unfunded/unverified key returns 401/402/403/429 rather than an
+    // answer. Troubleshooting if a call fails: check the key AND the account
+    // balance at https://openrouter.ai/credits.
     const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) throw new Error('OPENROUTER_API_KEY required');
+    if (!apiKey) {
+      throw new Error('OPENROUTER_API_KEY required (must be a funded/verified key — see https://openrouter.ai/credits)');
+    }
     const started = Date.now();
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -209,12 +217,18 @@ if (require.main === module) {
         'HTTP-Referer': 'https://rnd-research-fleet',
         'X-Title': 'R&D Research Fleet — Twin Search',
       },
+      // `usage: { include: true }` is OpenRouter's accounting extension — it
+      // returns spend on `usage.cost` (USD) in the response. Best-effort: if the
+      // field is absent, cost stays null and the eval's cost dimension is simply
+      // not populated for this run (never a crash).
       body: JSON.stringify({ model, messages, max_tokens: 4000, temperature: 0.3, usage: { include: true } }),
     });
     const latency_ms = Date.now() - started;
     if (!res.ok) {
       const t = await res.text().catch(() => '');
-      throw new Error(`${model} -> ${res.status} ${t.slice(0, 200)}`);
+      // 401/402/403/429 almost always = missing/unfunded key or rate limit —
+      // check the key and balance at https://openrouter.ai/credits.
+      throw new Error(`${model} -> ${res.status} ${t.slice(0, 200)} (if 401/402/403/429: check key + balance at https://openrouter.ai/credits)`);
     }
     const data = await res.json();
     const content = data.choices?.[0]?.message?.content || '';
