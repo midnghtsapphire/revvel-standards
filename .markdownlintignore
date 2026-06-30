@@ -6,3 +6,6 @@ docs/MASTER_AUDIT_PROMPTS/**
 
 # Transcript files - generated content
 docs/agents/**/transcripts/**
+
+# Research drafts incubator - raw research dumps, not process docs
+docs/research-drafts/**
