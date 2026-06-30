@@ -1,0 +1,42 @@
+name: BIOME Sentinel
+
+# Credit-free, rule-based failure detector (the crew's nociceptor). No AI keys.
+# Scans recent runs + open issues via GITHUB_TOKEN only and files/updates a single
+# deduped [BIOME-SENTINEL] incident when the fleet is in pain.
+
+on:
+  schedule:
+    - cron: '20 */2 * * *'  # every 2 hours, offset from the 4h self-healing loop
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+concurrency:
+  group: biome-sentinel
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  sense:
+    name: Detect fleet pain (rule-based)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run sentinel
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: node scripts/biome/sentinel.js

@@ -1,0 +1,49 @@
+name: BIOME Homeostat
+
+# Credit-free homeostasis regulator. Detects whether the AI-lane keys
+# (OpenRouter / Anthropic / Perplexity — the ones Doppler keeps wiping) are
+# present. Missing keys never degrade the crew (BIOME is credit-free); homeostat
+# just posts ONE consolidated, deduped status note and auto-resolves it when the
+# keys return. No needs-human spam.
+
+on:
+  schedule:
+    - cron: '40 */6 * * *'  # every 6 hours
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: biome-homeostat
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  regulate:
+    name: Check AI-lane keys (credit-free)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run homeostat
+        # These secrets are read ONLY to detect presence. They are passed through
+        # env: (never interpolated into the shell) and may legitimately be empty —
+        # that is the credit-free case the homeostat is designed to report.
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        run: node scripts/biome/homeostat.js
