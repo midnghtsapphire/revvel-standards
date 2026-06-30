@@ -707,18 +707,34 @@ test('stuck-check-watchdog.yml find-stuck-issues passes owner/repo to all listFo
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
 
-  const job = doc.jobs['find-stuck-issues'];
+  const job = doc.jobs?.['find-stuck-issues'];
   if (!job) throw new Error('find-stuck-issues job not found in stuck-check-watchdog.yml');
 
-  // Check each step individually so splits are confined to a single call's argument block.
+  // Extract only the argument block for a single listForRepo( call by tracking
+  // paren/brace depth so later calls in the same step cannot satisfy the regex
+  // for an earlier call that is missing the params.
+  function extractArgBlock(str) {
+    let depth = 1; // we are already inside the opening ( of listForRepo(
+    for (let j = 0; j < str.length; j++) {
+      const ch = str[j];
+      if (ch === '(' || ch === '{') depth++;
+      else if (ch === ')' || ch === '}') {
+        depth--;
+        if (depth === 0) return str.slice(0, j);
+      }
+    }
+    return str; // unmatched parens — return whole string as fallback
+  }
+
+  // Check each step individually so splits are confined to one step's script.
   for (const [stepIdx, step] of (job.steps || []).entries()) {
     const script = step.with?.script || '';
     if (!script.includes('listForRepo(')) continue;
 
     const callSections = script.split('listForRepo(');
     for (let i = 1; i < callSections.length; i++) {
-      // Capture only the argument object up to the matching closing brace.
-      const body = callSections[i];
+      // Scope the check to only the argument block of this specific call.
+      const body = extractArgBlock(callSections[i]);
       // Use regex to confirm the param is an actual key assignment, not a comment/string.
       if (!/owner\s*:\s*context\.repo\.owner/.test(body)) {
         throw new Error(
