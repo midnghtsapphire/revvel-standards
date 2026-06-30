@@ -33,8 +33,9 @@ on:
     types:
       - openrouter-key-updated
   schedule:
-    # 02:30 UTC daily — after the instantiation-check cron (06:17 UTC) would
-    # already have flagged new failures; this sweep clears them the next day.
+    # 02:30 UTC daily — the instantiation-check cron runs at 06:17 UTC and
+    # flags failures; this sweep runs first and clears any that self-healed
+    # overnight so stalled items aren't re-escalated needlessly.
     - cron: "30 2 * * *"
 
 permissions:
@@ -55,6 +56,7 @@ jobs:
   probe-and-reset:
     name: Probe key then reset failure labels
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Probe OpenRouter API key
         id: probe
@@ -258,4 +260,3 @@ jobs:
               .write();
 
             core.warning(detail);
-    timeout-minutes: 15
