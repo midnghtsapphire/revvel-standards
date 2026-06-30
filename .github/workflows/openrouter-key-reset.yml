@@ -1,0 +1,261 @@
+name: OpenRouter Key Reset — Reprocess Failures
+
+# Trigger this workflow after updating OPENROUTER_API_KEY in repo secrets.
+# It probes the new key, and if valid, removes failure labels from every
+# issue/PR that stalled on openrouter:needs-key / openrouter:triage-failed /
+# openrouter:instantiation-failed so OpenRouter Triage picks them up again.
+#
+# Trigger options:
+#   1. workflow_dispatch  — run manually from the Actions tab any time after
+#                           setting/rotating the key.
+#   2. repository_dispatch (type: openrouter-key-updated) — call from an
+#                           automation script via the GitHub API when the
+#                           key is provisioned programmatically:
+#                           gh api repos/{owner}/{repo}/dispatches \
+#                             -f event_type=openrouter-key-updated
+#   3. schedule           — daily safety net: auto-heals any items that
+#                           were missed (e.g. key rotated outside business
+#                           hours with no manual trigger).
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: >
+          Dry run — probe the key but do NOT modify any issue/PR labels
+        type: boolean
+        default: false
+      max_items:
+        description: Max issues/PRs to reprocess (0 = unlimited)
+        type: string
+        default: "0"
+  repository_dispatch:
+    types:
+      - openrouter-key-updated
+  schedule:
+    # 02:30 UTC daily — after the instantiation-check cron (06:17 UTC) would
+    # already have flagged new failures; this sweep clears them the next day.
+    - cron: "30 2 * * *"
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: openrouter-key-reset
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  probe-and-reset:
+    name: Probe key then reset failure labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe OpenRouter API key
+        id: probe
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "key_present=false" >> "$GITHUB_OUTPUT"
+            echo "key_valid=false"   >> "$GITHUB_OUTPUT"
+            echo "detail=OPENROUTER_API_KEY is not configured in repo secrets." >> "$GITHUB_OUTPUT"
+            echo "::warning::OPENROUTER_API_KEY is not set — nothing to reset."
+            exit 0
+          fi
+
+          echo "key_present=true" >> "$GITHUB_OUTPUT"
+
+          HTTP_STATUS=$(curl -s -o /tmp/or-probe.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${OPENROUTER_API_KEY}" \
+            -H "HTTP-Referer: https://github.com/${GITHUB_REPOSITORY}" \
+            -H "X-Title: revvel-standards openrouter-key-reset" \
+            "https://openrouter.ai/api/v1/models")
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            MODEL_COUNT=$(python3 -c "import json,sys; d=json.load(open('/tmp/or-probe.json')); print(len(d.get('data',[])))" 2>/dev/null || echo "unknown")
+            echo "key_valid=true" >> "$GITHUB_OUTPUT"
+            echo "detail=HTTP 200 — key valid, ${MODEL_COUNT} models available." >> "$GITHUB_OUTPUT"
+            echo "✅ OpenRouter key is valid (${MODEL_COUNT} models)."
+          else
+            BODY=$(head -c 400 /tmp/or-probe.json || true)
+            echo "key_valid=false" >> "$GITHUB_OUTPUT"
+            echo "detail=HTTP ${HTTP_STATUS} — key probe failed. Body: ${BODY}" >> "$GITHUB_OUTPUT"
+            echo "::warning::OpenRouter key probe returned HTTP ${HTTP_STATUS} — labels will NOT be reset."
+          fi
+
+      - name: Reset failure labels on stalled issues/PRs
+        if: steps.probe.outputs.key_valid == 'true'
+        uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          MAX_ITEMS: ${{ github.event.inputs.max_items || '0' }}
+          PROBE_DETAIL: ${{ steps.probe.outputs.detail }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const dryRun   = process.env.DRY_RUN === 'true';
+            const maxItems = parseInt(process.env.MAX_ITEMS, 10) || 0;
+            const probeDetail = process.env.PROBE_DETAIL;
+
+            // Labels whose presence means the item stalled due to a missing/broken key.
+            const FAILURE_LABELS = [
+              'openrouter:needs-key',
+              'openrouter:triage-failed',
+              'openrouter:instantiation-failed',
+            ];
+
+            // Labels to remove when healing (also clear the generic escalation pair).
+            const REMOVE_LABELS = [
+              ...FAILURE_LABELS,
+              'openrouter:ralph-escalated',
+            ];
+
+            // Labels to add so the item is re-picked-up by OpenRouter Triage.
+            const RESTORE_LABELS = ['openrouter', 'triage:new'];
+
+            core.info(`Probe result: ${probeDetail}`);
+            core.info(`Dry run: ${dryRun}, max items: ${maxItems || 'unlimited'}`);
+
+            // ── Collect stalled items ─────────────────────────────────────
+            // Search for issues/PRs carrying ANY of the failure labels.
+            const stalled = [];
+            for (const label of FAILURE_LABELS) {
+              const items = await github.paginate(
+                github.rest.issues.listForRepo,
+                {
+                  owner: context.repo.owner,
+                  repo:  context.repo.repo,
+                  labels: label,
+                  state:  'open',
+                  per_page: 100,
+                }
+              );
+              for (const item of items) {
+                if (!stalled.find(s => s.number === item.number)) {
+                  stalled.push(item);
+                }
+              }
+            }
+
+            core.info(`Found ${stalled.length} stalled item(s) to heal.`);
+
+            const toProcess = (maxItems > 0) ? stalled.slice(0, maxItems) : stalled;
+            let healed = 0;
+            let skipped = 0;
+
+            for (const item of toProcess) {
+              const num = item.number;
+              const currentLabels = item.labels.map(l => l.name);
+
+              const labelsToRemove = REMOVE_LABELS.filter(l => currentLabels.includes(l));
+              // Only add RESTORE_LABELS that aren't already present.
+              const labelsToAdd = RESTORE_LABELS.filter(l => !currentLabels.includes(l));
+
+              core.info(`#${num}: remove=[${labelsToRemove}] add=[${labelsToAdd}]`);
+
+              if (dryRun) {
+                skipped++;
+                continue;
+              }
+
+              // Remove failure labels.
+              for (const label of labelsToRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo:  context.repo.repo,
+                    issue_number: num,
+                    name: label,
+                  });
+                } catch (err) {
+                  core.warning(`Could not remove label "${label}" from #${num}: ${err.message}`);
+                }
+              }
+
+              // Add restore labels.
+              if (labelsToAdd.length > 0) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo:  context.repo.repo,
+                    issue_number: num,
+                    labels: labelsToAdd,
+                  });
+                } catch (err) {
+                  core.warning(`Could not add labels to #${num}: ${err.message}`);
+                }
+              }
+
+              // Post a recovery comment so there's a clear audit trail.
+              try {
+                const isPR = Boolean(item.pull_request);
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo:  context.repo.repo,
+                  issue_number: num,
+                  body:
+                    `🔄 **OpenRouter key updated — reprocessing**\n\n` +
+                    `The \`OPENROUTER_API_KEY\` secret was refreshed and the key is now valid.\n\n` +
+                    `- **Removed:** ${labelsToRemove.map(l => `\`${l}\``).join(', ') || '_none_'}\n` +
+                    `- **Added:** ${labelsToAdd.map(l => `\`${l}\``).join(', ') || '_none_'}\n` +
+                    `- **Probe:** ${probeDetail}\n\n` +
+                    `This ${isPR ? 'PR' : 'issue'} has been re-queued for ` +
+                    `[OpenRouter Triage](.github/workflows/openrouter-triage.yml). ` +
+                    `It will be picked up on the next cron run (or you can trigger it manually).`,
+                });
+              } catch (err) {
+                core.warning(`Could not post recovery comment on #${num}: ${err.message}`);
+              }
+
+              healed++;
+            }
+
+            // ── Run summary ───────────────────────────────────────────────
+            const summaryRows = [
+              [{ data: 'Field', header: true }, { data: 'Value', header: true }],
+              ['Trigger', context.eventName],
+              ['Probe result', probeDetail],
+              ['Stalled items found', String(stalled.length)],
+              ['Items processed', String(toProcess.length)],
+              ['Items healed', String(healed)],
+              ['Items skipped (dry run)', String(skipped)],
+              ['Labels removed', REMOVE_LABELS.join(', ')],
+              ['Labels added', RESTORE_LABELS.join(', ')],
+              ['Dry run', String(dryRun)],
+            ];
+            await core.summary
+              .addHeading('OpenRouter Key Reset — Results')
+              .addTable(summaryRows)
+              .write();
+
+            core.info(`✅ Healed ${healed} item(s), skipped ${skipped} (dry run).`);
+
+      - name: Report key-missing (no reset performed)
+        if: steps.probe.outputs.key_valid != 'true'
+        uses: actions/github-script@v9.0.0
+        env:
+          KEY_PRESENT: ${{ steps.probe.outputs.key_present }}
+          PROBE_DETAIL: ${{ steps.probe.outputs.detail }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const keyPresent = process.env.KEY_PRESENT === 'true';
+            const detail     = process.env.PROBE_DETAIL;
+
+            await core.summary
+              .addHeading('OpenRouter Key Reset — No Action Taken')
+              .addRaw(
+                keyPresent
+                  ? `⚠️ Key is present but probe returned a non-200 status. No labels were reset.\n\n**Detail:** ${detail}`
+                  : `⚠️ \`OPENROUTER_API_KEY\` is not configured. Set it under **Settings → Secrets and variables → Actions** then re-run this workflow.`
+              )
+              .write();
+
+            core.warning(detail);
+    timeout-minutes: 15
