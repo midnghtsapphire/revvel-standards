@@ -41,8 +41,12 @@ async function api(path, options = {}) {
   try {
     return JSON.parse(text);
   } catch {
-    // A successful response that isn't JSON is a genuine anomaly — surface it
-    // instead of silently masking it as null (which callers read as "no match").
+    // allowError callers opted into graceful degradation — hand them null
+    // rather than throwing on an unexpected non-JSON body.
+    if (options.allowError) return null;
+    // Otherwise a successful response that isn't JSON is a genuine anomaly —
+    // surface it instead of silently masking it as null (which callers read as
+    // "no match").
     throw new Error(
       `GitHub API ${options.method || 'GET'} ${path} -> ${res.status} returned non-JSON: ${text.slice(0, 200)}`
     );

@@ -35,9 +35,14 @@ test('ok + valid JSON parses', async () => {
   assert.deepEqual(await api('/x'), { hello: 'world' });
 });
 
-test('ok + non-JSON throws (surfaced, not silently masked as null)', async () => {
+test('ok + non-JSON throws by default (surfaced, not silently masked as null)', async () => {
   stubFetch({ ok: true, status: 200, body: '<html>502 Bad Gateway</html>' });
   await assert.rejects(() => api('/x'), /returned non-JSON/);
+});
+
+test('ok + non-JSON + allowError returns null (caller opted into graceful degrade)', async () => {
+  stubFetch({ ok: true, status: 200, body: '<html>unexpected</html>' });
+  assert.equal(await api('/x', { allowError: true }), null);
 });
 
 test('non-ok + allowError returns null (graceful degrade, no throw on error page)', async () => {
