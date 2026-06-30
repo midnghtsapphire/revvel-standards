@@ -130,7 +130,7 @@ function countOf(v) {
  * runA/runB: { answer, citations, latency_ms, cost_usd }
  * adjudication: parsed adjudicator object (may be null -> fallback merge).
  */
-function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicatorLatencyMs = 0, adjudicatorCostUsd = null }) {
+function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicatorLatencyMs = 0, adjudicatorCostUsd = null, error = false }) {
   const adj = adjudication || {};
   const sourcesA = runA.citations || [];
   const sourcesB = runB.citations || [];
@@ -147,7 +147,10 @@ function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicato
     query_id: queryId,
     answer,
     citations,
-    error: false,
+    // A twin run is only error-free when BOTH arms returned; a failed arm is
+    // surfaced so eval/search-eval.js can quantify error-rate instead of the
+    // whole run vanishing.
+    error: Boolean(error),
     latency_ms,
     cost_usd,
     twin: {
@@ -230,17 +233,37 @@ if (require.main === module) {
     const userMsg = [{ role: 'system', content: SEARCH_SYSTEM }, { role: 'user', content: query }];
 
     console.error(`[twin] A=${models.modelA}  B=${models.modelB}  adj=${models.adjudicator}`);
-    // Two independent runs IN PARALLEL — the whole point of twin.
-    const [a, b] = await Promise.all([callModel(models.modelA, userMsg), callModel(models.modelB, userMsg)]);
+    // Two independent runs IN PARALLEL — allSettled so a single arm failing
+    // still yields an eval-compatible (error-flagged) report instead of losing
+    // the whole run.
+    const settled = await Promise.allSettled([callModel(models.modelA, userMsg), callModel(models.modelB, userMsg)]);
+    const okA = settled[0].status === 'fulfilled';
+    const okB = settled[1].status === 'fulfilled';
+    if (!okA) console.error(`[twin] model A (${models.modelA}) failed: ${settled[0].reason?.message}`);
+    if (!okB) console.error(`[twin] model B (${models.modelB}) failed: ${settled[1].reason?.message}`);
+    const a = okA ? settled[0].value : { content: '', latency_ms: 0, cost_usd: null };
+    const b = okB ? settled[1].value : { content: '', latency_ms: 0, cost_usd: null };
     const runA = { answer: a.content, citations: extractCitations(a.content), latency_ms: a.latency_ms, cost_usd: a.cost_usd };
     const runB = { answer: b.content, citations: extractCitations(b.content), latency_ms: b.latency_ms, cost_usd: b.cost_usd };
 
-    const adjMsg = [
-      { role: 'system', content: ADJUDICATOR_SYSTEM },
-      { role: 'user', content: `Question:\n${query}\n\n--- Answer A (${models.modelA}) ---\n${runA.answer}\n\n--- Answer B (${models.modelB}) ---\n${runB.answer}` },
-    ];
-    const adj = await callModel(models.adjudicator, adjMsg);
-    const adjudication = parseAdjudication(adj.content);
+    // Adjudicate only if at least one arm produced content.
+    let adjudication = null;
+    let adjLatency = 0;
+    let adjCost = null;
+    if (okA || okB) {
+      const adjMsg = [
+        { role: 'system', content: ADJUDICATOR_SYSTEM },
+        { role: 'user', content: `Question:\n${query}\n\n--- Answer A (${models.modelA}) ---\n${runA.answer}\n\n--- Answer B (${models.modelB}) ---\n${runB.answer}` },
+      ];
+      try {
+        const adj = await callModel(models.adjudicator, adjMsg);
+        adjudication = parseAdjudication(adj.content);
+        adjLatency = adj.latency_ms;
+        adjCost = adj.cost_usd;
+      } catch (e) {
+        console.error(`[twin] adjudicator (${models.adjudicator}) failed: ${e.message}`);
+      }
+    }
 
     const result = buildTwinResult({
       queryId: 'cli-query',
@@ -248,12 +271,14 @@ if (require.main === module) {
       runA,
       runB,
       adjudication,
-      adjudicatorLatencyMs: adj.latency_ms,
-      adjudicatorCostUsd: adj.cost_usd,
+      adjudicatorLatencyMs: adjLatency,
+      adjudicatorCostUsd: adjCost,
+      error: !okA || !okB, // a twin needs both arms; a failed arm is a degraded (error) run
     });
     // Emit the eval-compatible report on stdout (pipe to a fixture, then run
     // `npm run eval:strategies ... --twin-adjudicated <file>`).
     console.log(JSON.stringify(buildTwinReport([result], models), null, 2));
+    if (!okA || !okB) process.exitCode = 1; // signal a degraded run without discarding the report
   })().catch((e) => {
     console.error('twin-search error:', e.message);
     process.exit(1);

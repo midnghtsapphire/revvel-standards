@@ -88,6 +88,19 @@ test('buildTwinResult uses adjudicator fields and emits the twin schema', () => 
   assert.deepEqual(r.twin.sources_a, ['https://a.com']);
 });
 
+test('buildTwinResult surfaces error state (so eval can measure error-rate)', () => {
+  const ok = { answer: 'a', citations: ['https://a.com'], latency_ms: 100, cost_usd: null };
+  const empty = { answer: '', citations: [], latency_ms: 0, cost_usd: null };
+  const models = { modelA: 'a', modelB: 'b', adjudicator: 'c' };
+  // default: error-free
+  assert.equal(buildTwinResult({ queryId: 'q', models, runA: ok, runB: ok, adjudication: null }).error, false);
+  // a failed arm -> error true, but a report is still produced
+  const degraded = buildTwinResult({ queryId: 'q', models, runA: ok, runB: empty, adjudication: null, error: true });
+  assert.equal(degraded.error, true);
+  assert.equal(degraded.query_id, 'q');
+  assert.deepEqual(degraded.citations, ['https://a.com']); // surviving arm's sources still surface
+});
+
 test('buildTwinResult falls back when adjudication is null (overlap + union)', () => {
   const runA = { answer: 'a', citations: ['https://a.com'], latency_ms: 1000, cost_usd: null };
   const runB = { answer: 'b', citations: ['https://b.com'], latency_ms: 1200, cost_usd: null };
