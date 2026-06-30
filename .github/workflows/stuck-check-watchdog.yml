@@ -42,6 +42,8 @@ jobs:
             
             // Find issues with wr:checking label
             const { data: checkingIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               state: 'open',
               labels: 'wr:checking',
               per_page: 50
@@ -49,6 +51,8 @@ jobs:
             
             // Find issues with issue:in-progress label
             const { data: inProgressIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               state: 'open',
               labels: 'issue:in-progress',
               per_page: 50
@@ -56,6 +60,8 @@ jobs:
             
             // Find issues with lifecycle:stuck label
             const { data: lifecycleStuckIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               state: 'open',
               labels: 'lifecycle:stuck',
               per_page: 50
@@ -114,6 +120,8 @@ jobs:
               
               // Check if PR exists linked to issue
               const { data: relatedPRs } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 state: 'all',
                 per_page: 50
               });
