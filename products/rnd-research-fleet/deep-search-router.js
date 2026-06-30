@@ -115,35 +115,37 @@ async function deepSearch(query, profileName = 'deep_search') {
   return result;
 }
 
-// CLI
-const query = process.argv.slice(2).join(' ');
-const profile = process.argv[2] === '--profile' ? process.argv[3] : null;
-const actualQuery = profile ? process.argv.slice(4).join(' ') : query;
+// CLI — guarded so the module can be safely required (e.g. by twin-search.js)
+// without executing a search on import.
+if (require.main === module) {
+  const query = process.argv.slice(2).join(' ');
+  const profile = process.argv[2] === '--profile' ? process.argv[3] : null;
+  const actualQuery = profile ? process.argv.slice(4).join(' ') : query;
 
-if (!actualQuery) {
-  console.log(`
+  if (!actualQuery) {
+    console.log(`
 🔬 Deep Search Router
 
 Usage:
   node deep-search-router.js "your research question"
   node deep-search-router.js --profile market "your question"
-  
+
 Profiles:
   deep_search (default) - DOE, TRIZ, MEErP, LCA, BNAT
-  market_research       - TAM, competitors, trends  
+  market_research       - TAM, competitors, trends
   technical            - Feasibility, architecture
 
 Models:
   Primary: anthropic/claude-3.5-sonnet
   Fallback: openrouter/fusion
 `);
-  process.exit(0);
-}
+    process.exit(0);
+  }
 
-deepSearch(actualQuery, profile || 'deep_search')
-  .catch(e => {
+  deepSearch(actualQuery, profile || 'deep_search').catch((e) => {
     console.error('❌ Error:', e.message);
     process.exit(1);
   });
+}
 
-module.exports = { deepSearch, callOpenRouter, ROUTING_PROFILES };
+module.exports = { deepSearch, callOpenRouter, ROUTING_PROFILES, MASTER_PROMPT };
