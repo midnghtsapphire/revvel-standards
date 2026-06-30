@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node perplexity-research.js",
     "deep-search": "node deep-search-router.js",
+    "orchestrate": "node orchestrator.js",
     "persona": "node persona-loader.js",
     "install-all": "./install.sh",
     "setup": "node auto-github-join.js",
