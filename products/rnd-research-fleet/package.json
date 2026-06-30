@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node perplexity-research.js",
     "deep-search": "node deep-search-router.js",
+    "twin:search": "node twin-search.js",
     "persona": "node persona-loader.js",
     "install-all": "./install.sh",
     "setup": "node auto-github-join.js",

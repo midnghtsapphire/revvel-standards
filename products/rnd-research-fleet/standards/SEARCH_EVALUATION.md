@@ -280,6 +280,35 @@ adjudication quality and zero unsupported-claim flags. (Against the already-stro
 baseline the same twin run scores `tune_twin`, since its rubric edge there is
 below the keep threshold - exactly the kind of nuance this report surfaces.)
 
+### Running the twin LIVE (real API)
+
+`twin-search.js` is the live runner. It sends the query to two independent models
+in parallel, adjudicates/synthesizes a source-backed answer, and prints a report
+in the twin JSON schema above — so its output feeds straight into the offline
+comparator. Requires `OPENROUTER_API_KEY` (this is the product's paid search lane,
+not the credit-free BIOME crew).
+
+```bash
+cd products/rnd-research-fleet
+
+# Live twin run -> capture as a fixture
+OPENROUTER_API_KEY=... node twin-search.js "your research question" > /tmp/twin-live.json
+# (override models if desired)
+#   TWIN_MODEL_A=openai/gpt-4o-search-preview TWIN_MODEL_B=anthropic/claude-3.5-sonnet \
+#   TWIN_ADJUDICATOR=openai/gpt-4o node twin-search.js "..."
+
+# Then score it against Fable/baseline with the same comparator:
+node eval/search-eval.js \
+  --fixtures eval/fixtures/queries.json \
+  --baseline eval/fixtures/baseline.example.json \
+  --fable    eval/fixtures/fable.example.json \
+  --twin-adjudicated /tmp/twin-live.json \
+  --md /tmp/strategy-report.md
+```
+
+The live run still has to **earn `keep_twin`** on the comparator before it becomes
+the default — the runner produces the data; the eval makes the call.
+
 ### Twin run JSON schema (per result)
 
 ```json
