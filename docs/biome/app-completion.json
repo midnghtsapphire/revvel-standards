@@ -1,0 +1,15 @@
+{
+  "schema": "biome-app-completion/v1",
+  "generated_at": "2026-06-30T00:00:00Z",
+  "credit_free": true,
+  "base_url": "https://revvel-standards.vercel.app",
+  "overall": "all-testable-live",
+  "summary": {
+    "total": 0,
+    "live": 0,
+    "unreachable": 0,
+    "no_link": 0,
+    "external": 0
+  },
+  "apps": []
+}

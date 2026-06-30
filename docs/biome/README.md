@@ -33,6 +33,7 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 | `biome-medic` | macrophage (immune cell) | every 6h | Re-surfaces stuck items (`self-heal` label + comment); when AI lanes are offline, clears dead `openrouter:needs-key` blocks. Storm-safe; never deletes content. |
 | `biome-homeostat` | homeostasis regulator | every 6h | Detects missing AI keys (the Doppler-wipe case); posts ONE consolidated, deduped status note and auto-resolves it when keys return. No `needs-human` spam. |
 | `biome-sheaf` | connective tissue | hourly | Glues every worker's local section into `biome-status.json` + `biome-status.html` and commits them (single committer — no commit races). |
+| `biome-inspector` | proprioception (is it alive?) | every 6h | HTTP-checks every app's live Vercel URL from `docs/app-deployments.yml` (2xx = testable-live), publishes `app-completion.json` (+ `.html`), and files a deduped worklist of missing/unreachable projects so they get finished. Enforces DEFINITION_OF_DONE #1. |
 
 ## The loop (detect → remediate → monitor → reset)
 
@@ -43,15 +44,21 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 3. **Regulate** — `biome-homeostat` keeps the crew "healthy" even with AI lanes
    offline and surfaces a single, calm status note.
 4. **Monitor** — `biome-sheaf` publishes the glued status feed every hour.
-5. **Reset** — incidents/status notes auto-resolve (close) when the fleet recovers;
-   nothing is force-deleted.
+5. **Inspect** — `biome-inspector` HTTP-checks every app's live Vercel URL, publishes
+   the completion scoreboard, and files a worklist of projects that aren't
+   testable-live yet so the loop drives them to done.
+6. **Reset** — incidents/status notes/worklists auto-resolve (close) when the fleet
+   recovers; nothing is force-deleted.
 
 ## The monitor feed (for Lovable)
 
 `biome-sheaf` commits a stable, machine-readable feed:
 
-- `docs/biome/biome-status.json` — schema `biome-status/v1`
+- `docs/biome/biome-status.json` — schema `biome-status/v1` (fleet health)
 - `docs/biome/biome-status.html` — self-contained human view
+- `docs/biome/app-completion.json` — schema `biome-app-completion/v1` (which apps are
+  testable-live right now — written by `biome-inspector`)
+- `docs/biome/app-completion.html` — self-contained human view
 
 Lovable (or any external monitor) can poll the raw JSON, e.g.:
 
