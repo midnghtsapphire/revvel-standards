@@ -149,10 +149,12 @@ node auto-github-join.js
 
 You will need:
 - A **free GitHub account** — create one at https://github.com/join
-- A **GitHub personal access token** (classic, `repo` scope):
+- A **GitHub personal access token** (classic) with the `repo` and
+  `workflow` scopes (add `admin:org` only if you fork into an
+  organization rather than your personal account):
   1. Go to https://github.com/settings/tokens/new
   2. Note: any name (e.g. `rnd-fleet`)
-  3. Scope: check `repo`
+  3. Scopes: check `repo` and `workflow` (and `admin:org` for org forks)
   4. Click **Generate token** and copy it
 
 When prompted, paste your token. The agent will:

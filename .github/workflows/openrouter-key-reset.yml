@@ -85,7 +85,7 @@ jobs:
             echo "detail=HTTP 200 — key valid, ${MODEL_COUNT} models available." >> "$GITHUB_OUTPUT"
             echo "✅ OpenRouter key is valid (${MODEL_COUNT} models)."
           else
-            BODY=$(head -c 400 /tmp/or-probe.json || true)
+            BODY=$(head -c 400 /tmp/or-probe.json | tr '\n' ' ' || true)
             echo "key_valid=false" >> "$GITHUB_OUTPUT"
             echo "detail=HTTP ${HTTP_STATUS} — key probe failed. Body: ${BODY}" >> "$GITHUB_OUTPUT"
             echo "::warning::OpenRouter key probe returned HTTP ${HTTP_STATUS} — labels will NOT be reset."
