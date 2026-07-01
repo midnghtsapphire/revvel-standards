@@ -160,7 +160,7 @@ jobs:
               const labelNames = labels.map(l => l.name);
               const updatedAt = new Date(pr.updated_at);
               const age = now - updatedAt;
-              const { data: reviews } = await github.rest.pulls.listReviews({
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
                 owner,
                 repo,
                 pull_number: prNumber,
@@ -168,10 +168,14 @@ jobs:
               });
               const latestHeadReviewByUser = new Map();
               for (const review of reviews) {
-                if (!review.user?.login || review.state === 'COMMENTED' || review.commit_id !== pr.head.sha) continue;
+                if (!review.user?.login) continue;
+                if (review.state === 'COMMENTED') continue;
+                if (review.commit_id !== pr.head.sha) continue;
+                const reviewTimestamp = review.submitted_at || review.updated_at;
+                if (!reviewTimestamp) continue;
                 const existing = latestHeadReviewByUser.get(review.user.login);
-                const submittedAt = new Date(review.submitted_at || review.updated_at || 0);
-                const existingAt = existing ? new Date(existing.submitted_at || existing.updated_at || 0) : null;
+                const submittedAt = new Date(reviewTimestamp);
+                const existingAt = existing ? new Date(existing.submitted_at || existing.updated_at) : null;
                 if (!existing || submittedAt >= existingAt) {
                   latestHeadReviewByUser.set(review.user.login, review);
                 }

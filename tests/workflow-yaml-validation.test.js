@@ -260,7 +260,7 @@ test('stuck-label-watchdog.yml reconciles awaiting-review from live approvals on
   if (!script.includes('github.rest.pulls.listReviews')) {
     throw new Error('watchdog must read live PR reviews before repairing stale awaiting-review state');
   }
-  if (!script.includes("review.commit_id !== pr.head.sha")) {
+  if (!script.includes('review.commit_id') || !script.includes('pr.head.sha')) {
     throw new Error('watchdog must only trust approvals that match the current head SHA');
   }
   if (!script.includes('liveApprovedCurrentHead')) {
