@@ -254,7 +254,14 @@ fix: |
   func (k *KillSwitch) Check(ctx context.Context) error {
     if !k.enabled.Load() {
       return ErrKillSwitchActivated
-    }
+Restructure to separate ACTUAL market research from VEINS-capability-dependent strategy:
+
+1. Move pure market research (pain points, budget, decision makers, keyword targets) to a 'Market Context' section that is independent of VEINS.
+2. Create a separate 'Go-To-Market (Conditional on VEINS Validation)' section that explicitly states: 'The following strategy is CONTINGENT on verification of VEINS capabilities per the Requirements section.'
+3. Add a 'Market Validation Risks' subsection that lists what happens if VEINS capabilities are less capable than assumed (e.g., 'If detection latency is >5 seconds instead of sub-1s, positioning must shift to batch-healing market').
+4. Do NOT publish positioning or marketing claims until VEINS is validated to meet the assumptions.
+
+Alternatively, if you are confident in VEINS capabilities, provide the validation evidence in an earlier section.
     return nil
   }
 commit_message: "feat(safety): implement kill switch for VEINS autonomous operations"
