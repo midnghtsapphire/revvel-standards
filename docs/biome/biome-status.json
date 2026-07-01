@@ -1,31 +1,87 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-01T15:00:42.203Z",
+  "generated_at": "2026-07-01T21:32:53.406Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "67/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 67,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28522250657,
-            "name": "Subscription & Trial Tracker",
-            "path": ".github/workflows/subscription-tracker.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28522250657",
+            "id": 28549135860,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549135860",
             "conclusion": "failure"
           },
           {
-            "id": 28520958189,
-            "name": "BIOME Inspector",
-            "path": ".github/workflows/biome-inspector.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28520958189",
+            "id": 28549131924,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549131924",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549126828,
+            "name": "OpenRouter Assignee — First Line of Sight",
+            "path": ".github/workflows/openrouter-assignee.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549126828",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549114220,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549114220",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549114106,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549114106",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549112673,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549112673",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549112511,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549112511",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549112172,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549112172",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549110862,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549110862",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28549110803,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28549110803",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +107,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28521910322"
+        "last_run": null
       }
     },
     "sheaf": {
