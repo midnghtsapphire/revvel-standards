@@ -1,41 +1,58 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-06-30T00:00:00Z",
+  "generated_at": "2026-07-01T20:35:33.921Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "bootstrap — awaiting first scheduled scan",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
-        "total_runs": 0,
+        "failed_runs": 1,
+        "total_runs": 100,
         "stuck_issues": 0
       },
-      "detail": {}
+      "detail": {
+        "recent_failures": [
+          {
+            "id": 28546068082,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28546068082",
+            "conclusion": "failure"
+          }
+        ],
+        "stuck": []
+      }
     },
     "homeostat": {
       "status": "healthy",
-      "summary": "bootstrap — AI-lane state reported on first run",
+      "summary": "AI lanes offline (OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY unset) — credit-free rule-based lanes active",
       "counts": {
         "ai_keys_present": 0,
-        "ai_keys_missing": 0
+        "ai_keys_missing": 3
       },
       "detail": {
-        "ai_lanes": "unknown"
+        "ai_lanes": "offline",
+        "present": [],
+        "missing": [
+          "OPENROUTER_API_KEY",
+          "ANTHROPIC_API_KEY",
+          "PERPLEXITY_API_KEY"
+        ]
       }
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28542218411"
       }
     },
     "sheaf": {
       "status": "healthy",
-      "summary": "bootstrap snapshot — replaced by first hourly run",
+      "summary": "feed generated",
       "counts": {
         "workers": 3
       },
