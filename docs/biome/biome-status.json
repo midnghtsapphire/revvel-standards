@@ -1,28 +1,37 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-06-30T00:00:00Z",
+  "generated_at": "2026-07-01T07:31:10.594Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "bootstrap — awaiting first scheduled scan",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
         "failed_runs": 0,
-        "total_runs": 0,
+        "total_runs": 100,
         "stuck_issues": 0
       },
-      "detail": {}
+      "detail": {
+        "recent_failures": [],
+        "stuck": []
+      }
     },
     "homeostat": {
       "status": "healthy",
-      "summary": "bootstrap — AI-lane state reported on first run",
+      "summary": "AI lanes offline (OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY unset) — credit-free rule-based lanes active",
       "counts": {
         "ai_keys_present": 0,
-        "ai_keys_missing": 0
+        "ai_keys_missing": 3
       },
       "detail": {
-        "ai_lanes": "unknown"
+        "ai_lanes": "offline",
+        "present": [],
+        "missing": [
+          "OPENROUTER_API_KEY",
+          "ANTHROPIC_API_KEY",
+          "PERPLEXITY_API_KEY"
+        ]
       }
     },
     "medic": {
@@ -35,7 +44,7 @@
     },
     "sheaf": {
       "status": "healthy",
-      "summary": "bootstrap snapshot — replaced by first hourly run",
+      "summary": "feed generated",
       "counts": {
         "workers": 3
       },
