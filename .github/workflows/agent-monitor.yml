@@ -65,7 +65,7 @@ jobs:
             echo "jules=skipped" >> $GITHUB_OUTPUT
           else
             response=$(curl -s -o /dev/null -w "%{http_code}" "https://jules.google.com/api/health" \
-              -H "Authorization: ${JULES_API_KEY}" \
+              -H "Authorization: Bearer ${JULES_API_KEY}" \
               2>&1 || echo "000")
             if [[ "$response" == "200" ]]; then
               echo "jules=healthy" >> $GITHUB_OUTPUT
@@ -196,9 +196,9 @@ jobs:
       - name: Close resolved agent-failure issues
         run: |
           # Find open AGENT-FAILURE issues and close them now that agents are healthy
-          OPEN_ISSUES=$(gh search issues --repo "${{ github.repository }}" \
-            --state open --json number \
-            -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" \
+          OPEN_ISSUES=$(gh issue list --repo "${{ github.repository }}" \
+            --state open --search "[AGENT-FAILURE] in:title" --json number \
+            --jq '.[].number' \
             2>/dev/null || echo "")
 
           if [[ -z "$OPEN_ISSUES" ]]; then
