@@ -252,6 +252,22 @@ test('stuck-label-watchdog.yml clears lifecycle:stuck once a PR recovers', () =>
   }
 });
 
+test('stuck-label-watchdog.yml reconciles awaiting-review from live approvals on the current head SHA', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  if (!script.includes('github.rest.pulls.listReviews')) {
+    throw new Error('watchdog must read live PR reviews before repairing stale awaiting-review state');
+  }
+  if (!script.includes('review.commit_id') || !script.includes('pr.head.sha')) {
+    throw new Error('watchdog must only trust approvals that match the current head SHA');
+  }
+  if (!script.includes('liveApprovedCurrentHead')) {
+    throw new Error('watchdog must derive approval state from live reviews on the current head');
+  }
+});
+
 test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
