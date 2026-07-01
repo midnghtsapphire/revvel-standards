@@ -733,5 +733,35 @@ test('self-healing.yml routes step outputs through env and not bare run interpol
   }
 });
 
+test('fleet-controller.yml feed push survives branch protection (API fallback, fail-open)', () => {
+  // Regression for job 84418694523: bare `git push` to main was rejected by branch
+  // protection ("Changes must be made through a pull request — GH013"). The feed
+  // step must use `git push || { gh api ... }` so it (a) retries via the Contents
+  // API when the push is blocked and (b) exits 0 either way (fail-open design).
+  const filePath = path.join(WORKFLOWS_DIR, 'fleet-controller.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs['schedule-grid'].steps;
+
+  const feedStep = steps.find((s) => s.name === 'Commit the monitor feed if it changed');
+  if (!feedStep) throw new Error('fleet-controller: "Commit the monitor feed if it changed" step not found');
+
+  const run = feedStep.run || '';
+
+  // Must still contain git push (primary path)
+  if (!run.includes('git push')) {
+    throw new Error('fleet-controller feed step must attempt git push as the primary path');
+  }
+
+  // Must have a gh-api fallback so a branch-protection rejection does not exit non-zero
+  if (!run.includes('gh api')) {
+    throw new Error('fleet-controller feed step must fall back to gh api repos/.../contents/... when git push is blocked');
+  }
+
+  // The push must be guarded by `git push && ... || {` so the fallback fires instead of crashing
+  if (!/git push\s*&&[^|]*\|\|/.test(run.replace(/\n/g, ' '))) {
+    throw new Error('fleet-controller git push must be followed by && ... || fallback to avoid non-zero exit on branch-protection rejection');
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
