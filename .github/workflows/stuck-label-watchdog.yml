@@ -160,6 +160,26 @@ jobs:
               const labelNames = labels.map(l => l.name);
               const updatedAt = new Date(pr.updated_at);
               const age = now - updatedAt;
+              const { data: reviews } = await github.rest.pulls.listReviews({
+                owner,
+                repo,
+                pull_number: prNumber,
+                per_page: 100,
+              });
+              const latestHeadReviewByUser = new Map();
+              for (const review of reviews) {
+                if (!review.user?.login || review.state === 'COMMENTED' || review.commit_id !== pr.head.sha) continue;
+                const existing = latestHeadReviewByUser.get(review.user.login);
+                const submittedAt = new Date(review.submitted_at || review.updated_at || 0);
+                const existingAt = existing ? new Date(existing.submitted_at || existing.updated_at || 0) : null;
+                if (!existing || submittedAt >= existingAt) {
+                  latestHeadReviewByUser.set(review.user.login, review);
+                }
+              }
+              const currentHeadReviewStates = Array.from(latestHeadReviewByUser.values()).map(review => review.state);
+              const liveApprovedCurrentHead =
+                currentHeadReviewStates.includes('APPROVED') &&
+                !currentHeadReviewStates.includes('CHANGES_REQUESTED');
 
               // Fix conflicting labels: approved + needs-action
               if (labelNames.includes('approved') && labelNames.includes('needs-action')) {
@@ -211,10 +231,18 @@ jobs:
                 continue;
               }
 
-              // Fix conflicting labels: awaiting-review + approved
-              if (labelNames.includes('awaiting-review') && labelNames.includes('approved')) {
+              // Fix stale/conflicting review labels when the current head is approved.
+              if (labelNames.includes('awaiting-review') && (labelNames.includes('approved') || liveApprovedCurrentHead)) {
                 try { await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'awaiting-review' }); } catch(e) {}
                 labelNames.splice(labelNames.indexOf('awaiting-review'), 1);
+                if (!labelNames.includes('approved')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['approved'] });
+                  labelNames.push('approved');
+                }
+                if (labelNames.includes('checks-passing') && !labelNames.includes('ready-to-merge')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['ready-to-merge'] });
+                  labelNames.push('ready-to-merge');
+                }
                 if (!labelNames.includes('lifecycle:stuck')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['lifecycle:stuck'] });
                   labelNames.push('lifecycle:stuck');
@@ -223,11 +251,11 @@ jobs:
                   pr,
                   'awaiting-review-approved',
                   '`awaiting-review` + `approved` conflict',
-                  'Removed `awaiting-review`; approval takes precedence until new commits invalidate it.',
-                  'Inspect review and synchronize event paths. If `awaiting-review` can be added after approval without a new commit/reopened event, patch that workflow path.'
+                  'Removed `awaiting-review` and restored the approval state from live reviews on the current head SHA; approval takes precedence until new commits invalidate it.',
+                  'Inspect review, auto-approve, and synchronize event paths. If `awaiting-review` can survive or be re-added after approval on the current head without a new commit/reopened event, patch that workflow path.'
                 );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: `🔍 **Watchdog:** Detected conflicting labels (\`awaiting-review\` + \`approved\`). Removed \`awaiting-review\` — approval takes precedence. Routed follow-up to agent repair issue #${repairIssue.number}.` });
+                  body: `🔍 **Watchdog:** Detected stale review state on an approved PR. Removed \`awaiting-review\` and restored approval on the current head SHA. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
@@ -292,7 +320,7 @@ jobs:
                 const stillStuck =
                   (labelNames.includes('approved') && labelNames.includes('needs-action')) ||
                   (labelNames.includes('checks-passing') && labelNames.includes('checks-failing')) ||
-                  (labelNames.includes('awaiting-review') && labelNames.includes('approved')) ||
+                  (labelNames.includes('awaiting-review') && (labelNames.includes('approved') || liveApprovedCurrentHead)) ||
                   (labelNames.includes('ready-to-merge') && !labelNames.includes('approved')) ||
                   (labelNames.includes('awaiting-review') && age > 24 * HOUR) ||
                   (labelNames.includes('checks-failing') && age > 12 * HOUR);
