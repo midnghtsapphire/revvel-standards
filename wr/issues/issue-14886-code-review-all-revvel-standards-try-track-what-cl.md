@@ -1,4 +1,4 @@
-# WR: [WR] code-review all revvel standards try track what claude code did?
+# WR: [WR] code-review all revvel standards try track what claude code did
 
 **Issue:** #14886  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -8,13 +8,12 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28529623907.md`
 
-# WR-Ready Research Packet: Code Review Standards & Claude Tracking
+## WR-Ready Research Packet: Code Review Standards & Claude Tracking
 
 ## 1. Executive Decision
 
