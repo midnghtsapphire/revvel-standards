@@ -25,6 +25,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       agents_status: ${{ steps.health.outputs.status }}
+      issues: ${{ steps.health.outputs.issues }}
     steps:
       - name: Check OpenRouter agent
         id: openrouter
@@ -55,15 +56,22 @@ jobs:
 
       - name: Check Jules agent
         id: jules
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
         run: |
-          # Test Jules API if available
-          response=$(curl -s -o /dev/null -w "%{http_code}" "https://jules.ai/api/health" \
-            2>&1 || echo "000")
-          
-          if [[ "$response" == "200" ]]; then
-            echo "jules=healthy" >> $GITHUB_OUTPUT
+          # Jules (Google) has no public REST health endpoint.
+          # Only check if a Jules API key is explicitly configured; otherwise skip.
+          if [ -z "${JULES_API_KEY}" ]; then
+            echo "jules=skipped" >> $GITHUB_OUTPUT
           else
-            echo "jules=unhealthy:$response" >> $GITHUB_OUTPUT
+            response=$(curl -s -o /dev/null -w "%{http_code}" "https://jules.google.com/api/health" \
+              -H "Authorization: ${JULES_API_KEY}" \
+              2>&1 || echo "000")
+            if [[ "$response" == "200" ]]; then
+              echo "jules=healthy" >> $GITHUB_OUTPUT
+            else
+              echo "jules=unhealthy:$response" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Compile health status
@@ -91,7 +99,8 @@ jobs:
             echo "status=healthy" >> $GITHUB_OUTPUT
           else
             echo "status=unhealthy" >> $GITHUB_OUTPUT
-            echo "issues=$(printf '; %s' "${UNHEALTHY[@]}")" >> $GITHUB_OUTPUT
+            ISSUES_STR=$(printf '%s; ' "${UNHEALTHY[@]}")
+            echo "issues=${ISSUES_STR%; }" >> $GITHUB_OUTPUT
           fi
 
   # Create WR if agents unhealthy
@@ -170,3 +179,35 @@ jobs:
           gh issue comment "$EXISTING" --body "⚠️ Agent health check still failing: $ISSUES"
           
           echo "✅ Updated existing WR #$EXISTING"
+
+  # Auto-close AGENT-FAILURE issues when all agents are healthy again
+  close-on-recovery:
+    needs: check-agent-health
+    if: needs.check-agent-health.outputs.agents_status == 'healthy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Close resolved agent-failure issues
+        run: |
+          # Find open AGENT-FAILURE issues and close them now that agents are healthy
+          OPEN_ISSUES=$(gh search issues --repo "${{ github.repository }}" \
+            --state open --json number \
+            -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" \
+            2>/dev/null || echo "")
+
+          if [[ -z "$OPEN_ISSUES" ]]; then
+            echo "No open AGENT-FAILURE issues to close."
+            exit 0
+          fi
+
+          for ISSUE_NUM in $OPEN_ISSUES; do
+            gh issue close "$ISSUE_NUM" \
+              --comment "✅ All monitored agents are healthy. Auto-closing this issue."
+            echo "✅ Closed issue #$ISSUE_NUM"
+          done
