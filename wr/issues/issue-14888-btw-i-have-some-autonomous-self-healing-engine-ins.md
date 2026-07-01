@@ -8,54 +8,68 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28530033096.md`
 
-# Executive Decision
+## Executive Decision
 
 **BLOCK**: This WR cannot proceed without critical documentation and safety controls. The VEINS autonomous self-healing engine poses significant operational risks without proper monitoring, documentation, and safeguards.
 
-## Critical Blockers
+### Critical Blockers
 1. **No verifiable documentation** for VEINS architecture or capabilities
 2. **Uncontrolled autonomous operations** creating work requests without oversight
 3. **Data loss risk** from AI agents (Grok/Claude) with deletion capabilities
 4. **Missing real-time monitoring** for autonomous system behaviors
 5. **Undocumented controller fleet** managing multiple orchestrators
 
-## Required Before Proceeding
+### Required Before Proceeding
 1. Provide repository URLs and documentation for VEINS system
 2. Implement kill switches and manual overrides for autonomous operations
 3. Deploy comprehensive monitoring dashboard with real-time alerts
 4. Document and secure all file operation permissions
 5. Create architecture diagrams for controller fleet hierarchy
 
-# Audience We Are Going After and Why
+## Audience We Are Going After and Why
 
-## Primary Target: Platform Engineering Teams
+### Primary Target: Platform Engineering Teams
 **Profile**: Mid-to-large enterprises (500+ engineers) running complex microservices architectures
 - **Pain Points**: Alert fatigue, manual incident response, multi-cloud orchestration complexity
 - **Budget**: $50K-500K annual for DevOps tooling
 - **Decision Makers**: VP Engineering, Platform Team Leads, SRE Directors
 
-## Why This Audience
+### Why This Audience
 1. **Urgent Need**: 70% report burnout from manual incident response (Source: 2024 State of DevOps Report)
 2. **Budget Available**: Platform teams have dedicated reliability budgets
 3. **Technical Sophistication**: Can evaluate and implement complex autonomous systems
 4. **Network Effects**: Success stories spread quickly in platform engineering communities
 
-## Secondary Audiences
+### Secondary Audiences
 - **Chaos Engineering Teams**: Need controlled failure injection with safety
 - **Multi-Cloud Architects**: Managing orchestrator sprawl across providers
 - **Compliance Teams**: Require audit trails for all automated actions
 
-# Marketing and SEO Plan
+## Marketing and SEO Plan
 
-## Content Strategy
+> **⚠️ Conditional on VEINS validation.** The positioning, messaging, and claims
+> below assume the VEINS capabilities (real-time detection, multi-orchestrator
+> control, autonomous healing) described in this document. Those capabilities are
+> currently UNVERIFIED — see "Factual Validation and Evidence Gaps". Do NOT
+> publish any of the claims below until each assumed capability is validated
+> against the "Build Requirements and Acceptance Gates" section.
 
-### Landing Pages (Priority Order)
+### Market Validation Risks
+- **If detection latency is >5s instead of sub-1s**: positioning must shift from
+  "real-time self-healing" to a batch/scheduled-remediation message.
+- **If multi-orchestrator support is not delivered**: drop the "Multi-Orchestrator
+  Control Plane" landing page and Kubernetes-only positioning applies.
+- **If safe rollback/audit trails are incomplete**: the "safety-first" and "Trust
+  but verify" messaging cannot be substantiated and must be removed.
+
+### Content Strategy
+
+#### Landing Pages (Priority Order)
 1. **"Autonomous Self-Healing for Platform Teams"**
    - Title: `Stop Fighting Fires: Autonomous Infrastructure That Heals Itself`
    - Meta: `VEINS autonomous healing engine detects and fixes issues before you wake up. Real-time monitoring, safe chaos engineering, multi-orchestrator control.`
@@ -69,22 +83,22 @@ Source packet: `docs/research-engine/run-28530033096.md`
    - Title: `Chaos Engineering Without the Chaos: Controlled Failure Injection`
    - Meta: `Test resilience safely with automated rollbacks, real-time monitoring, and audit trails. No more accidental production outages.`
 
-### SEO Keyword Targets
+#### SEO Keyword Targets
 - **High Intent**: "autonomous healing platform", "multi-orchestrator management", "self-healing infrastructure"
 - **Comparison**: "VEINS vs Kubernetes operators", "autonomous healing vs manual runbooks"
 - **Educational**: "how to implement self-healing systems", "chaos engineering best practices"
 
-### Content Calendar
+#### Content Calendar
 - Week 1-2: Technical architecture posts on self-healing patterns
 - Week 3-4: Case studies on prevented outages
 - Month 2: Comparison guides vs. manual approaches
 - Month 3: ROI calculator for autonomous operations
 
-# Competitor and GitHub Star Intelligence
+## Competitor and GitHub Star Intelligence
 
-## Direct Competitors
+### Direct Competitors
 
-### Established Players
+#### Established Players
 1. **Kubernetes Operators** (Native)
    - Stars: N/A (built-in)
    - Moat: Native integration, massive ecosystem
@@ -100,63 +114,63 @@ Source packet: `docs/research-engine/run-28530033096.md`
    - Moat: Enterprise features, compliance
    - Weakness: Expensive, chaos-focused only
 
-### Emerging Threats
+#### Emerging Threats
 - **OpenDevin/Aider**: AI code agents (8k+ stars)
 - **Crossplane**: Multi-cloud control plane (8.5k+ stars)
 
-## Differentiation Strategy
+### Differentiation Strategy
 1. **Integrated Platform**: Combine self-healing + chaos + monitoring (competitors do one)
 2. **Multi-Orchestrator**: Support beyond just Kubernetes
 3. **Safety First**: Audit trails and rollbacks built-in
 4. **Real-Time**: Sub-second detection and response
 
-# Chatter and Demand Signals
+## Chatter and Demand Signals
 
-## User Pain Points (From Research)
+### User Pain Points (From Research)
 1. **"I frigging don't want stuff deleted"** - Fear of autonomous systems
 2. **"It doesn't seem real time"** - Performance expectations not met
 3. **"How do we detect it?"** - Lack of observability
 4. **"Generate some watcher system"** - Clear demand for monitoring
 
-## Market Signals
+### Market Signals
 - **Growing Demand**: "AIOps" search volume up 40% YoY
 - **Community Activity**: r/devops discussions on automation fatigue
 - **Enterprise Adoption**: 15% using chaos engineering (Gartner 2023)
 - **Trust Deficit**: Fear of autonomous systems making destructive changes
 
-## Positioning Response
+### Positioning Response
 - Lead with **safety and observability** over automation
 - **"Trust but verify"** messaging
 - Demo rollback capabilities prominently
 - Show audit trails in all marketing materials
 
-# Factual Validation and Evidence Gaps
+## Factual Validation and Evidence Gaps
 
-## Critical Unknowns
+### Critical Unknowns
 
-### Technical Validation Needed
+#### Technical Validation Needed
 1. **VEINS Repository**: No URL or documentation provided
 2. **Performance Metrics**: No benchmarks for "real-time" claims
 3. **Architecture Details**: Controller fleet design undocumented
 4. **Integration Points**: How VEINS connects to orchestrators
 
-### Market Validation Gaps
+#### Market Validation Gaps
 1. **Customer Evidence**: No case studies or testimonials
 2. **ROI Metrics**: No data on prevented outages or time saved
 3. **Adoption Numbers**: No usage statistics available
 4. **Pricing Validation**: No competitor pricing analysis
 
-## Required Evidence Collection
+### Required Evidence Collection
 1. Benchmark VEINS response times vs. manual intervention
 2. Document 3-5 prevented outage scenarios with metrics
 3. Survey platform teams on willingness to pay
 4. Analyze competitor pricing and feature matrices
 
-# Build Requirements and Acceptance Gates
+## Build Requirements and Acceptance Gates
 
-## MVP Requirements
+### MVP Requirements
 
-### Core Features
+#### Core Features
 1. **Real-Time Monitoring Dashboard**
    - Sub-second event detection
    - Visual system health indicators
@@ -172,7 +186,7 @@ Source packet: `docs/research-engine/run-28530033096.md`
    - Unified control plane API
    - Cross-orchestrator workflows
 
-### Acceptance Criteria
+#### Acceptance Criteria
 - [ ] 99.9% uptime for monitoring system
 - [ ] <1 second detection latency
 - [ ] Zero data loss from autonomous actions
@@ -180,15 +194,15 @@ Source packet: `docs/research-engine/run-28530033096.md`
 - [ ] Manual override responds in <5 seconds
 - [ ] Supports 3+ orchestrator types
 
-## Technical Requirements
+### Technical Requirements
 - **Languages**: Go (performance), Python (AI integrations)
 - **Infrastructure**: Kubernetes-native, multi-region capable
 - **Storage**: Time-series DB for metrics, S3 for audit logs
 - **Security**: SOC2 compliance, encryption at rest/transit
 
-# Code Review Agent Packet
+## Code Review Agent Packet
 
-## For Bito AI
+### For Bito AI
 ```
 Review Focus: Safety and monitoring implementation
 Key Areas:
@@ -198,7 +212,7 @@ Key Areas:
 4. Ensure comprehensive logging for audit trails
 ```
 
-## For OpenRouter
+### For OpenRouter
 ```
 Security Review Requirements:
 - Scan for hardcoded credentials or API keys
@@ -207,7 +221,7 @@ Security Review Requirements:
 - Validate input sanitization for chaos toggles
 ```
 
-## For Coderabbit
+### For Coderabbit
 ```
 Architecture Review:
 1. Verify separation of concerns between VEINS and orchestrators
@@ -216,7 +230,7 @@ Architecture Review:
 4. Ensure proper abstraction layers
 ```
 
-## For Ralph Loop
+### For Ralph Loop
 ```
 Performance Review:
 - Benchmark real-time detection latency
@@ -225,9 +239,9 @@ Performance Review:
 - Validate database query optimization
 ```
 
-# Automatic Fix and Commit Queue
+## Automatic Fix and Commit Queue
 
-## Priority 1: Safety Controls
+### Priority 1: Safety Controls
 ```yaml
 file: src/veins/safety/kill_switch.go
 fix: |
@@ -239,35 +253,27 @@ fix: |
   )
   
   type KillSwitch struct {
-    enabled atomic.Bool
+    activated atomic.Bool
   }
   
   func (k *KillSwitch) Enable() {
-    k.enabled.Store(true)
+    k.activated.Store(true)
   }
   
   func (k *KillSwitch) Disable() {
-    k.enabled.Store(false)
-  }
+    k.activated.Store(false)
   }
   
   func (k *KillSwitch) Check(ctx context.Context) error {
-    if !k.enabled.Load() {
+    if k.activated.Load() {
       return ErrKillSwitchActivated
-Restructure to separate ACTUAL market research from VEINS-capability-dependent strategy:
-
-1. Move pure market research (pain points, budget, decision makers, keyword targets) to a 'Market Context' section that is independent of VEINS.
-2. Create a separate 'Go-To-Market (Conditional on VEINS Validation)' section that explicitly states: 'The following strategy is CONTINGENT on verification of VEINS capabilities per the Requirements section.'
-3. Add a 'Market Validation Risks' subsection that lists what happens if VEINS capabilities are less capable than assumed (e.g., 'If detection latency is >5 seconds instead of sub-1s, positioning must shift to batch-healing market').
-4. Do NOT publish positioning or marketing claims until VEINS is validated to meet the assumptions.
-
-Alternatively, if you are confident in VEINS capabilities, provide the validation evidence in an earlier section.
+    }
     return nil
   }
 commit_message: "feat(safety): implement kill switch for VEINS autonomous operations"
 ```
 
-## Priority 2: Real-Time Monitoring
+### Priority 2: Real-Time Monitoring
 ```yaml
 file: monitoring/veins_watcher.yaml
 fix: |
@@ -297,6 +303,8 @@ file: src/veins/audit/logger.go
 fix: |
   package audit
   
+  import "time"
+  
   type Event struct {
     Timestamp time.Time
     Actor     string
@@ -306,7 +314,15 @@ fix: |
     Metadata  map[string]interface{}
   }
   
-  func LogDeletion(actor, resource string) {
+  type Logger struct {
+    writer EventWriter
+  }
+  
+  type EventWriter interface {
+    Write(event Event) error
+  }
+  
+  func (l *Logger) LogDeletion(actor, resource string) error {
     event := Event{
       Timestamp: time.Now(),
       Actor:     actor,
@@ -314,7 +330,7 @@ fix: |
       Resource:  resource,
       Result:    "PENDING_APPROVAL",
     }
-    auditLog.Write(event)
+    return l.writer.Write(event)
   }
 commit_message: "feat(audit): implement comprehensive audit logging for all VEINS actions"
 ```
@@ -339,30 +355,29 @@ fix: |
 commit_message: "docs: add comprehensive VEINS architecture documentation"
 ```
 
-# Labels to Apply
+## Labels to Apply
 
-## Priority Labels
+### Priority Labels
 - 🔴 `blocked-safety`: Missing critical safety controls
 - 🔴 `blocked-documentation`: No architecture documentation
 - 🔴 `blocked-monitoring`: No real-time visibility
 
-## Risk Labels
+### Risk Labels
 - `risk-data-loss`: Uncontrolled deletion capabilities
 - `risk-autonomous`: Self-modifying system without oversight
 - `risk-cascade`: Multi-orchestrator trigger potential
 
-## Technical Labels
+### Technical Labels
 - `needs-architecture-review`: Undocumented system design
 - `needs-security-review`: Elevated permissions without audit
 - `needs-performance-baseline`: No metrics for "real-time" claims
 
-## Process Labels
+### Process Labels
 - `requires-poc`: Need proof of concept before proceeding
 - `requires-customer-validation`: No evidence of market need
 - `epic`: Multi-sprint implementation required
----
 
-**WR Status:** 🟡 In Progress  
+---
 
 ## Issue Context
 
@@ -451,12 +466,12 @@ _No response_
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+- [x] Deep market research — see "Audience We Are Going After and Why" and "Marketing and SEO Plan"
+- [ ] BOM — N/A — software research document, no bill of materials
+- [x] Community chatter — see "Chatter and Demand Signals"
+- [x] Competitor analysis — see "Competitor and GitHub Star Intelligence"
+- [x] Domain strategy — see "Marketing and SEO Plan" (SEO keywords, landing pages)
+- [ ] Monetization — pending Jules refinement; only competitor pricing captured so far
 
 ## Executive Summary
 
