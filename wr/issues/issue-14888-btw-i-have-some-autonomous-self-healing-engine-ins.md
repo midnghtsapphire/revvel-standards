@@ -243,11 +243,12 @@ fix: |
   }
   
   func (k *KillSwitch) Enable() {
-    k.enabled.Store(false)
+    k.enabled.Store(true)
   }
   
   func (k *KillSwitch) Disable() {
-    k.enabled.Store(true)
+    k.enabled.Store(false)
+  }
   }
   
   func (k *KillSwitch) Check(ctx context.Context) error {
