@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   compliance-check:
@@ -49,7 +50,7 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            github.rest.createIssue({
+            github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: "⚠️ Compliance Check Failed",
@@ -62,7 +63,7 @@ jobs:
             const fs = require('fs');
             const content = fs.readFileSync('docs/COMPLIANCE_TRACKER.md', 'utf8');
             if (content.includes('URGENT') || content.includes('CRITICAL')) {
-              github.rest.createIssue({
+              github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: "🔴 URGENT: Compliance Item Detected",
