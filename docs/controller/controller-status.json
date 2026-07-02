@@ -1,73 +1,37 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-02T17:41:43.125Z",
+  "generated_at": "2026-07-02T18:21:13.283Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 4,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 7,
-    "running": 4,
+    "total": 4,
+    "running": 1,
     "queued": 3,
     "done": 0,
-    "healthy": 4,
+    "healthy": 1,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 4,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28609985031,
+      "id": 28612301699,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28609985031",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28612301699",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 12125,
-      "since_update_ms": 4125,
+      "age_ms": 8283,
+      "since_update_ms": 4283,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 28609152251,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28609152251",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 829125,
-      "since_update_ms": 809125,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 28609114981,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28609114981",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 894125,
-      "since_update_ms": 828125,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 28609110843,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28609110843",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 900125,
-      "since_update_ms": 824125,
-      "reason": "running within budget",
-      "protected": false
     },
     {
       "id": 28557728966,
