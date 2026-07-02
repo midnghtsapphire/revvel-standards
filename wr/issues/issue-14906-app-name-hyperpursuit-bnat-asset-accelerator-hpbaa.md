@@ -235,7 +235,17 @@ risk_labels:
 
 production-app
 
-### PDF pipeline batch
+Replace all proposed illegal data collection methods with legal alternatives:
+
+**BNAT Asset Research & Discovery (Legal Alternative)**
+- Public API integrations (Yahoo Finance, Alpha Vantage, IEX Cloud)
+- SEC EDGAR database for company filings
+- Public GitHub repositories and open-source projects
+- Published academic research and whitepapers
+- Licensed commercial data providers (FactSet, Bloomberg Terminal, Refinitiv)
+- User-provided data and manual input
+
+Remove: torrents, deep web scraping, 'secret data sources', unauthorized cache harvesting.
 
 None
 
@@ -332,7 +342,7 @@ By leveraging the HyperPursuit BNAT Asset Accelerator, Audrey Evans can effectiv
 ### Required Bundle
 
 _No response_
-
+Remove or reframe the financial promise. Change 'help Audrey Evans achieve her goal of amassing $10M+' to 'provide research, analytics, and investment insights to support wealth management decisions' (with a disclaimer that past performance does not guarantee future results). Add a compliance section stating: 'This application provides analysis tools only and is not financial advice.'
 ### Definition of Done
 
 _No response_
@@ -342,7 +352,7 @@ _No response_
 _No response_
 
 ### Explicit Exclusions
-
+Either: (a) Acknowledge this is a single-user custom tool and adjust scope/complexity accordingly, or (b) Define a broader market and create a go-to-market strategy. Add sections for: 'Market Size Estimate', 'Pricing Model', 'Competitive Positioning', and 'User Acquisition Strategy.'
 _No response_
 
 ### Delivery Shape
@@ -409,4 +419,4 @@ N/A — pending Jules refinement
 
 ## Risks
 
-N/A — pending Jules refinement
+If proceeding with any version of this work request, add a 'Glossary' or 'Definitions' section at the top that explains BNAT with a clear, technical definition. If BNAT remains undefined, the research recommendation to reject stands unchallenged.
