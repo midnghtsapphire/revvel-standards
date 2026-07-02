@@ -118,7 +118,7 @@ The application is now clarified as a private tool for one operator. That remove
 1. Prompt-to-asset engine (single operator) with reusable templates for offers, pages, and campaign assets.
 2. Weekly revenue experiment loop: launch, measure, prune, and scale based on contribution margin.
 3. Source-governance gate before ingestion: rights, ToS, provenance, and retention policy checks.
-4. K6 repository evaluation sprint focused on load/performance automation patterns that can harden the prompt-to-asset pipeline.
+4. K6 (Grafana k6 load-testing tool) repository evaluation sprint focused on load/performance automation patterns that can harden the prompt-to-asset pipeline.
 
 **If Rebuilt:**
 - Phase 1: Basic portfolio tracking dashboard
