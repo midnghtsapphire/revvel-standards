@@ -152,7 +152,7 @@ automatic_fix:
   file: "src/data/sources.config.js"
   content: |
     export const DATA_SOURCES = {
-      // Rights-cleared + terms-compliant sources only
+      // Rights-cleared and terms-compliant sources only
       yahoo_finance: { api: 'finance.yahoo.com' },
       alpha_vantage: { api: 'alphavantage.co' }
     };
