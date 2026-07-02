@@ -13,13 +13,13 @@
 
 Source packet: `docs/research-engine/run-28564362655.md`
 
-## WR-Ready Research Packet: HyperPursuit BNAT Asset Accelerator (HPBAA)
+### WR-Ready Research Packet: HyperPursuit BNAT Asset Accelerator (HPBAA)
 
 ## 1. Executive Decision
 
 **RECOMMENDATION: PROCEED ONLY AS A PRIVATE INTERNAL TOOL**
 
-Author clarification on PR: this app is intended for personal use only so one operator can run a prompt and generate product assets. That internal-use scope is workable, but the current request still needs narrowing. The application uses undefined terminology ("BNAT"), includes potentially illegal data collection methods, and lacks technical feasibility details for a safe implementation.
+Per author clarification, this app is intended for personal use only so one operator can run a prompt and generate product assets. That internal-use scope is workable, but the current request still needs narrowing. The application uses undefined terminology ("BNAT"), includes potentially illegal data collection methods, and lacks technical feasibility details for a safe implementation.
 
 **Critical Blockers:**
 - Core concept "BNAT" is undefined and has no market presence
@@ -223,7 +223,7 @@ risk_labels:
 
 ---
 
-**FINAL VERDICT:** Do not ship this as a market product. Re-scope it as an internal prompt-to-product-assets assistant with legal data sources, explicit boundaries, and realistic technical scope before development.
+**FINAL VERDICT:** Per author clarification, this tool is intended for single-operator internal use only and must remain within that scope. Limit implementation to an internal prompt-to-product-assets assistant with legal data sources, explicit boundaries, and realistic technical scope before development.
 
 ---
 
