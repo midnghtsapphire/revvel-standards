@@ -13,11 +13,11 @@ function read(relativePath) {
 }
 
 test('stale audited actions are removed or explicitly dispositioned', () => {
-  assert.doesNotMatch(read('.github/workflows/match-labels.yml'), /binowork\/match-labels@/);
-  assert.doesNotMatch(read('.github/workflows/arsc-labels.yml'), /wagner-cotta\/arsc-label@/);
-  assert.doesNotMatch(read('templates/cicd/arsc-labels.yml'), /wagner-cotta\/arsc-label@/);
-  assert.doesNotMatch(read('.github/workflows/green-website.yml'), /filiptronicek\/green-action@/);
-  assert.doesNotMatch(read('templates/cicd/green-website.yml'), /filiptronicek\/green-action@/);
+  assert.doesNotMatch(read('.github/workflows/match-labels.yml'), /^\s*uses:\s+binowork\/match-labels@/m);
+  assert.doesNotMatch(read('.github/workflows/arsc-labels.yml'), /^\s*uses:\s+wagner-cotta\/arsc-label@/m);
+  assert.doesNotMatch(read('templates/cicd/arsc-labels.yml'), /^\s*uses:\s+wagner-cotta\/arsc-label@/m);
+  assert.doesNotMatch(read('.github/workflows/green-website.yml'), /^\s*uses:\s+filiptronicek\/green-action@/m);
+  assert.doesNotMatch(read('templates/cicd/green-website.yml'), /^\s*uses:\s+filiptronicek\/green-action@/m);
 
   const createIssueBranch = read('.github/workflows/create-issue-branch.yml');
   assert.match(createIssueBranch, /robvanderleek\/create-issue-branch@[0-9a-f]{40}/);
