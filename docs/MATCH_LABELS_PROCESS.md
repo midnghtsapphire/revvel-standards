@@ -1,6 +1,6 @@
 # Match Labels — Process & Reference
 
-**Issue reference:** *"Add Match Labels Action"* — wire up [`binowork/match-labels@v0.1.1`](https://github.com/binowork/match-labels) so pull-request workflows in `revvel-standards` can branch on the labels attached to a PR.
+**Issue reference:** *"Add Match Labels Action"* — the workflow now performs the match inline with `actions/github-script` after the third-party action audit retired stale `binowork/match-labels@v0.1.1` in WR #14884.
 
 Implementation: [`.github/workflows/match-labels.yml`](../.github/workflows/match-labels.yml).
 
@@ -9,25 +9,25 @@ Implementation: [`.github/workflows/match-labels.yml`](../.github/workflows/matc
 ## TL;DR
 
 1. Every pull request event that can change the label set triggers the **Match Labels** workflow.
-2. The workflow runs `binowork/match-labels@v0.1.1` against a curated list of **merge-control / routing** labels:
+2. The workflow matches the current PR labels against a curated list of **merge-control / routing** labels:
    - `auto-merge`, `won't-merge`, `blocked`
    - `auto-fix`, `openrouter`, `copilot`, `needs-human`
 3. The matched labels are exposed as three job outputs (`matched_labels`, `matched_labels_array`, `matched_labels_count`) that downstream jobs and reusable workflows can gate on.
-4. If none of the filter labels are present, the action applies the `triage` label as a default — matching the behaviour of [`arsc-labels.yml`](../.github/workflows/arsc-labels.yml).
+4. The match is read-only; label creation and fallback triage remain the job of [`arsc-labels.yml`](../.github/workflows/arsc-labels.yml).
 
 ---
 
-## Why this action
+## Why this workflow
 
-`binowork/match-labels` is a small, focused action that answers one question: *"which of the labels I care about are attached to this PR?"* It returns a comma-separated string, a JSON array, and a count, which makes it easy to write `if:` guards such as:
+This workflow answers one question: *"which of the labels I care about are attached to this PR?"* It returns a comma-separated string, a JSON array, and a count, which makes it easy to write `if:` guards such as:
 
 ```yaml
 if: ${{ needs.match-labels.outputs.matched_labels_count == '1' }}
 ```
 
-This is a cleaner pattern than scraping `github.event.pull_request.labels.*.name` in each consumer workflow.
+This is a cleaner pattern than scraping `github.event.pull_request.labels.*.name` in each consumer workflow, but without depending on an abandoned node16 third-party action.
 
-> **Note:** The upstream action only runs when the GitHub event payload contains a `pull_request` object, so this workflow is intentionally scoped to `pull_request` events only. Issues are handled by [`arsc-labels.yml`](../.github/workflows/arsc-labels.yml) and [`issue-automation.yml`](../.github/workflows/issue-automation.yml).
+> **Note:** The implementation only reads the GitHub event payload's `pull_request` object, so this workflow is intentionally scoped to `pull_request` events only. Issues are handled by [`arsc-labels.yml`](../.github/workflows/arsc-labels.yml) and [`issue-automation.yml`](../.github/workflows/issue-automation.yml).
 
 ---
 
@@ -36,7 +36,6 @@ This is a cleaner pattern than scraping `github.event.pull_request.labels.*.name
 | Input | Description | Default in this workflow |
 |---|---|---|
 | `match_labels` | Newline-separated list of labels to look for on the PR. | Revvel merge-control + routing labels |
-| `default_label` | Label to apply when **no** filter labels are matched. | `triage` |
 
 ## Outputs
 

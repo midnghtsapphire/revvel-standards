@@ -30,10 +30,12 @@ how strictly we audit it.
 | **Single-author** — everything else | `sanjay3290/*`, `binowork/*`, `omnedia/*`, `lowlydba/*`, etc. | **Flag** if no release > threshold. Triggers a `[WR]` issue. |
 
 The tier lists live in `scripts/audit-third-party-actions.sh` at the top
-(`TRUSTED_OWNERS`, `MULTI_AUTHOR_OWNERS`). Update them as the landscape
-shifts — e.g., when a single-author action gets adopted by an org, move it
-to multi-author. **Don't delete entries, just move them between lists** (per
-the comment-don't-delete convention).
+(`TRUSTED_OWNERS`, `MULTI_AUTHOR_OWNERS`, `ACCEPTED_SINGLE_AUTHOR_ACTIONS`).
+Update them as the landscape shifts — e.g., when a single-author action gets
+adopted by an org, move it to multi-author; when one exact `owner/repo`
+remains healthy but does not justify promoting the whole owner, add that exact
+action to `ACCEPTED_SINGLE_AUTHOR_ACTIONS`. **Don't delete entries, just move
+them between lists** (per the comment-don't-delete convention).
 
 ## 2. Staleness threshold
 
@@ -81,7 +83,7 @@ For each flagged action the WR opens, the owner / on-call agent picks one:
 | **Pin to commit SHA** | Action is actively maintained on `main` but skipped releases | Replace `@v1` with `@<full-sha>` and open an issue upstream asking for a tag. |
 | **Replace with a maintained alternative** | A trusted or multi-author equivalent exists | Open a focused PR swapping the action; cite the audit WR. |
 | **Silence the auto-trigger** | Action is abandoned and no clean replacement exists yet | Comment out the `pull_request_target:` (or equivalent auto-trigger) per the comment-don't-delete convention; keep `workflow_dispatch:`; document why in the file header. (This is what #13974 did for `sanjay3290/jules-pr-reviewer@v1`.) |
-| **Accept the risk** | Action is genuinely stable and "done" (rare) | Add the action's `owner/repo` to `MULTI_AUTHOR_OWNERS` or `TRUSTED_OWNERS` in the audit script with a comment explaining why, and close the WR. |
+| **Accept the risk** | Action is genuinely stable and "done" (rare) | Add the exact action `owner/repo` to `ACCEPTED_SINGLE_AUTHOR_ACTIONS` (or promote the owner to `MULTI_AUTHOR_OWNERS` / `TRUSTED_OWNERS` when that broader trust is justified) with a comment explaining why, and close the WR. |
 
 Each flagged action gets one comment on the WR explaining the chosen
 disposition before the WR is closed. That keeps the audit trail

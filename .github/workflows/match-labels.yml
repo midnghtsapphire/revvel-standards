@@ -1,3 +1,7 @@
+#
+# Local label matching replaces abandoned `binowork/match-labels@v0.1.1`
+# (stale release + deprecated node16 runtime, WR #14884) so PR routing keeps
+# running on maintained first-party actions.
 name: Match Labels
 on:
   pull_request:
@@ -26,9 +30,9 @@ jobs:
     steps:
       - name: Match merge-control / routing labels
         id: match
-        uses: binowork/match-labels@v0.1.1
-        with:
-          match_labels: |
+        uses: actions/github-script@v9.0.0
+        env:
+          MATCH_LABELS: |
             auto-merge
             won't-merge
             blocked
@@ -36,7 +40,24 @@ jobs:
             openrouter
             copilot
             needs-human
-          default_label: triage
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pullRequest = context.payload.pull_request;
+            if (!pullRequest) {
+              throw new Error('This workflow only runs in a pull_request context');
+            }
+            const matchLabels = (process.env.MATCH_LABELS || '')
+              .split(/\r?\n/)
+              .map((label) => label.trim())
+              .filter(Boolean);
+            const currentLabels = (pullRequest.labels || []).map((label) => label.name);
+            const matched = currentLabels.filter((label) => matchLabels.includes(label));
+
+            core.setOutput('matched_labels', matched.join(','));
+            core.setOutput('matched_labels_array', JSON.stringify(matched));
+            core.setOutput('matched_labels_count', String(matched.length));
+            core.info(`Matched labels: ${matched.join(',') || '(none)'}`);
       - name: Summarise match result
         run: |
           echo "### Match Labels" >> "$GITHUB_STEP_SUMMARY"

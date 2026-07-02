@@ -160,7 +160,7 @@ Set up these automation rules in GitHub Projects → Workflows:
 
 ### ARSC Labels Automation Workflow
 
-The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests using the [`wagner-cotta/arsc-label`](https://github.com/wagner-cotta/arsc-label) action. It supports **Add**, **Remove**, **Set**, and **Clear** operations.
+The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests with inline `actions/github-script` calls. It supports **Add**, **Remove**, **Set**, and **Clear** operations without relying on a stale third-party label action.
 
 | Trigger | Automation |
 |---|---|

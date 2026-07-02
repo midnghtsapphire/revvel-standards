@@ -36,6 +36,7 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   const job = doc.jobs['green-website'];
   const steps = job.steps || [];
   const actionStep = steps.find((step) => step.name === 'green-website');
+  const artifactStep = steps.find((step) => step.name === 'Upload carbon artifact');
   const commitStep = steps.find((step) => step.name === 'Commit green website report');
   const resolveStep = steps.find((step) => step.name === 'Resolve target URL');
   const markerStep = steps.find((step) => step.name === 'Verify README carbon marker');
@@ -55,11 +56,23 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   if (!String(job.if || '').includes('docs: update green website report')) {
     throw new Error(`${relativePath} must skip its own generated report commits`);
   }
-  if (!actionStep || actionStep.uses !== 'filiptronicek/green-action@v1.0.2') {
-    throw new Error(`${relativePath} must use filiptronicek/green-action@v1.0.2`);
+  if (!actionStep || actionStep.uses !== 'actions/github-script@v9.0.0') {
+    throw new Error(`${relativePath} must collect Website Carbon data with actions/github-script@v9.0.0`);
   }
   if (actionStep.env?.URL !== '${{ steps.target.outputs.url }}') {
-    throw new Error(`${relativePath} must pass the resolved target URL to green-action`);
+    throw new Error(`${relativePath} must pass the resolved target URL to the green-website step`);
+  }
+  if (!String(actionStep.with?.script || '').includes('api.websitecarbon.com/site?url=')) {
+    throw new Error(`${relativePath} must fetch Website Carbon data`);
+  }
+  if (!String(actionStep.with?.script || '').includes("fs.writeFileSync(carbonPath")) {
+    throw new Error(`${relativePath} must write the carbon data file`);
+  }
+  if (!artifactStep || artifactStep.uses !== 'actions/upload-artifact@v4') {
+    throw new Error(`${relativePath} must upload the carbon artifact with actions/upload-artifact@v4`);
+  }
+  if (artifactStep.with?.name !== 'carbon' || artifactStep.with?.path !== 'carbon') {
+    throw new Error(`${relativePath} must upload the generated carbon file as the carbon artifact`);
   }
   if (!resolveStep || !JSON.stringify(resolveStep).includes('GREEN_WEBSITE_URL')) {
     throw new Error(`${relativePath} must resolve vars.GREEN_WEBSITE_URL`);
@@ -109,10 +122,11 @@ test('README exposes carbon card insertion point or generated card', () => {
 test('standard documents action, marker, URL override, and verification', () => {
   const standard = read('standards/GREEN_WEBSITE_REPORTING_STANDARD.md');
   for (const required of [
-    'filiptronicek/green-action@v1.0.2',
+    'actions/github-script@v9.0.0',
     '<!-- CARBON-STATS -->',
     'GREEN_WEBSITE_URL',
     'templates/cicd/green-website.yml',
+    'actions/upload-artifact',
     'node tests/green-website-standard.test.js',
   ]) {
     if (!standard.includes(required)) {
