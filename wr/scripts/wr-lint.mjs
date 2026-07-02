@@ -36,13 +36,13 @@ const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
 const STAR_DATA_SIGNAL = /\bGitHub Stars?\b|\bstars?\b/i;
 const STAR_VALUE_SIGNAL = /\b\d+(?:\.\d+)?k\b|\b\d{3,}\b/i;
-const DATA_TIMESTAMP_SIGNAL = /Data (?:collected|collection timestamp)|as of \d{4}-\d{2}-\d{2}|snapshot date/i;
-const SOURCE_SIGNAL = /\bSources?:\b|GitHub API|api\.github\.com|github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+/i;
+const DATA_TIMESTAMP_SIGNAL = /Data (?:collected|collection(?:\s*:)?(?:\s+timestamp)?)|as of \d{4}-\d{2}-\d{2}|snapshot date/i;
+const SOURCE_SIGNAL = /\bSources?:\b|GitHub API|api\.github\.com|github\.com\/[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?\/[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/i;
 const ABSOLUTE_COMPETITOR_SIGNAL = /\bno competitor\b/i;
 const QUALIFIED_CLAIM_SIGNAL = /\bbased on\b|\bpublic data\b|\bas of\b|\bwe (?:have )?not identified\b/i;
 const BLOCKED_SIGNAL = /\bBLOCKED\b|\bdecision required\b/i;
 const AWAITING_INPUT_SIGNAL = /\bAWAITING INPUT\b|\bDECISION PENDING\b/i;
-const INPUT_CHECKBOX_SIGNAL = /^- \[ \].*(revenue|cost|evidence|data|required|input)/i;
+const INPUT_CHECKBOX_SIGNAL = /^\s*- \[ \].*(revenue|cost|evidence|data|required|input)/i;
 
 function lintFile(path) {
   const text = fs.readFileSync(path, "utf8");
@@ -164,7 +164,9 @@ function lintFile(path) {
   }
 
   // 10. Competitor/star claims must include timestamp + source evidence.
-  const hasStarClaim = lines.some((l, i) => !inFence[i] && STAR_DATA_SIGNAL.test(l) && STAR_VALUE_SIGNAL.test(l));
+  const hasStarContext = lines.some((l, i) => !inFence[i] && STAR_DATA_SIGNAL.test(l));
+  const hasStarValue = lines.some((l, i) => !inFence[i] && STAR_VALUE_SIGNAL.test(l));
+  const hasStarClaim = hasStarContext && hasStarValue;
   if (hasStarClaim) {
     const hasTimestamp = lines.some((l, i) => !inFence[i] && DATA_TIMESTAMP_SIGNAL.test(l));
     const hasSource = lines.some((l, i) => !inFence[i] && SOURCE_SIGNAL.test(l));
