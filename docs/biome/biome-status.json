@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-02T18:32:12.917Z",
+  "generated_at": "2026-07-02T19:31:11.486Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 28609617400,
+            "id": 28613085653,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28609617400",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28613085653",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28615672673"
       }
     },
     "sheaf": {
