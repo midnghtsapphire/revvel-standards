@@ -19,11 +19,11 @@ Source packet: `docs/research-engine/run-28564362655.md`
 
 **RECOMMENDATION: PROCEED ONLY AS A PRIVATE INTERNAL TOOL**
 
-Per author clarification, this app is intended for personal use only so one operator can run a prompt and generate product assets. That internal-use scope is workable, but the current request still needs narrowing. The application uses undefined terminology ("BNAT"), includes potentially illegal data collection methods, and lacks technical feasibility details for a safe implementation.
+Per author clarification, this app is intended for personal use only so one operator can run a prompt and generate product assets. That internal-use scope is workable, but the current request still needs narrowing. The application uses undefined terminology ("BNAT"), includes high-risk data-source language that requires explicit rights checks, and lacks technical feasibility details for a safe implementation.
 
 **Critical Blockers:**
 - Core concept "BNAT" is undefined and has no market presence
-- Proposed data collection methods violate multiple laws and platform ToS
+- Proposed data collection methods are not rights-validated or terms-validated
 - No regulatory compliance framework for financial advisory features
 - Internal-use-only scope must be documented explicitly (not positioned as a market product)
 - Technical claims combine unrelated advanced mathematics without implementation details
@@ -35,7 +35,7 @@ Per author clarification, this app is intended for personal use only so one oper
 The application is now clarified as a private tool for one operator. That removes the need for broad market validation, but requires clear scope boundaries:
 - Personal productivity tooling only
 - No external user onboarding or financial-advisory claims
-- Legal public data sources only
+- Rights-cleared and terms-compliant data sources only
 - Explicit disclaimer that outputs are research drafts, not financial advice
 
 **If Pivoted to Legitimate Market:**
@@ -43,7 +43,7 @@ The application is now clarified as a private tool for one operator. That remove
 - Financial advisors needing research automation
 - Crypto investors wanting portfolio management
 
-**Why This Still Needs Rework:** The undefined "BNAT" terminology and questionable data methods make the current implementation unsafe, even for private use.
+**Why This Still Needs Rework:** The undefined "BNAT" terminology and unverified data-source permissions make the current implementation unsafe, even for private use.
 
 ## 3. Marketing and SEO Plan
 
@@ -93,9 +93,9 @@ The application is now clarified as a private tool for one operator. That remove
 | Claim | Status | Evidence |
 |-------|--------|----------|
 | "BNAT methodology" | **UNSUPPORTED** | No definition or references exist |
-| "$10M in 3 years" | **UNREALISTIC** | No financial model or precedent |
-| "Deep web torrents" | **ILLEGAL** | Violates copyright and ToS |
-| "Secret data sources" | **UNETHICAL** | Potential privacy law violations |
+| "$30M in 3.03456 years" | **STRETCH TARGET** | Needs phased revenue model, KPI gates, and monthly validation |
+| "Deep web torrents/usenet" | **CONTEXT-DEPENDENT** | Lawfulness depends on content rights, jurisdiction, and ToS |
+| "Secret data sources" | **HIGH-RISK** | Requires explicit permission/provenance checks to avoid privacy or contract violations |
 | "Precog research" | **IMPOSSIBLE** | Science fiction concept |
 | "Sheaf theory application" | **UNSUBSTANTIATED** | No practical implementation shown |
 
@@ -105,10 +105,20 @@ The application is now clarified as a private tool for one operator. That remove
 
 **Blocking Issues:**
 1. Define "BNAT" with technical specifications
-2. Remove all illegal data collection methods
+2. Add source-rights, provenance, and terms-compliance validation
 3. Add financial services compliance framework
 4. Reduce scope to single, achievable feature
-5. Provide market validation evidence
+5. Add measurable revenue system aligned to owner target
+
+## 7A. Goal Acceleration Plan (Owner Target)
+
+**Owner target:** $30M in 3.03456 years (internal objective).
+
+**Execution system (internal-only):**
+1. Prompt-to-asset engine (single operator) with reusable templates for offers, pages, and campaign assets.
+2. Weekly revenue experiment loop: launch, measure, prune, and scale based on contribution margin.
+3. Source-governance gate before ingestion: rights, ToS, provenance, and retention policy checks.
+4. K6 repository evaluation sprint focused on load/performance automation patterns that can harden the prompt-to-asset pipeline.
 
 **If Rebuilt:**
 - Phase 1: Basic portfolio tracking dashboard
@@ -135,18 +145,18 @@ commit_message: "docs: add BNAT technical specification template"
 
 ### For OpenRouter Review
 ```yaml
-blocking_issue: "Illegal Data Collection"
-finding: "Proposed torrent/deep web scraping violates laws"
+blocking_issue: "Unverified Data-Source Compliance"
+finding: "Proposed torrent/deep web/usenet inputs are not rights-validated or terms-validated"
 automatic_fix:
-  action: "Replace with legal data sources"
+  action: "Add source-rights and provenance validation layer"
   file: "src/data/sources.config.js"
   content: |
     export const DATA_SOURCES = {
-      // Legal public APIs only
+      // Rights-cleared + terms-compliant sources only
       yahoo_finance: { api: 'finance.yahoo.com' },
       alpha_vantage: { api: 'alphavantage.co' }
     };
-commit_message: "fix: replace illegal data sources with public APIs"
+commit_message: "fix: add data-source rights validation guardrails"
 ```
 
 ### For Coderabbit
@@ -190,7 +200,7 @@ commit_queue:
   - message: "docs: add COMPLIANCE.md for regulatory requirements"
     files: ["docs/COMPLIANCE.md"]
     
-  - message: "fix: remove illegal data collection references"
+  - message: "fix: add rights-validation for high-risk data source references"
     files: ["README.md", "src/data/*"]
     
   - message: "docs: add market validation requirements"
@@ -223,7 +233,7 @@ risk_labels:
 
 ---
 
-**FINAL VERDICT:** Per author clarification, this tool is intended for single-operator internal use only and must remain within that scope. Limit implementation to an internal prompt-to-product-assets assistant with legal data sources, explicit boundaries, and realistic technical scope before development.
+**FINAL VERDICT:** Per author clarification, this tool is intended for single-operator internal use only and must remain within that scope. Limit implementation to an internal prompt-to-product-assets assistant with explicit source-rights checks, clear boundaries, and a measurable revenue execution loop.
 
 ---
 
