@@ -8,43 +8,42 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28564362655.md`
 
-# WR-Ready Research Packet: HyperPursuit BNAT Asset Accelerator (HPBAA)
+## WR-Ready Research Packet: HyperPursuit BNAT Asset Accelerator (HPBAA)
 
 ## 1. Executive Decision
 
-**RECOMMENDATION: DO NOT PROCEED**
+**RECOMMENDATION: PROCEED ONLY AS A PRIVATE INTERNAL TOOL**
 
-This work request should be rejected in its current form. The application is built on undefined terminology ("BNAT"), makes unrealistic financial promises ($10M+ in 3 years), proposes potentially illegal data collection methods, and lacks any market validation or technical feasibility analysis.
+Author clarification on PR: this app is intended for personal use only so one operator can run a prompt and generate product assets. That internal-use scope is workable, but the current request still needs narrowing. The application uses undefined terminology ("BNAT"), includes potentially illegal data collection methods, and lacks technical feasibility details for a safe implementation.
 
 **Critical Blockers:**
 - Core concept "BNAT" is undefined and has no market presence
 - Proposed data collection methods violate multiple laws and platform ToS
 - No regulatory compliance framework for financial advisory features
-- Single-user market (Audrey Evans) is not a viable business model
+- Internal-use-only scope must be documented explicitly (not positioned as a market product)
 - Technical claims combine unrelated advanced mathematics without implementation details
 
 ## 2. Audience We Are Going After and Why
 
-**Current State: NO VIABLE AUDIENCE**
+**Current State: SINGLE-OPERATOR INTERNAL TOOL**
 
-The application targets a single individual ("Audrey Evans") with no broader market applicability. No evidence exists of:
-- Market demand for "BNAT asset acceleration"
-- Communities discussing these concepts
-- Competitor products in this space
-- User pain points this would solve
+The application is now clarified as a private tool for one operator. That removes the need for broad market validation, but requires clear scope boundaries:
+- Personal productivity tooling only
+- No external user onboarding or financial-advisory claims
+- Legal public data sources only
+- Explicit disclaimer that outputs are research drafts, not financial advice
 
 **If Pivoted to Legitimate Market:**
 - High-net-worth individuals seeking AI-powered investment tools
 - Financial advisors needing research automation
 - Crypto investors wanting portfolio management
 
-**Why This Fails:** The undefined "BNAT" terminology, unrealistic promises, and questionable data methods make this unmarketable to any legitimate audience.
+**Why This Still Needs Rework:** The undefined "BNAT" terminology and questionable data methods make the current implementation unsafe, even for private use.
 
 ## 3. Marketing and SEO Plan
 
@@ -224,7 +223,8 @@ risk_labels:
 
 ---
 
-**FINAL VERDICT:** This work request represents a high-risk, undefined project with no viable path to market. It should be rejected and completely reconceptualized with legitimate market research, legal compliance, and realistic technical scope before any development begins.
+**FINAL VERDICT:** Do not ship this as a market product. Re-scope it as an internal prompt-to-product-assets assistant with legal data sources, explicit boundaries, and realistic technical scope before development.
+
 ---
 
 **WR Status:** 🟡 In Progress  
