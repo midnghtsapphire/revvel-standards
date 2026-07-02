@@ -1,24 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-02T19:31:11.486Z",
+  "generated_at": "2026-07-02T20:29:22.976Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28613085653,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28613085653",
+            "id": 28619518258,
+            "name": ".github/workflows/durability-mirror.yml",
+            "path": ".github/workflows/durability-mirror.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28619518258",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28619517780,
+            "name": ".github/workflows/daily-news-briefing.yml",
+            "path": ".github/workflows/daily-news-briefing.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28619517780",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28615672673"
+        "last_run": null
       }
     },
     "sheaf": {
