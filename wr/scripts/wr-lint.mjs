@@ -34,6 +34,15 @@ const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO
 
 // Bracket placeholders the full template leaves behind.
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
+const STAR_DATA_SIGNAL = /\bGitHub Stars?\b|\bstars?\b/i;
+const STAR_VALUE_SIGNAL = /\b\d+(?:\.\d+)?k\b|\b\d{3,}\b/i;
+const DATA_TIMESTAMP_SIGNAL = /Data (?:collected|collection timestamp)|as of \d{4}-\d{2}-\d{2}|snapshot date/i;
+const SOURCE_SIGNAL = /\bSources?:\b|GitHub API|api\.github\.com|github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+/i;
+const ABSOLUTE_COMPETITOR_SIGNAL = /\bno competitor\b/i;
+const QUALIFIED_CLAIM_SIGNAL = /\bbased on\b|\bpublic data\b|\bas of\b|\bwe (?:have )?not identified\b/i;
+const BLOCKED_SIGNAL = /\bBLOCKED\b|\bdecision required\b/i;
+const AWAITING_INPUT_SIGNAL = /\bAWAITING INPUT\b|\bDECISION PENDING\b/i;
+const INPUT_CHECKBOX_SIGNAL = /^- \[ \].*(revenue|cost|evidence|data|required|input)/i;
 
 function lintFile(path) {
   const text = fs.readFileSync(path, "utf8");
@@ -152,6 +161,37 @@ function lintFile(path) {
   // 9. Title rendering artifact: stripped backtick identifier leaves a double space.
   if (/^#\s*WR:.*\S\s{2,}\S/.test(lines[0] || "")) {
     issues.push(`line 1: title has a double space — a backtick-wrapped identifier was likely stripped during generation; restore it`);
+  }
+
+  // 10. Competitor/star claims must include timestamp + source evidence.
+  const hasStarClaim = lines.some((l, i) => !inFence[i] && STAR_DATA_SIGNAL.test(l) && STAR_VALUE_SIGNAL.test(l));
+  if (hasStarClaim) {
+    const hasTimestamp = lines.some((l, i) => !inFence[i] && DATA_TIMESTAMP_SIGNAL.test(l));
+    const hasSource = lines.some((l, i) => !inFence[i] && SOURCE_SIGNAL.test(l));
+    if (!hasTimestamp || !hasSource) {
+      issues.push(`competitor/star claims need verification metadata — include both "Data collected: YYYY-MM-DD" and explicit source citations (GitHub API/repos)`);
+    }
+  }
+
+  // 11. Absolute competitor claims must be qualified.
+  lines.forEach((l, i) => {
+    if (inFence[i]) return;
+    if (ABSOLUTE_COMPETITOR_SIGNAL.test(l) && !QUALIFIED_CLAIM_SIGNAL.test(l)) {
+      issues.push(`line ${i + 1}: absolute competitor claim detected ("no competitor ...") — qualify with scope/timeframe and evidence source`);
+    }
+  });
+
+  // 12. Blocked WRs must show explicit awaiting-input gate with checklist.
+  const hasBlockedState = lines.some((l, i) => !inFence[i] && BLOCKED_SIGNAL.test(l));
+  if (hasBlockedState) {
+    const hasAwaitingInputBanner = lines.some((l, i) => !inFence[i] && AWAITING_INPUT_SIGNAL.test(l));
+    const inputChecklistItems = lines.reduce((n, l, i) => {
+      if (inFence[i]) return n;
+      return n + (INPUT_CHECKBOX_SIGNAL.test(l) ? 1 : 0);
+    }, 0);
+    if (!hasAwaitingInputBanner || inputChecklistItems < 2) {
+      issues.push(`blocked WR missing intake gate — add "AWAITING INPUT"/"DECISION PENDING" plus at least two unchecked required-input checklist items`);
+    }
   }
 
   return issues;

@@ -121,7 +121,9 @@ test('WR lint script must catch common issues', () => {
     { pattern: 'BRACKET_PLACEHOLDER|placeholder|\\[.*\\]', msg: 'raw placeholders' },
     { pattern: 'SCAFFOLD|scaffolding', msg: 'scaffolding patterns' },
     { pattern: 'H1|h1|header', msg: 'H1 header validation' },
-    { pattern: 'BASIC_SIGNALS|basic', msg: 'template/type mismatch' }
+    { pattern: 'BASIC_SIGNALS|basic', msg: 'template/type mismatch' },
+    { pattern: 'DATA_TIMESTAMP_SIGNAL|SOURCE_SIGNAL|GitHub API|Data collected', msg: 'competitor/star evidence checks' },
+    { pattern: 'BLOCKED_SIGNAL|AWAITING INPUT|INPUT_CHECKBOX_SIGNAL', msg: 'blocked-state intake checks' }
   ];
   
   const missing = requiredChecks.filter(check => !new RegExp(check.pattern, 'i').test(content));
