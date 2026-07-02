@@ -89,7 +89,7 @@ The research cannot proceed due to three fundamental blockers:
 - GrowlingEyes.com is operational (threat intel across 18 domains)
 - Hosted on DigitalOcean (IP: 143.244.167.14)
 - Built with Next.js/TypeScript stack
-
+Add evidence citations: (1) Include a 'Data collected: [DATE]' timestamp above the table. (2) Verify star counts from GitHub API or latest snapshot. (3) For the 'market gap' claim, cite specific product documentation or interviews showing the gap. (4) Use conditional language: 'Based on public GitHub data as of [DATE], no identified competitor currently positions as...' rather than definitive claims.
 **Unverified Claims**:
 - Claude Haiku 4.5 Extended (does not exist)
 - GrowlingEyes revenue/costs (no data provided)
