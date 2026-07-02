@@ -1,24 +1,87 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-02T19:31:11.486Z",
+  "generated_at": "2026-07-02T22:23:32.605Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "24/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 24,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28613085653,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28613085653",
+            "id": 28623872560,
+            "name": ".github/workflows/agent-fallback.yml",
+            "path": ".github/workflows/agent-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623872560",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623872165,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623872165",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623871761,
+            "name": ".github/workflows/durability-mirror.yml",
+            "path": ".github/workflows/durability-mirror.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623871761",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623871464,
+            "name": ".github/workflows/daily-news-briefing.yml",
+            "path": ".github/workflows/daily-news-briefing.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623871464",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623871148,
+            "name": ".github/workflows/test-bito-integration.yml",
+            "path": ".github/workflows/test-bito-integration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623871148",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623870759,
+            "name": ".github/workflows/saml-sso-registration.yml",
+            "path": ".github/workflows/saml-sso-registration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623870759",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623822619,
+            "name": ".github/workflows/daily-news-briefing.yml",
+            "path": ".github/workflows/daily-news-briefing.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623822619",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623822209,
+            "name": ".github/workflows/test-bito-integration.yml",
+            "path": ".github/workflows/test-bito-integration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623822209",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623821895,
+            "name": ".github/workflows/saml-sso-registration.yml",
+            "path": ".github/workflows/saml-sso-registration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623821895",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28623821462,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28623821462",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +107,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28615672673"
+        "last_run": null
       }
     },
     "sheaf": {
