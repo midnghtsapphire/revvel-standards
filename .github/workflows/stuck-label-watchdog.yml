@@ -268,7 +268,7 @@ jobs:
                   'Inspect review, auto-approve, and synchronize event paths. If any "waiting for review" label (`awaiting-review`, `awaiting-approval`, `status:waiting-for-review`) can survive or be re-added after approval on the current head without a new commit/reopened event, patch that workflow path.'
                 );
                 await github.rest.issues.createComment({ owner, repo, issue_number: prNumber,
-                  body: `🔍 **Watchdog:** Detected stale review state on an approved PR. Removed \`awaiting-review\` and restored approval on the current head SHA. Routed follow-up to agent repair issue #${repairIssue.number}.` });
+                  body: `🔍 **Watchdog:** Detected stale review state on an approved PR. Removed \`awaiting-review\` and its synonyms (\`awaiting-approval\`, \`status:waiting-for-review\`) and restored approval on the current head SHA. Routed follow-up to agent repair issue #${repairIssue.number}.` });
                 continue;
               }
 
