@@ -266,6 +266,14 @@ test('stuck-label-watchdog.yml reconciles awaiting-review from live approvals on
   if (!script.includes('liveApprovedCurrentHead')) {
     throw new Error('watchdog must derive approval state from live reviews on the current head');
   }
+  if (!script.includes('STALE_REVIEW_SYNONYMS')) {
+    throw new Error('watchdog must reconcile awaiting-review through a synonym set');
+  }
+  for (const synonym of ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review']) {
+    if (!script.includes(`'${synonym}'`)) {
+      throw new Error(`watchdog must strip the stale review synonym '${synonym}' when the current head is approved`);
+    }
+  }
 });
 
 test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
