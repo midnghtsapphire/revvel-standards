@@ -13,10 +13,13 @@ const lintScript = path.join(repoRoot, 'wr/scripts/wr-lint.mjs');
 
 function runLint(content) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wr-lint-'));
-  const file = path.join(tmpDir, 'sample.md');
-  fs.writeFileSync(file, content);
-  const result = spawnSync('node', [lintScript, file], { encoding: 'utf8' });
-  return result;
+  try {
+    const file = path.join(tmpDir, 'sample.md');
+    fs.writeFileSync(file, content);
+    return spawnSync('node', [lintScript, file], { encoding: 'utf8' });
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 test('fails when star claims are missing timestamp/source evidence', () => {
