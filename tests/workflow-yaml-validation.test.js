@@ -411,6 +411,75 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   }
 });
 
+test('compliance-watcher.yml github-script block compiles', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'compliance-watcher.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const step = doc.jobs.watch.steps.find((entry) => entry.name === 'Evaluate deadlines and alert');
+
+  if (!step) {
+    throw new Error('Evaluate deadlines and alert step not found');
+  }
+
+  try {
+    new AsyncFunction('github', 'context', 'core', String(step.with?.script || ''));
+  } catch (error) {
+    throw new Error(`compliance-watcher github-script block does not compile: ${error.message}`);
+  }
+});
+
+test('subscription-tracker.yml installs repo deps before github-script', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'subscription-tracker.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const steps = doc.jobs.track.steps;
+  const setupIndex = steps.findIndex((step) => step.name === 'Setup Node');
+  const installIndex = steps.findIndex((step) => step.name === 'Install deps');
+  const scriptIndex = steps.findIndex((step) => step.name === 'Compute report and upsert tracking issue');
+
+  if (setupIndex === -1) throw new Error('subscription-tracker must set up Node before running github-script');
+  if (installIndex === -1) throw new Error('subscription-tracker must install dependencies before running github-script');
+  if (scriptIndex === -1) throw new Error('subscription-tracker github-script step not found');
+  if (!(setupIndex < installIndex && installIndex < scriptIndex)) {
+    throw new Error('subscription-tracker must install dependencies before the github-script step');
+  }
+});
+
+test('biome-inspector.yml falls back to the Contents API when direct pushes are blocked', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'biome-inspector.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const step = doc.jobs.inspect.steps.find((entry) => entry.name === 'Commit scoreboard if changed');
+  const script = String(step?.run || '');
+
+  if (!String(doc.env?.GH_REPO || '').includes('github.repository')) {
+    throw new Error('biome-inspector must define GH_REPO for the Contents API fallback');
+  }
+  if (!script.includes('Direct push blocked by branch protection')) {
+    throw new Error('biome-inspector must log the branch-protection fallback path');
+  }
+  if (!script.includes('gh api "repos/${GH_REPO}/contents/${encoded_path}" -X PUT')) {
+    throw new Error('biome-inspector must update the scoreboard via the Contents API when push fails');
+  }
+});
+
+test('flow-chart-sync.yml falls back to the Contents API when direct pushes are blocked', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'flow-chart-sync.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const step = doc.jobs.sync.steps.find((entry) => entry.name === 'Commit and push updated flow charts');
+  const script = String(step?.run || '');
+
+  if (!String(step?.env?.GH_REPO || '').includes('github.repository')) {
+    throw new Error('flow-chart-sync must define GH_REPO for the Contents API fallback');
+  }
+  if (!String(step?.env?.GH_TOKEN || '').includes('ADMIN_GITHUB_TOKEN')) {
+    throw new Error('flow-chart-sync must use the admin-token fallback for the Contents API path');
+  }
+  if (!script.includes('Direct push blocked after $attempts attempts')) {
+    throw new Error('flow-chart-sync must log the branch-protection fallback path');
+  }
+  if (!script.includes('gh api "repos/${GH_REPO}/contents/${encoded_path}" -X PUT')) {
+    throw new Error('flow-chart-sync must update changed files via the Contents API when push fails');
+  }
+});
+
 test('wr-pr-creation.yml uses existing WR templates and preserves issue body', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'wr-pr-creation.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

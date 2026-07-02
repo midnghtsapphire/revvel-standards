@@ -77,7 +77,7 @@ jobs:
                 `- Days remaining: ${days}`,
                 `- Thresholds: 60/30/14/7/3/1`,
                 ``,
-                `Please resolve and apply \\`paperwork:compliance-handled\\` when complete.`
+                `Please resolve and apply \`paperwork:compliance-handled\` when complete.`
               ].join('\n');
 
               await github.rest.issues.create({ owner, repo, title, body, labels: ['urgent-compliance'], assignees: [assignee] });
