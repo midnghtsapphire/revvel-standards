@@ -1,5 +1,7 @@
 # Copy to .github/workflows/green-website.yml in every public web app repo.
 # Add <!-- CARBON-STATS --> to README.md where the generated card should appear.
+# Local Website Carbon fetch replaced `filiptronicek/green-action@v1.0.2`
+# in WR #14884 after the third-party action audit flagged its stale node12 lane.
 
 name: Website green-o-meter
 
@@ -71,9 +73,49 @@ jobs:
           fi
 
       - name: green-website
-        uses: filiptronicek/green-action@v1.0.2
+        uses: actions/github-script@v9.0.0
         env:
           URL: ${{ steps.target.outputs.url }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            const targetUrl = process.env.URL;
+            if (!targetUrl) {
+              throw new Error('URL env was not provided');
+            }
+
+            const response = await fetch(`https://api.websitecarbon.com/site?url=${encodeURIComponent(targetUrl)}`);
+            if (!response.ok) {
+              throw new Error(`Website Carbon API request failed: ${response.status} ${response.statusText}`);
+            }
+
+            const carbonData = await response.json();
+            const cleanerThan = Math.round((Number(carbonData.cleanerThan) || 0) * 100);
+            const badge = `![carbon consumption of this project](https://green-action.vercel.app/api/card?p=${cleanerThan}&type=percent)`;
+            const badgePattern = /!\[carbon consumption of this project\]\(https:\/\/green-action\.vercel\.app\/api\/card\?p=\d{1,3}(?:&type=(?:percent|grams))?\)/;
+            const readmePath = 'README.md';
+            const carbonPath = 'carbon';
+
+            let readme = fs.readFileSync(readmePath, 'utf8');
+            if (readme.includes('<!-- CARBON-STATS -->')) {
+              readme = readme.replace('<!-- CARBON-STATS -->', badge);
+            } else if (badgePattern.test(readme)) {
+              readme = readme.replace(badgePattern, badge);
+            } else {
+              throw new Error('README.md is missing the carbon marker or generated badge');
+            }
+
+            fs.writeFileSync(readmePath, readme);
+            fs.writeFileSync(carbonPath, `${JSON.stringify(carbonData, null, 2)}\n`);
+            core.info(`Cleaner-than score for ${targetUrl}: ${cleanerThan}`);
+
+      - name: Upload carbon artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: carbon
+          path: carbon
 
       - name: Commit green website report
         run: |

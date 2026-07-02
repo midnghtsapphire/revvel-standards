@@ -1,3 +1,7 @@
+#
+# Local github-script label management replaces abandoned
+# `wagner-cotta/arsc-label@v1.0` (single-maintainer, one-day history, WR
+# #14884) so this workflow no longer depends on third-party checkout + pip.
 name: ARSC Labels
 on:
   workflow_dispatch:
@@ -32,12 +36,79 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Manage Labels (ARSC)
-        uses: wagner-cotta/arsc-label@v1.0
+        id: manage-labels
+        uses: actions/github-script@v9.0.0
+        env:
+          OBJECT_ID: ${{ github.event.inputs['object-id'] }}
+          OPERATION: ${{ github.event.inputs.operation }}
+          LABELS: ${{ github.event.inputs.labels || '' }}
         with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.inputs['object-id'] }}
-          operation: ${{ github.event.inputs.operation }}
-          labels: ${{ github.event.inputs.labels }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = Number(process.env.OBJECT_ID);
+            const operation = process.env.OPERATION;
+            const labels = (process.env.LABELS || '')
+              .split(',')
+              .map((label) => label.trim())
+              .filter(Boolean);
+
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              throw new Error(`Invalid object-id: ${process.env.OBJECT_ID}`);
+            }
+
+            let response;
+            switch (operation) {
+              case 'add':
+                if (labels.length === 0) throw new Error('labels input is required for add');
+                response = await github.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                  labels,
+                });
+                break;
+              case 'remove': {
+                if (labels.length === 0) throw new Error('labels input is required for remove');
+                const removed = [];
+                const missing = [];
+                for (const name of labels) {
+                  try {
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number, name });
+                    removed.push(name);
+                  } catch (error) {
+                    if (error.status === 404) {
+                      missing.push(name);
+                      continue;
+                    }
+                    throw error;
+                  }
+                }
+                response = { data: { removed, missing } };
+                break;
+              }
+              case 'set':
+                if (labels.length === 0) throw new Error('labels input is required for set');
+                response = await github.request('PUT /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                  labels,
+                });
+                break;
+              case 'clear':
+                response = await github.request('DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                });
+                break;
+              default:
+                throw new Error(`Unsupported operation: ${operation}`);
+            }
+
+            core.setOutput('response', JSON.stringify(response.data ?? { status: response.status }));
     timeout-minutes: 15
   triage-new-issue:
     name: Apply Triage Label to New Issues
@@ -69,12 +140,16 @@ jobs:
             }
       - name: Add `triage` label to new issue
         if: toJSON(github.event.issue.labels) == '[]'
-        uses: wagner-cotta/arsc-label@v1.0
+        uses: actions/github-script@v9.0.0
         with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.issue.number }}
-          operation: add
-          labels: triage
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['triage'],
+            });
     timeout-minutes: 15
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

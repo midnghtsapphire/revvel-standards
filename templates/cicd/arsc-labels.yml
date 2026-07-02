@@ -15,8 +15,8 @@
 # Setup:
 #   cp templates/cicd/arsc-labels.yml .github/workflows/arsc-labels.yml
 #
-# Uses: wagner-cotta/arsc-label@v1.0
-# Docs: https://github.com/wagner-cotta/arsc-label
+# Local github-script implementation replaced `wagner-cotta/arsc-label@v1.0`
+# in WR #14884 after the third-party action audit flagged it as stale.
 
 name: ARSC Labels
 
@@ -64,12 +64,79 @@ jobs:
 
     steps:
       - name: Manage Labels (ARSC)
-        uses: wagner-cotta/arsc-label@v1.0
+        id: manage-labels
+        uses: actions/github-script@v9.0.0
+        env:
+          OBJECT_ID: ${{ github.event.inputs['object-id'] }}
+          OPERATION: ${{ github.event.inputs.operation }}
+          LABELS: ${{ github.event.inputs.labels || '' }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.inputs['object-id'] }}
-          operation: ${{ github.event.inputs.operation }}
-          labels: ${{ github.event.inputs.labels }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = Number(process.env.OBJECT_ID);
+            const operation = process.env.OPERATION;
+            const labels = (process.env.LABELS || '')
+              .split(',')
+              .map((label) => label.trim())
+              .filter(Boolean);
+
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              throw new Error(`Invalid object-id: ${process.env.OBJECT_ID}`);
+            }
+
+            let response;
+            switch (operation) {
+              case 'add':
+                if (labels.length === 0) throw new Error('labels input is required for add');
+                response = await github.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                  labels,
+                });
+                break;
+              case 'remove': {
+                if (labels.length === 0) throw new Error('labels input is required for remove');
+                const removed = [];
+                const missing = [];
+                for (const name of labels) {
+                  try {
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number, name });
+                    removed.push(name);
+                  } catch (error) {
+                    if (error.status === 404) {
+                      missing.push(name);
+                      continue;
+                    }
+                    throw error;
+                  }
+                }
+                response = { data: { removed, missing } };
+                break;
+              }
+              case 'set':
+                if (labels.length === 0) throw new Error('labels input is required for set');
+                response = await github.request('PUT /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                  labels,
+                });
+                break;
+              case 'clear':
+                response = await github.request('DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+                  owner,
+                  repo,
+                  issue_number,
+                });
+                break;
+              default:
+                throw new Error(`Unsupported operation: ${operation}`);
+            }
+
+            core.setOutput('response', JSON.stringify(response.data ?? { status: response.status }));
 
   # ────────────────────────────────────────────────────────────────────────────
   # Job 2 — Auto-label new issues with `triage`
@@ -106,12 +173,16 @@ jobs:
 
       - name: Add `triage` label to new issue
         if: toJSON(github.event.issue.labels) == '[]'
-        uses: wagner-cotta/arsc-label@v1.0
+        uses: actions/github-script@v9.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.issue.number }}
-          operation: add
-          labels: triage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['triage'],
+            });
 
   # ────────────────────────────────────────────────────────────────────────────
   # Job 3 — Auto-label draft PRs and remove `draft` on promotion
@@ -148,18 +219,33 @@ jobs:
 
       - name: Add `draft` label when PR is opened as draft
         if: github.event.action == 'opened' && github.event.pull_request.draft == true
-        uses: wagner-cotta/arsc-label@v1.0
+        uses: actions/github-script@v9.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: add
-          labels: draft
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['draft'],
+            });
 
       - name: Remove `draft` label when PR is marked Ready for Review
         if: github.event.action == 'ready_for_review'
-        uses: wagner-cotta/arsc-label@v1.0
+        uses: actions/github-script@v9.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          object-id: ${{ github.event.pull_request.number }}
-          operation: remove
-          labels: draft
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: 'draft',
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              core.info('`draft` label already absent');
+            }

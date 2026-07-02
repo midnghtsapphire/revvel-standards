@@ -59,6 +59,14 @@ MULTI_AUTHOR_OWNERS=(
   "BeksOmega"
 )
 
+# Exact owner/repo exceptions for active single-author actions that have
+# already been dispositioned. Keep these narrow so one healthy project does not
+# silently bless every other action from the same owner.
+ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
+  # WR #14884: active releases/commits and already pinned to a full commit SHA.
+  "robvanderleek/create-issue-branch"
+)
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 contains() {
@@ -77,9 +85,12 @@ contains() {
   return 1
 }
 
-classify_owner() {
-  local owner="$1"
-  if contains "$owner" "${TRUSTED_OWNERS[@]}"; then
+classify_action() {
+  local action="$1"
+  local owner="${action%%/*}"
+  if contains "$action" "${ACCEPTED_SINGLE_AUTHOR_ACTIONS[@]}"; then
+    echo "multi-author"
+  elif contains "$owner" "${TRUSTED_OWNERS[@]}"; then
     echo "trusted"
   elif contains "$owner" "${MULTI_AUTHOR_OWNERS[@]}"; then
     echo "multi-author"
@@ -148,7 +159,7 @@ json_rows=()
 for action in "${USES[@]}"; do
   [[ -z "$action" ]] && continue
   owner="${action%%/*}"
-  tier=$(classify_owner "$owner")
+  tier=$(classify_action "$action")
   last_release=$(last_release_date "$action")
   age_days=$(days_since "$last_release")
 
