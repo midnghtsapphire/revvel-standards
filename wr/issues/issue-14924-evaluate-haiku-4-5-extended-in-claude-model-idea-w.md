@@ -277,7 +277,7 @@ Use GrowlingEyes as moat + primary revenue engine
 Bolt consulting + eval tools onto existing platform
 Pros: Defensible moat, leverage existing infra, faster scaling, synergistic revenue
 Cons: More complex, tighter coupling
-My phase-0 question:
+Move the Objective section to a GitHub Discussions post or mark this as a 'discussion' PR rather than a formal work request. Alternatively, add an 'AWAITING INPUT' blocking comment at the top of the document that links directly to the author's issue #14924 with checkboxes for required data: '- [ ] GrowlingEyes revenue/month provided' '- [ ] Operational cost breakdown provided' '- [ ] Product-market fit evidence reviewed'. Once all checkboxes are checked, convert to a formal WR.
 GrowlingEyes right now—is it:
 Generating revenue? (if yes, how much/month?)
 Costing money to maintain? (hosting + labor)
