@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-03T17:30:57.316Z",
+  "generated_at": "2026-07-03T18:28:49.731Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 28672875731,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28672875731",
+            "id": 28677512925,
+            "name": "Fix-WR Gate",
+            "path": ".github/workflows/fix-wr-gate.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28677512925",
             "conclusion": "failure"
           },
           {
-            "id": 28672768959,
+            "id": 28677507876,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28672768959",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28677507876",
             "conclusion": "failure"
           }
         ],
