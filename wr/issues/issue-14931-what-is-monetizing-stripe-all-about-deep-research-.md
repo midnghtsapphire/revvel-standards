@@ -112,7 +112,11 @@ Meta: Complete starter kit for Stripe Connect marketplaces. Handle subscriptions
 
 ### Core Features Required
 1. **Stripe Connect Integration**
-   - Express account onboarding
+Mark uncertain figures with confidence tags:
+
+- Creator economy valued at **~$250B** (Statista 2023; adoption varies by definition) **growing to ~$480B by 2027** [projection model: medium confidence]
+
+Or provide actual sources with links where available.
    - OAuth connection flow
    - Webhook handling
 
