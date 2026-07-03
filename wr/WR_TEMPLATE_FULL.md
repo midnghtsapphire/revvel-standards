@@ -32,6 +32,11 @@
 - [ ] Domain strategy
 - [ ] Monetization
 
+## Research Findings
+
+<!-- revvel-research-findings -->
+{RESEARCH_FINDINGS}
+
 ## Executive Summary
 
 {EXECUTIVE_SUMMARY}

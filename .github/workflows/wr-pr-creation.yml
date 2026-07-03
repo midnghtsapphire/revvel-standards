@@ -576,6 +576,34 @@ jobs:
           text = wr_file.read_text(encoding="utf8")
           for key, value in replacements.items():
               text = text.replace(key, value)
+          # Long-form (FULL) template owns a dedicated "## Research Findings"
+          # section via the {RESEARCH_FINDINGS} token. When the template carries
+          # that token, fill it in place from the research-findings.md payload
+          # (collected in the previous step) instead of prepending a second
+          # findings block above the template body. This keeps a single,
+          # standard-position Research Findings section and stops the structure
+          # from diverging from the WR template (see issue #15101). BASIC WRs
+          # have no such token and still receive findings via the prepend below.
+          findings_consumed = False
+          if "{RESEARCH_FINDINGS}" in text:
+              findings_path = pathlib.Path("research-findings.md")
+              findings_body = ""
+              if findings_path.is_file():
+                  findings_body = findings_path.read_text(encoding="utf8").strip()
+              if findings_body:
+                  # Drop the leading marker/heading the payload may already
+                  # carry so the template's own "## Research Findings" heading
+                  # is not duplicated.
+                  findings_body = re.sub(
+                      r"^\s*<!--\s*revvel-research-findings\s*-->\s*", "", findings_body
+                  )
+                  findings_body = re.sub(
+                      r"^\s*#{1,6}\s*Research Findings\s*\n+", "", findings_body
+                  ).strip()
+                  text = text.replace("{RESEARCH_FINDINGS}", findings_body or "N/A — pending Jules refinement")
+                  findings_consumed = True
+              else:
+                  text = text.replace("{RESEARCH_FINDINGS}", "N/A — pending Jules refinement")
           # Catch-all: any generator token still left (e.g. {EXECUTIVE_SUMMARY},
           # {DEEP_WEB_RESEARCH}, {RISKS}, {RECOMMENDATIONS}, {REQUIREMENTS},
           # {PRODUCT_SELECTIONS}, {TOKEN}) becomes an explicit N/A marker rather
@@ -584,6 +612,10 @@ jobs:
           # jamming every generated WR PR. Mirrors wr/scripts/generate-wr.sh.
           text = re.sub(r"\{[A-Z_]+\}", "N/A — pending Jules refinement", text)
           wr_file.write_text(text, encoding="utf8")
+          if findings_consumed:
+              # Signal the shell step below to skip the prepend so the findings
+              # are not emitted twice.
+              pathlib.Path(".wr-findings-consumed").write_text("1", encoding="utf8")
           PY
 
           # Insert issue information at the top
@@ -600,14 +632,16 @@ jobs:
 
           EOF
 
-          # Append research findings if they exist
-          if [ -f research-findings.md ] && [ -s research-findings.md ]; then
+          # Append research findings if they exist and were not already placed
+          # into the template's dedicated Research Findings section above.
+          if [ ! -f .wr-findings-consumed ] && [ -f research-findings.md ] && [ -s research-findings.md ]; then
             echo "" >> temp_header.md
             cat research-findings.md >> temp_header.md
             echo "" >> temp_header.md
             echo "---" >> temp_header.md
             echo "" >> temp_header.md
           fi
+          rm -f .wr-findings-consumed
 
           OUTPUT_TYPE=$(printf '%s\n' "$ISSUE_BODY" | awk '/^### Output Type$/ { found=1; next } found && NF { print; exit }' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\r')
           tail -n +10 "${WR_FILE}" >> temp_header.md
