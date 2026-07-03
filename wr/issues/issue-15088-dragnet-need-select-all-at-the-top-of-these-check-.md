@@ -8,13 +8,12 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28685548341.md`
 
-# WR-Ready Research Packet: Dragnet Select All Checkbox Feature
+## WR-Ready Research Packet: Dragnet Select All Checkbox Feature
 
 ## 1. Executive Decision
 
@@ -227,6 +226,7 @@ The Select All checkbox provides bulk selection capabilities for the dragnet int
 4. Repository/codebase reference
 
 The development team should not begin work until these requirements are provided.
+
 ---
 
 **WR Status:** 🟡 In Progress  
@@ -291,21 +291,12 @@ _No response_
 
 ### Validation Expectations
 
-m the intended operating behavior.
-
-
-This WR defines a bundled outcome, not just a minimum acceptable patch.
-
-Explicitly requested secondary items should not be silently deferred.
-
-If the PR is partial, the blocker must be documented.
-
-The PR should reflect the WR's required bundle and definition of done.
+- Manual testing: verify the Select All checkbox is pre-selected and controls all child checkboxes.
+- Regression testing: verify existing individual checkbox behavior still works.
+- Accessibility testing: verify keyboard navigation, labels, and screen-reader announcements.
+- URL requirement: provide a working `/dragnet` test URL before marking the issue done.
 
 ### Blocker Rule
-
-m the intended operating behavior.
-
 
 This WR defines a bundled outcome, not just a minimum acceptable patch.
 
@@ -323,7 +314,6 @@ The PR should reflect the WR's required bundle and definition of done.
 - [x] The PR should reflect the WR's required bundle and definition of done.
 
 ## Repository Metadata
-Replace the garbled text with clear validation expectations. Example: '### Validation Expectations\n\n- Manual testing: Verify Select All checkbox works with 50+ items\n- Regression testing: Confirm no existing checkbox functionality broken\n- Accessibility testing: Validate with screen reader and keyboard\n- Visual testing: Confirm checkbox state matches UI indicators'
 | Property | Value |
 | --- | --- |
 | Stars | N/A |
@@ -334,12 +324,12 @@ Replace the garbled text with clear validation expectations. Example: '### Valid
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis
+- [x] Domain strategy
+- [x] Monetization
 
 ## Executive Summary
 
