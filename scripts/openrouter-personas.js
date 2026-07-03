@@ -50,6 +50,14 @@ const MODE_ALIASES = {
   deferred: INSTANTIATION_MODES.ON_ASSIGNMENT,
 };
 
+// Shared emoji set that DRAGNET can offer as copy/paste picks in comment threads.
+const EMOTICON_BANK = Object.freeze({
+  status: Object.freeze(["✅", "⚠️", "❌", "🟢", "🟡", "🔴"]),
+  action: Object.freeze(["🛠️", "🚀", "🔧", "📦", "🧪", "📌"]),
+  analysis: Object.freeze(["🕵️", "🔍", "📊", "🧠", "🧭", "📝"]),
+  communication: Object.freeze(["💬", "📣", "📬", "🤝", "🙌", "🙏"]),
+});
+
 /**
  * Persona registry.
  *
@@ -199,6 +207,11 @@ const PERSONA_REGISTRY = {
 /** @returns {Object} The full persona registry. */
 function getPersonas() {
   return PERSONA_REGISTRY;
+}
+
+/** @returns {Object} Curated emoji categories for quick selection in issue comments. */
+function getEmoticonBank() {
+  return EMOTICON_BANK;
 }
 
 /**
@@ -366,8 +379,10 @@ async function instantiateFleet(handles, options = {}) {
 
 module.exports = {
   PERSONA_REGISTRY,
+  EMOTICON_BANK,
   INSTANTIATION_MODES,
   getPersonas,
+  getEmoticonBank,
   getPersona,
   normalizeMode,
   buildMessages,

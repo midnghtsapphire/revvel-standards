@@ -40,16 +40,39 @@
 
 const fs = require("fs");
 const { execFileSync } = require("child_process");
-const { instantiate, getPersonas } = require("./openrouter-personas");
+const { instantiate, getPersonas, getEmoticonBank } = require("./openrouter-personas");
 
 // Verbs that mean "do the thing" rather than "tell me about it".
 // "do" is included so "/dragnet do a perm fix" and "/dragnet please do a fix"
 // enter EXECUTION mode without requiring a more explicit verb.
 const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add", "do"];
+const EMOTICON_BANK_REQUEST = /\b(emoji|emojis|emoticon|emoticons|emoticonbank|emoji\s*bank)\b/i;
 
 function detectAction(task) {
   const m = (task || "").match(/^\s*(build|implement|create|fix|ship|make|add|do)\b/i);
   return m ? m[1].toLowerCase() : null;
+}
+
+function isEmoticonBankRequest(task) {
+  return EMOTICON_BANK_REQUEST.test(String(task || ""));
+}
+
+function renderEmoticonBankMarkdown() {
+  const bank = getEmoticonBank();
+  const lines = [
+    "🕵️ **DRAGNET Emoticon Bank**",
+    "",
+    "Pick any set below and copy/paste into your requests.",
+    "",
+  ];
+  for (const [category, icons] of Object.entries(bank)) {
+    lines.push(`- **${category}:** ${icons.join(" ")}`);
+  }
+  lines.push(
+    "",
+    "_Tip: ask `/dragnet use status + action icons for this request` and include your picks._"
+  );
+  return lines.join("\n");
 }
 
 /**
@@ -465,6 +488,13 @@ async function main() {
     throw new Error("Missing REPO or ISSUE_NUMBER");
   }
 
+  // Dedicated DRAGNET helper lane for emoji-selection requests.
+  if (command.handle === "dragnet" && isEmoticonBankRequest(command.task)) {
+    postComment(repo, issueNumber, renderEmoticonBankMarkdown());
+    console.log(`🕵️ DRAGNET posted emoticon bank on issue #${issueNumber}`);
+    return;
+  }
+
   // EXECUTION mode: an action verb means "do it", so file real work instead of replying.
   if (command.action) {
     // DRAGNET special path: deduplicate against open WRs and PRs before filing.
@@ -553,4 +583,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parsePersonaCommand, sanitizeMentions, gatherContext };
+module.exports = {
+  parsePersonaCommand,
+  sanitizeMentions,
+  gatherContext,
+  isEmoticonBankRequest,
+  renderEmoticonBankMarkdown,
+};
