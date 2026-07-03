@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-03T15:21:40.668Z",
+  "generated_at": "2026-07-03T16:01:24.221Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -8,9 +8,9 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 4,
+    "total": 5,
     "running": 1,
-    "queued": 3,
+    "queued": 4,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 28669529675,
+      "id": 28671441694,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28669529675",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28671441694",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 8668,
-      "since_update_ms": 5668,
+      "age_ms": 7221,
+      "since_update_ms": 4221,
       "reason": "running within budget",
       "protected": true
     },
@@ -62,6 +62,18 @@
       "name": "SEO + A11y Guard",
       "path": ".github/workflows/seo-a11y-guard.yml",
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/27961415482",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 25269615820,
+      "name": "Agent Audit Logger",
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/25269615820",
       "status": "queued",
       "health": "queued",
       "age_ms": null,
