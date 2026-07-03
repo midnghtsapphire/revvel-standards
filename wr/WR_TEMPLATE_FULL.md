@@ -1,5 +1,11 @@
 <!-- WR_TEMPLATE_FULL.md — product/sellable WRs only. For bug/chore/docs use WR_TEMPLATE_BASIC.md. -->
 <!-- Generator must substitute every {TOKEN} and fill or N/A every [placeholder] before commit. -->
+<!-- Source-packet convention: when the research engine runs, it prepends a "## Research Findings"
+     block containing a line like `Source packet: docs/research-engine/run-<run-id>.md`. That
+     run-<run-id>.md path points to an external research-engine CI artifact (the run that produced
+     the packet) and is intentionally NOT a committed file in this repo. Reviewers should not flag
+     it as a missing/broken link — the reference is a pointer to the CI run, not a repo file.
+     See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
 # WR: {TITLE}
 
 **Issue:** {ISSUE_REF}  
