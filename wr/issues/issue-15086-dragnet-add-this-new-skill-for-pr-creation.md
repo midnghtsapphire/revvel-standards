@@ -14,7 +14,7 @@
 
 Source packet: `docs/research-engine/run-28685420571.md`
 
-# Executive Decision
+## Executive Decision
 
 **PROCEED WITH IMPLEMENTATION** - The PR Accelerator Skill addresses a critical operational need for automating agent-to-human handoff workflows. Despite missing market validation data, the internal efficiency gains justify immediate development.
 
@@ -30,11 +30,11 @@ Source packet: `docs/research-engine/run-28685420571.md`
 3. Add telemetry for usage tracking and revenue metrics
 4. Create landing page targeting "GitHub PR automation" keywords
 
-# Audience We Are Going After and Why
+## Audience We Are Going After and Why
 
 **Primary Audience:** Engineering teams using AI agents for development tasks
 - **Pain Point:** Manual PR creation kills velocity gains from AI automation
-- **Urgent Need:** 15-30 minutes lost per agent task on packaging outputs
+- **Urgent Need:** Estimated 15–30 minutes lost per agent task on packaging outputs (internal estimate from our own agent-run logs; not yet validated against an external benchmark)
 - **Switching Barrier:** Low - drop-in skill for existing agent systems
 
 **Secondary Audience:** DevOps teams managing agent fleets
@@ -43,11 +43,11 @@ Source packet: `docs/research-engine/run-28685420571.md`
 - **Growth Path:** Expand from PR creation to full CI/CD automation
 
 **Why This Audience:**
-- Growing adoption of AI coding assistants (40% YoY growth)
+- Growing adoption of AI coding assistants (direction observed anecdotally; specific YoY growth figure not yet sourced — treat as unverified)
 - High willingness to pay for developer productivity tools ($10-25/user/month)
 - Network effects through team adoption and skill sharing
 
-# Marketing and SEO Plan
+## Marketing and SEO Plan
 
 ## Landing Page Strategy
 **Primary URL:** `/github-pr-automation-mcp`
@@ -74,7 +74,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 - GitHub Discussions and relevant subreddits
 - Technical blog posts on dev.to and Medium
 
-# Competitor and GitHub Star Intelligence
+## Competitor and GitHub Star Intelligence
 
 ## Direct Competitors
 | Name | Type | Stars | Pricing | Key Differentiator |
@@ -95,16 +95,16 @@ Source packet: `docs/research-engine/run-28685420571.md`
 - Easy to replicate with GitHub Actions
 - Limited moat without network effects
 
-# Chatter and Demand Signals
+## Chatter and Demand Signals
 
 ## Validated Pain Points
-- **Context Switching:** 73% of teams cite as top productivity killer (GitHub Survey 2023)
+- **Context Switching:** Widely reported as a major productivity drag for developers; the specific "73% (GitHub Survey 2023)" figure could not be traced to a verifiable source and should be treated as unverified until a citation is added
 - **PR Process Confusion:** Common complaints about unclear formatting and reviewer assignment
 - **Agent Handoff Friction:** Growing need for standardized agent-to-human workflows
 
 ## Demand Indicators
-- "Automation" + "pull request" queries up 23% YoY
-- Developer productivity tools showing 40%+ growth in search interest
+- "Automation" + "pull request" search interest appears to be rising (specific "up 23% YoY" figure is an unsourced estimate — needs a search-trends citation)
+- Developer productivity tooling continues to attract strong search interest (the "40%+ growth" figure is unsourced and should be verified or removed)
 - Increasing adoption of AI coding assistants across enterprises
 
 ## Emotional Drivers
@@ -112,7 +112,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 - **Efficiency:** "completely frictionless pipeline"
 - **Reliability:** "executes perfectly on the first try"
 
-# Factual Validation and Evidence Gaps
+## Factual Validation and Evidence Gaps
 
 ## Verified Claims
 ✅ GitHub API structure for PR creation is accurate
@@ -132,7 +132,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 3. Analyze GitHub Marketplace for pricing benchmarks
 4. Verify repository structure and permissions
 
-# Build Requirements and Acceptance Gates
+## Build Requirements and Acceptance Gates
 
 ## Core Requirements
 1. **Skill Implementation**
@@ -169,7 +169,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 3. **Load Tests:** Verify performance under concurrent requests
 4. **User Acceptance:** Beta test with 3-5 internal teams
 
-# Code Review Agent Packet
+## Code Review Agent Packet
 
 ## For Bito AI
 ```
@@ -208,7 +208,7 @@ Performance considerations:
 - Monitor memory usage during bulk PR creation
 ```
 
-# Automatic Fix and Commit Queue
+## Automatic Fix and Commit Queue
 
 ## Critical Fixes
 
@@ -299,7 +299,7 @@ export async function trackPRCreation(payload: PRPayload): Promise<void> {
 ```
 **Commit:** `feat(config): add flexible configuration for PR automation`
 
-# Labels to Apply
+## Labels to Apply
 
 ## Required Labels
 - `agent-generated` - All PRs created by this skill
@@ -397,7 +397,7 @@ You can drop this directly into your agent's system prompt or save it as a custo
 **Skill Instructions:**
 
 > "When you have completed your designated Weekly Research (`wr/`) or sandbox task, you are authorized to immediately package and ship your work for review. Use the `github-mcp-server` to execute the following sequence:
-> 1. **Branch:** Checkout a new branch from `main`. Use a standardized prefix (e.g., `wr/update-[topic]` or `sandbox/[experiment-name]`).
+> 1. **Branch:** Checkout a new branch from `main`. Use a standardized prefix (e.g., `wr/update-<topic>` or `sandbox/<experiment-name>`).
 > 2. **Commit:** Stage all modifications within the `wr/` or `sandbox/` directory. Create a commit using conventional formatting (e.g., `docs(wr): add compliance rulebook context`).
 > 3. **Pull Request Construction:** Use the `create_pull_request` tool with the following parameters:
 > * **Title:** Clear, 5-7 word summary of the update.
