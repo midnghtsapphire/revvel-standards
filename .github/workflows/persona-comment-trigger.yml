@@ -38,10 +38,13 @@ jobs:
        contains(github.event.comment.body, '/dragnet') ||
        contains(github.event.comment.body, '/🎓') ||
        contains(github.event.comment.body, '/🧠') ||
+       contains(github.event.comment.body, '/🗺️') ||
        contains(github.event.comment.body, '/🗺') ||
        contains(github.event.comment.body, '/🔀') ||
+       contains(github.event.comment.body, '/🕵️') ||
        contains(github.event.comment.body, '/🕵') ||
        contains(github.event.comment.body, '/🔎') ||
+       contains(github.event.comment.body, '/🛠️') ||
        contains(github.event.comment.body, '/🛠') ||
        contains(github.event.comment.body, '/persona'))
     steps:
