@@ -235,7 +235,7 @@ Architecture review needed:
 ### Handoff + Sticky Comment Requirement
 - Apply labels first (blocking + risk + status) so this is visible beyond a single comment window.
 - Post a sticky PR/issue comment summarizing blockers and required next actions.
-- If `/dragnet` cannot complete the required bundle in this pass, explicitly hand this back to the next specialist assignee and tag the handoff owner in the sticky comment.
+- If `/dragnet` cannot complete the full required bundle in this pass (Objective + Required Bundle attachments + Definition of Done + Do Not Under-Scope), explicitly hand this back to the next specialist assignee and tag the handoff owner in the sticky comment.
 
 ---
 
