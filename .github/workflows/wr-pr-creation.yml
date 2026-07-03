@@ -600,7 +600,7 @@ jobs:
                   findings_body = re.sub(
                       r"^\s*#{1,6}\s*Research Findings\s*\n+", "", findings_body
                   ).strip()
-                  text = text.replace("{RESEARCH_FINDINGS}", findings_body or "N/A — pending Jules refinement")
+                  text = text.replace("{RESEARCH_FINDINGS}", findings_body)
                   findings_consumed = True
               else:
                   text = text.replace("{RESEARCH_FINDINGS}", "N/A — pending Jules refinement")
