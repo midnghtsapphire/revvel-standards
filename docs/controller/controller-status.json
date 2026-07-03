@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-03T05:37:27.442Z",
+  "generated_at": "2026-07-03T06:51:40.499Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 2,
@@ -12,8 +12,8 @@
     "running": 2,
     "queued": 3,
     "done": 0,
-    "healthy": 1,
-    "stalled": 1,
+    "healthy": 2,
+    "stalled": 0,
     "runaway": 0,
     "protected": 1,
     "occupancy": 2,
@@ -22,27 +22,27 @@
   },
   "orchestrators": [
     {
-      "id": 28640825603,
+      "id": 28643792964,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28640825603",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28643792964",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 11442,
-      "since_update_ms": 7442,
+      "age_ms": 9499,
+      "since_update_ms": 6499,
       "reason": "running within budget",
       "protected": true
     },
     {
-      "id": 28640017880,
+      "id": 28643201666,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28640017880",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28643201666",
       "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1344442,
-      "since_update_ms": 1138442,
-      "reason": "no progress for 19m ≥ 15m",
+      "health": "healthy",
+      "age_ms": 843499,
+      "since_update_ms": 839499,
+      "reason": "running within budget",
       "protected": false
     },
     {
@@ -82,22 +82,5 @@
       "protected": false
     }
   ],
-  "preemptions": [
-    {
-      "id": 28640017880,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "health": "stalled",
-      "reason": "no progress for 19m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-3.5-sonnet",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-3.5-sonnet"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassigned(no-model-input)",
-      "error": null
-    }
-  ]
+  "preemptions": []
 }
