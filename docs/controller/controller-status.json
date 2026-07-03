@@ -1,49 +1,37 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-03T05:37:27.442Z",
+  "generated_at": "2026-07-03T17:53:45.848Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 2,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
     "total": 5,
-    "running": 2,
-    "queued": 3,
+    "running": 1,
+    "queued": 4,
     "done": 0,
     "healthy": 1,
-    "stalled": 1,
+    "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 2,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28640825603,
+      "id": 28676152147,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28640825603",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28676152147",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 11442,
-      "since_update_ms": 7442,
+      "age_ms": 9848,
+      "since_update_ms": 4848,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 28640017880,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28640017880",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1344442,
-      "since_update_ms": 1138442,
-      "reason": "no progress for 19m ≥ 15m",
-      "protected": false
     },
     {
       "id": 28630779040,
@@ -80,24 +68,19 @@
       "since_update_ms": null,
       "reason": "awaiting a runner (trigger)",
       "protected": false
+    },
+    {
+      "id": 25269615820,
+      "name": "Agent Audit Logger",
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/25269615820",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
     }
   ],
-  "preemptions": [
-    {
-      "id": 28640017880,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "health": "stalled",
-      "reason": "no progress for 19m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-3.5-sonnet",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-3.5-sonnet"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassigned(no-model-input)",
-      "error": null
-    }
-  ]
+  "preemptions": []
 }
