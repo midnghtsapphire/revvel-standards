@@ -117,7 +117,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 ✅ WR specification documents exist and are well-structured  
 
 ## Unverified Claims Requiring Evidence
-❌ "$300 DigitalOcean bill" - No invoice provided  
+Reword the Moat Opportunities section to flag these as 'planned' differentiators contingent on WR-4250 implementation. Add a 'Not Yet Implemented' warning at the top of the Marketing section.
 ❌ "10 million dollar project" - No valuation documentation  
 ⚠️ S.H.I.F.T. protocol implementation - Referenced but not demonstrated  
 ⚠️ OpenHands droplet access - Configuration not verified  
