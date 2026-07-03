@@ -14,7 +14,7 @@
 
 Source packet: `docs/research-engine/run-28679865486.md`
 
-# WR-Ready Research Packet: Image-to-Text Parser & LLM Pipeline for Jules
+## WR-Ready Research Packet: Image-to-Text Parser & LLM Pipeline for Jules
 
 ## 1. Executive Decision
 
@@ -310,7 +310,16 @@ _No response_
 | Archived | No |
 
 ## Research Checklist
+### Definition of Done
 
+- [ ] Jules input schema is documented and approved
+- [ ] OCR/Vision API selected and cost model validated
+- [ ] End-to-end pipeline processes 20 sample WRs with ≥95% accuracy
+- [ ] All required WR fields are populated by LLM stage
+- [ ] Processing latency is <30 seconds per document
+- [ ] Error handling covers 10+ failure modes
+- [ ] Metrics dashboard tracks accuracy and cost per run
+- [ ] Documentation includes API examples for Jules integration
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
