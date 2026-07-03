@@ -7,7 +7,12 @@
  */
 
 const assert = require("assert");
-const { parsePersonaCommand, sanitizeMentions } = require("../scripts/persona-comment-runner");
+const {
+  parsePersonaCommand,
+  sanitizeMentions,
+  isEmoticonBankRequest,
+  renderEmoticonBankMarkdown,
+} = require("../scripts/persona-comment-runner");
 
 let passed = 0;
 let failed = 0;
@@ -84,6 +89,19 @@ test("detects an action verb (execution mode)", () => {
 test("a question is advisory (no action)", () => {
   assert.strictEqual(parsePersonaCommand("/professor what is the TAM?").action, null);
   assert.strictEqual(parsePersonaCommand("/oaudrey how should we route this?").action, null);
+});
+
+test("detects DRAGNET emoticon bank requests", () => {
+  assert.strictEqual(isEmoticonBankRequest("create an emoticonbank for me"), true);
+  assert.strictEqual(isEmoticonBankRequest("show me an emoji bank"), true);
+  assert.strictEqual(isEmoticonBankRequest("diagnose this workflow timeout"), false);
+});
+
+test("renders emoticon bank markdown with categorized picks", () => {
+  const markdown = renderEmoticonBankMarkdown();
+  assert.ok(markdown.includes("DRAGNET Emoticon Bank"));
+  assert.ok(markdown.includes("**status:**"));
+  assert.ok(markdown.includes("✅"));
 });
 
 test("sanitizeMentions defangs @mentions so a reply never pings a real user", () => {

@@ -11,8 +11,10 @@
 
 const {
   PERSONA_REGISTRY,
+  EMOTICON_BANK,
   INSTANTIATION_MODES,
   getPersonas,
+  getEmoticonBank,
   getPersona,
   normalizeMode,
   buildMessages,
@@ -87,6 +89,15 @@ async function runTests() {
     Array.isArray(PERSONA_REGISTRY.professor.models) &&
       PERSONA_REGISTRY.professor.models[0] === "perplexity/sonar-pro",
     "The Professor pins the Perplexity Sonar model lane"
+  );
+  assertTrue(
+    getEmoticonBank().analysis.includes(PERSONA_REGISTRY.dragnet.emoji),
+    "Emoticon bank includes the DRAGNET emoji in analysis picks"
+  );
+  assertEqual(
+    EMOTICON_BANK.status[0],
+    "✅",
+    "Exports a stable emoticon bank for comment-trigger helpers"
   );
 
   // Handle resolution
