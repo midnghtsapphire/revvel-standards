@@ -59,6 +59,8 @@
 <!-- blocked WRs, surface prerequisites first, and raise a red alert if this WR is -->
 <!-- worked before its prerequisites land. Query a full chain with `/dragnet deps <wr-id>`. -->
 <!-- Use WR/issue references (e.g. #15090) or "none" — never leave a raw token. -->
+<!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
+<!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
 | Field | Value |
 | --- | --- |
