@@ -14,7 +14,7 @@
 
 Source packet: `docs/research-engine/run-28679146241.md`
 
-# Executive Decision
+## Executive Decision
 
 **SHIP WR-4200 IMMEDIATELY**. The gluing consistency implementation has tested code ready and represents the closest path to production value. All other specifications remain blocked until this foundational system is operational.
 
@@ -22,7 +22,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 
 **Block All New Specifications** until at least one WR is fully implemented and generating value. Five unmerged specs represent technical debt, not progress.
 
-# Audience We Are Going After and Why
+## Audience We Are Going After and Why
 
 **Primary Target**: DevOps teams and engineering managers at mid-stage startups (10-100 engineers) burning 20-30% of engineering time on manual infrastructure operations.
 
@@ -40,7 +40,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 
 **Secondary Market**: Solo developers managing multi-platform deployments who need trustworthy automation without "magic AI" risks.
 
-# Marketing and SEO Plan
+## Marketing and SEO Plan
 
 ## Immediate Actions (Week 1)
 1. **Hero Message Update**: "Automated cross-platform deployment with secure agent handoffs"
@@ -61,7 +61,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 - Primary: "cross-platform DevOps automation", "secure agent handoffs", "DigitalOcean Vercel integration"
 - Long-tail: "AI DevOps without credential leaks", "automated deployment with audit trails", "multi-cloud credential isolation"
 
-# Competitor and GitHub Star Intelligence
+## Competitor and GitHub Star Intelligence
 
 ## Direct Competitors
 1. **GitHub Copilot Workspace** (Microsoft)
@@ -88,7 +88,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 2. **Dual-Output Requirements**: Diagram + spec bundling is unique
 3. **Evidence-Based Remediation**: "Observe broadly. Heal deliberately" differentiates from autonomous chaos
 
-# Chatter and Demand Signals
+## Chatter and Demand Signals
 
 ## Pain Points from User Research
 - "Five specs is a backlog, not progress" - Implementation bottleneck frustration
@@ -108,7 +108,7 @@ Source packet: `docs/research-engine/run-28679146241.md`
 3. Engineering time audit showing 20%+ on ops
 4. New compliance requirements for deployment auditing
 
-# Factual Validation and Evidence Gaps
+## Factual Validation and Evidence Gaps
 
 ## Verified Claims
 ✅ Live deployment at veinsloop.vercel.app  
@@ -130,7 +130,7 @@ Reword the Moat Opportunities section to flag these as 'planned' differentiators
 4. **No metrics** on adoption or success rates
 5. **No security audit** of credential isolation
 
-# Build Requirements and Acceptance Gates
+## Build Requirements and Acceptance Gates
 
 ## WR-4200: Gluing Consistency (PRIORITY 1)
 **Requirements**:
@@ -168,7 +168,7 @@ Reword the Moat Opportunities section to flag these as 'planned' differentiators
 - [ ] Copy clarity score > 8/10
 - [ ] Page load time < 3 seconds
 
-# Code Review Agent Packet
+## Code Review Agent Packet
 
 ## For Bito AI
 ```yaml
@@ -202,7 +202,7 @@ architecture_review:
   - error_propagation: "Verify error context preservation"
 ```
 
-# Automatic Fix and Commit Queue
+## Automatic Fix and Commit Queue
 
 ## Fix 1: Brand Theme Color
 **File**: `veinsloop/styles.css`
@@ -267,7 +267,7 @@ echo "PASS: Credential isolation verified"
 ```
 **Commit**: `test: add credential isolation verification script`
 
-# Labels to Apply
+## Labels to Apply
 
 ## Priority Labels
 - `priority-1-ship-now`: WR-4200 implementation
