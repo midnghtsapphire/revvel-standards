@@ -38,7 +38,7 @@ Source packet: `docs/research-engine/run-28617972283.md`
 - High demand for turnkey monetization solutions
 - Stripe Connect complexity creates opportunity for templates/tools
 
-### Pain Points
+Either: (1) Provide verifiable sources (links, citations) for all quantitative claims, or (2) Mark them with confidence levels inline: 'Creator economy valued at ~$250B [low confidence — needs SEO tool verification]'. For 1000+ monthly searches, replace with 'Strong demand signals indicated by active Stripe Connect discussions' or remove the specific number until verified. See L121 for the incomplete fix attempt.
 - Complex onboarding for connected accounts
 - Fee calculation and revenue sharing confusion
 - Compliance burden (KYC/AML)
