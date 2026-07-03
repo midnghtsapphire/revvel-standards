@@ -38,7 +38,7 @@ const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO
 // a WR still showing "_No response_" has unfilled scope sections, and any [x]
 // acknowledgement alongside it is the same false-completion signal as a raw
 // {TOKEN}/[placeholder]. See issue #15080 (long-form work-request template).
-const NO_RESPONSE = /(^|\s)_No response_(\s|$)/i;
+const NO_RESPONSE = /(^|[^A-Za-z0-9])_No response_(?=[^A-Za-z0-9]|$)/i;
 
 // Bracket placeholders the full template leaves behind.
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;

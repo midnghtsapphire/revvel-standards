@@ -53,6 +53,21 @@ test("flags checked acknowledgements when fields are blank (_No response_)", () 
   ].join("\n");
   const { status, stdout } = runLint(md);
   assert.strictEqual(status, 1, "expected non-zero exit for false-completion");
+  assert.match(stdout, /2 \[x\] item\(s\)/);
+  assert.match(stdout, /false-completion signal/);
+});
+
+test("flags _No response_ with no space after a field-label colon", () => {
+  const md = [
+    "# WR: Add discoverability layers",
+    "",
+    "**Summary:**_No response_",
+    "",
+    CHECKED_ACK,
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "punctuation-adjacent _No response_ must trip rule 7");
   assert.match(stdout, /false-completion signal/);
 });
 
