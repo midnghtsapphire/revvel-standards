@@ -1,4 +1,5 @@
 {
+  "_instructions": "Template file. Before this project is production-ready, replace every REPLACE-* value: set provenance.decided_by (human or agent that chose the model), provenance.decided_at (ISO 8601 date), and confirm take_rate_percent + roi via decision/fee-worksheet.md.",
   "model_chosen": "connect",
   "take_rate_percent": 2.5,
   "flat_fee_cents": 0,
