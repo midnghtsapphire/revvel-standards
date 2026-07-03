@@ -324,12 +324,12 @@ The PR should reflect the WR's required bundle and definition of done.
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis
-- [x] Domain strategy
-- [x] Monetization
+- [ ] Deep market research — prefilled default: agent fills this if requester leaves it blank
+- [ ] BOM — prefilled default: agent fills this if requester leaves it blank
+- [ ] Community chatter — prefilled default: agent fills this if requester leaves it blank
+- [ ] Competitor analysis — prefilled default: agent fills this if requester leaves it blank
+- [ ] Domain strategy — prefilled default: agent fills this if requester leaves it blank
+- [ ] Monetization — prefilled default: agent fills this if requester leaves it blank
 
 ## Executive Summary
 
