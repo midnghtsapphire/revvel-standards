@@ -124,7 +124,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
 2. Define dependency types and detection criteria
 3. Quantify current coordination overhead
 
-## Build Requirements and Acceptance Gates
+## MVP Requirements and Technical Architecture
 
 ### MVP Requirements
 - [ ] WRs can declare dependencies using standard syntax
@@ -211,9 +211,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Parse Dependencies
+        id: parse
         run: |
           # Extract dependency references from issue body
-          deps=$(echo "${{ github.event.issue.body }}" | grep -oP 'depends on #\K\d+')
+          deps=$(echo "$ISSUE_BODY" | grep -oP 'depends on #\K\d+')
           echo "dependencies=$deps" >> $GITHUB_OUTPUT
       - name: Validate Chain
         run: |
