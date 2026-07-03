@@ -323,7 +323,7 @@ The PR should reflect the WR's required bundle and definition of done.
 - [x] The PR should reflect the WR's required bundle and definition of done.
 
 ## Repository Metadata
-
+Replace the garbled text with clear validation expectations. Example: '### Validation Expectations\n\n- Manual testing: Verify Select All checkbox works with 50+ items\n- Regression testing: Confirm no existing checkbox functionality broken\n- Accessibility testing: Validate with screen reader and keyboard\n- Visual testing: Confirm checkbox state matches UI indicators'
 | Property | Value |
 | --- | --- |
 | Stars | N/A |
