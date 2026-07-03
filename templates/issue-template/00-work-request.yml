@@ -202,6 +202,42 @@ body:
         - One PR preferred, split only if blocked
         - Proposal first
         - Multiple PRs intentionally planned
+        - Explodable sellable ZIP (unpacks into repo folders)
+    validations:
+      required: false
+
+  - type: textarea
+    id: sellable_artifact_bundle
+    attributes:
+      label: Sellable Artifact Bundle
+      description: >
+        For sellable products: list everything the buyer receives, packaged as an explodable ZIP that
+        unpacks into the correct repo folders on import. Call out all necessary files, prompts, skills,
+        LLMs/models, tools, MCP servers, CLI entrypoints, tokens/secrets templates, and a BOM (bill of
+        materials) list.
+      placeholder: |
+        Deliver as an explodable ZIP that unpacks into the right folders, containing:
+        - /agents, /docs, /scripts, /config folders that explode into place
+        - Prompts, skills, and agent definitions
+        - LLM/model + tool + MCP + CLI wiring
+        - env.template for tokens/secrets (no real secrets committed)
+        - BOM.list (bill of materials) for compute, DB, integrations, runtime
+        - README with install / setup guide
+    validations:
+      required: false
+
+  - type: textarea
+    id: purchase_validation
+    attributes:
+      label: Purchase Validation (functions-as-purchased)
+      description: >
+        How will we rigorously prove the artifact functions exactly as a paying customer would receive it?
+        Describe the tests to run and include a URL / instructions to exercise it before marking done.
+      placeholder: |
+        - Unzip the delivered bundle into a clean repo and confirm it explodes into the expected folders
+        - Follow the README as a buyer would; run the documented setup end to end
+        - Run the included test suite / smoke checks and confirm they pass
+        - Provide a URL (or exact commands) to reproduce a working run before completing as done
     validations:
       required: false
 
