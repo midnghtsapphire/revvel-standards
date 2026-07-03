@@ -472,6 +472,7 @@ function buildSynthesisPrompt(context, laneReports) {
     "",
     "For the Code Review Agent Packet, write comments that Bito AI, OpenRouter review, Coderabbit, and Ralph Loop can act on. Every blocking finding must include an automatic fix plan and a commit message.",
     "",
+    // Mirrors the competitor-pricing rule in wr/WR_TEMPLATE_FULL.md; keep both in sync.
     "For Competitor and GitHub Star Intelligence, the competitor/pricing table must list actual prices (e.g. \"$99-299/month\"), not vague labels like \"Paid tiers\". If a competitor's price is unknown, write \"Pricing data pending — competitive benchmark research required.\" Do not ship incomplete competitive intelligence.",
     "",
     laneText,
