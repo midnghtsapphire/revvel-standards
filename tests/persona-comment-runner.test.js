@@ -40,7 +40,9 @@ test("parses emoji shortcuts for low-typing commands", () => {
   assert.strictEqual(parsePersonaCommand("/🎓 research this market").handle, "professor");
   assert.strictEqual(parsePersonaCommand("/🕵️ fix this CI error").handle, "dragnet");
   assert.strictEqual(parsePersonaCommand("/🔎 fix this CI error").handle, "dragnet");
-  assert.strictEqual(parsePersonaCommand("/🕵️").handle, "dragnet");
+  const emojiOnly = parsePersonaCommand("/🕵️");
+  assert.strictEqual(emojiOnly.handle, "dragnet");
+  assert.strictEqual(emojiOnly.task, "/🕵️");
 });
 
 test("parses the /persona <name> <task> form", () => {
