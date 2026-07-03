@@ -28,7 +28,7 @@
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
-- [ ] Competitor analysis
+- [ ] Competitor analysis (table MUST list actual prices or "Pricing data pending")
 - [ ] Domain strategy
 - [ ] Monetization
 
@@ -41,6 +41,8 @@
 {PRODUCT_SELECTIONS}
 
 ## Step 2 — Deep Web Research
+
+<!-- Competitor analysis MUST include actual prices (e.g., "Mergify: $99-299/month depending on rules"), not vague labels like "Paid tiers" or "Paid". If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required." Do NOT ship incomplete competitive intelligence. -->
 
 {DEEP_WEB_RESEARCH}
 
