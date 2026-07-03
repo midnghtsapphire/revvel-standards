@@ -34,7 +34,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 
 **Primary Audience:** Engineering teams using AI agents for development tasks
 - **Pain Point:** Manual PR creation kills velocity gains from AI automation
-- **Urgent Need:** Estimated 15–30 minutes lost per agent task on packaging outputs (internal estimate from our own agent-run logs; not yet validated against an external benchmark)
+- **Urgent Need:** Estimated 15–30 minutes lost per agent task on packaging outputs (internal estimate; not externally validated)
 - **Switching Barrier:** Low - drop-in skill for existing agent systems
 
 **Secondary Audience:** DevOps teams managing agent fleets
@@ -43,7 +43,7 @@ Source packet: `docs/research-engine/run-28685420571.md`
 - **Growth Path:** Expand from PR creation to full CI/CD automation
 
 **Why This Audience:**
-- Growing adoption of AI coding assistants (direction observed anecdotally; specific YoY growth figure not yet sourced — treat as unverified)
+- Growing adoption of AI coding assistants (anecdotal observation; YoY growth figure unverified)
 - High willingness to pay for developer productivity tools ($10-25/user/month)
 - Network effects through team adoption and skill sharing
 
@@ -98,13 +98,13 @@ Source packet: `docs/research-engine/run-28685420571.md`
 ## Chatter and Demand Signals
 
 ## Validated Pain Points
-- **Context Switching:** Widely reported as a major productivity drag for developers; the specific "73% (GitHub Survey 2023)" figure could not be traced to a verifiable source and should be treated as unverified until a citation is added
+- **Context Switching:** Widely reported as a major productivity drag for developers (specific 73% "GitHub Survey 2023" figure unverified)
 - **PR Process Confusion:** Common complaints about unclear formatting and reviewer assignment
 - **Agent Handoff Friction:** Growing need for standardized agent-to-human workflows
 
 ## Demand Indicators
-- "Automation" + "pull request" search interest appears to be rising (specific "up 23% YoY" figure is an unsourced estimate — needs a search-trends citation)
-- Developer productivity tooling continues to attract strong search interest (the "40%+ growth" figure is unsourced and should be verified or removed)
+- "Automation" + "pull request" search interest appears to be rising (specific 23% YoY figure unverified)
+- Developer productivity tooling continues to attract strong search interest (40%+ growth figure unverified)
 - Increasing adoption of AI coding assistants across enterprises
 
 ## Emotional Drivers

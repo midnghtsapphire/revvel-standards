@@ -472,7 +472,10 @@ function buildSynthesisPrompt(context, laneReports) {
     "",
     "For the Code Review Agent Packet, write comments that Bito AI, OpenRouter review, Coderabbit, and Ralph Loop can act on. Every blocking finding must include an automatic fix plan and a commit message.",
     "",
-    "Citation rule: every statistic, percentage, growth rate, or market-size claim must include a direct source link. If a number is not sourced, omit it or explicitly label it as an estimate (e.g. \"internal estimate\", \"observed anecdotally — unverified\") and use a range instead of a precise figure. Never present bare percentages (e.g. \"73% of teams\", \"40% YoY\") without attribution.",
+    "Citation rule: every statistic, percentage, growth rate, or market-size claim must include a",
+    "direct source link. If a number is not sourced, omit it or explicitly label it as an estimate",
+    "(e.g. \"internal estimate\", \"observed anecdotally — unverified\") and use a range instead of a",
+    "precise figure. Never present bare percentages (e.g. \"73% of teams\", \"40% YoY\") without attribution.",
     "",
     laneText,
   ].join("\n");
