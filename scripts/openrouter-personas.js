@@ -73,7 +73,7 @@ const PERSONA_REGISTRY = {
     role: "Dispatcher — routes work to the cheapest capable model",
     // Friendly job-name aliases so the persona is easy to remember by what
     // it does. `/dispatcher` resolves to the same persona as `/openrouter`.
-    aliases: ["dispatcher", "router"],
+    aliases: ["dispatcher", "router", "🔀"],
     profile: "repo_surgery",
     description:
       "First line of sight. Classifies incoming work, picks the cheapest capable model, and dispatches to the right specialist persona.",
@@ -94,7 +94,7 @@ const PERSONA_REGISTRY = {
     role: "Triager — first line of sight, sorts and routes incoming work",
     // `/triager` is the role-name alias — easier to remember by what she does.
     // Still uses `/` prefix; `@triager` would notify a real GitHub user.
-    aliases: ["triager", "triage"],
+    aliases: ["triager", "triage", "🧠"],
     profile: "repo_surgery",
     description:
       "Owner persona and first line of sight on every issue and PR. Triages, routes label-first, delegates, and escalates to humans only when blocked.",
@@ -113,7 +113,7 @@ const PERSONA_REGISTRY = {
     name: "MindMappr",
     emoji: "🗺️",
     role: "Spotter — turns fuzzy ideas into structured mind maps and outlines",
-    aliases: ["spotter"],
+    aliases: ["spotter", "🗺️", "🗺"],
     profile: "cheap_batch_edits",
     description:
       "Turns fuzzy ideas into structured mind maps, outlines, and persona specs. Expands breadth first, then prunes to what matters.",
@@ -133,7 +133,7 @@ const PERSONA_REGISTRY = {
     name: "The Professor",
     emoji: "🎓",
     role: "Citer — answers with sourced facts (Perplexity Sonar lane)",
-    aliases: ["citer", "sourcer"],
+    aliases: ["citer", "sourcer", "🎓"],
     // Perplexity Sonar lane via OpenRouter — the no-API-key research path used
     // by scripts/perplexity-research-issue.js. Falls back to deeper then cheaper.
     models: [
@@ -163,7 +163,7 @@ const PERSONA_REGISTRY = {
     // applied to error triage: it researches the error, checks for an existing
     // WR or PR before creating a new one, and always requests a permanent fix
     // (never a workaround).
-    aliases: ["errorfix", "permfix", "dragnet-fix"],
+    aliases: ["errorfix", "permfix", "dragnet-fix", "🕵️", "🕵", "🔎"],
     profile: "repo_surgery",
     description:
       "Autonomous error hunter. Reads the issue/PR context, classifies the root cause, " +
@@ -187,7 +187,7 @@ const PERSONA_REGISTRY = {
     // `/fixer` is the role-name alias. Devin and Octopus produce diagnoses
     // and ready-to-apply fix prompts; Coder is the persona that actually
     // edits the files and opens the PR.
-    aliases: ["fixer", "patcher"],
+    aliases: ["fixer", "patcher", "🛠️", "🛠"],
     profile: "repo_surgery",
     description:
       "Applies code fixes from issues and review findings. Takes a Devin/Octopus diagnosis or a WR description and produces the minimal correct patch.",
