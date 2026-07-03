@@ -142,7 +142,7 @@ Multiple unverified claims and missing components
 
 ## 8. Code Review Agent Packet
 
-### For Bito AI
+Before marketing or deploying, conduct user interviews with 5-10 DevOps/compliance teams to validate: (1) do they actually need this tool, (2) would they pay for it, (3) what features matter most. Update section 5 with real feedback, or remove claims about product-market fit.
 ```
 Review dragnet-sentinel.yml for:
 1. Missing implementation in compliance check step
@@ -242,6 +242,7 @@ This compliance system shows promise but is currently a **design document, not a
 5. **Simplify onboarding** from 5 steps to 1-click installation
 
 The system has potential as a GitHub Marketplace app at $49-199/month per organization, but requires significant development work before it can generate revenue or provide value to users.
+
 ---
 
 **WR Status:** 🟡 In Progress  
@@ -258,7 +259,7 @@ None
 
 ### Research Mode
 
-None
+Either remove the reference to 'Obot's anti-mimicry protocols' or add a dedicated section documenting: (1) what the protocols do, (2) how they are implemented, (3) testing/validation approach, (4) known limitations.
 
 ### Delivery Mode
 
@@ -274,7 +275,7 @@ None
 
 ### Summary
 
-_No response_
+Add a new section titled 'Pricing & Licensing' that clarifies: (1) is this open-source (MIT/Apache) or proprietary, (2) if commercial, what is the pricing model (per-seat, per-repo, per-action-run), (3) if using external APIs (Anthropic, Datadog), what are estimated monthly costs for a typical mid-size team.
 
 ### Objective
 
