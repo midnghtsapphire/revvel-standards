@@ -93,6 +93,7 @@ async function runTests() {
   console.log("\nTest Group: getPersona");
   assertEqual(getPersona("oaudrey").name, "oAudrey", "Resolves a plain handle");
   assertEqual(getPersona("@oAudrey").name, "oAudrey", "Resolves a handle with @ and mixed case");
+  assertEqual(getPersona("🕵️").name, "DRAGNET", "Resolves an emoji alias to its persona");
   assertThrows(() => getPersona("nobody"), "Throws on unknown persona");
   assertThrows(() => getPersona(""), "Throws on empty handle");
 

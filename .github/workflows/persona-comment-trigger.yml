@@ -2,6 +2,7 @@ name: Persona Comment Trigger
 
 # Summon a persona on demand from an issue/PR comment:
 #   /professor <task> | /oaudrey ... | /mindmappr ... | /openrouter ...
+#   /🎓 ... | /🧠 ... | /🗺️ ... | /🔀 ... | /🕵️ ... | /🛠️ ...
 #   /persona <name> <task>
 # Triggers use a leading slash, NOT "@name": GitHub turns "@name" into a mention
 # of the real user account with that username and emails them, so "@professor"
@@ -35,6 +36,13 @@ jobs:
        contains(github.event.comment.body, '/mindmappr') ||
        contains(github.event.comment.body, '/openrouter') ||
        contains(github.event.comment.body, '/dragnet') ||
+       contains(github.event.comment.body, '/🎓') ||
+       contains(github.event.comment.body, '/🧠') ||
+       contains(github.event.comment.body, '/🗺') ||
+       contains(github.event.comment.body, '/🔀') ||
+       contains(github.event.comment.body, '/🕵') ||
+       contains(github.event.comment.body, '/🔎') ||
+       contains(github.event.comment.body, '/🛠') ||
        contains(github.event.comment.body, '/persona'))
     steps:
       - name: Checkout

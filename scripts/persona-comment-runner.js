@@ -52,12 +52,17 @@ function detectAction(task) {
   return m ? m[1].toLowerCase() : null;
 }
 
+function escapeRegExp(input) {
+  return String(input).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
  * Parse a persona trigger out of a comment body.
  *
- * Accepts "/persona <name> <task>" or the "/<name> <task>" shortcut. The "@name"
- * form is intentionally NOT accepted — it would notify the real GitHub user with
- * that username.
+ * Accepts "/persona <name> <task>" or the "/<name> <task>" shortcut where name
+ * can be a canonical handle, role alias, or emoji alias (for low-typing flows,
+ * e.g. "/🕵️ investigate this"). The "@name" form is intentionally NOT accepted —
+ * it would notify the real GitHub user with that username.
  *
  * @param {string} body - The comment body.
  * @returns {{handle: string, task: string, action: (string|null)} | null}
@@ -93,7 +98,7 @@ function parsePersonaCommand(body) {
   // GitHub user — `@triager` would notify whoever owns that username; the
   // slash form notifies no one.
   for (const trigger of triggers) {
-    const shortcut = new RegExp(`(?:^|\\s)/${trigger}\\b`, "i");
+    const shortcut = new RegExp(`(?:^|\\s)/${escapeRegExp(trigger)}(?=\\s|$)`, "i");
     if (shortcut.test(body)) {
       const rest = body.replace(shortcut, " ").trim();
       return {

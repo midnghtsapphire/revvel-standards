@@ -35,6 +35,13 @@ test("parses other persona shortcuts", () => {
   assert.strictEqual(parsePersonaCommand("/openrouter route this").handle, "openrouter");
 });
 
+test("parses emoji shortcuts for low-typing commands", () => {
+  assert.strictEqual(parsePersonaCommand("/🧠 triage this").handle, "oaudrey");
+  assert.strictEqual(parsePersonaCommand("/🎓 research this market").handle, "professor");
+  assert.strictEqual(parsePersonaCommand("/🕵️ fix this CI error").handle, "dragnet");
+  assert.strictEqual(parsePersonaCommand("/🔎 fix this CI error").handle, "dragnet");
+});
+
 test("parses the /persona <name> <task> form", () => {
   const cmd = parsePersonaCommand("/persona professor research the OSINT market");
   assert.strictEqual(cmd.handle, "professor");
