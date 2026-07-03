@@ -52,6 +52,22 @@
 
 {RECOMMENDATIONS}
 
+## Dependencies
+
+<!-- Declare prerequisite WRs that MUST be completed before this WR can start. -->
+<!-- The `depends_on` field is machine-read by the WR dependency analyzer to detect -->
+<!-- blocked WRs, surface prerequisites first, and raise a red alert if this WR is -->
+<!-- worked before its prerequisites land. Query a full chain with `/dragnet deps <wr-id>`. -->
+<!-- Use WR/issue references (e.g. #15090) or "none" — never leave a raw token. -->
+
+| Field | Value |
+| --- | --- |
+| `depends_on` (prerequisite WRs) | {DEPENDS_ON} |
+| Blocked by | {BLOCKED_BY} |
+| Blocks (downstream WRs) | {BLOCKS} |
+
+{DEPENDENCIES}
+
 ## Risks
 
 {RISKS}
