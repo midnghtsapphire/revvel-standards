@@ -138,7 +138,13 @@ test("enrichWorkRequest: LLM failure falls back to original body", async () => {
 });
 
 test("preprocessWorkRequest: end-to-end with injected OCR + LLM", async () => {
-  const runner = () => "text inside the image";
+  const runner = (cmd, args) => {
+    // Verify the OCR service is invoked correctly: python3 <script> --input <url>.
+    assert.strictEqual(cmd, "python3");
+    assert.ok(args.includes("--input"), "OCR runner should pass --input");
+    assert.strictEqual(args[args.length - 1], "https://github.com/user-attachments/assets/z");
+    return "text inside the image";
+  };
   const routed = async ({ messages }) => {
     // The OCR text must have reached the model.
     assert.match(messages[1].content, /text inside the image/);

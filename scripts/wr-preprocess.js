@@ -63,7 +63,7 @@ try {
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "tiff", "tif"];
 
 // The canonical WR fields Jules needs to rewrite the WR and PR. Kept in sync
-// with the Deep-Research issue template (.github/ISSUE_TEMPLATE/00-work-request.yml).
+// with the Work Request issue template (.github/ISSUE_TEMPLATE/00-work-request.yml).
 const CANONICAL_WR_FIELDS = [
   "Output Type",
   "Objective",
@@ -246,6 +246,13 @@ function buildEnrichmentMessages({ title, body, ocrText }) {
   ];
 }
 
+// Small helper so the fallback path can wrap raw OCR text in the same appendix
+// heading the structured assembler uses, without needing the results array.
+// Defined here (above enrichWorkRequest, its only caller) to read top-down.
+function assembleOcrAppendixText(ocrText) {
+  return ["## Extracted Image Text (OCR)", "", "```text", ocrText.trim(), "```"].join("\n");
+}
+
 /**
  * Enrich a WR body via the OpenRouter routing layer.
  *
@@ -292,12 +299,6 @@ async function enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed
   } catch (err) {
     return fallback(err && err.message ? err.message : String(err));
   }
-}
-
-// Small helper so the fallback path can wrap raw OCR text in the same appendix
-// heading the pure assembler uses, without needing the structured results array.
-function assembleOcrAppendixText(ocrText) {
-  return ["## Extracted Image Text (OCR)", "", "```text", ocrText.trim(), "```"].join("\n");
 }
 
 /**
