@@ -29,6 +29,32 @@ const PRODUCT_SECTIONS = [
 // Title/type signals that mean BASIC template (no market research).
 const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
 
+// Persona slash-command WRs (e.g. "/dragnet fix and implement") are substantive
+// research/permanent-fix requests that must get the FULL long-form template even
+// though their title often contains "fix". Detect the leading slash command so
+// rule 4 does not misclassify them as BASIC and reject the FULL product sections.
+// Mirrors the classifiers in wr/scripts/generate-wr.sh and wr-pr-creation.yml.
+function isSlashCommandTitle(firstLine) {
+  const title = String(firstLine || "")
+    .replace(/^#\s*/, "")
+    .replace(/^WR:\s*/i, "")
+    .replace(/^\[WR\]\s*/i, "")
+    .trim();
+  return /^\/[a-z][\w-]*/i.test(title);
+}
+
+// Shell-injection anti-pattern: untrusted github.event.*.{body,title} (or
+// comment.body) interpolated with ${{ }} directly into a shell command. Per
+// CLAUDE.md gotcha #4, these must be passed through `env:` and referenced as
+// "$VAR" inside the script. WR docs ship ready-to-commit workflow snippets, so
+// this rule intentionally scans inside fenced code blocks too — that is exactly
+// where the dangerous snippets live (Devin finding on #15094).
+const UNTRUSTED_EVENT_INTERP = /\$\{\{\s*github\.event\.[a-z0-9_.]*\b(?:body|title)\b[^}]*\}\}/i;
+// A line is "shell usage" when the interpolation lands in a command rather than
+// a safe `env:`/`with:` YAML mapping or an `if:` expression. `env:`/`with:` use
+// `key: ${{ ... }}` (colon), which the shell detector below deliberately misses.
+const SHELL_USAGE = /\becho\b|\[\[|\]\]|(^|\s)gh\s|^[^:]*\b[A-Za-z_][A-Za-z0-9_]*=/;
+
 // Unsubstituted generator tokens that must never ship.
 const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
 
@@ -83,7 +109,8 @@ function lintFile(path) {
   });
 
   // 4. Template/type mismatch: BASIC-signal title but product sections present.
-  const isBasic = BASIC_SIGNALS.test(path) || BASIC_SIGNALS.test(lines[0] || "");
+  const isBasic = !isSlashCommandTitle(lines[0]) &&
+    (BASIC_SIGNALS.test(path) || BASIC_SIGNALS.test(lines[0] || ""));
   if (isBasic) {
     for (const sec of PRODUCT_SECTIONS) {
       const re = new RegExp(`^#{1,4}\\s*.*${sec.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "im");
@@ -153,6 +180,16 @@ function lintFile(path) {
   if (/^#\s*WR:.*\S\s{2,}\S/.test(lines[0] || "")) {
     issues.push(`line 1: title has a double space — a backtick-wrapped identifier was likely stripped during generation; restore it`);
   }
+
+  // 10. Shell-injection anti-pattern in embedded workflow snippets: untrusted
+  // github.event.*.{body,title} interpolated straight into a shell command.
+  // Scans inside code fences on purpose — the ready-to-commit workflow YAML in
+  // the "Automatic Fix and Commit Queue" section is where this lands.
+  lines.forEach((l, i) => {
+    if (!UNTRUSTED_EVENT_INTERP.test(l)) return;
+    if (!SHELL_USAGE.test(l)) return; // safe env:/with:/if: mappings
+    issues.push(`line ${i + 1}: untrusted \${{ github.event.*.body/title }} interpolated into a shell command — pass it via env: (e.g. \`ISSUE_BODY: \${{ github.event.issue.body }}\`) and reference "$ISSUE_BODY" instead (CLAUDE.md gotcha #4)`);
+  });
 
   return issues;
 }
