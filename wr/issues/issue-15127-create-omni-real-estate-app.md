@@ -162,7 +162,15 @@ Without the specification document, the target audience cannot be determined. Ma
 **STATUS: CANNOT DEFINE - BLOCKED BY MISSING REQUIREMENTS**
 
 ### Minimum Required Information Before Development
+Expand the OSS analysis with a brief table for each project:
 
+| Project | Final Commit | Status | Key Features | Why It Failed |
+|---------|--------------|--------|--------------|---------------|
+| PropertyWebBuilder | 2019 | Abandoned | Multi-listing mgmt, basic CRM | Lack of MLS integration, limited mobile support |
+| OpenEstate | 2018 | Unmaintained | Property search, contact mgmt | No cloud version, complex deployment |
+| EstateCloud | 2020 | Archived | Workflow automation | Scaled too early, insufficient funding |
+
+This provides downstream teams with architectural lessons and informs what MVP features are essential vs. optional.
 1. **Target User Definition**
    - Primary persona (agent, buyer, seller, investor)
    - User journey maps
