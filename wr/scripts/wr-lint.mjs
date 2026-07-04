@@ -29,17 +29,23 @@ const PRODUCT_SECTIONS = [
 // Title/type signals that mean BASIC template (no market research).
 const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
 
-// Persona slash-command WRs (e.g. "/dragnet fix and implement") are substantive
+// Persona slash-command WRs (e.g. research personas) are substantive
 // research/permanent-fix requests that must get the FULL long-form template even
 // though their title often contains "fix". Detect the leading slash command so
 // rule 4 does not misclassify them as BASIC and reject the FULL product sections.
 // Mirrors the classifiers in wr/scripts/generate-wr.sh and wr-pr-creation.yml.
+//
+// EXCEPTION: the DRAGNET fix persona (/dragnet and its fix aliases) files
+// permanent bug fixes, which use the BASIC short-form template (issue #15122).
+// These are NOT treated as FULL-forcing slash commands, so rule 4 still applies.
+const DRAGNET_FIX_COMMAND = /^\/(dragnet(-fix)?|errorfix|perm-?fix)(?![a-z0-9-])/i;
 function isSlashCommandTitle(firstLine) {
   const title = String(firstLine || "")
     .replace(/^#\s*/, "")
     .replace(/^WR:\s*/i, "")
     .replace(/^\[WR\]\s*/i, "")
     .trim();
+  if (DRAGNET_FIX_COMMAND.test(title)) return false;
   return /^\/[a-z][\w-]*/i.test(title);
 }
 
