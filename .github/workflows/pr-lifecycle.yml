@@ -147,7 +147,36 @@ jobs:
               case 'review_requested': {
                 const cur = await currentLabels();
                 // Do not override an already approved PR unless a new commit/reopen resets it.
-                if (!cur.includes('approved') && !cur.includes('awaiting-review')) {
+                // Checking the `approved` label alone is racy: the review-state job that
+                // applies `approved` may be delayed or have failed even though a live
+                // approval already exists on the current head SHA. Requesting a re-review
+                // in that window would resurrect `awaiting-review`, producing the stuck
+                // `awaiting-review` + `approved` conflict (see stuck-label-watchdog.yml).
+                // Confirm against live reviews on the current head so the conflict cannot
+                // recur without a new commit/reopen event.
+                let approvedOnHead = cur.includes('approved');
+                if (!approvedOnHead) {
+                  try {
+                    const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                      owner, repo, pull_number: num, per_page: 100
+                    });
+                    const latestByUser = new Map();
+                    for (const r of reviews) {
+                      if (!r.user || !r.user.login) continue;
+                      if (r.state === 'COMMENTED') continue;
+                      if (r.commit_id !== pr.head.sha) continue;
+                      const ts = r.submitted_at || r.updated_at;
+                      if (!ts) continue;
+                      const prev = latestByUser.get(r.user.login);
+                      if (!prev || new Date(ts) >= new Date(prev.submitted_at || prev.updated_at)) {
+                        latestByUser.set(r.user.login, r);
+                      }
+                    }
+                    const states = Array.from(latestByUser.values()).map(r => r.state);
+                    approvedOnHead = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
+                  } catch (e) { core.warning(`review_requested approval check: ${e.message}`); }
+                }
+                if (!approvedOnHead && !cur.includes('awaiting-review')) {
                   await add('awaiting-review');
                 }
                 break;
