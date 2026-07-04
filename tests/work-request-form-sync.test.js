@@ -430,10 +430,52 @@ test('Work Request heavy template keeps only Output Type required', () => {
     'definition_of_done',
     'do_not_under_scope',
     'delivery_shape',
+    'sellable_artifact_bundle',
+    'purchase_validation',
     'blocker_rule',
   ]) {
     assert(!requiredFlagFromTemplate(tmpl, id), `${id} should be optional`);
   }
+});
+
+test('Work Request heavy template exposes sellable-artifact bundle and purchase validation fields', () => {
+  const active = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'ISSUE_TEMPLATE', '00-work-request.yml'),
+    'utf8'
+  );
+
+  // Explodable sellable ZIP delivery shape (unpacks into repo folders).
+  assert(
+    dropdownOptionsFromTemplate(active, 'delivery_shape').includes(
+      'Explodable sellable ZIP (unpacks into repo folders)'
+    ),
+    'Delivery Shape must offer the explodable sellable ZIP option'
+  );
+
+  // Sellable Artifact Bundle field for the ZIP contents (files/prompts/skills/etc.).
+  assert(
+    active.includes('id: sellable_artifact_bundle') &&
+      active.includes('label: Sellable Artifact Bundle'),
+    'heavy WR template must expose a Sellable Artifact Bundle field'
+  );
+
+  // Purchase Validation field to rigorously prove it functions as purchased.
+  assert(
+    active.includes('id: purchase_validation') &&
+      active.includes('label: Purchase Validation (functions-as-purchased)'),
+    'heavy WR template must expose a Purchase Validation field'
+  );
+
+  // wr-preprocess must keep these canonical fields in sync so Jules parses them.
+  const preprocess = fs.readFileSync(
+    path.join(REPO_ROOT, 'scripts', 'wr-preprocess.js'),
+    'utf8'
+  );
+  assert(
+    preprocess.includes('"Sellable Artifact Bundle"') &&
+      preprocess.includes('"Purchase Validation"'),
+    'scripts/wr-preprocess.js CANONICAL_WR_FIELDS must include the new sellable-artifact fields'
+  );
 });
 
 test('PDF_WR_PLAYBOOK links AUTOMATED_PRODUCT_PIPELINE and PDF shape', () => {
