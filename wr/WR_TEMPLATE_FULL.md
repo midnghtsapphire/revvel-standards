@@ -41,6 +41,11 @@
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
+## Research Findings
+
+<!-- revvel-research-findings -->
+{RESEARCH_FINDINGS}
+
 ## Executive Summary
 
 {EXECUTIVE_SUMMARY}
