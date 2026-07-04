@@ -1,4 +1,4 @@
-# WR: [WR] resolve this issue permanently either in a maintenance script or a .net service  but why is this happening seek when it happened to others on the web and use it for fixes and foss software lint still has a large pre-existing markdown backlog
+# WR: [WR] resolve this issue permanently either in a maintenance script or a .net service but why is this happening seek when it happened to others on the web and use it for fixes and foss software lint still has a large pre-existing markdown backlog
 
 **Issue:** #15096  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -14,7 +14,7 @@
 
 Source packet: `docs/research-engine/run-28686025517.md`
 
-# WR-Ready Research Packet: Markdown Linting Backlog Resolution
+## WR-Ready Research Packet: Markdown Linting Backlog Resolution
 
 ## 1. Executive Decision
 
