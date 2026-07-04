@@ -110,6 +110,22 @@ body:
     validations:
       required: false
 
+  - type: dropdown
+    id: decision_team
+    attributes:
+      label: Assign To / Decision Team
+      description: >
+        Who should own this WR? Leave on 'orchestrator' for the normal routing.
+        Choose 'dragnet-team' to summon the DRAGNET decision team (PLATO → MEDUSA →
+        COUNTER → JUDGE → DARWIN, see docs/DRAGNET_TEAM.md): it instantiates the team,
+        deduplicates against open WR/PRs, and drives a permanent-fix WR + PR together
+        — the same behavior as commenting `/dragnet` on the issue.
+      options:
+        - orchestrator
+        - dragnet-team
+    validations:
+      required: false
+
   - type: markdown
     attributes:
       value: |
