@@ -440,6 +440,33 @@ test('compliance-watcher.yml github-script block compiles', () => {
   }
 });
 
+test('compliance-check.yml urgent step deduplicates before creating an issue', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'compliance-check.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const step = doc.jobs['compliance-check'].steps.find((entry) => entry.name === 'Create Issue on Urgent');
+
+  if (!step) {
+    throw new Error('Create Issue on Urgent step not found');
+  }
+
+  const script = String(step.with?.script || '');
+
+  // Must query existing open issues before creating, otherwise the daily
+  // schedule opens an endless stream of identical urgent issues.
+  if (!/listForRepo/.test(script)) {
+    throw new Error('urgent step must look up existing issues before creating');
+  }
+  if (!/issue\.title === title|i\.title === title/.test(script)) {
+    throw new Error('urgent step must match on issue title to deduplicate');
+  }
+
+  try {
+    new AsyncFunction('github', 'context', 'core', script);
+  } catch (error) {
+    throw new Error(`compliance-check urgent github-script block does not compile: ${error.message}`);
+  }
+});
+
 test('subscription-tracker.yml installs repo deps before github-script', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'subscription-tracker.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
