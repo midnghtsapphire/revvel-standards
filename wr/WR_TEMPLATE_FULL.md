@@ -1,5 +1,11 @@
 <!-- WR_TEMPLATE_FULL.md — product/sellable WRs only. For bug/chore/docs use WR_TEMPLATE_BASIC.md. -->
 <!-- Generator must substitute every {TOKEN} and fill or N/A every [placeholder] before commit. -->
+<!-- Source-packet convention: when the research engine runs, it prepends a "## Research Findings"
+     block containing a line like `Source packet: docs/research-engine/run-<run-id>.md`. That
+     run-<run-id>.md path points to an external research-engine CI artifact (the run that produced
+     the packet) and is intentionally NOT a committed file in this repo. Reviewers should not flag
+     it as a missing/broken link — the reference is a pointer to the CI run, not a repo file.
+     See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
 # WR: {TITLE}
 
 **Issue:** {ISSUE_REF}  
@@ -24,7 +30,9 @@
 
 ## Research Checklist
 
+<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -32,6 +40,11 @@
 - [ ] Domain strategy
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+
+## Research Findings
+
+<!-- revvel-research-findings -->
+{RESEARCH_FINDINGS}
 
 ## Executive Summary
 
@@ -59,6 +72,24 @@
 ## Recommendations
 
 {RECOMMENDATIONS}
+
+## Dependencies
+
+<!-- Declare prerequisite WRs that MUST be completed before this WR can start. -->
+<!-- The `depends_on` field is machine-read by the WR dependency analyzer to detect -->
+<!-- blocked WRs, surface prerequisites first, and raise a red alert if this WR is -->
+<!-- worked before its prerequisites land. Query a full chain with `/dragnet deps <wr-id>`. -->
+<!-- Use WR/issue references (e.g. #15090) or "none" — never leave a raw token. -->
+<!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
+<!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
+
+| Field | Value |
+| --- | --- |
+| `depends_on` (prerequisite WRs) | {DEPENDS_ON} |
+| Blocked by | {BLOCKED_BY} |
+| Blocks (downstream WRs) | {BLOCKS} |
+
+{DEPENDENCIES}
 
 ## Risks
 

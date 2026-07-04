@@ -274,9 +274,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Required Fields
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          if [[ "${{ github.event.issue.body }}" == *"_No response_"* ]]; then
-            gh issue comment ${{ github.event.issue.number }} --body \
+          if [[ "$ISSUE_BODY" == *"_No response_"* ]]; then
+            gh issue comment "$ISSUE_NUMBER" --body \
             "❌ This Work Request is blocked due to missing requirements.
             
             Please complete:
@@ -286,7 +289,7 @@ jobs:
             
             The referenced repository may also be inaccessible."
             
-            gh issue edit ${{ github.event.issue.number }} \
+            gh issue edit "$ISSUE_NUMBER" \
               --add-label "blocked-incomplete-wr,needs-clarification"
             exit 1
           fi
@@ -305,19 +308,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Verify Repository Access
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          REPO_URL="${{ github.event.issue.body }}"
+          REPO_URL="$ISSUE_BODY"
           # Extract URL from body
           URL=$(echo "$REPO_URL" | grep -oP 'https://github\.com/[^/]+/[^/\s]+')
           
           if curl -f -s "https://api.github.com/repos/${URL#https://github.com/}" > /dev/null; then
             echo "✓ Repository accessible"
           else
-            gh issue comment ${{ github.event.issue.number }} --body \
+            gh issue comment "$ISSUE_NUMBER" --body \
             "⚠️ Cannot access repository: $URL
             Please verify the repository is public or provide access."
             
-            gh issue edit ${{ github.event.issue.number }} \
+            gh issue edit "$ISSUE_NUMBER" \
               --add-label "blocked-repo-access"
           fi
 ```
