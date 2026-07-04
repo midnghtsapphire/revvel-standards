@@ -171,10 +171,13 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'WR')
     steps:
       - name: Check required fields
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          if [[ "${{ github.event.issue.body }}" == *"_No response_"* ]]; then
-            gh issue comment ${{ github.event.issue.number }} --body "⚠️ WR blocked: Required fields are empty"
-            gh issue edit ${{ github.event.issue.number }} --add-label "blocked-incomplete"
+          if [[ "$ISSUE_BODY" == *"_No response_"* ]]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⚠️ WR blocked: Required fields are empty"
+            gh issue edit "$ISSUE_NUMBER" --add-label "blocked-incomplete"
           fi
 ```
 **Commit Message**: `ci: add WR required fields validation workflow`
@@ -202,9 +205,12 @@ jobs:
   label:
     steps:
       - name: Check for AI keywords
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if echo "${{ github.event.pull_request.body }}" | grep -iE "claude|copilot|ai-assisted"; then
-            gh pr edit ${{ github.event.pull_request.number }} --add-label "ai-assisted"
+          if echo "$PR_BODY" | grep -iE "claude|copilot|ai-assisted"; then
+            gh pr edit "$PR_NUMBER" --add-label "ai-assisted"
           fi
 ```
 **Commit Message**: `ci: auto-label AI-assisted pull requests`
