@@ -25,9 +25,17 @@ jobs:
         run: |
           # Full deployment registry — add new URLs here.
           # Format: NAME|URL
+          #
+          # NOTE: soul2bowl-prod (https://soul2bowl.com) is intentionally NOT
+          # monitored yet. Soul2Bowl is still Pre-Build (see
+          # docs/Soul2Bowl/README.md) and the apex domain currently resolves to
+          # GitHub Pages, so every check fails with a TLS altname mismatch
+          # (cert altnames are *.github.com/*.github.io) and files a false-alarm
+          # "Deployment DOWN — soul2bowl-prod" issue every 6 hours. Re-add the
+          # line below once production is live on DigitalOcean App Platform:
+          #   soul2bowl-prod|https://soul2bowl.com
           DEPLOYMENTS=$(cat <<'EOF'
           soul2bowl-vercel|https://soul2bowl.vercel.app
-          soul2bowl-prod|https://soul2bowl.com
           oaudrey|https://oaudrey.com
           revvel-standards-pages|https://midnghtsapphire.github.io/revvel-standards/
           EOF

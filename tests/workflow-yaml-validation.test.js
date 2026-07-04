@@ -347,8 +347,21 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   if (!script.includes("case 'review_requested'")) {
     throw new Error('pr-state script must handle review_requested events');
   }
-  if (!script.includes("!cur.includes('approved')")) {
-    throw new Error('review_requested path must not add awaiting-review when approved is present');
+  // The guard must prevent re-adding awaiting-review on an already-approved PR.
+  // Trusting the `approved` label alone is racy (the review-state job may not have
+  // applied it yet), so the path must also confirm a live approval scoped to the
+  // current head SHA before deciding whether to add awaiting-review.
+  if (!script.includes('approvedOnHead')) {
+    throw new Error('review_requested path must confirm live approval before adding awaiting-review');
+  }
+  if (!script.includes('commit_id !== pr.head.sha')) {
+    throw new Error('review_requested approval check must be scoped to the current head SHA');
+  }
+  if (!script.includes("cur.includes('approved')")) {
+    throw new Error('review_requested path must still treat the approved label as approved');
+  }
+  if (!script.includes("!approvedOnHead && !cur.includes('awaiting-review')")) {
+    throw new Error('awaiting-review must only be added when not approved on head and not already present');
   }
 });
 
