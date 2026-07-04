@@ -58,6 +58,14 @@ const SHELL_USAGE = /\becho\b|\[\[|\]\]|(^|\s)gh\s|^[^:]*\b[A-Za-z_][A-Za-z0-9_]
 // Unsubstituted generator tokens that must never ship.
 const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
 
+// GitHub issue-form artifact left in the rendered body when an optional field
+// (Summary, Required Bundle, Definition of Done, etc.) is submitted blank. It
+// is not a template token, so the other placeholder rules never catch it — but
+// a WR still showing "_No response_" has unfilled scope sections, and any [x]
+// acknowledgement alongside it is the same false-completion signal as a raw
+// {TOKEN}/[placeholder]. See issue #15080 (long-form work-request template).
+const NO_RESPONSE = /(^|[^A-Za-z0-9])_No response_(?=[^A-Za-z0-9]|$)/i;
+
 // Bracket placeholders the full template leaves behind.
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
 
@@ -155,6 +163,8 @@ function lintFile(path) {
     /\[\$CPC\]/i,
     /\[Date and summary\]/i,
     /\[Fix\]/i,
+    // Blank issue-form fields rendered as "_No response_" (issue #15080).
+    NO_RESPONSE,
   ];
   const hasAnyForbidden = lines.some((l, i) => {
     if (inFence[i]) return false;
