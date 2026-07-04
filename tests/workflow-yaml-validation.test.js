@@ -456,7 +456,7 @@ test('compliance-check.yml urgent step deduplicates before creating an issue', (
   if (!/listForRepo/.test(script)) {
     throw new Error('urgent step must look up existing issues before creating');
   }
-  if (!/issue\.title === title|i\.title === title/.test(script)) {
+  if (!/\(issue\.title === title\)|\(i\.title === title\)|issue\.title === title/.test(script)) {
     throw new Error('urgent step must match on issue title to deduplicate');
   }
 

@@ -72,14 +72,15 @@ jobs:
             // Deduplicate: the tracker always contains the words URGENT/CRITICAL,
             // so without this guard the daily schedule (and every push) would open
             // an endless stream of identical issues. Only open one when none is
-            // already open. Search open issues by title rather than creating blindly.
-            const existing = await github.paginate(github.rest.issues.listForRepo, {
+            // already open. Mirror compliance-watcher.yml: fetch open issues and
+            // match by title before creating.
+            const { data: openIssues } = await github.rest.issues.listForRepo({
               owner,
               repo,
               state: 'open',
               per_page: 100
             });
-            if (existing.some((issue) => !issue.pull_request && issue.title === title)) {
+            if (openIssues.some((issue) => !issue.pull_request && issue.title === title)) {
               core.info(`Existing open issue found, skipping creation: ${title}`);
               return;
             }
