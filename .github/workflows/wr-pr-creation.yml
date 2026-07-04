@@ -515,7 +515,11 @@ jobs:
           # Previously every WR used FULL, so fix-class WRs tripped wr-lint
           # rule 4 ("product section in a bug WR") and the PR stuck. Mirrors the
           # classification in wr/scripts/generate-wr.sh (grep -wiE; ERE has no \b).
-          if printf '%s' "${ISSUE_TITLE}" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+          if printf '%s' "${ISSUE_TITLE}" | grep -qiE '^[[:space:]]*(\[WR\][[:space:]]*)?/[a-z]'; then
+            # Persona slash-command WRs (e.g. "/dragnet ...") always use the
+            # FULL long-form template even when the title contains "fix".
+            TEMPLATE_PREF="wr/WR_TEMPLATE_FULL.md"
+          elif printf '%s' "${ISSUE_TITLE}" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
             TEMPLATE_PREF="wr/WR_TEMPLATE_BASIC.md"
           else
             TEMPLATE_PREF="wr/WR_TEMPLATE_FULL.md"
@@ -592,6 +596,7 @@ jobs:
 
           **Issue:** #${ISSUE_NUMBER}  
           **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+          **Created:** $(date -u +%Y-%m-%d)  
           **Research Date:** $(date -u +%Y-%m-%d)  
           **Researcher:** Jules (Google) + OpenRouter  
           **WR Status:** 🟡 In Progress

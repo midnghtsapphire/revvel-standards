@@ -55,6 +55,8 @@ function detectAction(task) {
 
 function escapeRegExp(input) {
   return String(input).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function isEmoticonBankRequest(task) {
   return EMOTICON_BANK_REQUEST.test(String(task || ""));
 }
@@ -427,6 +429,15 @@ function dragnetFixRequest({ repo, task, requestedOn }) {
     "_Duplicate check performed before filing: no matching open WR or PR was found._",
     "_Routed into the build pipeline via labels (`wr:code` → openrouter-coder)._",
     "_The coder will implement this and open a pull request._",
+    "",
+    "## After Implementation — Continuation",
+    "",
+    "Once the changes are implemented, the same run must:",
+    "- Open a single PR that contains the full fix (do not stop at the WR/issue).",
+    "- Hand the loop forward: remove the `wr:code` routing label and let the PR",
+    "  lifecycle / review / merge workflows continue automatically.",
+    "- If the pipeline stalls, add `wr:reset` to force a fresh WR PR/artifact pass",
+    "  (see `wr-pr-creation.yml`) — never leave the issue parked after the fix.",
   ].join("\n");
   const tmpFile = "/tmp/dragnet-workrequest.md";
   fs.writeFileSync(tmpFile, body);
