@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-04T12:46:25.952Z",
+  "generated_at": "2026-07-04T13:18:47.193Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -8,29 +8,41 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 5,
+    "total": 6,
     "running": 1,
-    "queued": 4,
+    "queued": 5,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
     "runaway": 0,
-    "protected": 1,
+    "protected": 2,
     "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28706663760,
+      "id": 28707464715,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28706663760",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28707464715",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 11952,
-      "since_update_ms": 8952,
+      "age_ms": 12193,
+      "since_update_ms": 8193,
       "reason": "running within budget",
+      "protected": true
+    },
+    {
+      "id": 28707468682,
+      "name": "BIOME Medic",
+      "path": ".github/workflows/biome-medic.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28707468682",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
       "protected": true
     },
     {
