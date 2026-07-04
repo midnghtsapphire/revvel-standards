@@ -57,6 +57,8 @@
 ## Step 2 — Deep Web Research
 
 <!-- Competitor analysis MUST include actual prices (e.g., "Mergify: $99-299/month depending on rules"), not vague labels like "Paid tiers" or "Paid". If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required." Do NOT ship incomplete competitive intelligence. -->
+<!-- This pricing rule is mirrored in scripts/research-engine.js (buildSynthesisPrompt); parity is
+     enforced by tests/research-engine.test.js. Update both files together if the wording changes. -->
 <!-- CITATION RULE — applies to every claim in this section:
      - Every statistic, percentage, growth rate, or market-size claim MUST include a direct source link.
      - If a number is not sourced, omit it or label it an estimate (e.g. "internal estimate", "unverified").
