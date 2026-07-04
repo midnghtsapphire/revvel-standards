@@ -1,5 +1,11 @@
 <!-- WR_TEMPLATE_FULL.md — product/sellable WRs only. For bug/chore/docs use WR_TEMPLATE_BASIC.md. -->
 <!-- Generator must substitute every {TOKEN} and fill or N/A every [placeholder] before commit. -->
+<!-- Source-packet convention: when the research engine runs, it prepends a "## Research Findings"
+     block containing a line like `Source packet: docs/research-engine/run-<run-id>.md`. That
+     run-<run-id>.md path points to an external research-engine CI artifact (the run that produced
+     the packet) and is intentionally NOT a committed file in this repo. Reviewers should not flag
+     it as a missing/broken link — the reference is a pointer to the CI run, not a repo file.
+     See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
 # WR: {TITLE}
 
 **Issue:** {ISSUE_REF}  
@@ -24,6 +30,7 @@
 
 ## Research Checklist
 
+<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
@@ -33,6 +40,11 @@
 - [ ] Domain strategy
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+
+## Research Findings
+
+<!-- revvel-research-findings -->
+{RESEARCH_FINDINGS}
 
 ## Executive Summary
 
