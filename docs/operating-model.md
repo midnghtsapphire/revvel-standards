@@ -58,7 +58,7 @@ Optional in the heavy form (recommended when you already know them):
 - PDF pipeline batch
 - Research Mode, Delivery Mode, Lifecycle Mode, Commercial Mode
 - Summary, Objective, Required Bundle, Definition of Done, Do Not Under-Scope, Explicit Exclusions
-- Delivery Shape, Expected Scope, Validation Expectations, Blocker Rule
+- Delivery Shape, Sellable Artifact Bundle, Purchase Validation, Expected Scope, Validation Expectations, Blocker Rule
 
 **Lightweight form (`10-OpenHands-system-wr.yml`)** — only two are required:
 
