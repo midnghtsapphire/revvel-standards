@@ -25,12 +25,14 @@
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
 - [ ] Competitor analysis
 - [ ] Domain strategy
 - [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Executive Summary
 
@@ -41,6 +43,13 @@
 {PRODUCT_SELECTIONS}
 
 ## Step 2 — Deep Web Research
+
+<!-- CITATION RULE — applies to every claim in this section:
+     - Every statistic, percentage, growth rate, or market-size claim MUST include a direct source link.
+     - If a number is not sourced, omit it or label it an estimate (e.g. "internal estimate", "unverified").
+     - Prefer a range over a precise figure when the number is an estimate.
+     - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
+       unattributed statistics are treated as placeholders and will be flagged in review. -->
 
 {DEEP_WEB_RESEARCH}
 
