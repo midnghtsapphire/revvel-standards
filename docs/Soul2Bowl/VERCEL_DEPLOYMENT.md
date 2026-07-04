@@ -92,6 +92,13 @@ The **Deployment Health Check** workflow (`.github/workflows/deployment-health-c
 
 The issue is closed automatically when the URL recovers.
 
+> **Note:** The production apex domain (`https://soul2bowl.com`) is **not**
+> health-checked yet. Soul2Bowl is still Pre-Build and the apex currently
+> resolves to GitHub Pages, so a check would fail with a TLS altname mismatch
+> and file a false-alarm `soul2bowl-prod` issue. Re-add `soul2bowl-prod` to the
+> workflow's deployment registry once production is live on DigitalOcean App
+> Platform.
+
 To run a manual health check:
 
 ```bash
