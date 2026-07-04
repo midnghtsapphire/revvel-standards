@@ -36,7 +36,7 @@
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or "Pricing data pending")
+- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [ ] Domain strategy
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
