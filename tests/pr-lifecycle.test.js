@@ -98,6 +98,19 @@ function isCheckPassing(checkConclusion) {
   return ['success', 'neutral', 'skipped'].includes(checkConclusion);
 }
 
+// Mirrors the review_requested guard in pr-lifecycle.yml: awaiting-review is only
+// (re-)added when the PR is NOT approved on the current head SHA and the label is
+// not already present. Approval is confirmed from live reviews scoped to the head
+// SHA, so a missing/late `approved` label cannot resurrect awaiting-review.
+function isApprovedOnHead(headReviewStates) {
+  return headReviewStates.includes('APPROVED') && !headReviewStates.includes('CHANGES_REQUESTED');
+}
+
+function shouldAddAwaitingReviewOnReviewRequested(currentLabels, headReviewStates) {
+  const approvedOnHead = currentLabels.has('approved') || isApprovedOnHead(headReviewStates);
+  return !approvedOnHead && !currentLabels.has('awaiting-review');
+}
+
 function isReviewApproved(reviewState) {
   return reviewState === 'APPROVED';
 }
@@ -209,6 +222,28 @@ function isReviewChangesRequested(reviewState) {
   await test('isReviewChangesRequested rejects other states', () => {
     assert.ok(!isReviewChangesRequested('APPROVED'));
     assert.ok(!isReviewChangesRequested('COMMENTED'));
+  });
+
+  // review_requested guard — must not resurrect awaiting-review after approval
+  await test('review_requested does not add awaiting-review when approved label present', () => {
+    assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(['approved']), []), false);
+  });
+
+  await test('review_requested does not add awaiting-review when live-approved on head (label not yet applied)', () => {
+    // The `approved` label may lag behind the live review state — still must not add.
+    assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(), ['APPROVED']), false);
+  });
+
+  await test('review_requested adds awaiting-review when not approved and label absent', () => {
+    assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(), []), true);
+  });
+
+  await test('review_requested does not duplicate awaiting-review when already present', () => {
+    assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(['awaiting-review']), []), false);
+  });
+
+  await test('review_requested adds awaiting-review when head approval is overridden by changes-requested', () => {
+    assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(), ['APPROVED', 'CHANGES_REQUESTED']), true);
   });
 
   // Label Management
