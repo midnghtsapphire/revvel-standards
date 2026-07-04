@@ -1,37 +1,49 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-04T20:15:08.129Z",
+  "generated_at": "2026-07-04T20:37:59.256Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 1,
+    "running": 2,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 5,
-    "running": 1,
+    "total": 6,
+    "running": 2,
     "queued": 4,
     "done": 0,
-    "healthy": 1,
+    "healthy": 2,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 1,
+    "occupancy": 2,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28718356614,
+      "id": 28718945035,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28718356614",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28718945035",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 12129,
-      "since_update_ms": 9129,
+      "age_ms": 6256,
+      "since_update_ms": 4256,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 28718945265,
+      "name": "Workflow Monitor (Real-Time)",
+      "path": ".github/workflows/workflow-monitor.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28718945265",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6256,
+      "since_update_ms": 2256,
+      "reason": "running within budget",
+      "protected": false
     },
     {
       "id": 28689586900,
