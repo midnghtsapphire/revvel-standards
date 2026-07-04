@@ -474,6 +474,10 @@ function buildSynthesisPrompt(context, laneReports) {
     "",
     // Mirrors the competitor-pricing rule in wr/WR_TEMPLATE_FULL.md; keep both in sync.
     "For Competitor and GitHub Star Intelligence, the competitor/pricing table must list actual prices (e.g. \"$99-299/month\"), not vague labels like \"Paid tiers\". If a competitor's price is unknown, write \"Pricing data pending — competitive benchmark research required.\" Do not ship incomplete competitive intelligence.",
+    "Citation rule: every statistic, percentage, growth rate, or market-size claim must include a",
+    "direct source link. If a number is not sourced, omit it or explicitly label it as an estimate",
+    "(e.g. \"internal estimate\", \"observed anecdotally — unverified\") and use a range instead of a",
+    "precise figure. Never present bare percentages (e.g. \"73% of teams\", \"40% YoY\") without attribution.",
     "",
     laneText,
   ].join("\n");

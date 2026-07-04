@@ -24,7 +24,14 @@ ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || e
 # `full` (per Copilot review on #14227). Use grep -wiE so word matching is
 # done by grep itself.
 if [[ "$CLASS" == "auto" ]]; then
-  if echo "$TITLE" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
+  # Persona slash-command WRs (e.g. "/dragnet fix and implement") are
+  # substantive research / permanent-fix requests: always use the FULL
+  # long-form template even though the title often contains "fix". Check this
+  # BEFORE the fix/bug keyword downgrade. Mirrored in wr-pr-creation.yml and
+  # wr-lint.mjs (isSlashCommandTitle).
+  if printf '%s' "$TITLE" | grep -qiE '^[[:space:]]*(\[WR\][[:space:]]*)?/[a-z]'; then
+    CLASS="full"
+  elif echo "$TITLE" | grep -qwiE '(fix|bug|typo|lint|refactor|chore|docs?|remove|pin|normalize|standardize|unreachable|duplicate)'; then
     CLASS="basic"
   elif echo "$TITLE" | grep -qiE '\<add (missing|test)\>'; then
     CLASS="basic"

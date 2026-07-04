@@ -1,0 +1,62 @@
+name: DRAGNET Team Assignment
+
+# Summon the DRAGNET decision team from the long-form Work Request template.
+#
+# The `Assign To / Decision Team` dropdown in
+# `.github/ISSUE_TEMPLATE/00-work-request.yml` renders `dragnet-team` into the
+# issue body when selected. This workflow detects that selection at issue
+# creation time and instantiates the team by reusing the exact same code path as
+# a `/dragnet` comment (scripts/persona-comment-runner.js). The WR + PR are then
+# produced by the standard wr-pr-creation lane, so selecting the team from the
+# form gives you "a WR created and PR at the same time" without an extra comment.
+#
+# Only fires on `opened` so re-editing an issue never re-summons the team.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: dragnet-team-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  summon-dragnet-team:
+    name: Summon DRAGNET from WR form selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only for Work Requests whose long-form template selected the DRAGNET team.
+    if: >-
+      github.event.issue.user.type != 'Bot' &&
+      contains(github.event.issue.body, 'dragnet-team') &&
+      (contains(github.event.issue.labels.*.name, 'work-request') ||
+       startsWith(github.event.issue.title, '[WR]'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Summon DRAGNET decision team
+        env:
+          # The default GITHUB_TOKEN cannot trigger downstream workflows; prefer
+          # the admin PAT when present so the summoned WR/PR can cascade.
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          # Constant summon text — never interpolate the issue body into the shell.
+          COMMENT_BODY: "/dragnet review this Work Request and instantiate the DRAGNET decision team, then drive the permanent-fix WR + PR."
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY not set — DRAGNET summon runs on the no-key bridge where available."
+          fi
+          node scripts/persona-comment-runner.js
