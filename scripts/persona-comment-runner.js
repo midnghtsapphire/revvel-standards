@@ -55,6 +55,8 @@ function detectAction(task) {
 
 function escapeRegExp(input) {
   return String(input).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function isEmoticonBankRequest(task) {
   return EMOTICON_BANK_REQUEST.test(String(task || ""));
 }
