@@ -61,15 +61,36 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const title = "🔴 URGENT: Compliance Item Detected";
             const content = fs.readFileSync('docs/COMPLIANCE_TRACKER.md', 'utf8');
-            if (content.includes('URGENT') || content.includes('CRITICAL')) {
-              github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: "🔴 URGENT: Compliance Item Detected",
-                body: "An urgent compliance item has been detected. Please review docs/COMPLIANCE_TRACKER.md"
-              });
+            if (!(content.includes('URGENT') || content.includes('CRITICAL'))) {
+              core.info('No urgent compliance items detected.');
+              return;
             }
+            // Deduplicate: the tracker always contains the words URGENT/CRITICAL,
+            // so without this guard the daily schedule (and every push) would open
+            // an endless stream of identical issues. Only open one when none is
+            // already open. Mirror compliance-watcher.yml: fetch open issues and
+            // match by title before creating.
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100
+            });
+            if (openIssues.some((issue) => !issue.pull_request && issue.title === title)) {
+              core.info(`Existing open issue found, skipping creation: ${title}`);
+              return;
+            }
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body: "An urgent compliance item has been detected. Please review docs/COMPLIANCE_TRACKER.md"
+            });
+            core.info(`Opened issue: ${title}`);
     timeout-minutes: 30
   monthly-audit:
     runs-on: ubuntu-latest
