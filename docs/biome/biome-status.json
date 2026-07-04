@@ -1,19 +1,41 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-04T18:22:06.134Z",
+  "generated_at": "2026-07-04T19:29:22.140Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 28715962132,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715962132",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28715961589,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715961589",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28715961133,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715961133",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
@@ -36,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28716913234"
       }
     },
     "sheaf": {
