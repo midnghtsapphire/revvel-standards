@@ -19,10 +19,6 @@
   // When to use, How, Caveats) across multiple process entries
   "MD024": false,
   
-  // MD026: Trailing punctuation in heading - allow for questions
-  "MD026": {
-    "punctuation": ".,;:"
-  },
   
   // MD046: Code block style - consistent fenced style
   "MD046": {
