@@ -596,6 +596,7 @@ jobs:
 
           **Issue:** #${ISSUE_NUMBER}  
           **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+          **Created:** $(date -u +%Y-%m-%d)  
           **Research Date:** $(date -u +%Y-%m-%d)  
           **Researcher:** Jules (Google) + OpenRouter  
           **WR Status:** 🟡 In Progress
