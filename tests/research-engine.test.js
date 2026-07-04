@@ -66,6 +66,27 @@ async function run() {
     assert.ok(prompt.includes("Recommend"));
   });
 
+  queue("keeps the competitor-pricing rule in sync with wr/WR_TEMPLATE_FULL.md", () => {
+    // Guards the manual cross-file obligation flagged at scripts/research-engine.js:475:
+    // buildSynthesisPrompt and wr/WR_TEMPLATE_FULL.md must state the same competitor-pricing
+    // rule. If either file's wording drifts, this test fails so the pair is re-synced.
+    const prompt = engine.buildSynthesisPrompt(
+      { query: "Sync check" },
+      [{ name: "Competitor Intel", agent: "competitor-intel", status: "ok", content: "x", attempts: [] }],
+    );
+    const template = fs.readFileSync(
+      path.join(__dirname, "..", "wr", "WR_TEMPLATE_FULL.md"),
+      "utf8",
+    );
+    // The sentinel string the pricing table must fall back to when a price is unknown.
+    const sentinel = "Pricing data pending — competitive benchmark research required.";
+    assert.ok(prompt.includes(sentinel), "synthesis prompt must carry the pricing sentinel");
+    assert.ok(template.includes(sentinel), "WR template must carry the pricing sentinel");
+    // The rule rejects vague price labels in favor of actual figures.
+    assert.ok(prompt.includes("Paid tiers"), "synthesis prompt must reference the vague-label example");
+    assert.ok(template.includes("Paid tiers"), "WR template must reference the vague-label example");
+  });
+
   queue("review comment carries the coder trigger phrase only for PRs", () => {
     const lanes = engine.LANE_DEFINITIONS;
     const issueComment = engine.buildReviewRequestComment({ outputFile: "/tmp/x.md", laneReports: lanes });
