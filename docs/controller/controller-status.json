@@ -1,73 +1,37 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-04T18:40:52.029Z",
+  "generated_at": "2026-07-04T19:17:40.835Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 4,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 8,
-    "running": 4,
+    "total": 5,
+    "running": 1,
     "queued": 4,
     "done": 0,
     "healthy": 1,
-    "stalled": 3,
+    "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 4,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28715956303,
+      "id": 28716904874,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715956303",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28716904874",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10029,
-      "since_update_ms": 7029,
+      "age_ms": 8835,
+      "since_update_ms": 5835,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 28715438121,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715438121",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1184029,
-      "since_update_ms": 1180029,
-      "reason": "no progress for 20m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 28715435337,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715435337",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1190029,
-      "since_update_ms": 1187029,
-      "reason": "no progress for 20m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 28715433837,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28715433837",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1193029,
-      "since_update_ms": 1189029,
-      "reason": "no progress for 20m ≥ 15m",
-      "protected": false
     },
     {
       "id": 28689586900,
@@ -118,54 +82,5 @@
       "protected": false
     }
   ],
-  "preemptions": [
-    {
-      "id": 28715438121,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "health": "stalled",
-      "reason": "no progress for 20m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-3.5-sonnet",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-3.5-sonnet"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassigned(no-model-input)",
-      "error": null
-    },
-    {
-      "id": 28715435337,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "health": "stalled",
-      "reason": "no progress for 20m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-3.5-sonnet",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-3.5-sonnet"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassigned(no-model-input)",
-      "error": null
-    },
-    {
-      "id": 28715433837,
-      "name": "Perplexity Research Agent",
-      "path": ".github/workflows/perplexity-research-agent.yml",
-      "health": "stalled",
-      "reason": "no progress for 20m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-3.5-sonnet",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-3.5-sonnet"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassigned(no-model-input)",
-      "error": null
-    }
-  ]
+  "preemptions": []
 }
