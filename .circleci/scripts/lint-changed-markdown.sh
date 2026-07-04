@@ -15,5 +15,6 @@ if [ -z "$FILES" ]; then
 else
   echo "Linting changed Markdown:"
   echo "$FILES"
-  npx markdownlint-cli2 $FILES
+  mapfile -t MARKDOWN_FILES < <(printf '%s\n' "$FILES")
+  npx markdownlint-cli2 "${MARKDOWN_FILES[@]}"
 fi
