@@ -67,9 +67,9 @@ async function run() {
   });
 
   queue("keeps the competitor-pricing rule in sync with wr/WR_TEMPLATE_FULL.md", () => {
-    // Guards the manual cross-file obligation flagged at scripts/research-engine.js:475:
-    // buildSynthesisPrompt and wr/WR_TEMPLATE_FULL.md must state the same competitor-pricing
-    // rule. If either file's wording drifts, this test fails so the pair is re-synced.
+    // Guards the manual cross-file obligation described in buildSynthesisPrompt
+    // (scripts/research-engine.js) and wr/WR_TEMPLATE_FULL.md: both must state the same
+    // competitor-pricing rule. If either file's wording drifts, this test fails so the pair is re-synced.
     const prompt = engine.buildSynthesisPrompt(
       { query: "Sync check" },
       [{ name: "Competitor Intel", agent: "competitor-intel", status: "ok", content: "x", attempts: [] }],
