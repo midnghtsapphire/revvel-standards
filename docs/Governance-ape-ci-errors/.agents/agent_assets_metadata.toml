@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ykE1LqHx9amgKzdPSul34"
+uri = "file://artifacts/cicd-dashboard/src/assets/mad-ape-hero.png"
+type = "image"
+title = "mad growling ape hero"

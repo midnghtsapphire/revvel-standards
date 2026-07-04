@@ -73,6 +73,8 @@ const CANONICAL_WR_FIELDS = [
   "Do Not Under-Scope",
   "Explicit Exclusions",
   "Delivery Shape",
+  "Sellable Artifact Bundle",
+  "Purchase Validation",
   "Expected Scope",
   "Validation Expectations",
   "Blocker Rule",
