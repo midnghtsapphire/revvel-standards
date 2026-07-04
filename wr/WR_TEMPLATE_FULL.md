@@ -36,7 +36,7 @@
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
-- [ ] Competitor analysis
+- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [ ] Domain strategy
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
@@ -56,6 +56,7 @@
 
 ## Step 2 — Deep Web Research
 
+<!-- Competitor analysis MUST include actual prices (e.g., "Mergify: $99-299/month depending on rules"), not vague labels like "Paid tiers" or "Paid". If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required." Do NOT ship incomplete competitive intelligence. -->
 <!-- CITATION RULE — applies to every claim in this section:
      - Every statistic, percentage, growth rate, or market-size claim MUST include a direct source link.
      - If a number is not sourced, omit it or label it an estimate (e.g. "internal estimate", "unverified").
