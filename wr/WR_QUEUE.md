@@ -32,9 +32,9 @@ Lightweight parking lot for research suggestions and spec ideas before they beco
 | Level | Monthly Revenue Target | Timeline |
 |-------|------------------------|----------|
 | P0 | $500 + / month | This week |
-| P1 | $100 – 500 / month | 1–2 weeks |
-| P2 | $50 – 100 / month | 1–2 months |
-| P3 | < $50 / month | 3 + months |
+| P1 | $100-500 / month | 1-2 weeks |
+| P2 | $50-100 / month | 1-2 months |
+| P3 | < $50 / month | 3+ months |
 | P4 | No direct revenue | As needed |
 
 ---
