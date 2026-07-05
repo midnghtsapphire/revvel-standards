@@ -161,7 +161,7 @@ const PERSONA_REGISTRY = {
     handle: "dragnet",
     name: "DRAGNET",
     emoji: "🕵️",
-    role: "Error Hunter + Product Scaffolder — diagnoses errors, deduplicates WR/PR, files permanent-fix WRs; also scaffolds new products from social signals, screenshots, and Reddit threads",
+    role: "Error Hunter + Product Scaffolder — triages bugs, builds products from social signals",
     // `/errorfix`, `/permfix` are aliases for ERROR MODE.
     // `/scaffold`, `/builder`, `/product-build` are aliases for SCAFFOLD MODE.
     // DRAGNET runs the PLATO→JUDGE pipeline for both:
