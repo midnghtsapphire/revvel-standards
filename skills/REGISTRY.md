@@ -519,6 +519,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### Product Operations
 
+#### dragnet-scaffold
+
+- **Path:** `skills/dragnet-scaffold/`
+- **Files:** `SKILL.md`
+- **Description:** DRAGNET SCAFFOLD MODE — the product-creation branch of the DRAGNET persona. Extracts product requirements from raw social signals (Reddit threads, screenshots, user-complaint clusters), classifies the cheapest viable solution shape, scores the candidate through the PLATO→JUDGE matrix, gates on ROI/legal/operational thresholds, and emits a complete WR with BOM, MVP definition, acceptance gates, and traceable source citations. Triggered by `/scaffold`, `/builder`, `/product-build`, or `/dragnet` when the task is a new product/feature request rather than a bug. Bridges the gap between unstructured social feedback and the structured `product-pipeline` build step.
+- **Tags:** dragnet, scaffold, product-build, builder, social-signals, reddit, screenshots, bom, plato-judge, wr-output, requirements-extraction
+- **Trigger:** "/scaffold", "/builder", "/product-build", "/dragnet <product request>", "extract requirements from screenshots", "build from Reddit", "scaffold from social signals"
+- **Lifecycle:** On-demand (comment-triggered)
+- **Persona:** 🕵️ DRAGNET (SCAFFOLD MODE)
+
 #### product-pipeline
 - **Path:** `skills/product-pipeline/`
 - **Files:** `SKILL.md` · `skill.yml`

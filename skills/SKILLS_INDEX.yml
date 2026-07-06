@@ -1055,6 +1055,41 @@ skills:
 
   # ─── Product Operations ───────────────────────────────────────────────────
 
+  - name: dragnet_scaffold
+    title: "DRAGNET Scaffold Mode"
+    version: "1.0.0"
+    path: "skills/dragnet-scaffold/"
+    skill_file: "skills/dragnet-scaffold/SKILL.md"
+    category: "Product Operations"
+    access: all
+    lifecycle: on-demand
+    persona: dragnet
+    related_standards:
+      - "standards/DRAGNET_FRAMEWORK.md"
+      - "standards/AUTOMATED_PRODUCT_PIPELINE.md"
+      - "wr/WR_TEMPLATE_FULL.md"
+      - "docs/AGENTS.md"
+    triggers:
+      - "/scaffold"
+      - "/builder"
+      - "/product-build"
+      - "/dragnet <product request>"
+      - "extract requirements from screenshots"
+      - "build from Reddit"
+      - "scaffold from social signals"
+    tags:
+      - dragnet
+      - scaffold
+      - product-build
+      - builder
+      - social-signals
+      - reddit
+      - screenshots
+      - bom
+      - plato-judge
+      - wr-output
+      - requirements-extraction
+
   - name: product_pipeline
     title: "Automated Product Pipeline"
     version: "1.0.0"
