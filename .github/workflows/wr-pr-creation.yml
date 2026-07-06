@@ -141,11 +141,15 @@ jobs:
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
 
+            const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
+
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            // Title-only intake can also route with tags like "#app" / "#tools".
             const isWR =
               title.match(/^\[WR\]/i) ||
+              titleHasRouteTags ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
@@ -667,6 +671,18 @@ jobs:
             found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
           ' | tr -d '\r')
 
+          if [[ -z "$OUTPUT_TYPE" ]]; then
+            case "$ISSUE_TITLE" in
+              *"#app"*|*"#apps"*) OUTPUT_TYPE="production-app" ;;
+              *"#tool"*|*"#tools"*) OUTPUT_TYPE="desktop-tool" ;;
+              *"#pdf"*) OUTPUT_TYPE="sellable-pdf" ;;
+              *"#api"*) OUTPUT_TYPE="api-product" ;;
+              *"#cli"*) OUTPUT_TYPE="cli-product" ;;
+              *"#mcp"*) OUTPUT_TYPE="mcp-product" ;;
+              *"#doc"*|*"#docs"*) OUTPUT_TYPE="technical-documentation" ;;
+            esac
+          fi
+
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
             sed -i '/## Step 5: Deployment Verification/,/## Step 6: Documentation Requirements/{/## Step 6: Documentation Requirements/!d}' "${WR_FILE}"
@@ -804,9 +820,24 @@ jobs:
               issue_number: issueNumber,
             });
 
-            // Parse Output Type from issue body to determine deliver label
+            const inferTitleOutputType = (title) => {
+              const normalizedTitle = String(title || '').toLowerCase();
+              if (/(?:^|[^a-z0-9])#apps?\b/.test(normalizedTitle)) return 'production-app';
+              if (/(?:^|[^a-z0-9])#tools?\b/.test(normalizedTitle)) return 'desktop-tool';
+              if (/(?:^|[^a-z0-9])#pdf\b/.test(normalizedTitle)) return 'sellable-pdf';
+              if (/(?:^|[^a-z0-9])#api\b/.test(normalizedTitle)) return 'api-product';
+              if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
+              if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
+              if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
+              return '';
+            };
+
+            // Parse Output Type from issue body to determine deliver label.
+            // Title-only intake can fall back to route tags like "#app" / "#tools".
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
-            const outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            const outputTypeRaw =
+              (outputTypeMatch?.[1] || '').trim().toLowerCase() ||
+              inferTitleOutputType(issue.title);
             const OUTPUT_TYPE_DELIVER_MAP = {
               'production-app': 'deliver:app',
               'desktop-tool': 'deliver:app',

@@ -210,6 +210,7 @@ test('WR workflows accept BASIC WR issue type and work-request label', () => {
   for (const workflow of [wrPrCreation, weeklyResearch]) {
     assert(workflow.includes("labelSet.has('work-request')"), 'WR workflow must accept work-request label');
     assert(workflow.includes("'basic wr'"), 'WR workflow must accept BASIC WR issue type');
+    assert(workflow.includes('titleHasRouteTags'), 'WR workflow must accept title-only route tags');
     assert(workflow.includes("'weekly-research'"), 'WR workflow must apply weekly-research label');
     assert(workflow.includes("'deep-research'"), 'WR workflow must apply deep-research label');
     assert(workflow.includes("'openrouter'"), 'WR workflow must apply openrouter label');
@@ -226,6 +227,11 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
   assert(
     wf.includes("startsWith(github.event.issue.title, '[WR]')"),
     'wr-auto-classify must accept [WR] title prefix'
+  );
+  assert(
+    wf.includes("contains(github.event.issue.title, '#app')") &&
+      wf.includes("contains(github.event.issue.title, '#tools')"),
+    'wr-auto-classify must accept title-only route tags like #app and #tools'
   );
 });
 

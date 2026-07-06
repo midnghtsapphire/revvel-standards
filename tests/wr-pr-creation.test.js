@@ -88,9 +88,11 @@ function isWrIssue(title, labels, issueType) {
   );
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
+  const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
   
   return (
     title.match(/^\[WR\]/i) ||
+    titleHasRouteTags ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
@@ -228,6 +230,11 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Some issue', [], 'wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'basic wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'work request'), true);
+  });
+
+  await test('isWrIssue detects title-only route tags', () => {
+    assert.equal(isWrIssue('Regulation-of-Skin-Collagen.pdf#tools #app', [], null), true);
+    assert.equal(isWrIssue('Red light guide #pdf', [], null), true);
   });
 
   await test('isWrIssue returns false for non-WR issues', () => {

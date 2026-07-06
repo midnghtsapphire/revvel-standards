@@ -45,7 +45,17 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#apps') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -187,6 +197,24 @@ jobs:
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
+
+          def infer_title_output_type(title):
+              normalized = (title or "").lower()
+              if re.search(r"(?:^|[^a-z0-9])#apps?\b", normalized):
+                  return "production-app"
+              if re.search(r"(?:^|[^a-z0-9])#tools?\b", normalized):
+                  return "desktop-tool"
+              if re.search(r"(?:^|[^a-z0-9])#pdf\b", normalized):
+                  return "sellable-pdf"
+              if re.search(r"(?:^|[^a-z0-9])#api\b", normalized):
+                  return "api-product"
+              if re.search(r"(?:^|[^a-z0-9])#cli\b", normalized):
+                  return "cli-product"
+              if re.search(r"(?:^|[^a-z0-9])#mcp\b", normalized):
+                  return "mcp-product"
+              if re.search(r"(?:^|[^a-z0-9])#docs?\b", normalized):
+                  return "technical-documentation"
+              return None
 
           def call_openrouter(needed, body, title):
               prompt = (
@@ -352,6 +380,10 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          if not parsed.get("Output Type"):
+              title_output_type = infer_title_output_type(ISSUE_TITLE)
+              if title_output_type:
+                  parsed["Output Type"] = title_output_type
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
