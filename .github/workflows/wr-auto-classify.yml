@@ -45,7 +45,16 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#docs') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#video'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -181,9 +190,29 @@ jobs:
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
 
-          def fields_needing_classification(parsed):
+          def infer_output_type_from_title(title):
+              title = (title or "").lower()
+              route_tags = [
+                  (r"(^|\s)#(?:app|web-app)\b", "production-app"),
+                  (r"(^|\s)#desktop\b", "desktop-tool"),
+                  (r"(^|\s)#pdf\b", "sellable-pdf"),
+                  (r"(^|\s)#(?:docs?|documentation)\b", "technical-documentation"),
+                  (r"(^|\s)#api\b", "api-product"),
+                  (r"(^|\s)#cli\b", "cli-product"),
+                  (r"(^|\s)#mcp\b", "mcp-product"),
+                  (r"(^|\s)#video\b", "invention-flow"),
+                  (r"(^|\s)#tools?\b", "internal-script-automation"),
+              ]
+              for pattern, output_type in route_tags:
+                  if re.search(pattern, title):
+                      return output_type
+              return None
+
+          def fields_needing_classification(parsed, title_tag_output_type):
               needed = []
               for field, value in parsed.items():
+                  if field == "Output Type" and title_tag_output_type:
+                      continue
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
@@ -352,8 +381,11 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          title_tag_output_type = infer_output_type_from_title(ISSUE_TITLE)
           print(f"Parsed form values: {parsed}")
-          needed = fields_needing_classification(parsed)
+          if title_tag_output_type:
+              print(f"Title route tags inferred Output Type: {title_tag_output_type}")
+          needed = fields_needing_classification(parsed, title_tag_output_type)
           print(f"Fields needing classification: {needed}")
 
           classified = {}
@@ -372,6 +404,9 @@ jobs:
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
+                  continue
+              if field == "Output Type" and title_tag_output_type in allowed:
+                  final[field] = title_tag_output_type
                   continue
               suggested = classified.get(field)
               if suggested in allowed:
@@ -420,6 +455,7 @@ jobs:
               update_single_select(project_id, item_id, info["id"], opt_id)
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tag" if (field == "Output Type" and title_tag_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
                   else "fallback"
               )
@@ -457,7 +493,7 @@ jobs:
               *summary_lines,
               *extra_summary,
               "",
-              f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
+              f"_Source: explicit = you picked it; title-tag = inferred from routing tags like #app/#tools in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
           ]
           if used_fallback:
               comment_lines.append("")

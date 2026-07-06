@@ -27,7 +27,18 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#docs') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#mcp') ||
+        contains(github.event.issue.title, '#video')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -55,9 +66,29 @@ jobs:
             }
 
             const body = issue.body || '';
+            const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
+
+            function inferOutputTypeFromTitle(rawTitle) {
+              const title = (rawTitle || '').toLowerCase();
+              const routeTags = [
+                [/(^|\s)#(?:app|web-app)\b/, 'production-app'],
+                [/(^|\s)#desktop\b/, 'desktop-tool'],
+                [/(^|\s)#pdf\b/, 'sellable-pdf'],
+                [/(^|\s)#(?:docs?|documentation)\b/, 'technical-documentation'],
+                [/(^|\s)#api\b/, 'api-product'],
+                [/(^|\s)#cli\b/, 'cli-product'],
+                [/(^|\s)#mcp\b/, 'mcp-product'],
+                [/(^|\s)#video\b/, 'invention-flow'],
+                [/(^|\s)#tools?\b/, 'internal-script-automation'],
+              ];
+              for (const [pattern, outputType] of routeTags) {
+                if (pattern.test(title)) return outputType;
+              }
+              return '';
+            }
 
             // Match the `### Output Type (required)` form section — tolerant of
             // trailing parenthetical annotations and case (matches the same
@@ -65,11 +96,11 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
-              core.info('No Output Type section found in issue body — skipping route.');
+            const outputType = (m?.[1] || '').trim().toLowerCase() || inferOutputTypeFromTitle(title);
+            if (!outputType) {
+              core.info('No Output Type section or title route tags found — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.
