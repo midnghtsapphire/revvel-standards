@@ -78,12 +78,22 @@ out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
   stripping {
     if (in_comment) {
-      if ($0 ~ /-->/) in_comment=0
-      next
+      if ($0 ~ /-->/) {
+        sub(/^.*-->/, "", $0)
+        in_comment=0
+        if ($0 ~ /^[[:space:]]*$/) next
+      } else {
+        next
+      }
     }
     if ($0 ~ /^[[:space:]]*<!--/) {
-      if ($0 !~ /-->/) in_comment=1
-      next
+      if ($0 ~ /-->/) {
+        sub(/^[[:space:]]*<!--.*-->/, "", $0)
+        if ($0 ~ /^[[:space:]]*$/) next
+      } else {
+        in_comment=1
+        next
+      }
     }
     if ($0 ~ /^[[:space:]]*$/) next
     stripping=0
