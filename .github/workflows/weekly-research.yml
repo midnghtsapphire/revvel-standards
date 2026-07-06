@@ -55,8 +55,12 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
-            const hasRouteTags = /#(?:app|tools)\b/i.test(title);
-            const hasSourceUrl = /https?:\/\/\S+/i.test(body);
+            const hasRouteTags =
+              title.toLowerCase().includes('#app') ||
+              title.toLowerCase().includes('#tools');
+            const hasSourceUrl =
+              body.includes('https://') ||
+              body.includes('http://');
             const looksLikeTaggedSourceIntake = hasRouteTags && hasSourceUrl;
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
