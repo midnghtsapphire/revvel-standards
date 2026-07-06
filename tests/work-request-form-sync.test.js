@@ -229,6 +229,26 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
   );
 });
 
+test('WR auto-classify infers Output Type from title app/tool hints', () => {
+  const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'), 'utf8');
+  assert(
+    wf.includes('def infer_output_type_from_title(title):'),
+    'wr-auto-classify should infer output type from title hints when Output Type is missing'
+  );
+  assert(
+    wf.includes('title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)'),
+    'wr-auto-classify should compute a title-based Output Type hint'
+  );
+  assert(
+    wf.includes('if field == "Output Type" and title_inferred_output_type in allowed:'),
+    'wr-auto-classify should use the title Output Type hint before fallback defaults'
+  );
+  assert(
+    wf.includes('title-hint = inferred from title tags/keywords'),
+    'wr-auto-classify should document title-hint as a classification source'
+  );
+});
+
 test('WR PR creation waits for research completion and ignores PR comments', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
