@@ -26,7 +26,7 @@ https://platinumtherapylights.com/de/blogs/news/best-medical-grade-red-light-the
 - [x] Deep market research
 - [ ] BOM
 - [x] Community chatter
-- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [ ] Competitor analysis — table present; device competitor pricing verified; app-tier pricing for Reprise, OutLast, RedLightOS not publicly listed (requires in-app check)
 - [x] Domain strategy
 - [x] Monetization
 - [x] Every statistic/percentage cited with a source link or labeled as an estimate
@@ -87,11 +87,11 @@ This sits squarely in the **wellness tech affiliate + freemium SaaS** category w
 
 | Competitor | Platform | Pricing | Key Features | Differentiation |
 | --- | --- | --- | --- | --- |
-| **Reprise: Red Light Tracker** | iOS | Pricing data pending — competitive benchmark research required | Session logs, reminders, photo comparisons, device tracking | Device-agnostic; privacy-first ([App Store](https://apps.apple.com/us/app/reprise-red-light-tracker/id6762540385)) |
+| **Reprise: Red Light Tracker** | iOS | Free + "Reprise Plus" paid tier; exact subscription price not publicly listed — check in-app | Session logs, reminders, photo comparisons, device tracking | Device-agnostic; privacy-first ([App Store](https://apps.apple.com/us/app/reprise-red-light-tracker/id6762540385)) |
 | **Vital Red Light** | iOS + Android | Free (brand-locked) | Session management, protocol presets, timers | Tied to Vital Red Light hardware ecosystem only ([App Store](https://apps.apple.com/us/app/vital-red-light/id6758754593)) |
 | **Radia** | iOS | Free | Device-agnostic session tracking, progress photos | Simple UX; minimal features ([App: Radia](https://iphone.apkpure.com/app/radia-red-light-therapy/com.charithp.radia)) |
 | **RedLight Therapy & Dawn Simul** | Android | Free | Guided routines, reminders, streak tracking | Covers skin/recovery/sleep/mood segments ([Google Play](https://play.google.com/store/apps/details?id=com.ugurayaz.redlighttherapy)) |
-| **OutLast** | Web + App | Pricing data pending — competitive benchmark research required | Dose tracking, body area logging, streaks | Premium-positioned high-end tracker ([tryoutlast.com](https://tryoutlast.com/red-light-therapy-tracker)) |
+| **OutLast** | Web + App | Free + paid tier; exact subscription price not publicly listed — check in-app | Dose tracking, body area logging, streaks | Premium-positioned high-end tracker ([tryoutlast.com](https://tryoutlast.com/red-light-therapy-tracker)) |
 | **RedLightOS** | Android | Pricing data pending — competitive benchmark research required | AI coaching, dose tracking, community protocols | Claims first intelligent tracker for Android ([redlightos.com](https://redlightos.com/)) |
 
 **Gap identified:** No existing solution combines a full **device comparison/selector tool** with session tracking and affiliate monetization. All apps focus on post-purchase tracking; none target the pre-purchase buyer journey.
@@ -116,10 +116,10 @@ Primary keyword targets (search volume — internal estimate, verify with SEMrus
 
 ### Community & Demand Signals
 
-- r/redlighttherapy: approximately 55K members (unverified — check reddit.com/r/redlighttherapy); active discussions on device comparisons and protocol questions
-- r/biohackers: approximately 150K+ members (unverified), frequent red light therapy threads
-- Multiple Facebook groups with 20K–100K members focused on PlatinumLED and general red light therapy (unverified — requires manual verification)
-- YouTube: device review channels showing 100K+ views on BIOMAX comparison videos (unverified)
+- r/redlighttherapy: approximately **98,000 members** as of 2024 ([GummySearch](https://gummysearch.com/r/redlighttherapy/)); active discussions on device comparisons and protocol questions
+- r/biohackers: approximately 150K+ members (internal estimate — unverified), frequent red light therapy threads
+- Multiple Facebook groups with 20K–100K members focused on PlatinumLED and general red light therapy (internal estimate — unverified; requires manual verification)
+- YouTube: device review channels showing 100K+ views on BIOMAX comparison videos (internal estimate — unverified)
 - **Signal:** High-volume organic traffic for comparison queries; existing apps underserve the buyer discovery journey
 
 ### Monetization
