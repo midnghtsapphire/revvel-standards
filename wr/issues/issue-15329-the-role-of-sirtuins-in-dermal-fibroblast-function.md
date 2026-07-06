@@ -111,7 +111,7 @@ Recommended output bundle:
 
 | Name | Type | Stars / Users | Pricing | Key Differentiator |
 | --- | --- | --- | --- | --- |
-| Haut.AI | B2B SaaS AI skin analysis | Private | ~$45–100/mo (estimated; custom enterprise) | 250+ biomarker AI analysis |
+| Haut.AI | B2B SaaS AI skin analysis | Private | Pricing data pending — competitive benchmark research required. | 250+ biomarker AI analysis |
 | SkinVision | Consumer app | 2 M+ users | Free + pay-per-scan / ~$10/mo | Mole/cancer risk focus |
 | Revieve | B2B beauty personalisation | Private | Custom enterprise | AR try-on + AI recommendations |
 | Perfect Corp. YouCam | Consumer + B2B | 1 B+ AR try-ons | Free consumer / custom B2B | Dominant AR skin try-on |
