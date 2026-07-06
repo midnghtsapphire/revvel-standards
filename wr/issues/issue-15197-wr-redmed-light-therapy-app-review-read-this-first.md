@@ -1,9 +1,9 @@
-# WR: [WR] RedMed Light Therapy App Review: Read This First-pdf create mobile app or tool for red light therapy or photobiomudulation therapy
+# WR: RedMed Light Therapy App Review: create a mobile app or tool for red light therapy (photobiomodulation)
 
 **Issue:** #15197  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
-**Researcher:** Jules (Google) + OpenRouter  
+**Researcher:** Gemini (Google) + OpenRouter  
 **Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
@@ -25,7 +25,7 @@
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
-- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [x] Domain strategy
 - [x] Monetization
 - [x] Every statistic/percentage cited with a source link or labeled as an estimate
@@ -68,7 +68,7 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 
 | Product | Price | Notes | Source |
 | --- | --- | --- | --- |
-| RedMed (iOS) | Listed as low-cost app in review (about $1); current store price should be re-checked at release time | Screen-based red-light app concept; this WR pivots to hardware-assisted tracking | [Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/) |
+| RedMed (iOS) | Pricing data pending — competitive benchmark research required. | Screen-based red-light app concept; this WR pivots to hardware-assisted tracking | [Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/) |
 | RedMed (Android) | Pricing data pending — competitive benchmark research required. | Android listing confirms product presence; verify active pricing during launch prep | [Google Play listing](https://play.google.com/store/apps/details?id=com.martin.redmed&hl=en-US) |
 | Other wellness tracking apps | Pricing data pending — competitive benchmark research required. | Add final paid/free benchmark table during implementation sprint kickoff | N/A — requires follow-up market scrape |
 
