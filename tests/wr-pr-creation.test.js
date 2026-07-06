@@ -88,9 +88,11 @@ function isWrIssue(title, labels, issueType) {
   );
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
+  const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
   
   return (
     title.match(/^\[WR\]/i) ||
+    hasTitleRouteTag ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
@@ -228,6 +230,11 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Some issue', [], 'wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'basic wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'work request'), true);
+  });
+
+  await test('isWrIssue detects title route tags for title-only intake', () => {
+    assert.equal(isWrIssue('places to buy pbmt tools #tool #app', [], null), true);
+    assert.equal(isWrIssue('Need a new CLI helper #cli', [], null), true);
   });
 
   await test('isWrIssue returns false for non-WR issues', () => {
