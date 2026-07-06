@@ -1,6 +1,6 @@
 # WR: Photochem-Photobiology-2025-Wang-From-molecular-mechanisms-to-clinical-applications comprehensive review need best not yet available app or tool
 
-**Issue:** #15233  
+**Issue:** midnghtsapphire/revvel-standards#15233  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
 **Researcher:** N/A  
@@ -26,19 +26,7 @@ https://lymphoedemaeducation.com.au/wp-content/uploads/2025/04/Photochem-Photobi
 
 ## Research Checklist
 
-<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
-
-## Research Checklist
-
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -64,11 +52,11 @@ Wang et al. (2025) published in *Photochemistry and Photobiology* provides a com
 
 ## Executive Summary
 
-**Product Recommendation: PBMCalc Pro — Clinical Photobiomodulation Protocol Builder**
+**Product Recommendation: LuminaCalc — Clinical Photobiomodulation Protocol Builder**
 
 The Wang 2025 review confirms that photobiomodulation is a scientifically mature therapy with a documented clinical evidence base, yet the practitioner ecosystem is severely under-tooled. Clinicians using LLLT/PBM devices must manually calculate treatment parameters (wavelength selection, dose, fluence, beam area, treatment time) from scattered research literature — a process that is error-prone and time-consuming.
 
-**PBMCalc Pro** is a SaaS web app that:
+**LuminaCalc** is a SaaS web app that:
 1. Takes patient inputs (condition, tissue depth, skin type, body region)
 2. Outputs an evidence-based treatment protocol (wavelength, power, fluence, time, frequency)
 3. Generates a printable/shareable clinical report
@@ -91,7 +79,7 @@ The Wang 2025 review confirms that photobiomodulation is a scientifically mature
 | Skill | No | N/A | N/A | Defer to v2 |
 | Mobile app | No | N/A | N/A | Web-first; PWA if needed |
 
-**Product name options:** PBMCalc Pro · PhotoDose · LuminaPro · LLLTguide
+**Product name options:** LuminaCalc · PhotoDose · LuminaPro · LLLTguide
 
 **Recommended name:** **LuminaCalc** (available as a concept; domain strategy below)
 
