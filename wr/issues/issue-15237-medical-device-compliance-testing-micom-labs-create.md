@@ -12,7 +12,7 @@
 <!-- revvel-research-findings -->
 ## Research Findings
 
-Source: MiCOM Labs medical device compliance testing guide (<https://micomlabs.com/medical-device-compliance-testing/>) + OpenRouter market research.
+Source: MiCOM Labs medical device compliance testing guide (<https://micomlabs.com/medical-device-compliance-testing/>) — domain content inferred from publicly known MiCOM Labs services and medical device compliance testing standards; URL was inaccessible during automated research. Plus OpenRouter market research.
 
 ### 1. Executive Decision
 
@@ -132,7 +132,7 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 **Evidence Gaps (flag for research sprint):**
 - Exact SEMrush/Ahrefs search volume data for primary keywords (estimates above; verify before launch)
 - ComplianceQuest exact pricing (requires sales demo)
-- MiCOM Labs guide exact content structure (URL inaccessible during research; review when available)
+- MiCOM Labs guide exact content structure (URL inaccessible during automated research; guide content inferred from publicly known MiCOM Labs services and medical device compliance testing domain knowledge — review guide directly when available for any gap)
 - Customer acquisition cost benchmarks for medical compliance SaaS
 
 ### 7. Build Requirements and Acceptance Gates
