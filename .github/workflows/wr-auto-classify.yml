@@ -179,7 +179,7 @@ jobs:
               )
               m = re.search(pattern, body, re.DOTALL)
               if not m:
-                  return None
+                  return ""
               value = m.group(1).strip()
               if value.lower() in ("_no response_", "no response", ""):
                   return None

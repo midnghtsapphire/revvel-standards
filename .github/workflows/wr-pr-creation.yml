@@ -672,15 +672,22 @@ jobs:
           ' | tr -d '\r')
 
           if [[ -z "$OUTPUT_TYPE" ]]; then
-            case "$ISSUE_TITLE" in
-              *"#app"*|*"#apps"*) OUTPUT_TYPE="production-app" ;;
-              *"#tool"*|*"#tools"*) OUTPUT_TYPE="desktop-tool" ;;
-              *"#pdf"*) OUTPUT_TYPE="sellable-pdf" ;;
-              *"#api"*) OUTPUT_TYPE="api-product" ;;
-              *"#cli"*) OUTPUT_TYPE="cli-product" ;;
-              *"#mcp"*) OUTPUT_TYPE="mcp-product" ;;
-              *"#doc"*|*"#docs"*) OUTPUT_TYPE="technical-documentation" ;;
-            esac
+            NORMALIZED_TITLE=$(printf '%s' "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]')
+            if [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#apps?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="production-app"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#tools?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="desktop-tool"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#pdf([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="sellable-pdf"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#api([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="api-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#cli([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="cli-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#mcp([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="mcp-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#docs?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="technical-documentation"
+            fi
           fi
 
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
