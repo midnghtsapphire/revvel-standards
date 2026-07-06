@@ -228,9 +228,10 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
     'wr-auto-classify must accept [WR] title prefix'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#app')") &&
-      wf.includes("contains(github.event.issue.title, '#tools')") &&
-      wf.includes("contains(github.event.issue.body, 'http')"),
+    wf.includes("((contains(github.event.issue.title, '#app') ||") &&
+      wf.includes("contains(github.event.issue.title, '#tools')) &&") &&
+      wf.includes("(contains(github.event.issue.body, 'https://') ||") &&
+      wf.includes("contains(github.event.issue.body, 'http://'))))"),
     'wr-auto-classify must accept route-tagged title-only source intake'
   );
 });
@@ -239,7 +240,7 @@ test('weekly-research accepts route-tagged title-only source intake', () => {
   const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'), 'utf8');
   assert(
     wf.includes('looksLikeTaggedSourceIntake') &&
-      wf.includes('#(?:app|tools)') &&
+      wf.includes('/#(?:app|tools)\\b/') &&
       wf.includes('hasSourceUrl'),
     'weekly-research must detect #tools/#app source-link intake as WR work'
   );

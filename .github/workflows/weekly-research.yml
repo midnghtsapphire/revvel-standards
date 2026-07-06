@@ -55,7 +55,7 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
-            const hasRouteTags = /(?:^|\s)#(?:app|tools)\b/i.test(title);
+            const hasRouteTags = /#(?:app|tools)\b/i.test(title);
             const hasSourceUrl = /https?:\/\/\S+/i.test(body);
             const looksLikeTaggedSourceIntake = hasRouteTags && hasSourceUrl;
 
