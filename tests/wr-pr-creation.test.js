@@ -88,9 +88,11 @@ function isWrIssue(title, labels, issueType) {
   );
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
+  const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title || '');
   
   return (
     title.match(/^\[WR\]/i) ||
+    hasRouteTag ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
@@ -228,6 +230,11 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Some issue', [], 'wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'basic wr'), true);
     assert.equal(isWrIssue('Some issue', [], 'work request'), true);
+  });
+
+  await test('isWrIssue detects title route tags', () => {
+    assert.equal(isWrIssue('s12967-025-07466-3.pdf#tools #apps', [], null), true);
+    assert.equal(isWrIssue('landing page #app', [], null), true);
   });
 
   await test('isWrIssue returns false for non-WR issues', () => {

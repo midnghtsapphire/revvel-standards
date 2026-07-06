@@ -229,6 +229,44 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
   );
 });
 
+test('WR workflows infer routing from title tags for title-only intake', () => {
+  const weeklyResearch = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
+    'utf8'
+  );
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+  const wrAutoClassify = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'),
+    'utf8'
+  );
+  const openrouterAutoRoute = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+
+  assert(
+    weeklyResearch.includes('/#(?:tool|tools|app|apps)\\b/i'),
+    'weekly-research should treat title route tags as WR intake signals'
+  );
+  assert(
+    wrPrCreation.includes('/#(?:tool|tools|app|apps)\\b/i'),
+    'wr-pr-creation should treat title route tags as WR intake signals'
+  );
+  assert(
+    wrAutoClassify.includes('infer_output_type_from_title') &&
+      wrAutoClassify.includes('Inferred Output Type from title tag'),
+    'wr-auto-classify should infer Output Type from title route tags when body is blank'
+  );
+  assert(
+    openrouterAutoRoute.includes('inferOutputTypeFromTitle') &&
+      openrouterAutoRoute.includes('No Output Type section or route tags found'),
+    'openrouter-auto-route should infer Output Type from title route tags'
+  );
+});
+
 test('WR PR creation waits for research completion and ignores PR comments', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),

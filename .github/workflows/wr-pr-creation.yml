@@ -144,8 +144,10 @@ jobs:
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
+              hasRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
@@ -805,8 +807,16 @@ jobs:
             });
 
             // Parse Output Type from issue body to determine deliver label
+            const inferOutputTypeFromTitle = (value) => {
+              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
+              return '';
+            };
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
-            const outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            const outputTypeRaw = (
+              (outputTypeMatch?.[1] || '').trim().toLowerCase() ||
+              inferOutputTypeFromTitle(issue.title || '')
+            );
             const OUTPUT_TYPE_DELIVER_MAP = {
               'production-app': 'deliver:app',
               'desktop-tool': 'deliver:app',
