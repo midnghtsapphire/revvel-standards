@@ -70,14 +70,19 @@ TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no back
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
 out="$(cat "$TEMPLATE")"
 # Strip leading HTML comments before the H1 — `awk` walks the head of the
-# template, drops any `<!-- ... -->` line and blank lines, until the first
-# non-comment / non-blank line, then prints the rest verbatim. Without this,
-# WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
-# the lint gate refuses the output (Devin finding on #14227).
+# template, drops any `<!-- ... -->` block (single-line or multi-line) and
+# blank lines, until the first non-comment / non-blank line, then prints the
+# rest verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments
+# push the H1 to line 3+ and the lint gate refuses the output (Devin finding
+# on #14227; multi-line comment fix on #15313).
 out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1 }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^[[:space:]]*$/           { next }
+  BEGIN { stripping=1; in_block=0 }
+  stripping && in_block { if (/-->/) in_block=0; next }
+  stripping && /^<!--/ {
+    if (/-->/) { next }
+    in_block=1; next
+  }
+  stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"
 subst() { out="${out//\{$1\}/$2}"; }
