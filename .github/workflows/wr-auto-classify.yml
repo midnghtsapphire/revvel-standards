@@ -189,13 +189,14 @@ jobs:
               return needed
 
           def infer_title_output_type(title):
-              tag_match = re.search(
+              matches = re.findall(
                   r"(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)",
                   title or "",
                   re.IGNORECASE,
               )
-              if not tag_match:
+              if not matches:
                   return None
+
               # Title-only intake may carry route tags instead of a filled body.
               # Prefer product-shaped tags over generic tool tags when multiple
               # tags are present (e.g. `#tools #app` should route to app).
@@ -210,7 +211,13 @@ jobs:
                   "tools": "internal-script-automation",
                   "tool": "internal-script-automation",
               }
-              return tag_map.get(tag_match.group(1).lower())
+
+              found = {m.lower() for m in matches}
+              priority = ["app", "api", "mcp", "cli", "pdf", "docs", "doc", "tools", "tool"]
+              for tag in priority:
+                  if tag in found:
+                      return tag_map[tag]
+              return None
 
           def call_openrouter(needed, body, title):
               prompt = (
