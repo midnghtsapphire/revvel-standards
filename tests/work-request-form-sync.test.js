@@ -233,8 +233,9 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
     'wr-auto-classify must infer Output Type from title route tags'
   );
   assert(
-    wf.includes('("#app", "production-app")') &&
-      wf.includes('("#tools", "internal-script-automation")'),
+    wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools)') &&
+      wf.includes('"app": "production-app"') &&
+      wf.includes('"tools": "internal-script-automation"'),
     'wr-auto-classify must map #app/#tools title tags to WR Output Type values'
   );
 });

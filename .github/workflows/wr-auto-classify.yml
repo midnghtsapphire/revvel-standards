@@ -189,25 +189,28 @@ jobs:
               return needed
 
           def infer_title_output_type(title):
-              normalized = (title or "").lower()
+              tag_match = re.search(
+                  r"(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)",
+                  title or "",
+                  re.IGNORECASE,
+              )
+              if not tag_match:
+                  return None
               # Title-only intake may carry route tags instead of a filled body.
               # Prefer product-shaped tags over generic tool tags when multiple
               # tags are present (e.g. `#tools #app` should route to app).
-              tag_map = (
-                  ("#app", "production-app"),
-                  ("#api", "api-product"),
-                  ("#mcp", "mcp-product"),
-                  ("#cli", "cli-product"),
-                  ("#pdf", "sellable-pdf"),
-                  ("#docs", "technical-documentation"),
-                  ("#doc", "technical-documentation"),
-                  ("#tools", "internal-script-automation"),
-                  ("#tool", "internal-script-automation"),
-              )
-              for tag, output_type in tag_map:
-                  if tag in normalized:
-                      return output_type
-              return None
+              tag_map = {
+                  "app": "production-app",
+                  "api": "api-product",
+                  "mcp": "mcp-product",
+                  "cli": "cli-product",
+                  "pdf": "sellable-pdf",
+                  "docs": "technical-documentation",
+                  "doc": "technical-documentation",
+                  "tools": "internal-script-automation",
+                  "tool": "internal-script-automation",
+              }
+              return tag_map.get(tag_match.group(1).lower())
 
           def call_openrouter(needed, body, title):
               prompt = (
@@ -391,23 +394,20 @@ jobs:
               print("OpenRouter not configured; using opinionated defaults for blank fields.")
               used_fallback = True
 
-          # Merge: explicit > classified > defaults. Validate against allowed options.
+          # Merge: explicit > title tags > classified > defaults. Validate against
+          # allowed options.
           final = {}
           for field, allowed in DROPDOWN_FIELDS.items():
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
-                  continue
-              if field == "Output Type" and title_output_type in allowed:
+              elif field == "Output Type" and title_output_type in allowed:
                   final[field] = title_output_type
-                  continue
-              suggested = classified.get(field)
-              if suggested in allowed:
-                  final[field] = suggested
-                  continue
-              # fallback
-              final[field] = DEFAULTS[field]
-              used_fallback = True
+              elif classified.get(field) in allowed:
+                  final[field] = classified[field]
+              else:
+                  final[field] = DEFAULTS[field]
+                  used_fallback = True
 
           print(f"Final field values to write: {final}")
 
