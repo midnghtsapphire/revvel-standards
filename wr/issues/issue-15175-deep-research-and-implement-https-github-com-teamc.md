@@ -214,7 +214,14 @@ Synthesis error: HTTP 429: Provider returned error
 
 **Hooks:**
 - "Lightweight image processing pipeline"
-- "TypeScript-native pixel manipulation"
+Add a 'Bill of Materials & Cost Analysis' section that includes:
+1. List of pxpipe + required dependencies with versions
+2. Integration effort estimate (person-days)
+3. Maintenance effort projection (hours/quarter)
+4. Comparison table: pxpipe adoption cost vs. alternatives (RxJS, fp-ts, custom implementation)
+5. ROI calculation (if measurable)
+
+Mark in Research Checklist as [x] only after this section is complete.
 - "Performance-optimized browser graphics"
 
 **First Conversion Events:**
