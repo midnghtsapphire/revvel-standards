@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-06T20:38:24.234Z",
+  "generated_at": "2026-07-06T21:32:25.973Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "62/100 recent runs failed; 0 stuck item(s)",
+      "summary": "19/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 62,
+        "failed_runs": 19,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 28821799444,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28821799444",
+            "conclusion": "failure"
+          },
           {
             "id": 28821620856,
             "name": "Update Project Dashboard",
@@ -75,13 +82,6 @@
             "name": "Push on main",
             "path": "dynamic/github-code-scanning/codeql",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28821189533",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28820971344,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28820971344",
             "conclusion": "failure"
           }
         ],
