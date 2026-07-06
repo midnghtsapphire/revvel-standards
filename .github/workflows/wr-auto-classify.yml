@@ -191,6 +191,9 @@ jobs:
               return needed
 
           def infer_output_type_from_title(title):
+              # Keep this title-tag mapping in sync with weekly-research.yml and
+              # openrouter-auto-route.yml so title-only WR intake resolves the
+              # same Output Type across detection, classification, and routing.
               lower = (title or "").lower()
               if re.search(r'(^|\s)#(?:app|apps)(?=\s|$)', lower):
                   return "production-app"

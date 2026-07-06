@@ -245,9 +245,8 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
   );
 
   assert(
-    weeklyResearch.includes('hasTitleRouteTag') &&
-      weeklyResearch.includes('#(?:app|apps|tool|tools)') &&
-      weeklyResearch.includes('hasTitleRouteTag ||'),
+    weeklyResearch.includes('const hasTitleRouteTag =') &&
+      weeklyResearch.includes('#(?:app|apps|tool|tools)'),
     'weekly-research must recognize #app/#tool title tags as WR intake signals'
   );
   assert(

@@ -65,6 +65,9 @@ jobs:
             );
 
             function inferOutputTypeFromTitle(value) {
+              // Keep this mapping in sync with wr-auto-classify.yml so title-only
+              // WR intake resolves the same Output Type before/after the mirrored
+              // `output-type:*` label exists.
               if (/(^|\s)#(?:app|apps)(?=\s|$)/i.test(value || '')) {
                 return 'production-app';
               }
