@@ -75,7 +75,10 @@ out="$(cat "$TEMPLATE")"
 # WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
 # the lint gate refuses the output (Devin finding on #14227).
 out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1 }
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment           { next }
+  stripping && /^<!--/ && !/-->/ { in_comment=1; next }
   stripping && /^<!--.*-->[[:space:]]*$/ { next }
   stripping && /^[[:space:]]*$/           { next }
   { stripping=0; print }
