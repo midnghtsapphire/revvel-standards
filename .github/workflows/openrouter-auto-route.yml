@@ -27,7 +27,9 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -55,6 +57,7 @@ jobs:
             }
 
             const body = issue.body || '';
+            const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
@@ -65,11 +68,37 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
-              core.info('No Output Type section found in issue body — skipping route.');
+            const outputTypeLabel = existingLabels.find(label =>
+              label.startsWith('output-type:')
+            );
+            const inferTitleOutputType = (issueTitle) => {
+              const normalizedTitle = issueTitle.toLowerCase();
+              const tagMap = [
+                ['#app', 'production-app'],
+                ['#api', 'api-product'],
+                ['#mcp', 'mcp-product'],
+                ['#cli', 'cli-product'],
+                ['#pdf', 'sellable-pdf'],
+                ['#docs', 'technical-documentation'],
+                ['#doc', 'technical-documentation'],
+                ['#tools', 'internal-script-automation'],
+                ['#tool', 'internal-script-automation'],
+              ];
+              for (const [tag, inferredOutputType] of tagMap) {
+                if (normalizedTitle.includes(tag)) {
+                  return inferredOutputType;
+                }
+              }
+              return '';
+            };
+            const outputType =
+              (m && m[1].trim().toLowerCase()) ||
+              (outputTypeLabel && outputTypeLabel.slice('output-type:'.length)) ||
+              inferTitleOutputType(title);
+            if (!outputType) {
+              core.info('No Output Type found in issue body, labels, or title tags — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.
