@@ -40,7 +40,7 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 
 **Evidence of Demand:**
 - Reddit r/redlighttherapy has 45K+ subscribers discussing protocols, devices, and research ([Reddit](https://www.reddit.com/r/redlighttherapy/))
-- "Is red light therapy real" and "red light therapy evidence" show strong search intent signals (estimate: 22K+ monthly searches combined; unverified — needs SEMrush confirmation)
+- "Is red light therapy real" and "red light therapy evidence" show strong search intent signals (estimate: 22K+ monthly searches combined; unverified — needs Semrush confirmation)
 - r/biohacking frequently discusses RLT protocols and dosing ([Reddit r/biohacking](https://www.reddit.com/r/biohacking/))
 
 ### Secondary Audience: Practitioners and Wellness Clinics
@@ -70,7 +70,7 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 | red light therapy for pain evidence | 5K–20K/mo | Research |
 | is red light therapy FDA approved | 5K–20K/mo | Informational |
 
-*Volume estimates are unverified — competitive benchmark research required via SEMrush/Ahrefs*
+*Volume estimates are unverified — competitive benchmark research required via Semrush/Ahrefs*
 
 ### Content Strategy
 
@@ -154,7 +154,7 @@ A device-agnostic, evidence-first tool that:
 
 - Lumaflex affiliate commission rate (estimate: 8–15%; confirm at lumaflex.com/affiliates)
 - Joovv affiliate commission rate (Pricing data pending — competitive benchmark research required)
-- Monthly search volume for primary keywords (needs SEMrush/Ahrefs confirmation)
+- Monthly search volume for primary keywords (needs Semrush/Ahrefs confirmation)
 - App store data for Lumaflex (ratings, download estimates)
 
 ## 7. Build Requirements and Acceptance Gates
@@ -384,7 +384,7 @@ The global red light therapy device market reached approximately **$362.4 millio
 
 ### SEO Keywords
 
-- "red light therapy evidence" — 10K–50K/mo (estimate; needs SEMrush confirmation)
+- "red light therapy evidence" — 10K–50K/mo (estimate; needs Semrush confirmation)
 - "photobiomodulation benefits" — 5K–20K/mo (estimate)
 - "best red light therapy app" — 1K–10K/mo (estimate)
 - "red light therapy protocol" — 1K–10K/mo (estimate)
@@ -447,4 +447,4 @@ No blocking dependencies — this is a greenfield product.
 | Clinical evidence claims attract regulatory scrutiny | Medium | High | Add clear disclaimer: "For informational purposes only; not medical advice" |
 | SEO competition from established health sites | High | Medium | Focus on evidence-first niche content; avoid broad health keywords |
 | Lumaflex app already covers same use case | Low | Low | We build device-agnostic tool; Lumaflex is locked to their hardware |
-| Search volumes lower than estimated | Medium | Medium | Validate with SEMrush before full SEO investment; pivot to affiliate-first if needed |
+| Search volumes lower than estimated | Medium | Medium | Validate with Semrush before full SEO investment; pivot to affiliate-first if needed |
