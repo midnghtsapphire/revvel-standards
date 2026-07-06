@@ -91,12 +91,13 @@ jobs:
             ];
             const inferredOutputType =
               titleTagOutputTypeMap.find(([pattern]) => pattern.test(title))?.[1] || '';
-            if (!m && !inferredOutputType) {
+            const explicitOutputType = m?.[1]?.trim() || '';
+            if (!explicitOutputType && !inferredOutputType) {
               core.info('No Output Type section found in issue body — skipping route.');
               return;
             }
-            const outputType = (m?.[1] || inferredOutputType).trim().toLowerCase();
-            if (!m && inferredOutputType) {
+            const outputType = (explicitOutputType || inferredOutputType).toLowerCase();
+            if (!explicitOutputType && inferredOutputType) {
               core.info(`No Output Type section found; inferred Output Type from title tags: "${outputType}"`);
             }
             core.info(`Parsed Output Type: "${outputType}"`);

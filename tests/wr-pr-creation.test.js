@@ -238,7 +238,7 @@ function isCompletionTrigger(eventName, action, labelName) {
 
   await test('isWrIssue detects title-only route tags', () => {
     assert.equal(isWrIssue('Red light therapy stretch marks #tools #app', [], null), true);
-    assert.equal(isWrIssue('Red light therapy stretch marks (20#tool #app', [], null), true);
+    assert.equal(isWrIssue('Red Light Therapy for Stretch Marks: Science & Protocols (20#tool #app', [], null), true);
   });
 
   // Completion Labels

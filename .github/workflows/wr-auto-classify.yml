@@ -194,23 +194,18 @@ jobs:
               return parsed
 
           def infer_output_type_from_title(title):
-              title = (title or "").lower()
+              title = title or ""
               title_tag_map = [
-                  ("#app", "production-app"),
-                  ("#apps", "production-app"),
-                  ("#tool", "desktop-tool"),
-                  ("#tools", "desktop-tool"),
-                  ("#pdf", "sellable-pdf"),
-                  ("#pdfs", "sellable-pdf"),
-                  ("#doc", "technical-documentation"),
-                  ("#docs", "technical-documentation"),
-                  ("#api", "api-product"),
-                  ("#apis", "api-product"),
-                  ("#cli", "cli-product"),
-                  ("#mcp", "mcp-product"),
+                  (r"#apps?\b", "production-app"),
+                  (r"#tools?\b", "desktop-tool"),
+                  (r"#pdfs?\b", "sellable-pdf"),
+                  (r"#docs?\b", "technical-documentation"),
+                  (r"#apis?\b", "api-product"),
+                  (r"#cli\b", "cli-product"),
+                  (r"#mcp\b", "mcp-product"),
               ]
-              for tag, output_type in title_tag_map:
-                  if tag in title:
+              for pattern, output_type in title_tag_map:
+                  if re.search(pattern, title, re.IGNORECASE):
                       return output_type
               return None
 
