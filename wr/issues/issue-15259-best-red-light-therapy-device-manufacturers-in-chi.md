@@ -73,7 +73,7 @@ The global red light therapy device market is estimated at **$587.5 million in 2
 
 ### Target Manufacturers (Seed Database)
 
-| Manufacturer | Location | Certifications | Speciality |
+| Manufacturer | Location | Certifications | Specialty |
 | --- | --- | --- | --- |
 | EZ-Therapylight | Shenzhen | FDA, CE, RoHS | Full-body panels, OEM/ODM |
 | ShineNova Technology | Shenzhen | FDA, CE, ISO 13485 (160+ certs) | Smart wearables, app-integrated devices |
@@ -176,6 +176,16 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 - [ ] SEO meta tags on all pages (title, description, OG)
 - [ ] Lighthouse performance score ≥85
 - [ ] All Playwright smoke tests passing
+
+### Smoke Test Coverage (Playwright)
+
+| Flow | Required Assertions |
+| --- | --- |
+| Manufacturer search/filter | Results update on filter change; ≥1 result returned for known manufacturer name |
+| Comparison UI | ≥2 manufacturers can be selected; comparison table renders all fields |
+| RFQ submission | Form submits successfully; confirmation message shown; admin email triggered |
+| Freemium gate | Unauthenticated user hits paywall after free-tier limit; Stripe Checkout opens |
+| Manufacturer profile page | Page loads with name, certifications, and contact info visible |
 
 ## Recommendations
 
