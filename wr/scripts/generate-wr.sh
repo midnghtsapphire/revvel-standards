@@ -75,12 +75,16 @@ out="$(cat "$TEMPLATE")"
 # WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
 # the lint gate refuses the output (Devin finding on #14227).
 out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1 }
+  BEGIN { stripping=1; ml=0 }
+  stripping && !ml && /^<!--/ && !/-->/ { ml=1; next }
+  stripping && ml { if (/-->/) ml=0; next }
   stripping && /^<!--.*-->[[:space:]]*$/ { next }
   stripping && /^[[:space:]]*$/           { next }
   { stripping=0; print }
 ')"
-subst() { out="${out//\{$1\}/$2}"; }
+# Escape & in replacement to prevent bash parameter-expansion from treating it
+# as a backreference (& expands to the matched pattern text in ${var//pat/rep}).
+subst() { local _r="${2//&/\\&}"; out="${out//\{$1\}/$_r}"; }
 subst TITLE             "$TITLE_CLEAN"
 subst ISSUE_REF         "#${ISSUE:-N/A}"
 subst REPO              "midnghtsapphire/revvel-standards"
