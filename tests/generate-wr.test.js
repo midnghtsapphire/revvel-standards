@@ -23,7 +23,7 @@ function copyRecursive(src, dest) {
   fs.copyFileSync(src, dest);
 }
 
-test("generate-wr strips leading multi-line template comments before linting", () => {
+test("generate-wr strips leading multi-line template comments", () => {
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "generate-wr-"));
   try {
     copyRecursive(path.join(REPO_ROOT, "wr"), path.join(sandbox, "wr"));
