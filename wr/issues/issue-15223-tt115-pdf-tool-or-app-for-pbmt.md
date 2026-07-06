@@ -3,7 +3,7 @@
 **Issue:** #15223  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
-**Researcher:** Copilot  
+**Researcher:** Unassigned  
 **Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
