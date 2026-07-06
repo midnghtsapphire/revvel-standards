@@ -60,7 +60,7 @@ The research paper (PMC10040577, PMID 36993812) is a 2023 peer-reviewed review a
 The intersection of peer-reviewed sirtuin science and consumer longevity tooling represents a credible white space. No mainstream app in 2025 is strictly sirtuin- or fibroblast-centric; the closest competitors (Oura, Levels, Cronometer) address adjacent inputs (sleep, glucose, nutrition) without mapping them to skin-specific sirtuin biology. A dual-output strategy (consumer app + OSS research tool) lets us capture both the DTC skincare-enthusiast market and the B2B/research audience.
 
 **Rationale:**
-- The global NAD-based anti-aging skincare product market is forecasted at 7.9% CAGR through 2031 (internal estimate, based on published ingredient-supplier growth reports — unverified exact figure; treat as directional).
+- The global NAD-based anti-aging skincare product market is forecasted at 7.9% CAGR through 2031 — internal directional estimate; exact figure not independently verified. Do not use in investor materials without sourcing.
 - Estée Lauder's SIRTIVITY-LP™ patent and Silab's Longevicell ingredient (both 2025–2026 commercial launches) validate enterprise-level demand for sirtuin-centric skincare products ([Estée Lauder press release, April 2026](https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2026/4-22-2026); [Cosmetics & Toiletries, Silab Longevicell](https://www.cosmeticsandtoiletries.com/cosmetic-ingredients/actives/news/22933022/silab-silabs-longevicell-targets-sirtuins-coactivators-for-antiaging-longevity-efficacy)).
 - The scientific review (PMC10040577) was published in _Experimental Dermatology_ (2023), a high-impact journal, providing a defensible evidence base.
 
@@ -215,7 +215,7 @@ The intersection of peer-reviewed sirtuin science and consumer longevity tooling
 
 - [ ] Scaffold Next.js app under `products/sirtskin-app/`
 - [ ] Scaffold CLI package under `products/sirtskin-cli/`
-- [ ] Add entries to `AGENTS.md` port table (app: 3010, CLI: N/A)
+- [ ] Add entries to `AGENTS.md` port table (app: 3010 — next sequential after 3009, confirmed available; CLI: N/A)
 - [ ] Create `.env.example` for app (Supabase + Stripe keys)
 - [ ] Wire Stripe billing for `$9.99/mo` and `$79/yr` plans
 - [ ] Implement SAS scoring module with unit tests
