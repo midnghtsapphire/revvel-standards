@@ -390,12 +390,12 @@ jobs:
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
                   continue
+              if field == "Output Type" and title_inferred_output_type in allowed:
+                  final[field] = title_inferred_output_type
+                  continue
               suggested = classified.get(field)
               if suggested in allowed:
                   final[field] = suggested
-                  continue
-              if field == "Output Type" and title_inferred_output_type in allowed:
-                  final[field] = title_inferred_output_type
                   continue
               # fallback
               final[field] = DEFAULTS[field]
