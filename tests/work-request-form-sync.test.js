@@ -258,7 +258,9 @@ test('OpenRouter auto-route accepts normalized WR labels and output-type fallbac
     'openrouter-auto-route must fall back to output-type:* labels'
   );
   assert(
-    wf.includes('inferTitleOutputType') && wf.includes("['#app', 'production-app']"),
+    wf.includes('inferTitleOutputType') &&
+      wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools)') &&
+      wf.includes("app: 'production-app'"),
     'openrouter-auto-route must support title-tag Output Type inference for title-only intake'
   );
 });

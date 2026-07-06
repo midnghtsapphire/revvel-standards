@@ -72,24 +72,24 @@ jobs:
               label.startsWith('output-type:')
             );
             const inferTitleOutputType = (issueTitle) => {
-              const normalizedTitle = issueTitle.toLowerCase();
-              const tagMap = [
-                ['#app', 'production-app'],
-                ['#api', 'api-product'],
-                ['#mcp', 'mcp-product'],
-                ['#cli', 'cli-product'],
-                ['#pdf', 'sellable-pdf'],
-                ['#docs', 'technical-documentation'],
-                ['#doc', 'technical-documentation'],
-                ['#tools', 'internal-script-automation'],
-                ['#tool', 'internal-script-automation'],
-              ];
-              for (const [tag, inferredOutputType] of tagMap) {
-                if (normalizedTitle.includes(tag)) {
-                  return inferredOutputType;
-                }
+              const tagMatch = issueTitle.match(
+                /(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i
+              );
+              if (!tagMatch) {
+                return '';
               }
-              return '';
+              const tagMap = {
+                app: 'production-app',
+                api: 'api-product',
+                mcp: 'mcp-product',
+                cli: 'cli-product',
+                pdf: 'sellable-pdf',
+                docs: 'technical-documentation',
+                doc: 'technical-documentation',
+                tools: 'internal-script-automation',
+                tool: 'internal-script-automation',
+              };
+              return tagMap[tagMatch[1].toLowerCase()] || '';
             };
             const outputType =
               (m && m[1].trim().toLowerCase()) ||
