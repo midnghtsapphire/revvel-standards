@@ -72,12 +72,16 @@ jobs:
               label.startsWith('output-type:')
             );
             const inferTitleOutputType = (issueTitle) => {
-              const tagMatch = issueTitle.match(
-                /(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i
-              );
-              if (!tagMatch) {
+              const tagMatches = Array.from(
+                (issueTitle || '').matchAll(
+                  /(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/gi
+                )
+              ).map(m => m[1].toLowerCase());
+
+              if (tagMatches.length === 0) {
                 return '';
               }
+
               const tagMap = {
                 app: 'production-app',
                 api: 'api-product',
@@ -89,11 +93,20 @@ jobs:
                 tools: 'internal-script-automation',
                 tool: 'internal-script-automation',
               };
-              return tagMap[tagMatch[1].toLowerCase()] || '';
+
+              // Prefer product-shaped tags over generic tool tags when multiple tags are present.
+              const priority = ['app', 'api', 'mcp', 'cli', 'pdf', 'docs', 'doc', 'tools', 'tool'];
+              const found = new Set(tagMatches);
+              for (const tag of priority) {
+                if (found.has(tag)) {
+                  return tagMap[tag] || '';
+                }
+              }
+              return '';
             };
             const outputType =
               (m && m[1].trim().toLowerCase()) ||
-              (outputTypeLabel && outputTypeLabel.slice('output-type:'.length)) ||
+              (outputTypeLabel && outputTypeLabel.slice('output-type:'.length).trim().toLowerCase()) ||
               inferTitleOutputType(title);
             if (!outputType) {
               core.info('No Output Type found in issue body, labels, or title tags — skipping route.');
