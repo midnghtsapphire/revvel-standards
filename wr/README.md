@@ -18,8 +18,14 @@ Each repository gets a comprehensive WR that includes:
 ```
 wr/
 ├── README.md                    # This file
-├── WR_TEMPLATE.md              # Standard template for all WRs
 ├── WR_TRACKER.md               # Master tracker for all WRs
+├── WR_QUEUE.md                 # Idea / suggestion queue (park now, prioritize later)
+├── WR_TEMPLATE_IDEA.md         # Lightweight idea/spec capture (feeds the queue)
+├── WR_TEMPLATE_RESEARCH.md     # Fine-grained personal research template
+├── WR_TEMPLATE_BASIC.md        # Bug / chore / docs WR template
+├── WR_TEMPLATE_FULL.md         # Full product / sellable-asset WR template
+├── ideas/                       # Idea files (WR_TEMPLATE_IDEA instances)
+├── research/                    # Personal research files (WR_TEMPLATE_RESEARCH instances)
 ├── scripts/
 │   ├── generate-wr.sh          # Script to generate WR from template
 │   └── update-tracker.sh       # Script to update WR tracker
@@ -28,6 +34,27 @@ wr/
     ├── k9-community-site.md
     ├── certifixes.md
     └── ...                      # One WR per repository
+```
+
+## Template Guide
+
+| Template | When to use | Output lives in |
+|----------|-------------|-----------------|
+| `WR_TEMPLATE_IDEA.md` | Quick idea capture — fill only what you know now | `wr/ideas/` |
+| `WR_TEMPLATE_RESEARCH.md` | Targeted personal research — answer one specific question | `wr/research/` |
+| `WR_TEMPLATE_BASIC.md` | Bug / chore / docs / refactor WR | `wr/issues/` |
+| `WR_TEMPLATE_FULL.md` | New product or sellable asset — full market research | `wr/issues/` |
+
+### Idea → Full WR promotion path
+
+```
+Capture idea
+  → copy WR_TEMPLATE_IDEA.md → wr/ideas/YYYY-MM-DD-{slug}.md
+  → add row to WR_QUEUE.md (status: Queued)
+      ↓  when prioritized
+  → copy WR_TEMPLATE_FULL.md → wr/issues/issue-{N}-{slug}.md
+  → file GitHub issue [WR] {Title}
+  → update WR_QUEUE.md row (status: Promoted)
 ```
 
 ## Usage
