@@ -74,10 +74,15 @@ out="$(cat "$TEMPLATE")"
 # non-comment / non-blank line, then prints the rest verbatim. Without this,
 # WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
 # the lint gate refuses the output (Devin finding on #14227).
+# in_comment tracks state for multi-line <!-- ... --> blocks that span
+# several lines (e.g. the Source-packet convention comment in the FULL template).
 out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1 }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^[[:space:]]*$/           { next }
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && !in_comment && /^[[:space:]]*<!--/ && /-->/ { next }
+  stripping && !in_comment && /^[[:space:]]*<!--/ { in_comment=1; next }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment { next }
+  stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"
 subst() { out="${out//\{$1\}/$2}"; }
