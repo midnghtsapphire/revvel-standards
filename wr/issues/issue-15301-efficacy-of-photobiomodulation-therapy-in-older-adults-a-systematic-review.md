@@ -45,7 +45,7 @@ fill.
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
-- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`) — THOR price confirmed; hardware-bundled vendors (BIOFLEX, NovoTHOR, Lumaflex) require direct quotes per policy
 - [x] Domain strategy
 - [x] Monetization
 - [x] Every statistic/percentage cited with a source link or labeled as an estimate
@@ -115,9 +115,9 @@ $20,000+ vendor-locked device bundle.
 | Competitor | Price | Model | Protocol Software | Gap |
 | --- | --- | --- | --- | --- |
 | **THOR Photomedicine** | $16,000–$40,000 | Hardware bundle | Yes — device-locked | Requires THOR hardware |
-| **BIOFLEX Laser** | Pricing data pending — contact quote required | Hardware bundle | Yes — proprietary | Device-locked, no standalone |
-| **NovoTHOR** | Pricing data pending — contact quote required | Full-body pod | Yes — proprietary | Clinical/institutional only |
-| **Lumaflex Body Pro** | Pricing data pending — contact quote required | Portable hardware | Basic custom protocols | Device-locked |
+| **BIOFLEX Laser** | Pricing data pending — competitive benchmark research required. | Hardware bundle | Yes — proprietary | Device-locked, no standalone |
+| **NovoTHOR** | Pricing data pending — competitive benchmark research required. | Full-body pod | Yes — proprietary | Clinical/institutional only |
+| **Lumaflex Body Pro** | Pricing data pending — competitive benchmark research required. | Portable hardware | Basic custom protocols | Device-locked |
 
 ### Web / Standalone Tools
 
@@ -184,10 +184,10 @@ is growing at 10.2% CAGR through 2031. No standalone protocol tool exists for th
 - **TAM for protocol software:** Software is currently device-bundled; no standalone market data.
   Conservative estimate: 5–10% of hardware install base × SaaS price = $10M–$25M software TAM
   (internal estimate).
-- **US licensed physical therapists:** ~230,000 (Bureau of Labor Statistics, 2023 — unverified
-  exact count; BLS O*NET data cited as source).
+- **US licensed physical therapists:** ~230,000 — internal estimate; exact count unverified
+  ([BLS Occupational Outlook Handbook](https://www.bls.gov/ooh/healthcare/physical-therapists.htm) cited as source).
 - **Geriatric care clinics and wound centers:** 4,000+ certified wound care facilities in the US
-  ([AAWC estimate](https://aawconline.memberclicks.net/) — unverified exact count).
+  — internal estimate; exact count unverified ([AAWC](https://aawconline.memberclicks.net/) cited as source).
 
 ### Clinical Evidence Base (from PMC11274037)
 
@@ -213,8 +213,9 @@ documented in older adult populations.
 | Competitor | Price | Software Model | Older Adult Focus | Open API |
 | --- | --- | --- | --- | --- |
 | THOR Photomedicine | $16,000–$40,000 (hardware) | Device-bundled | No | No |
-| BIOFLEX Laser | Pricing data pending — competitive benchmark research required | Device-bundled | No | No |
-| NovoTHOR | Pricing data pending — competitive benchmark research required | Device-bundled | No | No |
+| BIOFLEX Laser | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
+| NovoTHOR | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
+| Lumaflex Body Pro | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
 | pbmdosage.com | Free | Standalone | No | No |
 | THOR Dose Calculator | Free | Web widget | No | No |
 | **Our product** | $49–$149/mo | SaaS, device-agnostic | **Yes** | Planned |
