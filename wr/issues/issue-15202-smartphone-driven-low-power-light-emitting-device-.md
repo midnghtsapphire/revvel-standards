@@ -1,4 +1,4 @@
-# WR: Smartphone-Driven Low-Power Light-Emitting Device - Create mobile app or tool for red light therapy or photobiomodulation therapy
+# WR: Red Light Therapy Mobile App - Protocol guidance and session tracking for photobiomodulation therapy
 
 **Issue:** #15202  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -57,7 +57,7 @@ Ship a demand-led mobile PBM companion app for people already buying red/NIR har
 Output bundle:
 - Mobile app (`iOS`, `Android`) using Expo/React Native
 - Lightweight protocol engine for session presets
-- Dose/session calculator tuned to the paper's reported 630/850 nm profile
+- Dose/session calculator tuned to the PMC5406741 study's reported 630/850 nm profile
 - Session analytics/export (`CSV` and Markdown report)
 - Hardware pairing/control layer for supported BLE or USB-C accessories
 
@@ -91,7 +91,7 @@ MVP features:
 | Item | Category | Cost | Notes |
 | --- | --- | --- | --- |
 | Expo + React Native + TypeScript | App stack | Free to start | Matches repo mobile default; no incremental license cost for the first shipped build. |
-| EAS Build / app store delivery | Build/distribution | `$0/month` free tier or `$19/month` starter tier | Public Expo pricing shows a usable free tier and a starter tier for launch-stage apps ([Expo pricing](https://expo.dev/pricing)). |
+| EAS Build / app store delivery | Build/distribution | `$0/month` free tier or `$19/month` starter tier | As of `2026-07-06`, public Expo pricing shows a usable free tier and a starter tier for launch-stage apps ([Expo pricing](https://expo.dev/pricing)). |
 | Local encrypted storage library | App dependency | Internal estimate: low / open-source | Needed for private session history and export on-device. |
 | BLE-enabled light accessory dev kit | Hardware integration | Internal estimate: `$50-$150/unit` | Small prototype budget for pairing, timer sync, and thermal-state testing. |
 | Temperature sensor or thermal telemetry path | Safety instrumentation | Internal estimate: `$5-$15/unit` if external sensor is required | Only needed if the chosen accessory does not already expose temperature or duty-cycle telemetry. |
@@ -110,12 +110,12 @@ MVP features:
 - `lightdose.app`
 - `photobiomodulationcoach.com`
 
-Registrar availability was not verified in this pass, so treat these as naming directions to check before brand lock.
+Registrar availability was not verified in this pass, so treat these as naming directions to check before brand lock. Action: verify domain availability and registrar pricing before finalizing brand decisions.
 
 ### Revenue / Monetization Model
 
 - Free core app for timer, reminders, and session logging to lower adoption friction.
-- Premium upgrade for protocol packs, deeper exports, clinician/coach notes, and device-specific calculators (internal estimate: `$9-$19/month` or annual equivalent).
+- Premium upgrade for protocol packs, deeper exports, clinician/coach notes, and device-specific calculators (internal estimate: `$9-$19/month` or a discounted annual tier in roughly the `$99-$199/year` band).
 - Affiliate revenue from compatible red/NIR hardware once the protocol library is trusted enough to recommend device classes.
 - Team/clinic mode for estheticians, recovery studios, or coaching programs that need shared protocol templates and client progress exports.
 
