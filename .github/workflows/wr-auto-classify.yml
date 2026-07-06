@@ -181,6 +181,29 @@ jobs:
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
 
+          TITLE_TAG_OUTPUT_TYPE = {
+              "#app": "production-app",
+              "#apps": "production-app",
+              "#tool": "desktop-tool",
+              "#tools": "desktop-tool",
+              "#pdf": "sellable-pdf",
+              "#docs": "technical-documentation",
+              "#doc": "technical-documentation",
+              "#cli": "cli-product",
+              "#api": "api-product",
+              "#mcp": "mcp-product",
+          }
+
+          def infer_output_type_from_title_tags(title):
+              # Title-route tags are an intake fallback for sparse/link-only WRs.
+              # First recognized tag wins, preserving user intent ordering.
+              tags_in_order = re.findall(r"(?<!\w)#([a-z][a-z0-9-]*)\b", (title or "").lower())
+              for tag in tags_in_order:
+                  output_type = TITLE_TAG_OUTPUT_TYPE.get(f"#{tag}")
+                  if output_type:
+                      return output_type
+              return None
+
           def fields_needing_classification(parsed):
               needed = []
               for field, value in parsed.items():
@@ -352,6 +375,9 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          title_inferred_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+          if title_inferred_output_type:
+              print(f"Title route-tag inferred Output Type: {title_inferred_output_type}")
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
@@ -372,6 +398,9 @@ jobs:
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
+                  continue
+              if field == "Output Type" and title_inferred_output_type in allowed:
+                  final[field] = title_inferred_output_type
                   continue
               suggested = classified.get(field)
               if suggested in allowed:
@@ -420,6 +449,7 @@ jobs:
               update_single_select(project_id, item_id, info["id"], opt_id)
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tags" if (field == "Output Type" and title_inferred_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
                   else "fallback"
               )
