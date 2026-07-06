@@ -249,7 +249,8 @@ test('WR intake and routing workflows recognize title route tags (#tool/#tools/#
 
   for (const workflow of [wrPrCreation, weeklyResearch]) {
     assert(
-      workflow.includes("['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag))"),
+      workflow.includes('const hasTitleRouteTag') &&
+        workflow.includes("'app', 'tool', 'tools'"),
       'WR intake workflow must treat title route tags as WR signals'
     );
   }
