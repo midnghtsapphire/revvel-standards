@@ -45,7 +45,19 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#apps') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#pdfs') ||
+       contains(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#apis') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -180,6 +192,27 @@ jobs:
               for form_label, field_name in FORM_TO_FIELD.items():
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
+
+          def infer_output_type_from_title(title):
+              title = (title or "").lower()
+              title_tag_map = [
+                  ("#app", "production-app"),
+                  ("#apps", "production-app"),
+                  ("#tool", "desktop-tool"),
+                  ("#tools", "desktop-tool"),
+                  ("#pdf", "sellable-pdf"),
+                  ("#pdfs", "sellable-pdf"),
+                  ("#doc", "technical-documentation"),
+                  ("#docs", "technical-documentation"),
+                  ("#api", "api-product"),
+                  ("#apis", "api-product"),
+                  ("#cli", "cli-product"),
+                  ("#mcp", "mcp-product"),
+              ]
+              for tag, output_type in title_tag_map:
+                  if tag in title:
+                      return output_type
+              return None
 
           def fields_needing_classification(parsed):
               needed = []
@@ -355,6 +388,9 @@ jobs:
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
+          title_tag_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_tag_output_type:
+              print(f"Inferred Output Type from title tag: {title_tag_output_type}")
 
           classified = {}
           used_fallback = False
@@ -372,6 +408,9 @@ jobs:
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
+                  continue
+              if field == "Output Type" and title_tag_output_type in allowed:
+                  final[field] = title_tag_output_type
                   continue
               suggested = classified.get(field)
               if suggested in allowed:
@@ -420,6 +459,7 @@ jobs:
               update_single_select(project_id, item_id, info["id"], opt_id)
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tag" if (field == "Output Type" and title_tag_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
                   else "fallback"
               )

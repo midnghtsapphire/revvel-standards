@@ -88,9 +88,11 @@ function isWrIssue(title, labels, issueType) {
   );
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
+  const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp)\b/i.test(title);
   
   return (
     title.match(/^\[WR\]/i) ||
+    hasWrRouteTag ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
@@ -232,6 +234,11 @@ function isCompletionTrigger(eventName, action, labelName) {
 
   await test('isWrIssue returns false for non-WR issues', () => {
     assert.equal(isWrIssue('Bug: Something broken', [], null), false);
+  });
+
+  await test('isWrIssue detects title-only route tags', () => {
+    assert.equal(isWrIssue('Red light therapy stretch marks #tools #app', [], null), true);
+    assert.equal(isWrIssue('Red light therapy stretch marks (20#tool #app', [], null), true);
   });
 
   // Completion Labels

@@ -27,7 +27,21 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#apps') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#pdfs') ||
+        contains(github.event.issue.title, '#doc') ||
+        contains(github.event.issue.title, '#docs') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#apis') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#mcp')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -55,6 +69,7 @@ jobs:
             }
 
             const body = issue.body || '';
+            const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
@@ -65,11 +80,25 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
+            const titleTagOutputTypeMap = [
+              [/#apps?\b/i, 'production-app'],
+              [/#tools?\b/i, 'desktop-tool'],
+              [/#pdfs?\b/i, 'sellable-pdf'],
+              [/#docs?\b/i, 'technical-documentation'],
+              [/#apis?\b/i, 'api-product'],
+              [/#cli\b/i, 'cli-product'],
+              [/#mcp\b/i, 'mcp-product'],
+            ];
+            const inferredOutputType =
+              titleTagOutputTypeMap.find(([pattern]) => pattern.test(title))?.[1] || '';
+            if (!m && !inferredOutputType) {
               core.info('No Output Type section found in issue body — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
+            const outputType = (m?.[1] || inferredOutputType).trim().toLowerCase();
+            if (!m && inferredOutputType) {
+              core.info(`No Output Type section found; inferred Output Type from title tags: "${outputType}"`);
+            }
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.
