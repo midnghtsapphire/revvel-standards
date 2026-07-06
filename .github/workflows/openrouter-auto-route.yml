@@ -27,7 +27,10 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#app')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -65,11 +68,24 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
-              core.info('No Output Type section found in issue body — skipping route.');
+            const TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              tool: 'desktop-tool',
+              tools: 'desktop-tool',
+              app: 'production-app',
+            };
+            const inferOutputTypeFromTitleTags = (title = '') => {
+              const tags = Array.from(title.toLowerCase().matchAll(/#([a-z0-9_-]+)/g), tag => tag[1]);
+              for (const key of ['tool', 'tools', 'app']) {
+                if (tags.includes(key)) return TITLE_ROUTE_TAG_OUTPUT_TYPE[key];
+              }
+              return '';
+            };
+
+            const outputType = (m?.[1] || inferOutputTypeFromTitleTags(issue.title || '')).trim().toLowerCase();
+            if (!outputType) {
+              core.info('No Output Type section or recognized title route tag found — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.

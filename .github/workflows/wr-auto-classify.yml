@@ -45,7 +45,10 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#app'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -132,6 +135,11 @@ jobs:
               "Deployment Target": "Deployment Target",
               "Launch Priority": "Priority",
           }
+          TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              "tool": "desktop-tool",
+              "tools": "desktop-tool",
+              "app": "production-app",
+          }
 
           def gh_graphql(query, variables=None, token=None):
               token = token or PAT
@@ -180,6 +188,13 @@ jobs:
               for form_label, field_name in FORM_TO_FIELD.items():
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
+
+          def infer_output_type_from_title_tags(title):
+              tags = re.findall(r"#([a-z0-9_-]+)", (title or "").lower())
+              for tag in ("tool", "tools", "app"):
+                  if tag in tags:
+                      return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag]
+              return None
 
           def fields_needing_classification(parsed):
               needed = []
@@ -352,6 +367,13 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          if not parsed.get("Output Type"):
+              title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+              if title_output_type in DROPDOWN_FIELDS["Output Type"]:
+                  parsed["Output Type"] = title_output_type
+                  print(
+                      f"Inferred Output Type from title route tag: {title_output_type}"
+                  )
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")

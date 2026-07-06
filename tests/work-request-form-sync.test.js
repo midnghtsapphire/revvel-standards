@@ -229,6 +229,59 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
   );
 });
 
+test('WR intake and routing workflows recognize title route tags (#tool/#tools/#app)', () => {
+  const wrPrCreation = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+  const weeklyResearch = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
+    'utf8'
+  );
+  const wrAutoClassify = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'),
+    'utf8'
+  );
+  const autoRoute = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+
+  for (const workflow of [wrPrCreation, weeklyResearch]) {
+    assert(
+      workflow.includes("['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag))"),
+      'WR intake workflow must treat title route tags as WR signals'
+    );
+  }
+
+  assert(
+    wrAutoClassify.includes("contains(github.event.issue.title, '#tool')") &&
+      wrAutoClassify.includes("contains(github.event.issue.title, '#tools')") &&
+      wrAutoClassify.includes("contains(github.event.issue.title, '#app')"),
+    'wr-auto-classify must run for title route tags'
+  );
+  assert(
+    wrAutoClassify.includes('TITLE_ROUTE_TAG_OUTPUT_TYPE') &&
+      wrAutoClassify.includes('infer_output_type_from_title_tags'),
+    'wr-auto-classify must infer Output Type from title route tags'
+  );
+
+  assert(
+    autoRoute.includes("contains(github.event.issue.title, '#tool')") &&
+      autoRoute.includes("contains(github.event.issue.title, '#tools')") &&
+      autoRoute.includes("contains(github.event.issue.title, '#app')"),
+    'openrouter-auto-route must run for title route tags'
+  );
+  assert(
+    autoRoute.includes('inferOutputTypeFromTitleTags'),
+    'openrouter-auto-route must infer Output Type from title route tags'
+  );
+  assert(
+    wrPrCreation.includes('inferOutputTypeFromTitleTags'),
+    'wr-pr-creation must infer Output Type from title route tags for deliver labels'
+  );
+});
+
 test('WR PR creation waits for research completion and ignores PR comments', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
