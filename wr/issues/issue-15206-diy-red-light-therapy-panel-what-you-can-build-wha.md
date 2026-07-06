@@ -1,4 +1,4 @@
-# WR: DIY Red Light Therapy Panel: What You Can Build, What It Costs, and When a Verified Device Makes More Sense — first pass: create a mobile app or tool for red light therapy or photobiomodulation therapy
+# WR: DIY Red Light Therapy Panel + Photobiomodulation Mobile App/Tool
 
 **Issue:** #15206  
 **Repository:** midnghtsapphire/revvel-standards  
@@ -23,7 +23,6 @@
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
