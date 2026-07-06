@@ -27,7 +27,11 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#tool')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -55,9 +59,20 @@ jobs:
             }
 
             const body = issue.body || '';
+            const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
+
+            function inferOutputTypeFromTitle(value) {
+              if (/(^|\s)#(?:app|apps)(?=\s|$)/i.test(value || '')) {
+                return 'production-app';
+              }
+              if (/(^|\s)#(?:tool|tools)(?=\s|$)/i.test(value || '')) {
+                return 'desktop-tool';
+              }
+              return '';
+            }
 
             // Match the `### Output Type (required)` form section — tolerant of
             // trailing parenthetical annotations and case (matches the same
@@ -65,12 +80,17 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
-              core.info('No Output Type section found in issue body — skipping route.');
+            const outputTypeLabel = existingLabels.find(label => label.startsWith('output-type:')) || '';
+            const outputType = (
+              m?.[1] ||
+              outputTypeLabel.replace(/^output-type:/, '') ||
+              inferOutputTypeFromTitle(title)
+            ).trim().toLowerCase();
+            if (!outputType) {
+              core.info('No Output Type section, mirrored output-type label, or title route tag found — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
-            core.info(`Parsed Output Type: "${outputType}"`);
+            core.info(`Resolved Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.
             const routingTable = {

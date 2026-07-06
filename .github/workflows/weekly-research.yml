@@ -54,12 +54,16 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const hasTitleRouteTag = /(^|\s)#(?:app|apps|tool|tools)(?=\s|$)/i.test(title);
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and issue template labels can be skipped
-            // if a label has not been created in the repository yet.
+            // if a label has not been created in the repository yet. Title-only
+            // intake may also carry route tags like `#app` / `#tool` instead of a
+            // `[WR]` prefix, so accept those as an explicit WR signal too.
             const isWR =
               title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);

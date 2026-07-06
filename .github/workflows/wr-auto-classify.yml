@@ -45,7 +45,9 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -187,6 +189,14 @@ jobs:
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
+
+          def infer_output_type_from_title(title):
+              lower = (title or "").lower()
+              if re.search(r'(^|\s)#(?:app|apps)(?=\s|$)', lower):
+                  return "production-app"
+              if re.search(r'(^|\s)#(?:tool|tools)(?=\s|$)', lower):
+                  return "desktop-tool"
+              return None
 
           def call_openrouter(needed, body, title):
               prompt = (
@@ -352,6 +362,10 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          title_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if not parsed.get("Output Type") and title_output_type:
+              parsed["Output Type"] = title_output_type
+              print(f"Inferred Output Type from title route tag: {title_output_type}")
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
