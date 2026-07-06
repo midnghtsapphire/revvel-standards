@@ -59,7 +59,7 @@ The article establishes three core PBM mechanisms relevant to a consumer/clinica
 ### Market Sizing
 
 - Global photobiomodulation therapy market estimated at USD 263 M (2023), growing at ~16% CAGR to ~USD 780 M by 2030 (internal estimate — formal verification via IBISWorld/Mordor recommended before investor deck).
-- Consumer red light therapy device market (home panels, masks, wands): an estimated 3–4× larger addressable market than clinical segment, driven by Joovv, Mito Red Light, Platinum LED, RedRush brands selling USD 300–3,000 panels.
+- Consumer red light therapy device market (home panels, masks, wands): an estimated 3–4× larger addressable market than clinical segment (internal estimate — formal market-research verification required), driven by Joovv, Mito Red Light, Platinum LED, RedRush brands selling USD 300–3,000 panels.
 - Androgenetic alopecia alone affects ~50% of men by age 50 and ~30% of women by age 70 ([PMC: Hair Loss Statistics, 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6388756/)); PBM is the only FDA-cleared non-drug hair-regrowth therapy.
 
 ### SEO Keywords (monthly search volume — Google Keyword Planner estimates, unverified)
