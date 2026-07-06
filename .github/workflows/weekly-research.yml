@@ -58,11 +58,17 @@ jobs:
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and issue template labels can be skipped
             // if a label has not been created in the repository yet.
+            //
+            // Also accept orchestrator-seeded title-tag intake (e.g. "...#tools #app")
+            // so fast-capture research links are promoted into the WR pipeline.
+            const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
+            const hasOrchestratorSeed = labelSet.has('wr:new') && labelSet.has('openrouter');
             const isWR =
               title.match(/^\[WR\]/i) ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
-              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              (hasRouteTag && hasOrchestratorSeed);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
