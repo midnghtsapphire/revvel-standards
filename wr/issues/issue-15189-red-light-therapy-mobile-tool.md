@@ -3,7 +3,7 @@
 **Issue:** #15189  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Created:** 2026-07-06  
-**Researcher:** Copilot  
+**Researcher:** Copilot Coding Agent (GPT-5.5)  
 **Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress
 
@@ -70,7 +70,9 @@ Pricing verification links:
 - [Mito Red Light](https://mitoredlight.com/)
 
 Where exact competitor app subscription pricing is not publicly stable:
-**Pricing data pending — competitive benchmark research required.**
+**Pricing data pending — competitive benchmark research required before MVP
+feature-lock (collect final subscription benchmarks during implementation
+kickoff).**
 
 ### 4. Target User and Core Jobs
 
