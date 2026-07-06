@@ -1,9 +1,9 @@
-# WR: 29266549bd0d4fab33fc1effbeb07544c556.pdfFirst-pdf create mobile app or tool for red light therapy or photobiomodulation therapy
+# WR: photobiomodulation mobile app or tool (issue #15210)
 
 **Issue:** #15210  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
-**Researcher:** Jules (Google) + OpenRouter  
+**Researcher:** GitHub Copilot Coding Agent  
 **Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
@@ -32,10 +32,12 @@ https://pdfs.semanticscholar.org/0bb8/29266549bd0d4fab33fc1effbeb07544c556.pdf
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
+Status note: this document currently records initial scope framing only; all checklist items remain pending until full evidence-backed research is completed.
+
 ## Research Findings
 
 <!-- revvel-research-findings -->
-N/A
+Pending detailed evidence extraction from the source PDF. Deep market and competitor research is deferred until treatment constraints and safety-relevant clinical claims are extracted and citation-mapped. **Owner:** orchestration lane delegates this extraction to a research specialist agent via OpenRouter routing. **Provenance to record:** delegated agent name + model route used for extraction run. **Target:** complete extraction before implementation PR kickoff.
 
 ## Executive Summary
 
@@ -88,11 +90,9 @@ Request captured for a mobile-first red-light therapy / photobiomodulation tool 
 
 | Field | Value |
 | --- | --- |
-| `depends_on` (prerequisite WRs) | N/A |
-| Blocked by | N/A |
-| Blocks (downstream WRs) | N/A |
-
-N/A
+| `depends_on` (prerequisite WRs) | none |
+| Blocked by | none |
+| Blocks (downstream WRs) | none |
 
 ## Risks
 
