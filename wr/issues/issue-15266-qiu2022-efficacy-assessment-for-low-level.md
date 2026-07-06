@@ -24,7 +24,7 @@ The Qiu et al. (2022) paper, _"Efficacy Assessment of a Low-Level Laser Helmet f
 
 **Build target:** A SaaS web app + optional mobile companion that implements the validated outcome metrics from the Qiu 2022 protocol — enabling clinicians and home users to track LLLT treatment efficacy, generate evidence-based reports, and benchmark results against the published real-world dataset.
 
-**Revenue path:** Polar.sh subscription tiers (Starter $49/mo, Pro $149/mo, Clinic $299/mo). White-label licensing for LLLT device makers (iRestore, Capillus, HairMax, Theradome).
+**Revenue path:** Polar.sh subscription tiers (Starter free, Pro $49/mo, Clinic $149/mo, White-label API $299/mo). Enterprise white-label partnerships with LLLT device makers (iRestore, Capillus, HairMax, Theradome) negotiated at $5,000–$25,000/mo custom rates — distinct from the self-serve $299/mo API tier.
 
 ## 2. Audience We Are Going After and Why
 
@@ -43,7 +43,8 @@ The Qiu et al. (2022) paper, _"Efficacy Assessment of a Low-Level Laser Helmet f
 3. **LLLT Device Manufacturers** (white-label B2B)
    - Pain point: Need differentiated software bundles to justify premium hardware pricing.
    - Identified targets: iRestore (~1M devices sold), Capillus, HairMax (FDA-cleared since 2007), Theradome.
-   - Deal size: $5,000–$25,000/month white-label license + revenue share.
+   - Self-serve channel: White-label API tier at $299/mo (same Polar.sh checkout).
+   - Enterprise channel: Custom white-label partnership deals at $5,000–$25,000/mo for co-branded builds, private infrastructure, and revenue share — negotiated separately from the standard API tier.
 
 ### Why This Wins
 
@@ -62,7 +63,7 @@ The Qiu 2022 paper provides validated clinical metrics (SALT score reduction, Gl
 | "androgenetic alopecia tracking software" | 900 | $4.20 | High professional intent |
 | "hair regrowth progress tracker" | 8,900 | $1.20 | Broad consumer audience |
 
-_Note: search volumes are estimates based on SEMrush category data — verify with Google Keyword Planner before finalising ad spend._
+_Note: search volumes are estimates based on SEMrush category data — verify with Google Keyword Planner before finalizing ad spend._
 
 ### Landing Page Copy
 
@@ -113,7 +114,7 @@ _Pricing data sources: vendor websites July 2026; "est." = estimated from public
 ### Demand Indicators
 
 - LLLT hair loss device market: $294.8M in 2024, projected $395.3M by 2030 at 5% CAGR ([Data Insights Market 2024](https://www.datainsightsmarket.com/reports/low-level-laser-therapy-lllt-devices-for-hair-loss-1907363)).
-- Hair loss treatment apps category growing: trichology SaaS segment ~8% YoY growth (internal estimate — verify with Statista).
+- Hair loss treatment apps category: no verified independent market research specifically for trichology SaaS is available at time of writing; the ~8% YoY growth figure is an internal estimate and should be validated with a dedicated Statista or Grand View Research report before use in investor materials.
 - FDA clearance of 9 LLLT helmet/comb devices accelerating consumer adoption ([FDA 510(k) database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm)).
 
 ## 6. Factual Validation
@@ -400,8 +401,8 @@ No prerequisite WRs. Standalone new product build. Optionally coordinate with `p
 
 ## Risks
 
-1. **HIPAA compliance complexity** — photo storage of scalp images may constitute PHI in a clinical context. Mitigate by defaulting to consumer (non-clinical) positioning at launch and adding BAA flow for Clinic tier.
-2. **Benchmark data licensing** — Qiu 2022 population outcome data is published in a journal; reproduce only aggregate summary statistics (means, CIs), not patient-level data, to stay within fair use.
+1. **HIPAA compliance complexity** — photo storage of scalp images may constitute PHI in a clinical context. Concrete technical controls required from day one regardless of market positioning: AES-256 encryption at rest, TLS 1.2+ in transit, signed expiring photo URLs (no public bucket ACLs), server-side audit logs (access time, user ID, IP) retained for 6 years, data retention policy with verified server-side delete on account closure, and a Business Associate Agreement (BAA) flow activated for Clinic tier users. Consumer positioning reduces regulatory risk but does not eliminate security obligations — do not rely on positioning as a substitute for technical controls.
+2. **Benchmark data licensing** — Qiu 2022 population outcome data is published in a peer-reviewed journal (Springer/Frontiers). Reproducing only aggregate summary statistics (means, confidence intervals, n=1,383) is generally permissible for commentary and tool benchmarking, but **legal review is required before publishing any derivative statistics or charts from the Qiu 2022 study in a commercial product** — verify with the journal's copyright policy and, if needed, seek explicit permission. Do not reproduce raw patient-level data under any circumstances.
 3. **Photo storage costs** — scalp photos can be large; implement client-side compression (< 2MB per upload) and storage lifecycle policies.
 4. **Device ecosystem fragmentation** — 9+ FDA-cleared LLLT devices with different protocols; keep device model as a free-text field initially, then add structured device library in v2.
 5. **Competition from device makers** — if iRestore or HairMax build a better tracking app internally, the moat narrows. Accelerate white-label deal before they do.
