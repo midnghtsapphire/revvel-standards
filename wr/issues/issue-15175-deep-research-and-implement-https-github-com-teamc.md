@@ -1,4 +1,4 @@
-# WR: [WR]  deep research and implement https://github.com/teamchong/pxpipe in revvel-standards
+# WR: deep research and implement https://github.com/teamchong/pxpipe in revvel-standards
 
 **Issue:** #15175  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -160,7 +160,7 @@ Synthesis error: HTTP 429: Provider returned error
 
 ### anthropic/claude-sonnet-4
 
-# Market Positioning Research: PxPipe Integration
+## Market Positioning Research: PxPipe Integration
 
 ## Findings
 
@@ -359,7 +359,7 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 
 ### anthropic/claude-sonnet-4
 
-# SEO Demand Research: PxPipe Implementation in Revvel Standards
+## SEO Demand Research: PxPipe Implementation in Revvel Standards
 
 ## Findings
 
@@ -390,7 +390,7 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 - "revvel standards implementation"
 
 #### Comparison Intent (Estimated)
-- "pxpipe vs [competitor]"
+- "pxpipe vs Dagster"
 - "best pixel pipeline libraries"
 - "image processing tool comparison"
 
@@ -550,10 +550,11 @@ If proceeding after risk assessment, create internal documentation to support de
             script: |
               github.rest.issues.addLabels({
                 issue
+        ```
 
 ### openai/gpt-4.1
 
-# Findings
+## Findings
 
 ## 1. Overview of pxpipe
 - [pxpipe](https://github.com/teamchong/pxpipe) is a Python library for building composable, functional pipelines for data processing.
@@ -608,13 +609,13 @@ If proceeding after risk assessment, create internal documentation to support de
 - Case studies or testimonials (if available)
 - Comparison tables with other pipeline frameworks
 
-# Evidence
+## Evidence
 
 - [pxpipe GitHub repository](https://github.com/teamchong/pxpipe): Documentation, usage examples, and positioning.
 - No official benchmarks or enterprise case studies found in the repository or README.
 - No explicit mention of production-readiness or enterprise support; requires further validation.
 
-# Risks
+## Risks
 
 - **Production Readiness:** pxpipe is lightweight and functional, but lacks explicit documentation or endorsements for production/enterprise use. [Source](https://github.com/teamchong/pxpipe)
 - **Community Support:** pxpipe appears to have limited community adoption and support compared to established frameworks like Airflow or Luigi.
@@ -626,7 +627,7 @@ If proceeding after risk assessment, create internal documentation to support de
 `risk-limited-support`  
 `needs-validation`  
 
-# Recommended Actions
+## Recommended Actions
 
 1. **Technical Validation:**  
    - Prototype pxpipe integration in a Revvel-standard app to assess compatibility and production readiness.
@@ -644,7 +645,7 @@ If proceeding after risk assessment, create internal documentation to support de
 4. **Ongoing Monitoring:**  
    - Monitor pxpipe repository for updates, issues, and community activity.
 
-# Automatic Fix Hooks
+## Automatic Fix Hooks
 
 - **Label Automation:**  
   If `risk-production-readiness` or `risk-limited-support` is detected, automatically apply these labels to the issue/PR.
@@ -670,7 +671,7 @@ If proceeding after risk assessment, create internal documentation to support de
 
 ### anthropic/claude-sonnet-4
 
-# Competitor Intelligence: pxpipe Implementation Research
+## Competitor Intelligence: pxpipe Implementation Research
 
 ## Findings
 
@@ -1027,7 +1028,7 @@ Of course. Here is my research summary for the request to implement `pxpipe`.
 *   **Dependency Check Hook:**
     *   **Trigger:** `on:pull_request` where a `package.json`, `requirements.txt`, `go.mod`, or other dependency file is modified.
     *   **Action:** If a new dependency is added, query the GitHub API for repository metadata (last commit date, star count). If `last_commit_date` > 2 years and `stars` < 100, add a `needs-review` label and post a comment:
-        > `@author This PR adds a new dependency ([dependency-name]) that appears to be unmaintained or has low adoption. Please justify its inclusion over more established alternatives. Scout recommends a risk review before merging.`
+        > `@author This PR adds a new dependency (pxpipe) that appears to be unmaintained or has low adoption. Please justify its inclusion over more established alternatives. Scout recommends a risk review before merging.`
 *   **Work Request Validation Hook:**
     *   **Trigger:** `on:issue_created` with label `work-request`.
     *   **Action:** If the issue body for fields like `### Objective` or `### Summary` contains `_No response_` or is empty, apply the label `risk/unvalidated-premise` and post a comment:
@@ -1050,7 +1051,7 @@ Findings
 Evidence
 
 - pxpipe repo: https://github.com/teamchong/pxpipe
-- No Stack Overflow questions tagged [pxpipe] (https://stackoverflow.com/search?q=pxpipe)
+- No Stack Overflow questions tagged [pxpipe](https://stackoverflow.com/search?q=pxpipe)
 - No Reddit posts mentioning pxpipe (https://www.reddit.com/search/?q=pxpipe)
 - General pipeline pain points: [Stack Overflow: "How do I debug complex data pipelines?"](https://stackoverflow.com/questions/48601987/how-do-i-debug-complex-data-pipelines), [Reddit: "What are your biggest pain points with ETL/data pipelines?"](https://www.reddit.com/r/dataengineering/comments/10k1w7o/what_are_your_biggest_pain_points_with_etldata/)
 - Related complaints about similar tools: [Airflow pain points](https://news.ycombinator.com/item?id=30772519), [Prefect vs. Airflow discussion](https://www.reddit.com/r/dataengineering/comments/12k9j7o/prefect_vs_airflow/)
@@ -1387,7 +1388,7 @@ revvel-standards/
 
 ### 1. Dependency Installation Hook
 ```yaml
-# .github/workflows/dependency-check.yml
+## .github/workflows/dependency-check.yml
 - name: Verify pxpipe availability
   run: |
     npm view @teamchong/pxpipe --json > pxpipe-info.json
@@ -1399,7 +1400,7 @@ revvel-standards/
 
 ### 2. License Compliance Hook
 ```yaml
-# .github/workflows/license-check.yml  
+## .github/workflows/license-check.yml  
 - name: Check pxpipe license
   run: |
     curl -s https://api.github.com/repos/teamchong/pxpipe | j
