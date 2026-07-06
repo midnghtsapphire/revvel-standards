@@ -118,7 +118,7 @@ Content plan:
 | --- | --- | --- | --- |
 | Consumer red-light timer apps (general category) | Pricing data pending — competitive benchmark research required. | N/A | Most focus on timers, not evidence-driven screening guardrails. |
 | Generic habit trackers | Freemium across market; pricing varies. | N/A | Can track sessions but lacks domain-specific contraindication checks. |
-| Open-source PBM-specific mobile project | Pricing data pending — competitive benchmark research required. | Pricing data pending — competitive benchmark research required. | No clear dominant OSS PBM app identified from this issue packet alone. |
+| Open-source PBM-specific mobile project | Pricing data pending — competitive benchmark research required. | N/A | No clear dominant OSS PBM app identified from this issue packet alone. |
 
 ### 5) Chatter and demand signals
 
