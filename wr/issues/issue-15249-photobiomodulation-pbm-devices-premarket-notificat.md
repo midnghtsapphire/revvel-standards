@@ -67,7 +67,7 @@ Primary revenue lever: monthly SaaS subscriptions on Polar.sh; secondary lever: 
 
 ## Step 1A — Product/Output Selections
 
-**Primary Deliverable:** Web app (Next.js, port 3009 or next available) — `products/pbmt-fda-tool/`
+**Primary Deliverable:** Web app (Next.js, port 3010) — `products/pbmt-fda-tool/`
 
 **Output shapes required (full revvel-standards product bundle):**
 
@@ -178,7 +178,7 @@ All search volume estimates are internal/unverified — primary source data requ
 | DB | Supabase (Postgres) | Monorepo standard |
 | PDF export | Pandoc / WeasyPrint | PDF playbook standard |
 | Deployment | Vercel | Monorepo standard |
-| Port | 3009 (or next available per AGENTS.md) | Assigned port table |
+| Port | 3010 | Next available per AGENTS.md port assignment table |
 
 ### Definition of Done
 
