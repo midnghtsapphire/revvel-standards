@@ -148,7 +148,7 @@ This WR covers the research and requirements for building a **Medical Mobile App
 
 ### Market Size
 
-The global connected care / IoMT (Internet of Medical Things) market is projected to reach **$76 billion in 2025**, growing toward **$152 billion by 2030** ([source](https://orangesoft.co/blog/medical-device-cybersecurity-guide) — estimate based on connected care market reports). Growth is driven by expanded telehealth adoption, chronic disease remote monitoring, and post-COVID digital health investment.
+The global connected care / IoMT (Internet of Medical Things) market was forecast to reach approximately **$76 billion by 2025** and is projected to grow toward **$152 billion by 2030** (forecast as of 2024; [source reference](https://orangesoft.co/blog/medical-device-cybersecurity-guide) — estimate based on connected care market reports). These are forward projections and should be re-validated against current industry reports before citing in investor materials. Growth drivers include expanded telehealth adoption, chronic disease remote monitoring, and post-COVID digital health investment.
 
 The MedTech software compliance tools sub-market (ALM, QMS, IEC 62304 tooling) is an estimated $2–5 billion segment (internal estimate — specific sub-market breakdown not publicly reported by major research firms).
 
@@ -174,8 +174,8 @@ The MedTech software compliance tools sub-market (ALM, QMS, IEC 62304 tooling) i
 
 ### SEO & Marketing Strategy
 
-**Primary Keywords:**
-- "medical mobile app compliance checklist" (estimated 500–2,000 monthly searches — unverified; verify with SEMrush/Ahrefs)
+**Primary Keywords (preliminary estimates — must be validated with SEMrush/Ahrefs before finalizing SEO strategy; see P0 actions):**
+- "medical mobile app compliance checklist" (estimated 500–2,000 monthly searches — unverified)
 - "IEC 62304 compliance tool" (estimated 1,000–3,000 monthly searches — unverified)
 - "medical device app regulatory requirements" (estimated 2,000–5,000 monthly searches — unverified)
 - "SaMD compliance checklist" (estimated 300–1,000 monthly searches — unverified)
