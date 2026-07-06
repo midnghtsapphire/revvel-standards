@@ -45,7 +45,10 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       ((contains(github.event.issue.title, '#app') ||
+         contains(github.event.issue.title, '#tools')) &&
+        contains(github.event.issue.body, 'http')))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
