@@ -217,7 +217,7 @@ Hosting: Vercel (web) + Expo EAS (mobile builds)
 - [ ] Session log (CRUD)
 
 **Gate 2: Protocol Depth (Week 4)**
-- [ ] At minimum 20 protocols covering 5+ health areas, each with full PubMed citations
+- [ ] At minimum 20 protocols covering 5+ health areas; each protocol card must include: PMID, full title, first author, publication year, and the specific parameters (wavelength nm, irradiance mW/cm², dose J/cm², treatment duration, distance, body area) drawn directly from that paper
 - [ ] Device compatibility guide (top 10 devices mapped)
 - [ ] Progress tracker (logging + basic charts)
 
@@ -353,7 +353,7 @@ Primary: "red light therapy app", "photobiomodulation app", "red light therapy p
 ## Recommendations
 
 1. **Start with iOS-first** MVP on React Native — larger app monetization on iOS, ship Android simultaneously via Expo
-2. **Seed protocol library from PubMed** — use NCBI API to pull abstracts for the top 50 PBM papers and summarize; cite every protocol
+2. **Seed protocol library from PubMed** — use NCBI E-utilities API (`esearch` + `efetch`) with query `"photobiomodulation" OR "low-level laser therapy"` in MeSH Terms, filtered to 2015–2026; rank results by citation count via iCite API (`https://icite.od.nih.gov/api/pubs?pmids=...`); select top 50 by citation count; summarize each abstract and cite every protocol with PMID + title + first author + year
 3. **Community beta on r/photobiomodulation** — 12k engaged members; beta testing + organic reviews
 4. **Legal review before launch** — wellness app copy must avoid therapeutic claims; brief a health law attorney ($500–$1,000 one-time)
 5. **Affiliate links Day 1** — high-margin revenue with zero marginal cost; integrate in protocol detail pages
