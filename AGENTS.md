@@ -117,6 +117,7 @@ collisions:
 | HVAC Calc Service | `products/hvac-calc-service` | 3006 | Next.js. ACCA Manual J/S/D HVAC load calculator with Markdown/CSV export. |
 | CLI Engine | `products/cli-engine` | 3008 | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
 | AI Ad Generator | `products/ai-ad-generator` | 3009 | Next.js. Zeely AI-inspired ad automation: product scraper, AI copy, static creatives, campaign manager, analytics. |
+| Red Light Therapy Dosage Calculator | `products/red-light-therapy-dosage-calculator` | 3010 | Next.js. Mobile-friendly PBM/red-light session-time calculator using irradiance and target dose. |
 
 Start a specific product on its assigned port:
 
@@ -129,6 +130,7 @@ cd products/revvel-skill-runner  && npm run dev -- -p 3004
 cd products/creator-payout-tracker && npm run dev -- -p 3005
 cd products/cli-engine           && npm run dev -- -p 3008
 cd products/ai-ad-generator      && npm run dev -- -p 3009
+cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 ```
 
 ### Running and testing
