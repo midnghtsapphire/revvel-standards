@@ -1,4 +1,4 @@
-# WR: DIY Red Light Therapy Panel: What You Can Build, What It Costs, and When a Verified Device Makes More SenseFirst-pdf create mobile app or tool for red light therapy or photobiomudulation therapy
+# WR: DIY Red Light Therapy Panel: What You Can Build, What It Costs, and When a Verified Device Makes More Sense — first pass: create a mobile app or tool for red light therapy or photobiomodulation therapy
 
 **Issue:** #15206  
 **Repository:** midnghtsapphire/revvel-standards  
