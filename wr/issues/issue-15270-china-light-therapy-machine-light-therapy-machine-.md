@@ -50,9 +50,9 @@ The issue owner dropped a reference URL to [Made-in-China.com Light Therapy Mach
 The light therapy device market is a real, growing consumer-health vertical with a clear gap for a high-quality, unbiased comparison and buyer-education tool. The Made-in-China.com signal suggests the owner may be exploring either (a) a product-review/comparison SaaS targeting US/UK consumers or (b) a drop-shipping / white-label fulfillment play sourcing devices wholesale. Both paths are viable; this WR scopes the higher-margin digital-product path first (comparison app / affiliate hub).
 
 **Key Decision Criteria:**
-- Market size is substantial (global phototherapy/light therapy market estimated $1.1B–$1.8B in 2023, internal estimate — paid report required for exact figure)
+- Market size is substantial (see Evidence Gaps — exact figure requires paid Grand View Research / MarketsandMarkets report)
 - Consumer confusion is high: dozens of device types (red light, SAD lamps, blue light, UV, near-infrared) with overlapping claims
-- Affiliate commission rates from major retailers (Amazon, Joovv, etc.) range from 3–12%
+- Amazon Associates commission on health/household appliances: 3% per publicly listed rate sheet (see Evidence Gaps for direct-brand program rates)
 - No dominant, trust-worthy comparison destination exists — SEO opportunity is real
 
 ## 2. Audience We Are Going After and Why
@@ -65,7 +65,7 @@ The light therapy device market is a real, growing consumer-health vertical with
 
 **Why This Audience:**
 - High purchase intent (devices range $30–$2,000+; high AOV = high affiliate commission)
-- Research-heavy purchase behavior: consumers read 5–10 articles before buying (internal estimate)
+- Research-heavy purchase behavior: consumers extensively compare before buying (observed pattern — verify with Google Analytics benchmarks)
 - Pain point: overwhelming array of unverified health claims; trust gap creates editorial opportunity
 - Seasonal spike (SAD season Q4/Q1) provides predictable traffic surge
 
@@ -88,7 +88,7 @@ The light therapy device market is a real, growing consumer-health vertical with
 4. **Review Pages:** individual product deep-dives with verified specs
 
 **Distribution Channels:**
-- Reddit: r/LightTherapy (~50k members), r/SleepHacking, r/longevity, r/SkincareAddiction
+- Reddit: r/LightTherapy, r/SleepHacking, r/longevity, r/SkincareAddiction (member counts change — verify at time of launch)
 - Pinterest (wellness content performs well)
 - YouTube (device unboxings and clinical breakdowns)
 - Google Discover / SEO-first approach
@@ -187,18 +187,17 @@ The Made-in-China.com light therapy wholesale signal + `#tool #app #project` has
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
 **Market Overview:**
-- Global photobiomodulation / light therapy device market: estimated $1.1B–$1.8B (2023, internal estimate — exact figure requires paid report from Grand View Research or MarketsandMarkets)
-- SAD lamp sub-market: growing, driven by remote work increasing indoor time (internal estimate — requires verification)
+- Global photobiomodulation / light therapy device market: requires paid report (Grand View Research or MarketsandMarkets) — see Evidence Gaps below
+- SAD lamp sub-market: growing segment; seasonality tied to northern-latitude winter months (qualitative observation — requires verification)
 - Primary consumer channels: Amazon, direct-to-consumer brand sites, specialty wellness retailers
 
 **Wholesale / Manufacturing Signal:**
 - Made-in-China.com lists 100+ suppliers for light therapy machines at wholesale prices (publicly visible at source URL)
-- Typical wholesale unit cost: $15–$150 USD per device (internal estimate from browsing comparable categories — verify with RFQ)
-- MOQ (Minimum Order Quantity): typically 10–100 units for standard SKUs (internal estimate)
+- Typical wholesale unit cost and MOQ: see Evidence Gaps — requires direct RFQ to suppliers; estimates not included to avoid unverified figures
 
 **Affiliate Opportunity:**
-- Amazon Associates: 3% commission on health/household appliances (publicly documented rate sheet — verify at [Amazon Associates rate card](https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ))
-- Direct brand programs (Joovv, PlatinumLED): Pricing data pending — competitive benchmark research required.
+- Amazon Associates: 3% commission on health/household appliances (publicly documented — verify current rate at [Amazon Associates rate card](https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ))
+- Direct brand programs (Joovv, PlatinumLED): Pricing data pending — competitive benchmark research required. (See Evidence Gaps — requires account registration with each program.)
 
 ## Step 3 — Requirements
 
