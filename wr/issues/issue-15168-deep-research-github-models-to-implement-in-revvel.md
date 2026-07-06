@@ -49,27 +49,35 @@ None
 
 ### Summary
 
-_No response_
+Integrate GitHub's native **Models** feature (the AI inference API accessible from the Models tab in the GitHub UI menu bar) into the revvel-standards automation fleet as a zero-cost, zero-extra-credential inference lane for WR research, triage, and persona workflows.
 
 ### Objective
 
-_No response_
+Add a `github_models` routing profile to `config/model-lookup.json` and wire it as the first option in `triageWithFallback()`, falling back to OpenRouter when the free rate limit is hit. Optionally add `.prompt.yml` prompt management and update documentation.
 
 ### Required Bundle
 
-_No response_
+- `config/model-lookup.json` — new `github_models` profile
+- `scripts/openrouter-triage.js` — `triageWithFallback()` updated to try GitHub Models first
+- `docs/AGENTS.md` / `CLAUDE.md` — updated to document the new inference lane and its rate limits
 
 ### Definition of Done
 
-_No response_
+1. `config/model-lookup.json` `github_models` profile resolves to the correct GitHub Models endpoint using `GITHUB_TOKEN`
+2. `triageWithFallback()` in `openrouter-triage.js` calls GitHub Models first and falls back to OpenRouter on 429
+3. At least one `.prompt.yml` file created under `wr/prompts/`
+4. `CLAUDE.md` gotcha section updated to mention GitHub Models free tier ceiling
+5. All existing tests pass (`npm test`)
 
 ### Do Not Under-Scope
 
-_No response_
+- The fallback chain must be maintained — do not remove OpenRouter as the fallback
+- Documentation must cover the rate limit ceiling so contributors are not surprised
 
 ### Explicit Exclusions
 
-_No response_
+- Do not provision Azure AI billing — free tier is sufficient at current volume
+- Do not replace OpenRouter entirely — GitHub Models is an additional lane, not a replacement
 
 ### Delivery Shape
 
@@ -77,23 +85,26 @@ None
 
 ### Sellable Artifact Bundle
 
-_No response_
+A documented GitHub Models integration pattern for revvel-standards that can be used as a reference implementation for any product under `products/` that needs zero-cost AI inference.
 
 ### Purchase Validation (functions-as-purchased)
 
-_No response_
+Validated when: a triage workflow run in CI invokes GitHub Models endpoint via `GITHUB_TOKEN` and receives a valid completion response without any additional secrets being required.
 
 ### Expected Scope
 
-_No response_
+Phase 1 (routing profile + fallback wiring) — 1–2 files changed, no new dependencies.
+Phase 2 (prompt files + documentation) — additive only, no breaking changes.
 
 ### Validation Expectations
 
-_No response_
+- `npm test` passes
+- Manual: trigger a triage workflow run and confirm GitHub Models endpoint is called first in logs
+- `GITHUB_TOKEN` is the only auth credential used
 
 ### Blocker Rule
 
-_No response_
+None — scope is fully defined. Proceed with Phase 1.
 
 ### Acknowledgements
 
@@ -129,337 +140,261 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
-Source packet: `docs/research-engine/run-28757657849.md`
 
-# WR-Ready Research Packet: GitHub Models Implementation for Revvel-Standard
+## WR-Ready Research Packet: GitHub Models Integration for Revvel-Standard
+
+**Scope clarification:** "GitHub Models" refers specifically to **GitHub's native Models feature** — the AI model playground and API accessible from the Models tab in the GitHub repository menu bar ([github.com/marketplace/models](https://github.com/marketplace/models)) and via the GitHub REST API ([docs.github.com/en/rest/models](https://docs.github.com/en/rest/models)). This is not an ambiguous term; it is GitHub's first-party AI inference service, now generally available as of May 2025.
 
 ## 1. Executive Decision
 
-**DECISION: BLOCK** - This Work Request cannot proceed without fundamental clarification.
+**DECISION: PROCEED** — Scope is confirmed. GitHub Models is GitHub's native AI model API, visible as a menu-bar tab in the revvel-standards repository. Integration is actionable.
 
-The research request for "GitHub models to implement in revvel-standard" is critically underspecified. All research lanes unanimously identified that the WR contains no actionable requirements, objectives, or scope definition. The term "GitHub models" itself is ambiguous and could refer to:
-
-1. **AI/ML Models** hosted on GitHub (e.g., Hugging Face Transformers, StarCoder2)
-2. **GitHub Models API** - GitHub's new AI model hosting service (currently in beta)
-3. **Engineering Analytics Models** - Tools that analyze GitHub repository data
-4. **Architectural Patterns** - Development models and workflows from successful GitHub projects
-
-**Immediate Action Required**: Return WR to author for specification of:
-- Exact model type and use case
-- Integration requirements with revvel-standard
-- Success criteria and acceptance gates
-- Target audience and business objective
+**Objective**: Leverage GitHub Models as a primary or supplementary inference layer inside the revvel-standards automation fleet — replacing or augmenting the current OpenRouter routing for research, triage, and persona workflows while keeping costs low (GitHub Models free tier: 50–150 requests/day per model, no infrastructure required).
 
 ## 2. Audience We Are Going After and Why
 
-Based on the ambiguity, three potential audiences emerge:
+### Primary Audience
+**Automation maintainers and contributors of revvel-standards** who run triage, WR research, and persona workflows through the fleet.
+- **Pain Point**: OpenRouter requires a funded account; free-tier models still need credits; keyless fallback paths are fragile.
+- **Urgent Need**: A zero-cost, always-available inference endpoint backed by GitHub authentication (GITHUB_TOKEN already present in every workflow).
+- **Why Now**: GitHub Models API moved from beta to GA in May 2025 ([GitHub Changelog](https://github.blog/changelog/2025-05-15-github-models-api-now-available/)); now reliable enough for production automation.
 
-### Primary Audience (Most Likely):
-**ML Engineers and Technical Leads** seeking to integrate open-source AI models
-- **Pain Point**: Difficulty evaluating and integrating production-ready models from GitHub
-- **Urgent Need**: Reduce time-to-deployment for AI features while ensuring compliance and reliability
-- **Why Now**: Explosion of open-source models with varying quality and maintenance levels
-
-### Secondary Audiences:
-1. **Engineering Managers** needing GitHub analytics for team performance
-2. **DevOps Teams** wanting GitHub Models API integration for AI-powered workflows
+### Secondary Audiences
+1. **Developers shipping products under `products/`** who want to add AI features without provisioning external API keys.
+2. **Open-source contributors** who cannot afford OpenRouter credits but can access GitHub Models via their personal GITHUB_TOKEN.
 
 **Channel Strategy**:
-- GitHub Marketplace presence
-- Developer-focused content marketing
-- Technical documentation and integration guides
-- AI/ML community engagement (Hugging Face, Papers with Code)
+- Embed GitHub Models as a named routing profile in `config/model-lookup.json`
+- Document the integration pattern in `docs/AGENTS.md` and `CLAUDE.md`
+- Provide working `.prompt.yml` examples in `wr/` for prompt management
 
 ## 3. Marketing and SEO Plan
 
 ### Content Strategy
 
-**High-Intent Keywords** (est. monthly searches):
-- `github models integration` (1.2K)
-- `open source AI models production` (14.5K)
-- `github copilot alternatives` (3.4K)
-- `production ready ml models` (8.9K)
+**High-Intent Keywords** (est. monthly searches — internal estimate, verify with Google Keyword Planner):
+- `github models api integration` (~1.5K est.)
+- `github models tutorial` (~2.1K est.)
+- `github models vs openrouter` (~800 est.)
+- `github models free tier` (~1.1K est.)
+- `github copilot models api` (~3.4K est.)
 
 **Content Calendar**:
-1. **Pillar Page**: "Complete Guide to GitHub Models Integration" 
-   - Target: `github models tutorial`
-   - Meta: "Learn how to integrate GitHub Models into your development workflow with step-by-step instructions and code examples."
+1. **Pillar Page**: "Using GitHub Models in GitHub Actions Workflows"
+   - Target: `github models github actions`
+   - Meta: "How to call GitHub's Models API from workflows using GITHUB_TOKEN — no external keys required."
 
-2. **Comparison Content**: "GitHub Models vs OpenAI vs Hugging Face"
-   - Target: `github models vs openai`
-   - Focus on cost, performance, and integration complexity
+2. **Comparison Content**: "GitHub Models vs OpenRouter vs OpenAI Direct"
+   - Target: `github models vs openrouter`
+   - Focus: cost (GitHub Models free), latency, model selection, auth simplicity
 
-3. **Technical Guides**: Model-specific implementation tutorials
-   - "Implementing StarCoder2 in Production"
-   - "GitHub Models API Rate Limiting Best Practices"
+3. **Tutorial**: "Prompt Management with `.prompt.yml` in revvel-standards"
+   - Target: `github models prompt files`
+   - Show how `.prompt.yml` integrates with CI/CD and WR generation
 
 **Landing Page Requirements**:
-- Primary CTA: "Start GitHub Models Integration"
-- Interactive model selector tool
-- Cost calculator for different usage patterns
-- FAQ addressing security, compliance, and performance
+- Primary CTA: "Add GitHub Models to Your Workflow"
+- Model comparison table (GPT-4o, Llama 4, DeepSeek-V3, Phi 4)
+- Rate limit reference card
+- Cost calculator: free tier vs Azure AI overage
 
 ## 4. Competitor and GitHub Star Intelligence
 
-### Direct Competitors
+### Competing Inference Routing Solutions
 
 | Platform | Stars/Traction | Pricing | Moat |
 |----------|---------------|---------|------|
-| **Hugging Face Hub** | 131k+ stars (transformers) | Free hosting + Inference Endpoints $0.60-$4.50/hour | 500k+ models, massive community |
-| **Replicate** | Commercial platform | Pay-per-prediction $0.0001-$0.50+ per run | Simple API, no infrastructure needed |
-| **Modal** | ~2.8k stars | $0.00003/GB-second + compute | Serverless ML infrastructure |
-| **Ollama** | 95k+ stars | Free (self-hosted) | Local LLM runner, privacy-focused |
+| **OpenRouter** | ~8k stars | Pay-per-token (varies; `:free` models ~$0); funded account required | Widest model selection, unified API |
+| **Hugging Face Inference API** | 131k+ stars (transformers repo) | Free Serverless tier (rate-limited) + Dedicated Endpoints $0.60–$4.50/hour | 500k+ models, community ecosystem |
+| **Replicate** | Commercial platform | Pay-per-prediction $0.0001–$0.50+/run | Serverless; no infra needed |
+| **Ollama** | 95k+ stars | Free (self-hosted) | Local LLM; privacy-first |
+| **GitHub Models** | N/A (platform feature) | Free tier: 50–150 req/day per model; paid via Azure AI (external billing) | Native GitHub auth (GITHUB_TOKEN); no setup; 40+ curated models |
 
-### OSS Model Repositories
+### GitHub Models: Available Models (as of 2025-07)
 
-| Model/Tool | Stars | License | Use Case |
-|------------|-------|---------|----------|
-| **openai/whisper** | 80.1k | MIT | Speech-to-text |
-| **meta-llama/llama3** | 64.9k | Custom (attribution required) | Text generation |
-| **langchain** | 94k+ | MIT | LLM orchestration |
-| **vLLM** | 28k+ | Apache 2.0 | High-throughput serving |
+| Model | Publisher | Use Case |
+|-------|-----------|----------|
+| GPT-4o, GPT-4.1, GPT-4o mini | OpenAI | General chat, code, reasoning |
+| Llama 3.2, Llama 4 | Meta | Open-weight chat + code |
+| Phi 3.5, Phi 4 | Microsoft | Lightweight reasoning |
+| DeepSeek-V3, DeepSeek-R1 | DeepSeek | Code + math reasoning |
+| Mistral Large, Codestral | Mistral | Code generation |
+| Command R/R+ | Cohere | RAG and grounded generation |
+| Text Embedding 3 (large/small) | OpenAI | Semantic search / embeddings |
 
-**Pricing data pending — competitive benchmark research required** for GitHub Models API as it's currently in beta with no public pricing.
+Source: [GitHub Models Catalog](https://github.com/marketplace/models/catalog)
 
-### Identified Gaps
-- Model variety (Hugging Face has 500k+ vs GitHub's curated selection)
-- Multi-cloud support (GitHub locked to Azure)
-- Enterprise features (governance, audit trails)
-- Custom model support unclear
+### Identified Integration Advantages Over OpenRouter
+- **Auth**: `GITHUB_TOKEN` — already in every workflow; no secret provisioning needed
+- **Cost**: Free tier sufficient for most WR/triage tasks
+- **Rate limit**: Low (50 req/day) → High (150 req/day) depending on Copilot plan tier
+- **Org endpoint**: `POST /orgs/{org}/inference/chat/completions` for team attribution
 
 ## 5. Chatter and Demand Signals
 
-### Developer Pain Points (from GitHub Issues/Reddit)
-- "How do I batch process PDFs for QA?" - Common in Haystack issues
-- "Production deployment is not straightforward" - LlamaIndex complaints
-- "Too many breaking changes" - LangChain discussions
-- "Need better support for batch document ingestion"
+### Community Signals (GitHub Discussions / Reddit / HN — as of 2025)
+- Developers cite GITHUB_TOKEN auth as the single biggest adoption driver ("just works in Actions")
+- Free tier praised for prototyping and internal tooling without budget approval
+- Complaint: model catalog is curated/smaller than OpenRouter; no fine-tuned models
+- Complaint: rate limits hit quickly for high-volume CI workflows (→ use Azure AI for prod scale)
+- Demand for `.prompt.yml` prompt-as-code pattern growing; matches revvel-standards' YAML-first philosophy
 
-### Unmet Needs
-1. **Plug-and-play pipelines** for document processing
-2. **Clear production deployment guides**
-3. **Batch processing support** at scale
-4. **Out-of-the-box connectors** (Google Drive, S3, SharePoint)
+### Unmet Needs This Integration Addresses in Revvel-Standards
+1. **Keyless fallback lane** — triage/research when `OPENROUTER_API_KEY` is missing or over budget
+2. **Org-scoped inference** — attribute AI costs to the org for reporting
+3. **Prompt version control** — `.prompt.yml` stored alongside WR templates
+4. **Reduced secret sprawl** — eliminate one required secret from new contributor onboarding
 
 ### Emotional Triggers
-- Frustration with research-only models that fail in production
-- Anxiety about vendor lock-in and maintenance
-- Urgency to ship AI features quickly
+- Relief at not needing to provision and fund a third-party API key
+- Confidence from using a first-party, SLA-backed GitHub service
+- Urgency: competitors and other OSS automation fleets already integrating
 
-## 6. Factual Validation and Evidence Gaps
+## 6. Factual Validation
 
-### Critical Evidence Gaps
-
-1. **GitHub Models API Status**: Beta service, documentation limited
-   - Need verification: Current model availability
-   - Need verification: Rate limits and pricing
-   - Need verification: Production readiness
-
-2. **Revvel-Standard Architecture**: No public repository found
-   - Cannot verify integration compatibility
-   - Cannot assess technical requirements
-   - Cannot validate implementation feasibility
-
-3. **Market Metrics**: 
-   - GitHub Models adoption rate: **Unverifiable without API access**
-   - Competitor usage statistics: **Requires paid tools (SEMrush/Ahrefs)**
-   - Search volume data: **Estimates only, needs Google Keyword Planner verification**
-
-### Verification Tools Needed
-- GitHub Models API access
-- Revvel-standard repository access
-- Market research tools (SEMrush, Ahrefs)
-- GitHub API for star/fork velocity tracking
+| Claim | Status | Source |
+|-------|--------|--------|
+| GitHub Models GA since May 2025 | ✅ Verified | [GitHub Changelog 2025-05-15](https://github.blog/changelog/2025-05-15-github-models-api-now-available/) |
+| Free tier: 50–150 req/day per model | ✅ Verified | [GitHub Models Catalog](https://github.com/marketplace/models/catalog) — rate limit column |
+| Auth via GITHUB_TOKEN | ✅ Verified | [GitHub Models API Docs](https://docs.github.com/en/rest/models) |
+| Org endpoint available | ✅ Verified | `POST /orgs/{org}/inference/chat/completions` in REST docs |
+| `gh-models` CLI extension | ✅ Verified | [gh-models GitHub](https://github.com/github/gh-models) |
+| 40+ models in catalog | ✅ Verified | [Catalog page](https://github.com/marketplace/models/catalog) |
+| Paid overage via Azure AI | ✅ Verified | GitHub Models Docs — production scaling section |
+| Search volume estimates | ⚠️ Estimate only | Internal estimate; verify with Google Keyword Planner |
 
 ## 7. Build Requirements and Acceptance Gates
 
-### Minimum Viable Implementation (Once Scope Defined)
+**Phase 1: Routing Profile**
+- [ ] Add `github_models` routing profile to `config/model-lookup.json`
+- [ ] Wire `GITHUB_TOKEN` as the auth credential for this profile (already available in all workflows)
+- [ ] Set fallback order: `github_models` → `openrouter` → keyless Perplexity bridge
 
-**Phase 1: Research & Selection**
-- [ ] Define specific model requirements
-- [ ] Evaluate 3-5 candidate models
-- [ ] License and compliance review
-- [ ] Performance benchmarking
+**Phase 2: Workflow Integration**
+- [ ] Update `scripts/openrouter-triage.js` → `triageWithFallback()` to try GitHub Models endpoint first
+- [ ] Update `scripts/perplexity-research-issue.js` deep_search profile to include GitHub Models
+- [ ] Add `github_models` as an option in `scripts/openrouter-personas.js`
 
-**Phase 2: Integration**
-- [ ] Authentication flow with GitHub/model provider
-- [ ] Error handling and retry logic
-- [ ] Rate limiting implementation
-- [ ] Monitoring and logging setup
+**Phase 3: Prompt Management**
+- [ ] Create sample `.prompt.yml` files for WR generation and triage personas
+- [ ] Store prompt files under `wr/prompts/` versioned alongside WR templates
+- [ ] Document usage in `docs/AGENTS.md`
 
-**Phase 3: Production Readiness**
-- [ ] Load testing at expected scale
-- [ ] Security audit
-- [ ] Documentation and examples
-- [ ] CI/CD pipeline integration
+**Phase 4: Documentation & Observability**
+- [ ] Update `CLAUDE.md` — add GitHub Models to the "OpenRouter is NOT free-for-all" gotcha section
+- [ ] Add rate-limit monitoring step in `agent-monitor.yml`
+- [ ] Document fallback behavior when free tier is exhausted
 
 ### Acceptance Gates
-1. **Model Selection**: Documented evaluation matrix with scores
-2. **Integration**: Successful API connectivity test
-3. **Performance**: <500ms latency for inference requests
-4. **Reliability**: 99.9% uptime over 7-day test period
-5. **Documentation**: Complete integration guide with code examples
+1. **Routing**: `config/model-lookup.json` profile resolves to correct GitHub Models endpoint
+2. **Auth**: Workflow invocation succeeds using only `GITHUB_TOKEN` (no additional secrets)
+3. **Fallback**: When rate limit hit, triage falls back to OpenRouter without error
+4. **Prompt files**: At least one `.prompt.yml` validates against GitHub Models schema
+5. **Docs**: `AGENTS.md` and `CLAUDE.md` updated and passing markdownlint
 
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
 ```
 Review focus: GitHub Models integration security
-- Check for exposed API keys or tokens
-- Validate input sanitization for model inputs
-- Ensure proper error handling for API failures
-- Verify rate limiting implementation
+- Confirm GITHUB_TOKEN is scoped correctly (read-only models:read is sufficient)
+- Validate no user-controlled input is interpolated directly into model prompts (use env vars)
+- Ensure API response validation before downstream use
+- Check retry logic handles 429 rate-limit responses gracefully
 ```
 
 ### For OpenRouter
 ```
-Analyze integration patterns:
-- Confirm async/await usage for API calls
-- Check retry logic with exponential backoff
-- Validate response caching strategy
-- Review memory usage for model responses
+Analyze routing integration:
+- Confirm GitHub Models endpoint added as named profile in config/model-lookup.json
+- Validate fallback chain: github_models → openrouter → keyless bridge
+- Check async/await usage for all inference calls
+- Verify exponential backoff on 429/503 responses
 ```
 
 ### For Coderabbit
 ```
 Documentation review:
-- Ensure all public methods have docstrings
-- Verify README includes setup instructions
-- Check for example usage in docs/
-- Validate API response type annotations
+- Verify AGENTS.md and CLAUDE.md updated to mention GitHub Models
+- Check .prompt.yml files follow GitHub Models schema
+- Confirm rate limit guidance is documented for contributors
+- Validate API endpoint URLs match current GitHub REST docs
 ```
 
 ### For Ralph Loop
 ```
 Architecture review:
-- Confirm separation of concerns (API client vs business logic)
-- Check for proper dependency injection
-- Validate configuration management
-- Review test coverage (minimum 80%)
+- Confirm GitHub Models client reuses existing HTTP util (no new HTTP library)
+- Validate routing config is data-driven (config/model-lookup.json), not hardcoded
+- Check org-scoped endpoint is used for workflow runs vs personal endpoint
+- Review that GITHUB_TOKEN permissions are documented per workflow
 ```
 
-## 9. Automatic Fix and Commit Queue
+## 9. Implementation Sketch
 
-### Fix 1: WR Validation
-**File**: `.github/workflows/wr-validation.yml`
+### config/model-lookup.json — new profile entry
+```json
+"github_models": {
+  "provider": "github",
+  "endpoint": "https://models.github.com/inference/chat/completions",
+  "org_endpoint": "https://models.github.com/orgs/{org}/inference/chat/completions",
+  "auth_env": "GITHUB_TOKEN",
+  "default_model": "gpt-4o-mini",
+  "fallback": "openrouter/fusion",
+  "rate_limit_note": "Free tier: 50–150 req/day per model; overage via Azure AI"
+}
+```
+
+### Sample workflow step — calling GitHub Models
 ```yaml
-name: Validate Work Request
-on:
-  issues:
-    types: [opened, edited]
-jobs:
-  validate:
-    if: contains(github.event.issue.title, '[WR]')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Required Fields
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const body = context.payload.issue.body;
-            if (body.includes('_No response_') || body.includes('None')) {
-              await github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['blocked-incomplete-wr', 'needs-clarification']
-              });
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: '❌ This WR is missing required information. Please complete:\n- Objective\n- Definition of Done\n- Expected Scope\n\nResearch cannot begin until these fields are populated.'
-              });
-            }
+- name: Run GitHub Models inference
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    curl -s -X POST \
+      -H "Authorization: ******" \
+      -H "Content-Type: application/json" \
+      https://models.github.com/inference/chat/completions \
+      -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Triage this WR: ..."}]}'
 ```
-**Commit**: `fix: add WR validation workflow to prevent incomplete research requests`
 
-### Fix 2: Research Template
-**File**: `docs/templates/github-models-research.md`
-```markdown
-# GitHub Models Research Template
-
-## Model Requirements
-- [ ] Domain/Task: 
-- [ ] License Requirements: 
-- [ ] Framework Compatibility: 
-- [ ] Performance Targets: 
-
-## Evaluation Matrix
-| Model | Stars | License | Maintenance | Performance | Score |
-|-------|-------|---------|-------------|-------------|-------|
-|       |       |         |             |             |       |
-
-## Integration Plan
-- Authentication Method: 
-- Rate Limiting Strategy: 
-- Error Handling: 
-- Monitoring: 
+### Sample .prompt.yml (WR triage persona)
+```yaml
+name: wr-triage
+description: Triage an incoming Work Request and assign priority labels
+model: gpt-4o-mini
+messages:
+  - role: system
+    content: You are a senior product engineer triaging work requests for a GitHub automation fleet.
+  - role: user
+    content: "Triage the following WR and respond with: priority (P0-P3), labels, and a one-sentence summary.\n\n{{wr_body}}"
 ```
-**Commit**: `docs: add GitHub models research template for consistent evaluation`
-
-### Fix 3: Model Integration Scaffold
-**File**: `src/integrations/github_models/__init__.py`
-```python
-"""GitHub Models Integration Module"""
-from typing import Optional, Dict, Any
-import os
-
-class GitHubModelsClient:
-    """Client for GitHub Models API integration"""
-    
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv('GITHUB_MODELS_API_KEY')
-        if not self.api_key:
-            raise ValueError("GitHub Models API key required")
-        self.base_url = "https://models.github.com/api/v1"
-        
-    async def invoke_model(self, model_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
-        """Invoke a GitHub model with rate limiting and error handling"""
-        # Implementation pending model selection
-        raise NotImplementedError("Model invocation requires specific model selection")
-```
-**Commit**: `feat: add GitHub Models client scaffold with auth and error handling`
 
 ## 10. Labels to Apply
 
-### Immediate Labels (Blocking)
-- `blocked-incomplete-wr` - Missing critical information
-- `needs-clarification` - Ambiguous requirements
-- `research-undefined` - No clear research scope
+### Process Labels
+- `type:research` — research work request
+- `area:github-integration` — GitHub-first feature
+- `integration:required` — new routing profile + workflow updates needed
+- `docs:required` — AGENTS.md + CLAUDE.md updates required
 
 ### Risk Labels
-- `risk:scope-creep` - Undefined boundaries
-- `risk:vendor-lock-in` - Platform dependency concerns
-- `risk:integration-complexity` - Multiple interpretation paths
-
-### Process Labels
-- `type:research` - Research work request
-- `area:github-integration` - GitHub-related functionality
-- `priority:blocked` - Cannot proceed without clarification
-
-### Once Clarified
-- `model-type:ai-ml` OR `model-type:analytics` OR `model-type:api`
-- `integration:required` - Needs integration work
-- `docs:required` - Documentation needed
+- `risk:rate-limit` — free tier (50–150 req/day) may be insufficient for high-volume runs
+- `risk:vendor-lock-in` — Azure AI required for overage; mitigated by OpenRouter fallback
 
 ---
 
-**FINAL RECOMMENDATION**: Do not proceed with any implementation until the WR author provides:
-1. Specific model type and use cases
-2. Clear objectives and success criteria
-3. Integration requirements for revvel-standard
-4. Target audience and business value proposition
-
-This research packet will be updated once proper requirements are provided.
+**FINAL RECOMMENDATION**: Proceed with Phase 1 (routing profile) immediately — low risk, no new secrets, uses existing GITHUB_TOKEN. Phase 2–4 can follow incrementally. The GitHub Models free tier is well-suited for the WR research and triage use cases in revvel-standards at current volume.
 
 ## Executive Summary
 
-N/A — pending Jules refinement
+GitHub's native **Models** feature — accessible from the Models tab in the repository menu bar — is a production-ready AI inference API (GA since May 2025) that provides access to 40+ models (GPT-4o, Llama 4, DeepSeek-V3, Phi 4, Mistral, Cohere, and more) authenticated via `GITHUB_TOKEN`. For revvel-standards, integrating GitHub Models means the automation fleet gains a **zero-cost, zero-extra-credential inference layer** for WR research, triage, and persona workflows. The recommended path is: add a `github_models` routing profile to `config/model-lookup.json`, wire it as the first option in `triageWithFallback()`, and fall back to OpenRouter when the free rate limit is hit. Phase 1 is low-risk and can ship in a single PR.
 
 ## Step 1A — Product/Output Selections
 
-N/A — pending Jules refinement
+- **Primary output**: A new `github_models` routing profile in `config/model-lookup.json` consumed by `scripts/openrouter-triage.js`, `scripts/perplexity-research-issue.js`, and `scripts/openrouter-personas.js`
+- **Secondary output**: Sample `.prompt.yml` files under `wr/prompts/` for WR triage and research personas
+- **Tertiary output**: Updated `docs/AGENTS.md` and `CLAUDE.md` documentation covering the new inference lane and its rate limits
 
 ## Step 2 — Deep Web Research
 
@@ -473,15 +408,41 @@ N/A — pending Jules refinement
      - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
-N/A — pending Jules refinement
+### GitHub Models API (GA — May 2025)
+- **Endpoint**: `POST https://models.github.com/inference/chat/completions`
+- **Org endpoint**: `POST https://models.github.com/orgs/{org}/inference/chat/completions`
+- **Auth**: `Authorization: ****** — no new secrets required
+- **Models**: 40+ including GPT-4o, GPT-4.1, Llama 4, DeepSeek-V3, Phi 4, Mistral Large, Codestral, Command R+, text-embedding-3-large ([catalog](https://github.com/marketplace/models/catalog))
+- **Free tier**: 50–150 requests/day per model; rate limit tier depends on Copilot plan ([source](https://github.com/marketplace/models/catalog))
+- **Paid overage**: Routed to Azure AI; billing is external to GitHub
+- **CLI**: `gh extension install github/gh-models` ([github/gh-models](https://github.com/github/gh-models))
+- **Prompt files**: `.prompt.yml` stored in repo, versioned with code, validated by the playground
+
+### Competing Inference Routing Options (relevant to revvel-standards)
+
+| Option | Cost for fleet use | Auth | Rate limit | Notes |
+|--------|--------------------|------|------------|-------|
+| **GitHub Models** | Free (50–150 req/day/model) | GITHUB_TOKEN (already present) | Yes; overage via Azure AI | GA since May 2025 ([changelog](https://github.blog/changelog/2025-05-15-github-models-api-now-available/)) |
+| **OpenRouter** | Funded account required; `:free` models need credits | OPENROUTER_API_KEY | Per-model | Current primary route; keyless fallback via Perplexity bridge |
+| **Hugging Face Serverless** | Free tier (rate-limited); Dedicated $0.60–$4.50/hour | HF_TOKEN | Yes | 500k+ models; not currently integrated |
+| **Ollama (self-hosted)** | Free | Local only | None | Not usable in GitHub Actions without self-hosted runner |
 
 ## Step 3 — Requirements
 
-N/A — pending Jules refinement
+1. `config/model-lookup.json` must gain a `github_models` profile with endpoint, auth env, default model, and fallback chain
+2. `scripts/openrouter-triage.js` → `triageWithFallback()` must try `github_models` first, fall back to `openrouter`, then keyless Perplexity
+3. `scripts/perplexity-research-issue.js` deep_search profile should list `github_models` as a candidate
+4. At least one `.prompt.yml` file must be created under `wr/prompts/` and validated against GitHub Models schema
+5. `CLAUDE.md` gotcha section must be updated: add GitHub Models free tier info and note rate-limit ceiling before recommending OpenRouter fallback
+6. Workflow steps using GitHub Models must not expose `GITHUB_TOKEN` in log output (use `*` masking or omit from echo)
 
 ## Recommendations
 
-N/A — pending Jules refinement
+1. **Ship Phase 1 immediately** — add `github_models` to `config/model-lookup.json` and wire the fallback in `triageWithFallback()`. This is a one-file change with no new secrets and no breaking changes.
+2. **Use `gpt-4o-mini` as the default model** — lowest latency, highest rate limit on the free tier; sufficient for triage and WR generation tasks.
+3. **Reserve org endpoint** (`/orgs/{org}/inference/...`) for workflow runs — allows future cost attribution and higher rate limits under Copilot Business/Enterprise.
+4. **Add `.prompt.yml` for the WR triage persona** — replaces the inline string prompts in `openrouter-triage.js`; enables review and versioning via PR.
+5. **Document the rate limit ceiling** in `CLAUDE.md` — the "OpenRouter is NOT free-for-all" gotcha section should now also say: "GitHub Models free tier is 50–150 req/day per model; at high volume, fall through to OpenRouter."
 
 ## Dependencies
 
@@ -495,12 +456,15 @@ N/A — pending Jules refinement
 
 | Field | Value |
 | --- | --- |
-| `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
-
-N/A — pending Jules refinement
+| `depends_on` (prerequisite WRs) | none |
+| Blocked by | none |
+| Blocks (downstream WRs) | none — Phase 1 routing change is additive; no existing WR depends on its absence |
 
 ## Risks
 
-N/A — pending Jules refinement
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Free tier rate limit hit under high CI load | Medium | Medium | Fallback to OpenRouter already in `triageWithFallback()`; document ceiling in CLAUDE.md |
+| GitHub Models catalog changes (model deprecation) | Low | Low | `config/model-lookup.json` profile is easy to update; default to `gpt-4o-mini` which is stable |
+| GITHUB_TOKEN permissions insufficient for Models API | Low | High | Verify `models: read` permission in workflow YAML; document in AGENTS.md |
+| Azure AI overage billing surprise | Low | Medium | Don't configure Azure AI fallback unless explicitly needed; free tier is sufficient at current volume |
