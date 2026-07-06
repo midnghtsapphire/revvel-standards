@@ -1,4 +1,4 @@
-# WR: Smartphone-Driven Low-Power Light-Emitting Device - PMCFirst-pdf create mobile app or tool for red light therapy or photobiomodulation therapy
+# WR: Smartphone-Driven Low-Power Light-Emitting Device - Create mobile app or tool for red light therapy or photobiomodulation therapy
 
 **Issue:** #15202  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -91,7 +91,7 @@ MVP features:
 | Item | Category | Cost | Notes |
 | --- | --- | --- | --- |
 | Expo + React Native + TypeScript | App stack | Free to start | Matches repo mobile default; no incremental license cost for the first shipped build. |
-| EAS Build / app store delivery | Build/distribution | Internal estimate: `$0-$29/month` until paid build volume is needed | Keep this as an ops line item rather than a blocker to shipping. |
+| EAS Build / app store delivery | Build/distribution | `$0/month` free tier or `$19/month` starter tier | Public Expo pricing shows a usable free tier and a starter tier for launch-stage apps ([Expo pricing](https://expo.dev/pricing)). |
 | Local encrypted storage library | App dependency | Internal estimate: low / open-source | Needed for private session history and export on-device. |
 | BLE-enabled light accessory dev kit | Hardware integration | Internal estimate: `$50-$150/unit` | Small prototype budget for pairing, timer sync, and thermal-state testing. |
 | Temperature sensor or thermal telemetry path | Safety instrumentation | Internal estimate: `$5-$15/unit` if external sensor is required | Only needed if the chosen accessory does not already expose temperature or duty-cycle telemetry. |
@@ -115,7 +115,7 @@ Registrar availability was not verified in this pass, so treat these as naming d
 ### Revenue / Monetization Model
 
 - Free core app for timer, reminders, and session logging to lower adoption friction.
-- Premium upgrade for protocol packs, deeper exports, clinician/coach notes, and device-specific calculators (internal estimate: `"$9-$19/month"` or annual equivalent).
+- Premium upgrade for protocol packs, deeper exports, clinician/coach notes, and device-specific calculators (internal estimate: `$9-$19/month` or annual equivalent).
 - Affiliate revenue from compatible red/NIR hardware once the protocol library is trusted enough to recommend device classes.
 - Team/clinic mode for estheticians, recovery studios, or coaching programs that need shared protocol templates and client progress exports.
 
