@@ -27,7 +27,10 @@ jobs:
        github.event.issue.user.login != 'github-actions[bot]' &&
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
-       startsWith(github.event.issue.title, '[WR]'))
+       (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
@@ -65,11 +68,18 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const m = body.match(sectionRegex);
-            if (!m) {
-              core.info('No Output Type section found in issue body — skipping route.');
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputType = ((m?.[1] || '').trim().toLowerCase() || inferredFromTitle);
+            if (!outputType) {
+              core.info('No Output Type section or title route tag found — skipping route.');
               return;
             }
-            const outputType = m[1].trim().toLowerCase();
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.

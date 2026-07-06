@@ -45,7 +45,10 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       startsWith(github.event.issue.title, '[WR]'))
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#app'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -187,6 +190,17 @@ jobs:
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
+
+          def infer_output_type_from_title(title):
+              m = re.search(r'#(tool|tools|app)\b', title or "", re.IGNORECASE)
+              if not m:
+                  return None
+              token = m.group(1).lower()
+              if token in ("tool", "tools"):
+                  return "desktop-tool"
+              if token == "app":
+                  return "production-app"
+              return None
 
           def call_openrouter(needed, body, title):
               prompt = (
@@ -355,6 +369,9 @@ jobs:
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
+          title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_inferred_output_type:
+              print(f"Title route tag inferred Output Type: {title_inferred_output_type}")
 
           classified = {}
           used_fallback = False
@@ -376,6 +393,9 @@ jobs:
               suggested = classified.get(field)
               if suggested in allowed:
                   final[field] = suggested
+                  continue
+              if field == "Output Type" and title_inferred_output_type in allowed:
+                  final[field] = title_inferred_output_type
                   continue
               # fallback
               final[field] = DEFAULTS[field]

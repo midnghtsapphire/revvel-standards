@@ -144,8 +144,10 @@ jobs:
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
@@ -666,6 +668,17 @@ jobs:
             found && /(^|[ \t])### / { exit }
             found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
           ' | tr -d '\r')
+          if [ -z "$OUTPUT_TYPE" ]; then
+            TITLE_TAG=$(printf '%s\n' "${ISSUE_TITLE}" | grep -oEi '#(tool|tools|app)\b' | head -n1 | tr '[:upper:]' '[:lower:]' || true)
+            case "$TITLE_TAG" in
+              '#tool'|'#tools')
+                OUTPUT_TYPE='desktop-tool'
+                ;;
+              '#app')
+                OUTPUT_TYPE='production-app'
+                ;;
+            esac
+          fi
 
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
@@ -806,7 +819,14 @@ jobs:
 
             // Parse Output Type from issue body to determine deliver label
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
-            const outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputTypeRaw = ((outputTypeMatch?.[1] || '').trim().toLowerCase() || inferredFromTitle);
             const OUTPUT_TYPE_DELIVER_MAP = {
               'production-app': 'deliver:app',
               'desktop-tool': 'deliver:app',
