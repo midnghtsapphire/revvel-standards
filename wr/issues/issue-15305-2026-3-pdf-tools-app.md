@@ -42,12 +42,12 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 
 **Option B — Research neuroscientists**
 - Pain Point: Fragmented tooling for EEG/fMRI data processing, subgroup discovery, and reproducibility
-- Market: ~50,000 active neuroscience researchers globally (estimate pending verification — [TODO: verify in PDF review]).
+- Market: ~50,000 active neuroscience researchers globally (estimate pending verification). [TODO: verify in PDF review with a primary-source citation.]
 - Willingness to Pay: Grants typically cover software tooling; $0–$50/month open-source/freemium is most common
 
 **Option C — Patients and consumer digital-health**
 - Pain Point: No widely available, clinically validated tinnitus self-management app
-- Market: [TODO: verify tinnitus burden estimate in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
+- Market: [TODO: verify tinnitus burden market-size statistic in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
 - Willingness to Pay: $5–15/month for consumer app; freemium with premium tier
 
 ---
@@ -109,7 +109,7 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 - r/tinnitus (Reddit, 150k+ members) — top complaints: "no app actually works", "just white noise, no personalisation", "I want something backed by real science"
 - r/audiology — clinicians report lack of validated screening tools that integrate with EHR
 - Clinical forum posts ([Tinnitus Talk](https://www.tinnitustalk.com/)) cite demand for personalised sub-type-based therapies
-- Tinnitus prevalence remains an estimate pending verification — [TODO: verify in PDF review] with a tinnitus-specific primary source before citing a global percentage.
+- Tinnitus prevalence requires verification — [TODO: verify with a tinnitus-specific primary source in PDF review before citing a global percentage].
 
 ---
 
