@@ -102,7 +102,7 @@ A cross-platform (iOS + Android) React Native application that embeds all 7 best
 
 - Global mHealth market 2023: ~$60B (internal estimate; see [Grand View Research](https://www.grandviewresearch.com/industry-analysis/mhealth-market) for trending data).
 - Connected medical device app segment growing at an estimated 25–30% CAGR (internal estimate).
-- FDA cleared over 500 mobile medical apps through De Novo / 510(k) pathways as of 2024 ([FDA Digital Health Center](https://www.fda.gov/medical-devices/digital-health-center-excellence/digital-health-software-precertification-pre-cert-program)).
+- FDA does not publish a single authoritative count of “cleared mobile medical apps”; treat aggregate counts as an estimate and cite the query method (e.g., FDA [510(k) database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm) / [De Novo database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm)).
 
 ### Competitor Analysis
 
