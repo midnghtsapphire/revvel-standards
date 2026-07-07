@@ -22,7 +22,7 @@ The tool provides an interactive, phase-by-phase compliance checklist based on t
 - **Project Info Panel** — Device name, version, project lead, device class (I/II/III), intended use, and date range
 - **DHF Export** — Download a full Design History File summary as Markdown or a compliance checklist as CSV
 - **REST API** — `POST /api/dhf` returns markdown, CSV, and a per-phase summary JSON for QMS integrations; `GET /api/dhf` returns the full phase/item schema
-- **Client-side** — All data stays in the browser; nothing is transmitted to any server
+- **Client-side by default** — The UI generates exports locally; only optional calls to `/api/dhf` transmit the provided payload
 - **SEO-optimized** — Targets "FDA design controls checklist", "21 CFR 820.30 compliance", "DHF generator", and related high-intent keywords
 
 ---
