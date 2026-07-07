@@ -37,7 +37,7 @@ https://platinumtherapylights.com/de/blogs/news/best-medical-grade-red-light-the
 
 ### PlatinumLED Therapy Lights — Product Context
 
-The referenced article covers **PlatinumLED Therapy Lights BIOMAX** panels, one of the leading consumer/prosumer red light therapy brands. PlatinumLED holds FDA Class II medical device status and accepts HSA/FSA payments, which signals a regulated wellness product category.
+The referenced article covers **PlatinumLED Therapy Lights BIOMAX** panels, one of the leading consumer/prosumer red light therapy brands. PlatinumLED markets certain devices as FDA-cleared (Class II) and HSA/FSA-eligible (verify via FDA database + PlatinumLED eligibility documentation) — signaling a regulated wellness product category.
 
 **Current PlatinumLED BIOMAX product line (2024–2025):**
 - BIOMAX 300: ~$499 ([platinumtherapylights.com](https://platinumtherapylights.com))
