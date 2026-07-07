@@ -231,13 +231,11 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
     'wr-auto-classify must accept [WR] title prefix'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#app ')") &&
-      wf.includes("endsWith(github.event.issue.title, '#app')"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')"),
     'wr-auto-classify must accept #app title route tags'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#tool ')") &&
-      wf.includes("endsWith(github.event.issue.title, '#tool')"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #tool ')"),
     'wr-auto-classify must accept #tool title route tags'
   );
   assert(
@@ -253,11 +251,11 @@ test('OpenRouter auto-route accepts title-only route tags and infers Output Type
     'openrouter-auto-route must accept work-request labels'
   );
   assert(
-    wf.includes("(contains(github.event.issue.title, '#app ') || endsWith(github.event.issue.title, '#app'))"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')"),
     'openrouter-auto-route must accept #app title route tags'
   );
   assert(
-    wf.includes("(contains(github.event.issue.title, '#tool ') || endsWith(github.event.issue.title, '#tool'))"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #tool ')"),
     'openrouter-auto-route must accept #tool title route tags'
   );
   assert(
