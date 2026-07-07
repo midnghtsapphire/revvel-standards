@@ -407,3 +407,26 @@ Every 6h, `biome-inspector`:
   self-heal loop drives them to completion; auto-resolves when all apps are live.
 
 Read-only on the registry/auditor; additive; nothing existing was changed.
+
+---
+
+## Update — July 7, 2026: ORBIT persona (CircleCI expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**ORBIT 🪐**, the new CircleCI pipeline-commander persona (`/orbit`, `/circleci`,
+`/circle-ci`, `/🪐`, `/⭕`). Resolution stays registry-driven: the tokens map to the
+`orbit` entry added to `scripts/openrouter-personas.js`, so the runner
+(`scripts/persona-comment-runner.js`) needed no changes.
+
+Companion changes in the same PR (#15406):
+
+- `skills/circleci-expert/SKILL.md` — ORBIT's playbook (both CLI generations,
+  playbooks, lesser-known-features bench).
+- `.circleci/config.yml` — additive `validate-registries` job: the persona
+  registry must parse and resolve, and `skills/SKILLS_INDEX.yml` must be valid
+  YAML, in both PR and main workflows. The existing `lint-and-test` gate was
+  not modified.
+- `standards/CIRCLECI_INTEGRATION_STANDARD.md` — governance for the CircleCI
+  lane (GH Actions owns repo automation; CircleCI owns the build-and-test gate).
+
+Additive; no existing workflow behavior was changed.

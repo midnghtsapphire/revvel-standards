@@ -28,6 +28,7 @@ upgrade decision can be made.
 | BrowserStack | n/a (deferred) | $0 | Live | est. $29 / user / mo | browserstack.com/pricing |
 | Test.ai | n/a (skipped — overlaps Keploy) | — | — | — | — |
 | Jenkins | n/a (skipped — overlaps GH Actions) | $0 (OSS) | n/a | $0 | jenkins.io |
+| CircleCI | Free (6,000 build min/mo) | $0 | Performance (usage-based credits) | est. $15+ / mo (verify) | circleci.com/pricing (verify) |
 
 ## Update procedure
 

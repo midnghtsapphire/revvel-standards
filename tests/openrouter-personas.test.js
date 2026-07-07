@@ -76,8 +76,8 @@ async function runTests() {
   console.log("Test Group: Persona Registry");
   assertEqual(
     Object.keys(getPersonas()).sort(),
-    ["coder", "dragnet", "mindmappr", "oaudrey", "openrouter", "professor"],
-    "Should register exactly the six named personas"
+    ["coder", "dragnet", "mindmappr", "oaudrey", "openrouter", "orbit", "professor"],
+    "Should register exactly the seven named personas"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
@@ -105,6 +105,8 @@ async function runTests() {
   assertEqual(getPersona("oaudrey").name, "oAudrey", "Resolves a plain handle");
   assertEqual(getPersona("@oAudrey").name, "oAudrey", "Resolves a handle with @ and mixed case");
   assertEqual(getPersona("🕵️").name, "DRAGNET", "Resolves an emoji alias to its persona");
+  assertEqual(getPersona("circleci").name, "ORBIT", "Resolves the circleci alias to ORBIT");
+  assertEqual(getPersona("⭕").name, "ORBIT", "Resolves the ⭕ emoji alias to ORBIT");
   assertThrows(() => getPersona("nobody"), "Throws on unknown persona");
   assertThrows(() => getPersona(""), "Throws on empty handle");
 
@@ -146,7 +148,7 @@ async function runTests() {
   // Fleet registration (deferred, no API calls)
   console.log("\nTest Group: instantiateFleet (deferred)");
   const fleet = await instantiateFleet(undefined, { silent: true });
-  assertEqual(fleet.length, 6, "Fleet registers all six personas by default");
+  assertEqual(fleet.length, 7, "Fleet registers all seven personas by default");
   assertTrue(
     fleet.every((f) => f.instantiated === false && typeof f.assign === "function"),
     "Each fleet member is a deferred handle"

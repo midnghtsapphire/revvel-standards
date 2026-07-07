@@ -9,3 +9,4 @@ pitch.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-05-27 | Mabl | Owner request | Active → **Paused** | $X → $0 | Pause (no upgrade) | #13967 | Replaced by Keploy; eval kept in workflow header per standards. |
 | 2026-05-28 | Keploy | Initial install | none → **Free** | $0 | Tier 0 (free-tier-first rule) | (install only) | App + Chrome Recorder onboarded; see `docs/TESTING_STACK.md`. |
+| 2026-07-07 | CircleCI | ORBIT persona wire-in (#15406) | none → **Free** | $0 | Tier 0 (free-tier-first rule) | #15406 | Existing `.circleci/config.yml` gate formalized under ORBIT 🪐 ownership; added `validate-registries` job. Governance: `standards/CIRCLECI_INTEGRATION_STANDARD.md`. No paid tier; row added to `docs/TOOL_COST_INDEX.md`. |
