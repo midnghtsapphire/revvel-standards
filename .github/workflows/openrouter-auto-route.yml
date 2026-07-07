@@ -81,11 +81,16 @@ jobs:
               return '';
             };
 
-            const outputType = (m?.[1] || inferOutputTypeFromTitleTags(issue.title || '')).trim().toLowerCase();
-            if (!outputType) {
-              core.info('No Output Type section or recognized title route tag found — skipping route.');
-              return;
-            }
+             const outputTypeFromBody = (m?.[1] || '').trim().toLowerCase();
+             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
+             const outputType =
+               outputTypeFromBody && outputTypeFromBody !== '_no response_'
+                 ? outputTypeFromBody
+                 : outputTypeFromTitle;
+             if (!outputType) {
+               core.info('No Output Type section or recognized title route tag found — skipping route.');
+               return;
+             }
             core.info(`Parsed Output Type: "${outputType}"`);
 
             // Routing table — mode → list of agent-trigger labels.
