@@ -78,6 +78,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
 | Agent prompt detection, TODO @agent routing, @bito @goap @roo tags, HANDOFF.md execution | [`prompt-routing`](#prompt-routing) |
 | Roo-Cline, local development, VS Code agent, multi-file refactoring, @roo tag | [`roo-cline`](#roo-cline) |
+| TDD red-green-refactor, structured debugging, Socratic brainstorming, /execute-plan, subagent code review, Superpowers | [`superpowers`](#superpowers) |
 
 ---
 
@@ -636,3 +637,13 @@ At the end of every session:
 - **Trigger:** "@roo", "roo-cline", "local refactoring", "VS Code agent", "autonomous coding", "Cline", "IDE agent"
 - **Documentation:** `docs/ROO_CLINE_SETUP.md` · `docs/AGENT_PROMPT_CONVENTION.md`
 - **Status:** Active (manual invocation, desktop tool)
+
+#### superpowers
+
+- **Path:** `skills/superpowers/`
+- **Files:** `SKILL.md` · `superpowers.skill.yml`
+- **Platform:** [Claude Plugins — Superpowers](https://claude.com/plugins/superpowers)
+- **Description:** Composable skills framework that enforces structured software development discipline in Claude. Five independently loadable modules: `/brainstorming` (Socratic requirements refinement that blocks implementation until sign-off), `/tdd` (red-green-refactor with mandatory failing-test enforcement — the RED phase is non-negotiable), `/debug` (four-phase root-cause methodology: reproduce → classify → hypothesis test → fix; architectural review escalation auto-triggers after three failed attempts), `/execute-plan` (batched implementation plans with a `code-reviewer` subagent checkpoint between each batch), and `/writing-skills` (TDD principles applied to skill and documentation authoring, requiring ≥ 3 assertions per skill). The `code-reviewer` subagent evaluates implementations against the approved plan, coding standards, and architectural principles. Modules compose: new feature → brainstorm + TDD + execute-plan; bug fix → debug + TDD; new skill → brainstorm + writing-skills.
+- **Tags:** superpowers, tdd, red-green-refactor, brainstorming, systematic-debugging, four-phase-debug, execute-plan, code-reviewer, writing-skills, composable-skills, structured-development, architectural-escalation
+- **Trigger:** "superpowers", "/brainstorming", "/tdd", "/execute-plan", "/debug superpowers", "/writing-skills", "red-green-refactor", "structured tdd", "four-phase debug", "subagent code review", "tests must fail first", "architectural review escalation", "claude superpowers plugin".
+- **Lifecycle:** Composable — load individual modules or the full suite on demand.
