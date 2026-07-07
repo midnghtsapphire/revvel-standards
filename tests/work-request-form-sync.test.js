@@ -268,9 +268,12 @@ test('WR intake and routing workflows recognize title route tags (#tool/#tools/#
   );
 
   assert(
-    autoRoute.includes("contains(github.event.issue.title, '#tool')") &&
-      autoRoute.includes("contains(github.event.issue.title, '#tools')") &&
-      autoRoute.includes("contains(github.event.issue.title, '#app')"),
+    (autoRoute.includes("contains(github.event.issue.title, '#tool ')") ||
+      autoRoute.includes("endsWith(github.event.issue.title, '#tool')")) &&
+      (autoRoute.includes("contains(github.event.issue.title, '#tools ')") ||
+        autoRoute.includes("endsWith(github.event.issue.title, '#tools')")) &&
+      (autoRoute.includes("contains(github.event.issue.title, '#app ')") ||
+        autoRoute.includes("endsWith(github.event.issue.title, '#app')")),
     'openrouter-auto-route must run for title route tags'
   );
   assert(

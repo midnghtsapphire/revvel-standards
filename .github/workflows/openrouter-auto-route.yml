@@ -28,9 +28,12 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
-        contains(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#app')))
+        contains(github.event.issue.title, '#tools ') ||
+        endsWith(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool ') ||
+        endsWith(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app ') ||
+        endsWith(github.event.issue.title, '#app')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
