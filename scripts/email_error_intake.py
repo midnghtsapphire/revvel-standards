@@ -30,12 +30,81 @@ import email
 import imaplib
 import json
 import os
+import re
 import ssl
 import subprocess
 import tempfile
 from email.header import decode_header
 
 DEFAULT_KEYWORDS = "error,failed,failure,alert,exception,timeout,down,5xx,crash"
+
+# Matches a subject that is *only* a URL (with or without scheme).
+# A subject like "https://app.circleci.com/..." or "app.circleci.com/..." has no
+# human-readable description and would create a useless GitHub issue title.
+_URL_ONLY_RE = re.compile(
+    r"^(https?://)?[\w.-]+\.[a-z]{2,}[/\S]*$",
+    re.IGNORECASE,
+)
+
+
+def _parse_circleci_url(url: str) -> dict:
+    """Extract structured metadata from a CircleCI build-output URL.
+
+    Returns a dict with keys: project, build_num, step_num (strings, or empty).
+    Example URL:
+      https://app.circleci.com/api/v1.1/project/github/owner/repo/1234/output/5/0?file=true
+    """
+    m = re.search(
+        r"/project/[^/]+/(?P<owner>[^/]+)/(?P<repo>[^/]+)/(?P<build>\d+)/output/(?P<step>\d+)",
+        url,
+    )
+    if not m:
+        return {}
+    return {
+        "project": f"{m.group('owner')}/{m.group('repo')}",
+        "build_num": m.group("build"),
+        "step_num": m.group("step"),
+    }
+
+
+def sanitize_subject(subject: str, body_text: str) -> tuple[str, str | None]:
+    """Return a (title_suffix, extra_note) pair for the GitHub issue title/body.
+
+    When *subject* is a raw URL we replace it with a human-readable description
+    so that the resulting issue title is meaningful.  *extra_note* is an
+    additional line inserted into the issue body when the URL was rewritten.
+    """
+    if not subject or not _URL_ONLY_RE.match(subject.strip()):
+        # Subject has real descriptive text — use as-is.
+        return subject, None
+
+    url = subject.strip()
+    if "circleci.com" in url.lower():
+        meta = _parse_circleci_url(url)
+        if meta:
+            desc = (
+                f"[CI FAILURE] CircleCI build #{meta['build_num']} failed "
+                f"(project {meta['project']}, step {meta['step_num']})"
+            )
+        else:
+            desc = "[CI FAILURE] CircleCI build failed (URL-only notification)"
+        note = (
+            f"**Original CircleCI URL:** `{url}`\n\n"
+            "The subject of the notification email was a raw CircleCI API URL. "
+            "Check the CircleCI webhook / email-intake configuration so that it "
+            "includes a human-readable description in the subject line."
+        )
+    else:
+        # Generic URL-only subject — still rewrite so the issue has a real title.
+        desc = f"[CI/CD FAILURE] Automated notification (URL-only subject)"
+        note = (
+            f"**Original URL in subject:** `{url}`\n\n"
+            "The subject of the notification email was a raw URL. "
+            "Check the automation that sends failure emails so that it supplies "
+            "a descriptive subject line."
+        )
+
+    return desc, note
 
 
 def env(key, default=""):
@@ -145,12 +214,20 @@ def main():
 
         msgid = (msg.get("Message-ID") or "").strip()
         marker = f"email-error-intake:{msgid}"
-        title = (f"[email-error] {subject or '(no subject)'}")[:120]
+
+        # Rewrite URL-only subjects so the issue title is human-readable.
+        sanitized_subject, url_note = sanitize_subject(subject or "(no subject)", extract_text(msg))
+        title = (f"[email-error] {sanitized_subject}")[:120]
+
         body = (
             "Auto-filed from an error email by `email_error_intake.py`.\n\n"
             f"- **From:** {sender}\n"
             f"- **Date:** {decode_mime(msg.get('Date'))}\n"
             f"- **Message-ID:** `{msgid}`\n\n"
+        )
+        if url_note:
+            body += f"### ⚠️ URL-only subject rewritten\n\n{url_note}\n\n"
+        body += (
             "### Excerpt\n\n```\n"
             f"{extract_text(msg)[:1500]}\n"
             "```\n\n"
