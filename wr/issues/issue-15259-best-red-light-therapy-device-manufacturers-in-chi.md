@@ -166,9 +166,7 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 `3011` — next available after `meddevice-compliance-navigator` at 3010
 
-### Definition of Done
-
-- [ ] Manufacturer directory live with ≥10 verified entries
+- [ ] Manufacturer directory live with ≥10 entries; each entry includes an explicit verification status (e.g., unverified / self-claimed / cross-checked)
 - [ ] Comparison UI functional for ≥4 side-by-side
 - [ ] RFQ form submits and sends email to admin + auto-reply to submitter
 - [ ] Freemium gate active (Stripe Checkout)
