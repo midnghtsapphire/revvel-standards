@@ -209,6 +209,7 @@ test('WR workflows accept BASIC WR issue type and work-request label', () => {
 
   for (const workflow of [wrPrCreation, weeklyResearch]) {
     assert(workflow.includes("labelSet.has('work-request')"), 'WR workflow must accept work-request label');
+    assert(workflow.includes("labelSet.has('wr:new') && hasTitleRouteTag"), 'WR workflow must accept title-only wr:new route-tag intake');
     assert(workflow.includes("'basic wr'"), 'WR workflow must accept BASIC WR issue type');
     assert(workflow.includes("'weekly-research'"), 'WR workflow must apply weekly-research label');
     assert(workflow.includes("'deep-research'"), 'WR workflow must apply deep-research label');
@@ -226,6 +227,43 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
   assert(
     wf.includes("startsWith(github.event.issue.title, '[WR]')"),
     'wr-auto-classify must accept [WR] title prefix'
+  );
+  assert(
+    wf.includes('def infer_title_output_type(title):'),
+    'wr-auto-classify must infer Output Type from title route tags'
+  );
+  assert(
+    wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools)') &&
+      wf.includes('"app": "production-app"') &&
+      wf.includes('"tools": "internal-script-automation"') &&
+      wf.includes('priority = ["app",'),
+    'wr-auto-classify must map #app/#tools title tags to WR Output Type values (with multi-tag precedence)'
+  );
+});
+
+test('OpenRouter auto-route accepts normalized WR labels and output-type fallbacks', () => {
+  const wf = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+
+  assert(
+    wf.includes("contains(github.event.issue.labels.*.name, 'work-request')"),
+    'openrouter-auto-route must run after WR labels are normalized'
+  );
+  assert(
+    wf.includes("contains(github.event.issue.labels.*.name, 'weekly-research')"),
+    'openrouter-auto-route must accept weekly-research-labeled issues'
+  );
+  assert(
+    wf.includes("label.startsWith('output-type:')"),
+    'openrouter-auto-route must fall back to output-type:* labels'
+  );
+  assert(
+    wf.includes('inferTitleOutputType') &&
+      wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools)') &&
+      wf.includes("app: 'production-app'"),
+    'openrouter-auto-route must support title-tag Output Type inference for title-only intake'
   );
 });
 
