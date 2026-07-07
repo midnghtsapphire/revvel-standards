@@ -45,6 +45,8 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+       (contains(github.event.issue.labels.*.name, 'wr:new') &&
+        contains(github.event.issue.labels.*.name, 'openrouter')) ||
        startsWith(github.event.issue.title, '[WR]'))
     runs-on: ubuntu-latest
     env:
