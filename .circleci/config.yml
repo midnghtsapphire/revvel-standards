@@ -107,6 +107,9 @@ workflows:
             branches:
               only: main
       - validate-registries:
+          filters:
+            branches:
+              only: main
       - policy-check:
           filters:
             branches:
