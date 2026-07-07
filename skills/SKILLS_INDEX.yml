@@ -326,6 +326,46 @@ skills:
       - "e2e tests"
       - "unit tests"
 
+  - name: superpowers
+    title: "Superpowers — Structured Software Development Framework"
+    version: "1.0.0"
+    path: "skills/superpowers/"
+    skill_file: "skills/superpowers/superpowers.skill.yml"
+    category: "Developer Workflow"
+    source_url: "https://claude.com/plugins/superpowers"
+    issue: 15426
+    access: all
+    lifecycle: composable
+    persona: "🦸 Superpowers"
+    modules:
+      - /brainstorming
+      - /tdd
+      - /debug
+      - /execute-plan
+      - /writing-skills
+    related_skills:
+      - brainstorming
+      - code_review
+      - testing
+      - skill_forge
+      - ralph_loop
+    triggers:
+      - "superpowers"
+      - "/brainstorming"
+      - "/tdd"
+      - "/execute-plan"
+      - "/debug superpowers"
+      - "/writing-skills"
+      - "red-green-refactor"
+      - "structured tdd"
+      - "four-phase debug"
+      - "subagent code review"
+      - "composable skill framework"
+      - "claude superpowers plugin"
+      - "tdd cycle"
+      - "tests must fail first"
+      - "architectural review escalation"
+
   - name: mvi_contract
     title: "MVI Contract"
     version: "1.0.0"

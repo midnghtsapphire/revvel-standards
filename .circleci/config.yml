@@ -46,11 +46,16 @@ jobs:
   # edit here silently kills every /persona summon. No npm ci needed: uses only
   # node built-ins plus a one-shot npx fetch.
   validate-registries:
+  # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
+  # and that every REVVEL-DISABLED block in changed files has all required
+  # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
+  # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
+  policy-check:
     executor: node-executor
     steps:
       - checkout
       - run:
-          name: Persona registry parses and resolves ORBIT
+I          name: Persona registry parses and resolves ORBIT
           command: |
             node --check scripts/openrouter-personas.js
             node -e "
@@ -62,6 +67,18 @@ jobs:
       - run:
           name: Skills index is valid YAML
           command: npx --yes js-yaml skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+          # Fetch enough history for an accurate merge-base diff.
+          # 200 commits covers virtually all branches in this repo.
+          name: Fetch origin/main for merge-base diff
+          command: git fetch origin main --depth=200
+      - run:
+          name: RVS-AGENT-001 archival policy check
+          command: bash .circleci/scripts/check-archival-policy.sh
+          environment:
+            # allow-destroy label is not available in CircleCI context; default to
+            # strict mode. PRs with the label bypass this in GitHub Actions via
+            # no-destroy-guard.yml — they still run the archival comment validation.
+            ALLOW_DESTROY: "false"
 
 workflows:
   version: 2
@@ -74,6 +91,7 @@ workflows:
             branches:
               ignore: main
       - validate-registries:
+      - policy-check:
           filters:
             branches:
               ignore: main
@@ -86,6 +104,7 @@ workflows:
             branches:
               only: main
       - validate-registries:
+      - policy-check:
           filters:
             branches:
               only: main
