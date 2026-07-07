@@ -190,3 +190,28 @@ test("flags an unclosed REVVEL-DISABLED block", () => {
   assert.strictEqual(status, 1, "unclosed REVVEL-DISABLED block must fail rule 11");
   assert.match(stdout, /REVVEL-DISABLED block opened but never closed/);
 });
+
+// A prose MENTION of the token (no pipe-separated header) must not open a
+// phantom block. WR_TEMPLATE_FULL.md's "Superseded Content" guidance comments
+// reference REVVEL-DISABLED by name; before the opener regex required the
+// canonical `REVVEL-DISABLED |` header shape, every FULL-template WR failed
+// generation with "opened but never closed" (issue #15215 fallout).
+test("does not treat a prose mention of REVVEL-DISABLED as a block opener", () => {
+  const md = [
+    "# WR: Ship the new widget",
+    "",
+    "## Superseded Content",
+    "",
+    "<!-- Per RVS-AGENT-001: replaced code must be commented out with a",
+    "     REVVEL-DISABLED header rather than deleted. -->",
+    "<!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),",
+    "     NOT-APPLICABLE (no code was removed). -->",
+    "",
+    "| Field | Value |",
+    "| --- | --- |",
+    "| Supersedes WR/issue | N/A |",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 0, `prose mention of REVVEL-DISABLED must not open a block, got:\n${stdout}`);
+});
