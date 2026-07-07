@@ -253,11 +253,11 @@ test('OpenRouter auto-route accepts title-only route tags and infers Output Type
     'openrouter-auto-route must accept work-request labels'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#app')"),
+    wf.includes("(contains(github.event.issue.title, '#app ') || endsWith(github.event.issue.title, '#app'))"),
     'openrouter-auto-route must accept #app title route tags'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#tool')"),
+    wf.includes("(contains(github.event.issue.title, '#tool ') || endsWith(github.event.issue.title, '#tool'))"),
     'openrouter-auto-route must accept #tool title route tags'
   );
   assert(
