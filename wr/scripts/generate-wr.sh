@@ -86,7 +86,7 @@ out="$(printf '%s\n' "$out" | awk '
       next
     }
     if ($0 ~ /^[[:space:]]*$/) next
-  }
+if ($0 ~ /[[:space:]]*-->[[:space:]]*$/) in_comment=0
   { stripping=0; print }
 ')"
 subst() { out="${out//\{$1\}/$2}"; }
