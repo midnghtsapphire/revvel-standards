@@ -29,7 +29,7 @@ upgrade decision can be made.
 | Test.ai | n/a (skipped — overlaps Keploy) | — | — | — | — |
 | Jenkins | n/a (skipped — overlaps GH Actions) | $0 (OSS) | n/a | $0 | jenkins.io |
 | CircleCI | Free (6,000 build min/mo) | $0 | Performance (usage-based credits) | est. $15+ / mo (verify) | circleci.com/pricing (verify) |
-| Octopus Review | Hosted Free (monthly AI limit — currently hit) | $0 | BYOK (own Anthropic/OpenAI keys) or self-host (MIT) | $0 platform + provider usage (verify) | octopus-review.ai (verify); OSI-public repos free unlimited |
+| Octopus Review | Hosted Free (monthly AI limit — currently hit); OSI-public repos free unlimited | $0 | BYOK (own Anthropic/OpenAI keys) or self-host (MIT) | $0 platform + provider usage (verify) | octopus-review.ai (verify) |
 
 ## Update procedure
 
