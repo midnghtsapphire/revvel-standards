@@ -77,6 +77,29 @@ out="$(cat "$TEMPLATE")"
 # line 1 and the lint gate refuses the output (Devin finding on #14227).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping {
+    if (in_comment) {
+      if ($0 ~ /-->/) {
+        sub(/^.*-->/, "", $0)
+        in_comment=0
+        if ($0 ~ /^[[:space:]]*$/) next
+      } else {
+        next
+      }
+    }
+    if ($0 ~ /^[[:space:]]*<!--/) {
+      if ($0 ~ /-->/) {
+        sub(/^[[:space:]]*<!--.*-->/, "", $0)
+        if ($0 ~ /^[[:space:]]*$/) next
+      } else {
+        in_comment=1
+        next
+      }
+    }
+    if ($0 ~ /^[[:space:]]*$/) next
+    stripping=0
+  }
+  { print }
   stripping && in_comment && /-->[[:space:]]*$/ { in_comment=0; next }
   stripping && in_comment                        { next }
   stripping && /^<!--.*-->[[:space:]]*$/         { next }
