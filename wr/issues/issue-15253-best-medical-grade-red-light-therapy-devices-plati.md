@@ -160,7 +160,7 @@ Primary keyword targets (search volume — internal estimate, verify with SEMrus
 
 ### Immediate (Month 1)
 
-1. Scaffold Next.js PWA at `products/rlt-device-finder/` on port 3010
+1. Scaffold Next.js PWA at `products/rlt-device-finder/` on port 3011
 2. Build device database (20 panels) with structured JSON — seed from public spec sheets
 3. Implement selector tool with filters and affiliate link output
 4. Apply for PlatinumLED affiliate program: [platinumtherapylights.com/pages/affiliate-program](https://platinumtherapylights.com/pages/affiliate-program)
