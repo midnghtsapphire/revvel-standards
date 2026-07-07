@@ -5,8 +5,10 @@ This directory contains the CircleCI gate for this repository.
 ## Current workflow
 
 - **Workflow(s):** `pr-workflow`, `main-workflow`
-- **Job:** `lint-and-test`
-- **Purpose:** run the real quality gate (`markdownlint` on changed Markdown + `npm test`)
+- **Jobs:** `lint-and-test`, `policy-check`
+- **Purpose:**
+  - `lint-and-test`: run the real quality gate (`markdownlint` on changed Markdown + `npm test`)
+  - `policy-check`: enforce RVS-AGENT-001 archival policy (no silent deletions; REVVEL-DISABLED blocks must have all required metadata fields)
 
 ## Directory structure
 
@@ -14,6 +16,7 @@ This directory contains the CircleCI gate for this repository.
 .circleci/
 ├── config.yml
 └── scripts/
+    ├── check-archival-policy.sh
     ├── lint-changed-markdown.sh
     └── run-tests.sh
 ```
