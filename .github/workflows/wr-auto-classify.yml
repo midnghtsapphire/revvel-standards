@@ -390,7 +390,7 @@ jobs:
               print("OpenRouter not configured; using opinionated defaults for blank fields.")
               used_fallback = True
 
-          # Merge: explicit > classified > defaults. Validate against allowed options.
+          # Merge: explicit > classified > title-hint > defaults. Validate against allowed options.
           final = {}
           for field, allowed in DROPDOWN_FIELDS.items():
               explicit = parsed.get(field)
