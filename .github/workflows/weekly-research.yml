@@ -57,11 +57,17 @@ jobs:
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and issue template labels can be skipped
-            // if a label has not been created in the repository yet.
+            // if a label has not been created in the repository yet. Manual
+            // title-only intake also uses route tags like `#app` / `#tools`; only
+            // treat those as WRs when the issue is still in the fresh `wr:new`
+            // lifecycle bucket so ordinary hashtag chatter does not get upgraded.
+            const hasTitleRouteTag =
+              /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
+              (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
