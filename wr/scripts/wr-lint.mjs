@@ -207,6 +207,63 @@ function lintFile(path) {
     issues.push(`line ${i + 1}: untrusted \${{ github.event.*.body/title }} interpolated into a shell command — pass it via env: (e.g. \`ISSUE_BODY: \${{ github.event.issue.body }}\`) and reference "$ISSUE_BODY" instead (CLAUDE.md gotcha #4)`);
   });
 
+  // 11. REVVEL-DISABLED archival blocks: if the WR embeds any REVVEL-DISABLED
+  // block it must have all required metadata fields. This validates that WR
+  // docs shipping workflow snippets with disabled code don't omit the audit
+  // trail required by RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md).
+  // Uses word-boundary-aware regex to avoid false negatives from partial matches
+  // (e.g. "REASON: MODEL: needs update" must not satisfy the MODEL: field check).
+  // Match ONLY the canonical machine-greppable header — the token followed by
+  // its pipe-separated field list (COMMENT-DONT-DELETE.md §3: "REVVEL-DISABLED
+  // | AGENT: ... | MODEL: ..."). A bare prose mention of the token (e.g. the
+  // WR_TEMPLATE_FULL.md "Superseded Content" guidance says "commented out with
+  // a REVVEL-DISABLED header") must NOT open a phantom block — that false
+  // positive made wr-lint refuse every FULL-template WR (issue #15215
+  // regression tests caught it).
+  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED(?!-END)\s*\|/;
+  // Uses a pipe-anchored pattern so prose references like "use a REVVEL-DISABLED
+  // header" in instructional HTML comments (e.g. in WR_TEMPLATE_FULL.md's
+  // Superseded Content guidance) do not false-positive as actual markers.
+  // Real markers always use the pipe-delimited metadata format:
+  //   // REVVEL-DISABLED | AGENT: ... | MODEL: ... | WR: ... | DATE: ... | STATUS: ...
+  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED\s*\|/;
+  const REVVEL_DISABLED_CLOSE = /REVVEL-DISABLED-END\b/;
+  // Each field regex anchors on a pipe (|) or line start/comment prefix so
+  // "AGENT:" in a REASON sentence does not satisfy the AGENT: field requirement.
+  const REQUIRED_REVVEL_FIELDS = [
+    { name: "AGENT:",  re: /(?:^|\|)\s*AGENT\s*:/ },
+    { name: "MODEL:",  re: /(?:^|\|)\s*MODEL\s*:/ },
+    { name: "WR:",     re: /(?:^|\|)\s*WR\s*:/ },
+    { name: "DATE:",   re: /(?:^|\|)\s*DATE\s*:/ },
+    { name: "STATUS:", re: /(?:^|\|)\s*STATUS\s*:/ },
+  ];
+  let inDisabledBlock = false;
+  let disabledBlockStart = -1;
+  let disabledBlockHeader = "";
+  lines.forEach((l, i) => {
+    if (!inDisabledBlock && REVVEL_DISABLED_OPEN.test(l)) {
+      inDisabledBlock = true;
+      disabledBlockStart = i + 1;
+      disabledBlockHeader = l;
+    } else if (inDisabledBlock && REVVEL_DISABLED_CLOSE.test(l)) {
+      // Validate the opening header has all required fields
+      const missing = REQUIRED_REVVEL_FIELDS.filter(({ re }) => !re.test(disabledBlockHeader));
+      if (missing.length > 0) {
+        issues.push(
+          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.map((f) => f.name).join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`
+        );
+      }
+      inDisabledBlock = false;
+      disabledBlockHeader = "";
+    }
+  });
+  // Unclosed block
+  if (inDisabledBlock) {
+    issues.push(
+      `line ${disabledBlockStart}: REVVEL-DISABLED block opened but never closed with REVVEL-DISABLED-END`
+    );
+  }
+
   return issues;
 }
 
