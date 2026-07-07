@@ -192,7 +192,7 @@ Estimated monthly recurring costs for a live MVP (low-traffic, < 1,000 active us
 Phase 2 additions (> 1,000 users, subscription billing active):
 
 | Service | Est. Monthly Cost |
-Revise Section 3 — Requirements to clearly state: (1) 'For MVP: No health data collection that constitutes PHI. Only collect: device type (categorical), session logs (timestamps/durations), photo uploads (no metadata). Explicitly NOT collected: clinical history, diagnoses, medication data.' (2) Add requirement: 'Privacy policy must state: This app is not a medical device; tracking data is fitness/wellness data, not protected health information.' (3) For Phase 2 (telehealth upsell): 'Telehealth feature requires separate BAA with participating clinicians and Supabase; upgrade to HIPAA-eligible tier ($20/month).' (4) Risks section: expand FDA/HIPAA to include specific mitigation (BAA scope, audit logging, data residency).
+| --- | --- |
 | Stripe (payment processing) | 2.9% + $0.30 per transaction |
 | Supabase Pro | $25/month |
 | Vercel Pro | $20/month |
