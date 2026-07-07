@@ -12,7 +12,7 @@
 <!-- revvel-research-findings -->
 ## Research Findings
 
-Source packet: `docs/research-engine/run-15305.md`
+Source packet: `docs/research-engine/run-<github-run-id>.md`
 
 ### 1. Executive Decision
 
