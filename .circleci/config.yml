@@ -46,11 +46,6 @@ jobs:
   # edit here silently kills every /persona summon. No npm ci needed: uses only
   # node built-ins plus a one-shot npx fetch.
   validate-registries:
-  # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
-  # and that every REVVEL-DISABLED block in changed files has all required
-  # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
-  # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
-  policy-check:
     executor: node-executor
     steps:
       - checkout
@@ -66,7 +61,18 @@ jobs:
             "
       - run:
           name: Skills index is valid YAML
-          command: npx --yes js-yaml skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+          # js-yaml pinned so this gate is reproducible (no floating npx fetch).
+          command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+
+  # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
+  # and that every REVVEL-DISABLED block in changed files has all required
+  # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
+  # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
+  policy-check:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
           # Fetch enough history for an accurate merge-base diff.
           # 200 commits covers virtually all branches in this repo.
           name: Fetch origin/main for merge-base diff
@@ -91,9 +97,6 @@ workflows:
             branches:
               ignore: main
       - validate-registries:
-          filters:
-            branches:
-              ignore: main
           filters:
             branches:
               ignore: main
