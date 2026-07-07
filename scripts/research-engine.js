@@ -15,6 +15,10 @@ const ERROR_BODY_LIMIT = 900;
 // the findings comment posts reliably and remains consumable by wr-pr-creation.
 const MAX_FINDINGS_COMMENT_LENGTH = 60000;
 
+// Ralph loop: max iterations and minimum confidence threshold before re-research is skipped.
+const RALPH_LOOP_MAX_ITERATIONS = 3;
+const RALPH_LOOP_MIN_CONFIDENCE = 60;
+
 const MODEL_TRIAD = [
   "anthropic/claude-sonnet-4",
   "google/gemini-2.5-pro",
@@ -147,6 +151,22 @@ const LANE_DEFINITIONS = [
       "Recommend labels for the PR review state.",
     ],
   },
+  {
+    id: "repo-web-search",
+    name: "Repository Review and Web Search Fallback",
+    agent: "Scout-Web",
+    roleLabel: "research:repo-web",
+    purpose: "Review any GitHub repository referenced in the query. If it is unavailable, unmaintained, or inadequate, search for alternative tools, libraries, and competitor APIs that solve the same problem.",
+    checklist: [
+      "Extract all GitHub repository URLs from the query and review each one (stars, last commit, license, purpose, open issues).",
+      "If the primary repository is unavailable, abandoned, or not a fit, name the tool/library and search for alternatives online.",
+      "List at least three direct competitors, substitute libraries, or commercial APIs that solve the same problem.",
+      "For each alternative capture: GitHub stars or npm downloads, last-commit date, license, pricing, and a one-sentence differentiation.",
+      "Select the best alternative based on maintenance activity, community adoption, license compatibility, and feature parity with the original.",
+      "Explain WHY each alternative was ranked as it was — do not present bare conclusions.",
+      "State a confidence score (0–100) for your primary recommendation at the end of your response.",
+    ],
+  },
 ];
 
 function truncateForComment(text, limit = ERROR_BODY_LIMIT) {
@@ -169,6 +189,28 @@ function parseCsv(value) {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+/**
+ * Extracts a 0–100 confidence score from a model-generated text block.
+ * Looks for patterns like "Confidence: 75", "confidence score: 80/100", "80%".
+ * Returns null when no parsable score is found.
+ */
+function extractConfidenceScore(content) {
+  if (!content) return null;
+  const patterns = [
+    /confidence[:\s]+(\d{1,3})\s*(?:\/\s*100|%|out of 100)?/i,
+    /confidence score[:\s]+(\d{1,3})/i,
+    /\bscore[:\s]+(\d{1,3})\s*(?:\/\s*100|%)?/i,
+  ];
+  for (const re of patterns) {
+    const match = content.match(re);
+    if (match) {
+      const score = parseInt(match[1], 10);
+      if (score >= 0 && score <= 100) return score;
+    }
+  }
+  return null;
 }
 
 function parseDepth(value) {
@@ -426,6 +468,9 @@ async function runLane(lane, context, caller = callOpenRouter) {
   );
 
   const successes = attempts.filter((attempt) => attempt.ok && attempt.content.trim());
+  const combinedContent = successes.map((attempt) => `### ${attempt.model}\n\n${attempt.content}`).join("\n\n");
+  // Extract confidence score from the combined model output for this lane.
+  const confidenceScore = extractConfidenceScore(combinedContent);
   return {
     id: lane.id,
     name: lane.name,
@@ -434,7 +479,8 @@ async function runLane(lane, context, caller = callOpenRouter) {
     checklist: lane.checklist,
     status: successes.length > 0 ? "complete" : "failed",
     attempts,
-    content: successes.map((attempt) => `### ${attempt.model}\n\n${attempt.content}`).join("\n\n"),
+    content: combinedContent,
+    confidenceScore,
   };
 }
 
@@ -445,17 +491,37 @@ function buildSynthesisPrompt(context, laneReports) {
         .filter((attempt) => !attempt.ok)
         .map((attempt) => `- ${attempt.model}: ${attempt.error}`)
         .join("\n");
+      const scoreNote = report.confidenceScore !== null && report.confidenceScore !== undefined
+        ? `Confidence score: ${report.confidenceScore}/100`
+        : "";
       return [
         `## ${report.name} (${report.agent})`,
-        `Status: ${report.status}`,
+        `Status: ${report.status}${scoreNote ? ` | ${scoreNote}` : ""}`,
         report.content || "No successful model output.",
         failed ? `\nFailed attempts:\n${failed}` : "",
       ].join("\n\n");
     })
     .join("\n\n---\n\n");
 
+  // Include per-iteration confidence summary when iterationHistory is provided.
+  const iterationNote = context.iterationHistory && context.iterationHistory.length > 1
+    ? [
+      "",
+      `**Ralph Loop iterations completed:** ${context.iterationHistory.length}`,
+      "The confidence scores below represent the best result from all iterations.",
+      ...context.iterationHistory.map((iter, i) => {
+        const scores = iter.filter((r) => r.confidenceScore !== null && r.confidenceScore !== undefined);
+        const avg = scores.length
+          ? Math.round(scores.reduce((sum, r) => sum + r.confidenceScore, 0) / scores.length)
+          : "n/a";
+        return `- Iteration ${i + 1}: avg confidence ${avg}${typeof avg === "number" ? "/100" : ""}`;
+      }),
+    ].join("\n")
+    : "";
+
   return [
     `Research query: ${context.query}`,
+    iterationNote,
     "",
     "Synthesize the lane reports into one WR-ready research packet.",
     "Required sections:",
@@ -469,6 +535,8 @@ function buildSynthesisPrompt(context, laneReports) {
     "8. Code Review Agent Packet",
     "9. Automatic Fix and Commit Queue",
     "10. Labels to Apply",
+    "11. Repository Review and Best Alternative",
+    "12. Confidence Score Summary",
     "",
     "For the Code Review Agent Packet, write comments that Bito AI, OpenRouter review, Coderabbit, and Ralph Loop can act on. Every blocking finding must include an automatic fix plan and a commit message.",
     "",
@@ -480,6 +548,8 @@ function buildSynthesisPrompt(context, laneReports) {
     "direct source link. If a number is not sourced, omit it or explicitly label it as an estimate",
     "(e.g. \"internal estimate\", \"observed anecdotally — unverified\") and use a range instead of a",
     "precise figure. Never present bare percentages (e.g. \"73% of teams\", \"40% YoY\") without attribution.",
+    "",
+    "For Confidence Score Summary, aggregate the per-lane confidence scores from all iterations. Select the best-scoring idea from the combined data and explain your reasoning. Discard low-confidence (< 60) findings unless they are the only data available.",
     "",
     laneText,
   ].join("\n");
@@ -818,6 +888,93 @@ function writeDocument(outputFile, document) {
   return outputPath;
 }
 
+/**
+ * Determines which lanes need a retry based on failure status or low confidence.
+ * Returns the subset of LANE_DEFINITIONS that should be re-researched.
+ */
+function checkLanesNeedRetry(laneReports) {
+  return LANE_DEFINITIONS.filter((def) => {
+    const report = laneReports.find((r) => r.id === def.id);
+    if (!report) return true; // missing — always retry
+    if (report.status !== "complete") return true; // failed — retry
+    // Low confidence: re-run unless confidence is at or above threshold.
+    if (report.confidenceScore !== null && report.confidenceScore !== undefined) {
+      return report.confidenceScore < RALPH_LOOP_MIN_CONFIDENCE;
+    }
+    // No parsable score — treat as needing retry only for the repo-web-search lane,
+    // since that lane explicitly asks for a score in its checklist.
+    return report.id === "repo-web-search";
+  });
+}
+
+/**
+ * Merges a new set of lane reports into the accumulated best set.
+ * For each lane, the report with the higher confidence score wins;
+ * if scores are unavailable or equal, the newer (retry) result takes precedence.
+ */
+function mergeLaneReports(accumulated, fresh) {
+  const merged = [...accumulated];
+  for (const freshReport of fresh) {
+    const idx = merged.findIndex((r) => r.id === freshReport.id);
+    if (idx === -1) {
+      merged.push(freshReport);
+      continue;
+    }
+    const existing = merged[idx];
+    const existingScore = existing.confidenceScore ?? -1;
+    const freshScore = freshReport.confidenceScore ?? -1;
+    // Fresh result wins unless existing score is strictly higher.
+    if (freshScore >= existingScore || freshReport.status === "complete") {
+      merged[idx] = freshReport;
+    }
+  }
+  return merged;
+}
+
+/**
+ * Ralph loop: runs research lanes iteratively until all WR fields are covered
+ * (all lanes complete with confidence >= RALPH_LOOP_MIN_CONFIDENCE) or until
+ * RALPH_LOOP_MAX_ITERATIONS is reached.
+ *
+ * Each iteration re-runs only the lanes that failed or returned low confidence,
+ * then merges results and feeds iteration history into the synthesis prompt.
+ *
+ * Skipped in dry-run mode to preserve test determinism.
+ */
+async function runRalphLoop(context, caller = callOpenRouter) {
+  // First pass — run all lanes.
+  let laneReports = await Promise.all(
+    LANE_DEFINITIONS.map((lane) => runLane(lane, context, caller)),
+  );
+
+  // Iteration history records each pass for the synthesis prompt.
+  const iterationHistory = [laneReports];
+
+  // Ralph loop — disabled in dryRun so tests remain deterministic.
+  if (!context.dryRun) {
+    for (let iter = 1; iter < RALPH_LOOP_MAX_ITERATIONS; iter++) {
+      const retryLanes = checkLanesNeedRetry(laneReports);
+      if (retryLanes.length === 0) break; // all lanes complete with good confidence
+
+      console.log(
+        `::notice::Ralph loop iteration ${iter + 1}/${RALPH_LOOP_MAX_ITERATIONS} — retrying ${retryLanes.length} lane(s): ${retryLanes.map((l) => l.id).join(", ")}`,
+      );
+
+      const freshReports = await Promise.all(
+        retryLanes.map((lane) => runLane(lane, context, caller)),
+      );
+
+      laneReports = mergeLaneReports(laneReports, freshReports);
+      iterationHistory.push(freshReports);
+    }
+  }
+
+  // Attach iteration history to context so buildSynthesisPrompt can include it.
+  context.iterationHistory = iterationHistory;
+
+  return laneReports;
+}
+
 async function runResearchEngine(options, caller = callOpenRouter) {
   const context = await hydrateContext(options);
   await updateStartState(context);
@@ -832,9 +989,7 @@ async function runResearchEngine(options, caller = callOpenRouter) {
     synthesis = blocked.synthesis;
     status = "blocked";
   } else {
-    laneReports = await Promise.all(
-      LANE_DEFINITIONS.map((lane) => runLane(lane, context, caller)),
-    );
+    laneReports = await runRalphLoop(context, caller);
     synthesis = await synthesizeResearch(context, laneReports, caller);
     status = laneReports.some((report) => report.status === "complete") ? "complete" : "blocked";
   }
@@ -881,18 +1036,24 @@ module.exports = {
   LANE_DEFINITIONS,
   MASTER_CHECKLIST,
   MODEL_TRIAD,
+  RALPH_LOOP_MAX_ITERATIONS,
+  RALPH_LOOP_MIN_CONFIDENCE,
   buildLaneSystemPrompt,
   buildLaneUserPrompt,
   buildFindingsComment,
   buildMissingKeyReport,
   buildReviewRequestComment,
   buildSynthesisPrompt,
+  checkLanesNeedRetry,
   defaultOutputFile,
+  extractConfidenceScore,
   findAndRequestLinkedPrReviews,
   formatDocument,
   getOptionsFromEnv,
+  mergeLaneReports,
   parseDepth,
   runLane,
+  runRalphLoop,
   runResearchEngine,
   selectModels,
   slugify,
