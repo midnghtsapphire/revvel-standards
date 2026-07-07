@@ -15,7 +15,11 @@ while [[ $# -gt 0 ]]; do case "$1" in
 esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
-HERE="$(cd "$(dirname "$0")/.." && pwd)"   # wr/
+# wr/ — env-overridable so tests can point HERE at a sandbox instead of the
+# real wr/issues/ (tests set HERE=<tmpdir>; without the default-only
+# assignment the override is silently ignored and test runs mutate tracked
+# fixture files).
+HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----
@@ -84,7 +88,9 @@ out="$(printf '%s\n' "$out" | awk '
   stripping && /^[[:space:]]*$/    { next }
   { stripping=0; print }
 ')"
-subst() { out="${out//\{$1\}/$2}"; }
+# Escape & in replacement strings to prevent bash parameter expansion from
+# treating & as a backreference to the matched pattern (${var//pat/rep}).
+subst() { local _r="${2//&/\\&}"; out="${out//\{$1\}/$_r}"; }
 subst TITLE             "$TITLE_CLEAN"
 subst ISSUE_REF         "#${ISSUE:-N/A}"
 subst REPO              "midnghtsapphire/revvel-standards"
