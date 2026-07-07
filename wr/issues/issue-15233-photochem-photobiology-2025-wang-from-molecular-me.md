@@ -34,7 +34,7 @@ https://lymphoedemaeducation.com.au/wp-content/uploads/2025/04/Photochem-Photobi
 - [x] Competitor analysis (table with prices below)
 - [x] Domain strategy
 - [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate — needs citations/estimate labels for community sizes, device pricing, and adoption/market figures
 
 ## Research Findings
 
