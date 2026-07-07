@@ -37,7 +37,7 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 
 **Option A — Clinicians and audiologists**
 - Pain Point: No consolidated AI-assisted diagnostic workflow for tinnitus or hearing-disorder sub-typing
-- Market: ~13,000 audiologists in the US ([BLS 2024](https://www.bls.gov/ooh/healthcare/audiologists.htm)); broader ENT/neurotology community worldwide
+For any statistic used to justify market size or funding decisions: (1) verify the source document actually contains the claim, (2) if unverified, mark it clearly ('estimate pending verification — see TODO #xyz'), (3) for forward-facing docs, cite primary sources only or explicitly defer to post-PDF-review. Example: 'Tinnitus affects approximately 14% of adults ([WHO 2021](https://www.who.int/news-room/fact-sheets/detail/deafness-and-hearing-loss)) — pending confirmation in 2026_3.pdf analysis.'
 - Willingness to Pay: $100–600/month per clinician for validated diagnostic software
 
 **Option B — Research neuroscientists**
