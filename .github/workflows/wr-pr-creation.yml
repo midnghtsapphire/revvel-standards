@@ -144,10 +144,16 @@ jobs:
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            // Manual title-only intake also uses route tags like `#app` / `#tools`;
+            // only trust those when the issue is still marked `wr:new` so unrelated
+            // hashtagged issues do not enter the WR pipeline.
+            const hasTitleRouteTag =
+              /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
+              (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
             if (!isWR) {
               core.info(`Issue #${issueNumber} is not a WR issue`);
