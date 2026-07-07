@@ -20,7 +20,7 @@ upgrade decision can be made.
 | ImgBot | Open-source | $0 | — | n/a (free indefinitely) | imgbot.net |
 | CodeRabbit | Free (limited) | $0 | Pro | est. $24 / user / mo | coderabbit.ai/pricing |
 | Bito | Free (limited) | $0 | Pro | est. $15 / user / mo | bito.ai/pricing |
-| Mabl | **PAUSED** | $0 | — | est. starts $150+ / mo | mabl.com/pricing (verify) |
+| Mabl | **PAUSED** | $0 | — | est. starts $150+ / mo; note: local/CI CLI runs are credit-free (see `skills/mabl-expert/`) | mabl.com/pricing (verify) |
 | Augment Code | Free (limited) | $0 | per their pricing | per their pricing | augmentcode.com |
 | Cypress | OSS / Free | $0 | Cypress Cloud — est. $75/mo team | est. $75 / mo | cypress.io/pricing (verify) |
 | Applitools | Free (100 checkpoints/mo) | $0 | Starter | est. $45 / mo | applitools.com/pricing (verify) |
