@@ -20,7 +20,7 @@ The **technical SEO basics are already in place** (meta description, Open Graph,
 1. **It's a client-rendered SPA** (Vite/React, no SSR/prerender) — crawlers see an empty `<div id="root">` for everything except the static `index.html` head. Most content is not in the initial HTML.
 2. **The brand entity is fragmented** — "V.E.I.N.S." is expanded 4 different ways across your properties. Google can't build one clean entity.
 3. **Your best marketing content is locked behind auth** (`/about`, `/healing-algorithms`), so it can never be indexed.
-4. **`llms.txt` publishes terms your own repo flags as fabricated** ("VSPR", "S-MOS") — an E‑E‑A‑T / trust risk.
+4. **`llms.txt` uses undefined internal labels as if they are externally verifiable terms** ("VSPR", "S-MOS") — an E‑E‑A‑T / trust risk.
 
 Rough grade: **technical foundation B+, actual discoverability C.** The gap is content-indexability and brand consistency, not tags.
 
@@ -67,10 +67,10 @@ The authed dashboard does **not** need SSR — it's correctly `noindex`-by-natur
 **Impact:** Your richest, keyword-dense explanatory content can never be crawled or ranked.
 **Fix (fleet):** Publish **public** versions of About and Healing-Algorithms (or public marketing equivalents) outside the auth shell, and add them to the sitemap.
 
-### C4 — `llms.txt` states fabricated-flagged terms as fact
-**What:** `llms.txt` describes the "**VSPR** runtime" and "**S-MOS** health formula" as real mechanisms. Your own `revvel-standards/skills/malama/` explicitly flags **"VSPR"** and **"S-MOS"** as *fabricated benchmarks/citations*.
-**Impact:** Publishing invented technical/benchmark terms as fact is an E‑E‑A‑T and trust liability — exactly what AI Overviews and reviewers penalize, and it undermines the "recognition" you want.
-**Fix (fleet):** Either (a) ground VSPR/S-MOS in a real, cited definition before publishing, or (b) reword `llms.txt`/marketing to describe the pipeline without the fabricated-flagged labels. Reconcile with `skills/malama` before it ships.
+### C4 — `llms.txt` uses undefined internal labels as public claims
+**What:** `llms.txt` describes the "**VSPR** runtime" and "**S-MOS** health formula" as if they are externally grounded mechanisms, while `revvel-standards/skills/malama/` documents those terms as non-production/internal context.
+**Impact:** Publishing undefined internal labels as factual public mechanisms is an E‑E‑A‑T and trust liability — exactly what AI Overviews and reviewers penalize, and it undermines the "recognition" you want.
+**Fix (fleet):** Choose one path before publishing: (a) add real, public, cited definitions for VSPR/S-MOS, or (b) reword `llms.txt`/marketing to plain pipeline language (inputs, checks, remediation, verification) without those labels. Ship only after `llms.txt` and `skills/malama` are aligned.
 
 ---
 
@@ -128,7 +128,7 @@ Ordered by ROI. Nothing here has been executed — this is the work list for the
 - [ ] **C1** Prerender public routes (`vite-react-ssg`/prerender) so content is in the HTML.
 - [ ] **C2** Pick ONE canonical "V.E.I.N.S." expansion; align site + all READMEs + llms.txt + JSON-LD.
 - [ ] **C3** Publish public (non-auth) About / Healing-Algorithms marketing pages.
-- [ ] **C4** Reconcile `llms.txt` VSPR/S-MOS wording with `skills/malama` fabrication flags.
+- [ ] **C4** Reword `llms.txt`/marketing to plain pipeline terms (or add cited definitions), and align with `skills/malama` before shipping.
 - [ ] **H1** Add `og:image` + `twitter:image` (1200×630).
 - [ ] **H2** Complete `sitemap.xml` (add `/plans`, `/waitlist`); `noindex` `/auth`.
 - [ ] **H3** Rewrite `<title>` to lead with a searchable brand + keyword.
