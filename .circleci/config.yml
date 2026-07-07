@@ -35,6 +35,28 @@ jobs:
           name: Run tests (node --test + shell)
           command: bash .circleci/scripts/run-tests.sh
 
+  # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
+  # and that every REVVEL-DISABLED block in changed files has all required
+  # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
+  # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
+  policy-check:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          # Fetch enough history for an accurate merge-base diff.
+          # 200 commits covers virtually all branches in this repo.
+          name: Fetch origin/main for merge-base diff
+          command: git fetch origin main --depth=200
+      - run:
+          name: RVS-AGENT-001 archival policy check
+          command: bash .circleci/scripts/check-archival-policy.sh
+          environment:
+            # allow-destroy label is not available in CircleCI context; default to
+            # strict mode. PRs with the label bypass this in GitHub Actions via
+            # no-destroy-guard.yml — they still run the archival comment validation.
+            ALLOW_DESTROY: "false"
+
 workflows:
   version: 2
 
@@ -45,11 +67,19 @@ workflows:
           filters:
             branches:
               ignore: main
+      - policy-check:
+          filters:
+            branches:
+              ignore: main
 
   # Run on main.
   main-workflow:
     jobs:
       - lint-and-test:
+          filters:
+            branches:
+              only: main
+      - policy-check:
           filters:
             branches:
               only: main

@@ -70,17 +70,27 @@ TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no back
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
 out="$(cat "$TEMPLATE")"
 # Strip leading HTML comments before the H1 — `awk` walks the head of the
-# template, drops any `<!-- ... -->` line and blank lines, until the first
-# non-comment / non-blank line, then prints the rest verbatim. Without this,
-# WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
-# the lint gate refuses the output (Devin finding on #14227).
+# template, drops single-line and multi-line `<!-- ... -->` blocks and blank
+# lines until the first non-comment / non-blank line, then prints verbatim.
+# Without this, WR_TEMPLATE_FULL.md's leading author comments (including the
+# multi-line source-packet convention block on lines 3-8) push the H1 past
+# line 1 and the lint gate refuses the output (Devin finding on #14227).
 out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1 }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^[[:space:]]*$/           { next }
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && in_comment {
+    if (/-->/) { in_comment=0 }
+    next
+  }
+  stripping && /^<!--/ {
+    if (/-->/) { next }
+    in_comment=1; next
+  }
+  stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"
-subst() { out="${out//\{$1\}/$2}"; }
+# Escape & in replacement to prevent bash parameter-expansion from treating it
+# as a backreference (& expands to the matched pattern text in ${var//pat/rep}).
+subst() { local _r="${2//&/\\&}"; out="${out//\{$1\}/$_r}"; }
 subst TITLE             "$TITLE_CLEAN"
 subst ISSUE_REF         "#${ISSUE:-N/A}"
 subst REPO              "midnghtsapphire/revvel-standards"
