@@ -53,10 +53,7 @@
 - [x] BOM
 - [x] Community chatter
 - [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
-
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate (several figures below still need citations or "estimate" labels)
 ## Research Findings
 
 <!-- revvel-research-findings -->
