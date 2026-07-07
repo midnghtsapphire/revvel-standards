@@ -92,7 +92,7 @@ Setup-from-zero (apps, environments, plans, secrets) lives in the companion
 
 ## Playbooks
 
-### 1 — "Should we un-pause Mabl?"
+### 1 — The un-pause question
 
 Run the reactivation gate above. If any leg fails, the answer is no — cite the
 preserved evaluation in `mabl.yml` and stop. If all three pass: uncomment the
@@ -112,7 +112,7 @@ Waitlist/signup/receipt emails (e.g. veinsloop `/waitlist`): mabl Mailbox gives
 throwaway addresses + content assertions without SMTP test rigging — this is a
 capability Keploy/Playwright don't give us out of the box.
 
-### 4 — Answering "why did the old workflow never run?"
+### 4 — Diagnosing why the old workflow never ran
 
 Preserved diagnosis: missing `MABL_API_KEY` → loud short-circuit; or key present
 but no plans matched the trigger labels → silent no-op. Check plan labels in the
