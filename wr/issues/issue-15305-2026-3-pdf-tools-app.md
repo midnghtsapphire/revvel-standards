@@ -47,7 +47,7 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 
 **Option C — Patients and consumer digital-health**
 - Pain Point: No widely available, clinically validated tinnitus self-management app
-- Market: Tinnitus burden estimate pending verification — [TODO: verify in PDF review]. Current WHO 2021 source cited here covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
+- Market: Tinnitus burden estimate pending verification — [TODO: verify in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
 - Willingness to Pay: $5–15/month for consumer app; freemium with premium tier
 
 ---
@@ -163,7 +163,7 @@ Recommended path: confirm PDF content → select audience tier (clinician tool v
 ### Market Size
 
 - Digital therapeutics market size: USD 9.1B in 2024, projected CAGR ~24% through 2030 ([Grand View Research, 2024](https://www.grandviewresearch.com/industry-analysis/digital-therapeutics-market)) — unverified estimate; confirm with primary source.
-- Tinnitus: affects an estimated ~14% of adults globally ([American Tinnitus Association](https://www.ata.org/about-tinnitus/)) — [TODO: verify in PDF review] for primary-source prevalence evidence. Remove tinnitus-prevalence attribution to WHO 2021 unless a tinnitus-specific WHO source is cited.
+- Tinnitus prevalence is often reported around ~14% in secondary summaries (for example, [American Tinnitus Association](https://www.ata.org/about-tinnitus/)) — estimate pending verification; [TODO: verify in PDF review] with a tinnitus-specific primary epidemiology source before publication.
 - No current AI-personalised tinnitus tool with peer-reviewed backing exists in the major app stores (internal audit, July 2026).
 
 ### Regulatory Landscape
