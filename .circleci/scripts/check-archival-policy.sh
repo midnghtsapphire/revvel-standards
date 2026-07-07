@@ -78,15 +78,16 @@ if [ -n "$CHANGED_FILES" ]; then
     LINE_NO=0
     while IFS= read -r line; do
       LINE_NO=$((LINE_NO + 1))
-      if echo "$line" | grep -q 'REVVEL-DISABLED\b' && ! echo "$line" | grep -q 'REVVEL-DISABLED-END'; then
+      # Match REVVEL-DISABLED that is NOT immediately followed by -END
+      if echo "$line" | grep -qE 'REVVEL-DISABLED([^-]|$)' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
         IN_BLOCK=true
         BLOCK_LINE=$LINE_NO
         BLOCK_HEADER="$line"
-      elif echo "$line" | grep -q 'REVVEL-DISABLED-END'; then
+      elif echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
         if [ "$IN_BLOCK" = true ]; then
           # Validate required fields in opening header
           for field in "${REQUIRED_FIELDS[@]}"; do
-            if ! echo "$BLOCK_HEADER" | grep -q "$field"; then
+            if ! echo "$BLOCK_HEADER" | grep -qF "$field"; then
               echo "❌ $file:$BLOCK_LINE — REVVEL-DISABLED block missing '$field'" >&2
               echo "   Header: $BLOCK_HEADER" >&2
               echo "   See standards/COMMENT-DONT-DELETE.md §2.1 for the required format." >&2

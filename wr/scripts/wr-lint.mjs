@@ -211,9 +211,19 @@ function lintFile(path) {
   // block it must have all required metadata fields. This validates that WR
   // docs shipping workflow snippets with disabled code don't omit the audit
   // trail required by RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md).
-  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED\b/;
+  // Uses word-boundary-aware regex to avoid false negatives from partial matches
+  // (e.g. "REASON: MODEL: needs update" must not satisfy the MODEL: field check).
+  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED(?!-END)\b/;
   const REVVEL_DISABLED_CLOSE = /REVVEL-DISABLED-END\b/;
-  const REQUIRED_REVVEL_FIELDS = ["AGENT:", "MODEL:", "WR:", "DATE:", "STATUS:"];
+  // Each field regex anchors on a pipe (|) or line start/comment prefix so
+  // "AGENT:" in a REASON sentence does not satisfy the AGENT: field requirement.
+  const REQUIRED_REVVEL_FIELDS = [
+    { name: "AGENT:",  re: /(?:^|\|)\s*AGENT\s*:/ },
+    { name: "MODEL:",  re: /(?:^|\|)\s*MODEL\s*:/ },
+    { name: "WR:",     re: /(?:^|\|)\s*WR\s*:/ },
+    { name: "DATE:",   re: /(?:^|\|)\s*DATE\s*:/ },
+    { name: "STATUS:", re: /(?:^|\|)\s*STATUS\s*:/ },
+  ];
   let inDisabledBlock = false;
   let disabledBlockStart = -1;
   let disabledBlockHeader = "";
@@ -224,10 +234,10 @@ function lintFile(path) {
       disabledBlockHeader = l;
     } else if (inDisabledBlock && REVVEL_DISABLED_CLOSE.test(l)) {
       // Validate the opening header has all required fields
-      const missing = REQUIRED_REVVEL_FIELDS.filter((f) => !disabledBlockHeader.includes(f));
+      const missing = REQUIRED_REVVEL_FIELDS.filter(({ re }) => !re.test(disabledBlockHeader));
       if (missing.length > 0) {
         issues.push(
-          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`
+          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.map((f) => f.name).join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`
         );
       }
       inDisabledBlock = false;

@@ -42,13 +42,12 @@ jobs:
   policy-check:
     executor: node-executor
     steps:
-      - checkout:
+      - checkout
+      - run:
           # Fetch enough history for an accurate merge-base diff.
           # 200 commits covers virtually all branches in this repo.
-          post-steps:
-            - run:
-                name: Fetch origin/main for merge-base diff
-                command: git fetch origin main --depth=200
+          name: Fetch origin/main for merge-base diff
+          command: git fetch origin main --depth=200
       - run:
           name: RVS-AGENT-001 archival policy check
           command: bash .circleci/scripts/check-archival-policy.sh

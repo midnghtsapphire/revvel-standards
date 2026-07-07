@@ -160,9 +160,9 @@ echo "🔍 RVS-AGENT-001 deletion policy check..."
 DELETED_FILES=$(git diff --cached --name-only --diff-filter=D 2>/dev/null || true)
 if [ -n "$DELETED_FILES" ]; then
   echo "  ❌ The following files are staged for deletion:"
-  for f in $DELETED_FILES; do
+  while IFS= read -r f; do
     echo "     - $f"
-  done
+  done <<< "$DELETED_FILES"
   echo ""
   echo "  Per RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md):"
   echo "  Files must not be deleted silently. Options:"
