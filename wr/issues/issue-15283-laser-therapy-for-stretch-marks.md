@@ -80,9 +80,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 ### Primary Segments
 
 1. **Postpartum consumers** (largest demand segment)
-   - Stretch marks from pregnancy are among the top dermatologic complaints
-   - Actively search treatment options: "laser stretch mark removal" ~40,500 monthly US searches (estimate — SEMrush verification recommended)
-   - Willingness to pay: high (already spending $200–$500/session at clinics)
+   - Willingness to pay: high (estimate — typical US clinic pricing is often cited around $200–$500/session; add a source before publishing)
 
 2. **Post-weight-loss adults**
    - Second-largest segment; growing with GLP-1 (Ozempic/Wegovy) weight-loss adoption
