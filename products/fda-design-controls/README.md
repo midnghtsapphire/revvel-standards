@@ -17,7 +17,7 @@ The tool provides an interactive, phase-by-phase compliance checklist based on t
 ## Features
 
 - **9 Design Phases** — Covers all 21 CFR 820.30 phases: Planning, Design Input, Design Output, Design Review, Verification, Validation, Design Transfer, Design Changes, and DHF
-- **51 Checklist Items** — Required vs. recommended items with expandable FDA-sourced guidance notes per item
+- **59 Checklist Items** — Required vs. recommended items with expandable FDA-sourced guidance notes per item
 - **Real-Time Progress Tracking** — Per-phase and overall completion percentages with visual progress bars
 - **Project Info Panel** — Device name, version, project lead, device class (I/II/III), intended use, and date range
 - **DHF Export** — Download a full Design History File summary as Markdown or a compliance checklist as CSV
