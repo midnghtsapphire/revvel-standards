@@ -26,7 +26,7 @@ https://platinumtherapylights.com/de/blogs/news/best-medical-grade-red-light-the
 - [x] Deep market research
 - [ ] BOM
 - [x] Community chatter
-- [ ] Competitor analysis — table present; device competitor pricing verified; app-tier pricing for Reprise, OutLast, RedLightOS not publicly listed (requires in-app check)
+- [ ] Competitor analysis — table present; subscription pricing for Reprise, OutLast, and RedLightOS not publicly listed (requires in-app check)
 - [x] Domain strategy
 - [x] Monetization
 - [x] Every statistic/percentage cited with a source link or labeled as an estimate
