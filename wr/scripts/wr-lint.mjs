@@ -207,6 +207,40 @@ function lintFile(path) {
     issues.push(`line ${i + 1}: untrusted \${{ github.event.*.body/title }} interpolated into a shell command — pass it via env: (e.g. \`ISSUE_BODY: \${{ github.event.issue.body }}\`) and reference "$ISSUE_BODY" instead (CLAUDE.md gotcha #4)`);
   });
 
+  // 11. REVVEL-DISABLED archival blocks: if the WR embeds any REVVEL-DISABLED
+  // block it must have all required metadata fields. This validates that WR
+  // docs shipping workflow snippets with disabled code don't omit the audit
+  // trail required by RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md).
+  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED\b/;
+  const REVVEL_DISABLED_CLOSE = /REVVEL-DISABLED-END\b/;
+  const REQUIRED_REVVEL_FIELDS = ["AGENT:", "MODEL:", "WR:", "DATE:", "STATUS:"];
+  let inDisabledBlock = false;
+  let disabledBlockStart = -1;
+  let disabledBlockHeader = "";
+  lines.forEach((l, i) => {
+    if (!inDisabledBlock && REVVEL_DISABLED_OPEN.test(l)) {
+      inDisabledBlock = true;
+      disabledBlockStart = i + 1;
+      disabledBlockHeader = l;
+    } else if (inDisabledBlock && REVVEL_DISABLED_CLOSE.test(l)) {
+      // Validate the opening header has all required fields
+      const missing = REQUIRED_REVVEL_FIELDS.filter((f) => !disabledBlockHeader.includes(f));
+      if (missing.length > 0) {
+        issues.push(
+          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`
+        );
+      }
+      inDisabledBlock = false;
+      disabledBlockHeader = "";
+    }
+  });
+  // Unclosed block
+  if (inDisabledBlock) {
+    issues.push(
+      `line ${disabledBlockStart}: REVVEL-DISABLED block opened but never closed with REVVEL-DISABLED-END`
+    );
+  }
+
   return issues;
 }
 
