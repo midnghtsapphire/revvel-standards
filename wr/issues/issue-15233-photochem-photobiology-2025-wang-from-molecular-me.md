@@ -1,6 +1,7 @@
 # WR: Photochem-Photobiology-2025-Wang-From-molecular-mechanisms-to-clinical-applications comprehensive review need best not yet available app or tool
 
-**Issue:** midnghtsapphire/revvel-standards#15233  
+**Issue:** #15233  
+Closes #15233
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
 **Researcher:** N/A  
