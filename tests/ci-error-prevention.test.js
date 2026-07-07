@@ -353,6 +353,75 @@ test('YAML files must not have tab indentation', () => {
 });
 
 // ============================================================
+// Test 12: issue-state-machine must guard against URL-only titles
+// ============================================================
+test('issue-state-machine.yml must detect and close URL-only issue titles', () => {
+  const wfFile = '.github/workflows/issue-state-machine.yml';
+  if (!fs.existsSync(wfFile)) {
+    console.log('   ⚠ issue-state-machine.yml not found, skipping');
+    return;
+  }
+
+  const content = fs.readFileSync(wfFile, 'utf8');
+
+  // The guard step must exist with the required detection logic
+  assert.ok(
+    content.includes('malformed_check') || content.includes('URL-only'),
+    'issue-state-machine.yml must have a malformed URL-only title guard step'
+  );
+  assert.ok(
+    content.includes('urlOnlyRe') || content.includes('url_only') || content.includes('URL-only'),
+    'issue-state-machine.yml must have a URL-only regex or detection pattern'
+  );
+  assert.ok(
+    content.includes("state: 'closed'") || content.includes('state: closed'),
+    'issue-state-machine.yml must close malformed issues'
+  );
+
+  // The wr:new label step must be conditional on the malformed check
+  const wrNewIdx = content.indexOf("labels: ['wr:new']");
+  const malformedGuardIdx = content.indexOf('malformed_check');
+  assert.ok(
+    malformedGuardIdx !== -1,
+    'issue-state-machine.yml must have a malformed_check step'
+  );
+  assert.ok(
+    malformedGuardIdx < wrNewIdx,
+    'malformed_check step must appear before the wr:new label step'
+  );
+
+  console.log('   ✓ issue-state-machine.yml has URL-only title guard');
+});
+
+// ============================================================
+// Test 13: email_error_intake.py must not create URL-only issue titles
+// ============================================================
+test('email_error_intake.py must sanitize URL-only email subjects', () => {
+  const scriptFile = 'scripts/email_error_intake.py';
+  if (!fs.existsSync(scriptFile)) {
+    console.log('   ⚠ email_error_intake.py not found, skipping');
+    return;
+  }
+
+  const content = fs.readFileSync(scriptFile, 'utf8');
+
+  assert.ok(
+    content.includes('sanitize_subject') || content.includes('_URL_ONLY_RE'),
+    'email_error_intake.py must contain a URL-only subject sanitizer'
+  );
+  assert.ok(
+    content.includes('circleci'),
+    'email_error_intake.py must have specific handling for CircleCI URLs'
+  );
+  assert.ok(
+    content.includes('CI FAILURE') || content.includes('[CI'),
+    'email_error_intake.py must rewrite URL-only subjects to a [CI ...] title'
+  );
+
+  console.log('   ✓ email_error_intake.py sanitizes URL-only subjects');
+});
+
+// ============================================================
 // Summary
 // ============================================================
 console.log('\n═══════════════════════════════════════════');
