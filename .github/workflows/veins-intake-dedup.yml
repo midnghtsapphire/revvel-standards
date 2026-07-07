@@ -1,0 +1,93 @@
+# VEINS Intake Dedup
+#
+# Provenance: GitHub Actions (GitHub) via actions/github-script@v9.0.0 — no
+# external tools, secrets, or paid services.
+#
+# Why this exists: the external V.E.I.N.S. self-healing engine (it runs OUTSIDE
+# this repo and posts alerts with the owner's token) can open near-duplicate
+# "[VEINS] ..." issues in bursts — e.g. on 2026-07-06 it opened three copies of
+# "Stuck workflow: PR Lifecycle" within minutes (#15358, #15359, #15360),
+# differing only in the minute counter. learnings.md (2026-05-01) requires any
+# automation that opens recurring issues to dedup instead of cloning. The
+# engine's own code can't be patched from here, so this gate dedups at intake:
+# when a new [VEINS] issue opens, normalize its title (strip volatile numbers
+# like "(3767m)" or "83 jobs") and, if an older OPEN [VEINS] issue has the same
+# normalized title, close the newcomer as a duplicate with a pointer to the
+# original.
+name: VEINS Intake Dedup
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+
+concurrency:
+  group: veins-dedup-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  dedup:
+    name: Close duplicate VEINS alert
+    if: startsWith(github.event.issue.title, '[VEINS]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - name: Find open twin and close newcomer
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+
+            // Volatile numbers (stuck-minutes, queue depth) change every run;
+            // strip them so "(3767m)" and "(3807m)" alerts collapse together.
+            const normalize = (t) =>
+              t.toLowerCase().replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+            const key = normalize(issue.title);
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner, repo, state: 'open', per_page: 100,
+            });
+            const twin = open.find(i =>
+              i.number !== issue.number &&
+              !i.pull_request &&
+              i.title.startsWith('[VEINS]') &&
+              normalize(i.title) === key
+            );
+
+            if (!twin) {
+              core.info(`#${issue.number}: no open twin — keeping.`);
+              return;
+            }
+
+            core.notice(`#${issue.number} duplicates open #${twin.number} — closing.`);
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number,
+              body: [
+                '🔁 **VEINS intake dedup**',
+                '',
+                `This alert duplicates open issue #${twin.number} (same component; volatile numbers ignored).`,
+                'Closing as a duplicate — track the original instead.',
+                '',
+                '_Automated by `.github/workflows/veins-intake-dedup.yml` per the learnings.md dedup rule for recurring automated issues._',
+              ].join('\n'),
+            });
+
+            try {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['duplicate'],
+              });
+            } catch (e) {
+              core.notice(`Could not add duplicate label: ${e.message}`);
+            }
+
+            await github.rest.issues.update({
+              owner, repo, issue_number: issue.number,
+              state: 'closed', state_reason: 'not_planned',
+            });
