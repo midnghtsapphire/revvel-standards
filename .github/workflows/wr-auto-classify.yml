@@ -46,18 +46,30 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
-       contains(github.event.issue.title, '#app') ||
-       contains(github.event.issue.title, '#apps') ||
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#pdf') ||
-       contains(github.event.issue.title, '#pdfs') ||
-       contains(github.event.issue.title, '#doc') ||
-       contains(github.event.issue.title, '#docs') ||
-       contains(github.event.issue.title, '#api') ||
-       contains(github.event.issue.title, '#apis') ||
-       contains(github.event.issue.title, '#cli') ||
-       contains(github.event.issue.title, '#mcp'))
+       contains(github.event.issue.title, '#app ') ||
+       endsWith(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#apps ') ||
+       endsWith(github.event.issue.title, '#apps') ||
+       contains(github.event.issue.title, '#tool ') ||
+       endsWith(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools ') ||
+       endsWith(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf ') ||
+       endsWith(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#pdfs ') ||
+       endsWith(github.event.issue.title, '#pdfs') ||
+       contains(github.event.issue.title, '#doc ') ||
+       endsWith(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs ') ||
+       endsWith(github.event.issue.title, '#docs') ||
+       contains(github.event.issue.title, '#api ') ||
+       endsWith(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#apis ') ||
+       endsWith(github.event.issue.title, '#apis') ||
+       contains(github.event.issue.title, '#cli ') ||
+       endsWith(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp ') ||
+       endsWith(github.event.issue.title, '#mcp'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
