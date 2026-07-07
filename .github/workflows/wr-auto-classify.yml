@@ -46,9 +46,12 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#app'))
+       contains(toLower(github.event.issue.title), '#tool ') ||
+       endsWith(toLower(github.event.issue.title), '#tool') ||
+       contains(toLower(github.event.issue.title), '#tools ') ||
+       endsWith(toLower(github.event.issue.title), '#tools') ||
+       contains(toLower(github.event.issue.title), '#app ') ||
+       endsWith(toLower(github.event.issue.title), '#app'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}

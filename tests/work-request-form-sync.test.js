@@ -256,9 +256,9 @@ test('WR intake and routing workflows recognize title route tags (#tool/#tools/#
   }
 
   assert(
-    wrAutoClassify.includes("contains(github.event.issue.title, '#tool')") &&
-      wrAutoClassify.includes("contains(github.event.issue.title, '#tools')") &&
-      wrAutoClassify.includes("contains(github.event.issue.title, '#app')"),
+    wrAutoClassify.includes("toLower(github.event.issue.title), '#tool") &&
+      wrAutoClassify.includes("toLower(github.event.issue.title), '#tools") &&
+      wrAutoClassify.includes("toLower(github.event.issue.title), '#app"),
     'wr-auto-classify must run for title route tags'
   );
   assert(
