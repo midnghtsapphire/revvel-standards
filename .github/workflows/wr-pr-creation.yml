@@ -823,10 +823,12 @@ jobs:
               }
               return '';
             };
-            const outputTypeRaw = (
-              outputTypeMatch?.[1] ||
-              inferOutputTypeFromTitleTags(issue.title || '')
-            ).trim().toLowerCase();
+             const outputTypeFromBody = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
+             const outputTypeRaw =
+               outputTypeFromBody && outputTypeFromBody !== '_no response_'
+                 ? outputTypeFromBody
+                 : outputTypeFromTitle;
             const OUTPUT_TYPE_DELIVER_MAP = {
               'production-app': 'deliver:app',
               'desktop-tool': 'deliver:app',
