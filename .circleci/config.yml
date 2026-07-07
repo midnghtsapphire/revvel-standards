@@ -61,7 +61,8 @@ jobs:
             "
       - run:
           name: Skills index is valid YAML
-          command: npx --yes js-yaml skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+          # js-yaml pinned so this gate is reproducible (no floating npx fetch).
+          command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
 
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
@@ -92,6 +93,10 @@ workflows:
   pr-workflow:
     jobs:
       - lint-and-test:
+          filters:
+            branches:
+              ignore: main
+      - validate-registries:
           filters:
             branches:
               ignore: main
