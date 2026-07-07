@@ -405,3 +405,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** When bulk-editing many workflow files, insert via a raw line-based patch (anchor on each target job's `runs-on:` line) rather than a YAML round-trip, which would reflow formatting and strip comments. A column-0 line inside a job's block-scalar `run:` body can fool a naive "am I still inside `jobs:`" tracker into stopping early (it skipped `secrets-guardian.yml`'s `alert-on-failure` job) — always reconcile the patched set against the target set and hand-fix the remainder. `30` is a safe uniform cap for these automation/label/lint/heal jobs (all finish in 1-3 min; well under the 360-min default) and `automation-doctor` only checks for the field's presence.
 
 **Next Action:** Open the PR for these 29 timeout additions. The fleet-wide `workflows:validate` gate is now green end-to-end.
+
+---
+
+**Date/Time:** 2026-07-07T01:00:00Z
+
+**Task Attempted:** Fix the pre-existing #15215 fallout: 3 failing tests in `tests/generate-wr-comment-stripping.test.js` and every FULL-template WR generation refusing with "GENERATOR REFUSED: output failed wr-lint".
+
+**Outcome:** Success — root test suite is fully green (393/393, was 389/392) and a real end-to-end FULL-template generation passes wr-lint again. Also stopped test runs from mutating tracked fixture files.
+
+**Root Cause of Failure (If any):** Two stacked defects. (1) `wr-lint.mjs` rule 11's opener regex `/REVVEL-DISABLED(?!-END)\b/` matched a bare PROSE mention of the token — and `WR_TEMPLATE_FULL.md`'s new "Superseded Content" guidance comments mention "a REVVEL-DISABLED header" — so every generated FULL WR opened a phantom archival block that never closed, and the generator's hard lint gate refused all output. (2) The regression tests tried to sandbox via `HERE=<tmpdir>` env, but `generate-wr.sh` unconditionally reassigned `HERE`, silently ignoring the override — tests ran against the real template AND wrote/mutated tracked `wr/issues/issue-99999-*.md` fixtures on every `npm test`.
+
+**Self-Healing Fix / Learned Lesson:** Anchor lint-rule regexes on the canonical machine-greppable shape, not the bare token: rule 11 now requires `REVVEL-DISABLED |` (the pipe-separated field header per COMMENT-DONT-DELETE.md §3), which all existing rule-11 fixtures already use. When a template documents a lint-enforced convention in prose, the linter must distinguish mention from use. And when a test sets an env override, verify the script actually honors it — `VAR="${VAR:-default}"` in the script, plus a pollution check (`git status` after `npm test`) catches silent sandbox escapes. Added a rule-11 regression test for the prose-mention case.
+
+**Next Action:** None for this regression — monitor the PR.
