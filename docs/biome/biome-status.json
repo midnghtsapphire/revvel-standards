@@ -1,87 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-07T16:47:33.271Z",
+  "generated_at": "2026-07-07T21:30:42.732Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "15/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 15,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28883218984,
+            "id": 28897324478,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28897324478",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28896873797,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28883218984",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881838415,
-            "name": ".github/workflows/openrouter-auto-route.yml",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881838415",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881837724,
-            "name": ".github/workflows/durability-mirror.yml",
-            "path": ".github/workflows/durability-mirror.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881837724",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881836889,
-            "name": ".github/workflows/test-bito-integration.yml",
-            "path": ".github/workflows/test-bito-integration.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881836889",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881836390,
-            "name": ".github/workflows/agent-fallback.yml",
-            "path": ".github/workflows/agent-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881836390",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881835900,
-            "name": ".github/workflows/saml-sso-registration.yml",
-            "path": ".github/workflows/saml-sso-registration.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881835900",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881835386,
-            "name": ".github/workflows/daily-news-briefing.yml",
-            "path": ".github/workflows/daily-news-briefing.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881835386",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881834717,
-            "name": ".github/workflows/openrouter-coder.yml",
-            "path": ".github/workflows/openrouter-coder.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881834717",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881596497,
-            "name": ".github/workflows/test-bito-integration.yml",
-            "path": ".github/workflows/test-bito-integration.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881596497",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28881595899,
-            "name": ".github/workflows/openrouter-coder.yml",
-            "path": ".github/workflows/openrouter-coder.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28881595899",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28896873797",
             "conclusion": "failure"
           }
         ],
