@@ -260,6 +260,10 @@ test('OpenRouter auto-route accepts title-only route tags and infers Output Type
     'openrouter-auto-route must accept #tool title route tags'
   );
   assert(
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #skill ')"),
+    'openrouter-auto-route must accept #skill title route tags'
+  );
+  assert(
     wf.includes('const titleTagOutputTypeMap = ['),
     'openrouter-auto-route must infer Output Type from title route tags when the issue body is blank'
     wf.includes("contains(github.event.issue.labels.*.name, 'wr:new')") &&
@@ -307,8 +311,9 @@ test('OpenRouter auto-route accepts normalized WR labels and output-type fallbac
   assert(
     autoRoute.includes('/#apps?\\b/i.test(title)') &&
       autoRoute.includes('/#tools?\\b/i.test(title)') &&
+      autoRoute.includes('/#skills?\\b/i.test(title)') &&
       autoRoute.includes('inferredFromTitle'),
-    'openrouter-auto-route must infer Output Type from #app/#apps/#tool/#tools title tags'
+    'openrouter-auto-route must infer Output Type from #app/#apps/#tool/#tools/#skill/#skills title tags'
     wf.includes("contains(github.event.issue.labels.*.name, 'work-request')"),
     'openrouter-auto-route must run after WR labels are normalized'
   );
@@ -322,7 +327,7 @@ test('OpenRouter auto-route accepts normalized WR labels and output-type fallbac
   );
   assert(
     wf.includes('inferTitleOutputType') &&
-      wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools)') &&
+      wf.includes('#(app|api|cli|mcp|pdf|doc|docs|tool|tools|skill|skills)') &&
       wf.includes("app: 'production-app'"),
     'openrouter-auto-route must support title-tag Output Type inference for title-only intake'
   );
