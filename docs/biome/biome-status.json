@@ -1,90 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-07T09:11:17.604Z",
+  "generated_at": "2026-07-07T17:39:35.576Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "13/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 13,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 28854971285,
-            "name": ".github/workflows/durability-mirror.yml",
-            "path": ".github/workflows/durability-mirror.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854971285",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854970623,
-            "name": ".github/workflows/openrouter-coder.yml",
-            "path": ".github/workflows/openrouter-coder.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854970623",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854970023,
-            "name": ".github/workflows/agent-fallback.yml",
-            "path": ".github/workflows/agent-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854970023",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854969496,
-            "name": ".github/workflows/openrouter-auto-route.yml",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854969496",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854968810,
-            "name": ".github/workflows/daily-news-briefing.yml",
-            "path": ".github/workflows/daily-news-briefing.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854968810",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854968185,
-            "name": ".github/workflows/test-bito-integration.yml",
-            "path": ".github/workflows/test-bito-integration.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854968185",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854943614,
-            "name": ".github/workflows/saml-sso-registration.yml",
-            "path": ".github/workflows/saml-sso-registration.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854943614",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854942883,
-            "name": ".github/workflows/durability-mirror.yml",
-            "path": ".github/workflows/durability-mirror.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854942883",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854942228,
-            "name": ".github/workflows/agent-fallback.yml",
-            "path": ".github/workflows/agent-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854942228",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28854941518,
-            "name": ".github/workflows/openrouter-auto-route.yml",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28854941518",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },

@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This?
+## What This Is
 
 This registry is the **master index of all skills** available in the Revvel Skills Vault. Every agent operating in any Revvel repository must read this file and load the relevant skill(s) before executing a task.
 
@@ -49,6 +49,9 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | ADA compliance audits, free certifications, autonomous monitoring, accessibility agent | [`ada-compliance-agent`](#ada-compliance-agent) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| CircleCI, circleci CLI, .circleci/config.yml, orbs, pipeline tuning, test splitting, config policies, ORBIT | [`circleci-expert`](#circleci-expert) |
+| Octopus Review, usage limit banner, octp CLI, repo index, review-bot model routing, OCTO | [`octopus-expert`](#octopus-expert) |
+| Mabl expertise, un-pause/reactivate Mabl, credit-free test runs, mabl MCP, Mailbox email testing, MENDER | [`mabl-expert`](#mabl-expert) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets | [`schema-rich-results`](#schema-rich-results) |
@@ -75,12 +78,24 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
 | Agent prompt detection, TODO @agent routing, @bito @goap @roo tags, HANDOFF.md execution | [`prompt-routing`](#prompt-routing) |
 | Roo-Cline, local development, VS Code agent, multi-file refactoring, @roo tag | [`roo-cline`](#roo-cline) |
+| TDD red-green-refactor, structured debugging, Socratic brainstorming, /execute-plan, subagent code review, Superpowers | [`superpowers`](#superpowers) |
 
 ---
 
 ## Full Skill Catalog
 
 ### Code Quality & Autonomous Review
+
+#### octopus-expert
+
+- **Path:** `skills/octopus-expert/`
+- **Files:** `SKILL.md`
+- **Platform:** [Octopus Review](https://octopus-review.ai) (source-available, Modified MIT — `github.com/octopusreview/octopus`)
+- **Description:** OCTO — the fleet's expert on Octopus Review, the RAG-based codebase-aware AI PR reviewer wired into this org. Manages the monthly AI-usage-limit banner (three lanes: hosted BYOK Anthropic/OpenAI keys, self-host (Modified MIT) via Docker Compose for model sovereignty, OSI-public repos free unlimited), keeps the Qdrant vector index fresh (`octopus repo index` before disputing findings), operates `@octp/cli` (`pr review`, `repo index`, `whoami`, `usage`) through `.github/workflows/octopus-cli.yml`, keeps Octopus-filed issues routing into the WR pipeline (`octopus-route.yml`, rate-limited backfill only), and owns model routing — including **OpenRouter on self-host** via the OpenAI-compatible gateway slots (`ACP_BASE_URL=https://openrouter.ai/api/v1`, models namespaced `acp:<slug>`) and Ollama local lanes.
+- **Tags:** octopus-review, octo, ai-code-review, rag, qdrant, embeddings, usage-limits, byok, self-host, openrouter, ollama, octp-cli, issue-routing
+- **Trigger:** "/octo", "/octopus", "octopus review", "usage limit", "octopus index", "octp", "review bot limits", "octopus self-host", "octopus openrouter"
+- **Lifecycle:** On-demand (comment-triggered) + advisory on any Octopus Review task
+- **Persona:** 🐙 OCTO (Reviewmaster)
 
 #### bito-ai
 
@@ -292,6 +307,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ### DevOps & Deployment
 
+#### circleci-expert
+
+- **Path:** `skills/circleci-expert/`
+- **Files:** `SKILL.md`
+- **Description:** ORBIT — the fleet's CircleCI pipeline commander. Wires repos into CircleCI with minimal pinned configs, validates locally before any push (`circleci config validate` / `process`), reproduces failing jobs in Docker (`circleci local execute`), tunes pipelines (caching, workspaces, DLC, parallelism, timing-based test splitting, resource-class rightsizing via Insights), authors/publishes orbs, enforces Rego config policies, and operates the v1.x preview CLI (`run` trigger/watch with scriptable exit codes, `envvar`, `dlc purge`, and the built-in `circleci mcp` MCP server for Claude). Covers both CLI generations and a lesser-known-features bench.
+- **Tags:** circleci, orbit, ci-cd, pipelines, orbs, config-validation, local-execute, test-splitting, docker-layer-caching, config-policies, opa-rego, mcp, insights
+- **Trigger:** "/orbit", "/circleci", "/circle-ci", "circleci config", ".circleci/config.yml", "wire in circleci", "orb authoring", "pipeline tuning", "test splitting", "config policy"
+- **Lifecycle:** On-demand (comment-triggered) + advisory on any CircleCI task
+- **Persona:** 🪐 ORBIT (Pipeline Commander)
+
 #### deployment
 - **Path:** `skills/deployment/`
 - **Files:** `SKILL.md` · `deployment.skill.yml`
@@ -428,6 +453,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Testing & Quality
+
+#### mabl-expert
+
+- **Path:** `skills/mabl-expert/`
+- **Files:** `SKILL.md`
+- **Platform:** [Mabl](https://www.mabl.com) — **PAUSED in this fleet 2026-05-27** (replaced by Keploy; evaluation preserved in `.github/workflows/mabl.yml`)
+- **Description:** MENDER — the fleet's Mabl expert and guardian of its pause. Knows the 2026 agentic platform (Planner/Generator/Healer test agents, GenAI assertions, multi-model auto-healing, API + MongoDB/Oracle testing, Test Impact Analysis, Mailbox email-flow assertions), the **credit-free lanes** (`mabl tests run` locally/CI consumes no cloud credits; mabl cloud MCP drives it from Claude agents), and owns the reactivation gate: a browser-E2E need Keploy+Playwright can't cover, a Doppler-managed key, and labeled plans — all three or Mabl stays paused. Companion setup skill: [`mabl`](#mabl).
+- **Tags:** mabl, mender, e2e-testing, agentic-testing, auto-healing, genai-assertions, credit-free, mabl-mcp, mailbox, paused-tool, reactivation-gate, keploy
+- **Trigger:** "/mender", "/mabl", "mabl question", "un-pause mabl", "reactivate mabl", "email flow testing", "mabl mailbox", "mabl mcp", "credit-free mabl"
+- **Lifecycle:** On-demand (comment-triggered) + advisory on any Mabl task
+- **Persona:** 🧪 MENDER (Test Healer)
 
 #### mabl
 
@@ -601,3 +637,13 @@ At the end of every session:
 - **Trigger:** "@roo", "roo-cline", "local refactoring", "VS Code agent", "autonomous coding", "Cline", "IDE agent"
 - **Documentation:** `docs/ROO_CLINE_SETUP.md` · `docs/AGENT_PROMPT_CONVENTION.md`
 - **Status:** Active (manual invocation, desktop tool)
+
+#### superpowers
+
+- **Path:** `skills/superpowers/`
+- **Files:** `SKILL.md` · `superpowers.skill.yml`
+- **Platform:** [Claude Plugins — Superpowers](https://claude.com/plugins/superpowers)
+- **Description:** Composable skills framework that enforces structured software development discipline in Claude. Five independently loadable modules: `/brainstorming` (Socratic requirements refinement that blocks implementation until sign-off), `/tdd` (red-green-refactor with mandatory failing-test enforcement — the RED phase is non-negotiable), `/debug` (four-phase root-cause methodology: reproduce → classify → hypothesis test → fix; architectural review escalation auto-triggers after three failed attempts), `/execute-plan` (batched implementation plans with a `code-reviewer` subagent checkpoint between each batch), and `/writing-skills` (TDD principles applied to skill and documentation authoring, requiring ≥ 3 assertions per skill). The `code-reviewer` subagent evaluates implementations against the approved plan, coding standards, and architectural principles. Modules compose: new feature → brainstorm + TDD + execute-plan; bug fix → debug + TDD; new skill → brainstorm + writing-skills.
+- **Tags:** superpowers, tdd, red-green-refactor, brainstorming, systematic-debugging, four-phase-debug, execute-plan, code-reviewer, writing-skills, composable-skills, structured-development, architectural-escalation
+- **Trigger:** "superpowers", "/brainstorming", "/tdd", "/execute-plan", "/debug superpowers", "/writing-skills", "red-green-refactor", "structured tdd", "four-phase debug", "subagent code review", "tests must fail first", "architectural review escalation", "claude superpowers plugin".
+- **Lifecycle:** Composable — load individual modules or the full suite on demand.
