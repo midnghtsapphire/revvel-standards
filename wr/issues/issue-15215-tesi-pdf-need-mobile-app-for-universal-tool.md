@@ -1,32 +1,24 @@
-<!-- WR_TEMPLATE_FULL.md — product/sellable WRs only. For bug/chore/docs use WR_TEMPLATE_BASIC.md. -->
-<!-- Generator must substitute every {TOKEN} and fill or N/A every [placeholder] before commit. -->
-<!-- Source-packet convention: when the research engine runs, it prepends a "## Research Findings"
-     block containing a line like `Source packet: docs/research-engine/run-<run-id>.md`. That
-     run-<run-id>.md path points to an external research-engine CI artifact (the run that produced
-     the packet) and is intentionally NOT a committed file in this repo. Reviewers should not flag
-     it as a missing/broken link — the reference is a pointer to the CI run, not a repo file.
-     See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
-# WR: {TITLE}
+# WR: tesi.pdf need mobile app for universal tool
 
-**Issue:** {ISSUE_REF}  
-**Repository:** {REPO}  
-**Created:** {DATE}  
-**Researcher:** {RESEARCHER}  
-**Research Date:** {RESEARCH_DATE}  
-**WR Status:** {STATUS}  
+**Issue:** #15215  
+**Repository:** midnghtsapphire/revvel-standards  
+**Created:** 2026-07-06  
+**Researcher:** Jules (Google) + OpenRouter  
+**Research Date:** 2026-07-06  
+**WR Status:** 🟡 In Progress  
 
 ## Issue Context
 
-{ISSUE_BODY}
+https://webthesis.biblio.polito.it/34869/1/tesi.pdf
 
 ## Repository Metadata
 
 | Property | Value |
 | --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Stars | N/A |
+| Open Issues | N/A |
+| Private | N/A |
+| Archived | N/A |
 
 ## Research Checklist
 
@@ -44,15 +36,15 @@
 ## Research Findings
 
 <!-- revvel-research-findings -->
-{RESEARCH_FINDINGS}
+N/A
 
 ## Executive Summary
 
-{EXECUTIVE_SUMMARY}
+N/A
 
 ## Step 1A — Product/Output Selections
 
-{PRODUCT_SELECTIONS}
+N/A
 
 ## Step 2 — Deep Web Research
 
@@ -66,15 +58,15 @@
      - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
-{DEEP_WEB_RESEARCH}
+N/A
 
 ## Step 3 — Requirements
 
-{REQUIREMENTS}
+N/A
 
 ## Recommendations
 
-{RECOMMENDATIONS}
+N/A
 
 ## Dependencies
 
@@ -88,30 +80,12 @@
 
 | Field | Value |
 | --- | --- |
-| `depends_on` (prerequisite WRs) | {DEPENDS_ON} |
-| Blocked by | {BLOCKED_BY} |
-| Blocks (downstream WRs) | {BLOCKS} |
+| `depends_on` (prerequisite WRs) | N/A |
+| Blocked by | N/A |
+| Blocks (downstream WRs) | N/A |
 
-{DEPENDENCIES}
+N/A
 
 ## Risks
 
-{RISKS}
-
-## Superseded Content
-
-<!-- Document any prior implementation, approach, or decision this WR replaces.
-     Per RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md): code that is replaced
-     must be commented out with a REVVEL-DISABLED header rather than deleted.
-     Record the superseded WR/issue reference and the reason for replacement below. -->
-<!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
-
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | {SUPERSEDES} |
-| Reason for replacement | {SUPERSESSION_REASON} |
-| Archival status | {ARCHIVAL_STATUS} |
-
-<!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
-     DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
-     NOT-APPLICABLE (no code was removed), PENDING-REVIEW (awaiting human decision). -->
+N/A
