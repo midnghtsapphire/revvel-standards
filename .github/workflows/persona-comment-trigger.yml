@@ -53,8 +53,8 @@ jobs:
        contains(github.event.comment.body, '/🪐') ||
        contains(github.event.comment.body, '/⭕') ||
        contains(github.event.comment.body, '/octo') ||
+       contains(github.event.comment.body, '/octopus') ||
        contains(github.event.comment.body, '/🐙') ||
-       contains(github.event.comment.body, '/mender') ||
        contains(github.event.comment.body, '/mabl') ||
        contains(github.event.comment.body, '/🧪') ||
        contains(github.event.comment.body, '/🎓') ||
