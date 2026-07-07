@@ -13,7 +13,7 @@
 
 **Output Type:** desktop-tool / production-app (`#tool #app`)
 
-**Source Reference:** https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks
+**Source Reference:** [ASDS — Laser Therapy for Stretch Marks](https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks)
 
 **Summary:** Build a laser therapy for stretch marks information and patient-routing tool/app. The ASDS source page covers clinical laser treatments for stretch marks (striae distensae). The product maps to a consumer-facing informational and appointment-booking tool that bridges patients to certified dermatologic providers, plus an educational/tracking component for at-home low-level laser/LED device users.
 
@@ -122,7 +122,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 ### Distribution Channels
 
-1. Reddit: r/SkincareAddiction (~1.8M members), r/Mommit, r/loseit — high organic reach for before/after content
+1. Reddit: r/SkincareAddiction (~1.8M members estimate; capture a fresh snapshot before publishing), r/Mommit, r/loseit — high organic reach for before/after content
 2. TikTok/Instagram: before-and-after skin transformation content (viral category)
 3. Affiliate partnerships: RealSelf, Zwivel, American Society for Dermatologic Surgery (ASDS) referral listings
 4. Google Ads: target high-intent "near me" and "cost" keywords
@@ -202,7 +202,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 - **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS
 - **Backend:** Next.js API Routes + Vercel Edge Functions
 - **Database:** Supabase (PostgreSQL) — user accounts, photo storage, session logs
-- **AI/ML:** OpenAI GPT-4o-mini for skin assessment chat; optional: fine-tuned skin image model
+- **AI/ML:** OpenRouter-routed GPT-4o-mini-compatible model for skin assessment chat via `OPENROUTER_API_KEY`; optional: fine-tuned skin image model
 - **Maps/Search:** Google Places API for provider lookup
 - **Payments:** Stripe (subscriptions + one-time)
 - **Storage:** Vercel Blob / Supabase Storage for progress photos
@@ -215,7 +215,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 | Service | Purpose | Cost |
 |---|---|---|
 | Google Places API | Provider directory search | ~$0.032/request; free tier 28,500 req/month |
-| OpenAI API | AI skin assessment | ~$0.15/1M input tokens (GPT-4o-mini) |
+| OpenRouter API | AI skin assessment model routing | Varies by selected model/provider |
 | Stripe | Payments | 2.9% + $0.30/transaction |
 | Supabase | DB + Auth + Storage | Free up to 500MB DB; $25/month Pro |
 | Vercel | Hosting | Free Hobby; $20/month Pro |
@@ -256,7 +256,7 @@ Laser therapy for striae distensae (stretch marks) employs several modalities:
 
 **Clinical Efficacy:** Multiple RCTs show 40–75% improvement in stretch mark appearance after fractional laser series (internal estimate from literature review — cite specific studies before publishing in app).
 
-**Session Costs (US, 2025):**
+**Session Costs (US, 2025; estimates — verify by market before publishing):**
 - Per session: $200–$500 (non-ablative fractional); $500–$1,500 (ablative CO2 fractional)
 - Course of treatment: $600–$4,500+
 - At-home LED devices: $150–$600 one-time
@@ -297,7 +297,7 @@ Laser therapy for striae distensae (stretch marks) employs several modalities:
 
 ### Immediate Actions
 
-1. **Scaffold the Next.js project** under `products/laser-stretch-marks-tool` using the repo's standard port 3010 (next available per AGENTS.md table).
+1. **Scaffold the Next.js project** under `products/laser-stretch-marks-tool` using port 3010 if it is still unassigned (current next slot after the AGENTS.md table).
 2. **Build the education hub first** — highest SEO value, enables content indexing before features launch.
 3. **Integrate Google Places API** for provider search with "dermatologist laser stretch marks" query preset.
 4. **Wire Stripe freemium gate** before Phase 3 AI features to capture early adopters.
