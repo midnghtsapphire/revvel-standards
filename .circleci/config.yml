@@ -94,6 +94,9 @@ workflows:
           filters:
             branches:
               ignore: main
+          filters:
+            branches:
+              ignore: main
       - policy-check:
           filters:
             branches:
