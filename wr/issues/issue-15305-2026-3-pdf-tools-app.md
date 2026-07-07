@@ -37,17 +37,17 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 
 **Option A — Clinicians and audiologists**
 - Pain Point: No consolidated AI-assisted diagnostic workflow for tinnitus or hearing-disorder sub-typing
-- Market: ~13,000 audiologists in the US ([BLS 2024](https://www.bls.gov/ooh/healthcare/audiologists.htm), primary source verified for US count); broader ENT/neurotology community worldwide.
+- Market: ~13,000 audiologists in the US ([BLS 2024](https://www.bls.gov/ooh/healthcare/audiologists.htm)); broader ENT/neurotology community worldwide (unquantified).
 - Willingness to Pay: $100–600/month per clinician for validated diagnostic software
 
 **Option B — Research neuroscientists**
 - Pain Point: Fragmented tooling for EEG/fMRI data processing, subgroup discovery, and reproducibility
-- Market: ~50,000 active neuroscience researchers globally (estimate pending verification — [TODO: verify in PDF review] and replace with a primary-source citation).
+- Market: ~50,000 active neuroscience researchers globally (estimate pending verification — [TODO: verify in PDF review]).
 - Willingness to Pay: Grants typically cover software tooling; $0–$50/month open-source/freemium is most common
 
 **Option C — Patients and consumer digital-health**
 - Pain Point: No widely available, clinically validated tinnitus self-management app
-- Market: Tinnitus burden estimate pending verification — [TODO: verify in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
+- Market: [TODO: verify tinnitus burden estimate in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
 - Willingness to Pay: $5–15/month for consumer app; freemium with premium tier
 
 ---
@@ -109,7 +109,7 @@ Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment.
 - r/tinnitus (Reddit, 150k+ members) — top complaints: "no app actually works", "just white noise, no personalisation", "I want something backed by real science"
 - r/audiology — clinicians report lack of validated screening tools that integrate with EHR
 - Clinical forum posts ([Tinnitus Talk](https://www.tinnitustalk.com/)) cite demand for personalised sub-type-based therapies
-- Tinnitus prevalence remains estimate pending verification — [TODO: verify in PDF review] with a tinnitus-specific primary source before citing a global percentage.
+- Tinnitus prevalence remains an estimate pending verification — [TODO: verify in PDF review] with a tinnitus-specific primary source before citing a global percentage.
 
 ---
 
@@ -137,13 +137,13 @@ The requester has linked to a peer-reviewed paper from Lab CLINT (Trinity Colleg
 - [ ] Competitor analysis — partial; table lists known pricing where available; some entries marked "pricing data pending"
 - [ ] Domain strategy — N/A — pending paper topic and product scope confirmation
 - [ ] Monetization — N/A — pending audience and product type selection
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate — checked; unresolved claims are explicitly marked as estimate pending verification with `[TODO: verify in PDF review]`.
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate — checked; unresolved claims are marked with `[TODO: verify in PDF review]`.
 
 ## Executive Summary
 
 Build one or more software tools or apps grounded in the 2026 Lab CLINT (Trinity College Dublin) peer-reviewed neuroscience paper linked in issue #15305. The paper's specific subject is pending PDF retrieval; it is the lab's third 2026 publication and falls within their known research focus on machine learning for tinnitus, cochlear implants, neuromodulation, and cognitive disorders.
 
-The market opportunity in digital-health neurotechnology is large and under-served. Tinnitus prevalence claims remain estimate pending verification — [TODO: verify in PDF review] before using a forward-facing global count, because the currently cited WHO 2021 source covers deafness/hearing loss broadly. Differentiation is achievable through direct academic credibility (Lab CLINT research backing) and ML-driven sub-typing.
+The market opportunity in digital-health neurotechnology is large and under-served. Tinnitus prevalence claims remain an estimate pending verification — [TODO: verify in PDF review] before using a forward-facing global count, because the currently cited WHO 2021 source covers deafness/hearing loss broadly. Differentiation is achievable through direct academic credibility (Lab CLINT research backing) and ML-driven sub-typing.
 
 Recommended path: confirm PDF content → select audience tier (clinician tool vs. consumer app) → define MVP → build and validate.
 
@@ -163,7 +163,7 @@ Recommended path: confirm PDF content → select audience tier (clinician tool v
 ### Market Size
 
 - Digital therapeutics market size: USD 9.1B in 2024, projected CAGR ~24% through 2030 ([Grand View Research, 2024](https://www.grandviewresearch.com/industry-analysis/digital-therapeutics-market)) — unverified estimate; confirm with primary source.
-- Tinnitus prevalence is often reported around ~14% in secondary summaries (for example, [American Tinnitus Association](https://www.ata.org/about-tinnitus/)) — estimate pending verification; [TODO: verify in PDF review] with a tinnitus-specific primary epidemiology source before publication.
+- Tinnitus prevalence is often reported around ~14% in secondary summaries (for example, [American Tinnitus Association](https://www.ata.org/about-tinnitus/)) — [TODO: verify in PDF review] with a tinnitus-specific primary epidemiology source before publication.
 - No current AI-personalised tinnitus tool with peer-reviewed backing exists in the major app stores (internal audit, July 2026).
 
 ### Regulatory Landscape
