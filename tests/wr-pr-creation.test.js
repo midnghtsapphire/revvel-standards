@@ -86,6 +86,7 @@ function isWrIssue(title, labels, issueType) {
   const labelSet = new Set(
     labels.map(l => typeof l === 'string' ? l : l.name)
   );
+  const hasTitleRouteTag = /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
   const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title || '');
@@ -95,6 +96,7 @@ function isWrIssue(title, labels, issueType) {
     hasRouteTag ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
+    (labelSet.has('wr:new') && hasTitleRouteTag) ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
   );
 }
@@ -235,6 +237,23 @@ function isCompletionTrigger(eventName, action, labelName) {
   await test('isWrIssue detects title route tags', () => {
     assert.equal(isWrIssue('s12967-025-07466-3.pdf#tools #apps', [], null), true);
     assert.equal(isWrIssue('landing page #app', [], null), true);
+  await test('isWrIssue detects title-only WR intake via route tags on wr:new issues', () => {
+    assert.equal(
+      isWrIssue(
+        'Photobiomodulation study #tools #app',
+        [{ name: 'wr:new' }],
+        null
+      ),
+      true
+    );
+    assert.equal(
+      isWrIssue(
+        'Photobiomodulation study #tools #app',
+        [],
+        null
+      ),
+      false
+    );
   });
 
   await test('isWrIssue returns false for non-WR issues', () => {
