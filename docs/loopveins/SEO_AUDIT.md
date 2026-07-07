@@ -128,7 +128,7 @@ Ordered by ROI. Nothing here has been executed — this is the work list for the
 - [ ] **C1** Prerender public routes (`vite-react-ssg`/prerender) so content is in the HTML.
 - [ ] **C2** Pick ONE canonical "V.E.I.N.S." expansion; align site + all READMEs + llms.txt + JSON-LD.
 - [ ] **C3** Publish public (non-auth) About / Healing-Algorithms marketing pages.
-- [ ] **C4** Reconcile `llms.txt` VSPR/S‑MOS wording with `skills/malama` fabrication flags.
+- [ ] **C4** Reconcile `llms.txt` VSPR/S-MOS wording with `skills/malama` fabrication flags.
 - [ ] **H1** Add `og:image` + `twitter:image` (1200×630).
 - [ ] **H2** Complete `sitemap.xml` (add `/plans`, `/waitlist`); `noindex` `/auth`.
 - [ ] **H3** Rewrite `<title>` to lead with a searchable brand + keyword.
