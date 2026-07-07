@@ -80,7 +80,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 ### Primary Segments
 
 1. **Postpartum consumers** (largest demand segment)
-   - Willingness to pay: high (estimate — typical US clinic pricing is often cited around $200–$500/session; add a source before publishing)
+   - Willingness to pay: high (estimate — typical US clinic pricing is often cited around $200–$500/session; verify with market data before launch)
 
 2. **Post-weight-loss adults**
    - Second-largest segment; growing with GLP-1 (Ozempic/Wegovy) weight-loss adoption
@@ -169,7 +169,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 - Laser stretch marks treatment market: **$1.0B USD in 2024 → $1.1B in 2025** at ~8.3% CAGR through 2035 ([Wise Guy Reports](https://www.wiseguyreports.com/reports/lasers-to-treat-stretch-marks-market))
 - Overall stretch marks treatment market: **$3.03B in 2025** ([Mordor Intelligence](https://www.mordorintelligence.com/industry-reports/stretch-marks-treatment-market))
-- GLP-1 weight-loss drug users represent a new fast-growing cohort seeking post-weight-loss skin care (internal estimate, 2024–2026)
+- GLP-1 weight-loss drug users represent a new fast-growing cohort seeking post-weight-loss skin care (internal estimate, 2024–2026 — verify with market data before launch)
 
 ---
 
@@ -254,9 +254,9 @@ Laser therapy for striae distensae (stretch marks) employs several modalities:
 - **Nd:YAG (1064nm):** Better for darker skin tones (Fitzpatrick IV–VI); lower risk of post-inflammatory hyperpigmentation.
 - **Radiofrequency Microneedling (e.g., Morpheus8):** Increasingly combined with laser for synergistic collagen induction.
 
-**Clinical Efficacy:** Multiple RCTs show 40–75% improvement in stretch mark appearance after fractional laser series (internal estimate from literature review — cite specific studies before publishing in app).
+**Clinical Efficacy:** Multiple RCTs show 40–75% improvement in stretch mark appearance after fractional laser series (internal estimate from literature review).
 
-**Session Costs (US, 2025; estimates — verify by market before publishing):**
+**Session Costs (US, 2025; estimates — verify with market data before launch):**
 - Per session: $200–$500 (non-ablative fractional); $500–$1,500 (ablative CO2 fractional)
 - Course of treatment: $600–$4,500+
 - At-home LED devices: $150–$600 one-time
