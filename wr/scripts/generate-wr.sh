@@ -15,7 +15,7 @@ while [[ $# -gt 0 ]]; do case "$1" in
 esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
-HERE="$(cd "$(dirname "$0")/.." && pwd)"   # wr/
+HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"   # wr/; respect env-var override for tests
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----
@@ -127,7 +127,9 @@ out="$(printf '%s\n' "$out" | awk '
   stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"
-subst() { out="${out//\{$1\}/$2}"; }
+# Escape & in replacement to prevent bash parameter-expansion from treating it
+# as a backreference (& expands to the matched pattern text in ${var//pat/rep}).
+subst() { local _r="${2//&/\\&}"; out="${out//\{$1\}/$_r}"; }
 subst TITLE             "$TITLE_CLEAN"
 subst ISSUE_REF         "#${ISSUE:-N/A}"
 subst REPO              "midnghtsapphire/revvel-standards"

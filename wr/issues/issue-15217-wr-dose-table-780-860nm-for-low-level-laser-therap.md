@@ -1,15 +1,105 @@
-# WR: single-line comment test
+# WR: [WR] Dose_table_780-860nm_for_Low_Level_Laser_Therapy_WALT-2010.pdf tool or app for laser therapy
 
-**Issue:** #99999  
+**Issue:** #15217  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
-**Researcher:** N/A  
+**Researcher:** Copilot (GitHub)  
 **Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
 ## Issue Context
 
-test body
+### Output Type (required)
+
+production-app
+
+### PDF pipeline batch
+
+None
+
+### Research Mode
+
+standard
+
+### Delivery Mode
+
+build-direct
+
+### Lifecycle Mode
+
+new-build
+
+### Commercial Mode
+
+digital-product
+
+### Assign To / Decision Team
+
+OpenRouter orchestrator + Copilot implementation lane
+
+### Summary
+
+Build a tool/app for laser therapy practitioners using the WALT 2010 780-860nm dose table as the source reference.
+
+### Objective
+
+Create a practitioner-ready calculator that converts WALT guideline inputs into recommended treatment parameters for low-level laser therapy.
+
+Source PDF: <https://waltpbm.org/wp-content/uploads/2021/08/Dose_table_780-860nm_for_Low_Level_Laser_Therapy_WALT-2010.pdf>
+
+### Required Bundle
+
+- Dose calculation engine for 780-860nm protocol inputs
+- Clear output with units and treatment guidance notes
+- Basic safety disclaimer (not a replacement for clinical judgment)
+
+### Definition of Done
+
+- The WR defines the calculator scope, constraints, and validation expectations
+- The WALT PDF link is preserved as the primary source input
+- Research checklist and downstream implementation sections are available for execution
+
+### Do Not Under-Scope
+
+Include both clinical-accuracy and commercialization considerations (distribution and monetization path).
+
+### Explicit Exclusions
+
+No medical diagnosis functionality.
+
+### Delivery Shape
+
+Web app with optional CLI companion.
+
+### Sellable Artifact Bundle
+
+Web calculator + documentation + launch copy.
+
+### Purchase Validation (functions-as-purchased)
+
+A practitioner can enter treatment parameters and receive a usable dosing output aligned to the cited WALT table.
+
+### Expected Scope
+
+Single-product implementation with strong citations and market validation.
+
+### Validation Expectations
+
+- Unit-level verification of dose calculations against sample values from the WALT table
+- UX check for input/output clarity
+- Basic disclaimer and safety language review
+
+### Blocker Rule
+
+Block implementation if required PDF values cannot be extracted and verified.
+
+### Acknowledgements
+
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] Explicitly requested secondary items should not be silently deferred.
+- [ ] If the PR is partial, the blocker must be documented.
+- [ ] The PR should reflect the WR's required bundle and definition of done.
+- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Repository Metadata
 
@@ -17,13 +107,12 @@ test body
 | --- | --- |
 | Stars | N/A |
 | Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Private | No |
+| Archived | No |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
@@ -40,11 +129,11 @@ N/A
 
 ## Executive Summary
 
-N/A
+N/A — initial WR created from issue intake.
 
 ## Step 1A — Product/Output Selections
 
-N/A
+N/A — to be filled during research execution.
 
 ## Step 2 — Deep Web Research
 
@@ -58,15 +147,15 @@ N/A
      - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
-N/A
+N/A — pending dedicated research pass.
 
 ## Step 3 — Requirements
 
-N/A
+N/A — pending implementation planning.
 
 ## Recommendations
 
-N/A
+N/A — pending implementation planning.
 
 ## Dependencies
 
@@ -88,4 +177,4 @@ N/A
 
 ## Risks
 
-N/A
+N/A — pending implementation planning.
