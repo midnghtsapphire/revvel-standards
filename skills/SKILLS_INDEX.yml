@@ -1055,6 +1055,42 @@ skills:
 
   # ─── CI/CD Operations ──────────────────────────────────────────────────────
 
+  - name: octopus_expert
+    title: "OCTO — Octopus Review Expert"
+    version: "1.0.0"
+    path: "skills/octopus-expert/"
+    skill_file: "skills/octopus-expert/SKILL.md"
+    category: "Code Quality & Autonomous Review"
+    access: all
+    lifecycle: on-demand
+    persona: octo
+    related_standards:
+      - ".github/workflows/octopus-cli.yml"
+      - ".github/workflows/octopus-route.yml"
+      - "docs/PROVENANCE_STANDARD.md"
+    triggers:
+      - "/octo"
+      - "/octopus"
+      - "octopus review"
+      - "usage limit"
+      - "octopus index"
+      - "octp"
+      - "octopus self-host"
+      - "octopus openrouter"
+    tags:
+      - octopus-review
+      - octo
+      - ai-code-review
+      - rag
+      - qdrant
+      - usage-limits
+      - byok
+      - self-host
+      - openrouter
+      - ollama
+      - octp-cli
+      - issue-routing
+
   - name: circleci_expert
     title: "ORBIT — CircleCI Expert"
     version: "1.0.0"

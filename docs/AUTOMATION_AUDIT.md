@@ -430,3 +430,19 @@ Companion changes in the same PR (#15406):
   lane (GH Actions owns repo automation; CircleCI owns the build-and-test gate).
 
 Additive; no existing workflow behavior was changed.
+
+---
+
+## Update — July 7, 2026: OCTO persona (Octopus Review expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**OCTO 🐙**, the Octopus Review expert persona (`/octo`, `/octopus`, `/🐙`). As with
+ORBIT, resolution is registry-driven via the `octo` entry in
+`scripts/openrouter-personas.js`; the runner needed no changes.
+
+OCTO manages the org's existing Octopus Review integration (`octopus-cli.yml`,
+`octopus-route.yml`, the GitHub App): usage-limit lanes (hosted BYOK / self-host /
+OSI-public free), RAG-index hygiene (`octopus repo index`), and model routing —
+including OpenRouter on self-host via the OpenAI-compatible gateway env slots.
+Playbook: `skills/octopus-expert/SKILL.md`. Additive; no existing workflow behavior
+was changed.
