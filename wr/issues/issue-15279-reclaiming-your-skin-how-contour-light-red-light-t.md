@@ -82,7 +82,7 @@ This is a well-differentiated niche in the crowded wellness app space, with stro
 | --- | --- | --- | --- | --- |
 | Global Red Light Therapy (devices + services) | USD 533.8M (2025) | USD 1.13B by 2033 | 9.8% | [Research and Markets, 2025](https://www.researchandmarkets.com/reports/6241239/red-light-therapy-market-size-share-and-trends) |
 | Stretch Marks Treatment (all modalities) | USD 2.51B (2024) | USD 3.57B by 2031 | ~4.5% | [Verified Market Research, 2024](https://www.verifiedmarketresearch.com/product/stretch-marks-treatment-market/) |
-| Postpartum Wellness Apps (broader segment) | USD 315M (2024) | Growing at ~9% YoY (estimate) | ~9% | [Grand View Research, 2024](https://www.grandviewresearch.com/industry-analysis/stretch-marks-treatment-market) |
+| Postpartum Wellness Apps (broader segment) | USD 315M (2024) | Growing at ~9% YoY (estimate) | ~9% | Estimate — needs postpartum-wellness-app market source (current link is for stretch marks market) |
 
 ### Competitor Analysis
 
