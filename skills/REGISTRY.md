@@ -91,8 +91,8 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Files:** `SKILL.md`
 - **Platform:** [Octopus Review](https://octopus-review.ai) (open source, MIT — `github.com/octopusreview/octopus`)
 - **Description:** OCTO — the fleet's expert on Octopus Review, the RAG-based codebase-aware AI PR reviewer wired into this org. Manages the monthly AI-usage-limit banner (three lanes: hosted BYOK Anthropic/OpenAI keys, self-host via Docker Compose for model sovereignty, OSI-public repos free unlimited), keeps the Qdrant vector index fresh (`octopus repo index` before disputing findings), operates `@octp/cli` (`pr review`, `repo index`, `whoami`, `usage`) through `.github/workflows/octopus-cli.yml`, keeps Octopus-filed issues routing into the WR pipeline (`octopus-route.yml`, rate-limited backfill only), and owns model routing — including **OpenRouter on self-host** via the OpenAI-compatible gateway slots (`ACP_BASE_URL=https://openrouter.ai/api/v1`, models namespaced `acp:<slug>`) and Ollama local lanes.
-- **Tags:** octopus-review, octo, ai-code-review, rag, qdrant, embeddings, usage-limits, byok, self-host, openrouter, ollama, octp-cli, issue-routing
-- **Trigger:** "/octo", "/octopus", "octopus review", "usage limit", "octopus index", "octp", "review bot limits", "octopus self-host", "octopus openrouter"
+- **Tags:** octopus-review, octo, ai-code-review, rag, qdrant, usage-limits, byok, self-host, openrouter, ollama, octp-cli, issue-routing
+- **Trigger:** "/octo", "/octopus", "octopus review", "usage limit", "octopus index", "octp", "octopus self-host", "octopus openrouter"
 - **Lifecycle:** On-demand (comment-triggered) + advisory on any Octopus Review task
 - **Persona:** 🐙 OCTO (Reviewmaster)
 
