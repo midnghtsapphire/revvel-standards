@@ -64,7 +64,7 @@ revvel-standards change.
 <!-- revvel-research-findings -->
 Source packet: `docs/research-engine/run-28785281534.md`
 
-# Fleet Maintenance Research Packet: midnghtsapphire/manus-reports
+## Fleet Maintenance Research Packet: midnghtsapphire/manus-reports
 
 ## 1. Executive Decision
 
