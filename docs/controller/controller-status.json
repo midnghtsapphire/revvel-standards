@@ -1,43 +1,139 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-06T04:51:19.014Z",
+  "generated_at": "2026-07-07T08:13:11.874Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 1,
+    "running": 9,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 5,
-    "running": 1,
+    "total": 13,
+    "running": 9,
     "queued": 4,
     "done": 0,
-    "healthy": 1,
-    "stalled": 0,
+    "healthy": 5,
+    "stalled": 4,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 1,
+    "occupancy": 9,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28768598485,
+      "id": 28851651085,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28768598485",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28851651085",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7014,
-      "since_update_ms": 4014,
+      "age_ms": 9874,
+      "since_update_ms": 5874,
       "reason": "running within budget",
       "protected": true
     },
     {
-      "id": 28760714287,
+      "id": 28851401991,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28851401991",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 277874,
+      "since_update_ms": 274874,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 28851401943,
+      "name": "Priority Router — Issues & PRs",
+      "path": ".github/workflows/priority-router.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28851401943",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 277874,
+      "since_update_ms": 273874,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 28851118571,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28851118571",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 579874,
+      "since_update_ms": 575874,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 28850847483,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28850847483",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 872874,
+      "since_update_ms": 869874,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 28850720456,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28850720456",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1018874,
+      "since_update_ms": 1015874,
+      "reason": "no progress for 17m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 28850620708,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28850620708",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1129874,
+      "since_update_ms": 1123874,
+      "reason": "no progress for 19m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 28850493838,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28850493838",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1270874,
+      "since_update_ms": 1268874,
+      "reason": "no progress for 21m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 28850115375,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28850115375",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1703874,
+      "since_update_ms": 1701874,
+      "reason": "no progress for 28m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 28833360016,
       "name": "Update Naukri Resume",
       "path": ".github/workflows/naukri-resume.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28760714287",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28833360016",
       "status": "queued",
       "health": "queued",
       "age_ms": null,
@@ -82,5 +178,70 @@
       "protected": false
     }
   ],
-  "preemptions": []
+  "preemptions": [
+    {
+      "id": 28850720456,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "health": "stalled",
+      "reason": "no progress for 17m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-3.5-sonnet",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-3.5-sonnet"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"Workflow does not have 'workflow_dispatch' trigger\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
+      "error": null
+    },
+    {
+      "id": 28850620708,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "health": "stalled",
+      "reason": "no progress for 19m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-3.5-sonnet",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-3.5-sonnet"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"Workflow does not have 'workflow_dispatch' trigger\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
+      "error": null
+    },
+    {
+      "id": 28850493838,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "health": "stalled",
+      "reason": "no progress for 21m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-3.5-sonnet",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-3.5-sonnet"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"Workflow does not have 'workflow_dispatch' trigger\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
+      "error": null
+    },
+    {
+      "id": 28850115375,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "health": "stalled",
+      "reason": "no progress for 28m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-3.5-sonnet",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-3.5-sonnet"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"Workflow does not have 'workflow_dispatch' trigger\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
+      "error": null
+    }
+  ]
 }
