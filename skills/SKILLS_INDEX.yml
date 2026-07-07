@@ -326,6 +326,46 @@ skills:
       - "e2e tests"
       - "unit tests"
 
+  - name: superpowers
+    title: "Superpowers — Structured Software Development Framework"
+    version: "1.0.0"
+    path: "skills/superpowers/"
+    skill_file: "skills/superpowers/superpowers.skill.yml"
+    category: "Developer Workflow"
+    source_url: "https://claude.com/plugins/superpowers"
+    issue: 15426
+    access: all
+    lifecycle: composable
+    persona: "🦸 Superpowers"
+    modules:
+      - /brainstorming
+      - /tdd
+      - /debug
+      - /execute-plan
+      - /writing-skills
+    related_skills:
+      - brainstorming
+      - code_review
+      - testing
+      - skill_forge
+      - ralph_loop
+    triggers:
+      - "superpowers"
+      - "/brainstorming"
+      - "/tdd"
+      - "/execute-plan"
+      - "/debug superpowers"
+      - "/writing-skills"
+      - "red-green-refactor"
+      - "structured tdd"
+      - "four-phase debug"
+      - "subagent code review"
+      - "composable skill framework"
+      - "claude superpowers plugin"
+      - "tdd cycle"
+      - "tests must fail first"
+      - "architectural review escalation"
+
   - name: mvi_contract
     title: "MVI Contract"
     version: "1.0.0"
@@ -1052,6 +1092,121 @@ skills:
       - "genz bot"
       - "adulting bot"
       - "weaponized bot"
+
+  # ─── CI/CD Operations ──────────────────────────────────────────────────────
+
+  - name: mabl_expert
+    title: "MENDER — Mabl Expert"
+    version: "1.0.0"
+    path: "skills/mabl-expert/"
+    skill_file: "skills/mabl-expert/SKILL.md"
+    category: "Testing & Quality"
+    access: all
+    lifecycle: on-demand
+    persona: mender
+    related_standards:
+      - "skills/mabl/SKILL.md"
+      - ".github/workflows/mabl.yml"
+      - "docs/TOOL_COST_INDEX.md"
+      - "docs/UPGRADE_LOG.md"
+    triggers:
+      - "/mender"
+      - "/mabl"
+      - "un-pause mabl"
+      - "reactivate mabl"
+      - "mabl mcp"
+      - "mabl mailbox"
+      - "email flow testing"
+      - "credit-free mabl"
+    tags:
+      - mabl
+      - mender
+      - e2e-testing
+      - agentic-testing
+      - auto-healing
+      - genai-assertions
+      - credit-free
+      - mabl-mcp
+      - mailbox
+      - paused-tool
+      - reactivation-gate
+      - keploy
+
+  - name: octopus_expert
+    title: "OCTO — Octopus Review Expert"
+    version: "1.0.0"
+    path: "skills/octopus-expert/"
+    skill_file: "skills/octopus-expert/SKILL.md"
+    category: "Code Quality & Autonomous Review"
+    access: all
+    lifecycle: on-demand
+    persona: octo
+    related_standards:
+      - ".github/workflows/octopus-cli.yml"
+      - ".github/workflows/octopus-route.yml"
+      - "docs/PROVENANCE_STANDARD.md"
+    triggers:
+      - "/octo"
+      - "/octopus"
+      - "octopus review"
+      - "usage limit"
+      - "octopus index"
+      - "octp"
+      - "review bot limits"
+      - "octopus self-host"
+      - "octopus openrouter"
+    tags:
+      - octopus-review
+      - octo
+      - ai-code-review
+      - rag
+      - qdrant
+      - embeddings
+      - usage-limits
+      - byok
+      - self-host
+      - openrouter
+      - ollama
+      - octp-cli
+      - issue-routing
+
+  - name: circleci_expert
+    title: "ORBIT — CircleCI Expert"
+    version: "1.0.0"
+    path: "skills/circleci-expert/"
+    skill_file: "skills/circleci-expert/SKILL.md"
+    category: "DevOps & Deployment"
+    access: all
+    lifecycle: on-demand
+    persona: orbit
+    related_standards:
+      - "standards/CIRCLECI_INTEGRATION_STANDARD.md"
+      - ".circleci/config.yml"
+    triggers:
+      - "/orbit"
+      - "/circleci"
+      - "/circle-ci"
+      - "circleci config"
+      - ".circleci/config.yml"
+      - "wire in circleci"
+      - "orb authoring"
+      - "pipeline tuning"
+      - "test splitting"
+      - "config policy"
+    tags:
+      - circleci
+      - orbit
+      - ci-cd
+      - pipelines
+      - orbs
+      - config-validation
+      - local-execute
+      - test-splitting
+      - docker-layer-caching
+      - config-policies
+      - opa-rego
+      - mcp
+      - insights
 
   # ─── Product Operations ───────────────────────────────────────────────────
 
