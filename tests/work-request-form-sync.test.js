@@ -233,14 +233,7 @@ test('WR auto-classify accepts title and weekly-research signals when blank WR l
       wf.includes("contains(github.event.issue.labels.*.name, 'openrouter')"),
     'wr-auto-classify must accept wr:new + openrouter seeded intake'
   );
-});
-
-test('Weekly research and auto-route accept orchestrator seeded title-tag intake', () => {
-  const weeklyResearch = fs.readFileSync(
-    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
-    'utf8'
-  );
-  const autoRoute = fs.readFileSync(
+  assert(
     wf.includes('def infer_title_output_type(title):'),
     'wr-auto-classify must infer Output Type from title route tags'
   );
@@ -253,8 +246,12 @@ test('Weekly research and auto-route accept orchestrator seeded title-tag intake
   );
 });
 
-test('OpenRouter auto-route accepts normalized WR labels and output-type fallbacks', () => {
-  const wf = fs.readFileSync(
+test('Weekly research and auto-route accept orchestrator seeded title-tag intake', () => {
+  const weeklyResearch = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
+    'utf8'
+  );
+  const autoRoute = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
     'utf8'
   );
@@ -276,6 +273,16 @@ test('OpenRouter auto-route accepts normalized WR labels and output-type fallbac
       autoRoute.includes('/#tools?\\b/i.test(title)') &&
       autoRoute.includes('inferredFromTitle'),
     'openrouter-auto-route must infer Output Type from #app/#apps/#tool/#tools title tags'
+  );
+});
+
+test('OpenRouter auto-route accepts normalized WR labels and output-type fallbacks', () => {
+  const wf = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+
+  assert(
     wf.includes("contains(github.event.issue.labels.*.name, 'work-request')"),
     'openrouter-auto-route must run after WR labels are normalized'
   );

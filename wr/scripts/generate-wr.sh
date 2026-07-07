@@ -75,20 +75,6 @@ TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no back
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
 out="$(cat "$TEMPLATE")"
 # Strip leading HTML comments before the H1 — `awk` walks the head of the
-<<<<<<< HEAD
-# template, drops any `<!-- ... -->` line and blank lines, until the first
-# non-comment / non-blank line, then prints the rest verbatim. Without this,
-# WR_TEMPLATE_FULL.md's leading author comments push the H1 to line 3 and
-# the lint gate refuses the output (Devin finding on #14227).
-# in_comment tracks state for multi-line <!-- ... --> blocks that span
-# several lines (e.g. the Source-packet convention comment in the FULL template).
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_comment=0 }
-  stripping && !in_comment && /^[[:space:]]*<!--/ && /-->/ { next }
-  stripping && !in_comment && /^[[:space:]]*<!--/ { in_comment=1; next }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment { next }
-=======
 # template, drops any `<!-- ... -->` line (single or multi-line) and blank
 # lines, until the first non-comment / non-blank line, then prints the rest
 # verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push
@@ -109,7 +95,6 @@ out="$(printf '%s\n' "$out" | awk '
     if (/-->/) { next }
     in_comment=1; next
   }
->>>>>>> origin/main
   stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"

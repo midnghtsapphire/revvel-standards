@@ -9,7 +9,7 @@
 
 ## Issue Context
 
-https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks
+<https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks>
 
 ## Repository Metadata
 
