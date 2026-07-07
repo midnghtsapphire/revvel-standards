@@ -211,9 +211,12 @@ function lintFile(path) {
   // block it must have all required metadata fields. This validates that WR
   // docs shipping workflow snippets with disabled code don't omit the audit
   // trail required by RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md).
-  // Uses word-boundary-aware regex to avoid false negatives from partial matches
-  // (e.g. "REASON: MODEL: needs update" must not satisfy the MODEL: field check).
-  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED(?!-END)\b/;
+  // Uses a pipe-anchored pattern so prose references like "use a REVVEL-DISABLED
+  // header" in instructional HTML comments (e.g. in WR_TEMPLATE_FULL.md's
+  // Superseded Content guidance) do not false-positive as actual markers.
+  // Real markers always use the pipe-delimited metadata format:
+  //   // REVVEL-DISABLED | AGENT: ... | MODEL: ... | WR: ... | DATE: ... | STATUS: ...
+  const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED\s*\|/;
   const REVVEL_DISABLED_CLOSE = /REVVEL-DISABLED-END\b/;
   // Each field regex anchors on a pipe (|) or line start/comment prefix so
   // "AGENT:" in a REASON sentence does not satisfy the AGENT: field requirement.
