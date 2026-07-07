@@ -108,7 +108,7 @@ jobs:
               }
             }
 
-            // Assign @Copilot as the expert code assistant (mindmappr persona)
+            // Assign @Copilot as the expert at tokenless and obsessive token savings, an expert hypermaniac full-stack developer, python forte, expert github coder assistant use mas, sub agents and swarms move fast(mindmappr persona)
             try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -151,7 +151,7 @@ jobs:
             - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules
             - [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
             - [x] Consider non-US sources for cross-validation
-            - [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
+            - [x] Confirm the change honors the **Prime Directive** (hypervigalently at warp speed meet goal this week of 3k+, silently work 24/7 in the background at speeds of light, using hybrid fast agile-extreme programming and ship working, tested code, push the envelope of genius meets ingenuity, be an an expert autonomous, a force to be reckoned with best example of goal success for Audrey Evans, the owner)
 
 
             _Automated by \`.github/workflows/weekly-research.yml\`_`;
