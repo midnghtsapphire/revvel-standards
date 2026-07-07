@@ -10,24 +10,30 @@ const path = require("node:path");
 
 const REPO_ROOT = path.join(__dirname, "..");
 
-function copyRecursive(src, dest) {
-  const stat = fs.statSync(src);
-  if (stat.isDirectory()) {
-    fs.mkdirSync(dest, { recursive: true });
-    for (const entry of fs.readdirSync(src)) {
-      copyRecursive(path.join(src, entry), path.join(dest, entry));
-    }
-    return;
+function setupSandboxWr(sandbox) {
+  const wrRoot = path.join(sandbox, "wr");
+  fs.mkdirSync(path.join(wrRoot, "scripts"), { recursive: true });
+  fs.mkdirSync(path.join(wrRoot, "issues"), { recursive: true });
+
+  const filesToCopy = [
+    "scripts/generate-wr.sh",
+    "scripts/wr-lint.mjs",
+    "WR_TEMPLATE_FULL.md",
+    "WR_TEMPLATE_BASIC.md",
+  ];
+
+  for (const rel of filesToCopy) {
+    const src = path.join(REPO_ROOT, "wr", rel);
+    const dest = path.join(wrRoot, rel);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
   }
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
 }
 
 test("generate-wr strips leading multi-line template comments", () => {
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "generate-wr-"));
   try {
-    copyRecursive(path.join(REPO_ROOT, "wr"), path.join(sandbox, "wr"));
-
+    setupSandboxWr(sandbox);
     const bodyFile = path.join(sandbox, "issue-body.txt");
     fs.writeFileSync(
       bodyFile,
