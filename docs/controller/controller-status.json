@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-06T04:51:19.014Z",
+  "generated_at": "2026-07-07T18:19:01.975Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -22,22 +22,22 @@
   },
   "orchestrators": [
     {
-      "id": 28768598485,
+      "id": 28888728035,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28768598485",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28888728035",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7014,
-      "since_update_ms": 4014,
+      "age_ms": 9975,
+      "since_update_ms": 5975,
       "reason": "running within budget",
       "protected": true
     },
     {
-      "id": 28760714287,
+      "id": 28833360016,
       "name": "Update Naukri Resume",
       "path": ".github/workflows/naukri-resume.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28760714287",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28833360016",
       "status": "queued",
       "health": "queued",
       "age_ms": null,
