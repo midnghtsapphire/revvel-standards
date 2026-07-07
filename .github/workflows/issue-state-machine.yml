@@ -103,7 +103,73 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'issues' && github.event.action == 'opened'
     steps:
+      - name: Detect and close malformed URL-only issues
+        id: malformed_check
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = (issue.title || '').trim();
+            const body  = (issue.body  || '').trim();
+
+            // A "URL-only" title is one whose entire content is a single URL
+            // (with or without the https:// scheme). This pattern catches:
+            //   - https://... or http://...
+            //   - app.circleci.com/...  (scheme omitted, as seen in the wild)
+            //   - Any other bare hostname/path without surrounding text
+            const urlOnlyRe = /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}[/\S]*$/i;
+            const isTitleUrlOnly = urlOnlyRe.test(title) && !title.includes(' ');
+
+            if (!isTitleUrlOnly) {
+              core.setOutput('is_malformed', 'false');
+              console.log('Issue title looks valid; continuing normal lifecycle.');
+              return;
+            }
+
+            core.setOutput('is_malformed', 'true');
+            console.log('Detected URL-only issue title — closing as malformed.');
+
+            // Build a human-readable explanation
+            const circleCiRe = /circleci\.com/i;
+            const hint = circleCiRe.test(title)
+              ? '**What likely happened:** A CircleCI build-failure notification was forwarded ' +
+                'verbatim (URL only) instead of including the actual failure message. ' +
+                'Check your CircleCI webhook / email-intake configuration and make sure ' +
+                'it formats the issue title as a human-readable description (e.g. ' +
+                '`[CI FAILURE] Build #NNNN failed on branch <name>`) and includes the ' +
+                'relevant log lines in the body.\n\n' +
+                '**CircleCI log URL found in title:**\n```\n' + title + '\n```'
+              : '**What likely happened:** An automated system created this issue with a ' +
+                'raw URL as the title instead of a human-readable description. ' +
+                'Please investigate the automation and fix it to supply a meaningful title and body.';
+
+            const closeBody =
+              '## ⚠️ Malformed issue — auto-closed\n\n' +
+              'This issue was automatically closed because its title is a raw URL with no ' +
+              'descriptive text. The WR lifecycle requires a meaningful title so that ' +
+              'triage, research, and coding agents can process it correctly.\n\n' +
+              hint + '\n\n' +
+              '---\n_Auto-closed by `issue-state-machine.yml` malformed-issue guard._';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: closeBody,
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed',
+              state_reason: 'not_planned',
+            });
+
+            console.log('Closed malformed issue #' + issue.number);
+
       - name: Add wr:new label
+        if: steps.malformed_check.outputs.is_malformed != 'true'
         uses: actions/github-script@v9.0.0
         with:
           script: |
