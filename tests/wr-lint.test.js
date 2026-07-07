@@ -136,3 +136,57 @@ test("does not flag product section for a non-fix persona slash command (FULL lo
   const { status, stdout } = runLint(md);
   assert.strictEqual(status, 0, `research persona WR must stay FULL, got:\n${stdout}`);
 });
+
+// Rule 11: REVVEL-DISABLED archival comment validation
+test("flags REVVEL-DISABLED block missing required metadata fields", () => {
+  const md = [
+    "# WR: Fix broken auth middleware",
+    "",
+    "Code was disabled to unblock CI.",
+    "",
+    "```js",
+    "// REVVEL-DISABLED | AGENT: copilot | DATE: 2026-01-15 | STATUS: FAILED",
+    "// REASON: middleware throws under Node 20",
+    "// const authCheck = require('./auth');",
+    "// REVVEL-DISABLED-END",
+    "```",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "REVVEL-DISABLED block missing MODEL: and WR: must fail rule 11");
+  assert.match(stdout, /REVVEL-DISABLED block missing required field/);
+});
+
+test("passes a well-formed REVVEL-DISABLED block with all required fields", () => {
+  const md = [
+    "# WR: Fix broken auth middleware",
+    "",
+    "Code was disabled to unblock CI.",
+    "",
+    "```js",
+    "// REVVEL-DISABLED | AGENT: copilot | MODEL: claude-sonnet-4-5 | WR: #1234 | DATE: 2026-01-15 | STATUS: FAILED",
+    "// REASON: middleware throws under Node 20; needs investigation",
+    "// const authCheck = require('./auth');",
+    "// REVVEL-DISABLED-END",
+    "```",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 0, `well-formed REVVEL-DISABLED block must pass, got:\n${stdout}`);
+});
+
+test("flags an unclosed REVVEL-DISABLED block", () => {
+  const md = [
+    "# WR: Fix broken auth middleware",
+    "",
+    "```js",
+    "// REVVEL-DISABLED | AGENT: copilot | MODEL: claude-sonnet-4-5 | WR: #1234 | DATE: 2026-01-15 | STATUS: FAILED",
+    "// REASON: unclosed block test",
+    "// const authCheck = require('./auth');",
+    "```",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "unclosed REVVEL-DISABLED block must fail rule 11");
+  assert.match(stdout, /REVVEL-DISABLED block opened but never closed/);
+});
