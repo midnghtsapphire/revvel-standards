@@ -1053,6 +1053,46 @@ skills:
       - "adulting bot"
       - "weaponized bot"
 
+  # ─── CI/CD Operations ──────────────────────────────────────────────────────
+
+  - name: circleci_expert
+    title: "ORBIT — CircleCI Expert"
+    version: "1.0.0"
+    path: "skills/circleci-expert/"
+    skill_file: "skills/circleci-expert/SKILL.md"
+    category: "DevOps & Deployment"
+    access: all
+    lifecycle: on-demand
+    persona: orbit
+    related_standards:
+      - "standards/CIRCLECI_INTEGRATION_STANDARD.md"
+      - ".circleci/config.yml"
+    triggers:
+      - "/orbit"
+      - "/circleci"
+      - "/circle-ci"
+      - "circleci config"
+      - ".circleci/config.yml"
+      - "wire in circleci"
+      - "orb authoring"
+      - "pipeline tuning"
+      - "test splitting"
+      - "config policy"
+    tags:
+      - circleci
+      - orbit
+      - ci-cd
+      - pipelines
+      - orbs
+      - config-validation
+      - local-execute
+      - test-splitting
+      - docker-layer-caching
+      - config-policies
+      - opa-rego
+      - mcp
+      - insights
+
   # ─── Product Operations ───────────────────────────────────────────────────
 
   - name: dragnet_scaffold

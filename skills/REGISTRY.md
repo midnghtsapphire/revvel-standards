@@ -49,6 +49,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
 | ADA compliance audits, free certifications, autonomous monitoring, accessibility agent | [`ada-compliance-agent`](#ada-compliance-agent) |
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| CircleCI, circleci CLI, .circleci/config.yml, orbs, pipeline tuning, test splitting, config policies, ORBIT | [`circleci-expert`](#circleci-expert) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets | [`schema-rich-results`](#schema-rich-results) |
@@ -291,6 +292,16 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### DevOps & Deployment
+
+#### circleci-expert
+
+- **Path:** `skills/circleci-expert/`
+- **Files:** `SKILL.md`
+- **Description:** ORBIT — the fleet's CircleCI pipeline commander. Wires repos into CircleCI with minimal pinned configs, validates locally before any push (`circleci config validate` / `process`), reproduces failing jobs in Docker (`circleci local execute`), tunes pipelines (caching, workspaces, DLC, parallelism, timing-based test splitting, resource-class rightsizing via Insights), authors/publishes orbs, enforces Rego config policies, and operates the v1.x preview CLI (`run` trigger/watch with scriptable exit codes, `envvar`, `dlc purge`, and the built-in `circleci mcp` MCP server for Claude). Covers both CLI generations and a lesser-known-features bench.
+- **Tags:** circleci, orbit, ci-cd, pipelines, orbs, config-validation, local-execute, test-splitting, docker-layer-caching, config-policies, opa-rego, mcp, insights
+- **Trigger:** "/orbit", "/circleci", "/circle-ci", "circleci config", ".circleci/config.yml", "wire in circleci", "orb authoring", "pipeline tuning", "test splitting", "config policy"
+- **Lifecycle:** On-demand (comment-triggered) + advisory on any CircleCI task
+- **Persona:** 🪐 ORBIT (Pipeline Commander)
 
 #### deployment
 - **Path:** `skills/deployment/`

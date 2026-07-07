@@ -3,7 +3,8 @@ name: Persona Comment Trigger
 # Summon a persona on demand from an issue/PR comment:
 #   /professor <task> | /oaudrey ... | /mindmappr ... | /openrouter ...
 #   /dragnet <error or product req> | /scaffold <req> | /builder <req> | /product-build <req>
-#   /🎓 ... | /🧠 ... | /🗺️ ... | /🔀 ... | /🕵️ ... | /🛠️ ...
+#   /orbit <circleci task> | /circleci ... | /circle-ci ...
+#   /🎓 ... | /🧠 ... | /🗺️ ... | /🔀 ... | /🕵️ ... | /🛠️ ... | /🪐 ... | /⭕ ...
 #   /persona <name> <task>
 # Triggers use a leading slash, NOT "@name": GitHub turns "@name" into a mention
 # of the real user account with that username and emails them, so "@professor"
@@ -11,7 +12,9 @@ name: Persona Comment Trigger
 # The Professor (no-key Perplexity research) is the headline lane.
 # DRAGNET handles both ERROR MODE (bugs/failures) and SCAFFOLD MODE (new product from
 # screenshots/Reddit/social signals). Use /scaffold or /builder to invoke SCAFFOLD MODE
-# directly. See scripts/openrouter-personas.js and docs/OPENROUTER_ASSIGNEE_PROCESS.md.
+# directly. ORBIT is the CircleCI pipeline commander (wire-in, validate, tune, orbs,
+# policy — playbook: skills/circleci-expert/SKILL.md).
+# See scripts/openrouter-personas.js and docs/OPENROUTER_ASSIGNEE_PROCESS.md.
 
 on:
   issue_comment:
@@ -42,6 +45,11 @@ jobs:
        contains(github.event.comment.body, '/scaffold') ||
        contains(github.event.comment.body, '/builder') ||
        contains(github.event.comment.body, '/product-build') ||
+       contains(github.event.comment.body, '/orbit') ||
+       contains(github.event.comment.body, '/circleci') ||
+       contains(github.event.comment.body, '/circle-ci') ||
+       contains(github.event.comment.body, '/🪐') ||
+       contains(github.event.comment.body, '/⭕') ||
        contains(github.event.comment.body, '/🎓') ||
        contains(github.event.comment.body, '/🧠') ||
        contains(github.event.comment.body, '/🗺️') ||
