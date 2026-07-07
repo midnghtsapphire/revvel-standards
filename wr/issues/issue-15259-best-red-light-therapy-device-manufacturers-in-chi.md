@@ -66,8 +66,8 @@ The global red light therapy device market is estimated at **$587.5 million in 2
 | Global RLT device market 2026 | $587.5 million | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
 | Market size by 2033 | $1.13 billion | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
 | CAGR 2026–2033 | 9.8% | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
-| RLT panel segment 2026 | $1.11 billion | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
-| Panel segment CAGR | 15.5% | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
+| RLT panel market (separate report; not directly comparable to the device-market total above) | $1.11 billion | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
+| Panel market CAGR | 15.5% | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
 | North America market share | ~44% of global revenue (estimate) | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
 
 ### Target Manufacturers (Seed Database)
