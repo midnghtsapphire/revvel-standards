@@ -1115,7 +1115,6 @@ skills:
       - "usage limit"
       - "octopus index"
       - "octp"
-      - "review bot limits"
       - "octopus self-host"
       - "octopus openrouter"
     tags:
@@ -1124,7 +1123,6 @@ skills:
       - ai-code-review
       - rag
       - qdrant
-      - embeddings
       - usage-limits
       - byok
       - self-host
