@@ -91,6 +91,9 @@ workflows:
             branches:
               ignore: main
       - validate-registries:
+          filters:
+            branches:
+              ignore: main
       - policy-check:
           filters:
             branches:
