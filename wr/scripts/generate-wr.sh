@@ -20,6 +20,7 @@ esac; done
 # HERE=<tmpdir>; without this default-only assignment the override was
 # silently ignored and test runs mutated tracked fixture files).
 HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
+HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"   # wr/; respect env-var override for tests
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----

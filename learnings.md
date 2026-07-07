@@ -419,3 +419,14 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** Anchor lint-rule regexes on the canonical machine-greppable shape, not the bare token: rule 11 now requires `REVVEL-DISABLED |` (the pipe-separated field header per COMMENT-DONT-DELETE.md §3), which all existing rule-11 fixtures already use. When a template documents a lint-enforced convention in prose, the linter must distinguish mention from use. And when a test sets an env override, verify the script actually honors it — `VAR="${VAR:-default}"` in the script, plus a pollution check (`git status` after `npm test`) catches silent sandbox escapes. Added a rule-11 regression test for the prose-mention case.
 
 **Next Action:** None for this regression — monitor the PR.
+**Date/Time:** 2026-07-07T00:00:00Z
+
+**Task Attempted:** Stop the external V.E.I.N.S. engine from flooding the repo with near-duplicate `[VEINS]` alert issues (11 opened in one burst on 2026-07-06, incl. three copies of "Stuck workflow: PR Lifecycle" differing only by minute counter).
+
+**Outcome:** Success — closed all 11 stale `[VEINS]` issues (verified 0 remain open) and added `.github/workflows/veins-intake-dedup.yml`: on `issues: opened` with a `[VEINS]` title, normalize the title (strip volatile numbers) and close the newcomer as duplicate when an older open twin exists.
+
+**Root Cause of Failure (If any):** The `[VEINS]` issue creator is NOT in this repo — no workflow here creates them; the V.E.I.N.S. engine runs externally and posts with the owner's token, so the learnings.md dedup rule could not be applied at the source. The burst itself traced to the installation API rate-limit saturation making workflows look hung (~3,700m) to the engine's stuck-check.
+
+**Self-Healing Fix / Learned Lesson:** When an issue-creating automation lives outside the repo, dedup at intake instead: an `issues: opened` gate that title-matches after stripping volatile numbers is enough to collapse alert storms, and closing a VEINS issue is its documented ack path ("Closing it marks the heal as accepted upstream"). GitHub REST cannot truly delete issues — close with `not_planned`/`completed` is the deletion equivalent.
+
+**Next Action:** Merge the dedup gate. Separately: 3 pre-existing test failures on main in `tests/generate-wr-comment-stripping.test.js` (WR generator refuses output, regression #15215) — needs its own fix, unrelated to this change.
