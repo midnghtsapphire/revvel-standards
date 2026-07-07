@@ -254,7 +254,9 @@ test('WR workflows infer routing from title tags for title-only intake', () => {
     'weekly-research should treat title route tags as WR intake signals'
   );
   assert(
-    wrPrCreation.includes('/#(?:tool|tools|app|apps)\\b/i'),
+    wrPrCreation.includes('const hasRouteTag =') &&
+      wrPrCreation.includes('/#(?:tool|tools|app|apps)\\b/i.test(title)') &&
+      wrPrCreation.includes('hasRouteTag ||'),
     'wr-pr-creation should treat title route tags as WR intake signals'
   );
   assert(
