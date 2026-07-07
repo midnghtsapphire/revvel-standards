@@ -78,7 +78,7 @@ out="$(cat "$TEMPLATE")"
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
   stripping && !in_comment && /^<!--/ && /-->/ { next }
-  stripping && !in_comment && /^<!--/ && !/>/ { in_comment=1; next }
+  stripping && !in_comment && /^<!--/ && !/-->/ { in_comment=1; next }
   stripping && in_comment && /-->/ { in_comment=0; next }
   stripping && in_comment { next }
   stripping {
