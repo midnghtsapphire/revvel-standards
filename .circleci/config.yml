@@ -45,7 +45,7 @@ jobs:
   # Added by ORBIT — these files drive the persona comment trigger, so a broken
   # edit here silently kills every /persona summon. No npm ci needed: uses only
   # node built-ins plus a one-shot npx fetch.
-  validate-registries:
+  # validate-registries checks are currently handled inside policy-check (below).
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
