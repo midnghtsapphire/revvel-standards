@@ -23,7 +23,7 @@ name: VEINS Monitor — Vital Engine INtelligence Surveillance
 
 on:
   schedule:
-    - cron: '0 * * * *'   # hourly — fast enough to catch the 7-day wall
+    - cron: '28 * * * *'   # hourly — staggered off :00 to reduce runner bursts
   workflow_dispatch:
     inputs:
       dry_run:
