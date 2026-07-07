@@ -74,7 +74,7 @@ A cross-platform (iOS + Android) React Native application that embeds all 7 best
 | --- | --- |
 | Security | AES-256 at rest, TLS 1.3 in transit, biometric + PIN auth, HIPAA audit log |
 | Regulatory | FDA SaMD pre-cert checklist, IEC 62304 lifecycle doc scaffold, in-app compliance badge |
-| BLE Connectivity | react-native-ble-plx, GATT HDP profiles, auto-reconnect, signal strength indicator |
+| BLE Connectivity | react-native-ble-plx, standard medical BLE GATT services (e.g., Glucose/Heart Rate/Pulse Oximeter), auto-reconnect, signal strength indicator |
 | Clinical UX | Dark-mode optimized, large touch targets (≥44 px), WCAG 2.1 AA, one-hand layout |
 | Data Accuracy | Client-side checksum, server reconciliation, calibration reminder scheduling |
 | Battery | Background scan duty-cycling (5s active / 25s sleep), phone + device low-battery toast |
