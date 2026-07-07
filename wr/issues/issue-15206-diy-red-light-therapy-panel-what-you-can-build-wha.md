@@ -1,15 +1,15 @@
-# WR: single-line comment test
+# WR: DIY Red Light Therapy Panel + Photobiomodulation Mobile App/Tool
 
-**Issue:** #99999  
+**Issue:** #15206  
 **Repository:** midnghtsapphire/revvel-standards  
-**Created:** 2026-07-07  
-**Researcher:** N/A  
-**Research Date:** 2026-07-07  
+**Created:** 2026-07-06  
+**Researcher:** Jules (Google) + OpenRouter  
+**Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
 ## Issue Context
 
-test body
+<https://feeds.lumarasystems.com/blog/diy-red-light-therapy-panel>
 
 ## Repository Metadata
 
@@ -23,7 +23,6 @@ test body
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM

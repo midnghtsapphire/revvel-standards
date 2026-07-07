@@ -6,7 +6,7 @@ name: Stuck Check Watchdog
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: '8 * * * *'  # Every hour (staggered off :00 to reduce runner bursts)
   workflow_dispatch:
     inputs:
       dry_run:
