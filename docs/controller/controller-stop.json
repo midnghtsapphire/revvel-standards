@@ -1,5 +1,26 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-07T04:16:39.156Z",
-  "stop": []
+  "generated_at": "2026-07-07T08:13:11.874Z",
+  "stop": [
+    {
+      "id": 28850720456,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 17m ≥ 15m"
+    },
+    {
+      "id": 28850620708,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 19m ≥ 15m"
+    },
+    {
+      "id": 28850493838,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 21m ≥ 15m"
+    },
+    {
+      "id": 28850115375,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 28m ≥ 15m"
+    }
+  ]
 }
