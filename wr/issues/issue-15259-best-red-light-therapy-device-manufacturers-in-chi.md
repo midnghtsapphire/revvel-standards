@@ -164,7 +164,7 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 ### Assigned Port
 
-`3010` — next available after `ai-ad-generator` at 3009
+`3011` — next available after `meddevice-compliance-navigator` at 3010
 
 ### Definition of Done
 
