@@ -38,7 +38,9 @@ The requester has supplied a technical measurement whitepaper from LightLab Inte
 ## Research Findings
 
 <!-- revvel-research-findings -->
-
+- PBM market is growing (~10.4% CAGR; source linked below) with clear demand for independent dose/irradiance verification tooling.
+- LightLab’s ISO/IEC 17025-aligned methodology provides a defensible basis for an irradiance map + fluence (J/cm²) calculator.
+- Competitive landscape lacks a self-serve, multi-device comparison DB + dose tracker, creating first-mover SaaS opportunity.
 ## WR-Ready Research Packet: PhotoBioModulation Therapy Bed Measurement App/Tool
 
 ## 1. Executive Decision
