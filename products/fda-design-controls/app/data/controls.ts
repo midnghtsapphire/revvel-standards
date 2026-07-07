@@ -702,16 +702,17 @@ export function buildDhfCsv(
   }
 
   // Append project metadata as a footer section
+  const escape = (s: string) => `"${s.replace(/"/g, '""')}"`;
   rows.push('');
   rows.push('"Device Name","Version","Project Lead","Device Class","Start Date","Target Date"');
   rows.push(
     [
-      `"${project.deviceName}"`,
-      `"${project.deviceVersion}"`,
-      `"${project.projectLead}"`,
-      `"${project.deviceClass}"`,
-      `"${project.startDate}"`,
-      `"${project.targetDate}"`,
+      escape(project.deviceName),
+      escape(project.deviceVersion),
+      escape(project.projectLead),
+      escape(project.deviceClass),
+      escape(project.startDate),
+      escape(project.targetDate),
     ].join(',')
   );
 
