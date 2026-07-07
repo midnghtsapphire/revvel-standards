@@ -60,7 +60,7 @@ Web application (Next.js). Shippable as a SaaS product targeting medical device 
      - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
-Target market: Medical device manufacturers and commercial lighting companies required to demonstrate IEC 62471 / IEC 60601-1-9 compliance (market sizing / growth claims: add citations before shipping, or label as estimates). Competitor/pricing: Pricing data pending — competitive benchmark research required. PDF parsing libraries: PyPDF2 (GitHub: https://github.com/py-pdf/pypdf) and pdf-lib (GitHub: https://github.com/Hopding/pdf-lib). Keywords: photobiological safety, IEC 62471, lamp testing, LED safety compliance, optical radiation safety, medical device standards, illumination safety assessment.
+Target market: Medical device manufacturers and commercial lighting companies required to demonstrate IEC 62471 / IEC 60601-1-9 compliance. Market size: compliance software is a large and growing segment — unverified estimate; no sourced figures available at time of writing. Competitor/pricing: Pricing data pending — competitive benchmark research required. PDF parsing libraries: PyPDF2 (GitHub: https://github.com/py-pdf/pypdf) and pdf-lib (GitHub: https://github.com/Hopding/pdf-lib). Keywords: photobiological safety, IEC 62471, lamp testing, LED safety compliance, optical radiation safety, medical device standards, illumination safety assessment.
 
 ## Step 3 — Requirements
 
