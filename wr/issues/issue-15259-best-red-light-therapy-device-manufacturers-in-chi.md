@@ -156,7 +156,7 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 | --- | --- | --- |
 | Frontend | Next.js 14 (App Router) | Consistent with other products in this monorepo |
 | Database | PostgreSQL via Prisma | Relational data for manufacturer + certification records |
-| Auth | NextAuth.js | Standard pattern in this repo |
+| Auth | NextAuth.js (or Clerk) | Choose based on desired auth UX + deployment constraints |
 | Payments | Stripe | Freemium subscription + per-lead billing |
 | Search | Algolia or pg_search | Fast faceted filtering |
 | Hosting | Vercel | CDN + SSR for SEO |
