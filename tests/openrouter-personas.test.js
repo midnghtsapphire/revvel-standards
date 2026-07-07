@@ -152,6 +152,7 @@ async function runTests() {
   // Fleet registration (deferred, no API calls)
   console.log("\nTest Group: instantiateFleet (deferred)");
   const fleet = await instantiateFleet(undefined, { silent: true });
+  assertEqual(fleet.length, 8, "Fleet registers all eight personas by default");
   assertEqual(fleet.length, 9, "Fleet registers all nine personas by default");
   assertTrue(
     fleet.every((f) => f.instantiated === false && typeof f.assign === "function"),
