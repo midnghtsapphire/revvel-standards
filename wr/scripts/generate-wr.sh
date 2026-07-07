@@ -82,6 +82,11 @@ out="$(cat "$TEMPLATE")"
 # #14227; multi-line comment fix on #15215).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment           { next }
+  stripping && /^<!--/ && !/-->/ { in_comment=1; next }
+  stripping && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && /^[[:space:]]*$/           { next }
   stripping && in_comment {
     if (/-->/) { in_comment=0 }
     next
