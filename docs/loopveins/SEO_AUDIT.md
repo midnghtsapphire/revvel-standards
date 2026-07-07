@@ -123,7 +123,7 @@ Everything points to `veinsloop.lovable.app`. If you launch on a purchased domai
 
 ## 6. Fix checklist for the fleet
 
-Ordered by ROI. Nothing here has been executed — this is the work list for the review/agent fleet ("done vt fleet").
+Ordered by ROI. Nothing here has been executed — this is the work list for the review/agent fleet.
 
 - [ ] **C1** Prerender public routes (`vite-react-ssg`/prerender) so content is in the HTML.
 - [ ] **C2** Pick ONE canonical "V.E.I.N.S." expansion; align site + all READMEs + llms.txt + JSON-LD.
