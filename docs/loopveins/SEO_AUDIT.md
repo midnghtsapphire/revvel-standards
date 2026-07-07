@@ -68,9 +68,9 @@ The authed dashboard does **not** need SSR — it's correctly `noindex`-by-natur
 **Fix (fleet):** Publish **public** versions of About and Healing-Algorithms (or public marketing equivalents) outside the auth shell, and add them to the sitemap.
 
 ### C4 — `llms.txt` states fabricated-flagged terms as fact
-**What:** `llms.txt` describes the "**VSPR** runtime" and "**S‑MOS** health formula" as real mechanisms. Your own `revvel-standards/skills/malama/` explicitly flags **"VSPR"** and **"S‑MOS"** as *fabricated benchmarks/citations*.
+**What:** `llms.txt` describes the "**VSPR** runtime" and "**S-MOS** health formula" as real mechanisms. Your own `revvel-standards/skills/malama/` explicitly flags **"VSPR"** and **"S-MOS"** as *fabricated benchmarks/citations*.
 **Impact:** Publishing invented technical/benchmark terms as fact is an E‑E‑A‑T and trust liability — exactly what AI Overviews and reviewers penalize, and it undermines the "recognition" you want.
-**Fix (fleet):** Either (a) ground VSPR/S‑MOS in a real, cited definition before publishing, or (b) reword `llms.txt`/marketing to describe the pipeline without the fabricated-flagged labels. Reconcile with `skills/malama` before it ships.
+**Fix (fleet):** Either (a) ground VSPR/S-MOS in a real, cited definition before publishing, or (b) reword `llms.txt`/marketing to describe the pipeline without the fabricated-flagged labels. Reconcile with `skills/malama` before it ships.
 
 ---
 
