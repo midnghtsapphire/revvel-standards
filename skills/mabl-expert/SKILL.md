@@ -77,7 +77,7 @@ hand-pasted); and test plans labeled + linked so runs are never silent no-ops.
 
 ## CLI Quick Reference
 
-Install: `npm i -g @mablhq/mabl-cli` (CI: `mablhq/setup-mabl-cli` action).
+Install: `npm i -g @mablhq/mabl-cli` (CI: `mablhq/setup-mabl-cli@v1.5` action).
 Auth: `mabl auth login` / API key. Then:
 
 | Command | What it does |
