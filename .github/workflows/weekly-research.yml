@@ -63,12 +63,20 @@ jobs:
             // so fast-capture research links are promoted into the WR pipeline.
             const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
             const hasOrchestratorSeed = labelSet.has('wr:new') && labelSet.has('openrouter');
+            // if a label has not been created in the repository yet. Manual
+            // title-only intake also uses route tags like `#app` / `#tools`; only
+            // treat those as WRs when the issue is still in the fresh `wr:new`
+            // lifecycle bucket so ordinary hashtag chatter does not get upgraded.
+            const hasTitleRouteTag =
+              /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
               (hasRouteTag && hasOrchestratorSeed);
+              (labelSet.has('wr:new') && hasTitleRouteTag) ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
