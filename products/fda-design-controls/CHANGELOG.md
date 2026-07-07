@@ -14,14 +14,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 - Initial release of the FDA Design Controls Tracker.
 - 9 design phases covering all of 21 CFR 820.30 (Planning, Input, Output,
   Review, Verification, Validation, Transfer, Changes, DHF).
-- 51 checklist items with required/recommended tags and expandable FDA-sourced
+- 59 checklist items with required/recommended tags and expandable FDA-sourced
   guidance notes.
 - Interactive phase-navigation sidebar with real-time per-phase and overall
   completion progress bars.
 - Project info panel: device name, version, project lead, device class, intended
   use, start/target dates.
 - DHF export: Markdown (design-history-file.md) and CSV
-  (design-controls-checklist.csv) — fully client-side, no server transmission.
+  (design-controls-checklist.csv) — generated client-side in the browser UI.
+  Note: calling `POST /api/dhf` sends the provided payload to the serverless
+  route and should not be used for strictly client-only workflows.
 - REST API: `GET /api/dhf` returns phase/item schema; `POST /api/dhf` generates
   markdown, CSV, and per-phase completion summary.
 - TypeScript unit tests covering phase structure, count helpers, completion

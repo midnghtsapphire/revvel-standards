@@ -12,6 +12,11 @@ import {
  * POST /api/dhf
  *
  * Generates a Design History File summary from a JSON payload.
+ * NOTE: This is a server-side route. Calling this endpoint transmits the
+ * provided project info and checkedItems payload to the serverless function.
+ * Use the client-side export in the UI if you need strictly browser-local
+ * operation with no server transmission.
+ *
  * Accepts a project info object and a map of checked item IDs per phase.
  *
  * Body (JSON):

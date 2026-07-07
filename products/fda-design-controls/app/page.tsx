@@ -386,6 +386,8 @@ export default function HomePage() {
                       <div className="flex items-start gap-3">
                         <button
                           onClick={() => toggleItem(activePhaseId, item.id)}
+                          role="checkbox"
+                          aria-checked={done}
                           className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded border-2 flex items-center justify-center transition-colors ${
                             done
                               ? 'bg-emerald-500 border-emerald-500'
