@@ -24,7 +24,8 @@ persona who answers "why did Octopus say that / stop reviewing / miss context?"
 
 ## What Octopus Review Actually Is
 
-- **Open source (MIT)** — `github.com/octopusreview/octopus`. The hosted service and
+- **Source-available (Modified MIT)** — `github.com/octopusreview/octopus`; review the
+  license terms before self-hosting. The hosted service and
   a self-hosted deployment run the same product.
 - **RAG-based, not diff-only:** on connect it clones the repo, chunks code (~1,500
   chars, 200 overlap), embeds with OpenAI `text-embedding-3-large` (3,072-dim), and
@@ -56,7 +57,7 @@ persona who answers "why did Octopus say that / stop reviewing / miss context?"
    instead of waiting for the banner.
 3. **`octopus repo index`** — force a re-index after big merges/renames so reviews
    don't reason from stale embeddings.
-4. **Self-host = full model sovereignty** (MIT, Docker Compose: Postgres + Qdrant +
+4. **Self-host = full model sovereignty** (Modified MIT, Docker Compose: Postgres + Qdrant +
    web). Code is processed in-memory; only vector embeddings persist.
 5. **OpenAI-compatible gateway slots** in self-host config: `ACP_BASE_URL` /
    `ACP_API_KEY` (models namespaced `acp:<model>`) and `OPENCODE_BASE_URL` /
@@ -137,7 +138,7 @@ file/line defect (DRAGNET dedup rules apply).
 ## Sources
 
 - Product + docs — <https://octopus-review.ai/docs/about>, <https://octopus-review.ai/docs/getting-started>
-- Source (MIT) + `.env.example` provider/gateway config — <https://github.com/octopusreview/octopus>
+- Source (Modified MIT) + `.env.example` provider/gateway config — <https://github.com/octopusreview/octopus>
 - Open-source free tier — <https://octopus-review.ai/open-source>
 - Architecture deep-dive (chunking, Qdrant, embeddings) — <https://octopus-review.ai/blog/building-an-ai-code-review-tool-architecture-and-lessons-learned>
 - CLI — <https://www.npmjs.com/package/@octp/cli>
