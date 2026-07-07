@@ -39,14 +39,14 @@ https://platinumtherapylights.com/de/blogs/news/best-medical-grade-red-light-the
 
 The referenced article covers **PlatinumLED Therapy Lights BIOMAX** panels, one of the leading consumer/prosumer red light therapy brands. PlatinumLED markets certain devices as FDA-cleared (Class II) and HSA/FSA-eligible (verify via FDA database + PlatinumLED eligibility documentation) — signaling a regulated wellness product category.
 
-**Current PlatinumLED BIOMAX product line (2024–2025):**
+**Current PlatinumLED BIOMAX product line (pricing estimates — verify on PlatinumLED product pages):**
 - BIOMAX 300: ~$499 ([platinumtherapylights.com](https://platinumtherapylights.com))
-- BIOMAX 450: ~$699
-- BIOMAX 600: ~$899
-- BIOMAX 900: ~$1,149
-- BIOMAX PRO NANO: ~$599+
-- BIOMAX PRO MIDI: ~$800–$1,000
-- BIOMAX PRO GRANDE/ULTRA: ~$1,400–$1,800+
+- BIOMAX 450: ~$699 (estimate)
+- BIOMAX 600: ~$899 (estimate)
+- BIOMAX 900: ~$1,149 (estimate)
+- BIOMAX PRO NANO: ~$599+ (estimate)
+- BIOMAX PRO MIDI: ~$800–$1,000 (estimate)
+- BIOMAX PRO GRANDE/ULTRA: ~$1,400–$1,800+ (estimate)
 
 Key differentiator: R+ | NIR+ multi-wavelength technology, Smart Modes, individual wavelength control, and zero-gap array design. Panels are both home and clinical grade. ([Source: lighttherapyinsiders.com](https://www.lighttherapyinsiders.com/biomax-pro-vs-biomax-900-review/))
 
