@@ -54,8 +54,7 @@ The global red light therapy device market is estimated at **$587.5 million in 2
 | Commercial Mode | SaaS + affiliate |
 | Lifecycle Mode | MVP → iterate |
 | Research Mode | deep |
-| Assign To | OpenHands / Copilot Coding Agent |
-
+| Assign To | OpenHands / OpenRouter |
 **App name:** `RLT Source` (Red Light Therapy Source) — domain candidates: `rltsource.com`, `redlightsource.app`, `photobiomodulation.directory`
 
 ## Step 2 — Deep Web Research
