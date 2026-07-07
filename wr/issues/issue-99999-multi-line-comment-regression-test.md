@@ -89,3 +89,21 @@ N/A
 ## Risks
 
 N/A
+
+## Superseded Content
+
+<!-- Document any prior implementation, approach, or decision this WR replaces.
+     Per RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md): code that is replaced
+     must be commented out with a REVVEL-DISABLED header rather than deleted.
+     Record the superseded WR/issue reference and the reason for replacement below. -->
+<!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
+
+| Field | Value |
+| --- | --- |
+| Supersedes WR/issue | N/A |
+| Reason for replacement | N/A |
+| Archival status | N/A |
+
+<!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
+     DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
+     NOT-APPLICABLE (no code was removed), PENDING-REVIEW (awaiting human decision). -->
