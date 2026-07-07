@@ -15,6 +15,11 @@ while [[ $# -gt 0 ]]; do case "$1" in
 esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
+# wr/ — env-overridable so tests can point HERE at a sandbox instead of the
+# real wr/issues/ (tests/generate-wr-comment-stripping.test.js sets
+# HERE=<tmpdir>; without this default-only assignment the override was
+# silently ignored and test runs mutated tracked fixture files).
+HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
 HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"   # wr/; respect env-var override for tests
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
