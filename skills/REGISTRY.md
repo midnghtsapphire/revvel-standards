@@ -51,6 +51,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
 | CircleCI, circleci CLI, .circleci/config.yml, orbs, pipeline tuning, test splitting, config policies, ORBIT | [`circleci-expert`](#circleci-expert) |
 | Octopus Review, usage limit banner, octp CLI, repo index, review-bot model routing, OCTO | [`octopus-expert`](#octopus-expert) |
+| Mabl expertise, un-pause/reactivate Mabl, credit-free test runs, mabl MCP, Mailbox email testing, MENDER | [`mabl-expert`](#mabl-expert) |
 | OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
 | SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
 | Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets | [`schema-rich-results`](#schema-rich-results) |
@@ -451,6 +452,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 ### Testing & Quality
+
+#### mabl-expert
+
+- **Path:** `skills/mabl-expert/`
+- **Files:** `SKILL.md`
+- **Platform:** [Mabl](https://www.mabl.com) — **PAUSED in this fleet 2026-05-27** (replaced by Keploy; evaluation preserved in `.github/workflows/mabl.yml`)
+- **Description:** MENDER — the fleet's Mabl expert and guardian of its pause. Knows the 2026 agentic platform (Planner/Generator/Healer test agents, GenAI assertions, multi-model auto-healing, API + MongoDB/Oracle testing, Test Impact Analysis, Mailbox email-flow assertions), the **credit-free lanes** (`mabl tests run` locally/CI consumes no cloud credits; mabl cloud MCP drives it from Claude agents), and owns the reactivation gate: a browser-E2E need Keploy+Playwright can't cover, a Doppler-managed key, and labeled plans — all three or Mabl stays paused. Companion setup skill: [`mabl`](#mabl).
+- **Tags:** mabl, mender, e2e-testing, agentic-testing, auto-healing, genai-assertions, credit-free, mabl-mcp, mailbox, paused-tool, reactivation-gate, keploy
+- **Trigger:** "/mender", "/mabl", "mabl question", "un-pause mabl", "reactivate mabl", "email flow testing", "mabl mailbox", "mabl mcp", "credit-free mabl"
+- **Lifecycle:** On-demand (comment-triggered) + advisory on any Mabl task
+- **Persona:** 🧪 MENDER (Test Healer)
 
 #### mabl
 

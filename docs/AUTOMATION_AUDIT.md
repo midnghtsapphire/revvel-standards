@@ -446,3 +446,16 @@ OSI-public free), RAG-index hygiene (`octopus repo index`), and model routing �
 including OpenRouter on self-host via the OpenAI-compatible gateway env slots.
 Playbook: `skills/octopus-expert/SKILL.md`. Additive; no existing workflow behavior
 was changed.
+
+---
+
+## Update — July 7, 2026: MENDER persona (Mabl expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**MENDER 🧪**, the Mabl expert persona (`/mender`, `/mabl`, `/🧪`). Registry-driven
+resolution via the `mender` entry in `scripts/openrouter-personas.js`; runner
+unchanged. Note: **Mabl itself remains PAUSED** (2026-05-27 evaluation preserved in
+`mabl.yml`) — MENDER is the guardian of that pause and its reactivation gate, and
+documents the credit-free lanes (local/CI CLI runs consume no cloud credits; mabl
+cloud MCP). Playbook: `skills/mabl-expert/SKILL.md`. Additive; the paused `mabl.yml`
+workflow was NOT re-enabled.
