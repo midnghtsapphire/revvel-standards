@@ -82,27 +82,11 @@ out="$(cat "$TEMPLATE")"
 # #14227; multi-line comment fix on #15215).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
-
-  # Skip the leading template guidance block so line 1 is always the WR H1.
-  # Handles both single-line comments (`<!-- ... -->`) and multi-line comment
-  # blocks (`<!--` ... `-->`) before the header.
-  stripping && in_comment {
-    if ($0 ~ /-->/) in_comment=0
-    next
-  }
-
-  stripping && /^[[:space:]]*$/ { next }
-
-  stripping && /^[[:space:]]*<!--/ {
-    if ($0 !~ /-->/) in_comment=1
-    next
-  }
-
   stripping && in_comment {
     if (/-->/) { in_comment=0 }
     next
   }
-  stripping && /^<!--/ {
+  stripping && /^[[:space:]]*<!--/ {
     if (/-->/) { next }
     in_comment=1; next
   }
