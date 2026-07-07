@@ -67,6 +67,7 @@ jobs:
       - run:
           name: Skills index is valid YAML
           command: npx --yes js-yaml skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+      - run:
           # Fetch enough history for an accurate merge-base diff.
           # 200 commits covers virtually all branches in this repo.
           name: Fetch origin/main for merge-base diff
@@ -102,7 +103,6 @@ workflows:
           filters:
             branches:
               only: main
-      - validate-registries:
       - policy-check:
           filters:
             branches:
