@@ -28,6 +28,8 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        (contains(github.event.issue.labels.*.name, 'wr:new') &&
+         contains(github.event.issue.labels.*.name, 'openrouter'))))
         contains(github.event.issue.labels.*.name, 'work-request') ||
         contains(github.event.issue.labels.*.name, 'weekly-research')))
     steps:
@@ -56,6 +58,7 @@ jobs:
               return;
             }
 
+            const title = issue.title || '';
             const body = issue.body || '';
             const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
@@ -67,7 +70,31 @@ jobs:
             // regex pattern as `wr-auto-classify.yml`).
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
+            const inferOutputTypeFromTitle = (value) => {
+              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
+              return null;
+            };
+
             const m = body.match(sectionRegex);
+            const outputType = (
+              m?.[1]?.trim().toLowerCase() ||
+              inferOutputTypeFromTitle(title) ||
+              ''
+            );
+            if (!outputType) {
+              core.info('No Output Type section or route tags found — skipping route.');
+            const title = issue.title || '';
+            const titleHasAppTag = /#apps?\b/i.test(title);
+            const titleHasToolTag = /#tools?\b/i.test(title);
+            const inferredFromTitle =
+              titleHasAppTag ? 'production-app' :
+              titleHasToolTag ? 'desktop-tool' :
+              '';
+
+            const outputType = (m?.[1] || inferredFromTitle || '').trim().toLowerCase();
+            if (!outputType) {
+              core.info('No Output Type section or title route tag found — skipping route.');
             const outputTypeLabel = existingLabels.find(label =>
               label.startsWith('output-type:')
             );
