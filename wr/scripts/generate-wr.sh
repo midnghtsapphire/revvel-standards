@@ -128,6 +128,17 @@ out="$(printf '%s\n' "$out" | awk '
 # multi-line fix: in_comment state variable tracks open <!-- --> blocks).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping {
+    if (in_comment) {
+      if ($0 ~ /-->[[:space:]]*$/) in_comment=0
+      next
+    }
+    if ($0 ~ /^[[:space:]]*<!--/) {
+      if ($0 !~ /-->[[:space:]]*$/) in_comment=1
+      next
+    }
+    if ($0 ~ /^[[:space:]]*$/) next
+if ($0 ~ /[[:space:]]*-->[[:space:]]*$/) in_comment=0
   stripping && !in_comment && /^[[:space:]]*<!--/ {
     if (/-->/) { next }   # single-line comment — skip it
     in_comment=1; next    # opening of a multi-line comment
