@@ -70,6 +70,7 @@ jobs:
               title.match(/^\[WR\]/i) ||
               titleHasRouteTags ||
             // if a label has not been created in the repository yet.
+            const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
             const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
