@@ -28,6 +28,19 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app')))
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#apps') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#mcp') ||
+        contains(github.event.issue.title, '#doc') ||
+        contains(github.event.issue.title, '#docs')))
         (contains(github.event.issue.labels.*.name, 'wr:new') &&
          contains(github.event.issue.labels.*.name, 'openrouter'))))
         contains(github.event.issue.labels.*.name, 'work-request') ||
@@ -65,6 +78,18 @@ jobs:
               l => typeof l === 'string' ? l : l.name
             );
 
+            const inferTitleOutputType = (title) => {
+              const normalizedTitle = String(title || '').toLowerCase();
+              if (/(?:^|[^a-z0-9])#apps?\b/.test(normalizedTitle)) return 'production-app';
+              if (/(?:^|[^a-z0-9])#tools?\b/.test(normalizedTitle)) return 'desktop-tool';
+              if (/(?:^|[^a-z0-9])#pdf\b/.test(normalizedTitle)) return 'sellable-pdf';
+              if (/(?:^|[^a-z0-9])#api\b/.test(normalizedTitle)) return 'api-product';
+              if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
+              if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
+              if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
+              return '';
+            };
+
             // Match the `### Output Type (required)` form section — tolerant of
             // trailing parenthetical annotations and case (matches the same
             // regex pattern as `wr-auto-classify.yml`).
@@ -77,6 +102,19 @@ jobs:
             };
 
             const m = body.match(sectionRegex);
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputType = ((m?.[1] || '').trim().toLowerCase() || inferredFromTitle);
+            if (!outputType) {
+              core.info('No Output Type section or title route tag found — skipping route.');
+            const outputType = (m?.[1] || '').trim().toLowerCase() || inferTitleOutputType(issue.title);
+            if (!outputType) {
+              core.info('No Output Type section found in issue body — skipping route.');
             const outputType = (
               m?.[1]?.trim().toLowerCase() ||
               inferOutputTypeFromTitle(title) ||
