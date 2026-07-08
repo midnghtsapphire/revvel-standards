@@ -47,6 +47,21 @@ automations is rotating/overwriting daily.
   every key to Doppler (Doppler stays the single write path) or disconnect
   the sync (GitHub becomes the single write path). Pick ONE.
 
+## Owner decision 2026-07-08: Doppler is on the way out
+
+"It is just me, not a whole enterprise" — Doppler + weekly auto-rotation is
+enterprise churn for a solo operator. Second killer confirmed:
+`secret-rotation-schedule.yml` auto-rotated any secret older than 60 days
+through Doppler weekly (and its token line tries SIX different Doppler
+token names — the confusion made manifest). Rotation mints a new value in
+Doppler while GitHub/local copies keep the dead one.
+
+Actions taken on the PR branch: rotation cron PAUSED (manual dispatch
+kept). Recommended end state for this WR: disconnect the Doppler GitHub
+sync, make GitHub Actions secrets the single store, archive
+doppler-secrets-sync / sync-secrets-to-repos, collapse the six Doppler
+token names to zero, and let the presence ledger stand guard.
+
 ## Desktop credential agent (owner request)
 
 Owner wants an agent with desktop access that can "go get any API key and

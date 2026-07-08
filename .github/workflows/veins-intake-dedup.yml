@@ -61,7 +61,19 @@ jobs:
             );
 
             if (!twin) {
-              core.info(`#${issue.number}: no open twin — keeping.`);
+              // HEAL UPGRADE 2026-07-08: a fresh VEINS alert is work, not
+              // decoration. Label it into the self-heal loop (CLAUDE.md step
+              // 2-3: auto-fix/ralph-loop labels are what routers pick up) so
+              // the fleet acts instead of letting the alert sit and squawk.
+              try {
+                await github.rest.issues.addLabels({
+                  owner, repo, issue_number: issue.number,
+                  labels: ['auto-fix', 'ralph-loop', 'self-heal'],
+                });
+                core.info(`#${issue.number}: fresh VEINS alert — routed to self-heal loop.`);
+              } catch (e) {
+                core.notice(`Could not label fresh VEINS alert: ${e.message}`);
+              }
               return;
             }
 
@@ -91,3 +103,32 @@ jobs:
               owner, repo, issue_number: issue.number,
               state: 'closed', state_reason: 'not_planned',
             });
+
+            // HEAL UPGRADE 2026-07-08: if the same component keeps re-alerting,
+            // dedup alone is a mute button. After 3 duplicates, escalate the
+            // surviving twin to the stuck-watchdog lane (lifecycle:stuck feeds
+            // watchdog-diagnosis per agent-prompts.yml) exactly once.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number: twin.number, per_page: 100,
+            });
+            const dupCount = comments.filter(c =>
+              (c.body || '').includes('VEINS intake dedup')).length + 1;
+            const twinLabels = (twin.labels || []).map(l => typeof l === 'string' ? l : l.name);
+            if (dupCount >= 3 && !twinLabels.includes('lifecycle:stuck')) {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: twin.number,
+                labels: ['lifecycle:stuck', 'auto-fix'],
+              });
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: twin.number,
+                body: [
+                  '🚨 **VEINS escalation** — this component has re-alerted ' + dupCount + ' times.',
+                  '',
+                  'Dedup has been absorbing the squawks, but repeated alerts mean the underlying problem is NOT healing on its own.',
+                  'Escalated to the stuck-watchdog lane (`lifecycle:stuck`) for diagnosis and forced repair.',
+                  '',
+                  '_Automated by `.github/workflows/veins-intake-dedup.yml` — self-healers heal; they do not just squawk._',
+                ].join('\n'),
+              });
+              core.notice(`Escalated twin #${twin.number} after ${dupCount} duplicate alerts.`);
+            }
