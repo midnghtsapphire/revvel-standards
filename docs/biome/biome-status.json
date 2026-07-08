@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-08T00:30:59.289Z",
+  "generated_at": "2026-07-08T01:34:54.601Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
+            "id": 28909360543,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28909360543",
+            "conclusion": "failure"
+          },
+          {
             "id": 28908463585,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28908463585",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28908353355,
-            "name": "Weekly Research (WR) Automation",
-            "path": ".github/workflows/weekly-research.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28908353355",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28910494973"
       }
     },
     "sheaf": {
