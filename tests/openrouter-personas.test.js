@@ -74,10 +74,14 @@ async function runTests() {
 
   // Registry shape
   console.log("Test Group: Persona Registry");
+  // Core personas are hand-authored here; fleet pattern experts are derived
+  // from skills/agentic-workflow-fleet/FLEET.yml via agent-creator-data.json.
+  const CORE_PERSONAS = ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"];
+  const FLEET_PERSONAS = ["chain", "planner", "fanout", "conductor", "switchboard", "critic", "mirror", "rewoo", "loop"];
   assertEqual(
     Object.keys(getPersonas()).sort(),
-    ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"],
-    "Should register exactly the nine named personas"
+    [...CORE_PERSONAS, ...FLEET_PERSONAS].sort(),
+    "Should register the nine core personas plus the nine fleet pattern experts"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
@@ -152,8 +156,14 @@ async function runTests() {
   // Fleet registration (deferred, no API calls)
   console.log("\nTest Group: instantiateFleet (deferred)");
   const fleet = await instantiateFleet(undefined, { silent: true });
-  assertEqual(fleet.length, 8, "Fleet registers all eight personas by default");
-  assertEqual(fleet.length, 9, "Fleet registers all nine personas by default");
+  // Derive the expected size from the registry itself: a hardcoded count here
+  // goes stale the moment a persona is added (this exact assertion once said
+  // "eight" and sat red on main after MENDER became the ninth).
+  assertEqual(
+    fleet.length,
+    Object.keys(PERSONA_REGISTRY).length,
+    "Fleet registers every persona in the registry by default"
+  );
   assertTrue(
     fleet.every((f) => f.instantiated === false && typeof f.assign === "function"),
     "Each fleet member is a deferred handle"

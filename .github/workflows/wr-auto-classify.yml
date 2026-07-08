@@ -45,6 +45,8 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+       (contains(github.event.issue.labels.*.name, 'wr:new') &&
+        contains(github.event.issue.labels.*.name, 'openrouter')) ||
        startsWith(github.event.issue.title, '[WR]') ||
        contains(format(' {0} ', github.event.issue.title), ' #app ') ||
        contains(format(' {0} ', github.event.issue.title), ' #apps ') ||
@@ -57,52 +59,10 @@ jobs:
        contains(format(' {0} ', github.event.issue.title), ' #api ') ||
        contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
        contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #mcp '))
-       contains(github.event.issue.title, '#app') ||
-       contains(github.event.issue.title, '#tool'))
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#cli') ||
-       contains(github.event.issue.title, '#api') ||
-       contains(github.event.issue.title, '#mcp') ||
-       contains(github.event.issue.title, '#pdf') ||
-       contains(github.event.issue.title, '#doc') ||
-       contains(github.event.issue.title, '#docs'))
-       ((contains(github.event.issue.title, '#app') ||
-         contains(github.event.issue.title, '#tools')) &&
-        (contains(github.event.issue.body, 'https://') ||
-         contains(github.event.issue.body, 'http://'))))
-       contains(github.event.issue.title, '#app') ||
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#pdf') ||
-       contains(github.event.issue.title, '#docs') ||
-       contains(github.event.issue.title, '#api') ||
-       contains(github.event.issue.title, '#cli') ||
-       contains(github.event.issue.title, '#mcp') ||
-       contains(github.event.issue.title, '#video'))
-       contains(toLower(github.event.issue.title), '#tool ') ||
-       endsWith(toLower(github.event.issue.title), '#tool') ||
-       contains(toLower(github.event.issue.title), '#tools ') ||
-       endsWith(toLower(github.event.issue.title), '#tools') ||
-       contains(toLower(github.event.issue.title), '#app ') ||
-       endsWith(toLower(github.event.issue.title), '#app'))
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#app'))
-       contains(github.event.issue.title, '#app') ||
-       contains(github.event.issue.title, '#apps') ||
-       contains(github.event.issue.title, '#tool') ||
-       contains(github.event.issue.title, '#tools') ||
-       contains(github.event.issue.title, '#pdf') ||
-       contains(github.event.issue.title, '#api') ||
-       contains(github.event.issue.title, '#cli') ||
-       contains(github.event.issue.title, '#mcp') ||
-       contains(github.event.issue.title, '#doc') ||
-       contains(github.event.issue.title, '#docs'))
-       (contains(github.event.issue.labels.*.name, 'wr:new') &&
-        contains(github.event.issue.labels.*.name, 'openrouter')) ||
-       startsWith(github.event.issue.title, '[WR]'))
+       contains(format(' {0} ', github.event.issue.title), ' #mcp ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #skill ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #skills ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #website ')))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -117,7 +77,9 @@ jobs:
       PROJECT_OWNER_TYPE: user
       PROJECT_OWNER: midnghtsapphire
       PROJECT_NUMBER: 5
-      MODEL: anthropic/claude-sonnet-4
+      # Classification is the triage lane (.github/agent-models.yml) — cheap
+      # model; Sonnet is denylisted by house rule.
+      MODEL: openai/gpt-4o-mini
     steps:
       - name: Classify and apply
         run: |
@@ -203,6 +165,8 @@ jobs:
               ("mcp-product", re.compile(r"(?:^|\s)#mcp(?=\s|$)", re.IGNORECASE)),
               ("sellable-pdf", re.compile(r"(?:^|\s)#pdf(?=\s|$)", re.IGNORECASE)),
               ("technical-documentation", re.compile(r"(?:^|\s)#(?:doc|docs)(?=\s|$)", re.IGNORECASE)),
+              ("internal-script-automation", re.compile(r"(?:^|\s)#(?:skill|skills)(?=\s|$)", re.IGNORECASE)),
+              ("production-app", re.compile(r"(?:^|\s)#website(?=\s|$)", re.IGNORECASE)),
           ]
 
           def gh_graphql(query, variables=None, token=None):
@@ -264,6 +228,9 @@ jobs:
               "#cli": "cli-product",
               "#api": "api-product",
               "#mcp": "mcp-product",
+              "#skill": "internal-script-automation",
+              "#skills": "internal-script-automation",
+              "#website": "production-app",
           }
 
           def infer_output_type_from_title_tags(title):

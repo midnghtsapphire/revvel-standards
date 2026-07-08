@@ -69,6 +69,13 @@ test("generate-wr strips leading multi-line template comments", () => {
     assert.ok(!text.startsWith("<!--"), "rendered WR must not keep template comments above the H1");
   } finally {
     fs.rmSync(sandbox, { recursive: true, force: true });
+  }
+});
+
+// A second, in-repo variant of the same regression (arrived via a parallel
+// fix; both are kept because they exercise different working directories).
+// NOTE: an overlapping merge of these two variants once dropped the closing
+// braces above, leaving this whole file unparseable — and red on main.
 const GENERATOR = path.join(REPO_ROOT, "wr", "scripts", "generate-wr.sh");
 const WR_ISSUES_DIR = path.join(REPO_ROOT, "wr", "issues");
 
