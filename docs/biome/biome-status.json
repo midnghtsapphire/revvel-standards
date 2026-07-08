@@ -1,24 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-07T23:20:41.812Z",
+  "generated_at": "2026-07-08T00:30:59.289Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28905512516,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28905512516",
+            "id": 28908463585,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28908463585",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28908353355,
+            "name": "Weekly Research (WR) Automation",
+            "path": ".github/workflows/weekly-research.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28908353355",
             "conclusion": "failure"
           }
         ],
