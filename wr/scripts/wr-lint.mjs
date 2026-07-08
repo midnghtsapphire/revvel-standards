@@ -84,7 +84,9 @@ const DEFERRAL_PLACEHOLDERS = [
   { re: /\bpending\s+refinement\b/i,                     label: "pending refinement" },
   { re: /\bTBD\b/,                                       label: "TBD" },
   { re: /\bTODO\b/,                                      label: "TODO" },
-  // _No response_ is also caught by NO_RESPONSE / rule 7; wrapping here gives a standalone error too.
+  // _No response_ is also caught by NO_RESPONSE / rule 7 (false-completion with checked items);
+  // including it here as well gives a standalone rule-12 error even when no checklist is checked.
+  // Dual detection is intentional: rule 7 catches the combination, rule 12 catches it alone.
   { re: NO_RESPONSE,                                     label: "_No response_" },
 ];
 
@@ -288,7 +290,7 @@ function lintFile(path) {
     for (const { re, label } of DEFERRAL_PLACEHOLDERS) {
       if (re.test(l)) {
         issues.push(`line ${i + 1}: deferral placeholder "${label}" — fill the section or open a [WR-BLOCKER] issue; see wr/lint-rules/no-pending-placeholders.md`);
-        break; // one issue per line keeps output readable
+        break; // one issue per line keeps output readable; first matched pattern is reported
       }
     }
   });
