@@ -1,15 +1,15 @@
-# WR: single-line comment test
+# WR: Laser Therapy for Stretch Marks #tool or #app
 
-**Issue:** #99999  
+**Issue:** #15281  
 **Repository:** midnghtsapphire/revvel-standards  
-**Created:** 2026-07-07  
+**Created:** 2026-07-06  
 **Researcher:** N/A  
-**Research Date:** 2026-07-07  
+**Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
 ## Issue Context
 
-test body
+<https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks>
 
 ## Repository Metadata
 

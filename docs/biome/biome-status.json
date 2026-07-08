@@ -1,87 +1,46 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-07T07:12:09.056Z",
+  "generated_at": "2026-07-07T15:01:10.136Z",
+  "generated_at": "2026-07-08T03:05:31.591Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "70/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 70,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 28848386551,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848386551",
+            "id": 28914453263,
+            "name": ".github/workflows/saml-sso-registration.yml",
+            "path": ".github/workflows/saml-sso-registration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914453263",
             "conclusion": "failure"
           },
           {
-            "id": 28848385773,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848385773",
+            "id": 28914452869,
+            "name": ".github/workflows/test-bito-integration.yml",
+            "path": ".github/workflows/test-bito-integration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452869",
             "conclusion": "failure"
           },
           {
-            "id": 28848385463,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848385463",
+            "id": 28914452515,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452515",
             "conclusion": "failure"
           },
           {
-            "id": 28848385282,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848385282",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848384577,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848384577",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848384394,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848384394",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848383208,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848383208",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848383127,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848383127",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848382695,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848382695",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28848382655,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28848382655",
+            "id": 28914452154,
+            "name": ".github/workflows/openrouter-auto-route.yml",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452154",
             "conclusion": "failure"
           }
         ],

@@ -1,15 +1,15 @@
-# WR: multi-line comment regression test
+# WR: TT115.pdf tool or app for pbmt
 
-**Issue:** #99999  
+**Issue:** #15223  
 **Repository:** midnghtsapphire/revvel-standards  
-**Created:** 2026-07-07  
-**Researcher:** N/A  
-**Research Date:** 2026-07-07  
+**Created:** 2026-07-06  
+**Researcher:** Unassigned  
+**Research Date:** 2026-07-06  
 **WR Status:** 🟡 In Progress  
 
 ## Issue Context
 
-test body
+[TT115.pdf sample](https://spie.org/samples/TT115.pdf)
 
 ## Repository Metadata
 
@@ -23,7 +23,6 @@ test body
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
@@ -32,11 +31,12 @@ test body
 - [ ] Domain strategy
 - [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+_Pending — initial WR scaffold created; checklist items remain open until research is completed._
 
 ## Research Findings
 
 <!-- revvel-research-findings -->
-N/A
+Pending — research in progress.
 
 ## Executive Summary
 
@@ -83,8 +83,6 @@ N/A
 | `depends_on` (prerequisite WRs) | N/A |
 | Blocked by | N/A |
 | Blocks (downstream WRs) | N/A |
-
-N/A
 
 ## Risks
 
