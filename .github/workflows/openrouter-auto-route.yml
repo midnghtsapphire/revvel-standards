@@ -28,6 +28,10 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#tool')))
         contains(github.event.issue.labels.*.name, 'weekly-research') ||
         contains(github.event.issue.labels.*.name, 'work-request') ||
         contains(github.event.issue.title, '#app') ||
@@ -107,6 +111,18 @@ jobs:
               l => typeof l === 'string' ? l : l.name
             );
 
+            function inferOutputTypeFromTitle(value) {
+              // Keep this mapping in sync with wr-auto-classify.yml so title-only
+              // WR intake resolves the same Output Type before/after the mirrored
+              // `output-type:*` label exists.
+              if (/(^|\s)#(?:app|apps)(?=\s|$)/i.test(value || '')) {
+                return 'production-app';
+              }
+              if (/(^|\s)#(?:tool|tools)(?=\s|$)/i.test(value || '')) {
+                return 'desktop-tool';
+              }
+              return '';
+            }
             function inferOutputTypeFromTitle(text) {
               const normalized = (text || '').toLowerCase();
               if (/(?:^|\s)#app(?=\s|$)/.test(normalized)) return 'production-app';
@@ -161,6 +177,16 @@ jobs:
 
             const m = body.match(sectionRegex);
             const outputTypeLabel = existingLabels.find(label => label.startsWith('output-type:')) || '';
+            const outputType = (
+              m?.[1] ||
+              outputTypeLabel.replace(/^output-type:/, '') ||
+              inferOutputTypeFromTitle(title)
+            ).trim().toLowerCase();
+            if (!outputType) {
+              core.info('No Output Type section, mirrored output-type label, or title route tag found — skipping route.');
+              return;
+            }
+            core.info(`Resolved Output Type: "${outputType}"`);
             const outputType =
               (m?.[1] || '').trim().toLowerCase() ||
               outputTypeLabel.replace(/^output-type:/, '').trim().toLowerCase() ||

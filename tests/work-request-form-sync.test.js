@@ -509,6 +509,67 @@ test('WR workflows support title route tags for title-only intake', () => {
   );
 });
 
+test('WR auto-classify infers Output Type from title app/tool hints', () => {
+  const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'), 'utf8');
+  assert(
+    wf.includes('def infer_output_type_from_title(title):'),
+    'wr-auto-classify should infer output type from title hints when Output Type is missing'
+  );
+  assert(
+    wf.includes('title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)'),
+    'wr-auto-classify should compute a title-based Output Type hint'
+  );
+  assert(
+    wf.includes('if field == "Output Type" and title_inferred_output_type in allowed:'),
+    'wr-auto-classify should use the title Output Type hint before fallback defaults'
+  );
+  assert(
+    wf.includes('title-hint = inferred from title tags/keywords'),
+    'wr-auto-classify should document title-hint as a classification source'
+  );
+});
+
+
+test('Title route tags act as WR intake and Output Type signals for title-only issues', () => {
+  const weeklyResearch = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'),
+    'utf8'
+  );
+  const autoClassify = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'),
+    'utf8'
+  );
+  const autoRoute = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+
+  assert(
+    weeklyResearch.includes('const hasTitleRouteTag =') &&
+      weeklyResearch.includes('#(?:app|apps|tool|tools)'),
+    'weekly-research must recognize #app/#tool title tags as WR intake signals'
+  );
+  assert(
+    autoClassify.includes("contains(github.event.issue.title, '#app')") &&
+      autoClassify.includes("contains(github.event.issue.title, '#tool')"),
+    'wr-auto-classify must run for title-only route tags'
+  );
+  assert(
+    autoClassify.includes('def infer_output_type_from_title(title):') &&
+      autoClassify.includes('parsed["Output Type"] = title_output_type') &&
+      autoClassify.includes('return "production-app"') &&
+      autoClassify.includes('return "desktop-tool"'),
+    'wr-auto-classify must infer Output Type from #app/#tool title tags when the body is blank'
+  );
+  assert(
+    autoRoute.includes("contains(github.event.issue.labels.*.name, 'work-request')") &&
+      autoRoute.includes("contains(github.event.issue.title, '#app')") &&
+      autoRoute.includes("label.startsWith('output-type:')") &&
+      autoRoute.includes('inferOutputTypeFromTitle(title)'),
+    'openrouter-auto-route must accept title-tag WR intake and route from title/body/output-type label signals'
+  );
+});
+
 test('WR PR creation waits for research completion and ignores PR comments', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
