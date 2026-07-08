@@ -94,7 +94,8 @@ revenue-generating products:
     ├── screen-recorder-finder/
     ├── revvel-skill-runner/
     ├── creator-payout-tracker/
-    └── hvac-calc-service/
+    ├── hvac-calc-service/
+    └── fda-design-controls/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -118,6 +119,8 @@ collisions:
 | CLI Engine | `products/cli-engine` | 3008 | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
 | AI Ad Generator | `products/ai-ad-generator` | 3009 | Next.js. Zeely AI-inspired ad automation: product scraper, AI copy, static creatives, campaign manager, analytics. |
 | Red Light Therapy Dosage Calculator | `products/red-light-therapy-dosage-calculator` | 3010 | Next.js. Mobile-friendly PBM/red-light session-time calculator using irradiance and target dose. |
+| FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
+| MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 
 Start a specific product on its assigned port:
 
@@ -131,6 +134,8 @@ cd products/creator-payout-tracker && npm run dev -- -p 3005
 cd products/cli-engine           && npm run dev -- -p 3008
 cd products/ai-ad-generator      && npm run dev -- -p 3009
 cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
+cd products/fda-design-controls  && npm run dev -- -p 3010
+cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 ```
 
 ### Running and testing

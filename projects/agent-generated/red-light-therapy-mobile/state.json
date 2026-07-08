@@ -1,0 +1,20 @@
+{
+  "product_slug": "red-light-therapy-mobile",
+  "intake_id": "TEMPLATE",
+  "revenue_target_monthly_usd": 0,
+  "goal_phase": 1,
+  "status": "new",
+  "steps": [],
+  "shape": "app",
+  "step": 0,
+  "step_name": "scaffolded",
+  "bom_ready": false,
+  "build_green": false,
+  "certified": false,
+  "monetized": false,
+  "deployed": false,
+  "marketed": false,
+  "created_at": "2026-07-06T05:22:57Z",
+  "last_updated_at": "2026-07-06T05:22:57Z",
+  "notes": []
+}
