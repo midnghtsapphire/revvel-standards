@@ -50,6 +50,34 @@ The doc's own prescribed safeguards are the spec. Implement them:
   instead of patching a fourth time
 - Self-heal prompts include the learnings.md recall step
 
+## Acceptance spec: the owner's own S-MOS guardrails
+
+VSPR (Vascular-Sheaf Policy Repair) is the OWNER'S original architecture;
+V.E.I.N.S. is her combination of VSPR with a Perplexity-style work-memory
+brain (EmoBank). The "VSPR Swarm Metacognitive Operating System (S-MOS)
+Master Prompt" on her Drive (folder: VSPR) defines the guardrails this WR
+must implement — treat its §4 as the acceptance spec verbatim:
+
+1. **Anti-Oscillation Limit**: halt after K>=5 failed compile/logic checks
+   or K>=3 attempts without reliability improvement; produce a diagnostic
+   report; escalate to the human-on-the-loop channel. (Maps to item 3.)
+2. **Strict sandboxing**: every self-modification validated in an isolated
+   runtime; `write_patch` runs tests and AUTO-ROLLS-BACK on failure.
+   (Maps to item 1 — the fleet merged patches that did not even compile.)
+3. **Log-poisoning protection**: never ingest unsanitized issue/log text
+   into prompts; instruction-shaped strings quarantine the source. (Feeds
+   the security fleet WR, member 1: prompt-injection sentinel.)
+4. **No deletions without audit** — already partially embodied in
+   standards/COMMENT-DONT-DELETE.md.
+5. **Layer 6 memory**: RBT (Roses/Buds/Thorns) appraisals + EmoBank
+   affective telemetry appended to Learnings.md with the CLAUDE.md index
+   updated — the repo has Learnings.md + CLAUDE.md but no RBT structure
+   and no EmoBank; add both to the ledger format.
+
+Note: S-MOS Layer 2's complexity-tier routing (simple / reasoning /
+deep_search over OpenRouter) is the ancestor of `.github/agent-models.yml`
+`routing_tree` (2026-07-08) — the tree should cite S-MOS as its source.
+
 ## Context
 
 Companion artifacts on the owner's Drive: veins_core_simulation.py,
