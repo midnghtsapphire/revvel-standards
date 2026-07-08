@@ -86,15 +86,28 @@ function isWrIssue(title, labels, issueType) {
   const labelSet = new Set(
     labels.map(l => typeof l === 'string' ? l : l.name)
   );
+  const hasTitleRouteTag = /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
   const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+  const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title || '');
   
   return (
     title.match(/^\[WR\]/i) ||
     hasTitleRouteTag ||
+  const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
+  
+  return (
+    title.match(/^\[WR\]/i) ||
+    titleHasRouteTags ||
+  const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title || '');
+  
+  return (
+    title.match(/^\[WR\]/i) ||
+    hasRouteTag ||
     labelSet.has('weekly-research') ||
     labelSet.has('work-request') ||
+    (labelSet.has('wr:new') && hasTitleRouteTag) ||
     ['basic wr', 'wr', 'work request'].includes(normalizedIssueType)
   );
 }
@@ -235,10 +248,38 @@ function isCompletionTrigger(eventName, action, labelName) {
   await test('isWrIssue detects title route tags for title-only intake', () => {
     assert.equal(isWrIssue('places to buy pbmt tools #tool #app', [], null), true);
     assert.equal(isWrIssue('Need a new CLI helper #cli', [], null), true);
+  await test('isWrIssue detects title-only route tags', () => {
+    assert.equal(isWrIssue('Regulation-of-Skin-Collagen.pdf#tools #app', [], null), true);
+    assert.equal(isWrIssue('Red light guide #pdf', [], null), true);
+  await test('isWrIssue detects title route tags', () => {
+    assert.equal(isWrIssue('s12967-025-07466-3.pdf#tools #apps', [], null), true);
+    assert.equal(isWrIssue('landing page #app', [], null), true);
+  await test('isWrIssue detects title-only WR intake via route tags on wr:new issues', () => {
+    assert.equal(
+      isWrIssue(
+        'Photobiomodulation study #tools #app',
+        [{ name: 'wr:new' }],
+        null
+      ),
+      true
+    );
+    assert.equal(
+      isWrIssue(
+        'Photobiomodulation study #tools #app',
+        [],
+        null
+      ),
+      false
+    );
   });
 
   await test('isWrIssue returns false for non-WR issues', () => {
     assert.equal(isWrIssue('Bug: Something broken', [], null), false);
+  });
+
+  await test('isWrIssue detects title route tags even without [WR] prefix', () => {
+    assert.equal(isWrIssue('Red light therapy guide#tools #app', [], null), true);
+    assert.equal(isWrIssue('Clinical workflow #tool', [], null), true);
   });
 
   // Completion Labels
