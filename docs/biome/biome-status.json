@@ -1,90 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-08T20:29:38.547Z",
+  "generated_at": "2026-07-08T21:25:31.072Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "10/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 10,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 28973470903,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28973470903",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970546603,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970546603",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970289180,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970289180",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970279210,
-            "name": "🔄 Auto-Reset Stuck Issues",
-            "path": ".github/workflows/auto-reset-stuck-issues.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970279210",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970158116,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970158116",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970139917,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970139917",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970095720,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970095720",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970092387,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970092387",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970085180,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970085180",
-            "conclusion": "failure"
-          },
-          {
-            "id": 28970084511,
-            "name": "OpenRouter Triage",
-            "path": ".github/workflows/openrouter-triage.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28970084511",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
