@@ -232,6 +232,19 @@ test('WR auto-classify accepts title signals and infers output type from route t
     'wr-auto-classify must accept [WR] title prefix'
   );
   assert(
+    /\(\(contains\(github\.event\.issue\.title,\s*'#app'\)\s*\|\|\s*[\s\S]*contains\(github\.event\.issue\.title,\s*'#tools'\)\)\s*&&[\s\S]*contains\(github\.event\.issue\.body,\s*'https:\/\/'\)\s*\|\|[\s\S]*contains\(github\.event\.issue\.body,\s*'http:\/\/'\)\)\)/.test(wf),
+    'wr-auto-classify must accept route-tagged title-only source intake'
+  );
+});
+
+test('weekly-research accepts route-tagged title-only source intake', () => {
+  const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'weekly-research.yml'), 'utf8');
+  assert(
+    wf.includes('looksLikeTaggedSourceIntake') &&
+      wf.includes("title.toLowerCase().includes('#app')") &&
+      wf.includes("title.toLowerCase().includes('#tools')") &&
+      wf.includes('hasSourceUrl'),
+    'weekly-research must detect #tools/#app source-link intake as WR work'
     wf.includes("contains(github.event.issue.title, '#app')") &&
       wf.includes("contains(github.event.issue.title, '#tools')"),
     'wr-auto-classify must wake up for title route tags like #app/#tools'

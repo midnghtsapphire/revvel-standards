@@ -46,6 +46,10 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
+       ((contains(github.event.issue.title, '#app') ||
+         contains(github.event.issue.title, '#tools')) &&
+        (contains(github.event.issue.body, 'https://') ||
+         contains(github.event.issue.body, 'http://'))))
        contains(github.event.issue.title, '#app') ||
        contains(github.event.issue.title, '#tool') ||
        contains(github.event.issue.title, '#tools') ||

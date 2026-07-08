@@ -49,11 +49,26 @@ jobs:
             });
 
             const title = issue.title || '';
+            const body = issue.body || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
             const labelSet = new Set(labels);
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const hasRouteTags =
+              title.toLowerCase().includes('#app') ||
+              title.toLowerCase().includes('#tools');
+            const hasSourceUrl =
+              body.includes('https://') ||
+              body.includes('http://');
+            const looksLikeTaggedSourceIntake = hasRouteTags && hasSourceUrl;
+
+            // Recognize all canonical WR intake signals. BASIC WR issue types may
+            // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet. Also accept
+            // title-only source intake shaped like `... #tools #app` with the
+            // source URL in the body; those arrive without `[WR]` but are still
+            // routed work requests.
             const titleRouteTags = new Set(
               Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
             );
@@ -93,6 +108,7 @@ jobs:
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              looksLikeTaggedSourceIntake;
               hasTitleRouteTag;
               (hasRouteTag && hasOrchestratorSeed);
               (labelSet.has('wr:new') && hasTitleRouteTag) ||
@@ -100,6 +116,7 @@ jobs:
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
+            core.info(`Tagged source intake: ${looksLikeTaggedSourceIntake}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
             core.info(`Current labels: ${labels.join(', ')}`);
 
