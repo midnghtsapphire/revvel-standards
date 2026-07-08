@@ -140,6 +140,10 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const titleRouteTags = new Set(
+              Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
+            );
+            const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
 
             const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
@@ -165,6 +169,8 @@ jobs:
               hasRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              hasTitleRouteTag;
               (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
             if (!isWR) {
@@ -877,6 +883,24 @@ jobs:
               return '';
             };
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            const TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              tool: 'desktop-tool',
+              tools: 'desktop-tool',
+              app: 'production-app',
+            };
+            const inferOutputTypeFromTitleTags = (title = '') => {
+              const tags = Array.from(title.toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1]);
+              for (const tag of ['tool', 'tools', 'app']) {
+                if (tags.includes(tag)) return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag];
+              }
+              return '';
+            };
+             const outputTypeFromBody = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
+             const outputTypeRaw =
+               outputTypeFromBody && outputTypeFromBody !== '_no response_'
+                 ? outputTypeFromBody
+                 : outputTypeFromTitle;
             const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
             const inferredFromTitle =
               titleTag === 'tool' || titleTag === 'tools'

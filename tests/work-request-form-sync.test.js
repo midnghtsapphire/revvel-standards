@@ -341,6 +341,7 @@ test('WR workflows infer routing from title tags for title-only intake', () => {
   );
 });
 
+test('WR intake and routing workflows recognize title route tags (#tool/#tools/#app)', () => {
 test('WR workflows support title route tags for title-only intake', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
@@ -354,11 +355,48 @@ test('WR workflows support title route tags for title-only intake', () => {
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'),
     'utf8'
   );
+  const autoRoute = fs.readFileSync(
   const openrouterAutoRoute = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
     'utf8'
   );
 
+  for (const workflow of [wrPrCreation, weeklyResearch]) {
+    assert(
+      workflow.includes('const hasTitleRouteTag') &&
+        workflow.includes("'app', 'tool', 'tools'"),
+      'WR intake workflow must treat title route tags as WR signals'
+    );
+  }
+
+  assert(
+    wrAutoClassify.includes("toLower(github.event.issue.title), '#tool") &&
+      wrAutoClassify.includes("toLower(github.event.issue.title), '#tools") &&
+      wrAutoClassify.includes("toLower(github.event.issue.title), '#app"),
+    'wr-auto-classify must run for title route tags'
+  );
+  assert(
+    wrAutoClassify.includes('TITLE_ROUTE_TAG_OUTPUT_TYPE') &&
+      wrAutoClassify.includes('infer_output_type_from_title_tags'),
+    'wr-auto-classify must infer Output Type from title route tags'
+  );
+
+  assert(
+    (autoRoute.includes("contains(github.event.issue.title, '#tool ')") ||
+      autoRoute.includes("endsWith(github.event.issue.title, '#tool')")) &&
+      (autoRoute.includes("contains(github.event.issue.title, '#tools ')") ||
+        autoRoute.includes("endsWith(github.event.issue.title, '#tools')")) &&
+      (autoRoute.includes("contains(github.event.issue.title, '#app ')") ||
+        autoRoute.includes("endsWith(github.event.issue.title, '#app')")),
+    'openrouter-auto-route must run for title route tags'
+  );
+  assert(
+    autoRoute.includes('inferOutputTypeFromTitleTags'),
+    'openrouter-auto-route must infer Output Type from title route tags'
+  );
+  assert(
+    wrPrCreation.includes('inferOutputTypeFromTitleTags'),
+    'wr-pr-creation must infer Output Type from title route tags for deliver labels'
   assert(
     weeklyResearch.includes('#(?:tool|tools|app)'),
     'weekly-research must treat #tool/#tools/#app title tags as WR intake signals'

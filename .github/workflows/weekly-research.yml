@@ -54,6 +54,10 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const titleRouteTags = new Set(
+              Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
+            );
+            const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
 
             const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
@@ -88,6 +92,7 @@ jobs:
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              hasTitleRouteTag;
               (hasRouteTag && hasOrchestratorSeed);
               (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);

@@ -46,6 +46,12 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
+       contains(toLower(github.event.issue.title), '#tool ') ||
+       endsWith(toLower(github.event.issue.title), '#tool') ||
+       contains(toLower(github.event.issue.title), '#tools ') ||
+       endsWith(toLower(github.event.issue.title), '#tools') ||
+       contains(toLower(github.event.issue.title), '#app ') ||
+       endsWith(toLower(github.event.issue.title), '#app'))
        contains(github.event.issue.title, '#tools') ||
        contains(github.event.issue.title, '#tool') ||
        contains(github.event.issue.title, '#app'))
@@ -148,6 +154,11 @@ jobs:
               "Deployment Target": "Deployment Target",
               "Launch Priority": "Priority",
           }
+          TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              "tool": "desktop-tool",
+              "tools": "desktop-tool",
+              "app": "production-app",
+          }
 
           def gh_graphql(query, variables=None, token=None):
               token = token or PAT
@@ -197,6 +208,11 @@ jobs:
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
 
+          def infer_output_type_from_title_tags(title):
+              tags = re.findall(r"#([a-z0-9_-]+)", (title or "").lower())
+              for tag in ("tool", "tools", "app"):
+                  if tag in tags:
+                      return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag]
           def infer_output_type_from_title(title):
               if re.search(r"#(?:tool|tools)\b", title, re.IGNORECASE):
                   return "desktop-tool"
@@ -431,6 +447,12 @@ jobs:
 
           parsed = parse_form(ISSUE_BODY)
           if not parsed.get("Output Type"):
+              title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+              if title_output_type in DROPDOWN_FIELDS["Output Type"]:
+                  parsed["Output Type"] = title_output_type
+                  print(
+                      f"Inferred Output Type from title route tag: {title_output_type}"
+                  )
               title_output_type = infer_title_output_type(ISSUE_TITLE)
               if title_output_type:
                   parsed["Output Type"] = title_output_type
