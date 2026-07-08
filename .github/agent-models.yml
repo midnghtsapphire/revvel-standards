@@ -1,31 +1,37 @@
 # Agent Models Configuration
 # Defines routing profiles for different agent types
 # Used by workflows to reference models without hardcoding names
-
-# NOTE: Do NOT use Claude Sonnet 3.7 - it was retired Feb 2026
-# Use Claude Sonnet 4.6+ or GPT-5.5/GPT-5.1 class models
+#
+# HOUSE RULES (2026-07-08, owner decision after fleet A/B tests):
+# - Everything routes through OpenRouter where possible (one place, one bill).
+# - The Opus twins (Claude Opus 4.8 primary / 4.7 fallback) beat
+#   openrouter/auto "fusion" in our own tests — pin them, don't use auto.
+# - DO NOT route to Claude Sonnet models: in our testing Sonnet repeatedly
+#   refused/violated repo operating rules. Do not reintroduce as a fallback.
+# - DeepSeek owns the reasoning lane; Gemini owns the vision lane.
+# - Model IDs follow OpenRouter's vendor/model convention; verify new IDs at
+#   https://openrouter.ai/models before adding. Fallback chains absorb a bad
+#   primary — never ship a profile with no fallback.
 
 profiles:
-  # === OPENROUTER ORCHESTRATOR ===
-  # OpenRouter decides best model per task - recommended default
+  # === ORCHESTRATOR ===
+  # General work rides the Opus twins. (Not strategy:auto — see house rules.)
   orchestrator:
-    description: "Let OpenRouter pick best model for the task - recommended for general use"
+    description: "Opus twins for general orchestration — Opus 4.8 with Opus 4.7 fallback"
     provider: openrouter
-    strategy: "auto"  # Let OpenRouter pick best model
-    primary: "openai/gpt-4o"
-    fallback: "anthropic/claude-sonnet-4-20250514"
+    primary: "anthropic/claude-opus-4.8"
+    fallback: "anthropic/claude-opus-4.7"
     max_tokens: 15000
     temperature: 0.4
 
   # === TASK-SPECIFIC PROFILES ===
-  
-  # Code patch profile - explicit task-routed coding profile for GitHub/VS Code automation
+
+  # Code patch profile - explicit task-routed coding profile
   code_patch:
-    description: "Best available coder - Claude Sonnet 4 or GPT-4o for complex code"
+    description: "Best coder — Opus 4.8, twin 4.7 fallback"
     provider: openrouter
-    # OpenRouter will use best reasoning model
-    primary: "anthropic/claude-sonnet-4-20250514"
-    fallback: "openai/gpt-4o"
+    primary: "anthropic/claude-opus-4.8"
+    fallback: "anthropic/claude-opus-4.7"
     max_tokens: 20000
     temperature: 0.4
     use_for: ["code", "file-edit", "refactor", "implement"]
@@ -34,13 +40,35 @@ profiles:
   best_coder:
     description: "Alias of code_patch for legacy workflow compatibility"
     provider: openrouter
-    primary: "anthropic/claude-sonnet-4-20250514"
-    fallback: "openai/gpt-4o"
+    primary: "anthropic/claude-opus-4.8"
+    fallback: "anthropic/claude-opus-4.7"
     max_tokens: 20000
     temperature: 0.4
     use_for: ["code", "file-edit", "refactor", "implement"]
 
+  # Deep reasoning - DeepSeek owns this lane
+  reasoning:
+    description: "Hard reasoning, planning, hard debugging, math — DeepSeek R1"
+    provider: openrouter
+    primary: "deepseek/deepseek-r1"
+    fallback: "anthropic/claude-opus-4.8"
+    max_tokens: 16000
+    temperature: 0.3
+    use_for: ["reason", "plan", "hard-debug", "math", "analysis", "architecture"]
+
+  # Vision - anything with pixels goes here
+  vision:
+    description: "Images, screenshots, OCR, diagrams, PDF pages — Gemini 2.5 Pro"
+    provider: openrouter
+    primary: "google/gemini-2.5-pro"
+    fallback: "google/gemini-2.5-flash"
+    max_tokens: 12000
+    temperature: 0.3
+    use_for: ["image", "screenshot", "ocr", "diagram", "vision", "multimodal", "pdf-image"]
+
   # Best researcher - web-grounded with citations
+  # (Perplexity direct today; sonar models also exist on OpenRouter as
+  #  perplexity/sonar-pro if we ever consolidate keys fully.)
   research:
     description: "Deep research using Perplexity Sonar for web-grounded answers"
     provider: perplexity
@@ -49,22 +77,22 @@ profiles:
     max_tokens: 10000
     temperature: 0.4
 
-  # Review profile - explicit task-routed review profile for GitHub/VS Code automation
+  # Review profile - the OTHER twin reviews, so coder and reviewer differ
   review:
-    description: "Best available reviewer - GPT-4o or Claude for quality checks"
+    description: "PR/code review — Opus 4.7 (deliberately not the coding twin), DeepSeek R1 fallback"
     provider: openrouter
-    primary: "openai/gpt-4o"
-    fallback: "anthropic/claude-sonnet-4-20250514"
+    primary: "anthropic/claude-opus-4.7"
+    fallback: "deepseek/deepseek-r1"
     max_tokens: 8000
     temperature: 0.2
     use_for: ["review", "pr-review", "code-review"]
 
   # Backward-compatible alias for older workflow references
   best_reviewer:
-    description: "Alias of review profile (GPT-4o or Claude) for legacy workflow compatibility"
+    description: "Alias of review profile for legacy workflow compatibility"
     provider: openrouter
-    primary: "openai/gpt-4o"
-    fallback: "anthropic/claude-sonnet-4-20250514"
+    primary: "anthropic/claude-opus-4.7"
+    fallback: "deepseek/deepseek-r1"
     max_tokens: 8000
     temperature: 0.2
     use_for: ["review", "pr-review", "code-review"]
@@ -74,7 +102,7 @@ profiles:
     description: "Quick issue classification and routing - use cheap model"
     provider: openrouter
     primary: "openai/gpt-4o-mini"
-    fallback: "anthropic/claude-haiku-3.5"
+    fallback: "anthropic/claude-haiku-4.5"
     max_tokens: 4000
     temperature: 0.3
     use_for: ["triage", "classify", "route", "label"]
@@ -83,8 +111,8 @@ profiles:
   cheap_summary:
     description: "Quick summaries and simple responses"
     provider: openrouter
-    primary: "openai/gpt-4o-mini"
-    fallback: "anthropic/claude-haiku-3.5"
+    primary: "deepseek/deepseek-chat"
+    fallback: "openai/gpt-4o-mini"
     max_tokens: 2000
     temperature: 0.1
     use_for: ["summarize", "simple", "quick"]
@@ -111,24 +139,35 @@ profiles:
     enabled: ${{ vars.CIRCLECI_ENABLED || 'false' }}
     use_for: ["ci-cd", "deploy", "test"]
 
-#Orchestration flow:
-#  # Task-based routing:
-#  #   code/triage -> orchestrator (auto-select best model)
-#  #   file-edit/code -> code_patch (Claude Sonnet 4 or GPT-4o)
-#  #   research -> Perplexity Sonar (web-grounded)
-#  #   review -> review (quality focus)
-#  #   simple/quick -> cheap_summary (gpt-4o-mini)
-#
-#  wr:research -> Perplexity (research + WR handoff)
-#  wr:jules -> Jules (PR creation + CI Fixer)
-#  wr:code -> Direct LLM (file edits)
-#  wr:checking -> GitHub Actions
-#  lifecycle:stuck -> Perplexity diagnosis + requeue
+# === ROUTING TREE ===
+# For ANY type of job, walk top-down; first match wins; every leaf is a
+# profile above. Workflows, routers, and the Agent Creator dashboard should
+# consult this tree instead of inventing their own mapping.
+routing_tree:
+  - when: "job involves images, screenshots, diagrams, OCR, or PDF pages as pixels"
+    profile: vision
+  - when: "job needs deep reasoning: planning, hard debugging, math, architecture"
+    profile: reasoning
+  - when: "job writes or edits code (implement, refactor, file-edit)"
+    profile: code_patch
+  - when: "job reviews code or PRs"
+    profile: review
+  - when: "job needs web-grounded research with citations"
+    profile: research
+  - when: "job classifies, labels, or routes incoming work"
+    profile: triage
+  - when: "job is a quick summary or trivial transform"
+    profile: cheap_summary
+  - when: "job needs CI self-repair with PR creation"
+    profile: jules
+  - default: orchestrator
 
-# Model selection logic:
-# 1. Check use_for match in task context
-# 2. Fall back to orchestrator (auto-select)
-# 3. Specific profiles override auto
+# Models that must NOT be routed to (house rule — see header):
+denylist:
+  - pattern: "anthropic/claude-sonnet-*"
+    reason: "Refused/violated repo operating rules in fleet testing (2026-07)."
+  - pattern: "openrouter/auto"
+    reason: "Opus twins beat auto/fusion routing in fleet A/B tests (2026-07)."
 
 # For GitHub Actions usage:
 #   - ${{ fromJson(inputs.model_profile || 'orchestrator') }}

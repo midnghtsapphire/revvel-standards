@@ -1297,16 +1297,16 @@
   "profiles": [
     {
       "id": "orchestrator",
-      "description": "Let OpenRouter pick best model for the task - recommended for general use",
+      "description": "Opus twins for general orchestration — Opus 4.8 with Opus 4.7 fallback",
       "provider": "openrouter",
-      "primary": "openai/gpt-4o",
+      "primary": "anthropic/claude-opus-4.8",
       "use_for": []
     },
     {
       "id": "code_patch",
-      "description": "Best available coder - Claude Sonnet 4 or GPT-4o for complex code",
+      "description": "Best coder — Opus 4.8, twin 4.7 fallback",
       "provider": "openrouter",
-      "primary": "anthropic/claude-sonnet-4-20250514",
+      "primary": "anthropic/claude-opus-4.8",
       "use_for": [
         "code",
         "file-edit",
@@ -1318,12 +1318,41 @@
       "id": "best_coder",
       "description": "Alias of code_patch for legacy workflow compatibility",
       "provider": "openrouter",
-      "primary": "anthropic/claude-sonnet-4-20250514",
+      "primary": "anthropic/claude-opus-4.8",
       "use_for": [
         "code",
         "file-edit",
         "refactor",
         "implement"
+      ]
+    },
+    {
+      "id": "reasoning",
+      "description": "Hard reasoning, planning, hard debugging, math — DeepSeek R1",
+      "provider": "openrouter",
+      "primary": "deepseek/deepseek-r1",
+      "use_for": [
+        "reason",
+        "plan",
+        "hard-debug",
+        "math",
+        "analysis",
+        "architecture"
+      ]
+    },
+    {
+      "id": "vision",
+      "description": "Images, screenshots, OCR, diagrams, PDF pages — Gemini 2.5 Pro",
+      "provider": "openrouter",
+      "primary": "google/gemini-2.5-pro",
+      "use_for": [
+        "image",
+        "screenshot",
+        "ocr",
+        "diagram",
+        "vision",
+        "multimodal",
+        "pdf-image"
       ]
     },
     {
@@ -1335,9 +1364,9 @@
     },
     {
       "id": "review",
-      "description": "Best available reviewer - GPT-4o or Claude for quality checks",
+      "description": "PR/code review — Opus 4.7 (deliberately not the coding twin), DeepSeek R1 fallback",
       "provider": "openrouter",
-      "primary": "openai/gpt-4o",
+      "primary": "anthropic/claude-opus-4.7",
       "use_for": [
         "review",
         "pr-review",
@@ -1346,9 +1375,9 @@
     },
     {
       "id": "best_reviewer",
-      "description": "Alias of review profile (GPT-4o or Claude) for legacy workflow compatibility",
+      "description": "Alias of review profile for legacy workflow compatibility",
       "provider": "openrouter",
-      "primary": "openai/gpt-4o",
+      "primary": "anthropic/claude-opus-4.7",
       "use_for": [
         "review",
         "pr-review",
@@ -1371,7 +1400,7 @@
       "id": "cheap_summary",
       "description": "Quick summaries and simple responses",
       "provider": "openrouter",
-      "primary": "openai/gpt-4o-mini",
+      "primary": "deepseek/deepseek-chat",
       "use_for": [
         "summarize",
         "simple",
@@ -1407,6 +1436,43 @@
         "deploy",
         "test"
       ]
+    }
+  ],
+  "routing_tree": [
+    {
+      "when": "job involves images, screenshots, diagrams, OCR, or PDF pages as pixels",
+      "profile": "vision"
+    },
+    {
+      "when": "job needs deep reasoning: planning, hard debugging, math, architecture",
+      "profile": "reasoning"
+    },
+    {
+      "when": "job writes or edits code (implement, refactor, file-edit)",
+      "profile": "code_patch"
+    },
+    {
+      "when": "job reviews code or PRs",
+      "profile": "review"
+    },
+    {
+      "when": "job needs web-grounded research with citations",
+      "profile": "research"
+    },
+    {
+      "when": "job classifies, labels, or routes incoming work",
+      "profile": "triage"
+    },
+    {
+      "when": "job is a quick summary or trivial transform",
+      "profile": "cheap_summary"
+    },
+    {
+      "when": "job needs CI self-repair with PR creation",
+      "profile": "jules"
+    },
+    {
+      "default": "orchestrator"
     }
   ],
   "personas": [

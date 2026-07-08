@@ -74,7 +74,9 @@ jobs:
       PROJECT_OWNER_TYPE: user
       PROJECT_OWNER: midnghtsapphire
       PROJECT_NUMBER: 5
-      MODEL: anthropic/claude-sonnet-4
+      # Classification is the triage lane (.github/agent-models.yml) — cheap
+      # model; Sonnet is denylisted by house rule.
+      MODEL: openai/gpt-4o-mini
     steps:
       - name: Classify and apply
         run: |

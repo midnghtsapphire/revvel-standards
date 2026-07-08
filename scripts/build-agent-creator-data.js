@@ -56,6 +56,8 @@ function buildData() {
     use_for: (p && Array.isArray(p.use_for) && p.use_for) || [],
   }));
 
+  const routingTree = modelsDoc.routing_tree || [];
+
   const promptsDoc = readYaml(SOURCES.agent_prompts);
   const promptTemplates = Object.keys(promptsDoc.prompts || {});
   const labelTriggers = promptsDoc.label_triggers || {};
@@ -101,6 +103,7 @@ function buildData() {
     categories: [...new Set(skills.map((s) => s.category))].sort(),
     skills,
     profiles,
+    routing_tree: routingTree,
     personas,
     prompt_templates: promptTemplates,
     label_triggers: labelTriggers,
