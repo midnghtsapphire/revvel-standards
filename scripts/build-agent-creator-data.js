@@ -77,7 +77,11 @@ function buildData() {
     version: fleetDoc.version,
     initial_scope: fleetDoc.initial_scope || "",
     charter: fleetDoc.charter || {},
-    domains: fleetDoc.domains || [],
+    domains: (fleetDoc.domains || []).map((d) =>
+      typeof d === "string"
+        ? { name: d, focus: "" }
+        : { name: d.name, focus: (d.focus || "").trim() }
+    ),
     agents: (fleetDoc.agents || []).map((a) => ({
       handle: a.handle,
       name: a.name,

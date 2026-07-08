@@ -553,7 +553,10 @@ function genFleetManifest(r) {
   y.push(`requested_by: "${agentName()}" # via Agent Creator`);
   y.push(`entry_point: conductor  # Maestro decomposes and delegates; Switchyard routes intake`);
   y.push(`domains_later:`);
-  for (const d of F.domains) y.push(`  - "${d}"`);
+  for (const d of F.domains) {
+    y.push(`  - name: "${d.name}"`);
+    if (d.focus) y.push(`    focus: "${d.focus.replace(/\s+/g, " ")}"`);
+  }
   y.push(`agents:`);
   for (const f of r.fleetScored) {
     const a = f.agent;

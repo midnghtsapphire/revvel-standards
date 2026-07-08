@@ -29,13 +29,37 @@ charter:
     - "Test prompt changes against a regression set built from real failures"
 
 # Domain verticals the fleet branches into after the initial scope.
+# The role branches by domain more than by seniority — specialists pick a
+# vertical inside the first year and go deep.
 domains:
-  - "Marketing & Revenue Ops Automation"
-  - "Customer Support Automation"
-  - "Sales Operations Automation"
-  - "Finance & Back-Office Automation"
-  - "Product & Internal Tools Automation"
-  - "Agentic Workflow Engineering"
+  - name: "Marketing & Revenue Ops Automation"
+    focus: >
+      Lead scoring with LLM enrichment; personalized outreach generation;
+      content versioning across channels; multi-touch attribution stitching.
+  - name: "Customer Support Automation"
+    focus: >
+      Ticket triage and routing; automated response drafting with human
+      review; knowledge base retrieval; deflection workflows;
+      quality-assurance sampling on AI replies.
+  - name: "Sales Operations Automation"
+    focus: >
+      CRM data hygiene with AI enrichment; meeting summarization to
+      Salesforce or HubSpot; automated proposal generation; pipeline-stage
+      automation.
+  - name: "Finance & Back-Office Automation"
+    focus: >
+      Invoice extraction; expense categorization; reconciliation flows with
+      AI exception handling; reporting pipelines.
+  - name: "Product & Internal Tools Automation"
+    focus: >
+      User onboarding flows; internal AI assistants on top of company
+      knowledge; automated QA on user-generated content; growth experiment
+      tooling.
+  - name: "Agentic Workflow Engineering"
+    focus: >
+      The senior end: traditional workflow primitives combined with AI agent
+      loops, planning steps, and tool use for longer-running, less
+      deterministic processes.
 
 agents:
   - handle: chain
