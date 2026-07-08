@@ -46,6 +46,18 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
+       contains(format(' {0} ', github.event.issue.title), ' #app ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #apps ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #tool ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #tools ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #pdf ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #pdfs ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #doc ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #docs ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #api ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #mcp '))
        contains(github.event.issue.title, '#app') ||
        contains(github.event.issue.title, '#tool'))
        contains(github.event.issue.title, '#tool') ||
@@ -287,6 +299,19 @@ jobs:
                   if tag in tags:
                       return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag]
           def infer_output_type_from_title(title):
+              title = title or ""
+              title_tag_map = [
+                  (r"#apps?\b", "production-app"),
+                  (r"#tools?\b", "desktop-tool"),
+                  (r"#pdfs?\b", "sellable-pdf"),
+                  (r"#docs?\b", "technical-documentation"),
+                  (r"#apis?\b", "api-product"),
+                  (r"#cli\b", "cli-product"),
+                  (r"#mcp\b", "mcp-product"),
+              ]
+              for pattern, output_type in title_tag_map:
+                  if re.search(pattern, title, re.IGNORECASE):
+                      return output_type
               if re.search(r"#(?:tool|tools)\b", title, re.IGNORECASE):
                   return "desktop-tool"
               if re.search(r"#(?:app|apps)\b", title, re.IGNORECASE):
@@ -583,6 +608,9 @@ jobs:
               print(f"Title route tags inferred Output Type: {title_tag_output_type}")
           needed = fields_needing_classification(parsed, title_tag_output_type)
           print(f"Fields needing classification: {needed}")
+          title_tag_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_tag_output_type:
+              print(f"Inferred Output Type from title tag: {title_tag_output_type}")
           title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)
           if title_inferred_output_type:
               print(f"Title-based Output Type hint: {title_inferred_output_type}")
@@ -612,6 +640,8 @@ jobs:
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
                   continue
+              if field == "Output Type" and title_tag_output_type in allowed:
+                  final[field] = title_tag_output_type
               if field == "Output Type" and title_output_type in allowed:
                   final[field] = title_output_type
               if field == "Output Type" and title_tag_output_type in allowed:

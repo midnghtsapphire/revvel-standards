@@ -89,6 +89,11 @@ function isWrIssue(title, labels, issueType) {
   const hasTitleRouteTag = /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
   
   const normalizedIssueType = (issueType || '').trim().toLowerCase();
+  const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp)\b/i.test(title);
+  
+  return (
+    title.match(/^\[WR\]/i) ||
+    hasWrRouteTag ||
   const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
   const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title || '');
   
@@ -277,6 +282,9 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Bug: Something broken', [], null), false);
   });
 
+  await test('isWrIssue detects title-only route tags', () => {
+    assert.equal(isWrIssue('Red light therapy stretch marks #tools #app', [], null), true);
+    assert.equal(isWrIssue('Red Light Therapy for Stretch Marks: Science & Protocols (20#tool #app', [], null), true);
   await test('isWrIssue detects title route tags even without [WR] prefix', () => {
     assert.equal(isWrIssue('Red light therapy guide#tools #app', [], null), true);
     assert.equal(isWrIssue('Clinical workflow #tool', [], null), true);

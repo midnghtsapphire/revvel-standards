@@ -30,6 +30,20 @@ jobs:
        (startsWith(github.event.issue.title, '[WR]') ||
         contains(github.event.issue.labels.*.name, 'work-request') ||
         contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(format(' {0} ', github.event.issue.title), ' #app ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #apps ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #tool ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #tools ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #skill ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #skills ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #pdf ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #pdfs ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #doc ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #docs ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #api ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
+        contains(format(' {0} ', github.event.issue.title), ' #mcp ')))
         contains(github.event.issue.title, '#app') ||
         contains(github.event.issue.title, '#tool')))
         contains(github.event.issue.labels.*.name, 'weekly-research') ||
@@ -189,12 +203,33 @@ jobs:
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
             const inferOutputTypeFromTitle = (value) => {
-              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:tool|tools|skill|skills)\b/i.test(value)) return 'desktop-tool';
               if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
               return null;
             };
 
             const m = body.match(sectionRegex);
+            const titleTagOutputTypeMap = [
+              [/#apps?\b/i, 'production-app'],
+              [/#tools?\b/i, 'desktop-tool'],
+              [/#skills?\b/i, 'desktop-tool'],
+              [/#pdfs?\b/i, 'sellable-pdf'],
+              [/#docs?\b/i, 'technical-documentation'],
+              [/#apis?\b/i, 'api-product'],
+              [/#cli\b/i, 'cli-product'],
+              [/#mcp\b/i, 'mcp-product'],
+            ];
+            const inferredOutputType =
+              titleTagOutputTypeMap.find(([pattern]) => pattern.test(title))?.[1] || '';
+            const explicitOutputType = m?.[1]?.trim() || '';
+            if (!explicitOutputType && !inferredOutputType) {
+              core.info('No Output Type section found in issue body — skipping route.');
+              return;
+            }
+            const outputType = (explicitOutputType || inferredOutputType).toLowerCase();
+            if (!explicitOutputType && inferredOutputType) {
+              core.info(`No Output Type section found; inferred Output Type from title tags: "${outputType}"`);
+            }
             let outputType = (m?.[1] || '').trim().toLowerCase();
             if (!outputType) {
               outputType = inferOutputTypeFromTitleTags(title);
@@ -270,9 +305,11 @@ jobs:
             const title = issue.title || '';
             const titleHasAppTag = /#apps?\b/i.test(title);
             const titleHasToolTag = /#tools?\b/i.test(title);
+            const titleHasSkillTag = /#skills?\b/i.test(title);
             const inferredFromTitle =
               titleHasAppTag ? 'production-app' :
               titleHasToolTag ? 'desktop-tool' :
+              titleHasSkillTag ? 'desktop-tool' :
               '';
 
             const outputType = (m?.[1] || inferredFromTitle || '').trim().toLowerCase();
@@ -284,7 +321,7 @@ jobs:
             const inferTitleOutputType = (issueTitle) => {
               const tagMatches = Array.from(
                 (issueTitle || '').matchAll(
-                  /(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/gi
+                  /(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools|skill|skills)(?=\s|$)/gi
                 )
               ).map(m => m[1].toLowerCase());
 
@@ -302,10 +339,12 @@ jobs:
                 doc: 'technical-documentation',
                 tools: 'internal-script-automation',
                 tool: 'internal-script-automation',
+                skills: 'internal-script-automation',
+                skill: 'internal-script-automation',
               };
 
               // Prefer product-shaped tags over generic tool tags when multiple tags are present.
-              const priority = ['app', 'api', 'mcp', 'cli', 'pdf', 'docs', 'doc', 'tools', 'tool'];
+              const priority = ['app', 'api', 'mcp', 'cli', 'pdf', 'docs', 'doc', 'tools', 'tool', 'skills', 'skill'];
               const found = new Set(tagMatches);
               for (const tag of priority) {
                 if (found.has(tag)) {
