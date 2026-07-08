@@ -736,6 +736,35 @@ jobs:
             fi
           fi
 
+          infer_output_type_from_title_tags() {
+            local title_lower
+            title_lower=$(printf '%s' "${ISSUE_TITLE:-}" | tr '[:upper:]' '[:lower:]')
+            local tag_regex='#[a-z][a-z0-9-]*'
+            local tags
+            tags=$(printf '%s\n' "$title_lower" | grep -Eo "$tag_regex" || true)
+            local tag
+            while IFS= read -r tag; do
+              case "$tag" in
+                '#app'|'#apps') echo "production-app"; return 0 ;;
+                '#tool'|'#tools') echo "desktop-tool"; return 0 ;;
+                '#pdf') echo "sellable-pdf"; return 0 ;;
+                '#docs'|'#doc') echo "technical-documentation"; return 0 ;;
+                '#cli') echo "cli-product"; return 0 ;;
+                '#api') echo "api-product"; return 0 ;;
+                '#mcp') echo "mcp-product"; return 0 ;;
+              esac
+            done <<< "$tags"
+            return 1
+          }
+
+          if [ -z "$OUTPUT_TYPE" ]; then
+            TITLE_OUTPUT_TYPE="$(infer_output_type_from_title_tags || true)"
+            if [ -n "$TITLE_OUTPUT_TYPE" ]; then
+              OUTPUT_TYPE="$TITLE_OUTPUT_TYPE"
+              echo "No Output Type section found — inferred from title tags: $OUTPUT_TYPE"
+            fi
+          fi
+
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
             sed -i '/## Step 5: Deployment Verification/,/## Step 6: Documentation Requirements/{/## Step 6: Documentation Requirements/!d}' "${WR_FILE}"
@@ -911,6 +940,33 @@ jobs:
               return '';
             };
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            function inferOutputTypeFromTitleTags(rawTitle) {
+              const tagMap = {
+                '#app': 'production-app',
+                '#apps': 'production-app',
+                '#tool': 'desktop-tool',
+                '#tools': 'desktop-tool',
+                '#pdf': 'sellable-pdf',
+                '#docs': 'technical-documentation',
+                '#doc': 'technical-documentation',
+                '#cli': 'cli-product',
+                '#api': 'api-product',
+                '#mcp': 'mcp-product',
+              };
+              const tags = (rawTitle || '').toLowerCase().match(/(?<!\w)#[a-z][a-z0-9-]*\b/g) || [];
+              for (const tag of tags) {
+                if (tagMap[tag]) return tagMap[tag];
+              }
+              return '';
+            }
+
+            let outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            if (!outputTypeRaw) {
+              outputTypeRaw = inferOutputTypeFromTitleTags(issue.title || '');
+              if (outputTypeRaw) {
+                core.info(`No Output Type section found; inferred from title tags: "${outputTypeRaw}"`);
+              }
+            }
             const outputTypeRaw = ((outputTypeMatch?.[1] || '').trim().toLowerCase() ||
               inferOutputTypeFromTitle(issue.title || ''));
             const inferOutputTypeFromTitle = (value) => {

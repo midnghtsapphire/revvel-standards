@@ -87,6 +87,14 @@ out="$(cat "$TEMPLATE")"
 # #14227; multi-line comment fix on #15215).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping && !in_comment && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && !in_comment && /^<!--/ { in_comment=1; next }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment { next }
+  stripping && !in_comment && /^[[:space:]]*<!--/ {
+    if (/-->/) { next }
+    in_comment=1; next
+  }
   stripping && in_comment && /-->/ { in_comment=0; next }
 # template, drops any `<!-- ... -->` line and blank lines (including multi-line
 # <!-- --> blocks), until the first non-comment / non-blank line, then prints
@@ -120,6 +128,17 @@ out="$(printf '%s\n' "$out" | awk '
 # multi-line fix: in_comment state variable tracks open <!-- --> blocks).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping {
+    if (in_comment) {
+      if ($0 ~ /-->[[:space:]]*$/) in_comment=0
+      next
+    }
+    if ($0 ~ /^[[:space:]]*<!--/) {
+      if ($0 !~ /-->[[:space:]]*$/) in_comment=1
+      next
+    }
+    if ($0 ~ /^[[:space:]]*$/) next
+if ($0 ~ /[[:space:]]*-->[[:space:]]*$/) in_comment=0
   stripping && !in_comment && /^[[:space:]]*<!--/ {
     if (/-->/) { next }   # single-line comment — skip it
     in_comment=1; next    # opening of a multi-line comment
