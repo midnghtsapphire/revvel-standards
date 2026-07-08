@@ -220,6 +220,10 @@ function lintFile(path) {
   // a REVVEL-DISABLED header") must NOT open a phantom block — that false
   // positive made wr-lint refuse every FULL-template WR (issue #15215
   // regression tests caught it).
+  // Real markers always use the pipe-delimited metadata format:
+  //   // REVVEL-DISABLED | AGENT: ... | MODEL: ... | WR: ... | DATE: ... | STATUS: ...
+  // The (?!-END) lookahead keeps a "REVVEL-DISABLED-END | ..." line from
+  // re-opening a phantom block.
   const REVVEL_DISABLED_OPEN = /REVVEL-DISABLED(?!-END)\s*\|/;
   const REVVEL_DISABLED_CLOSE = /REVVEL-DISABLED-END\b/;
   // Each field regex anchors on a pipe (|) or line start/comment prefix so
