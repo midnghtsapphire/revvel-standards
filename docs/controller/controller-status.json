@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-08T06:14:38.054Z",
+  "generated_at": "2026-07-08T07:12:56.197Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -8,9 +8,9 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 6,
+    "total": 5,
     "running": 1,
-    "queued": 5,
+    "queued": 4,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
@@ -22,28 +22,16 @@
   },
   "orchestrators": [
     {
-      "id": 28921788807,
+      "id": 28924594884,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28921788807",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28924594884",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10054,
-      "since_update_ms": 6054,
+      "age_ms": 10197,
+      "since_update_ms": 7197,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 28921793916,
-      "name": "PR #15497",
-      "path": "dynamic/github-code-scanning/codeql",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28921793916",
-      "status": "queued",
-      "health": "queued",
-      "age_ms": null,
-      "since_update_ms": null,
-      "reason": "awaiting a runner (trigger)",
-      "protected": false
     },
     {
       "id": 28908752773,
