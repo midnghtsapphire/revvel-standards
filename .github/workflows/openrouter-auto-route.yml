@@ -28,6 +28,9 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app')))
         contains(github.event.issue.title, '#app') ||
         contains(github.event.issue.title, '#apps') ||
         contains(github.event.issue.title, '#tool') ||
@@ -99,6 +102,16 @@ jobs:
             };
 
             const m = body.match(sectionRegex);
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputType = ((m?.[1] || '').trim().toLowerCase() || inferredFromTitle);
+            if (!outputType) {
+              core.info('No Output Type section or title route tag found — skipping route.');
             const outputType = (m?.[1] || '').trim().toLowerCase() || inferTitleOutputType(issue.title);
             if (!outputType) {
               core.info('No Output Type section found in issue body — skipping route.');

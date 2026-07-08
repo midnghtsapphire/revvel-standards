@@ -46,6 +46,9 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#app'))
        contains(github.event.issue.title, '#app') ||
        contains(github.event.issue.title, '#apps') ||
        contains(github.event.issue.title, '#tool') ||
@@ -208,6 +211,15 @@ jobs:
                       needed.append(field)
               return needed
 
+          def infer_output_type_from_title(title):
+              m = re.search(r'#(tool|tools|app)\b', title or "", re.IGNORECASE)
+              if not m:
+                  return None
+              token = m.group(1).lower()
+              if token in ("tool", "tools"):
+                  return "desktop-tool"
+              if token == "app":
+                  return "production-app"
           def infer_title_output_type(title):
               normalized = (title or "").lower()
               if re.search(r"(?:^|[^a-z0-9])#apps?\b", normalized):
@@ -429,6 +441,9 @@ jobs:
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
+          title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_inferred_output_type:
+              print(f"Title route tag inferred Output Type: {title_inferred_output_type}")
           title_output_type = infer_title_output_type(ISSUE_TITLE)
           if title_output_type and "Output Type" in needed:
               needed = [field for field in needed if field != "Output Type"]
@@ -451,6 +466,17 @@ jobs:
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
+                  continue
+              if field == "Output Type" and title_inferred_output_type in allowed:
+                  final[field] = title_inferred_output_type
+                  continue
+              suggested = classified.get(field)
+              if suggested in allowed:
+                  final[field] = suggested
+                  continue
+              # fallback
+              final[field] = DEFAULTS[field]
+              used_fallback = True
               elif field == "Output Type" and title_output_type in allowed:
                   final[field] = title_output_type
               elif classified.get(field) in allowed:

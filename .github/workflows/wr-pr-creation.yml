@@ -146,6 +146,10 @@ jobs:
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
             // Title-only intake can also route with tags like "#app" / "#tools".
             const isWR =
               title.match(/^\[WR\]/i) ||
@@ -680,6 +684,17 @@ jobs:
             found && /(^|[ \t])### / { exit }
             found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
           ' | tr -d '\r')
+          if [ -z "$OUTPUT_TYPE" ]; then
+            TITLE_TAG=$(printf '%s\n' "${ISSUE_TITLE}" | grep -oEi '#(tool|tools|app)\b' | head -n1 | tr '[:upper:]' '[:lower:]' || true)
+            case "$TITLE_TAG" in
+              '#tool'|'#tools')
+                OUTPUT_TYPE='desktop-tool'
+                ;;
+              '#app')
+                OUTPUT_TYPE='production-app'
+                ;;
+            esac
+          fi
 
           if [[ -z "$OUTPUT_TYPE" ]]; then
             NORMALIZED_TITLE=$(printf '%s' "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]')
@@ -862,6 +877,14 @@ jobs:
               return '';
             };
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputTypeRaw = ((outputTypeMatch?.[1] || '').trim().toLowerCase() || inferredFromTitle);
             const outputTypeRaw = (
               (outputTypeMatch?.[1] || '').trim().toLowerCase() ||
               inferOutputTypeFromTitle(issue.title || '')
