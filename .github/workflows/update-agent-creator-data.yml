@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - skills/SKILLS_INDEX.yml
+      - skills/agentic-workflow-fleet/FLEET.yml
       - .github/agent-models.yml
       - .github/agent-prompts.yml
       - scripts/openrouter-personas.js

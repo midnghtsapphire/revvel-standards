@@ -94,6 +94,31 @@ skills:
 
   # ─── Agent Operations ──────────────────────────────────────────────────────
 
+  - name: agentic_workflow_fleet
+    title: "Agentic Workflow Fleet — Nine Single-Job Pattern Experts"
+    version: "0.1.0"
+    path: "skills/agentic-workflow-fleet/"
+    skill_file: "skills/agentic-workflow-fleet/agentic-workflow-fleet.skill.yml"
+    category: "Agent Operations"
+    fleet_file: "skills/agentic-workflow-fleet/FLEET.yml"
+    access: all
+    persona: oaudrey
+    lifecycle: proposed
+    triggers:
+      - "agentic workflow"
+      - "workflow fleet"
+      - "agent fleet"
+      - "prompt chaining"
+      - "plan and execute"
+      - "parallelization"
+      - "orchestrator-worker"
+      - "evaluator-optimizer"
+      - "reflection pattern"
+      - "rewoo"
+      - "autonomous workflow"
+      - "multi-agent pipeline"
+      - "workflow automation specialist"
+
   - name: malama
     title: "Mālama — Self-Healing Autonomous Agent Operating Loop"
     version: "1.0.0"

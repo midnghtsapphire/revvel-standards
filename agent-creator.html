@@ -153,10 +153,11 @@
 
 <header>
   <h1>🎯 Agent Creator <span class="pill">Agent Hunter</span></h1>
-  <p class="sub">Don't know what kind of agent you need, or what it's called in tech terms?
-  Describe it in plain words, paste any raw research you collected, and Agent Hunter will ask
-  the questions it can't infer, match your need against the fleet's existing skills, propose
-  new skills for the gaps, and generate the agent prompt + Work Request to make it real.</p>
+  <p class="sub"><strong>Tell it what you need done. It tells you <em>who</em> you need — then builds them.</strong>
+  You don't have to know what your agent is called in tech terms. Describe the job in plain words,
+  paste any raw research you collected (job posts, LinkedIn dumps, tool lists), and Agent Hunter asks
+  the questions it can't infer, names the agent type, matches against existing skills, staffs a fleet
+  when one agent isn't enough, and generates the prompts + Work Request to make it real.</p>
 </header>
 
 <div class="banner" id="banner">⚠ Catalog data not loaded — run <code>node scripts/build-agent-creator-data.js</code> or serve this page next to <code>agent-creator-data.json</code>.</div>
@@ -175,7 +176,8 @@
       <input type="text" id="aname" placeholder="e.g. Workflow Specialist">
       <div class="btnrow">
         <button class="btn primary" id="hunt">🔎 Hunt for my agent</button>
-        <button class="btn" id="example">Load example: AI Workflow Specialist</button>
+        <button class="btn" id="example">Example: AI Workflow Specialist</button>
+        <button class="btn" id="example-fleet">Example: 9-Pattern Fleet</button>
         <button class="btn" id="reset">Reset</button>
       </div>
     </div>
@@ -194,6 +196,12 @@
       <div id="routing" style="margin-top:12px"></div>
     </div>
 
+    <div class="card" id="fleetcard" style="display:none">
+      <h2>🚢 Fleet mode — nine single-job pattern experts</h2>
+      <p class="note" id="fleetnote" style="margin:0 0 6px"></p>
+      <div id="fleet"></div>
+    </div>
+
     <div class="card" id="gapcard" style="display:none">
       <h2>🧩 Gaps → proposed new skills</h2>
       <div id="gaps"></div>
@@ -209,6 +217,10 @@
       <div class="outhead"><h3>🛠 Draft <code>.skill.yml</code> (for skill-forge)</h3>
         <button class="btn small" data-copy="skill">Copy</button></div>
       <pre class="out" id="out-skill"></pre>
+
+      <div class="outhead" id="fleethead" style="display:none"><h3>🚢 Fleet manifest (one prompt per pattern expert)</h3>
+        <button class="btn small" data-copy="fleet">Copy</button></div>
+      <pre class="out" id="out-fleet" style="display:none"></pre>
 
       <div class="outhead"><h3>📨 Work Request (routes into the fleet)</h3>
         <button class="btn small" data-copy="wr">Copy body</button></div>
@@ -369,6 +381,19 @@ function analyze() {
   const profileId = KIND_TO_PROFILE[kind] || "orchestrator";
   const profile = DATA.profiles.find((p) => p.id === profileId) || DATA.profiles.find((p) => p.id === "orchestrator");
 
+  const fleetAgents = (DATA.fleet && DATA.fleet.agents) || [];
+  const fleetScored = fleetAgents.map((fa) => {
+    let raw = 0;
+    const fhits = [];
+    for (const t of [fa.pattern, ...(fa.use_for || [])]) {
+      if (hasPhrase(text, t)) { raw += t.includes(" ") ? 3 : 1.5; fhits.push(t); }
+    }
+    return { agent: fa, raw, hits: fhits, score: Math.round(100 * (1 - Math.exp(-raw / 3))) };
+  });
+  const fleetSignal = /(^|[^a-z])(fleet|team of agents|multi-?agent|nine patterns|9 patterns|agentic workflow)/.test(text);
+  const activated = fleetScored.filter((f) => f.raw > 0);
+  const fleetMode = fleetAgents.length > 0 && (fleetSignal || activated.length >= 3);
+
   const questions = [];
   if (!a.kind && !kindInferred) {
     questions.push({ id: "kind", text: "What should this agent mainly DO?",
@@ -400,7 +425,7 @@ function analyze() {
       ] });
   }
 
-  return { text, kind, kindInferred, outputType, outInferred, matched, tech, uncovered, persona, profile, questions };
+  return { text, kind, kindInferred, outputType, outInferred, matched, tech, uncovered, persona, profile, questions, fleetScored, fleetMode, activated };
 }
 
 /* ---------- rendering ---------- */
@@ -496,6 +521,57 @@ function renderGaps(r) {
     `Proposed: 1 new skill ("${proposedSkillName()}") with the terms above as its trigger list — draft .skill.yml generated below, buildable via skills/skill-forge.`));
 }
 
+function renderFleet(r) {
+  const fc = $("fleetcard");
+  if (!r.fleetMode) { fc.style.display = "none"; return; }
+  fc.style.display = "block";
+  $("fleetnote").textContent =
+    `Your request activates ${r.activated.length} of ${r.fleetScored.length} pattern experts. ` +
+    `Initial scope: ${DATA.fleet.initial_scope}. Every member does exactly one job.`;
+  const box = $("fleet");
+  box.replaceChildren();
+  for (const f of r.fleetScored) {
+    box.append(h("div", { class: "match" },
+      h("div", { class: "row1" },
+        h("div", null,
+          h("span", { class: "nm" }, `@${f.agent.handle} — ${f.agent.name}`),
+          " ", h("span", { class: "cat" }, `${f.agent.pattern} · ${f.agent.group}`)),
+        h("span", { class: "val" }, f.raw > 0 ? f.score + "%" : "standby")),
+      h("div", { class: "meter", title: "pattern activation 0–100" }, h("span", { style: `width:${f.score}%` })),
+      h("div", { class: "hits" }, f.agent.job)));
+  }
+}
+
+function genFleetManifest(r) {
+  const F = DATA.fleet;
+  const rules = (F.charter && F.charter.operating_rules) || [];
+  const skills = (F.charter && F.charter.essential_skills) || [];
+  const y = [];
+  y.push(`fleet: ${F.name}`);
+  y.push(`version: "${F.version}"`);
+  y.push(`initial_scope: "${F.initial_scope}"`);
+  y.push(`requested_by: "${agentName()}" # via Agent Creator`);
+  y.push(`entry_point: conductor  # Maestro decomposes and delegates; Switchyard routes intake`);
+  y.push(`domains_later:`);
+  for (const d of F.domains) y.push(`  - "${d}"`);
+  y.push(`agents:`);
+  for (const f of r.fleetScored) {
+    const a = f.agent;
+    y.push(`  - handle: ${a.handle}`);
+    y.push(`    name: "${a.name}"`);
+    y.push(`    pattern: "${a.pattern}"`);
+    y.push(`    activation: ${f.raw > 0 ? f.score + "%" : "standby"}`);
+    y.push(`    system_prompt: |`);
+    y.push(`      You are ${a.name} (@${a.handle}), the fleet's ${a.pattern} expert.`);
+    y.push(`      Your ONE job: ${a.job.replace(/\s+/g, " ")}`);
+    y.push(`      Scope: ${F.initial_scope}. Refuse work outside your pattern —`);
+    y.push(`      hand it to @conductor for re-delegation.`);
+    y.push(`      Shared skills: ${skills.slice(0, 3).join("; ")}.`);
+    y.push(`      Operating rules: ${rules.slice(0, 3).join("; ")}.`);
+  }
+  return y.join("\n");
+}
+
 function proposedSkillName() {
   const n = ($("aname").value.trim() || "workflow-specialist");
   return n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -525,6 +601,11 @@ function genPrompt(r) {
   if (r.matched.length) {
     lines.push("## Skills to load (existing)");
     for (const m of r.matched.slice(0, 6)) lines.push(`- ${m.skill.name} — ${m.skill.title} (${m.skill.path || "n/a"})`);
+    lines.push("");
+  }
+  if (r.fleetMode) {
+    lines.push("## Fleet staffing");
+    lines.push(`This mission is staffed by the ${DATA.fleet.name} (nine single-job pattern experts; manifest attached). Entry point: @conductor decomposes and delegates; @switchboard routes intake. ${DATA.fleet.initial_scope}.`);
     lines.push("");
   }
   if (r.uncovered.length) {
@@ -597,6 +678,11 @@ function genWrBody(r) {
     for (const m of r.matched.slice(0, 6)) b.push(`- ${m.skill.name} (${m.score}% match)`);
     b.push("");
   }
+  if (r.fleetMode) {
+    b.push(`## Fleet staffing (skills/agentic-workflow-fleet)`);
+    b.push(`Staff with the nine-pattern fleet — activated: ${r.activated.map((f) => "@" + f.agent.handle).join(", ") || "(orchestrator assigns)"}. Full manifest generated by Agent Creator.`);
+    b.push("");
+  }
   if (r.uncovered.length) {
     b.push(`## Forge this new skill (skills/skill-forge)`);
     b.push(`- ${proposedSkillName()} — triggers: ${r.uncovered.join(", ")}`);
@@ -618,6 +704,9 @@ function renderOutputs(r) {
   $("outcard").style.display = "block";
   $("out-prompt").textContent = genPrompt(r);
   $("out-skill").textContent = genSkillYml(r);
+  $("fleethead").style.display = r.fleetMode ? "flex" : "none";
+  $("out-fleet").style.display = r.fleetMode ? "block" : "none";
+  if (r.fleetMode) $("out-fleet").textContent = genFleetManifest(r);
   const body = genWrBody(r);
   $("out-wr").textContent = body;
   const params = new URLSearchParams({
@@ -636,6 +725,7 @@ function rerender() {
   const r = analyze();
   renderQuestions(r);
   renderMatches(r);
+  renderFleet(r);
   renderGaps(r);
   renderOutputs(r);
 }
@@ -652,11 +742,11 @@ $("reset").addEventListener("click", () => {
   state.analyzed = false;
   state.answers = { kind: null, output_type: null, autonomy: null, trigger: null };
   for (const id of ["need", "raw", "aname"]) $(id).value = "";
-  for (const id of ["qcard", "matchcard", "gapcard", "outcard"]) $(id).style.display = "none";
+  for (const id of ["qcard", "matchcard", "fleetcard", "gapcard", "outcard"]) $(id).style.display = "none";
 });
 document.querySelectorAll("[data-copy]").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const map = { prompt: "out-prompt", skill: "out-skill", wr: "out-wr" };
+    const map = { prompt: "out-prompt", skill: "out-skill", wr: "out-wr", fleet: "out-fleet" };
     navigator.clipboard.writeText($(map[btn.dataset.copy]).textContent).then(() => {
       const t = btn.textContent; btn.textContent = "Copied ✓";
       setTimeout(() => { btn.textContent = t; }, 1200);
@@ -686,6 +776,27 @@ Learning path: start with one platform end-to-end (n8n or Make), five real workf
 
 Future: agentic workflows are eating linear ones — blend deterministic and agentic patterns. Multimodal workflows (voice, image understanding, document extraction with vision models) are table stakes. Self-improving workflows are the frontier: flows that log failures, generate fix proposals, run them against test cases, and submit pull requests for human review.`;
 
+const EXAMPLE_FLEET_NEED = `I need an expert autonomous workflow fleet made up of nine areas, each having ONE job that they do expert. I knew I needed an autonomous agent specialist — but if I didn't, I should be able to paste what I need from job-hunting sites or LinkedIn and have you say what type of agent it is and create it with skills. Start by only handling workflow specialist work.`;
+const EXAMPLE_FLEET_RAW = `9 Agentic Workflow Patterns:
+
+Sequential Intelligence — Prompt Chaining: decomposes complex tasks into steps where each LLM call processes the output of the previous one, perfect for chatbot applications and AI agent tools. Plan and Execute: creates multi-step plans, executes sequentially, reviews, and adjusts after each task — ideal for business process automation and data pipeline orchestration.
+
+Parallel Processing — Parallelization: sections tasks or runs them multiple times simultaneously for aggregated outputs, essential for automating evaluations and implementing guardrails. Orchestrator-Worker: central LLM dynamically breaks down tasks and delegates to worker LLMs to synthesize results, powering agentic RAG and coding agents.
+
+Intelligent Routing — Routing: classifies inputs and directs them to specialized follow-up tasks for separation of concerns (customer support agents, multi-agent debates). Evaluator-Optimizer: one LLM generates responses while another provides evaluation and feedback in a continuous loop, crucial for real-time monitoring and coding agents.
+
+Self-Improving Systems — Reflection: learns via feedback and self-reflection, reviewing task responses to improve final quality. ReWOO: enhances ReACT with planning and substitution, reducing tokens — for deep search agents and multi-step question answering. Autonomous Workflow: agents as LLMs performing tasks on tool feedback in continuous loops, with guardrails.
+
+The AI Workflow Automation Specialist is the hybrid engineer who designs, builds, and operates automation pipelines where AI models are first-class steps. Fluent across n8n, Make, Zapier, Pipedream, Power Automate — and knows when to drop those for custom Python or TypeScript orchestration. RPA engineers automate clicks but rarely touch AI; prompt engineers craft behavior but rarely wire it into business systems; AI agent developers build loops but rarely sit inside a controlled workflow. This role owns the middle ground.
+
+Essential skills: Python or JavaScript automation scripting; workflow platforms (Zapier, Integromat, Power Automate); APIs and integration techniques; data analysis and visualization of workflow metrics; problem-solving to find inefficiencies; stakeholder communication.
+
+Orchestration frameworks: LangGraph, CrewAI, AG2 (AutoGen) to link specialized agents on complex goals. Self-healing automation: autonomous QA and coding agents that write scripts, run exploratory tests, and auto-fix failures using MCP servers. Context-aware decisioning: memory, RAG, external APIs adapting to legal constraints, region, company policy. Security and governance: red-teaming programs and guardrails for compliance.
+
+Domain verticals (branch by domain, one per specialist): Marketing and Revenue Ops (lead scoring with LLM enrichment, personalized outreach, multi-touch attribution). Customer Support (ticket triage and routing, drafted replies with human review, KB retrieval, deflection, QA sampling). Sales Operations (CRM hygiene with AI enrichment, meeting summaries to Salesforce/HubSpot, proposal generation, pipeline-stage automation). Finance and Back-Office (invoice extraction, expense categorization, reconciliation with AI exception handling, reporting pipelines). Product and Internal Tools (onboarding flows, internal AI assistants on company knowledge, automated QA on UGC, growth experiments). Agentic Workflow Engineering (the senior end: workflow primitives + agent loops, planning steps, tool use for long-running, less deterministic processes).
+
+Market: healthcare organizations already hire this mix — revenue-cycle AI operations (Nanonets, SmarterDx), HCC/risk-adjustment coding (Cotiviti), NHS AI and automation roles, Kenya Digital Health Agency, WHO/PATH digital-health consultancies.`;
+
 $("example").addEventListener("click", () => {
   $("need").value = EXAMPLE_NEED;
   $("raw").value = EXAMPLE_RAW;
@@ -694,6 +805,15 @@ $("example").addEventListener("click", () => {
   state.analyzed = true;
   rerender();
   $("qcard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("example-fleet").addEventListener("click", () => {
+  $("need").value = EXAMPLE_FLEET_NEED;
+  $("raw").value = EXAMPLE_FLEET_RAW;
+  $("aname").value = "Autonomous Workflow Fleet";
+  state.answers = { kind: null, output_type: null, autonomy: null, trigger: null };
+  state.analyzed = true;
+  rerender();
+  $("fleetcard").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 renderTiles();

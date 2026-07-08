@@ -29,6 +29,23 @@ test("buildData assembles the agent-creator catalog from the registries", () => 
   assert.ok(Object.keys(data.label_triggers).length > 0, "label_triggers empty");
 });
 
+test("buildData includes the nine-pattern agentic workflow fleet", () => {
+  const data = buildData();
+  assert.equal(data.fleet.name, "agentic-workflow-fleet");
+  assert.equal(data.fleet.agents.length, 9, "fleet must have exactly nine pattern experts");
+  const patterns = data.fleet.agents.map((a) => a.pattern);
+  for (const p of ["Prompt Chaining", "Plan and Execute", "Parallelization", "Orchestrator-Worker",
+    "Routing", "Evaluator-Optimizer", "Reflection", "ReWOO", "Autonomous Workflow"]) {
+    assert.ok(patterns.includes(p), `missing pattern expert: ${p}`);
+  }
+  for (const a of data.fleet.agents) {
+    assert.ok(a.handle && a.name && a.job, `fleet agent ${a.pattern} incomplete`);
+  }
+  assert.ok(data.fleet.domains.length === 6, "fleet must list the six domain verticals");
+  const idx = data.skills.find((s) => s.name === "agentic_workflow_fleet");
+  assert.ok(idx, "fleet skill not registered in SKILLS_INDEX");
+});
+
 test("CLI writes both JSON and window-global artifacts", () => {
   const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-creator-"));
   const { execFileSync } = require("node:child_process");

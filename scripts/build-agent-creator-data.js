@@ -29,6 +29,7 @@ const SOURCES = {
   model_profiles: ".github/agent-models.yml",
   agent_prompts: ".github/agent-prompts.yml",
   personas: "scripts/openrouter-personas.js",
+  fleet: "skills/agentic-workflow-fleet/FLEET.yml",
 };
 
 function readYaml(rel) {
@@ -70,11 +71,29 @@ function buildData() {
     description: p.description || "",
   }));
 
+  const fleetDoc = readYaml(SOURCES.fleet);
+  const fleet = {
+    name: fleetDoc.fleet,
+    version: fleetDoc.version,
+    initial_scope: fleetDoc.initial_scope || "",
+    charter: fleetDoc.charter || {},
+    domains: fleetDoc.domains || [],
+    agents: (fleetDoc.agents || []).map((a) => ({
+      handle: a.handle,
+      name: a.name,
+      pattern: a.pattern,
+      group: a.group || "",
+      job: (a.job || "").trim(),
+      use_for: a.use_for || [],
+    })),
+  };
+
   return {
     schema_version: "1.0",
     vault_version: index.vault_version || null,
     repo: "midnghtsapphire/revvel-standards",
     sources: SOURCES,
+    fleet,
     categories: [...new Set(skills.map((s) => s.category))].sort(),
     skills,
     profiles,
