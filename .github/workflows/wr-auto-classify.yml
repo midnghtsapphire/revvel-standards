@@ -45,6 +45,51 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+       startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool'))
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs'))
+       ((contains(github.event.issue.title, '#app') ||
+         contains(github.event.issue.title, '#tools')) &&
+        (contains(github.event.issue.body, 'https://') ||
+         contains(github.event.issue.body, 'http://'))))
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#docs') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#video'))
+       contains(toLower(github.event.issue.title), '#tool ') ||
+       endsWith(toLower(github.event.issue.title), '#tool') ||
+       contains(toLower(github.event.issue.title), '#tools ') ||
+       endsWith(toLower(github.event.issue.title), '#tools') ||
+       contains(toLower(github.event.issue.title), '#app ') ||
+       endsWith(toLower(github.event.issue.title), '#app'))
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#app'))
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#apps') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs'))
+       (contains(github.event.issue.labels.*.name, 'wr:new') &&
+        contains(github.event.issue.labels.*.name, 'openrouter')) ||
        startsWith(github.event.issue.title, '[WR]'))
     runs-on: ubuntu-latest
     env:
@@ -132,6 +177,21 @@ jobs:
               "Deployment Target": "Deployment Target",
               "Launch Priority": "Priority",
           }
+          TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              "tool": "desktop-tool",
+              "tools": "desktop-tool",
+              "app": "production-app",
+          }
+
+          TITLE_ROUTE_OUTPUT_TYPES = [
+              ("production-app", re.compile(r"(?:^|\s)#app(?=\s|$)", re.IGNORECASE)),
+              ("desktop-tool", re.compile(r"(?:^|\s)#(?:tool|tools)(?=\s|$)", re.IGNORECASE)),
+              ("cli-product", re.compile(r"(?:^|\s)#cli(?=\s|$)", re.IGNORECASE)),
+              ("api-product", re.compile(r"(?:^|\s)#api(?=\s|$)", re.IGNORECASE)),
+              ("mcp-product", re.compile(r"(?:^|\s)#mcp(?=\s|$)", re.IGNORECASE)),
+              ("sellable-pdf", re.compile(r"(?:^|\s)#pdf(?=\s|$)", re.IGNORECASE)),
+              ("technical-documentation", re.compile(r"(?:^|\s)#(?:doc|docs)(?=\s|$)", re.IGNORECASE)),
+          ]
 
           def gh_graphql(query, variables=None, token=None):
               token = token or PAT
@@ -202,14 +262,130 @@ jobs:
                   output_type = TITLE_TAG_OUTPUT_TYPE.get(f"#{tag}")
                   if output_type:
                       return output_type
+          def infer_output_type_from_title(title):
+              title = (title or "").lower()
+              route_tags = [
+                  (r"(^|\s)#(?:app|web-app)\b", "production-app"),
+                  (r"(^|\s)#desktop\b", "desktop-tool"),
+                  (r"(^|\s)#pdf\b", "sellable-pdf"),
+                  (r"(^|\s)#(?:docs?|documentation)\b", "technical-documentation"),
+                  (r"(^|\s)#api\b", "api-product"),
+                  (r"(^|\s)#cli\b", "cli-product"),
+                  (r"(^|\s)#mcp\b", "mcp-product"),
+                  (r"(^|\s)#video\b", "invention-flow"),
+                  (r"(^|\s)#tools?\b", "internal-script-automation"),
+              ]
+              for pattern, output_type in route_tags:
+                  if re.search(pattern, title):
+                      return output_type
+              return None
+
+          def fields_needing_classification(parsed, title_tag_output_type):
+          def infer_output_type_from_title_tags(title):
+              tags = re.findall(r"#([a-z0-9_-]+)", (title or "").lower())
+              for tag in ("tool", "tools", "app"):
+                  if tag in tags:
+                      return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag]
+          def infer_output_type_from_title(title):
+              if re.search(r"#(?:tool|tools)\b", title, re.IGNORECASE):
+                  return "desktop-tool"
+              if re.search(r"#(?:app|apps)\b", title, re.IGNORECASE):
+                  return "production-app"
               return None
 
           def fields_needing_classification(parsed):
               needed = []
               for field, value in parsed.items():
+                  if field == "Output Type" and title_tag_output_type:
+                      continue
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
+
+          def infer_output_type_from_title(title):
+              # Keep this title-tag mapping in sync with weekly-research.yml and
+              # openrouter-auto-route.yml so title-only WR intake resolves the
+              # same Output Type across detection, classification, and routing.
+              lower = (title or "").lower()
+              if re.search(r'(^|\s)#(?:app|apps)(?=\s|$)', lower):
+                  return "production-app"
+              if re.search(r'(^|\s)#(?:tool|tools)(?=\s|$)', lower):
+                  return "desktop-tool"
+              normalized = (title or "").strip().lower()
+              if not normalized:
+                  return None
+
+              # Title route tags remain the strongest non-form signal.
+              if re.search(r"(?:^|\s)#app\b", normalized):
+                  return "production-app"
+              if re.search(r"(?:^|\s)#tools?\b", normalized):
+                  return "desktop-tool"
+
+              has_app = re.search(r"\b(app|application|platform)\b", normalized)
+              has_tool = re.search(r"\b(tool|desktop)\b", normalized)
+              if has_tool:
+                  return "desktop-tool"
+              if has_app:
+                  return "production-app"
+
+          def infer_title_output_type(title):
+          def infer_output_type_from_title(title):
+              for output_type, pattern in TITLE_ROUTE_OUTPUT_TYPES:
+                  if pattern.search(title or ""):
+                      return output_type
+              m = re.search(r'#(tool|tools|app)\b', title or "", re.IGNORECASE)
+              if not m:
+                  return None
+              token = m.group(1).lower()
+              if token in ("tool", "tools"):
+                  return "desktop-tool"
+              if token == "app":
+                  return "production-app"
+          def infer_title_output_type(title):
+              normalized = (title or "").lower()
+              if re.search(r"(?:^|[^a-z0-9])#apps?\b", normalized):
+                  return "production-app"
+              if re.search(r"(?:^|[^a-z0-9])#tools?\b", normalized):
+                  return "desktop-tool"
+              if re.search(r"(?:^|[^a-z0-9])#pdf\b", normalized):
+                  return "sellable-pdf"
+              if re.search(r"(?:^|[^a-z0-9])#api\b", normalized):
+                  return "api-product"
+              if re.search(r"(?:^|[^a-z0-9])#cli\b", normalized):
+                  return "cli-product"
+              if re.search(r"(?:^|[^a-z0-9])#mcp\b", normalized):
+                  return "mcp-product"
+              if re.search(r"(?:^|[^a-z0-9])#docs?\b", normalized):
+                  return "technical-documentation"
+              matches = re.findall(
+                  r"(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)",
+                  title or "",
+                  re.IGNORECASE,
+              )
+              if not matches:
+                  return None
+
+              # Title-only intake may carry route tags instead of a filled body.
+              # Prefer product-shaped tags over generic tool tags when multiple
+              # tags are present (e.g. `#tools #app` should route to app).
+              tag_map = {
+                  "app": "production-app",
+                  "api": "api-product",
+                  "mcp": "mcp-product",
+                  "cli": "cli-product",
+                  "pdf": "sellable-pdf",
+                  "docs": "technical-documentation",
+                  "doc": "technical-documentation",
+                  "tools": "internal-script-automation",
+                  "tool": "internal-script-automation",
+              }
+
+              found = {m.lower() for m in matches}
+              priority = ["app", "api", "mcp", "cli", "pdf", "docs", "doc", "tools", "tool"]
+              for tag in priority:
+                  if tag in found:
+                      return tag_map[tag]
+              return None
 
           def call_openrouter(needed, body, title):
               prompt = (
@@ -378,12 +554,47 @@ jobs:
           title_inferred_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
           if title_inferred_output_type:
               print(f"Title route-tag inferred Output Type: {title_inferred_output_type}")
+          title_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if not parsed.get("Output Type") and title_output_type:
+              parsed["Output Type"] = title_output_type
+              print(f"Inferred Output Type from title route tag: {title_output_type}")
+          title_tag_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if not parsed.get("Output Type"):
+              title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+              if title_output_type in DROPDOWN_FIELDS["Output Type"]:
+                  parsed["Output Type"] = title_output_type
+                  print(
+                      f"Inferred Output Type from title route tag: {title_output_type}"
+                  )
+              title_output_type = infer_title_output_type(ISSUE_TITLE)
+              if title_output_type:
+                  parsed["Output Type"] = title_output_type
+              inferred_output = infer_output_type_from_title(ISSUE_TITLE)
+              if inferred_output:
+                  parsed["Output Type"] = inferred_output
+                  print(f"Inferred Output Type from title tag: {inferred_output}")
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
+          title_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_output_type and "Output Type" in needed:
+              needed = [field for field in needed if field != "Output Type"]
+          print(f"Title-derived Output Type: {title_output_type}")
+          if title_tag_output_type:
+              print(f"Title route tags inferred Output Type: {title_tag_output_type}")
+          needed = fields_needing_classification(parsed, title_tag_output_type)
           print(f"Fields needing classification: {needed}")
+          title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_inferred_output_type:
+              print(f"Title-based Output Type hint: {title_inferred_output_type}")
+              print(f"Title route tag inferred Output Type: {title_inferred_output_type}")
+          title_output_type = infer_title_output_type(ISSUE_TITLE)
+          if title_output_type and "Output Type" in needed:
+              needed = [field for field in needed if field != "Output Type"]
+              print(f"Title route tags inferred Output Type: {title_output_type}")
 
           classified = {}
           used_fallback = False
+          title_hint_used = False
 
           if needed and HAS_OPENROUTER:
               classified = call_openrouter(needed, ISSUE_BODY, ISSUE_TITLE)
@@ -392,13 +603,19 @@ jobs:
               print("OpenRouter not configured; using opinionated defaults for blank fields.")
               used_fallback = True
 
-          # Merge: explicit > classified > defaults. Validate against allowed options.
+          # Merge: explicit > classifier-output > title-hint > defaults. Validate against allowed options.
+          # Merge: explicit > title tags > classified > defaults. Validate against
+          # allowed options.
           final = {}
           for field, allowed in DROPDOWN_FIELDS.items():
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
                   continue
+              if field == "Output Type" and title_output_type in allowed:
+                  final[field] = title_output_type
+              if field == "Output Type" and title_tag_output_type in allowed:
+                  final[field] = title_tag_output_type
               if field == "Output Type" and title_inferred_output_type in allowed:
                   final[field] = title_inferred_output_type
                   continue
@@ -406,9 +623,20 @@ jobs:
               if suggested in allowed:
                   final[field] = suggested
                   continue
+              if field == "Output Type" and title_inferred_output_type in allowed:
+                  final[field] = title_inferred_output_type
+                  title_hint_used = True
+                  continue
               # fallback
               final[field] = DEFAULTS[field]
               used_fallback = True
+              elif field == "Output Type" and title_output_type in allowed:
+                  final[field] = title_output_type
+              elif classified.get(field) in allowed:
+                  final[field] = classified[field]
+              else:
+                  final[field] = DEFAULTS[field]
+                  used_fallback = True
 
           print(f"Final field values to write: {final}")
 
@@ -450,7 +678,10 @@ jobs:
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
                   else "title-tags" if (field == "Output Type" and title_inferred_output_type in DROPDOWN_FIELDS[field])
+                  else "title-tag" if (field == "Output Type" and title_output_type in DROPDOWN_FIELDS[field] and value == title_output_type)
+                  else "title-tag" if (field == "Output Type" and title_tag_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
+                  else "title-hint" if (field == "Output Type" and title_hint_used and value == title_inferred_output_type)
                   else "fallback"
               )
               summary_lines.append(f"- `{field}` = `{value}` _({source})_")
@@ -487,7 +718,9 @@ jobs:
               *summary_lines,
               *extra_summary,
               "",
-              f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
+              f"_Source: explicit = you picked it; classifier = OpenRouter ({MODEL}); title-hint = inferred from title tags/keywords; fallback = default applied because no explicit value, no classifier/title-hint, or invalid value._",
+              f"_Source: explicit = you picked it; title-tag = inferred from a route tag in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
+              f"_Source: explicit = you picked it; title-tag = inferred from routing tags like #app/#tools in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
           ]
           if used_fallback:
               comment_lines.append("")
