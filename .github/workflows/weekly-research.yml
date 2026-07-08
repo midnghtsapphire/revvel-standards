@@ -55,9 +55,9 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
-            const hasRouteTags =
-              title.toLowerCase().includes('#app') ||
-              title.toLowerCase().includes('#tools');
+            // Word-boundary match (Copilot post-merge finding on #15497):
+            // bare includes('#app') false-positived on #application/#tooling.
+            const hasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools)\b/i.test(title);
             const hasSourceUrl =
               body.includes('https://') ||
               body.includes('http://');
