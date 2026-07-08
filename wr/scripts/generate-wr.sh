@@ -87,6 +87,10 @@ out="$(cat "$TEMPLATE")"
 # #14227; multi-line comment fix on #15215).
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
+  stripping && !in_comment && /^[[:space:]]*<!--/ {
+    if (/-->/) { next }
+    in_comment=1; next
+  }
   stripping && in_comment && /-->/ { in_comment=0; next }
 # template, drops any `<!-- ... -->` line and blank lines (including multi-line
 # <!-- --> blocks), until the first non-comment / non-blank line, then prints
