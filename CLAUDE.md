@@ -55,6 +55,18 @@ Default `permissions: contents: read` is not enough for jobs that label issues
 `"$VAR"` inside the script instead. Internal computed outputs (counts, statuses)
 are lower risk but the env pattern is still preferred.
 
+### 5. A red gate on main is a stop sign — and watch for interleaved merges
+Never build on a red `npm test` (see `standards/GREEN_MAIN_STANDARD.md`; incident
+entries in `learnings.md`). On 2026-07-08, six red test files on main turned out
+to hide a dead `wr/scripts/generate-wr.sh`, a broken `wr-auto-classify.yml`
+trigger, and two non-compiling github-script blocks in `wr-pr-creation.yml` — all
+caused by **parallel agents pasting competing fixes of the same block on top of
+each other** while the gates that would have caught it were already red. Before
+fixing anything: check whether a fix already landed and reconcile (one
+implementation per behavior, delete the losers). The interleave signature:
+redeclared `const`, repeated `return`, stacked comments citing different issues.
+Make count/list assertions drift-proof (derive from the registry, never hardcode).
+
 ## Verifying changes locally (mirror the CircleCI gate)
 
 CircleCI (`.circleci/config.yml`) runs two **real** gates — replicate them before pushing:

@@ -84,115 +84,23 @@ out="$(cat "$TEMPLATE")"
 # blank lines, until the first non-comment / non-blank line, then prints the
 # rest verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments
 # push the H1 to line 3+ and the lint gate refuses the output (Devin finding
-# on #14227; multi-line comment fix on #15313).
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_block=0 }
-  stripping && in_block { if (/-->/) in_block=0; next }
-  stripping && /^<!--/ {
-    if (/-->/) { next }
-    in_block=1; next
-# template, drops any `<!-- ... -->` line (single or multi-line) and blank
-# lines, until the first non-comment / non-blank line, then prints the rest
-# verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push
-# the H1 to line 3+ and the lint gate refuses the output (Devin finding on
-# #14227; multi-line comment fix on #15215).
+# on #14227; multi-line comment fixes on #15215 / #15307 / #15313).
+#
+# LESSON (2026-07-08, see standards/GREEN_MAIN_STANDARD.md): six agents each
+# pasted their own variant of this awk block on top of the previous one,
+# leaving five unterminated "$(" — the script would not run at all. The gate
+# that would have caught it (tests/generate-wr*.test.js) was already red on
+# main, so nobody looked. Keep exactly ONE implementation here; a red gate is
+# a stop sign, not scenery.
 out="$(printf '%s\n' "$out" | awk '
   BEGIN { stripping=1; in_comment=0 }
   stripping && in_comment && /-->/ { in_comment=0; next }
   stripping && in_comment          { next }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^<!--/             { in_comment=1; next }
-  stripping && /^[[:space:]]*$/    { next }
-  stripping && !in_comment && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && !in_comment && /^<!--/ { in_comment=1; next }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment { next }
-  stripping && !in_comment && /^[[:space:]]*<!--/ {
-    if (/-->/) { next }
-    in_comment=1; next
-  }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-# template, drops any `<!-- ... -->` line and blank lines (including multi-line
-# <!-- --> blocks), until the first non-comment / non-blank line, then prints
-# the rest verbatim. Without this, WR_TEMPLATE_FULL.md's leading author
-# comments push the H1 to line 3 and the lint gate refuses the output
-# (Devin finding on #14227; multi-line block fix for #15307).
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_comment=0 }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment          { next }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^<!--/             { in_comment=1; next }
-  stripping && /^[[:space:]]*$/    { next }
-# template, drops any `<!-- ... -->` block (single-line OR multi-line) and blank
-# lines, until the first non-comment / non-blank line, then prints the rest
-# verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push the
-# H1 to line 3+ and the lint gate refuses the output (Devin finding on #14227).
-# Multi-line comment fix: track `in_comment` state so that continuation lines
-# of a `<!-- ... -->` block that spans multiple lines are also dropped.
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_comment=0 }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment           { next }
-  stripping && /^<!--/ && /-->[[:space:]]*$/ { next }
-  stripping && /^<!--/              { in_comment=1; next }
-  stripping && /^[[:space:]]*$/     { next }
-# template, drops any `<!-- ... -->` block (single- or multi-line) and blank
-# lines, until the first non-comment / non-blank line, then prints verbatim.
-# Without this, WR_TEMPLATE_FULL.md's multi-line leading comments push the H1
-# past line 1 and the lint gate refuses the output (Devin finding on #14227;
-# multi-line fix: in_comment state variable tracks open <!-- --> blocks).
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_comment=0 }
-  stripping {
-    if (in_comment) {
-      if ($0 ~ /-->[[:space:]]*$/) in_comment=0
-      next
-    }
-    if ($0 ~ /^[[:space:]]*<!--/) {
-      if ($0 !~ /-->[[:space:]]*$/) in_comment=1
-      next
-    }
-    if ($0 ~ /^[[:space:]]*$/) next
-if ($0 ~ /[[:space:]]*-->[[:space:]]*$/) in_comment=0
-  stripping && !in_comment && /^[[:space:]]*<!--/ {
+  stripping && /^[[:space:]]*<!--/ {
     if (/-->/) { next }   # single-line comment — skip it
     in_comment=1; next    # opening of a multi-line comment
   }
-  stripping && in_comment {
-    if (/-->/) { in_comment=0 }  # end of multi-line comment
-    next
-  }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment          { next }
-  stripping && /^<!--/ && /-->/    { next }
-  stripping && /^<!--/             { in_comment=1; next }
   stripping && /^[[:space:]]*$/    { next }
-  { stripping=0; print }
-')"
-# Escape & in replacement strings to prevent bash parameter expansion from
-# treating & as a backreference to the matched pattern (${var//pat/rep}).
-# template, drops any `<!-- ... -->` line (single or multi-line) and blank
-# lines, until the first non-comment / non-blank line, then prints the rest
-# verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push
-# the H1 to line 3+ and the lint gate refuses the output (Devin finding on
-# #14227; multi-line comment fix on #15215).
-out="$(printf '%s\n' "$out" | awk '
-  BEGIN { stripping=1; in_comment=0 }
-  stripping && in_comment && /-->/ { in_comment=0; next }
-  stripping && in_comment           { next }
-  stripping && /^<!--/ && !/-->/ { in_comment=1; next }
-  stripping && /^<!--.*-->[[:space:]]*$/ { next }
-  stripping && /^[[:space:]]*$/           { next }
-  stripping && in_comment {
-    if (/-->/) { in_comment=0 }
-    next
-  }
-  stripping && /^[[:space:]]*<!--/ {
-    if (/-->/) { next }
-    in_comment=1; next
-  }
-  stripping && /^[[:space:]]*$/ { next }
   { stripping=0; print }
 ')"
 # Escape & in replacement to prevent bash parameter-expansion from treating it
