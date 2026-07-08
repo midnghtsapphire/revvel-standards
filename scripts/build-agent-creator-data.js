@@ -62,7 +62,9 @@ function buildData() {
   const promptTemplates = Object.keys(promptsDoc.prompts || {});
   const labelTriggers = promptsDoc.label_triggers || {};
 
-  const { PERSONA_REGISTRY } = require(path.join(ROOT, SOURCES.personas));
+  // Static require (reviewer-fleet finding: no dynamic require paths);
+  // SOURCES.personas stays the documented source-of-truth pointer.
+  const { PERSONA_REGISTRY } = require("./openrouter-personas.js");
   const personas = Object.values(PERSONA_REGISTRY).map((p) => ({
     handle: p.handle,
     name: p.name,
