@@ -407,3 +407,55 @@ Every 6h, `biome-inspector`:
   self-heal loop drives them to completion; auto-resolves when all apps are live.
 
 Read-only on the registry/auditor; additive; nothing existing was changed.
+
+---
+
+## Update — July 7, 2026: ORBIT persona (CircleCI expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**ORBIT 🪐**, the new CircleCI pipeline-commander persona (`/orbit`, `/circleci`,
+`/circle-ci`, `/🪐`, `/⭕`). Resolution stays registry-driven: the tokens map to the
+`orbit` entry added to `scripts/openrouter-personas.js`, so the runner
+(`scripts/persona-comment-runner.js`) needed no changes.
+
+Companion changes in the same PR (#15406):
+
+- `skills/circleci-expert/SKILL.md` — ORBIT's playbook (both CLI generations,
+  playbooks, lesser-known-features bench).
+- `.circleci/config.yml` — additive `validate-registries` job: the persona
+  registry must parse and resolve, and `skills/SKILLS_INDEX.yml` must be valid
+  YAML, in both PR and main workflows. The existing `lint-and-test` gate was
+  not modified.
+- `standards/CIRCLECI_INTEGRATION_STANDARD.md` — governance for the CircleCI
+  lane (GH Actions owns repo automation; CircleCI owns the build-and-test gate).
+
+Additive; no existing workflow behavior was changed.
+
+---
+
+## Update — July 7, 2026: OCTO persona (Octopus Review expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**OCTO 🐙**, the Octopus Review expert persona (`/octo`, `/octopus`, `/🐙`). As with
+ORBIT, resolution is registry-driven via the `octo` entry in
+`scripts/openrouter-personas.js`; the runner needed no changes.
+
+OCTO manages the org's existing Octopus Review integration (`octopus-cli.yml`,
+`octopus-route.yml`, the GitHub App): usage-limit lanes (hosted BYOK / self-host /
+OSI-public free), RAG-index hygiene (`octopus repo index`), and model routing —
+including OpenRouter on self-host via the OpenAI-compatible gateway env slots.
+Playbook: `skills/octopus-expert/SKILL.md`. Additive; no existing workflow behavior
+was changed.
+
+---
+
+## Update — July 7, 2026: MENDER persona (Mabl expert) wired into the summon lane
+
+Extended **`.github/workflows/persona-comment-trigger.yml`** with summon tokens for
+**MENDER 🧪**, the Mabl expert persona (`/mender`, `/mabl`, `/🧪`). Registry-driven
+resolution via the `mender` entry in `scripts/openrouter-personas.js`; runner
+unchanged. Note: **Mabl itself remains PAUSED** (2026-05-27 evaluation preserved in
+`mabl.yml`) — MENDER is the guardian of that pause and its reactivation gate, and
+documents the credit-free lanes (local/CI CLI runs consume no cloud credits; mabl
+cloud MCP). Playbook: `skills/mabl-expert/SKILL.md`. Additive; the paused `mabl.yml`
+workflow was NOT re-enabled.

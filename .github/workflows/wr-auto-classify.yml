@@ -45,6 +45,8 @@ jobs:
       needs.preflight.outputs.has_pat == 'true' &&
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+       (contains(github.event.issue.labels.*.name, 'wr:new') &&
+        contains(github.event.issue.labels.*.name, 'openrouter')) ||
        startsWith(github.event.issue.title, '[WR]'))
     runs-on: ubuntu-latest
     env:
@@ -180,6 +182,13 @@ jobs:
               for form_label, field_name in FORM_TO_FIELD.items():
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
+
+          def infer_output_type_from_title(title):
+              if re.search(r"#(?:tool|tools)\b", title, re.IGNORECASE):
+                  return "desktop-tool"
+              if re.search(r"#(?:app|apps)\b", title, re.IGNORECASE):
+                  return "production-app"
+              return None
 
           def fields_needing_classification(parsed):
               needed = []
@@ -383,6 +392,11 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          if not parsed.get("Output Type"):
+              inferred_output = infer_output_type_from_title(ISSUE_TITLE)
+              if inferred_output:
+                  parsed["Output Type"] = inferred_output
+                  print(f"Inferred Output Type from title tag: {inferred_output}")
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
