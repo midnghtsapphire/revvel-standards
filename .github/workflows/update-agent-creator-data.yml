@@ -1,0 +1,53 @@
+name: Update Agent Creator Data
+
+# Regenerates agent-creator-data.{json,js} (consumed by agent-creator.html)
+# whenever any of its source-of-truth registries change on main.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - skills/SKILLS_INDEX.yml
+      - .github/agent-models.yml
+      - .github/agent-prompts.yml
+      - scripts/openrouter-personas.js
+      - scripts/build-agent-creator-data.js
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-creator-data
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # PAT fallback so the data-refresh push can cascade to the Pages
+          # deploy workflow (the default GITHUB_TOKEN cannot trigger it).
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: node scripts/build-agent-creator-data.js
+
+      - name: Commit refreshed data if changed
+        run: |
+          if git diff --quiet -- agent-creator-data.json agent-creator-data.js; then
+            echo "Agent creator data unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add agent-creator-data.json agent-creator-data.js
+          git commit -m "chore(agent-creator): refresh agent catalog data"
+          git push

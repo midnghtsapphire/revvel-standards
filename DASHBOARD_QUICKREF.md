@@ -36,6 +36,23 @@ npm run dashboard search <term>       # Search everything
 - **HTML:** `dashboard.html` (open in browser)
 - **JSON:** `dashboard-data.json` (for programmatic access)
 
+### Agent Creator (Agent Hunter)
+
+Don't know what kind of agent you need? Open `agent-creator.html`: describe
+what you need in plain words, paste any raw research (LinkedIn dumps, job
+posts, tool lists), and Agent Hunter asks the questions it can't infer,
+matches against the skills vault, proposes new skills for the gaps, and
+generates the agent prompt, a draft `.skill.yml` for skill-forge, and a
+prefilled Work Request.
+
+```bash
+npm run agent-creator:data            # Rebuild catalog from the registries
+```
+
+- **HTML:** `agent-creator.html`
+- **Data:** `agent-creator-data.json` / `agent-creator-data.js` (generated;
+  auto-refreshed by `.github/workflows/update-agent-creator-data.yml`)
+
 ## What's Tracked
 
 | Category | Count | Source |
@@ -79,7 +96,7 @@ Found 33 projects
 ...
 ```
 
-### Search for "oaudrey"
+### Search for oaudrey
 ```bash
 $ npm run dashboard search oaudrey
 
