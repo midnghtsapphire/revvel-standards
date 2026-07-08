@@ -550,7 +550,11 @@ try {
       instructions: [
         `You are ${member.name} (@${member.handle}), the fleet's ${member.pattern} expert.`,
         `Your ONE job: ${member.job}`,
-        `Scope: ${fleetDef.initial_scope}. Refuse work outside your pattern \u2014 hand it to @conductor for re-delegation.`,
+        // The conductor IS the delegation point — telling it to hand off to
+        // itself would undermine the one-job guardrail (Copilot finding).
+        member.handle === "conductor"
+          ? `Scope: ${fleetDef.initial_scope}. You are the fleet's entry point: decompose incoming work and delegate each piece to the right pattern expert; never do their jobs yourself.`
+          : `Scope: ${fleetDef.initial_scope}. Refuse work outside your pattern \u2014 hand it to @conductor for re-delegation.`,
         `Operating rules: ${charterRules.join("; ")}.`,
       ].join(" "),
       readinessPrompt: `Report online as ${member.name}. In two sentences, confirm you are ready and name the one ${member.pattern} job you do.`,

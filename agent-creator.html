@@ -747,12 +747,34 @@ $("reset").addEventListener("click", () => {
   for (const id of ["need", "raw", "aname"]) $(id).value = "";
   for (const id of ["qcard", "matchcard", "fleetcard", "gapcard", "outcard"]) $(id).style.display = "none";
 });
+// Clipboard API is unavailable/denied in non-secure contexts (notably
+// file://, which this page explicitly supports) — fall back to a hidden
+// textarea + execCommand, and never leave a rejection unhandled.
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => copyTextFallback(text));
+  }
+  return Promise.resolve(copyTextFallback(text));
+}
+function copyTextFallback(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+  ta.remove();
+  return ok;
+}
 document.querySelectorAll("[data-copy]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const map = { prompt: "out-prompt", skill: "out-skill", wr: "out-wr", fleet: "out-fleet" };
-    navigator.clipboard.writeText($(map[btn.dataset.copy]).textContent).then(() => {
-      const t = btn.textContent; btn.textContent = "Copied ✓";
-      setTimeout(() => { btn.textContent = t; }, 1200);
+    copyText($(map[btn.dataset.copy]).textContent).then((ok) => {
+      const t = btn.textContent;
+      btn.textContent = ok ? "Copied ✓" : "Select & copy manually";
+      setTimeout(() => { btn.textContent = t; }, 1600);
     });
   });
 });
