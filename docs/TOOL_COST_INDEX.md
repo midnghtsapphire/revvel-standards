@@ -19,8 +19,8 @@ upgrade decision can be made.
 | Doppler | Free (Developer) | $0 | Team | $18 / user / mo | keep | doppler.com/pricing |
 | ImgBot | Open-source | $0 | — | n/a (free indefinitely) | keep | imgbot.net |
 | CodeRabbit | Free (limited) | $0 | Pro | est. $24 / user / mo | **keep** (free; codebase-index value; D009) | coderabbit.ai/pricing |
-| Bito | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; silent no-op — key absent; D006) | bito.ai/pricing |
-| RecurseML | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; silent no-op — key absent; D007) | recurse.com (verify) |
+| Bito | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; workflow skips gracefully when key is absent; D006) | bito.ai/pricing |
+| RecurseML | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; workflow skips when key is absent; D007) | app.recurse.ml (verify) |
 | Mabl | **PAUSED 2026-05-27** | $0 | — | est. starts $150+ / mo; note: local/CI CLI runs are credit-free (see `skills/mabl-expert/`) | **cut** (replaced by Keploy; D010) | mabl.com/pricing (verify) |
 | Octopus Review | **REPLACED 2026-07-08** | $0 (hosted; monthly AI quota hit) | BYOK / self-host | $0 platform + provider usage | **replace → ai-pr-review-openrouter.yml** (D008) | octopus-review.ai (verify) |
 | Augment Code | Free (limited) | $0 | per their pricing | per their pricing | keep | augmentcode.com |
