@@ -28,6 +28,36 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#docs') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#mcp') ||
+        contains(github.event.issue.title, '#video')))
+        contains(github.event.issue.title, '#tools ') ||
+        endsWith(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool ') ||
+        endsWith(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app ') ||
+        endsWith(github.event.issue.title, '#app')))
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#app')))
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#apps') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#mcp') ||
+        contains(github.event.issue.title, '#doc') ||
+        contains(github.event.issue.title, '#docs')))
         (contains(github.event.issue.labels.*.name, 'wr:new') &&
          contains(github.event.issue.labels.*.name, 'openrouter'))))
         contains(github.event.issue.labels.*.name, 'work-request') ||
@@ -58,18 +88,101 @@ jobs:
               return;
             }
 
+            const title = issue.title || '';
             const body = issue.body || '';
             const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
 
+            function inferOutputTypeFromTitle(rawTitle) {
+              const title = (rawTitle || '').toLowerCase();
+              const routeTags = [
+                [/(^|\s)#(?:app|web-app)\b/, 'production-app'],
+                [/(^|\s)#desktop\b/, 'desktop-tool'],
+                [/(^|\s)#pdf\b/, 'sellable-pdf'],
+                [/(^|\s)#(?:docs?|documentation)\b/, 'technical-documentation'],
+                [/(^|\s)#api\b/, 'api-product'],
+                [/(^|\s)#cli\b/, 'cli-product'],
+                [/(^|\s)#mcp\b/, 'mcp-product'],
+                [/(^|\s)#video\b/, 'invention-flow'],
+                [/(^|\s)#tools?\b/, 'internal-script-automation'],
+              ];
+              for (const [pattern, outputType] of routeTags) {
+                if (pattern.test(title)) return outputType;
+              }
+              return '';
+            }
+            const inferTitleOutputType = (title) => {
+              const normalizedTitle = String(title || '').toLowerCase();
+              if (/(?:^|[^a-z0-9])#apps?\b/.test(normalizedTitle)) return 'production-app';
+              if (/(?:^|[^a-z0-9])#tools?\b/.test(normalizedTitle)) return 'desktop-tool';
+              if (/(?:^|[^a-z0-9])#pdf\b/.test(normalizedTitle)) return 'sellable-pdf';
+              if (/(?:^|[^a-z0-9])#api\b/.test(normalizedTitle)) return 'api-product';
+              if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
+              if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
+              if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
+              return '';
+            };
+
             // Match the `### Output Type (required)` form section — tolerant of
             // trailing parenthetical annotations and case (matches the same
             // regex pattern as `wr-auto-classify.yml`).
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
+            const inferOutputTypeFromTitle = (value) => {
+              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
+              return null;
+            };
+
             const m = body.match(sectionRegex);
+            const outputType = (m?.[1] || '').trim().toLowerCase() || inferOutputTypeFromTitle(title);
+            if (!outputType) {
+              core.info('No Output Type section or title route tags found — skipping route.');
+            const TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              tool: 'desktop-tool',
+              tools: 'desktop-tool',
+              app: 'production-app',
+            };
+            const inferOutputTypeFromTitleTags = (title = '') => {
+              const tags = Array.from(title.toLowerCase().matchAll(/#([a-z0-9_-]+)/g), tag => tag[1]);
+              for (const key of ['tool', 'tools', 'app']) {
+                if (tags.includes(key)) return TITLE_ROUTE_TAG_OUTPUT_TYPE[key];
+              }
+              return '';
+            };
+
+             const outputTypeFromBody = (m?.[1] || '').trim().toLowerCase();
+             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
+             const outputType =
+               outputTypeFromBody && outputTypeFromBody !== '_no response_'
+                 ? outputTypeFromBody
+                 : outputTypeFromTitle;
+             if (!outputType) {
+               core.info('No Output Type section or recognized title route tag found — skipping route.');
+               return;
+             }
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputType = ((m?.[1] || '').trim().toLowerCase() || inferredFromTitle);
+            if (!outputType) {
+              core.info('No Output Type section or title route tag found — skipping route.');
+            const outputType = (m?.[1] || '').trim().toLowerCase() || inferTitleOutputType(issue.title);
+            if (!outputType) {
+              core.info('No Output Type section found in issue body — skipping route.');
+            const outputType = (
+              m?.[1]?.trim().toLowerCase() ||
+              inferOutputTypeFromTitle(title) ||
+              ''
+            );
+            if (!outputType) {
+              core.info('No Output Type section or route tags found — skipping route.');
             const title = issue.title || '';
             const titleHasAppTag = /#apps?\b/i.test(title);
             const titleHasToolTag = /#tools?\b/i.test(title);
