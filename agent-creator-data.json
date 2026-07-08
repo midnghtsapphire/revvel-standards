@@ -1590,6 +1590,114 @@
       ],
       "profile": "repo_surgery",
       "description": "Expert on Mabl, the agentic test-automation platform — currently PAUSED in this fleet (replaced by Keploy; evaluation preserved in mabl.yml). Knows the 2026 feature bench (agentic test trio, GenAI assertions, multi-model auto-healing, API and MongoDB/Oracle testing, Test Impact Analysis, Mailbox email testing), the credit-free local/CI CLI lanes and the mabl cloud MCP, and owns the reactivation gate. Playbook: skills/mabl-expert/SKILL.md; setup companion: skills/mabl/."
+    },
+    {
+      "handle": "chain",
+      "name": "Chainwright",
+      "emoji": "🚢",
+      "role": "Prompt Chaining expert — Sequential Intelligence",
+      "aliases": [
+        "prompt-chaining",
+        "fleet-chain"
+      ],
+      "profile": "repo_surgery",
+      "description": "Decomposes a complex task into sequential LLM steps where each call processes the output of the previous one. Owns chatbot-style flows and agent tool pipelines. Does nothing else."
+    },
+    {
+      "handle": "planner",
+      "name": "Wayfinder",
+      "emoji": "🚢",
+      "role": "Plan and Execute expert — Sequential Intelligence",
+      "aliases": [
+        "plan-and-execute",
+        "fleet-planner"
+      ],
+      "profile": "repo_surgery",
+      "description": "Creates a multi-step plan, executes it sequentially, reviews after each task, and adjusts the remaining plan. Owns business-process automation and data-pipeline orchestration. Does nothing else."
+    },
+    {
+      "handle": "fanout",
+      "name": "Manifold",
+      "emoji": "🚢",
+      "role": "Parallelization expert — Parallel Processing",
+      "aliases": [
+        "parallelization",
+        "fleet-fanout"
+      ],
+      "profile": "repo_surgery",
+      "description": "Sections a task or runs it multiple times simultaneously and aggregates the outputs. Owns automated evaluations and guardrail voting. Does nothing else."
+    },
+    {
+      "handle": "conductor",
+      "name": "Maestro",
+      "emoji": "🚢",
+      "role": "Orchestrator-Worker expert — Parallel Processing",
+      "aliases": [
+        "orchestrator-worker",
+        "fleet-conductor"
+      ],
+      "profile": "repo_surgery",
+      "description": "Acts as the central brain that dynamically breaks a task down, delegates to worker agents, and synthesizes their results. Owns agentic RAG and coding-agent coordination. Does nothing else."
+    },
+    {
+      "handle": "switchboard",
+      "name": "Switchyard",
+      "emoji": "🚢",
+      "role": "Routing expert — Intelligent Routing",
+      "aliases": [
+        "routing",
+        "fleet-switchboard"
+      ],
+      "profile": "repo_surgery",
+      "description": "Classifies every input and directs it to the right specialized handler, keeping concerns separated. Owns support-ticket triage and multi-agent hand-offs. Does nothing else."
+    },
+    {
+      "handle": "critic",
+      "name": "Whetstone",
+      "emoji": "🚢",
+      "role": "Evaluator-Optimizer expert — Intelligent Routing",
+      "aliases": [
+        "evaluator-optimizer",
+        "fleet-critic"
+      ],
+      "profile": "repo_surgery",
+      "description": "Runs the generate-evaluate loop: one model produces, it evaluates and feeds back until quality clears the bar. Owns real-time output monitoring and coding-agent review loops. Does nothing else."
+    },
+    {
+      "handle": "mirror",
+      "name": "Looking Glass",
+      "emoji": "🚢",
+      "role": "Reflection expert — Self-Improving Systems",
+      "aliases": [
+        "reflection",
+        "fleet-mirror"
+      ],
+      "profile": "repo_surgery",
+      "description": "Reviews its own (and fleet) task responses via self-reflection and feedback to improve final quality over time. Owns post-run retros and failure-pattern learning. Does nothing else."
+    },
+    {
+      "handle": "rewoo",
+      "name": "Deepcut",
+      "emoji": "🚢",
+      "role": "ReWOO expert — Self-Improving Systems",
+      "aliases": [
+        "rewoo",
+        "fleet-rewoo"
+      ],
+      "profile": "repo_surgery",
+      "description": "Plans with substitution up front (ReWOO) to cut token use versus ReACT-style loops. Owns deep-search agents and multi-step question answering. Does nothing else."
+    },
+    {
+      "handle": "loop",
+      "name": "Perpetua",
+      "emoji": "🚢",
+      "role": "Autonomous Workflow expert — Self-Improving Systems",
+      "aliases": [
+        "autonomous-workflow",
+        "fleet-loop"
+      ],
+      "profile": "repo_surgery",
+      "description": "Runs as a continuous LLM loop acting on tool feedback, inside guardrails and spend caps. Owns long-running autonomous automations and self-healing flows. Does nothing else."
     }
   ],
   "prompt_templates": [

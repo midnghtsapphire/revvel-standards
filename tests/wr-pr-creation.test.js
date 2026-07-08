@@ -92,9 +92,9 @@ function isWrIssue(title, labels, issueType) {
   // ("Check if PR should be created"). RECONSTRUCTED 2026-07-08: four
   // interleaved variants of this function had been merged on top of each
   // other, leaving the file unparseable (standards/GREEN_MAIN_STANDARD.md).
-  const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp)\b/i.test(title);
-  const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
-  const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+  const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp|skill|skills|website)\b/i.test(title);
+  const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video|skill|skills|website)\b/i.test(title);
+  const hasTitleRouteTag = /(?:^|\s)#(?:app|apps|tool|tools|cli|api|mcp|pdf|doc|docs|skill|skills|website)(?=\s|$)/i.test(title);
 
   return (
     title.match(/^\[WR\]/i) ||
@@ -255,6 +255,8 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Red Light Therapy for Stretch Marks: Science & Protocols (20#tool #app', [], null), true);
     assert.equal(isWrIssue('Red light therapy guide#tools #app', [], null), true);
     assert.equal(isWrIssue('Clinical workflow #tool', [], null), true);
+    assert.equal(isWrIssue('Lead scoring helper #skill', [], null), true);
+    assert.equal(isWrIssue('Oz landing page #website', [], null), true);
   });
 
   await test('isWrIssue accepts wr:new seeded route-tag intake', () => {

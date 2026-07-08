@@ -216,10 +216,10 @@ test('WR workflows accept BASIC WR issue type, work-request label, and title rou
     assert(workflow.includes('app|apps'), 'WR workflow must accept #app title route tags');
     assert(
       workflow.includes('hasTitleRouteTag') &&
-        workflow.includes('#(?:app|tool|tools'),
+        workflow.includes('#(?:app|apps|tool|tools'),
       'WR workflow must accept title route tags'
     );
-    assert(workflow.includes('#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)'),
+    assert(workflow.includes('#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video|skill|skills|website)'),
       'WR workflow must accept title route tags like #app/#tools');
     // 2026-07-08: was pinned to `titleHasRouteTags`, an identifier that only
     // existed in a mangled duplicate block; the surviving extended-alias tier
@@ -430,7 +430,7 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
 
   assert(
     weeklyResearch.includes('const hasTitleRouteTag =') &&
-      weeklyResearch.includes('#(?:app|apps|tool|tools)'),
+      weeklyResearch.includes('#(?:app|apps|tool|tools'),
     'weekly-research must recognize #app/#tool title tags as WR intake signals'
   );
   // The trigger uses word-boundary matching — format(' {0} ', title) — so a

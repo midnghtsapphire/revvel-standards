@@ -424,6 +424,31 @@ test('wr-pr-creation.yml github-script blocks compile after workflow expression 
   }
 });
 
+// Added 2026-07-08: weekly-research's "Check if issue is WR" script carried
+// seven interleaved merge variants and could not compile — and NO gate
+// covered it (only wr-pr-creation and compliance-watcher were compiled).
+// Every github-script block in weekly-research.yml is now compiled here.
+// See standards/GREEN_MAIN_STANDARD.md.
+test('weekly-research.yml github-script blocks compile after workflow expression substitution', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'weekly-research.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+
+  for (const job of Object.values(doc.jobs)) {
+    for (const step of job.steps || []) {
+      if (!String(step.uses || '').includes('github-script')) continue;
+      const script = String(step.with?.script || '')
+        .replace(/\$\{\{\s*steps\.check\.outputs\.issue_number\s*\}\}/g, '123')
+        .replace(/\$\{\{\s*needs\.detect-wr\.outputs\.issue_number\s*\}\}/g, '123');
+
+      try {
+        new AsyncFunction('github', 'context', 'core', script);
+      } catch (error) {
+        throw new Error(`${step.name} github-script block does not compile: ${error.message}`);
+      }
+    }
+  }
+});
+
 test('compliance-watcher.yml github-script block compiles', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'compliance-watcher.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));

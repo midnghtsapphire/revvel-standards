@@ -59,7 +59,10 @@ jobs:
        contains(format(' {0} ', github.event.issue.title), ' #api ') ||
        contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
        contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #mcp ')))
+       contains(format(' {0} ', github.event.issue.title), ' #mcp ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #skill ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #skills ') ||
+       contains(format(' {0} ', github.event.issue.title), ' #website ')))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -162,6 +165,8 @@ jobs:
               ("mcp-product", re.compile(r"(?:^|\s)#mcp(?=\s|$)", re.IGNORECASE)),
               ("sellable-pdf", re.compile(r"(?:^|\s)#pdf(?=\s|$)", re.IGNORECASE)),
               ("technical-documentation", re.compile(r"(?:^|\s)#(?:doc|docs)(?=\s|$)", re.IGNORECASE)),
+              ("internal-script-automation", re.compile(r"(?:^|\s)#(?:skill|skills)(?=\s|$)", re.IGNORECASE)),
+              ("production-app", re.compile(r"(?:^|\s)#website(?=\s|$)", re.IGNORECASE)),
           ]
 
           def gh_graphql(query, variables=None, token=None):
@@ -223,6 +228,9 @@ jobs:
               "#cli": "cli-product",
               "#api": "api-product",
               "#mcp": "mcp-product",
+              "#skill": "internal-script-automation",
+              "#skills": "internal-script-automation",
+              "#website": "production-app",
           }
 
           def infer_output_type_from_title_tags(title):

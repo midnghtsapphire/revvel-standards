@@ -152,12 +152,12 @@ jobs:
             // Route-tag detection is kept in three deliberate tiers, each pinned
             // by tests/work-request-form-sync.test.js:
             // 1. Canonical word-boundary tags — unconditional WR signal.
-            const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp)\b/i.test(title);
+            const hasWrRouteTag = /#(?:app|apps|tool|tools|pdf|pdfs|doc|docs|api|apis|cli|mcp|skill|skills|website)\b/i.test(title);
             // 2. Extended alias set (web-app, documentation, video).
-            const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
+            const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video|skill|skills|website)\b/i.test(title);
             // 3. Narrow core set, only trusted while the issue is still `wr:new`,
             //    so unrelated hashtagged issues do not enter the WR pipeline.
-            const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+            const hasTitleRouteTag = /(?:^|\s)#(?:app|apps|tool|tools|cli|api|mcp|pdf|doc|docs|skill|skills|website)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
               hasWrRouteTag ||
@@ -889,6 +889,8 @@ jobs:
               if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
               if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
               if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
+              if (/(?:^|[^a-z0-9])#skills?\b/.test(normalizedTitle)) return 'internal-script-automation';
+              if (/(?:^|[^a-z0-9])#website\b/.test(normalizedTitle)) return 'production-app';
               return '';
             };
 

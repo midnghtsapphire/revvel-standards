@@ -74,10 +74,14 @@ async function runTests() {
 
   // Registry shape
   console.log("Test Group: Persona Registry");
+  // Core personas are hand-authored here; fleet pattern experts are derived
+  // from skills/agentic-workflow-fleet/FLEET.yml via agent-creator-data.json.
+  const CORE_PERSONAS = ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"];
+  const FLEET_PERSONAS = ["chain", "planner", "fanout", "conductor", "switchboard", "critic", "mirror", "rewoo", "loop"];
   assertEqual(
     Object.keys(getPersonas()).sort(),
-    ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"],
-    "Should register exactly the nine named personas"
+    [...CORE_PERSONAS, ...FLEET_PERSONAS].sort(),
+    "Should register the nine core personas plus the nine fleet pattern experts"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
