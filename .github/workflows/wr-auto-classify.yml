@@ -241,6 +241,27 @@ jobs:
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
 
+          TITLE_TAG_OUTPUT_TYPE = {
+              "#app": "production-app",
+              "#apps": "production-app",
+              "#tool": "desktop-tool",
+              "#tools": "desktop-tool",
+              "#pdf": "sellable-pdf",
+              "#docs": "technical-documentation",
+              "#doc": "technical-documentation",
+              "#cli": "cli-product",
+              "#api": "api-product",
+              "#mcp": "mcp-product",
+          }
+
+          def infer_output_type_from_title_tags(title):
+              # Title-route tags are an intake fallback for sparse/link-only WRs.
+              # First recognized tag wins, preserving user intent ordering.
+              tags_in_order = re.findall(r"(?<!\w)#([a-z][a-z0-9-]*)\b", (title or "").lower())
+              for tag in tags_in_order:
+                  output_type = TITLE_TAG_OUTPUT_TYPE.get(f"#{tag}")
+                  if output_type:
+                      return output_type
           def infer_output_type_from_title(title):
               title = (title or "").lower()
               route_tags = [
@@ -530,6 +551,9 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          title_inferred_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+          if title_inferred_output_type:
+              print(f"Title route-tag inferred Output Type: {title_inferred_output_type}")
           title_output_type = infer_output_type_from_title(ISSUE_TITLE)
           if not parsed.get("Output Type") and title_output_type:
               parsed["Output Type"] = title_output_type
@@ -653,6 +677,7 @@ jobs:
               update_single_select(project_id, item_id, info["id"], opt_id)
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tags" if (field == "Output Type" and title_inferred_output_type in DROPDOWN_FIELDS[field])
                   else "title-tag" if (field == "Output Type" and title_output_type in DROPDOWN_FIELDS[field] and value == title_output_type)
                   else "title-tag" if (field == "Output Type" and title_tag_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]

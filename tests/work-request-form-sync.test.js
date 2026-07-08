@@ -570,6 +570,30 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
   );
 });
 
+test('WR routing workflows infer Output Type from title route tags', () => {
+  const classify = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'),
+    'utf8'
+  );
+  const route = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'),
+    'utf8'
+  );
+  const wrPr = fs.readFileSync(
+    path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),
+    'utf8'
+  );
+
+  for (const workflow of [classify, route, wrPr]) {
+    assert(workflow.includes('#tool') && workflow.includes('#tools'), 'must recognize #tool/#tools route tags');
+    assert(workflow.includes('#app') && workflow.includes('#apps'), 'must recognize #app/#apps route tags');
+    assert(
+      workflow.includes('desktop-tool') && workflow.includes('production-app'),
+      'must map tool/app title tags to canonical Output Type values'
+    );
+  }
+});
+
 test('WR PR creation waits for research completion and ignores PR comments', () => {
   const wrPrCreation = fs.readFileSync(
     path.join(REPO_ROOT, '.github', 'workflows', 'wr-pr-creation.yml'),

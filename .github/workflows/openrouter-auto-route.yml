@@ -111,6 +111,25 @@ jobs:
               l => typeof l === 'string' ? l : l.name
             );
 
+            function inferOutputTypeFromTitleTags(rawTitle) {
+              const tagMap = {
+                '#app': 'production-app',
+                '#apps': 'production-app',
+                '#tool': 'desktop-tool',
+                '#tools': 'desktop-tool',
+                '#pdf': 'sellable-pdf',
+                '#docs': 'technical-documentation',
+                '#doc': 'technical-documentation',
+                '#cli': 'cli-product',
+                '#api': 'api-product',
+                '#mcp': 'mcp-product',
+              };
+              const tags = (rawTitle || '').toLowerCase().match(/(?<!\w)#[a-z][a-z0-9-]*\b/g) || [];
+              for (const tag of tags) {
+                if (tagMap[tag]) return tagMap[tag];
+              }
+              return '';
+            }
             function inferOutputTypeFromTitle(value) {
               // Keep this mapping in sync with wr-auto-classify.yml so title-only
               // WR intake resolves the same Output Type before/after the mirrored
@@ -176,6 +195,15 @@ jobs:
             };
 
             const m = body.match(sectionRegex);
+            let outputType = (m?.[1] || '').trim().toLowerCase();
+            if (!outputType) {
+              outputType = inferOutputTypeFromTitleTags(title);
+              if (outputType) {
+                core.info(`No Output Type section found; inferred from title tags: "${outputType}"`);
+              }
+            }
+            if (!outputType) {
+              core.info('No Output Type section found in issue body or title tags — skipping route.');
             const outputTypeLabel = existingLabels.find(label => label.startsWith('output-type:')) || '';
             const outputType = (
               m?.[1] ||
