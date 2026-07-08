@@ -58,6 +58,7 @@ jobs:
               return;
             }
 
+            const title = issue.title || '';
             const body = issue.body || '';
             const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
@@ -69,7 +70,20 @@ jobs:
             // regex pattern as `wr-auto-classify.yml`).
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
+            const inferOutputTypeFromTitle = (value) => {
+              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
+              return null;
+            };
+
             const m = body.match(sectionRegex);
+            const outputType = (
+              m?.[1]?.trim().toLowerCase() ||
+              inferOutputTypeFromTitle(title) ||
+              ''
+            );
+            if (!outputType) {
+              core.info('No Output Type section or route tags found — skipping route.');
             const title = issue.title || '';
             const titleHasAppTag = /#apps?\b/i.test(title);
             const titleHasToolTag = /#tools?\b/i.test(title);
