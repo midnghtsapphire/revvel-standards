@@ -15,6 +15,7 @@ while [[ $# -gt 0 ]]; do case "$1" in
 esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
+# wr/ — env-overridable so tests can point HERE at a sandbox instead of the
 #959.733px wr/ — env-overridable so tests can point HERE at a sandbox instead of the
 # real wr/issues/ (tests set HERE=<tmpdir>; without the default-only
 # assignment the override is silently ignored and test runs mutate tracked
@@ -79,6 +80,47 @@ TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no back
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
 out="$(cat "$TEMPLATE")"
 # Strip leading HTML comments before the H1 — `awk` walks the head of the
+# template, drops any `<!-- ... -->` line (single or multi-line) and blank
+# lines, until the first non-comment / non-blank line, then prints the rest
+# verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push
+# the H1 to line 3+ and the lint gate refuses the output (Devin finding on
+# #14227; multi-line comment fix on #15215).
+out="$(printf '%s\n' "$out" | awk '
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && !in_comment && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && !in_comment && /^<!--/ { in_comment=1; next }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment { next }
+  stripping && !in_comment && /^[[:space:]]*<!--/ {
+    if (/-->/) { next }
+    in_comment=1; next
+  }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+# template, drops any `<!-- ... -->` line and blank lines (including multi-line
+# <!-- --> blocks), until the first non-comment / non-blank line, then prints
+# the rest verbatim. Without this, WR_TEMPLATE_FULL.md's leading author
+# comments push the H1 to line 3 and the lint gate refuses the output
+# (Devin finding on #14227; multi-line block fix for #15307).
+out="$(printf '%s\n' "$out" | awk '
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment          { next }
+  stripping && /^<!--.*-->[[:space:]]*$/ { next }
+  stripping && /^<!--/             { in_comment=1; next }
+  stripping && /^[[:space:]]*$/    { next }
+# template, drops any `<!-- ... -->` block (single-line OR multi-line) and blank
+# lines, until the first non-comment / non-blank line, then prints the rest
+# verbatim. Without this, WR_TEMPLATE_FULL.md's leading author comments push the
+# H1 to line 3+ and the lint gate refuses the output (Devin finding on #14227).
+# Multi-line comment fix: track `in_comment` state so that continuation lines
+# of a `<!-- ... -->` block that spans multiple lines are also dropped.
+out="$(printf '%s\n' "$out" | awk '
+  BEGIN { stripping=1; in_comment=0 }
+  stripping && in_comment && /-->/ { in_comment=0; next }
+  stripping && in_comment           { next }
+  stripping && /^<!--/ && /-->[[:space:]]*$/ { next }
+  stripping && /^<!--/              { in_comment=1; next }
+  stripping && /^[[:space:]]*$/     { next }
 # template, drops any `<!-- ... -->` block (single- or multi-line) and blank
 # lines, until the first non-comment / non-blank line, then prints verbatim.
 # Without this, WR_TEMPLATE_FULL.md's multi-line leading comments push the H1
