@@ -280,6 +280,7 @@ jobs:
                       needed.append(field)
               return needed
 
+          def infer_title_output_type(title):
           def infer_output_type_from_title(title):
               for output_type, pattern in TITLE_ROUTE_OUTPUT_TYPES:
                   if pattern.search(title or ""):
