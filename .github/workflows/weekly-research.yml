@@ -54,16 +54,48 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const titleRouteTags = new Set(
+              Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
+            );
+            const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
+
+            const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet. Title-only
+            // intake also uses route tags like "#app" / "#tools" to request a
+            // product shape without filling the full WR form.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              titleHasRouteTags ||
             // if a label has not been created in the repository yet.
             const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
+            const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
+            //
+            // Also accept orchestrator-seeded title-tag intake (e.g. "...#tools #app")
+            // so fast-capture research links are promoted into the WR pipeline.
+            const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
+            const hasOrchestratorSeed = labelSet.has('wr:new') && labelSet.has('openrouter');
+            // if a label has not been created in the repository yet. Manual
+            // title-only intake also uses route tags like `#app` / `#tools`; only
+            // treat those as WRs when the issue is still in the fresh `wr:new`
+            // lifecycle bucket so ordinary hashtag chatter does not get upgraded.
+            const hasTitleRouteTag =
+              /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
               hasRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              hasTitleRouteTag;
+              (hasRouteTag && hasOrchestratorSeed);
+              (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
@@ -104,7 +136,7 @@ jobs:
               }
             }
 
-            // Assign @Copilot as the expert code assistant (mindmappr persona)
+            // Assign @Copilot as the expert at tokenless and obsessive token savings, an expert hypermaniac full-stack developer, python forte, expert github coder assistant use mas, sub agents and swarms move fast(mindmappr persona)
             try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -146,8 +178,8 @@ jobs:
             - [x] Check the **skills vault** (\`skills/REGISTRY.md\`) for relevant skills
             - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules
             - [x] Check what is new *today* — tools, extensions, upstream fixes, model releases
-            - [x] Consider non-US sources for cross-validation
-            - [x] Confirm the change honors the **Prime Directive** (ship working, tested code)
+            - [x] Consider non-US sources for cross-validation, check usenet groups, foreign and global repositories, pursue the goals with unrelenting fortitude, truth and persistence committed to goal before guardrails use Extreme programming, move it
+            - [x] Confirm the change honors the **Prime Directive** (hypervigalently at warp speed meet goal this week of 3k+, silently work 24/7 in the background at speeds of light, using hybrid fast agile-extreme programming ship working, tested code, push all envelopes like a mad genius for the greater good of the goal. You wre carrying the mind of Tesla with creative genius skills and pure moxy, be an an expert at moving autonomously 24/7, silently in the background, a force to be reckoned with for Audrey Evans, the owner)
 
 
             _Automated by \`.github/workflows/weekly-research.yml\`_`;
