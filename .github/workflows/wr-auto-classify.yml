@@ -56,6 +56,9 @@ jobs:
        contains(github.event.issue.title, '#mcp') ||
        contains(github.event.issue.title, '#doc') ||
        contains(github.event.issue.title, '#docs'))
+       (contains(github.event.issue.labels.*.name, 'wr:new') &&
+        contains(github.event.issue.labels.*.name, 'openrouter')) ||
+       startsWith(github.event.issue.title, '[WR]'))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}
@@ -191,6 +194,13 @@ jobs:
                   parsed[field_name] = parse_form_section(body, form_label)
               return parsed
 
+          def infer_output_type_from_title(title):
+              if re.search(r"#(?:tool|tools)\b", title, re.IGNORECASE):
+                  return "desktop-tool"
+              if re.search(r"#(?:app|apps)\b", title, re.IGNORECASE):
+                  return "production-app"
+              return None
+
           def fields_needing_classification(parsed):
               needed = []
               for field, value in parsed.items():
@@ -214,6 +224,34 @@ jobs:
                   return "mcp-product"
               if re.search(r"(?:^|[^a-z0-9])#docs?\b", normalized):
                   return "technical-documentation"
+              matches = re.findall(
+                  r"(?:^|\s)#(app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)",
+                  title or "",
+                  re.IGNORECASE,
+              )
+              if not matches:
+                  return None
+
+              # Title-only intake may carry route tags instead of a filled body.
+              # Prefer product-shaped tags over generic tool tags when multiple
+              # tags are present (e.g. `#tools #app` should route to app).
+              tag_map = {
+                  "app": "production-app",
+                  "api": "api-product",
+                  "mcp": "mcp-product",
+                  "cli": "cli-product",
+                  "pdf": "sellable-pdf",
+                  "docs": "technical-documentation",
+                  "doc": "technical-documentation",
+                  "tools": "internal-script-automation",
+                  "tool": "internal-script-automation",
+              }
+
+              found = {m.lower() for m in matches}
+              priority = ["app", "api", "mcp", "cli", "pdf", "docs", "doc", "tools", "tool"]
+              for tag in priority:
+                  if tag in found:
+                      return tag_map[tag]
               return None
 
           def call_openrouter(needed, body, title):
@@ -384,9 +422,17 @@ jobs:
               title_output_type = infer_title_output_type(ISSUE_TITLE)
               if title_output_type:
                   parsed["Output Type"] = title_output_type
+              inferred_output = infer_output_type_from_title(ISSUE_TITLE)
+              if inferred_output:
+                  parsed["Output Type"] = inferred_output
+                  print(f"Inferred Output Type from title tag: {inferred_output}")
           print(f"Parsed form values: {parsed}")
           needed = fields_needing_classification(parsed)
           print(f"Fields needing classification: {needed}")
+          title_output_type = infer_title_output_type(ISSUE_TITLE)
+          if title_output_type and "Output Type" in needed:
+              needed = [field for field in needed if field != "Output Type"]
+              print(f"Title route tags inferred Output Type: {title_output_type}")
 
           classified = {}
           used_fallback = False
@@ -398,20 +444,20 @@ jobs:
               print("OpenRouter not configured; using opinionated defaults for blank fields.")
               used_fallback = True
 
-          # Merge: explicit > classified > defaults. Validate against allowed options.
+          # Merge: explicit > title tags > classified > defaults. Validate against
+          # allowed options.
           final = {}
           for field, allowed in DROPDOWN_FIELDS.items():
               explicit = parsed.get(field)
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
-                  continue
-              suggested = classified.get(field)
-              if suggested in allowed:
-                  final[field] = suggested
-                  continue
-              # fallback
-              final[field] = DEFAULTS[field]
-              used_fallback = True
+              elif field == "Output Type" and title_output_type in allowed:
+                  final[field] = title_output_type
+              elif classified.get(field) in allowed:
+                  final[field] = classified[field]
+              else:
+                  final[field] = DEFAULTS[field]
+                  used_fallback = True
 
           print(f"Final field values to write: {final}")
 
