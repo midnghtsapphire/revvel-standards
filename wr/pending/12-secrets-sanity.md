@@ -27,6 +27,38 @@ automations is rotating/overwriting daily.
    (wr-auto-classify already probes) so a missing key degrades gracefully
    and files one labeled issue instead of failing silently for days.
 
+## Findings so far (2026-07-08 session)
+
+- The old `secrets-backup-daily.yml` was unsafe AND broken: it wrote secret
+  VALUES to `secret-backups/*.json` on main (repo root deploys publicly via
+  Pages + Vercel — a successful run would have published live tokens, which
+  secret scanning auto-revokes), but only `GH_TOKEN` was mapped into env, so
+  it actually backed up empty strings; zero commits ever landed. Its verify
+  step also printed the first 8 chars of each key into CI logs. REPLACED by
+  the Secrets Presence Ledger (same file): names + peppered fingerprints
+  only, `docs/secrets-ledger.json` timeline, one `[SECRET-MISSING]` issue
+  per disappearance.
+- All in-repo sync workflows are `workflow_dispatch`-only — nothing HERE
+  deletes daily. Prime suspect for the daily deletion: **Doppler's GitHub
+  sync integration**, which mirrors desired state and REMOVES repo secrets
+  that are not in the Doppler config. Any key added directly in GitHub's UI
+  gets wiped on Doppler's next sync. Check Doppler dashboard → the project
+  synced to this repo → integration settings/activity log. Fix = either add
+  every key to Doppler (Doppler stays the single write path) or disconnect
+  the sync (GitHub becomes the single write path). Pick ONE.
+
+## Desktop credential agent (owner request)
+
+Owner wants an agent with desktop access that can "go get any API key and
+track what we have" — key inventory is a full-time job. Practical shape:
+Claude Code (desktop app) running locally with a `credential-clerk` skill
+that (1) reads key inventories via password-manager CLIs (1Password `op`,
+Bitwarden `bw`) — never scraping browser sessions; (2) reconciles against
+`docs/secrets-ledger.json` and the SECRETS_MAP; (3) walks the owner through
+provider dashboards for keys that must be minted by hand, then files the
+name/location into the map. Values stay in the password manager; the repo
+only ever sees names, locations, and fingerprints.
+
 ## Definition of Done
 
 - Daily secret deletion root-caused and stopped (7 quiet days)
