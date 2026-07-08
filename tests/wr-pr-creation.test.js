@@ -94,6 +94,17 @@ function isWrIssue(title, labels, issueType) {
   return (
     title.match(/^\[WR\]/i) ||
     hasWrRouteTag ||
+  const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+  const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title || '');
+  
+  return (
+    title.match(/^\[WR\]/i) ||
+    hasTitleRouteTag ||
+  const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
+  
+  return (
+    title.match(/^\[WR\]/i) ||
+    titleHasRouteTags ||
   const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title || '');
   
   return (
@@ -239,6 +250,12 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(isWrIssue('Some issue', [], 'work request'), true);
   });
 
+  await test('isWrIssue detects title route tags for title-only intake', () => {
+    assert.equal(isWrIssue('places to buy pbmt tools #tool #app', [], null), true);
+    assert.equal(isWrIssue('Need a new CLI helper #cli', [], null), true);
+  await test('isWrIssue detects title-only route tags', () => {
+    assert.equal(isWrIssue('Regulation-of-Skin-Collagen.pdf#tools #app', [], null), true);
+    assert.equal(isWrIssue('Red light guide #pdf', [], null), true);
   await test('isWrIssue detects title route tags', () => {
     assert.equal(isWrIssue('s12967-025-07466-3.pdf#tools #apps', [], null), true);
     assert.equal(isWrIssue('landing page #app', [], null), true);
@@ -268,6 +285,9 @@ function isCompletionTrigger(eventName, action, labelName) {
   await test('isWrIssue detects title-only route tags', () => {
     assert.equal(isWrIssue('Red light therapy stretch marks #tools #app', [], null), true);
     assert.equal(isWrIssue('Red Light Therapy for Stretch Marks: Science & Protocols (20#tool #app', [], null), true);
+  await test('isWrIssue detects title route tags even without [WR] prefix', () => {
+    assert.equal(isWrIssue('Red light therapy guide#tools #app', [], null), true);
+    assert.equal(isWrIssue('Clinical workflow #tool', [], null), true);
   });
 
   // Completion Labels

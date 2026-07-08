@@ -49,11 +49,40 @@ jobs:
             });
 
             const title = issue.title || '';
+            const body = issue.body || '';
             const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
             const labelSet = new Set(labels);
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const hasTitleRouteTag = /(^|\s)#(?:app|apps|tool|tools)(?=\s|$)/i.test(title);
+            const hasRouteTags =
+              title.toLowerCase().includes('#app') ||
+              title.toLowerCase().includes('#tools');
+            const hasSourceUrl =
+              body.includes('https://') ||
+              body.includes('http://');
+            const looksLikeTaggedSourceIntake = hasRouteTags && hasSourceUrl;
+
+            // Recognize all canonical WR intake signals. BASIC WR issue types may
+            // be selected without labels, issue template labels can be skipped
+            // if a label has not been created in the repository yet, and title-only
+            // intake can use route tags like `#app` / `#tool` / `#tools`.
+            const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
+            // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet. Also accept
+            // title-only source intake shaped like `... #tools #app` with the
+            // source URL in the body; those arrive without `[WR]` but are still
+            // routed work requests.
+            const titleRouteTags = new Set(
+              Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
+            );
+            const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
+
+            const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and title-only intake may arrive with
@@ -65,7 +94,23 @@ jobs:
               title.match(/^\[WR\]/i) ||
               hasWrRouteTag ||
             // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet. Title-only
+            // intake may also carry route tags like `#app` / `#tool` instead of a
+            // `[WR]` prefix, so accept those as an explicit WR signal too.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
+            // intake also uses route tags like "#app" / "#tools" to request a
+            // product shape without filling the full WR form.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              titleHasRouteTags ||
             // if a label has not been created in the repository yet.
+            const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
             const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
             //
             // Also accept orchestrator-seeded title-tag intake (e.g. "...#tools #app")
@@ -84,12 +129,16 @@ jobs:
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              looksLikeTaggedSourceIntake;
+              hasTitleRouteTag;
               (hasRouteTag && hasOrchestratorSeed);
               (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
+            core.info(`Has title route tag: ${hasTitleRouteTag}`);
+            core.info(`Tagged source intake: ${looksLikeTaggedSourceIntake}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
             core.info(`Current labels: ${labels.join(', ')}`);
 

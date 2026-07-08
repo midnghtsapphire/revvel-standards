@@ -1,3 +1,153 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * Regression test for generate-wr.sh multi-line HTML comment stripping.
+ *
+ * WR_TEMPLATE_FULL.md has a multi-line <!-- --> block (lines 3-8) above the
+ * H1. The generator's awk comment-stripper must handle multi-line comments
+ * (using in_comment state) so that the H1 always lands on line 1 of the
+ * generated output — the requirement enforced by wr-lint rule 1.
+ *
+ * Issue reference: #15307 / #15325
+ */
+
+const assert = require('assert');
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+const repoRoot = path.resolve(__dirname, '..');
+const generateWr = path.resolve(repoRoot, 'wr/scripts/generate-wr.sh');
+const issuesDir = path.resolve(repoRoot, 'wr/issues');
+
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`✅ PASS: ${name}`);
+    return true;
+  } catch (err) {
+    console.error(`❌ FAIL: ${name}`);
+    console.error(`   ${err.message}`);
+    return false;
+  }
+}
+
+let passed = 0;
+let failed = 0;
+
+// Write a temporary body file
+const bodyFile = path.join(os.tmpdir(), 'test-wr-comment-strip-body.txt');
+fs.writeFileSync(bodyFile, 'Regression body for comment stripping test.\n');
+
+const TEST_ISSUE = '00001';
+let generatedFile = null;
+
+// Run the generator
+let generatorFailed = false;
+try {
+  execSync(
+    `bash "${generateWr}" --issue "${TEST_ISSUE}" --title "comment stripping regression test wr" --body-file "${bodyFile}" --class full`,
+    { cwd: repoRoot, encoding: 'utf8' }
+  );
+} catch (err) {
+  generatorFailed = true;
+  console.error('Generator failed:', err.stderr || err.message);
+}
+
+// Locate the generated file
+if (!generatorFailed) {
+  try {
+    const files = fs.readdirSync(issuesDir).filter((f) => f.startsWith(`issue-${TEST_ISSUE}-`));
+    if (files.length > 0) {
+      generatedFile = path.resolve(issuesDir, files[0]);
+    }
+  } catch (_) {}
+}
+
+if (test('generator produces a file for full-class WR', () => {
+  assert.ok(!generatorFailed, 'generate-wr.sh should exit 0');
+  assert.ok(generatedFile && fs.existsSync(generatedFile), 'generated file should exist in wr/issues/');
+})) { passed++; } else { failed++; }
+
+if (generatedFile && fs.existsSync(generatedFile)) {
+  const content = fs.readFileSync(generatedFile, 'utf8');
+  const lines = content.split('\n');
+
+  if (test('H1 is the very first line of the generated WR (no leading comments)', () => {
+    assert.ok(
+      lines[0].startsWith('# WR:'),
+      `Line 1 should be "# WR:…", got: "${lines[0]}"`
+    );
+  })) { passed++; } else { failed++; }
+
+  if (test('no HTML comment block remains before the H1', () => {
+    const beforeH1 = lines.slice(0, lines.findIndex((l) => l.startsWith('# WR:'))).join('\n');
+    assert.ok(
+      !beforeH1.includes('<!--'),
+      `Found HTML comment before H1. Content before H1:\n${beforeH1}`
+    );
+  })) { passed++; } else { failed++; }
+}
+
+// Cleanup
+try { fs.unlinkSync(bodyFile); } catch (_) {}
+if (generatedFile && fs.existsSync(generatedFile)) {
+  try { fs.unlinkSync(generatedFile); } catch (_) {}
+}
+
+console.log(`\n${passed} passed, ${failed} failed`);
+if (failed > 0) process.exit(1);
+ * Regression test: generate-wr.sh must strip leading multi-line HTML comments
+ * from WR_TEMPLATE_FULL.md so the H1 lands on line 1.
+ *
+ * Covers the fix for #15307 — the awk comment-stripper must handle multi-line
+ * <!-- --> blocks (not just single-line ones) so the linter does not reject
+ * the output with "H1 is at line 7, expected line 1".
+ */
+
+const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+
+const REPO_ROOT = path.resolve(__dirname, '..');
+const GENERATE_SH = path.join(REPO_ROOT, 'wr', 'scripts', 'generate-wr.sh');
+const WR_ISSUES_DIR = path.join(REPO_ROOT, 'wr', 'issues');
+
+test('generate-wr.sh: H1 lands on line 1 (multi-line comment stripping)', () => {
+  // Write a minimal body file
+  const bodyFile = path.join(os.tmpdir(), 'wr-test-body.md');
+  fs.writeFileSync(bodyFile, 'Test issue body for comment stripping regression.\n');
+
+  const title = 'Comment Stripping Regression Test WR';
+  const issueNum = 'test-comment-strip';
+
+  const result = spawnSync('bash', [
+    GENERATE_SH,
+    '--issue', issueNum,
+    '--title', title,
+    '--body-file', bodyFile,
+    '--class', 'full',
+  ], { encoding: 'utf8', cwd: REPO_ROOT });
+
+  // Clean up generated file regardless of outcome
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50);
+  const outFile = path.join(WR_ISSUES_DIR, `issue-${issueNum}-${slug}.md`);
+  try {
+    if (fs.existsSync(outFile)) fs.unlinkSync(outFile);
+  } catch (_) { /* ignore cleanup errors */ }
+  fs.unlinkSync(bodyFile);
+
+  assert.strictEqual(result.status, 0,
+    `generate-wr.sh failed with exit code ${result.status}.\nstdout: ${result.stdout}\nstderr: ${result.stderr}`);
+
+  assert.ok(
+    !result.stderr.includes('H1 is at line'),
+    `wr-lint reported H1 not at line 1 — multi-line comment stripping broken.\nstderr: ${result.stderr}`
 "use strict";
 
 /**
