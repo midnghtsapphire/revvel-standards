@@ -1,37 +1,49 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-08T12:06:45.987Z",
+  "generated_at": "2026-07-08T12:46:22.103Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 1,
+    "running": 2,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 5,
-    "running": 1,
+    "total": 6,
+    "running": 2,
     "queued": 4,
     "done": 0,
-    "healthy": 1,
+    "healthy": 2,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 1,
+    "occupancy": 2,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 28941298715,
+      "id": 28943657563,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28941298715",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28943657563",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7987,
-      "since_update_ms": 3987,
+      "age_ms": 7103,
+      "since_update_ms": 4103,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 28943571461,
+      "name": "Agent Fingerprint Gate",
+      "path": ".github/workflows/agent-fingerprint-gate.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28943571461",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 88103,
+      "since_update_ms": 81103,
+      "reason": "running within budget",
+      "protected": false
     },
     {
       "id": 28908752773,
