@@ -59,9 +59,21 @@ jobs:
             );
             const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
 
+            const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
+
             // Recognize all canonical WR intake signals. BASIC WR issue types may
             // be selected without labels, and issue template labels can be skipped
+            // if a label has not been created in the repository yet. Title-only
+            // intake also uses route tags like "#app" / "#tools" to request a
+            // product shape without filling the full WR form.
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              titleHasRouteTags ||
             // if a label has not been created in the repository yet.
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
             const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
             //
             // Also accept orchestrator-seeded title-tag intake (e.g. "...#tools #app")
