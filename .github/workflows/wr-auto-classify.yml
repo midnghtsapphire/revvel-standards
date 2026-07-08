@@ -47,6 +47,7 @@ jobs:
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
        contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool'))
        contains(github.event.issue.title, '#tool') ||
        contains(github.event.issue.title, '#tools') ||
        contains(github.event.issue.title, '#cli') ||
@@ -281,6 +282,14 @@ jobs:
               return needed
 
           def infer_output_type_from_title(title):
+              # Keep this title-tag mapping in sync with weekly-research.yml and
+              # openrouter-auto-route.yml so title-only WR intake resolves the
+              # same Output Type across detection, classification, and routing.
+              lower = (title or "").lower()
+              if re.search(r'(^|\s)#(?:app|apps)(?=\s|$)', lower):
+                  return "production-app"
+              if re.search(r'(^|\s)#(?:tool|tools)(?=\s|$)', lower):
+                  return "desktop-tool"
               normalized = (title or "").strip().lower()
               if not normalized:
                   return None
@@ -521,6 +530,10 @@ jobs:
           # ---------- main ----------
 
           parsed = parse_form(ISSUE_BODY)
+          title_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if not parsed.get("Output Type") and title_output_type:
+              parsed["Output Type"] = title_output_type
+              print(f"Inferred Output Type from title route tag: {title_output_type}")
           title_tag_output_type = infer_output_type_from_title(ISSUE_TITLE)
           if not parsed.get("Output Type"):
               title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
