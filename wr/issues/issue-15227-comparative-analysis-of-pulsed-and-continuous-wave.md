@@ -1,6 +1,6 @@
-# WR: single-line comment test
+# WR: Comparative Analysis of Pulsed and Continuous Wave Modes in High‐Intensity Laser Light Therapy: Implications for Deep Tissue Treatment - PMC need tool or app?
 
-**Issue:** #99999  
+**Issue:** #15227  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
 **Researcher:** N/A  
@@ -9,7 +9,9 @@
 
 ## Issue Context
 
-test body
+https://pmc.ncbi.nlm.nih.gov/articles/PMC12245496/
+
+- Closes midnghtsapphire/revvel-standards#15227
 
 ## Repository Metadata
 

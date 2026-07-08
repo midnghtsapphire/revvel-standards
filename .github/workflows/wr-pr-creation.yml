@@ -140,10 +140,28 @@ jobs:
             const rawIssueType = issue.type || context.payload.issue?.type;
             const issueType = typeof rawIssueType === 'string' ? rawIssueType : (rawIssueType?.name || '');
             const normalizedIssueType = issueType.trim().toLowerCase();
+            const titleRouteTags = new Set(
+              Array.from((title || '').toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1])
+            );
+            const hasTitleRouteTag = ['app', 'tool', 'tools'].some(tag => titleRouteTags.has(tag));
+
+            const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
+            const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+            const hasTitleRouteTag = /#(?:tool|tools|app)\b/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
+            // Title-only intake can also route with tags like "#app" / "#tools".
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              titleHasRouteTags ||
+            const hasRouteTag = /#(?:tool|tools|app|apps)\b/i.test(title);
             // Manual title-only intake also uses route tags like `#app` / `#tools`;
             // only trust those when the issue is still marked `wr:new` so unrelated
             // hashtagged issues do not enter the WR pipeline.
@@ -151,8 +169,11 @@ jobs:
               /(?:^|\s)#(?:app|api|cli|mcp|pdf|doc|docs|tool|tools)(?=\s|$)/i.test(title);
             const isWR =
               title.match(/^\[WR\]/i) ||
+              hasRouteTag ||
               labelSet.has('weekly-research') ||
               labelSet.has('work-request') ||
+              ['basic wr', 'wr', 'work request'].includes(normalizedIssueType) ||
+              hasTitleRouteTag;
               (labelSet.has('wr:new') && hasTitleRouteTag) ||
               ['basic wr', 'wr', 'work request'].includes(normalizedIssueType);
             if (!isWR) {
@@ -672,6 +693,36 @@ jobs:
             found && /(^|[ \t])### / { exit }
             found && NF { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print; exit }
           ' | tr -d '\r')
+          if [ -z "$OUTPUT_TYPE" ]; then
+            TITLE_TAG=$(printf '%s\n' "${ISSUE_TITLE}" | grep -oEi '#(tool|tools|app)\b' | head -n1 | tr '[:upper:]' '[:lower:]' || true)
+            case "$TITLE_TAG" in
+              '#tool'|'#tools')
+                OUTPUT_TYPE='desktop-tool'
+                ;;
+              '#app')
+                OUTPUT_TYPE='production-app'
+                ;;
+            esac
+          fi
+
+          if [[ -z "$OUTPUT_TYPE" ]]; then
+            NORMALIZED_TITLE=$(printf '%s' "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]')
+            if [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#apps?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="production-app"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#tools?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="desktop-tool"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#pdf([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="sellable-pdf"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#api([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="api-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#cli([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="cli-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#mcp([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="mcp-product"
+            elif [[ "$NORMALIZED_TITLE" =~ (^|[^a-z0-9])#docs?([^a-z0-9]|$) ]]; then
+              OUTPUT_TYPE="technical-documentation"
+            fi
+          fi
 
           if [[ "$OUTPUT_TYPE" == "sellable-pdf" || "$OUTPUT_TYPE" == "technical-documentation" || "$OUTPUT_TYPE" == "project-management-doc" ]]; then
             echo "Output Type is $OUTPUT_TYPE — stripping app deployment scaffolding from WR document."
@@ -810,9 +861,82 @@ jobs:
               issue_number: issueNumber,
             });
 
-            // Parse Output Type from issue body to determine deliver label
+            const inferTitleOutputType = (title) => {
+              const normalizedTitle = String(title || '').toLowerCase();
+              if (/(?:^|[^a-z0-9])#apps?\b/.test(normalizedTitle)) return 'production-app';
+              if (/(?:^|[^a-z0-9])#tools?\b/.test(normalizedTitle)) return 'desktop-tool';
+              if (/(?:^|[^a-z0-9])#pdf\b/.test(normalizedTitle)) return 'sellable-pdf';
+              if (/(?:^|[^a-z0-9])#api\b/.test(normalizedTitle)) return 'api-product';
+              if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
+              if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
+              if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
+              return '';
+            };
+
+            // Parse Output Type from issue body to determine deliver label.
+            // Title-only intake can fall back to route tags like "#app" / "#tools".
             const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
-            const outputTypeRaw = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+            const outputTypeRaw =
+              (outputTypeMatch?.[1] || '').trim().toLowerCase() ||
+              inferTitleOutputType(issue.title);
+            // Parse Output Type from issue body to determine deliver label
+            const inferOutputTypeFromTitle = (rawTitle) => {
+              const title = (rawTitle || '').toLowerCase();
+              const routeTags = [
+                [/(^|\s)#(?:app|web-app)\b/, 'production-app'],
+                [/(^|\s)#desktop\b/, 'desktop-tool'],
+                [/(^|\s)#pdf\b/, 'sellable-pdf'],
+                [/(^|\s)#(?:docs?|documentation)\b/, 'technical-documentation'],
+                [/(^|\s)#api\b/, 'api-product'],
+                [/(^|\s)#cli\b/, 'cli-product'],
+                [/(^|\s)#mcp\b/, 'mcp-product'],
+                [/(^|\s)#video\b/, 'invention-flow'],
+                [/(^|\s)#tools?\b/, 'internal-script-automation'],
+              ];
+              for (const [pattern, outputType] of routeTags) {
+                if (pattern.test(title)) return outputType;
+              }
+              return '';
+            };
+            const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            const outputTypeRaw = ((outputTypeMatch?.[1] || '').trim().toLowerCase() ||
+              inferOutputTypeFromTitle(issue.title || ''));
+            const inferOutputTypeFromTitle = (value) => {
+              if (/#(?:tool|tools)\b/i.test(value)) return 'desktop-tool';
+              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
+              return '';
+            };
+            const outputTypeMatch = (issue.body || '').match(/###\s*Output Type[^\n]*\n+([^\n#]+)/i);
+            const TITLE_ROUTE_TAG_OUTPUT_TYPE = {
+              tool: 'desktop-tool',
+              tools: 'desktop-tool',
+              app: 'production-app',
+            };
+            const inferOutputTypeFromTitleTags = (title = '') => {
+              const tags = Array.from(title.toLowerCase().matchAll(/#([a-z0-9_-]+)/g), m => m[1]);
+              for (const tag of ['tool', 'tools', 'app']) {
+                if (tags.includes(tag)) return TITLE_ROUTE_TAG_OUTPUT_TYPE[tag];
+              }
+              return '';
+            };
+             const outputTypeFromBody = (outputTypeMatch?.[1] || '').trim().toLowerCase();
+             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
+             const outputTypeRaw =
+               outputTypeFromBody && outputTypeFromBody !== '_no response_'
+                 ? outputTypeFromBody
+                 : outputTypeFromTitle;
+            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
+            const inferredFromTitle =
+              titleTag === 'tool' || titleTag === 'tools'
+                ? 'desktop-tool'
+                : titleTag === 'app'
+                  ? 'production-app'
+                  : '';
+            const outputTypeRaw = ((outputTypeMatch?.[1] || '').trim().toLowerCase() || inferredFromTitle);
+            const outputTypeRaw = (
+              (outputTypeMatch?.[1] || '').trim().toLowerCase() ||
+              inferOutputTypeFromTitle(issue.title || '')
+            );
             const OUTPUT_TYPE_DELIVER_MAP = {
               'production-app': 'deliver:app',
               'desktop-tool': 'deliver:app',

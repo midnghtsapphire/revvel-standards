@@ -70,7 +70,7 @@ Determine the best path to implement a composable, typed image-processing pipeli
 - [ ] A confidence-scored recommendation (0–100) is present and justified.
 - [ ] Integration spike (`scripts/image-pipeline.js`) passes `npm test` or is clearly marked as a stub.
 - [ ] Research packet document is committed to `docs/research-engine/`.
-- [ ] All WR Issue Context fields are filled (no `_No response_` remaining).
+- [ ] All WR Issue Context fields are filled (no `(no response)` remaining).
 
 ### Do Not Under-Scope
 
@@ -833,10 +833,11 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 *   **Create Follow-Up Task for Alternative Evaluation:** Generate a new task to ensure the recommended trade study is performed before proceeding with implementation.
     ```yaml
     - id: create_alternative_eval_issue
+    ```
 
 ### openai/gpt-4.1
 
-# Findings
+## Findings
 
 - **pxpipe** ([GitHub](https://github.com/teamchong/pxpipe)) is a Python library for building composable, type-safe, and parallelizable data pipelines.
 - It targets data engineering and ML workflows, similar to tools like [Pydantic](https://github.com/pydantic/pydantic), [Dagster](https://github.com/dagster-io/dagster), [Prefect](https://github.com/PrefectHQ/prefect), and [Kedro](https://github.com/kedro-org/kedro).
@@ -845,7 +846,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 - No user reviews or third-party benchmarks found.
 - Moat is weak: many mature, well-funded competitors exist.
 
-# Evidence
+## Evidence
 
 ## pxpipe Project Metrics
 
@@ -887,7 +888,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 - No unique features vs. established competitors.
 - No evidence of production adoption.
 
-# Risks
+## Risks
 
 - **Adoption Risk:** pxpipe is not widely used or tested.
 - **Maintenance Risk:** Single maintainer, low activity.
@@ -897,7 +898,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 **Labels to apply:** `risk:adoption`, `risk:maintenance`, `risk:integration`, `risk:moat`, `risk:docs`
 
-# Recommended Actions
+## Recommended Actions
 
 1. **If implementing pxpipe in revvel-standards,** treat as experimental; do not rely on for production.
 2. **Monitor pxpipe repo** for activity and releases.
@@ -905,7 +906,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 4. **Document pxpipe limitations** and risks in revvel-standards.
 5. **Contribute to pxpipe** if critical features are missing and adoption is desired.
 
-# Automatic Fix Hooks
+## Automatic Fix Hooks
 
 - **Label Automation:**  
   If pxpipe is referenced in a PR, automatically apply `risk:adoption`, `risk:maintenance`, `risk:integration`, `risk:moat`, `risk:docs`.
@@ -928,7 +929,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 ### anthropic/claude-sonnet-4
 
-# Scout Report: PxPipe Integration Research
+## Scout Report: PxPipe Integration Research
 
 ## Findings
 
@@ -1007,7 +1008,7 @@ Of course. Here is my research summary for the request to implement `pxpipe`.
 | Negligible adoption | As of this report, the repository has 12 stars and 2 forks. [https://github.com/teamchong/pxpipe](https://github.com/teamchong/pxpipe) |
 | No community support | An open issue from 2021 regarding build failures remains unaddressed. [https://github.com/teamchong/pxpipe/issues/1](https://github.com/teamchong/pxpipe/issues/1) |
 | No public chatter | Searches for `"pxpipe"` on `news.ycombinator.com`, `reddit.com`, and `stackoverflow.com` returned no relevant user discussions, questions, or solutions. Verification of live data was attempted via standard web search; no specialized API was required. |
-| Internal request lacks justification | The source WR issue body for "Objective" and "Summary" contains "_No response_". |
+| Internal request lacks justification | The source WR issue body for "Objective" and "Summary" contains "(no response)". |
 
 ### Risks
 
@@ -1031,7 +1032,7 @@ Of course. Here is my research summary for the request to implement `pxpipe`.
         > `@author This PR adds a new dependency (pxpipe) that appears to be unmaintained or has low adoption. Please justify its inclusion over more established alternatives. Scout recommends a risk review before merging.`
 *   **Work Request Validation Hook:**
     *   **Trigger:** `on:issue_created` with label `work-request`.
-    *   **Action:** If the issue body for fields like `### Objective` or `### Summary` contains `_No response_` or is empty, apply the label `risk/unvalidated-premise` and post a comment:
+    *   **Action:** If the issue body for fields like `### Objective` or `### Summary` contains `(no response)` or is empty, apply the label `risk/unvalidated-premise` and post a comment:
         > `@author This Work Request is missing a clear "Objective". Please edit the issue to define the problem you are trying to solve before this can be scoped or assigned.`
 
 ### openai/gpt-4.1
@@ -1095,7 +1096,7 @@ Unverifiable
 
 ### anthropic/claude-sonnet-4
 
-# Mirror Factual Validation Report
+## Mirror Factual Validation Report
 
 ## Findings
 
@@ -1112,7 +1113,7 @@ Unverifiable
 
 **Process Compliance**:
 - ✅ **ACKNOWLEDGED**: All required checkboxes marked
-- ❌ **INCOMPLETE**: All required fields marked "None" or "_No response_"
+- ❌ **INCOMPLETE**: All required fields marked "None" or "(no response)"
 
 ## Evidence
 
@@ -1303,7 +1304,7 @@ Automatic Fix Hooks
 
 ### anthropic/claude-sonnet-4
 
-# Technical Delivery Analysis: pxpipe Integration
+## Technical Delivery Analysis: pxpipe Integration
 
 ## Findings
 

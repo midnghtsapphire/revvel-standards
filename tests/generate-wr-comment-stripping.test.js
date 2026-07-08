@@ -1,82 +1,56 @@
 #!/usr/bin/env node
 'use strict';
 
-const assert = require('assert');
+/**
+ * Regression test: generate-wr.sh must strip leading multi-line HTML comments
+ * from WR_TEMPLATE_FULL.md so the H1 lands on line 1.
+ *
+ * Covers the fix for #15307 — the awk comment-stripper must handle multi-line
+ * <!-- --> blocks (not just single-line ones) so the linter does not reject
+ * the output with "H1 is at line 7, expected line 1".
+ */
+
+const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const GENERATOR = path.join(REPO_ROOT, 'wr', 'scripts', 'generate-wr.sh');
-const ISSUE_NUMBER = '999998';
+const GENERATE_SH = path.join(REPO_ROOT, 'wr', 'scripts', 'generate-wr.sh');
+const WR_ISSUES_DIR = path.join(REPO_ROOT, 'wr', 'issues');
 
-let passed = 0;
-let failed = 0;
+test('generate-wr.sh: H1 lands on line 1 (multi-line comment stripping)', () => {
+  // Write a minimal body file
+  const bodyFile = path.join(os.tmpdir(), 'wr-test-body.md');
+  fs.writeFileSync(bodyFile, 'Test issue body for comment stripping regression.\n');
 
-function test(name, fn) {
+  const title = 'Comment Stripping Regression Test WR';
+  const issueNum = 'test-comment-strip';
+
+  const result = spawnSync('bash', [
+    GENERATE_SH,
+    '--issue', issueNum,
+    '--title', title,
+    '--body-file', bodyFile,
+    '--class', 'full',
+  ], { encoding: 'utf8', cwd: REPO_ROOT });
+
+  // Clean up generated file regardless of outcome
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50);
+  const outFile = path.join(WR_ISSUES_DIR, `issue-${issueNum}-${slug}.md`);
   try {
-    fn();
-    console.log(`PASS: ${name}`);
-    passed += 1;
-  } catch (err) {
-    console.error(`FAIL: ${name}`);
-    console.error(`  ${err.stack || err.message}`);
-    failed += 1;
-  }
-}
+    if (fs.existsSync(outFile)) fs.unlinkSync(outFile);
+  } catch (_) { /* ignore cleanup errors */ }
+  fs.unlinkSync(bodyFile);
 
-function cleanupGeneratedFiles() {
-  const issuesDir = path.join(REPO_ROOT, 'wr', 'issues');
-  for (const name of fs.readdirSync(issuesDir)) {
-    if (name.startsWith(`issue-${ISSUE_NUMBER}-`) && name.endsWith('.md')) {
-      fs.unlinkSync(path.join(issuesDir, name));
-    }
-  }
-}
+  assert.strictEqual(result.status, 0,
+    `generate-wr.sh failed with exit code ${result.status}.\nstdout: ${result.stdout}\nstderr: ${result.stderr}`);
 
-test('generate-wr strips leading multi-line HTML comments so H1 is line 1', () => {
-  cleanupGeneratedFiles();
-
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'generate-wr-test-'));
-  const bodyFile = path.join(tmpDir, 'body.md');
-  fs.writeFileSync(bodyFile, 'https://example.com/source\n', 'utf8');
-
-  try {
-    execFileSync(
-      'bash',
-      [
-        GENERATOR,
-        '--issue',
-        ISSUE_NUMBER,
-        '--title',
-        'World First: Patient Receives High-Risk Therapy to Make Cells Young Again : ScienceAlert#tools #apps',
-        '--body-file',
-        bodyFile,
-      ],
-      { cwd: REPO_ROOT, encoding: 'utf8' }
-    );
-
-    const issuesDir = path.join(REPO_ROOT, 'wr', 'issues');
-    const generated = fs
-      .readdirSync(issuesDir)
-      .find((name) => name.startsWith(`issue-${ISSUE_NUMBER}-`) && name.endsWith('.md'));
-
-    assert.ok(generated, 'expected generator to create a WR issue file');
-    const content = fs.readFileSync(path.join(issuesDir, generated), 'utf8');
-    assert.ok(content.startsWith('# WR:'), 'expected generated WR to start with H1 on line 1');
-  } finally {
-    cleanupGeneratedFiles();
-    fs.rmSync(tmpDir, { recursive: true, force: true });
-  }
-});
-
-if (failed > 0) {
-  console.error(`\n${failed} test(s) failed`);
-  process.exit(1);
-}
-
-console.log(`\nAll ${passed} test(s) passed`);
+  assert.ok(
+    !result.stderr.includes('H1 is at line'),
+    `wr-lint reported H1 not at line 1 — multi-line comment stripping broken.\nstderr: ${result.stderr}`
 "use strict";
 
 /**
