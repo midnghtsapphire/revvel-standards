@@ -1,19 +1,49 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-06T03:07:11.194Z",
+  "generated_at": "2026-07-07T15:01:10.136Z",
+  "generated_at": "2026-07-08T03:05:31.591Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 28914453263,
+            "name": ".github/workflows/saml-sso-registration.yml",
+            "path": ".github/workflows/saml-sso-registration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914453263",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28914452869,
+            "name": ".github/workflows/test-bito-integration.yml",
+            "path": ".github/workflows/test-bito-integration.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452869",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28914452515,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452515",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28914452154,
+            "name": ".github/workflows/openrouter-auto-route.yml",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28914452154",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
