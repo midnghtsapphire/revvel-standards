@@ -98,6 +98,7 @@ The revvel-standards repository has extensive automation infrastructure:
 1. ✅ `ai-weekly-changelog.yml` — Auto-generated changelogs
 2. ✅ `flow-chart-sync.yml` — Flow chart updates
 3. ✅ `template-sync-check.yml` — Template consistency
+4. ✅ `update-agent-creator-data.yml` — Regenerates `agent-creator-data.{json,js}` (catalog for `agent-creator.html`, the Agent Hunter dashboard) when `skills/SKILLS_INDEX.yml`, `.github/agent-models.yml`, `.github/agent-prompts.yml`, or `scripts/openrouter-personas.js` change on main
 
 #### Special Purpose
 1. ✅ `fork-audit-bot.yml` — Fork evaluation
