@@ -64,6 +64,13 @@ jobs:
             const looksLikeTaggedSourceIntake = hasRouteTags && hasSourceUrl;
 
             // Recognize all canonical WR intake signals. BASIC WR issue types may
+            // be selected without labels, issue template labels can be skipped
+            // if a label has not been created in the repository yet, and title-only
+            // intake can use route tags like `#app` / `#tool` / `#tools`.
+            const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
             // be selected without labels, and issue template labels can be skipped
             // if a label has not been created in the repository yet. Also accept
             // title-only source intake shaped like `... #tools #app` with the
@@ -116,6 +123,7 @@ jobs:
 
             core.info(`Issue #${issueNumber}: "${title}"`);
             core.info(`Is WR: ${isWR}`);
+            core.info(`Has title route tag: ${hasTitleRouteTag}`);
             core.info(`Tagged source intake: ${looksLikeTaggedSourceIntake}`);
             core.info(`Issue type: ${issueType || '(none)'}`);
             core.info(`Current labels: ${labels.join(', ')}`);

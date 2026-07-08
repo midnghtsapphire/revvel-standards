@@ -28,6 +28,18 @@ jobs:
        !startsWith(github.event.issue.title, '[FAILURE]') &&
        !startsWith(github.event.issue.title, '[ALERT]') &&
        (startsWith(github.event.issue.title, '[WR]') ||
+        contains(github.event.issue.labels.*.name, 'weekly-research') ||
+        contains(github.event.issue.labels.*.name, 'work-request') ||
+        contains(github.event.issue.title, '#app') ||
+        contains(github.event.issue.title, '#tool') ||
+        contains(github.event.issue.title, '#tools') ||
+        contains(github.event.issue.title, '#cli') ||
+        contains(github.event.issue.title, '#api') ||
+        contains(github.event.issue.title, '#mcp') ||
+        contains(github.event.issue.title, '#pdf') ||
+        contains(github.event.issue.title, '#doc') ||
+        contains(github.event.issue.title, '#docs') ||
+        (github.event.action == 'labeled' && startsWith(github.event.label.name, 'output-type:'))))
         contains(github.event.issue.labels.*.name, 'work-request') ||
         contains(github.event.issue.labels.*.name, 'weekly-research') ||
         contains(github.event.issue.title, '#app') ||
@@ -95,6 +107,17 @@ jobs:
               l => typeof l === 'string' ? l : l.name
             );
 
+            function inferOutputTypeFromTitle(text) {
+              const normalized = (text || '').toLowerCase();
+              if (/(?:^|\s)#app(?=\s|$)/.test(normalized)) return 'production-app';
+              if (/(?:^|\s)#(?:tool|tools)(?=\s|$)/.test(normalized)) return 'desktop-tool';
+              if (/(?:^|\s)#cli(?=\s|$)/.test(normalized)) return 'cli-product';
+              if (/(?:^|\s)#api(?=\s|$)/.test(normalized)) return 'api-product';
+              if (/(?:^|\s)#mcp(?=\s|$)/.test(normalized)) return 'mcp-product';
+              if (/(?:^|\s)#pdf(?=\s|$)/.test(normalized)) return 'sellable-pdf';
+              if (/(?:^|\s)#(?:doc|docs)(?=\s|$)/.test(normalized)) return 'technical-documentation';
+              return '';
+            }
             function inferOutputTypeFromTitle(rawTitle) {
               const title = (rawTitle || '').toLowerCase();
               const routeTags = [
@@ -137,6 +160,13 @@ jobs:
             };
 
             const m = body.match(sectionRegex);
+            const outputTypeLabel = existingLabels.find(label => label.startsWith('output-type:')) || '';
+            const outputType =
+              (m?.[1] || '').trim().toLowerCase() ||
+              outputTypeLabel.replace(/^output-type:/, '').trim().toLowerCase() ||
+              inferOutputTypeFromTitle(title);
+            if (!outputType) {
+              core.info('No Output Type signal found in issue body, labels, or title tags — skipping route.');
             const outputType = (m?.[1] || '').trim().toLowerCase() || inferOutputTypeFromTitle(title);
             if (!outputType) {
               core.info('No Output Type section or title route tags found — skipping route.');

@@ -211,6 +211,11 @@ test('WR workflows accept BASIC WR issue type, work-request label, and title rou
     assert(workflow.includes("labelSet.has('work-request')"), 'WR workflow must accept work-request label');
     assert(workflow.includes("labelSet.has('wr:new') && hasTitleRouteTag"), 'WR workflow must accept title-only wr:new route-tag intake');
     assert(workflow.includes("'basic wr'"), 'WR workflow must accept BASIC WR issue type');
+    assert(
+      workflow.includes('hasTitleRouteTag') &&
+        workflow.includes('#(?:app|tool|tools'),
+      'WR workflow must accept title route tags'
+    );
     assert(workflow.includes('#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)'),
       'WR workflow must accept title route tags like #app/#tools');
     assert(workflow.includes('titleHasRouteTags'), 'WR workflow must accept title-only route tags');
@@ -232,6 +237,33 @@ test('WR auto-classify accepts title signals and infers output type from route t
     'wr-auto-classify must accept [WR] title prefix'
   );
   assert(
+    wf.includes("contains(github.event.issue.title, '#app')") &&
+      wf.includes("contains(github.event.issue.title, '#tool')"),
+    'wr-auto-classify must accept title route tags'
+  );
+  assert(
+    wf.includes('TITLE_ROUTE_OUTPUT_TYPES') &&
+      wf.includes('title-tag = inferred from a route tag in the issue title'),
+    'wr-auto-classify must infer Output Type from title route tags'
+  );
+});
+
+test('openrouter auto-route accepts WR labels and title route tags', () => {
+  const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'openrouter-auto-route.yml'), 'utf8');
+  assert(
+    wf.includes("contains(github.event.issue.labels.*.name, 'weekly-research')") &&
+      wf.includes("contains(github.event.issue.labels.*.name, 'work-request')"),
+    'openrouter-auto-route must accept WR labels'
+  );
+  assert(
+    wf.includes("contains(github.event.issue.title, '#app')") &&
+      wf.includes("contains(github.event.issue.title, '#tool')"),
+    'openrouter-auto-route must accept title route tags'
+  );
+  assert(
+    wf.includes("startsWith(github.event.label.name, 'output-type:')") &&
+      wf.includes('inferOutputTypeFromTitle'),
+    'openrouter-auto-route must route from output-type labels or title tags when body is blank'
     /\(\(contains\(github\.event\.issue\.title,\s*'#app'\)\s*\|\|\s*[\s\S]*contains\(github\.event\.issue\.title,\s*'#tools'\)\)\s*&&[\s\S]*contains\(github\.event\.issue\.body,\s*'https:\/\/'\)\s*\|\|[\s\S]*contains\(github\.event\.issue\.body,\s*'http:\/\/'\)\)\)/.test(wf),
     'wr-auto-classify must accept route-tagged title-only source intake'
   );

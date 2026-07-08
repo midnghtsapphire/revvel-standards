@@ -148,6 +148,13 @@ jobs:
             const titleHasRouteTags = /(?:^|[^a-z0-9])#(?:app|apps|tool|tools|pdf|docs?|cli|api|mcp)\b/i.test(title);
 
             // Check if this is a WR issue. GitHub issue templates, GitHub issue
+            // types, title-only route tags, and API-created issues do not always
+            // arrive with the same labels, so accept every canonical WR signal
+            // before normalizing labels.
+            const hasTitleRouteTag = /(?:^|\s)#(?:app|tool|tools|cli|api|mcp|pdf|doc|docs)(?=\s|$)/i.test(title);
+            const isWR =
+              title.match(/^\[WR\]/i) ||
+              hasTitleRouteTag ||
             // types, and API-created issues do not always arrive with the same
             // labels, so accept every canonical WR signal before normalizing labels.
             const hasRouteTag = /(^|\s)#(app|web-app|tool|tools|pdf|docs?|documentation|api|cli|mcp|video)\b/i.test(title);

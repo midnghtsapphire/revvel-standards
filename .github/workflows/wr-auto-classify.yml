@@ -46,6 +46,15 @@ jobs:
       (contains(github.event.issue.labels.*.name, 'work-request') ||
        contains(github.event.issue.labels.*.name, 'weekly-research') ||
        startsWith(github.event.issue.title, '[WR]') ||
+       contains(github.event.issue.title, '#app') ||
+       contains(github.event.issue.title, '#tool') ||
+       contains(github.event.issue.title, '#tools') ||
+       contains(github.event.issue.title, '#cli') ||
+       contains(github.event.issue.title, '#api') ||
+       contains(github.event.issue.title, '#mcp') ||
+       contains(github.event.issue.title, '#pdf') ||
+       contains(github.event.issue.title, '#doc') ||
+       contains(github.event.issue.title, '#docs'))
        ((contains(github.event.issue.title, '#app') ||
          contains(github.event.issue.title, '#tools')) &&
         (contains(github.event.issue.body, 'https://') ||
@@ -173,6 +182,16 @@ jobs:
               "app": "production-app",
           }
 
+          TITLE_ROUTE_OUTPUT_TYPES = [
+              ("production-app", re.compile(r"(?:^|\s)#app(?=\s|$)", re.IGNORECASE)),
+              ("desktop-tool", re.compile(r"(?:^|\s)#(?:tool|tools)(?=\s|$)", re.IGNORECASE)),
+              ("cli-product", re.compile(r"(?:^|\s)#cli(?=\s|$)", re.IGNORECASE)),
+              ("api-product", re.compile(r"(?:^|\s)#api(?=\s|$)", re.IGNORECASE)),
+              ("mcp-product", re.compile(r"(?:^|\s)#mcp(?=\s|$)", re.IGNORECASE)),
+              ("sellable-pdf", re.compile(r"(?:^|\s)#pdf(?=\s|$)", re.IGNORECASE)),
+              ("technical-documentation", re.compile(r"(?:^|\s)#(?:doc|docs)(?=\s|$)", re.IGNORECASE)),
+          ]
+
           def gh_graphql(query, variables=None, token=None):
               token = token or PAT
               data = json.dumps({"query": query, "variables": variables or {}}).encode()
@@ -262,6 +281,9 @@ jobs:
               return needed
 
           def infer_output_type_from_title(title):
+              for output_type, pattern in TITLE_ROUTE_OUTPUT_TYPES:
+                  if pattern.search(title or ""):
+                      return output_type
               m = re.search(r'#(tool|tools|app)\b', title or "", re.IGNORECASE)
               if not m:
                   return None
@@ -496,6 +518,11 @@ jobs:
                   parsed["Output Type"] = inferred_output
                   print(f"Inferred Output Type from title tag: {inferred_output}")
           print(f"Parsed form values: {parsed}")
+          needed = fields_needing_classification(parsed)
+          title_output_type = infer_output_type_from_title(ISSUE_TITLE)
+          if title_output_type and "Output Type" in needed:
+              needed = [field for field in needed if field != "Output Type"]
+          print(f"Title-derived Output Type: {title_output_type}")
           if title_tag_output_type:
               print(f"Title route tags inferred Output Type: {title_tag_output_type}")
           needed = fields_needing_classification(parsed, title_tag_output_type)
@@ -526,6 +553,8 @@ jobs:
               if explicit and explicit != "auto-classify" and explicit in allowed:
                   final[field] = explicit
                   continue
+              if field == "Output Type" and title_output_type in allowed:
+                  final[field] = title_output_type
               if field == "Output Type" and title_tag_output_type in allowed:
                   final[field] = title_tag_output_type
               if field == "Output Type" and title_inferred_output_type in allowed:
@@ -585,6 +614,7 @@ jobs:
               update_single_select(project_id, item_id, info["id"], opt_id)
               source = (
                   "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tag" if (field == "Output Type" and title_output_type in DROPDOWN_FIELDS[field] and value == title_output_type)
                   else "title-tag" if (field == "Output Type" and title_tag_output_type in DROPDOWN_FIELDS[field])
                   else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
                   else "fallback"
@@ -623,6 +653,7 @@ jobs:
               *summary_lines,
               *extra_summary,
               "",
+              f"_Source: explicit = you picked it; title-tag = inferred from a route tag in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
               f"_Source: explicit = you picked it; title-tag = inferred from routing tags like #app/#tools in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
           ]
           if used_fallback:
