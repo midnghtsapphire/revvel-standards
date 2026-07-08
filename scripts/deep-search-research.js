@@ -66,7 +66,14 @@ Walk through these frameworks:
 - Identify cutting-edge lab research, patents, and early development
 - If initial idea is obsolete, discard and explain the better paradigm
 
-**Phase 6: Final Verdict & Actionable Blueprint**
+**Phase 6: Repository Review and Competitor Web Search**
+- If the query references a GitHub repository, review it: stars, last commit, license, maintainer activity, open issues.
+- If the repository is unavailable, unmaintained, or insufficient, search the internet by tool/library name for alternatives.
+- List at least three competing tools, libraries, or commercial APIs. For each include: GitHub stars or npm downloads, pricing, license, last release date.
+- Select the best alternative with a scored rationale (cite each differentiator).
+- State a confidence score (0–100) for your primary recommendation.
+
+**Phase 7: Final Verdict & Actionable Blueprint**
 - Refine, Repurpose, or Pivot?
 - Bill of Materials (BOM) and Cost-Benefit Analysis
 - Specific steps, components, and execution risks
@@ -120,18 +127,25 @@ async function main() {
   const issueNumber = process.env.ISSUE_NUMBER;
   const repo = process.env.REPO;
 
+  // Detect GitHub repo URL(s) in the query so Phase 6 gets a targeted hint.
+  const repoUrlMatch = query.match(/https?:\/\/github\.com\/([a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+)/);
+  const repoUrlHint = repoUrlMatch
+    ? `\n\nPrimary GitHub repository to review in Phase 6: ${repoUrlMatch[0]}\nIf this repository is unavailable or unmaintained, perform a full web search for the tool name "${repoUrlMatch[1].split("/").pop()}" to identify the best alternative.`
+    : "";
+
   console.log("Deep Search Research");
   console.log("=".repeat(50));
   console.log(`Profile: ${PROFILE_NAME} (${profile.description})`);
   console.log(`Models: ${models.join(" → ")}`);
   console.log(`Query: ${query}`);
+  if (repoUrlHint) console.log("Repository detected — Phase 6 competitor search enabled.");
   console.log("");
 
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     {
       role: "user",
-      content: `Research this issue/request:\n\n${query}\n\nProvide a comprehensive deep research report following all 6 phases above.`,
+      content: `Research this issue/request:\n\n${query}${repoUrlHint}\n\nProvide a comprehensive deep research report following all 7 phases above.`,
     },
   ];
 
@@ -162,7 +176,7 @@ async function main() {
   if (issueNumber && repo) {
     const commentBody = `## 🔬 Deep R&D Research Results
 
-> Using **${models.join(" + ")}** with DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks.
+> Using **${models.join(" + ")}** with DOE Screening, TRIZ, MEErP, LCA, BNAT, and Competitor Web Search frameworks.
 
 ${resultText}
 
