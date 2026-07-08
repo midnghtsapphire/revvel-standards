@@ -1,5 +1,6 @@
 {
   "schema": "fleet-controller-ingestion/v1",
+  "generated_at": "2026-07-07T15:34:29.134Z",
   "generated_at": "2026-07-08T02:48:05.187Z",
   "needs_healing": []
 }
