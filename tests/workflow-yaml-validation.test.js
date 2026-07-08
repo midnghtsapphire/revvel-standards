@@ -763,6 +763,24 @@ test('workflow-monitor.yml re-sweeps stale Copilot runs on a schedule', () => {
   }
 });
 
+test('hourly maintenance workflows are staggered to avoid :00 runner queue spikes', () => {
+  const expectedCrons = new Map([
+    ['stuck-check-watchdog.yml', '8 * * * *'],
+    ['secrets-guardian.yml', '18 * * * *'],
+    ['veins-monitor.yml', '28 * * * *'],
+  ]);
+
+  for (const [workflowName, expectedCron] of expectedCrons.entries()) {
+    const filePath = path.join(WORKFLOWS_DIR, workflowName);
+    const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+    const on = doc.on || doc.true || {};
+    const schedule = on.schedule || [];
+    if (!schedule.some((entry) => entry.cron === expectedCron)) {
+      throw new Error(`${workflowName} must schedule at "${expectedCron}" to spread hourly maintenance load`);
+    }
+  }
+});
+
 test('morty-post-mortems.yml stays automated with required write scopes', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'morty-post-mortems.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
