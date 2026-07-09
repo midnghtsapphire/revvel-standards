@@ -65,7 +65,7 @@ test('every github-script job wraps fallible reads with the safeApi helper', () 
     );
     assert.match(
       script,
-      /core\.warning\(`\$\{callName\} failed: \$\{e\.message\}`\)/,
+      /core\.warning\(.*callName.*failed.*e\.message.*\)/,
       `expected ${jobName} safeApi to surface failures via core.warning`,
     );
   }

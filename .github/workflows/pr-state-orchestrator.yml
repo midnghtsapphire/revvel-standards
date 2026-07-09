@@ -371,7 +371,8 @@ jobs:
               }
             }
 
-            // Small pause between PRs to stay clear of secondary rate limits.
+            // Small pause between PRs (150ms keeps sequential mutations under
+            // GitHub's secondary rate limit guidance for rapid content writes).
             async function sleep(ms) {
               return new Promise(resolve => setTimeout(resolve, ms));
             }
@@ -510,7 +511,8 @@ jobs:
               }
             }
 
-            // Small pause between PRs to stay clear of secondary rate limits.
+            // Small pause between PRs (150ms keeps sequential mutations under
+            // GitHub's secondary rate limit guidance for rapid content writes).
             async function sleep(ms) {
               return new Promise(resolve => setTimeout(resolve, ms));
             }
@@ -660,7 +662,8 @@ jobs:
               }
             }
 
-            // Small pause between PRs to stay clear of secondary rate limits.
+            // Small pause between PRs (150ms keeps sequential mutations under
+            // GitHub's secondary rate limit guidance for rapid content writes).
             async function sleep(ms) {
               return new Promise(resolve => setTimeout(resolve, ms));
             }
