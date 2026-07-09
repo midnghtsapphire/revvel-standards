@@ -149,6 +149,14 @@ if [[ "$CLASS" == "basic" ]] && echo "$TITLE" | grep -qwi "fix"; then
   echo "REMINDER: This is a fix WR. The SAME PR must also modify the actual buggy file, not just add this WR." >&2
 fi
 
+# ---- Sanitize markdown before the gates (MD012/MD025/MD049; issue #15604) ----
+# Pasted bodies carry extra H1s, double blank lines, and asterisk emphasis that
+# fail the CircleCI changed-Markdown gate. Conditional so sandboxed copies of
+# this script (tests) still work without the sanitizer alongside.
+if command -v node >/dev/null && [[ -f "$HERE/scripts/sanitize-wr-markdown.mjs" ]]; then
+  node "$HERE/scripts/sanitize-wr-markdown.mjs" "$DEST"
+fi
+
 # ---- HARD GATE: lint the output; fail if dirty ----
 if command -v node >/dev/null && [[ -f "$HERE/scripts/wr-lint.mjs" || -f "$HERE/../workflows/wr-lint.mjs" ]]; then
   LINT="$HERE/scripts/wr-lint.mjs"; [[ -f "$LINT" ]] || LINT="$HERE/../workflows/wr-lint.mjs"
