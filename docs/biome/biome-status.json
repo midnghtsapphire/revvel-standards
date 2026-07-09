@@ -1,19 +1,90 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-09T13:55:40.225Z",
+  "generated_at": "2026-07-09T15:03:38.305Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "81/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 81,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 29027939809,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939809",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939807,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939807",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939803,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939803",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939800,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939800",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939795,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939795",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939758,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939758",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939733,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939733",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939729,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939729",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939716,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939716",
+            "conclusion": "startup_failure"
+          },
+          {
+            "id": 29027939691,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29027939691",
+            "conclusion": "startup_failure"
+          }
+        ],
         "stuck": []
       }
     },
