@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-09T00:34:20.836Z",
+  "generated_at": "2026-07-09T01:35:16.439Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 28986414882,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28986414882",
+            "conclusion": "failure"
+          },
+          {
+            "id": 28986278124,
+            "name": "WR PR Creation",
+            "path": ".github/workflows/wr-pr-creation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28986278124",
+            "conclusion": "failure"
+          },
           {
             "id": 28985504856,
             "name": "Update Project Dashboard",
@@ -44,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28987348677"
       }
     },
     "sheaf": {
