@@ -84,10 +84,46 @@ curl -s "http://localhost:3030/api/queue/next?enrich=1" | jq .
 curl -s "http://localhost:3030/api/products/ORDER-ID/listing-pack" | jq .
 ```
 
-### 6. Vercel
+### 6. Path A — personal launch (YOU run this on your PC)
+
+This is the real app for generating **lifestyle (non-stock) images** and saving packs to **your drive**.
+
+```bash
+cd reesereviews/vine-marketplace
+cp .env.example .env
+# Edit .env → set OPENROUTER_API_KEY=...  (required for lifestyle images)
+npm install
+npm start
+```
+
+Open **http://localhost:3030**
+
+1. **Import CSV** (your Order History.csv)  
+2. **Next product**  
+3. **Generate 3 lifestyle images → save pack**  
+4. Watch the **step list** (parse → link → reference → lifestyle 1/3… → save)  
+5. Files appear under:
+
+```text
+Documents\MarketplacePacks\{ASIN}\
+  listing.txt
+  meta.json
+  00-product-reference.jpg   (if Amazon fetch worked)
+  01-lifestyle.jpg
+  02-lifestyle.jpg
+  03-lifestyle.jpg
+```
+
+Override folder: `MARKETPLACE_PACKS_DIR=C:\path\to\folder` in `.env`.
+
+Without `OPENROUTER_API_KEY`, the job still saves **listing.txt** and shows the process; lifestyle step will error clearly.
+
+### 7. Vercel (static / API only — not the main personal path)
 
 Root directory for deploy: `reesereviews/vine-marketplace`  
-Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephemeral unless you add a DB later).
+Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephemeral).  
+**Lifestyle packs need a long-running local server** (Path A above) so images write to your Documents folder.
+
 
 
 ---

@@ -23,6 +23,8 @@ const { calculateListingPrice, formatUSD } = require('./lib/price-calculator');
 const { postProduct, repostProduct } = require('./lib/facebook-poster');
 const { importOrderCsv } = require('./lib/csv-import');
 const { enrichProduct, buildListingPack } = require('./lib/product-link');
+const packStore = require('./lib/pack-store');
+const { startPipeline, getJob } = require('./lib/lifestyle-pipeline');
 const inventory = require('./lib/inventory');
 const rfy = require('./lib/rfy-tracker');
 
@@ -285,6 +287,67 @@ app.get('/api/products/:orderId/listing-pack', (req, res) => {
   }
 });
 
+// ── Path A: local Marketplace packs (progress + disk storage) ─────────────
+
+app.get('/api/packs/config', (_req, res) => {
+  res.json({
+    ...packStore.openHint(),
+    openRouterConfigured: Boolean(process.env.OPENROUTER_API_KEY),
+    imageModel: process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image-preview',
+    port: PORT,
+  });
+});
+
+/** Start lifestyle pack job for one inventory product (one-at-a-time). */
+app.post('/api/packs/generate', (req, res) => {
+  try {
+    const { orderId, count } = req.body || {};
+    if (!orderId) return res.status(400).json({ error: 'orderId required' });
+    const product = inventory.getByOrderId(orderId);
+    if (!product) return res.status(404).json({ error: 'Product not in inventory — import CSV first' });
+    const job = startPipeline(product, { count: count || 3 });
+    res.status(202).json({
+      jobId: job.id,
+      status: job.status,
+      packDir: job.packDir,
+      steps: job.steps,
+      hasOpenRouter: job.hasOpenRouter,
+      poll: `/api/packs/jobs/${job.id}`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/packs/jobs/:jobId', (req, res) => {
+  const job = getJob(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+  res.json(job);
+});
+
+app.get('/api/packs/:key', (req, res) => {
+  try {
+    const key = req.params.key;
+    // Prefer inventory lookup by orderId, else treat as ASIN folder name
+    let product = inventory.getByOrderId(key);
+    if (!product) product = { asin: key, orderId: key };
+    const listed = packStore.listPack(product);
+    res.json(listed);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Serve saved pack files so the dashboard can show thumbnails
+app.use(
+  '/pack-files',
+  express.static(packStore.packsRoot(), {
+    fallthrough: true,
+    index: false,
+    maxAge: '1h',
+  })
+);
+
 // Post selected (or all unlisted) products
 app.post('/api/post', async (req, res) => {
   const { orderIds, dryRun = false, limit } = req.body;
@@ -501,9 +564,12 @@ function main() {
 
   // Local server mode
   app.listen(PORT, () => {
-    console.log(`\n🛒  Vine → Marketplace Dashboard`);
-    console.log(`   http://localhost:${PORT}`);
-    console.log(`   CSV: POST /api/import/csv  |  Next: GET /api/queue/next?enrich=1\n`);
+    const packs = packStore.openHint();
+    console.log(`\n🛒  Vine → Marketplace Dashboard (Path A — personal packs)`);
+    console.log(`   Open:  http://localhost:${PORT}`);
+    console.log(`   Packs: ${packs.packsRoot}`);
+    console.log(`   OpenRouter image key: ${process.env.OPENROUTER_API_KEY ? 'yes' : 'NO — set OPENROUTER_API_KEY in .env'}`);
+    console.log(`   CSV import → select product → Generate 3 lifestyle images → files on disk\n`);
     startScheduler();
   });
 }
