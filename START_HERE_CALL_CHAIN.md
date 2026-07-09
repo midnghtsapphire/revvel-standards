@@ -221,14 +221,14 @@ That page accepts your CSV in the browser. The main Vercel site only shows docs/
 
 ## Simple Marketplace Relister (Vercel — no local hoops)
 
-App code: `products/marketplace-relister`  
-Deploy as its **own** Vercel project (Root Directory = `products/marketplace-relister`).  
+App code: `docs/marketplace-relister`  
+Deploy as its **own** Vercel project (Root Directory = `docs/marketplace-relister`).  
 Set `OPENROUTER_API_KEY` once in Vercel. Bookmark that app URL only.
 
 
 ## Family Order Packs (private Vercel)
 
-Code: `products/marketplace-relister`.
+Code: `docs/marketplace-relister`.
 Deploy once on Vercel (Root Directory = that folder). Env: `OPENROUTER_API_KEY` + `FAMILY_APP_PASSWORD`.
 Daily use: one bookmark, upload CSV, Process next 10/25, download packs.
 
