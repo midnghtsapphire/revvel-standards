@@ -215,3 +215,109 @@ test("does not treat a prose mention of REVVEL-DISABLED as a block opener", () =
   const { status, stdout } = runLint(md);
   assert.strictEqual(status, 0, `prose mention of REVVEL-DISABLED must not open a block, got:\n${stdout}`);
 });
+
+// Rule 12: deferral placeholders must be flagged as a hard lint failure.
+test("flags N/A — pending Jules refinement as a deferral placeholder", () => {
+  const md = [
+    "# WR: Improve affiliate link pipeline",
+    "",
+    "## Executive Summary",
+    "",
+    "N/A — pending Jules refinement",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "pending Jules refinement must fail rule 12");
+  assert.match(stdout, /deferral placeholder/);
+  assert.match(stdout, /N\/A.*pending Jules refinement/i);
+});
+
+test("flags N/A — pending human review as a deferral placeholder", () => {
+  const md = [
+    "# WR: Improve affiliate link pipeline",
+    "",
+    "## Risks",
+    "",
+    "N/A — pending human review",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "pending human review must fail rule 12");
+  assert.match(stdout, /deferral placeholder/);
+});
+
+test("flags 'pending refinement' as a deferral placeholder", () => {
+  const md = [
+    "# WR: Improve affiliate link pipeline",
+    "",
+    "## Dependencies",
+    "",
+    "pending refinement",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "pending refinement must fail rule 12");
+  assert.match(stdout, /deferral placeholder/);
+});
+
+test("flags TBD as a deferral placeholder", () => {
+  const md = [
+    "# WR: New checkout widget",
+    "",
+    "## Monetization",
+    "",
+    "TBD",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "TBD must fail rule 12");
+  assert.match(stdout, /deferral placeholder/);
+});
+
+test("flags TODO as a deferral placeholder", () => {
+  const md = [
+    "# WR: New checkout widget",
+    "",
+    "## Recommendations",
+    "",
+    "TODO: fill this in",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "TODO must fail rule 12");
+  assert.match(stdout, /deferral placeholder/);
+});
+
+test("does not flag deferral phrases inside a fenced code block", () => {
+  const md = [
+    "# WR: Document the lint rule",
+    "",
+    "Below is an example of a forbidden phrase (shown in a code block):",
+    "",
+    "```",
+    "N/A — pending Jules refinement",
+    "TBD",
+    "TODO",
+    "```",
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 0, `deferral phrases in fenced code must not trip rule 12, got:\n${stdout}`);
+});
+
+test("deferral placeholder also triggers false-completion when checklist is checked", () => {
+  const md = [
+    "# WR: Add discoverability layers",
+    "",
+    "## Executive Summary",
+    "",
+    "N/A — pending Jules refinement",
+    "",
+    CHECKED_ACK,
+    "",
+  ].join("\n");
+  const { status, stdout } = runLint(md);
+  assert.strictEqual(status, 1, "deferral placeholder + checked ack must fail both rule 7 and rule 12");
+  assert.match(stdout, /deferral placeholder/);
+  assert.match(stdout, /false-completion signal/);
+});
