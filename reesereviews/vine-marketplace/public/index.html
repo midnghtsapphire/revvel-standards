@@ -257,20 +257,19 @@
     <button class="btn btn-primary" onclick="postSelected()" id="btn-post">🚀 Post to Marketplace</button>
   </div>
 
-  <!-- CSV import + one-at-a-time queue (no personal photos — ASIN → Amazon product link/images) -->
-  <div class="card" style="margin-bottom:20px;">
+  <!-- Path A: personal packs — CSV → one product → lifestyle images on YOUR disk -->
+  <div class="card" style="margin-bottom:20px;border-color:rgba(124,106,247,.45);">
     <div class="card-header">
-      <div class="card-title">Orders CSV → product links (vine-parser shape)</div>
-      <div style="font-size:12px;color:var(--mist);">No photos from you — ASIN builds amazon.com/dp/… then we pull product images</div>
+      <div class="card-title">Path A · My packs (local drive)</div>
+      <div style="font-size:12px;color:var(--mist);" id="packs-path-label">Loading pack folder…</div>
     </div>
     <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">
       <div class="field" style="flex:1;min-width:220px;">
-        <label>Amazon order history CSV</label>
+        <label>1 · Amazon order history CSV</label>
         <input type="file" id="csv-file" accept=".csv,text/csv" style="color:var(--mist);font-size:12px;">
       </div>
       <button class="btn btn-primary" onclick="importCsv()" id="btn-csv">⬆ Import CSV</button>
-      <button class="btn btn-ghost" onclick="queueNext(true)" id="btn-next">▶ Next item (enrich images)</button>
-      <button class="btn btn-ghost" onclick="queueNext(false)">▶ Next (link only)</button>
+      <button class="btn btn-ghost" onclick="queueNext(true)" id="btn-next">2 · Next product</button>
     </div>
     <div id="queue-panel" style="display:none;padding:0 18px 18px;">
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;background:rgba(0,0,0,.25);border-radius:12px;padding:14px;border:1px solid var(--border);">
@@ -279,14 +278,22 @@
           <div id="queue-title" style="font-weight:600;margin-bottom:6px;"></div>
           <div id="queue-meta" style="font-size:12px;color:var(--mist);margin-bottom:8px;"></div>
           <div id="queue-images" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <a id="queue-link" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">Open product page</a>
-            <button class="btn btn-sm btn-primary" onclick="showListingPack()">Listing pack (copy)</button>
-            <button class="btn btn-sm btn-success" onclick="enrichCurrent()">Re-fetch images</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <button class="btn btn-success" onclick="generateLifestylePack()" id="btn-gen">3 · Generate 3 lifestyle images → save pack</button>
+            <a id="queue-link" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">Amazon link (source)</a>
+            <button class="btn btn-sm btn-ghost" onclick="showListingPack()">Copy listing text</button>
           </div>
+          <!-- Live process steps -->
+          <div id="job-steps" style="font-size:13px;margin-bottom:10px;"></div>
+          <div id="job-thumbs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          <div id="job-pack-dir" style="font-size:12px;color:var(--accent-light);margin-top:8px;word-break:break-all;"></div>
           <pre id="queue-pack" style="display:none;margin-top:12px;font-size:11px;white-space:pre-wrap;color:var(--mist);max-height:220px;overflow:auto;"></pre>
         </div>
       </div>
+    </div>
+    <div style="padding:0 18px 16px;font-size:12px;color:var(--mist);">
+      Process you will see: parse → product link → reference image → lifestyle 1/3 · 2/3 · 3/3 → saved under Documents\MarketplacePacks\{ASIN}\
+      · Needs <code>OPENROUTER_API_KEY</code> in <code>.env</code> for lifestyle generation.
     </div>
   </div>
 
@@ -685,6 +692,101 @@ async function showListingPack() {
   }
 }
 
+// ── Path A: generate lifestyle pack with visible process ───────────────────
+let packPollTimer = null;
+
+function renderJobSteps(job) {
+  const box = document.getElementById('job-steps');
+  if (!job || !job.steps) { box.innerHTML = ''; return; }
+  const icon = { pending: '○', running: '◎', done: '✓', error: '✗', skipped: '–' };
+  const color = { pending: 'var(--mist)', running: 'var(--accent-light)', done: 'var(--success)', error: 'var(--danger)', skipped: 'var(--warn)' };
+  box.innerHTML = job.steps.map((s) =>
+    `<div style="padding:4px 0;color:${color[s.status] || 'var(--mist)'}">
+      <strong>${icon[s.status] || '·'} ${escHtml(s.label)}</strong>
+      <span style="opacity:.85"> — ${escHtml(s.detail || s.status)}</span>
+    </div>`
+  ).join('');
+  if (job.packDir) {
+    document.getElementById('job-pack-dir').textContent = 'Saved on your PC: ' + job.packDir;
+  }
+  const thumbs = document.getElementById('job-thumbs');
+  const key = (job.product && (job.product.asin || job.product.orderId)) || '';
+  if (job.images && job.images.length && key) {
+    thumbs.innerHTML = job.images.map((im) =>
+      `<img src="/pack-files/${encodeURIComponent(String(key).toUpperCase())}/${encodeURIComponent(im.name)}" 
+        class="thumb" style="width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" alt="">`
+    ).join('');
+  }
+}
+
+async function generateLifestylePack() {
+  if (!currentQueueProduct) return toast('Import CSV and click Next product first');
+  const btn = document.getElementById('btn-gen');
+  btn.disabled = true;
+  log('Starting lifestyle pack job…', 'log-info');
+  try {
+    const r = await fetch(`${API}/packs/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: currentQueueProduct.orderId, count: 3 }),
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.hasOpenRouter) {
+      toast('No OPENROUTER_API_KEY — will save listing only. Add key to .env for lifestyle pics.');
+    }
+    renderJobSteps({ steps: data.steps, packDir: null, images: [], product: currentQueueProduct });
+    pollJob(data.jobId);
+  } catch (e) {
+    log('❌ ' + e.message, 'log-err');
+    toast(e.message);
+    btn.disabled = false;
+  }
+}
+
+function pollJob(jobId) {
+  if (packPollTimer) clearInterval(packPollTimer);
+  packPollTimer = setInterval(async () => {
+    try {
+      const r = await fetch(`${API}/packs/jobs/${encodeURIComponent(jobId)}`);
+      const job = await r.json();
+      if (job.error && job.status === 'error' && !job.steps) throw new Error(job.error);
+      renderJobSteps(job);
+      log(`Job ${job.status}: ${(job.steps || []).filter(s => s.status === 'done').length} steps done`, 'log-info');
+      if (job.status === 'done' || job.status === 'error') {
+        clearInterval(packPollTimer);
+        packPollTimer = null;
+        document.getElementById('btn-gen').disabled = false;
+        if (job.status === 'done') {
+          toast('Pack ready on your disk');
+          log('✅ Pack: ' + (job.packDir || ''), 'log-ok');
+        } else {
+          toast('Job finished with errors — check steps');
+        }
+      }
+    } catch (e) {
+      clearInterval(packPollTimer);
+      packPollTimer = null;
+      document.getElementById('btn-gen').disabled = false;
+      toast(e.message);
+    }
+  }, 1200);
+}
+
+async function loadPacksConfig() {
+  try {
+    const r = await fetch(`${API}/packs/config`);
+    const c = await r.json();
+    const el = document.getElementById('packs-path-label');
+    if (el) {
+      el.textContent = (c.openRouterConfigured ? '🟢 OpenRouter ready · ' : '🟠 Add OPENROUTER_API_KEY for lifestyle images · ')
+        + 'Saves to: ' + (c.packsRoot || '');
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 async function postSelected() {
   const selected = [...selectedOrders];
   if (selected.length === 0) {
@@ -999,6 +1101,7 @@ document.addEventListener('click', async (evt) => {
   await loadProducts();
   await loadRfy();
   await loadRfySummary();
+  await loadPacksConfig();
 
   // Auto-refresh summary every 60s
   setInterval(async () => { await loadSummary(); await loadRfySummary(); }, 60000);

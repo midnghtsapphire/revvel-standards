@@ -248,6 +248,42 @@ test('attachProductLink is idempotent', () => {
   assert.strictEqual(p2.productUrl, p.productUrl);
 });
 
+// ── Pack store (local Documents path) ─────────────────────────────────────
+
+console.log('\n📁  Pack store');
+
+const packStore = require('../lib/pack-store');
+const os = require('os');
+const fs = require('fs');
+
+test('packsRoot defaults under home Documents', () => {
+  const prev = process.env.MARKETPLACE_PACKS_DIR;
+  delete process.env.MARKETPLACE_PACKS_DIR;
+  const root = packStore.packsRoot();
+  assert.ok(root.includes('MarketplacePacks'));
+  assert.ok(root.startsWith(os.homedir()) || root.includes(os.homedir()));
+  if (prev) process.env.MARKETPLACE_PACKS_DIR = prev;
+});
+
+test('packDir writes listing under MARKETPLACE_PACKS_DIR', () => {
+  const tmp = path.join(os.tmpdir(), 'mp-packs-test-' + Date.now());
+  process.env.MARKETPLACE_PACKS_DIR = tmp;
+  const dir = packStore.packDir({ asin: 'B08C4KWM9T', orderId: 'X' });
+  assert.ok(dir.includes('B08C4KWM9T'));
+  packStore.writeText(path.join(dir, 'listing.txt'), 'hello');
+  assert.ok(fs.existsSync(path.join(dir, 'listing.txt')));
+  const listed = packStore.listPack({ asin: 'B08C4KWM9T' });
+  assert.ok(listed.files.some((f) => f.name === 'listing.txt'));
+});
+
+test('createJob exposes visible process steps', () => {
+  const { createJob } = require('../lib/lifestyle-pipeline');
+  const job = createJob({ orderId: 'T1', asin: 'B08C4KWM9T', productTitle: 'Widget' }, { count: 3 });
+  assert.strictEqual(job.steps.length, 5);
+  assert.ok(job.steps.some((s) => s.id === 'lifestyle'));
+  assert.strictEqual(job.status, 'queued');
+});
+
 // ── Inventory ──────────────────────────────────────────────────────────────
 
 console.log('\n📦  Inventory');
