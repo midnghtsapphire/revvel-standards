@@ -1,37 +1,76 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseCsv, rowsToProducts } from '../lib/csv';
 
+/**
+ * Private family batch app:
+ * 1) Login once
+ * 2) Upload CSV once
+ * 3) Process batch (auto walks products)
+ * 4) Download images per product
+ */
 export default function Page() {
-  const [products, setProducts] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [fileName, setFileName] = useState('');
-  const [status, setStatus] = useState('Upload your Amazon order CSV (or try sample).');
-  const [busy, setBusy] = useState(false);
-  const [steps, setSteps] = useState([]);
-  const [images, setImages] = useState([]);
-  const [listing, setListing] = useState('');
-  const [error, setError] = useState('');
+  const [needLogin, setNeedLogin] = useState(false);
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
-  const current = products[index] || null;
+  const [products, setProducts] = useState([]);
+  const [fileName, setFileName] = useState('');
+  const [packs, setPacks] = useState({}); // id -> { status, images, listing, error }
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchCursor, setBatchCursor] = useState(0);
+  const [batchTotal, setBatchTotal] = useState(0);
+  const [logLine, setLogLine] = useState('Upload your Amazon order CSV to begin.');
+  const stopRef = useRef(false);
+
+  useEffect(() => {
+    fetch('/api/session')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.open) {
+          setNeedLogin(false);
+          return;
+        }
+        setNeedLogin(!d.ok);
+      })
+      .catch(() => setNeedLogin(false));
+  }, []);
+
+  async function doLogin(e) {
+    e?.preventDefault?.();
+    setLoginError('');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || 'Login failed');
+        return;
+      }
+      setNeedLogin(false);
+      setLogLine('Logged in. Upload your order CSV.');
+    } catch (err) {
+      setLoginError(err.message);
+    }
+  }
 
   function loadText(text, name) {
     const rows = parseCsv(text);
     const list = rowsToProducts(rows);
     if (!list.length) {
-      setError('No products found. Need columns like Product Name and ASIN.');
-      setProducts([]);
+      setLogLine('No products found — need Product Name / ASIN columns.');
       return;
     }
-    setError('');
     setProducts(list);
-    setIndex(0);
     setFileName(name || `${list.length} products`);
-    setImages([]);
-    setListing('');
-    setSteps([]);
-    setStatus(`Loaded ${list.length} products. Showing #1. Press Generate.`);
+    setPacks({});
+    setBatchCursor(0);
+    setBatchTotal(0);
+    setLogLine(`Loaded ${list.length} products. Press “Process batch” when ready.`);
   }
 
   function onFile(e) {
@@ -42,283 +81,388 @@ export default function Page() {
     reader.readAsText(f);
   }
 
-  function loadSample() {
-    const sample = [
-      'Order ID,Order Date,Product Name,ASIN,Unit Price,Quantity',
-      '111-1,2024-01-01,Slim 4-Tier Kitchen Storage Cart Black Brown,B0CGHRRN17,59.99,1',
-      '111-2,2024-01-02,Crystal Bracelet Rose Gold Sample,B0GV3N5QNY,18.99,1',
-      '111-3,2024-01-03,Panda Building Blocks Set Sample,B0GKP3292D,49.89,1',
-    ].join('\n');
-    loadText(sample, 'sample.csv');
-  }
-
-  async function generate() {
-    if (!current) return;
-    setBusy(true);
-    setError('');
-    setImages([]);
-    setListing('');
-    setSteps([
-      { t: '1. Read this product from your list', s: 'done' },
-      { t: '2. Sending to image generator…', s: 'run' },
-      { t: '3. Making 3 lifestyle pictures', s: 'wait' },
-      { t: '4. Show you the results', s: 'wait' },
-    ]);
-    setStatus(`Working on product ${index + 1} of ${products.length}…`);
-
+  const processOne = useCallback(async (product) => {
+    setPacks((prev) => ({
+      ...prev,
+      [product.id]: { status: 'running', images: [], listing: '', error: '' },
+    }));
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: current.title,
-          asin: current.asin,
+          title: product.title,
+          asin: product.asin,
           count: 3,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setSteps((prev) =>
-          prev.map((x, i) =>
-            i === 1 ? { ...x, s: 'err', t: data.error || 'Failed' } : x
-          )
-        );
-        setError(data.error || 'Generation failed');
-        setStatus('Stopped — see error below.');
-        return;
+        setPacks((prev) => ({
+          ...prev,
+          [product.id]: {
+            status: 'error',
+            images: [],
+            listing: '',
+            error: data.error || 'Failed',
+          },
+        }));
+        return false;
       }
-      setSteps([
-        { t: '1. Read this product from your list', s: 'done' },
-        { t: '2. Sent to image generator', s: 'done' },
-        {
-          t: `3. Made ${data.images?.length || 0} lifestyle pictures`,
-          s: data.images?.length ? 'done' : 'err',
+      setPacks((prev) => ({
+        ...prev,
+        [product.id]: {
+          status: data.images?.length ? 'done' : 'error',
+          images: data.images || [],
+          listing: data.listing || '',
+          error: data.errors?.map((x) => x.message).join('; ') || '',
         },
-        { t: '4. Ready — download what you like', s: 'done' },
-      ]);
-      setImages(data.images || []);
-      setListing(data.listing || '');
-      setStatus(
-        data.images?.length
-          ? `Done — ${data.images.length} pictures for this product. Download them, then Next.`
-          : 'Finished but no pictures returned.'
-      );
-      if (data.errors?.length) {
-        setError(data.errors.map((e) => `#${e.index}: ${e.message}`).join(' · '));
-      }
+      }));
+      return Boolean(data.images?.length);
     } catch (err) {
-      setError(err.message || 'Network error');
-      setStatus('Something went wrong.');
-    } finally {
-      setBusy(false);
+      setPacks((prev) => ({
+        ...prev,
+        [product.id]: {
+          status: 'error',
+          images: [],
+          listing: '',
+          error: err.message,
+        },
+      }));
+      return false;
+    }
+  }, []);
+
+  async function runBatch(limit) {
+    if (!products.length || batchRunning) return;
+    stopRef.current = false;
+    setBatchRunning(true);
+
+    // Only process products not already done
+    const pending = products.filter((p) => packs[p.id]?.status !== 'done');
+    const slice = typeof limit === 'number' ? pending.slice(0, limit) : pending;
+    setBatchTotal(slice.length);
+    setBatchCursor(0);
+    setLogLine(`Processing ${slice.length} products in the background of this tab…`);
+
+    let ok = 0;
+    for (let i = 0; i < slice.length; i++) {
+      if (stopRef.current) {
+        setLogLine(`Stopped. Finished ${ok} packs. You can resume anytime.`);
+        break;
+      }
+      setBatchCursor(i + 1);
+      setLogLine(`Working ${i + 1} of ${slice.length}: ${slice[i].title.slice(0, 60)}…`);
+      const success = await processOne(slice[i]);
+      if (success) ok += 1;
+    }
+
+    setBatchRunning(false);
+    if (!stopRef.current) {
+      setLogLine(`Batch finished. ${ok} of ${slice.length} packs ready. Scroll down to download.`);
     }
   }
 
-  function downloadImage(url, n) {
+  function stopBatch() {
+    stopRef.current = true;
+    setLogLine('Stopping after current product…');
+  }
+
+  function downloadImg(url, asin, n) {
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${current?.asin || 'product'}-lifestyle-${n}.jpg`;
+    a.download = `${asin || 'item'}-lifestyle-${n}.jpg`;
     a.click();
   }
 
-  const stepColor = useMemo(
-    () => ({ done: '#3dd68c', run: '#8b7cf7', wait: '#666', err: '#ff6b7a' }),
-    []
-  );
+  function downloadListing(text, asin) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${asin || 'item'}-listing.txt`;
+    a.click();
+  }
+
+  const doneCount = Object.values(packs).filter((p) => p.status === 'done').length;
+  const errorCount = Object.values(packs).filter((p) => p.status === 'error').length;
+
+  if (needLogin) {
+    return (
+      <main style={styles.wrap}>
+        <h1 style={styles.h1}>Family order packs</h1>
+        <p style={styles.sub}>Private. Enter the family password.</p>
+        <form onSubmit={doLogin} style={styles.card}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            style={styles.input}
+            autoFocus
+          />
+          <button type="submit" style={styles.btnGreen}>
+            Open app
+          </button>
+          {loginError ? <p style={styles.err}>{loginError}</p> : null}
+        </form>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: 720, margin: '0 auto', padding: '28px 16px 64px' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: 8 }}>My orders → lifestyle pics</h1>
-      <p style={{ color: '#a0a0b8', marginBottom: 20, lineHeight: 1.5 }}>
-        One page. Upload your Amazon order CSV. Pick a product. Get 3 real-life style images
-        (not stock). Download them. Next product when you want.
+    <main style={styles.wrap}>
+      <h1 style={styles.h1}>Family order packs</h1>
+      <p style={styles.sub}>
+        Private tool for you and your family. Upload orders once, process a batch, download lifestyle
+        pictures. Leave this tab open while it runs.
       </p>
 
-      <div
-        style={{
-          background: '#14141f',
-          border: '1px solid #2a2a3d',
-          borderRadius: 14,
-          padding: 18,
-          marginBottom: 14,
-        }}
-      >
-        <div style={{ fontSize: 12, color: '#a0a0b8', marginBottom: 10, textTransform: 'uppercase' }}>
-          Step 1 · Your file
-        </div>
-        <input type="file" accept=".csv,text/csv" onChange={onFile} disabled={busy} />
-        <div style={{ marginTop: 12 }}>
-          <button type="button" onClick={loadSample} disabled={busy} style={btnGhost}>
-            Or try with 3 sample products
-          </button>
-        </div>
+      <section style={styles.card}>
+        <div style={styles.label}>1 · Upload Amazon order CSV</div>
+        <input type="file" accept=".csv,text/csv" onChange={onFile} disabled={batchRunning} />
         {fileName ? (
-          <p style={{ marginTop: 10, fontSize: 13, color: '#a89cff' }}>{fileName}</p>
-        ) : null}
-      </div>
-
-      <div
-        style={{
-          background: '#0f1a14',
-          border: '1px solid #1f3d2e',
-          borderRadius: 12,
-          padding: 12,
-          marginBottom: 14,
-          fontSize: 14,
-        }}
-      >
-        <strong style={{ color: '#3dd68c' }}>Status:</strong> {status}
-      </div>
-
-      {current ? (
-        <div
-          style={{
-            background: '#14141f',
-            border: '1px solid #2a2a3d',
-            borderRadius: 14,
-            padding: 18,
-            marginBottom: 14,
-          }}
-        >
-          <div style={{ fontSize: 12, color: '#a0a0b8', marginBottom: 10, textTransform: 'uppercase' }}>
-            Step 2 · Product {index + 1} of {products.length}
-          </div>
-          <h2 style={{ fontSize: '1.05rem', marginBottom: 8 }}>{current.title}</h2>
-          <p style={{ fontSize: 13, color: '#a0a0b8', marginBottom: 14 }}>
-            {current.asin ? `ASIN ${current.asin}` : 'No ASIN'}
-            {current.paid ? ` · paid $${current.paid.toFixed(2)}` : ''}
+          <p style={{ marginTop: 10, color: '#a89cff', fontSize: 14 }}>
+            {fileName} · {products.length} products · {doneCount} packs ready
+            {errorCount ? ` · ${errorCount} errors` : ''}
           </p>
+        ) : null}
+      </section>
 
-          <button type="button" onClick={generate} disabled={busy} style={btnMain}>
-            {busy ? 'Working… watch the steps below' : 'Generate 3 lifestyle pictures'}
+      <section style={styles.card}>
+        <div style={styles.label}>2 · Run a batch</div>
+        <p style={{ color: '#a0a0b8', fontSize: 14, marginBottom: 12 }}>
+          The app walks products for you (not one manual click each). Start with 10 if you want a
+          shorter run.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          <button
+            type="button"
+            style={styles.btnGreen}
+            disabled={!products.length || batchRunning}
+            onClick={() => runBatch(10)}
+          >
+            Process next 10
           </button>
-
-          <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              disabled={busy || index <= 0}
-              onClick={() => {
-                setIndex((i) => i - 1);
-                setImages([]);
-                setListing('');
-                setSteps([]);
-                setStatus(`Product ${index} of ${products.length}`);
-              }}
-              style={btnGhost}
-            >
-              ← Prev
+          <button
+            type="button"
+            style={styles.btnPurple}
+            disabled={!products.length || batchRunning}
+            onClick={() => runBatch(25)}
+          >
+            Process next 25
+          </button>
+          <button
+            type="button"
+            style={styles.btnGhost}
+            disabled={!products.length || batchRunning}
+            onClick={() => runBatch(null)}
+          >
+            Process all remaining
+          </button>
+          {batchRunning ? (
+            <button type="button" style={styles.btnStop} onClick={stopBatch}>
+              Stop after this one
             </button>
-            <button
-              type="button"
-              disabled={busy || index >= products.length - 1}
-              onClick={() => {
-                setIndex((i) => i + 1);
-                setImages([]);
-                setListing('');
-                setSteps([]);
-                setStatus(`Product ${index + 2} of ${products.length}`);
-              }}
-              style={btnGhost}
-            >
-              Next product →
-            </button>
-          </div>
-
-          {steps.length ? (
-            <div style={{ marginTop: 16 }}>
-              {steps.map((s, i) => (
-                <div key={i} style={{ color: stepColor[s.s] || '#aaa', padding: '4px 0', fontSize: 14 }}>
-                  {s.s === 'done' ? '✓' : s.s === 'run' ? '◎' : s.s === 'err' ? '✗' : '○'} {s.t}
-                </div>
-              ))}
-            </div>
           ) : null}
-
-          {error ? (
-            <p style={{ marginTop: 12, color: '#ff6b7a', fontSize: 14 }}>{error}</p>
-          ) : null}
-
-          {images.length ? (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontSize: 12, color: '#a0a0b8', marginBottom: 8 }}>Your pictures · click download</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                {images.map((im) => (
-                  <div key={im.index} style={{ textAlign: 'center' }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={im.url}
-                      alt={`Lifestyle ${im.index}`}
-                      style={{
-                        width: 160,
-                        height: 200,
-                        objectFit: 'cover',
-                        borderRadius: 10,
-                        background: '#222',
-                        display: 'block',
-                      }}
-                    />
-                    <button
-                      type="button"
-                      style={{ ...btnGhost, marginTop: 6, width: '100%' }}
-                      onClick={() => downloadImage(im.url, im.index)}
-                    >
-                      Download {im.index}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {listing ? (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontSize: 12, color: '#a0a0b8', marginBottom: 6 }}>Listing text</div>
-              <textarea
-                readOnly
-                value={listing}
+        </div>
+        {batchRunning || batchTotal ? (
+          <div style={{ marginTop: 14 }}>
+            <div style={styles.barBg}>
+              <div
                 style={{
-                  width: '100%',
-                  minHeight: 100,
-                  background: '#0a0a10',
-                  border: '1px solid #2a2a3d',
-                  borderRadius: 10,
-                  color: '#f4f4ff',
-                  padding: 10,
-                  fontSize: 13,
+                  ...styles.barFill,
+                  width: batchTotal ? `${Math.round((batchCursor / batchTotal) * 100)}%` : '0%',
                 }}
               />
             </div>
-          ) : null}
-        </div>
-      ) : null}
+            <p style={{ fontSize: 13, color: '#a89cff', marginTop: 8 }}>
+              {batchRunning
+                ? `Running ${batchCursor} / ${batchTotal}`
+                : `Last batch: ${batchCursor} / ${batchTotal}`}
+            </p>
+          </div>
+        ) : null}
+      </section>
 
-      <p style={{ fontSize: 13, color: '#666', marginTop: 20 }}>
-        No local install. Images download to your computer when you click Download.
-        One OpenRouter key is set on the server once — you never paste it here.
+      <div style={styles.status}>{logLine}</div>
+
+      <section style={styles.card}>
+        <div style={styles.label}>3 · Packs ready to download</div>
+        {!doneCount && !errorCount ? (
+          <p style={{ color: '#666', fontSize: 14 }}>Nothing yet — run a batch above.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {products
+              .filter((p) => packs[p.id])
+              .map((p) => {
+                const pack = packs[p.id];
+                return (
+                  <div key={p.id} style={styles.packRow}>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.title}</div>
+                      <div style={{ fontSize: 12, color: '#a0a0b8' }}>
+                        {p.asin || 'no ASIN'} ·{' '}
+                        <span
+                          style={{
+                            color:
+                              pack.status === 'done'
+                                ? '#3dd68c'
+                                : pack.status === 'running'
+                                  ? '#8b7cf7'
+                                  : '#ff6b7a',
+                          }}
+                        >
+                          {pack.status}
+                        </span>
+                        {pack.error ? ` · ${pack.error}` : ''}
+                      </div>
+                      {pack.listing ? (
+                        <button
+                          type="button"
+                          style={{ ...styles.btnGhost, marginTop: 8 }}
+                          onClick={() => downloadListing(pack.listing, p.asin)}
+                        >
+                          Download listing.txt
+                        </button>
+                      ) : null}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {(pack.images || []).map((im) => (
+                        <div key={im.index}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={im.url}
+                            alt=""
+                            style={{
+                              width: 96,
+                              height: 120,
+                              objectFit: 'cover',
+                              borderRadius: 8,
+                              display: 'block',
+                              background: '#222',
+                            }}
+                          />
+                          <button
+                            type="button"
+                            style={{ ...styles.btnGhost, width: '100%', marginTop: 4, fontSize: 11 }}
+                            onClick={() => downloadImg(im.url, p.asin, im.index)}
+                          >
+                            Save {im.index}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
+      </section>
+
+      <p style={{ fontSize: 13, color: '#555', marginTop: 24, lineHeight: 1.5 }}>
+        Family-only. Bookmark this site. Your daughter only needs the password and this page — no
+        PowerShell, no GitHub.
       </p>
     </main>
   );
 }
 
-const btnMain = {
-  width: '100%',
-  padding: '14px 16px',
-  borderRadius: 12,
-  border: 'none',
-  background: '#3dd68c',
-  color: '#042',
-  fontWeight: 700,
-  fontSize: 16,
-  cursor: 'pointer',
-};
-
-const btnGhost = {
-  padding: '10px 14px',
-  borderRadius: 10,
-  border: '1px solid #2a2a3d',
-  background: '#1a1a28',
-  color: '#f4f4ff',
-  fontWeight: 600,
-  fontSize: 13,
-  cursor: 'pointer',
+const styles = {
+  wrap: { maxWidth: 880, margin: '0 auto', padding: '28px 16px 72px' },
+  h1: { fontSize: '1.55rem', marginBottom: 8 },
+  sub: { color: '#a0a0b8', marginBottom: 20, lineHeight: 1.5, fontSize: 15 },
+  card: {
+    background: '#14141f',
+    border: '1px solid #2a2a3d',
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 14,
+  },
+  label: {
+    fontSize: 12,
+    color: '#a0a0b8',
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    marginBottom: 12,
+  },
+  status: {
+    background: '#0f1a14',
+    border: '1px solid #1f3d2e',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    fontSize: 14,
+    color: '#c8f0d8',
+  },
+  packRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 14,
+    padding: 12,
+    borderRadius: 12,
+    background: 'rgba(0,0,0,0.25)',
+    border: '1px solid #2a2a3d',
+  },
+  input: {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    border: '1px solid #2a2a3d',
+    background: '#0a0a10',
+    color: '#fff',
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  btnGreen: {
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: 'none',
+    background: '#3dd68c',
+    color: '#042',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer',
+  },
+  btnPurple: {
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: 'none',
+    background: '#7c6af7',
+    color: '#fff',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer',
+  },
+  btnGhost: {
+    padding: '10px 14px',
+    borderRadius: 10,
+    border: '1px solid #2a2a3d',
+    background: '#1a1a28',
+    color: '#f4f4ff',
+    fontWeight: 600,
+    fontSize: 13,
+    cursor: 'pointer',
+  },
+  btnStop: {
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: 'none',
+    background: '#ff6b7a',
+    color: '#1a0000',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer',
+  },
+  barBg: {
+    height: 10,
+    borderRadius: 999,
+    background: '#222',
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+    background: 'linear-gradient(90deg,#7c6af7,#3dd68c)',
+    transition: 'width 0.3s',
+  },
+  err: { color: '#ff6b7a', marginTop: 10 },
 };
