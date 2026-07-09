@@ -204,3 +204,15 @@ If two docs conflict: **`MASTER.md` ordering wins** for process; **this file win
 ---
 
 _Last intent: stop hunting folders; one root file for start → next. Detail lives in SYSTEM_MAP._
+
+---
+
+## Amazon order CSV upload (live URL)
+
+**Do not use the hub homepage for uploads.** Use:
+
+- https://revvel-standards.vercel.app/docs/vine-orders/
+- or https://revvel-standards.vercel.app/vine-orders.html
+
+That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
+
