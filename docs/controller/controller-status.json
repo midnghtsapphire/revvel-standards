@@ -1,47 +1,35 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-09T08:17:55.766Z",
+  "generated_at": "2026-07-09T09:39:11.171Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 2,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 6,
-    "running": 2,
+    "total": 5,
+    "running": 1,
     "queued": 4,
     "done": 0,
-    "healthy": 2,
+    "healthy": 1,
     "stalled": 0,
     "runaway": 0,
-    "protected": 2,
-    "occupancy": 2,
+    "protected": 1,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29004147399,
+      "id": 29008623041,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29004147399",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29008623041",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 143766,
-      "since_update_ms": 4766,
-      "reason": "running within budget",
-      "protected": true
-    },
-    {
-      "id": 29003989299,
-      "name": "Agent Monitor",
-      "path": ".github/workflows/agent-monitor.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29003989299",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 314766,
-      "since_update_ms": 2766,
+      "age_ms": 323171,
+      "since_update_ms": 12171,
       "reason": "running within budget",
       "protected": true
     },
