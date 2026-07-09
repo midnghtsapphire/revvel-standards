@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 "use strict";
 
-/** Unit tests for scripts/fleet-maintenance.js — pure selection/rotation logic. */
+/** Unit tests for scripts/fleet-maintenance.js. */
 
 const assert = require("assert");
-const { selectRepos, isoWeek } = require("../scripts/fleet-maintenance");
+const {
+  fileWorkRequest,
+  hasOpenWorkRequest,
+  isoWeek,
+  selectRepos,
+} = require("../scripts/fleet-maintenance");
 
 let passed = 0;
 let failed = 0;
@@ -39,6 +44,52 @@ test("rotates across weeks to cover the fleet", () => {
 test("isoWeek returns a sane week number", () => {
   const w = isoWeek(new Date("2026-05-23T00:00:00Z"));
   assert.ok(w >= 1 && w <= 53, `got ${w}`);
+});
+
+test("hasOpenWorkRequest returns true when a matching open WR exists", () => {
+  const found = hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => (
+    JSON.stringify([{ number: 123 }])
+  ));
+
+  assert.strictEqual(found, true);
+});
+
+test("hasOpenWorkRequest returns false when no matching open WR exists", () => {
+  const found = hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => "[]");
+
+  assert.strictEqual(found, false);
+});
+
+test("hasOpenWorkRequest fails closed when gh issue list fails", () => {
+  assert.throws(
+    () => hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => {
+      throw new Error("gh auth failed");
+    }),
+    /refusing to file a duplicate.*gh auth failed/
+  );
+});
+
+test("hasOpenWorkRequest fails closed when gh returns malformed JSON", () => {
+  assert.throws(
+    () => hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => "{"),
+    /refusing to file a duplicate/
+  );
+});
+
+test("fileWorkRequest does not create an issue when open-WR lookup fails", () => {
+  const calls = [];
+
+  assert.throws(
+    () => fileWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", false, (args) => {
+      calls.push(args);
+      if (args[1] === "list") throw new Error("rate limit exceeded");
+      if (args[1] === "create") return "https://github.com/example/issues/1\n";
+      throw new Error(`unexpected gh call: ${args.join(" ")}`);
+    }),
+    /refusing to file a duplicate.*rate limit exceeded/
+  );
+
+  assert.strictEqual(calls.some((args) => args[1] === "create"), false);
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

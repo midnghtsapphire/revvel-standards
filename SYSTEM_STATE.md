@@ -51,6 +51,7 @@
 | BUG-015 | Affiliate Hub regressed below patched Next.js/PostCSS dependency floor (`next` 15.5.15, `eslint-config-next` 14.2.3, nested PostCSS 8.4.x) | high | resolved | 2026-05-16 |
 | BUG-016 | BASIC WR / issue-type intake could miss required WR labels, causing `wr-pr-creation.yml` to skip instead of creating a PR | high | resolved | 2026-05-17 |
 | BUG-017 | Root workflow validation failed on malformed `ship-status-audit.yml` markdown template literal indentation and duplicate `script` keys in `ship-to-market.yml` | medium | resolved | 2026-05-19 |
+| BUG-018 | Fleet maintenance treated failed open-WR lookup as no open WR, risking duplicate `[WR]` issues | high | resolved | 2026-07-09 |
 
 ---
 
@@ -107,6 +108,7 @@
 | Creator Payout Tracker product | 2026-05-21 | ✅ `npm run test`, `npm run lint`, `npm run build`, and `npm audit --audit-level=high` pass in `products/creator-payout-tracker` | Verifies payout recommendation engine, Markdown/CSV report export, `/api/report`, TypeScript, and production build. npm audit still reports a moderate nested Next/PostCSS advisory with no stable non-breaking fix. |
 | WR issue template / BASIC WR regression test | 2026-05-17 | ✅ `node tests/work-request-form-sync.test.js` verifies template label sync, portable template sync, and BASIC WR workflow detection | — |
 | Perplexity no-key integration | 2026-05-17 | ✅ `node tests/perplexity-research-issue.test.js`, `npm run workflows:validate`, and `npm test` pass after `npm ci` | Verifies the fork-backed research script, no required `PERPLEXITY_API_KEY`, workflow install path, Credential Gatekeeper omission, and MCP registration |
+| Fleet Maintenance WR dedupe | 2026-07-09 | ✅ `node tests/fleet-maintenance.test.js` and `npm test` pass | Verifies open-WR lookup success, empty results, `gh` failure, malformed JSON, and no issue creation after failed lookup |
 | PromptForge app validation | 2026-05-17 | ✅ `node tests/prompt-generation-app.test.js`; `npm run lint`; `npm run build` in `products/prompt-generation-app` | — |
 | Research Engine unit test | 2026-05-17 | ✅ `node tests/research-engine.test.js` verified lane coverage, OpenRouter triangulation, missing-key packets, and offline mocked execution | — |
 | Workflow YAML validation | 2026-05-17 | ✅ `node tests/workflow-yaml-validation.test.js` compiles key WR github-script blocks; `npm run workflows:validate` reports 120 valid workflows, 0 invalid, 0 missing timeouts | — |
@@ -169,6 +171,10 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 ## Last Updated
 
 ```
+Last updated: 2026-07-09 03:03 UTC
+Updated by: Cursor
+Session summary: Fixed fleet maintenance WR dedupe to fail closed on `gh issue list` and JSON parse errors, with regression tests proving duplicate WR creation is blocked.
+
 Last updated: 2026-05-19 05:34 UTC
 Updated by: Cursor
 Session summary: Added green website reporting workflow/template/standard with README carbon marker support, fixed workflow YAML blockers in ship-status/ship-to-market, and verified focused green tests, workflow validation, Automation Doctor, and full root npm test pass.

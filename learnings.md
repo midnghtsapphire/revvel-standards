@@ -34,6 +34,20 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-07-09T03:03:00Z
+
+**Task Attempted:** Fix fleet maintenance duplicate Work Request risk when open-issue lookup fails
+
+**Outcome:** Success - `hasOpenWorkRequest` now fails closed on `gh issue list` errors, auth/rate-limit failures, malformed JSON, and non-array payloads; regression tests verify `fileWorkRequest` does not create a new `[WR]` after lookup failure.
+
+**Root Cause of Failure (If any):** The open-WR preflight caught every `gh` or JSON parsing error and returned `false`, making an untrusted lookup indistinguishable from a confirmed empty result.
+
+**Self-Healing Fix / Learned Lesson:** Deduplication preflights must fail closed. If the script cannot prove the target repo has no open marker issue, it must throw a contextual error and skip creation instead of opening another automation issue.
+
+**Next Action:** None - Work complete.
+
+---
+
 **Date/Time:** 2026-05-01T19:37:00Z
 
 **Task Attempted:** Fix recurring `oAudrey retro` issues reporting HTTP 000 for `oaudrey.com` and `fieldwork.oaudrey.com`

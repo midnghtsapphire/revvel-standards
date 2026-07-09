@@ -1,16 +1,25 @@
 name: RecurseML — Autonomous Code Review
+
+# ── CUT 2026-07-08 (D007) ─────────────────────────────────────────────────────
+# RecurseML has been removed from the active review fleet. Zero unique catches in
+# the 50-PR sample (RECURSE_ML_API_KEY was absent → no results posted). The
+# OpenRouter lane (ai-pr-review-openrouter.yml) covers the same signal.
+# Auto-triggers commented out; kept for on-demand / historical reference.
+# See: DECISIONS.md D007, docs/TOOL_COST_INDEX.md, wr/issues/issue-15517-*.md
+# ──────────────────────────────────────────────────────────────────────────────
+
 on:
-  # RecurseML reviews PRs (its primary job) as well as pushes to protected
-  # branches. The pull_request trigger was missing here, so the step that
-  # builds a PR-scoped diff (github.event_name == "pull_request") never ran on
-  # PRs — restored to match templates/cicd/recurse-ml.yml.
-  pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - main
-      - release/**
-      - hotfix/**
+  # Auto-triggers are disabled (D007). Keep workflow_dispatch for on-demand runs.
+  # Previous pull_request + protected-branch push triggers are preserved below as
+  # comments for easy re-enable if needed.
+  # See also: DECISIONS.md D007
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  # push:
+  #   branches:
+  #     - main
+  #     - release/**
+  #     - hotfix/**
   workflow_dispatch:
     inputs:
       target_branch:
