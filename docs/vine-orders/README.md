@@ -1,24 +1,17 @@
-# Amazon Orders → Listing Pack (live upload page)
+# Amazon Orders upload page
 
-**This is the page that accepts your CSV upload.**
-
-## Live URL (after deploy)
+## Open this URL only
 
 https://revvel-standards.vercel.app/docs/vine-orders/
 
-## What it is
+## What to click (in order)
 
-- Browser-only tool (your CSV stays on your machine)
-- Parses Amazon order history CSV
-- Builds `https://www.amazon.com/dp/{ASIN}` from product IDs
-- One-at-a-time listing pack for Marketplace copy-paste
-- **You do not upload personal product photos**
+1. **Green button** — "START — load 3 sample products" (no file needed)
+2. **Orange button** — "OPEN THIS PRODUCT ON AMAZON" (this is the product link)
+3. **Next product** — go through the list
+4. Later: **Choose my orders CSV** for your real Amazon export
 
-## What it is not
+## What NOT to expect
 
-- Not the main hub homepage (folders / oAudrey / artifacts)
-- Not the full Node `reesereviews/vine-marketplace` server (email + FB API)
-
-## Local open
-
-Open `index.html` in a browser, or after `bash scripts/build-static.sh` visit `/docs/vine-orders/`.
+- The dashed "Choose CSV" box is a **file picker on your computer**, not a product website.
+- The main hub https://revvel-standards.vercel.app/ does not upload orders.
