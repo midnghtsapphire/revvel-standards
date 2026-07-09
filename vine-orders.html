@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amazon Orders → Marketplace Pack | Vine parse</title>
+  <meta name="description" content="Upload Amazon order CSV. Get product links from ASIN. One at a time. No personal photos required." />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.1);
+      --accent: #7c6af7;
+      --accent2: #a89cff;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --mist: rgba(255,255,255,0.55);
+      --white: #f5f5ff;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 10%, rgba(124,106,247,.2), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 90% 80%, rgba(34,197,94,.08), transparent 55%);
+      pointer-events: none; z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 28px 18px 64px; }
+    h1 { font-size: 1.55rem; letter-spacing: -0.03em; margin-bottom: 6px; }
+    h1 span { color: var(--accent2); }
+    .sub { color: var(--mist); font-size: 0.95rem; margin-bottom: 22px; max-width: 40rem; }
+    .banner {
+      background: rgba(124,106,247,.12);
+      border: 1px solid rgba(124,106,247,.35);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
+    }
+    .banner strong { color: var(--accent2); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
+    }
+    .card h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: .08em; color: var(--mist); margin-bottom: 12px; }
+    .drop {
+      border: 2px dashed rgba(168,156,255,.45);
+      border-radius: 12px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .drop:hover, .drop.drag { background: rgba(124,106,247,.12); border-color: var(--accent2); }
+    .drop input { display: none; }
+    .drop p { color: var(--mist); font-size: 0.9rem; margin-top: 6px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: none; border-radius: 10px;
+      padding: 10px 16px; font-weight: 600; font-size: 0.9rem;
+      cursor: pointer; color: #fff; background: var(--accent);
+    }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-ghost { background: rgba(255,255,255,.08); border: 1px solid var(--border); }
+    .btn-ok { background: var(--ok); color: #041; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .stat b { display: block; font-size: 1.4rem; }
+    .stat span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mist); }
+    .product {
+      display: grid; grid-template-columns: 88px 1fr; gap: 14px;
+      padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(0,0,0,.25); margin-bottom: 10px;
+    }
+    .product img {
+      width: 88px; height: 88px; object-fit: contain; background: #fff; border-radius: 10px;
+    }
+    .product .ph {
+      width: 88px; height: 88px; border-radius: 10px; background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center; color: var(--mist); font-size: 0.75rem; text-align: center; padding: 6px;
+    }
+    .product h3 { font-size: 1rem; margin-bottom: 4px; }
+    .meta { font-size: 0.8rem; color: var(--mist); margin-bottom: 8px; word-break: break-all; }
+    a.link { color: var(--accent2); }
+    textarea, pre.pack {
+      width: 100%; min-height: 160px; margin-top: 10px;
+      background: rgba(0,0,0,.35); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--white); padding: 12px; font-size: 0.8rem;
+      font-family: ui-monospace, Consolas, monospace; white-space: pre-wrap;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+    th { color: var(--mist); font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; }
+    tr.active { background: rgba(124,106,247,.12); }
+    tr { cursor: pointer; }
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #1a1a28; border: 1px solid var(--border); padding: 10px 16px;
+      border-radius: 10px; font-size: 0.85rem; opacity: 0; transition: opacity .2s; z-index: 9;
+    }
+    .toast.show { opacity: 1; }
+    .steps { font-size: 0.85rem; color: var(--mist); margin-bottom: 14px; }
+    .steps ol { margin-left: 1.2rem; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Amazon Orders → <span>Listing Pack</span></h1>
+    <p class="sub">
+      Upload your Amazon order history CSV. We build product links from ASIN
+      (<code>amazon.com/dp/…</code>). No personal photos. One item at a time for Marketplace copy-paste.
+    </p>
+
+    <div class="banner">
+      <strong>This is the upload page.</strong>
+      Not the main hub (folders / artifacts). Bookmark this URL only for orders:
+      <div style="margin-top:6px;word-break:break-all;">
+        <code id="self-url"></code>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>1 · How to get the CSV (Amazon)</h2>
+      <div class="steps">
+        <ol>
+          <li>Amazon → Account → <strong>Your Orders</strong> or <strong>Request Your Information / Order history reports</strong></li>
+          <li>Download the <strong>Items</strong> / order history report as <strong>CSV</strong></li>
+          <li>Upload that file below (stays in your browser — not sent to our server)</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2 · Upload CSV</h2>
+      <label class="drop" id="drop" for="file">
+        <div style="font-size:1.6rem;">⬆</div>
+        <div style="font-weight:600;margin-top:8px;">Click or drop orders CSV here</div>
+        <p>Accepts .csv from Amazon order history</p>
+        <input type="file" id="file" accept=".csv,text/csv,text/plain" />
+      </label>
+      <div class="row">
+        <button type="button" class="btn" id="btn-demo">Load sample (3 items)</button>
+        <span id="file-name" style="color:var(--mist);font-size:0.85rem;"></span>
+      </div>
+    </div>
+
+    <div id="after" class="hidden">
+      <div class="stats">
+        <div class="stat"><span>Imported</span><b id="n-total">0</b></div>
+        <div class="stat"><span>With ASIN</span><b id="n-asin">0</b></div>
+        <div class="stat"><span>Queue left</span><b id="n-left">0</b></div>
+        <div class="stat"><span>Current #</span><b id="n-idx">—</b></div>
+      </div>
+
+      <div class="card">
+        <h2>3 · One at a time</h2>
+        <div class="row" style="margin-top:0;">
+          <button type="button" class="btn" id="btn-prev">← Prev</button>
+          <button type="button" class="btn btn-ok" id="btn-next">Next →</button>
+          <button type="button" class="btn btn-ghost" id="btn-copy">Copy listing pack</button>
+          <button type="button" class="btn btn-ghost" id="btn-open">Open Amazon product</button>
+        </div>
+        <div id="current" style="margin-top:14px;"></div>
+        <label style="display:block;margin-top:12px;font-size:0.75rem;color:var(--mist);text-transform:uppercase;letter-spacing:.06em;">Listing pack (edit then copy)</label>
+        <textarea id="pack" spellcheck="false"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>4 · All imported items</h2>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>ASIN</th>
+                <th>Paid</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:8px;">
+      <h2>Not this page?</h2>
+      <p style="color:var(--mist);font-size:0.9rem;">
+        <a class="link" href="https://revvel-standards.vercel.app/">revvel-standards.vercel.app</a>
+        is the public hub (folders / oAudrey / docs). It does <strong>not</strong> upload orders.
+        Full Node app (email + FB): <code>reesereviews/vine-marketplace</code> on GitHub — run locally or deploy that folder separately.
+      </p>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+(function () {
+  document.getElementById('self-url').textContent = location.href.split('#')[0];
+
+  const state = { products: [], index: 0 };
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function normHeader(h) {
+    return String(h || '').replace(/^\uFEFF/, '').trim().toLowerCase().replace(/[_]+/g, ' ').replace(/\s+/g, ' ');
+  }
+
+  function parseCsvLine(line) {
+    const out = [];
+    let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) {
+        if (ch === '"') {
+          if (line[i + 1] === '"') { cur += '"'; i++; }
+          else q = false;
+        } else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ',') { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out;
+  }
+
+  function parseCsv(text) {
+    const lines = String(text || '').replace(/^\uFEFF/, '').trim().split(/\r?\n/).filter((l) => l.trim());
+    if (!lines.length) return [];
+    const headers = parseCsvLine(lines[0]).map(normHeader);
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cells = parseCsvLine(lines[i]);
+      const row = {};
+      headers.forEach((h, idx) => { row[h] = (cells[idx] || '').trim(); });
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function pick(row, names) {
+    for (const n of names) {
+      const k = normHeader(n);
+      if (row[k]) return row[k];
+    }
+    for (const n of names) {
+      const want = normHeader(n);
+      for (const [k, v] of Object.entries(row)) {
+        if (k.includes(want) && v) return v;
+      }
+    }
+    return '';
+  }
+
+  function extractAsin(raw) {
+    if (!raw) return null;
+    const s = String(raw).trim();
+    const fromUrl = s.match(/\/(?:dp|gp\/product|product)\/([A-Z0-9]{10})/i);
+    if (fromUrl) return fromUrl[1].toUpperCase();
+    if (/^[A-Z0-9]{10}$/i.test(s)) return s.toUpperCase();
+    const m = s.match(/\b([A-Z0-9]{10})\b/i);
+    return m ? m[1].toUpperCase() : null;
+  }
+
+  function money(raw) {
+    const n = parseFloat(String(raw || '').replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function rowToProduct(row, i) {
+    const orderId = pick(row, ['order id', 'order number', 'order #']) || `CSV-${i + 1}`;
+    const asin = extractAsin(pick(row, ['asin', 'asin/isbn', 'asin isbn', 'isbn']));
+    const title = pick(row, ['title', 'product name', 'product title', 'item name', 'description'])
+      || (asin ? `Amazon product ${asin}` : `Item ${i + 1}`);
+    const paid = money(pick(row, ['item total', 'total owed', 'unit price', 'purchase price', 'price', 'shipment item subtotal']));
+    const productUrl = asin ? `https://www.amazon.com/dp/${asin}` : (pick(row, ['product url', 'url', 'link']) || null);
+    const suggest = Math.max(1, Math.round(paid * 0.8 * 100) / 100);
+    return {
+      orderId,
+      asin,
+      productTitle: title.slice(0, 200),
+      paidPrice: paid,
+      suggestedPrice: paid ? suggest : null,
+      productUrl,
+      orderDate: pick(row, ['order date', 'date', 'purchase date']) || '',
+    };
+  }
+
+  function importText(text, label) {
+    const rows = parseCsv(text);
+    const products = rows.map(rowToProduct).filter((p) => p.asin || (p.productTitle && !p.productTitle.startsWith('Item ')));
+    state.products = products;
+    state.index = 0;
+    document.getElementById('file-name').textContent = label || `${products.length} products`;
+    document.getElementById('after').classList.toggle('hidden', products.length === 0);
+    if (!products.length) {
+      toast('No products found — need Title and/or ASIN columns');
+      return;
+    }
+    renderAll();
+    toast(`Loaded ${products.length} products`);
+  }
+
+  function listingPack(p) {
+    const price = p.suggestedPrice != null ? `$${p.suggestedPrice.toFixed(2)}` : '(set price)';
+    return [
+      p.productTitle,
+      '',
+      `Asking: ${price}`,
+      p.paidPrice ? `(I paid about $${p.paidPrice.toFixed(2)})` : '',
+      '',
+      p.asin ? `ASIN: ${p.asin}` : '',
+      p.productUrl || '',
+      '',
+      'From my Amazon orders. Condition: as noted — ask questions before buying.',
+      'Local pickup / shipping as agreed. Thanks for looking!',
+    ].filter((line, idx, arr) => !(line === '' && arr[idx - 1] === '')).join('\n');
+  }
+
+  function renderAll() {
+    const n = state.products.length;
+    const withAsin = state.products.filter((p) => p.asin).length;
+    document.getElementById('n-total').textContent = n;
+    document.getElementById('n-asin').textContent = withAsin;
+    document.getElementById('n-left').textContent = Math.max(0, n - state.index - 1);
+    document.getElementById('n-idx').textContent = n ? `${state.index + 1}/${n}` : '—';
+
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = state.products.map((p, i) => `
+      <tr class="${i === state.index ? 'active' : ''}" data-i="${i}">
+        <td>${i + 1}</td>
+        <td>${esc(p.productTitle)}</td>
+        <td>${esc(p.asin || '—')}</td>
+        <td>${p.paidPrice ? '$' + p.paidPrice.toFixed(2) : '—'}</td>
+        <td>${p.productUrl ? `<a class="link" href="${esc(p.productUrl)}" target="_blank" rel="noopener">dp/${esc(p.asin)}</a>` : '—'}</td>
+      </tr>`).join('');
+
+    tbody.querySelectorAll('tr').forEach((tr) => {
+      tr.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') return;
+        state.index = Number(tr.dataset.i);
+        renderCurrent();
+        renderAll();
+      });
+    });
+
+    renderCurrent();
+  }
+
+  function renderCurrent() {
+    const p = state.products[state.index];
+    const box = document.getElementById('current');
+    if (!p) {
+      box.innerHTML = '';
+      document.getElementById('pack').value = '';
+      return;
+    }
+    document.getElementById('n-left').textContent = Math.max(0, state.products.length - state.index - 1);
+    document.getElementById('n-idx').textContent = `${state.index + 1}/${state.products.length}`;
+    box.innerHTML = `
+      <div class="product">
+        <div class="ph">Open Amazon<br>for photos</div>
+        <div>
+          <h3>${esc(p.productTitle)}</h3>
+          <div class="meta">
+            Order ${esc(p.orderId)}
+            ${p.asin ? ' · ASIN ' + esc(p.asin) : ''}
+            ${p.orderDate ? ' · ' + esc(p.orderDate) : ''}
+            ${p.paidPrice ? ' · paid $' + p.paidPrice.toFixed(2) : ''}
+            ${p.suggestedPrice != null ? ' · suggest $' + p.suggestedPrice.toFixed(2) : ''}
+          </div>
+          ${p.productUrl ? `<a class="link" href="${esc(p.productUrl)}" target="_blank" rel="noopener">${esc(p.productUrl)}</a>` : '<span style="color:var(--warn)">No ASIN — add product link manually</span>'}
+          <p style="margin-top:8px;font-size:0.8rem;color:var(--mist);">
+            Photos: open the product page (link above) and save 3–5 Amazon images for your Marketplace listing.
+            This page does not store your CSV on a server.
+          </p>
+        </div>
+      </div>`;
+    document.getElementById('pack').value = listingPack(p);
+  }
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  const drop = document.getElementById('drop');
+  const fileInput = document.getElementById('file');
+
+  ['dragenter', 'dragover'].forEach((ev) => {
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach((ev) => {
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('drag'); });
+  });
+  drop.addEventListener('drop', (e) => {
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) readFile(fileInput.files[0]);
+  });
+
+  function readFile(f) {
+    const reader = new FileReader();
+    reader.onload = () => importText(String(reader.result || ''), f.name);
+    reader.onerror = () => toast('Could not read file');
+    reader.readAsText(f);
+  }
+
+  document.getElementById('btn-demo').onclick = () => {
+    const sample = [
+      'Order ID,Order Date,Title,ASIN,Unit Price,Quantity',
+      '112-1111111-2222222,2026-01-10,Example Kitchen Blender,B08C4KWM9T,39.99,1',
+      '112-3333333-4444444,2026-01-12,Example LED Desk Lamp,B09ABCDEF1,18.50,1',
+      '112-5555555-6666666,2026-01-14,Example Yoga Mat,B07XYZ1234,22.00,1',
+    ].join('\n');
+    importText(sample, 'sample.csv');
+  };
+
+  document.getElementById('btn-next').onclick = () => {
+    if (state.index < state.products.length - 1) {
+      state.index++;
+      renderAll();
+    } else toast('End of list');
+  };
+  document.getElementById('btn-prev').onclick = () => {
+    if (state.index > 0) {
+      state.index--;
+      renderAll();
+    }
+  };
+  document.getElementById('btn-open').onclick = () => {
+    const p = state.products[state.index];
+    if (p && p.productUrl) window.open(p.productUrl, '_blank', 'noopener');
+    else toast('No product URL');
+  };
+  document.getElementById('btn-copy').onclick = async () => {
+    const text = document.getElementById('pack').value;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Listing pack copied');
+    } catch {
+      document.getElementById('pack').select();
+      toast('Select text and copy (Ctrl+C)');
+    }
+  };
+})();
+  </script>
+</body>
+</html>
