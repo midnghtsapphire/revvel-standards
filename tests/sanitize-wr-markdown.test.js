@@ -109,9 +109,16 @@ test("CLI rewrites a dirty file in place and leaves a clean file untouched", () 
   }
 });
 
-test("sanitized output passes markdownlint on the original failure pattern", () => {
+test("sanitized output passes markdownlint on the original failure pattern", (t) => {
   // Reproduces the exact finding set from issue #15604 (MD012/MD025/MD049),
   // then asserts markdownlint-cli2 reports the sanitized file clean.
+  // Requires the repo devDependency markdownlint-cli2 to be installed
+  // (`npm ci`); skips gracefully when it is not available.
+  const repoRoot = path.join(__dirname, "..");
+  if (!fs.existsSync(path.join(repoRoot, "node_modules", "markdownlint-cli2"))) {
+    t.skip("markdownlint-cli2 not installed (run npm ci)");
+    return;
+  }
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sanitize-wr-lint-"));
   const file = path.join(dir, "wr.md");
   try {
@@ -131,7 +138,6 @@ test("sanitized output passes markdownlint on the original failure pattern", () 
     fs.writeFileSync(file, dirty, "utf8");
     spawnSync(process.execPath, [SCRIPT, file], { encoding: "utf8" });
 
-    const repoRoot = path.join(__dirname, "..");
     const lint = spawnSync(
       "npx",
       ["--no-install", "markdownlint-cli2", "--config", path.join(repoRoot, ".markdownlint.jsonc"), file],

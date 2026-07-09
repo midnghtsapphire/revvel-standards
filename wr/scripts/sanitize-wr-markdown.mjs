@@ -27,6 +27,7 @@
 // Usage: node sanitize-wr-markdown.mjs <file.md> [more.md ...]   (rewrites in place)
 
 import fs from "node:fs";
+import { pathToFileURL } from "node:url";
 
 const FENCE_RE = /^(\s*)(`{3,}|~{3,})/;
 
@@ -116,7 +117,7 @@ export function sanitizeWrMarkdown(text) {
 
 // ---- CLI ----
 const invokedDirectly =
-  process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (invokedDirectly) {
   const files = process.argv.slice(2);

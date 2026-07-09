@@ -151,8 +151,11 @@ fi
 
 # ---- Sanitize markdown before the gates (MD012/MD025/MD049; issue #15604) ----
 # Pasted bodies carry extra H1s, double blank lines, and asterisk emphasis that
-# fail the CircleCI changed-Markdown gate. Conditional so sandboxed copies of
-# this script (tests) still work without the sanitizer alongside.
+# fail the CircleCI changed-Markdown gate. $HERE is this script's wr/ directory
+# (resolved at the top of this file), so the sanitizer lives at
+# $HERE/scripts/sanitize-wr-markdown.mjs — same layout wr-lint.mjs uses below.
+# Conditional so sandboxed copies of this script (tests) still work without
+# the sanitizer alongside.
 if command -v node >/dev/null && [[ -f "$HERE/scripts/sanitize-wr-markdown.mjs" ]]; then
   node "$HERE/scripts/sanitize-wr-markdown.mjs" "$DEST"
 fi
