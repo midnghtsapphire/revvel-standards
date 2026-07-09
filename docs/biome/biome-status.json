@@ -1,31 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-09T19:33:00.158Z",
+  "generated_at": "2026-07-09T20:34:57.592Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 29048363886,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29048363886",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29045232965,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29045232965",
+            "conclusion": "failure"
+          },
+          {
             "id": 29041734523,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29041734523",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29041660494,
-            "name": "WR PR Creation",
-            "path": ".github/workflows/wr-pr-creation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29041660494",
             "conclusion": "failure"
           }
         ],
