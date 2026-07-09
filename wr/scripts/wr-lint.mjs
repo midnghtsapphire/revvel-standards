@@ -75,6 +75,21 @@ const NO_RESPONSE = /(^|[^A-Za-z0-9])_No response_(?=[^A-Za-z0-9]|$)/i;
 // Bracket placeholders the full template leaves behind.
 const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
 
+// Deferral placeholders: phrases that indicate an agent stopped researching instead of filling content.
+// Forbidden in all WR docs — agents must loop until sections are filled or open a [WR-BLOCKER] issue.
+// Policy reference: wr/lint-rules/no-pending-placeholders.md
+const DEFERRAL_PLACEHOLDERS = [
+  { re: /N\/A\s*[—\-]\s*pending\s+Jules\s+refinement/i, label: "N/A — pending Jules refinement" },
+  { re: /N\/A\s*[—\-]\s*pending\s+human\s+review/i,     label: "N/A — pending human review" },
+  { re: /\bpending\s+refinement\b/i,                     label: "pending refinement" },
+  { re: /\bTBD\b/,                                       label: "TBD" },
+  { re: /\bTODO\b/,                                      label: "TODO" },
+  // _No response_ is also caught by NO_RESPONSE / rule 7 (false-completion with checked items);
+  // including it here as well gives a standalone rule-12 error even when no checklist is checked.
+  // Dual detection is intentional: rule 7 catches the combination, rule 12 catches it alone.
+  { re: NO_RESPONSE,                                     label: "_No response_" },
+];
+
 function lintFile(path) {
   const text = fs.readFileSync(path, "utf8");
   const lines = text.split("\n");
@@ -171,6 +186,8 @@ function lintFile(path) {
     /\[Fix\]/i,
     // Blank issue-form fields rendered as "_No response_" (issue #15080).
     NO_RESPONSE,
+    // Deferral placeholders (rule 12 / no-pending-placeholders.md).
+    ...DEFERRAL_PLACEHOLDERS.map(({ re }) => re),
   ];
   const hasAnyForbidden = lines.some((l, i) => {
     if (inFence[i]) return false;
@@ -261,6 +278,22 @@ function lintFile(path) {
       `line ${disabledBlockStart}: REVVEL-DISABLED block opened but never closed with REVVEL-DISABLED-END`
     );
   }
+
+  // 12. Deferral placeholders: phrases agents must never leave in a final WR doc.
+  // "N/A — pending Jules refinement", "pending human review", "pending refinement",
+  // "TBD", "TODO", "_No response_" all signal that an agent stopped instead of
+  // researching. Fill the section or open a [WR-BLOCKER] issue with the specific gap.
+  // Skips fenced code blocks (examples/snippets are OK).
+  // Policy: wr/lint-rules/no-pending-placeholders.md
+  lines.forEach((l, i) => {
+    if (inFence[i]) return;
+    for (const { re, label } of DEFERRAL_PLACEHOLDERS) {
+      if (re.test(l)) {
+        issues.push(`line ${i + 1}: deferral placeholder "${label}" — fill the section or open a [WR-BLOCKER] issue; see wr/lint-rules/no-pending-placeholders.md`);
+        break; // one issue per line keeps output readable; first matched pattern is reported
+      }
+    }
+  });
 
   return issues;
 }
