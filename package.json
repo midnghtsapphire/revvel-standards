@@ -24,6 +24,8 @@
     "connections": "node scripts/connections-registry.js --markdown",
     "connections:html": "node scripts/connections-registry.js --html",
     "connections:drift": "node scripts/connections-registry.js --drift",
+    "secrets:map": "node scripts/secrets-map.js",
+    "secrets:map:check": "node scripts/secrets-map.js --check",
     "dashboard": "node scripts/dashboard-cli.js",
     "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
     "agent-creator:data": "node scripts/build-agent-creator-data.js",
