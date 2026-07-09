@@ -276,6 +276,34 @@ test('stuck-label-watchdog.yml reconciles awaiting-review from live approvals on
   }
 });
 
+test('stuck-label-watchdog.yml silently self-heals awaiting-review+approved first, escalates only on same-head recurrence', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  // A per-head-SHA hidden marker is how the watchdog remembers a prior silent repair.
+  if (!script.includes('watchdog-silent-repair:awaiting-review-approved:')) {
+    throw new Error('watchdog must record a per-head-SHA silent-repair marker for awaiting-review+approved');
+  }
+  if (!script.includes('alreadySilentlyRepaired')) {
+    throw new Error('watchdog must gate escalation on whether a silent repair already happened on this head SHA');
+  }
+  // First occurrence must NOT create noise: escalation (lifecycle:stuck / repair issue /
+  // visible comment) must be guarded behind the recurrence branch, not run unconditionally.
+  const conflictBlock = script.slice(
+    script.indexOf('const STALE_REVIEW_SYNONYMS'),
+    script.indexOf('// Fix: ready-to-merge without approved')
+  );
+  if (!conflictBlock.includes('if (!alreadySilentlyRepaired)')) {
+    throw new Error('watchdog must branch on !alreadySilentlyRepaired to keep the first self-heal silent');
+  }
+  const escalationIndex = conflictBlock.indexOf('openAgentRepairIssue');
+  const recurrenceGateIndex = conflictBlock.indexOf('alreadySilentlyRepaired');
+  if (escalationIndex === -1 || recurrenceGateIndex === -1 || escalationIndex < recurrenceGateIndex) {
+    throw new Error('watchdog must only open an agent repair issue after the recurrence gate for awaiting-review+approved');
+  }
+});
+
 test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
