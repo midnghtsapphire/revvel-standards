@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-08T23:25:36.039Z",
+  "generated_at": "2026-07-09T00:34:20.836Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 28982669945,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28982669945",
+            "id": 28985504856,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/28985504856",
             "conclusion": "failure"
           }
         ],
