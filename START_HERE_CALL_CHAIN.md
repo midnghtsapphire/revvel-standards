@@ -216,3 +216,11 @@ _Last intent: stop hunting folders; one root file for start → next. Detail liv
 
 That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
 
+
+---
+
+## Simple Marketplace Relister (Vercel — no local hoops)
+
+App code: `products/marketplace-relister`  
+Deploy as its **own** Vercel project (Root Directory = `products/marketplace-relister`).  
+Set `OPENROUTER_API_KEY` once in Vercel. Bookmark that app URL only.
