@@ -1,49 +1,49 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-09T07:05:26.182Z",
+  "generated_at": "2026-07-09T20:00:16.305Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 2,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
     "total": 6,
-    "running": 2,
-    "queued": 4,
+    "running": 1,
+    "queued": 5,
     "done": 0,
-    "healthy": 2,
+    "healthy": 1,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 2,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29000467133,
-      "name": "Stuck Label Detection & Auto-Progression",
-      "path": ".github/workflows/stuck-label-automation.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29000467133",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 12182,
-      "since_update_ms": 9182,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29000308084,
+      "id": 29046335631,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29000308084",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29046335631",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 199182,
-      "since_update_ms": 8182,
+      "age_ms": 10305,
+      "since_update_ms": 6305,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 29019751454,
+      "name": "OpenRouter Triage",
+      "path": ".github/workflows/openrouter-triage.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29019751454",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
     },
     {
       "id": 28985792766,
