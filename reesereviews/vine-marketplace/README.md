@@ -1,18 +1,25 @@
 # Vine → Marketplace
 
-Automated pipeline that reads **Amazon Vine** and paid order emails from `angelreporters@gmail.com`, extracts product data, and posts listings to **Facebook Marketplace** (via Meta Graph API) at **20% below your cost basis**.
+Automated pipeline that reads **Amazon Vine** and paid order emails (or **order history CSV**), extracts product data using **`lib/amazon-parser.js`**, builds **Amazon product links from ASIN** (no personal photos required), and prepares listing packs / optional Facebook Marketplace posts at **20% below your cost basis**.
+
+**Spine:** vine parse shape — every item is `{ orderId, asin, productTitle, imageUrl, productUrl, … }` whether it came from email or CSV.
 
 ## Features
 
 | Feature | Detail |
 |---|---|
 | 📬 Email ingestion | IMAP reader pulls Amazon shipped/delivered/Vine emails |
+| 📄 CSV import | Amazon order history CSV → same product records as email parse |
+| 🔗 Product links | ASIN → `https://www.amazon.com/dp/{ASIN}` (owner does not upload photos) |
+| 🖼 Image enrich | Prefer email CDN image; optional fetch of product-page gallery |
+| ▶ One-at-a-time | `GET /api/queue/next` for sequential review |
+| 📋 Listing pack | Title, description, 3–5 images, price — human posts to Marketplace |
 | 🔍 Smart parsing | Extracts product name, ASIN, price paid, Vine FMV, images |
 | 💲 Auto-pricing | 20% off cost basis; Vine items use 1099 FMV as cost |
-| 🚀 FB Marketplace | Posts via Meta Graph API (Page Post or Commerce Catalog) |
+| 🚀 FB Marketplace | Optional Meta Graph API (Page Post or Commerce Catalog) |
 | 📦 Inventory tracking | JSON file tracks all products, listing status, sold status |
 | 🔄 Repost scheduler | Auto-refreshes stale listings after N days |
-| 📊 Dashboard UI | Glassmorphism dark UI — date range, queue review, mark sold |
+| 📊 Dashboard UI | Glassmorphism dark UI — CSV upload, queue, date range, mark sold |
 | ⏰ Cron automation | Runs silently 3× daily; repost check every Monday |
 
 ---
@@ -48,6 +55,9 @@ npm start
 # Fetch and ingest Amazon emails
 node index.js fetch
 
+# Import Amazon order history CSV (Account → order reports — human download)
+node index.js import-csv ./orders.csv
+
 # Post all unlisted products to Facebook (add --dry-run to preview)
 node index.js post
 node index.js post --dry-run
@@ -58,6 +68,27 @@ node index.js repost
 # Print inventory summary
 node index.js summary
 ```
+
+### 5. CSV / queue API (no personal photos)
+
+```bash
+# Import CSV (JSON body)
+curl -s -X POST http://localhost:3030/api/import/csv \
+  -H "Content-Type: application/json" \
+  -d "{\"csv\": \"$(cat orders.csv | sed 's/\"/\\\"/g')\"}"
+
+# Next unlisted item + try to pull product images from Amazon page
+curl -s "http://localhost:3030/api/queue/next?enrich=1" | jq .
+
+# Listing pack for copy-paste to Marketplace
+curl -s "http://localhost:3030/api/products/ORDER-ID/listing-pack" | jq .
+```
+
+### 6. Vercel
+
+Root directory for deploy: `reesereviews/vine-marketplace`  
+Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephemeral unless you add a DB later).
+
 
 ---
 

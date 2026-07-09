@@ -9,9 +9,42 @@
  *   2. "Your order has been delivered" — marks item as received
  *   3. "Amazon Vine — Your product has arrived" — marks as Vine + captures FMV if present
  *   4. "Amazon Vine — Product Received" — alternate Vine confirmation template
+ *
+ * Shared product identity (also used by CSV import):
+ *   ASIN → productUrl = https://www.amazon.com/dp/{ASIN}
+ *   imageUrl from email/Amazon CDN when present (owner does not supply photos)
  */
 
 'use strict';
+
+/** Build the canonical Amazon product page URL from an ASIN. */
+function productUrlFromAsin(asin, marketplace = 'www.amazon.com') {
+  if (!asin || typeof asin !== 'string') return null;
+  const clean = asin.trim().toUpperCase();
+  if (!/^[A-Z0-9]{10}$/.test(clean)) return null;
+  const host = marketplace.replace(/^https?:\/\//, '').replace(/\/$/, '') || 'www.amazon.com';
+  return `https://${host}/dp/${clean}`;
+}
+
+/** True when value looks like a 10-char ASIN. */
+function isValidAsin(asin) {
+  return typeof asin === 'string' && /^[A-Z0-9]{10}$/i.test(asin.trim());
+}
+
+/**
+ * Fill productUrl (and keep imageUrl) on any product-shaped record.
+ * Safe to call repeatedly — does not overwrite a non-empty productUrl.
+ */
+function attachProductLink(product, marketplace = 'www.amazon.com') {
+  if (!product || typeof product !== 'object') return product;
+  const asin = product.asin ? String(product.asin).trim().toUpperCase() : null;
+  const url = productUrlFromAsin(asin, marketplace);
+  return {
+    ...product,
+    asin: asin || product.asin || null,
+    productUrl: product.productUrl || url,
+  };
+}
 
 // Regex patterns for extracting data from Amazon email bodies
 const PATTERNS = {
@@ -111,18 +144,22 @@ function parseAmazonEmail(mail) {
   const deliveryDate = deliveryDateStr ? new Date(deliveryDateStr).toISOString() : null;
 
   const isVine = emailType === 'vine';
+  const asinClean = asin ? asin.toUpperCase() : null;
 
-  return {
+  return attachProductLink({
     orderId: orderId || `UNKNOWN-${Date.now()}`,
-    asin: asin || null,
+    asin: asinClean,
     productTitle: productTitle.substring(0, 200),
     paidPrice,
     vineTaxValue,
     isVine,
     imageUrl: imageUrl || null,
+    productUrl: productUrlFromAsin(asinClean),
+    imageUrls: imageUrl ? [imageUrl] : [],
     trackingNumber: tracking || null,
     deliveryDate: deliveryDate || (emailType === 'delivered' ? new Date().toISOString() : null),
     emailType,
+    source: 'email',
     receivedAt: new Date().toISOString(),
     subject,
     // Listing fields populated later
@@ -133,7 +170,14 @@ function parseAmazonEmail(mail) {
     listedAt: null,
     soldAt: null,
     soldPrice: null,
-  };
+  });
 }
 
-module.exports = { parseAmazonEmail, detectEmailType };
+module.exports = {
+  parseAmazonEmail,
+  detectEmailType,
+  productUrlFromAsin,
+  isValidAsin,
+  attachProductLink,
+  PATTERNS,
+};

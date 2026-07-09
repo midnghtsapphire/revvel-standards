@@ -18,9 +18,11 @@ const cron = require('node-cron');
 const path = require('path');
 
 const { fetchEmails, filterAmazonEmails } = require('./lib/gmail-reader');
-const { parseAmazonEmail } = require('./lib/amazon-parser');
+const { parseAmazonEmail, attachProductLink } = require('./lib/amazon-parser');
 const { calculateListingPrice, formatUSD } = require('./lib/price-calculator');
 const { postProduct, repostProduct } = require('./lib/facebook-poster');
+const { importOrderCsv } = require('./lib/csv-import');
+const { enrichProduct, buildListingPack } = require('./lib/product-link');
 const inventory = require('./lib/inventory');
 const rfy = require('./lib/rfy-tracker');
 
@@ -137,7 +139,8 @@ async function repostStale({ dryRun = false } = {}) {
 // ─────────────────────────────────────────────
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '8mb' }));
+app.use(express.text({ type: ['text/csv', 'text/plain'], limit: '8mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Health check
@@ -190,6 +193,93 @@ app.post('/api/fetch', async (req, res) => {
       before: before ? new Date(before) : null,
     });
     res.json({ ingested: products.length, products });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── CSV import (Amazon order history) → same product shape as vine parse ──
+// Body: raw CSV text (Content-Type: text/csv) OR JSON { csv: "..." }
+app.post('/api/import/csv', (req, res) => {
+  try {
+    const csvText =
+      typeof req.body === 'string'
+        ? req.body
+        : req.body && req.body.csv != null
+          ? req.body.csv
+          : '';
+    if (!csvText || !String(csvText).trim()) {
+      return res.status(400).json({ error: 'Provide CSV as text body or JSON { csv: "..." }' });
+    }
+    const result = importOrderCsv(csvText);
+    const stored = [];
+    for (const p of result.products) {
+      inventory.upsert(p);
+      stored.push(p);
+    }
+    res.json({
+      ingested: stored.length,
+      skipped: result.skipped,
+      errors: result.errors,
+      headers: result.headers,
+      products: stored,
+      note: 'ASIN → productUrl attached. Run enrich for product-page images. No personal photos required.',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// One-at-a-time queue: next unlisted product (optional enrich)
+app.get('/api/queue/next', async (req, res) => {
+  try {
+    const doEnrich = req.query.enrich === '1' || req.query.enrich === 'true';
+    const unlisted = inventory.getUnlisted();
+    if (unlisted.length === 0) {
+      return res.json({ product: null, remaining: 0 });
+    }
+    let product = attachProductLink(unlisted[0]);
+    let enrichMeta = null;
+    if (doEnrich) {
+      const r = await enrichProduct(product, { fetchImages: true });
+      product = r.product;
+      inventory.upsert(product);
+      enrichMeta = { reason: r.reason, fetchError: r.fetchError || null, imageCount: (r.imageUrls || []).length };
+    }
+    res.json({
+      product,
+      remaining: unlisted.length,
+      enrich: enrichMeta,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Enrich one product: productUrl + images from Amazon product page (when fetchable)
+app.post('/api/products/:orderId/enrich', async (req, res) => {
+  try {
+    const existing = inventory.getByOrderId(req.params.orderId);
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+    const r = await enrichProduct(existing, {
+      fetchImages: req.body?.fetchImages !== false,
+    });
+    inventory.upsert(r.product);
+    res.json(r);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Listing pack for marketplace copy-paste (human posts)
+app.get('/api/products/:orderId/listing-pack', (req, res) => {
+  try {
+    const existing = inventory.getByOrderId(req.params.orderId);
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+    const product = attachProductLink(existing);
+    const pricing = calculateListingPrice(product);
+    const pack = buildListingPack(product, pricing);
+    res.json(pack);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -362,36 +452,70 @@ function startScheduler() {
 }
 
 // ─────────────────────────────────────────────
-//  CLI entry point
+//  CLI / local server entry (not when required by Vercel)
 // ─────────────────────────────────────────────
 
-const CLI_COMMAND = process.argv[2];
+function main() {
+  const CLI_COMMAND = process.argv[2];
 
-if (CLI_COMMAND === 'fetch') {
-  fetchAndIngest()
-    .then((p) => { console.log(`Ingested ${p.length} products.`); process.exit(0); })
-    .catch((err) => { console.error(err.message); process.exit(1); });
-} else if (CLI_COMMAND === 'post') {
-  postUnlisted({ dryRun: process.argv[3] === '--dry-run' })
-    .then((r) => { console.log(JSON.stringify(r, null, 2)); process.exit(0); })
-    .catch((err) => { console.error(err.message); process.exit(1); });
-} else if (CLI_COMMAND === 'repost') {
-  repostStale({ dryRun: process.argv[3] === '--dry-run' })
-    .then((r) => { console.log(JSON.stringify(r, null, 2)); process.exit(0); })
-    .catch((err) => { console.error(err.message); process.exit(1); });
-} else if (CLI_COMMAND === 'summary') {
-  console.log(JSON.stringify(inventory.getSummary(), null, 2));
-  process.exit(0);
-} else if (CLI_COMMAND === 'rfy') {
-  console.log(JSON.stringify(rfy.getSummary(), null, 2));
-  process.exit(0);
-} else {
-  // Server mode
+  if (CLI_COMMAND === 'fetch') {
+    return fetchAndIngest()
+      .then((p) => { console.log(`Ingested ${p.length} products.`); process.exit(0); })
+      .catch((err) => { console.error(err.message); process.exit(1); });
+  }
+  if (CLI_COMMAND === 'post') {
+    return postUnlisted({ dryRun: process.argv[3] === '--dry-run' })
+      .then((r) => { console.log(JSON.stringify(r, null, 2)); process.exit(0); })
+      .catch((err) => { console.error(err.message); process.exit(1); });
+  }
+  if (CLI_COMMAND === 'repost') {
+    return repostStale({ dryRun: process.argv[3] === '--dry-run' })
+      .then((r) => { console.log(JSON.stringify(r, null, 2)); process.exit(0); })
+      .catch((err) => { console.error(err.message); process.exit(1); });
+  }
+  if (CLI_COMMAND === 'summary') {
+    console.log(JSON.stringify(inventory.getSummary(), null, 2));
+    process.exit(0);
+    return;
+  }
+  if (CLI_COMMAND === 'rfy') {
+    console.log(JSON.stringify(rfy.getSummary(), null, 2));
+    process.exit(0);
+    return;
+  }
+  if (CLI_COMMAND === 'import-csv') {
+    const fs = require('fs');
+    const file = process.argv[3];
+    if (!file) {
+      console.error('Usage: node index.js import-csv <path-to-orders.csv>');
+      process.exit(1);
+      return;
+    }
+    const { importOrderCsv: imp } = require('./lib/csv-import');
+    const result = imp(fs.readFileSync(file, 'utf8'));
+    result.products.forEach((p) => inventory.upsert(p));
+    console.log(JSON.stringify({ ingested: result.products.length, skipped: result.skipped, errors: result.errors }, null, 2));
+    process.exit(0);
+    return;
+  }
+
+  // Local server mode
   app.listen(PORT, () => {
     console.log(`\n🛒  Vine → Marketplace Dashboard`);
-    console.log(`   http://localhost:${PORT}\n`);
+    console.log(`   http://localhost:${PORT}`);
+    console.log(`   CSV: POST /api/import/csv  |  Next: GET /api/queue/next?enrich=1\n`);
     startScheduler();
   });
 }
 
-module.exports = { fetchAndIngest, listProduct, postUnlisted, repostStale };
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  app,
+  fetchAndIngest,
+  listProduct,
+  postUnlisted,
+  repostStale,
+};

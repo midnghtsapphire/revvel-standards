@@ -257,6 +257,39 @@
     <button class="btn btn-primary" onclick="postSelected()" id="btn-post">🚀 Post to Marketplace</button>
   </div>
 
+  <!-- CSV import + one-at-a-time queue (no personal photos — ASIN → Amazon product link/images) -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">Orders CSV → product links (vine-parser shape)</div>
+      <div style="font-size:12px;color:var(--mist);">No photos from you — ASIN builds amazon.com/dp/… then we pull product images</div>
+    </div>
+    <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">
+      <div class="field" style="flex:1;min-width:220px;">
+        <label>Amazon order history CSV</label>
+        <input type="file" id="csv-file" accept=".csv,text/csv" style="color:var(--mist);font-size:12px;">
+      </div>
+      <button class="btn btn-primary" onclick="importCsv()" id="btn-csv">⬆ Import CSV</button>
+      <button class="btn btn-ghost" onclick="queueNext(true)" id="btn-next">▶ Next item (enrich images)</button>
+      <button class="btn btn-ghost" onclick="queueNext(false)">▶ Next (link only)</button>
+    </div>
+    <div id="queue-panel" style="display:none;padding:0 18px 18px;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;background:rgba(0,0,0,.25);border-radius:12px;padding:14px;border:1px solid var(--border);">
+        <img id="queue-img" class="thumb" style="width:96px;height:96px;object-fit:contain;background:#fff;border-radius:10px;" alt="">
+        <div style="flex:1;min-width:200px;">
+          <div id="queue-title" style="font-weight:600;margin-bottom:6px;"></div>
+          <div id="queue-meta" style="font-size:12px;color:var(--mist);margin-bottom:8px;"></div>
+          <div id="queue-images" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <a id="queue-link" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">Open product page</a>
+            <button class="btn btn-sm btn-primary" onclick="showListingPack()">Listing pack (copy)</button>
+            <button class="btn btn-sm btn-success" onclick="enrichCurrent()">Re-fetch images</button>
+          </div>
+          <pre id="queue-pack" style="display:none;margin-top:12px;font-size:11px;white-space:pre-wrap;color:var(--mist);max-height:220px;overflow:auto;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Log pane -->
   <div id="log-pane"></div>
 
@@ -508,6 +541,147 @@ async function fetchEmails() {
     toast('Fetch failed: ' + e.message);
   } finally {
     btn.disabled = false;
+  }
+}
+
+// ── CSV import + one-at-a-time queue ───────────────────────────────────────
+let currentQueueProduct = null;
+
+async function importCsv() {
+  const input = document.getElementById('csv-file');
+  const btn = document.getElementById('btn-csv');
+  if (!input.files || !input.files[0]) {
+    toast('Choose an Amazon orders CSV file first');
+    return;
+  }
+  btn.disabled = true;
+  log('Importing order CSV…', 'log-info');
+  try {
+    const text = await input.files[0].text();
+    const r = await fetch(`${API}/import/csv`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv: text }),
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    log(`✅ CSV ingested ${data.ingested} (skipped ${data.skipped})`, 'log-ok');
+    toast(`Imported ${data.ingested} products from CSV`);
+    await loadSummary();
+    await loadProducts();
+  } catch (e) {
+    log('❌ CSV: ' + e.message, 'log-err');
+    toast('CSV import failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderQueueProduct(product, remaining, enrichMeta) {
+  currentQueueProduct = product;
+  const panel = document.getElementById('queue-panel');
+  panel.style.display = 'block';
+  document.getElementById('queue-title').textContent = product.productTitle || '(no title)';
+  const bits = [
+    product.asin ? `ASIN ${product.asin}` : 'no ASIN',
+    product.productUrl || '',
+    remaining != null ? `${remaining} left in queue` : '',
+    enrichMeta && enrichMeta.reason ? `enrich: ${enrichMeta.reason}` : '',
+  ].filter(Boolean);
+  document.getElementById('queue-meta').textContent = bits.join(' · ');
+  const img = document.getElementById('queue-img');
+  const imgs = product.imageUrls && product.imageUrls.length
+    ? product.imageUrls
+    : product.imageUrl
+      ? [product.imageUrl]
+      : [];
+  if (imgs[0]) {
+    img.src = imgs[0];
+    img.style.display = 'block';
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+  }
+  const strip = document.getElementById('queue-images');
+  strip.innerHTML = imgs.slice(0, 5).map((u) =>
+    `<img src="${escHtml(u)}" class="thumb" style="width:56px;height:56px;object-fit:contain;background:#fff;" alt="">`
+  ).join('') || '<span style="color:var(--mist);font-size:12px;">No images yet — open product page or re-fetch</span>';
+  const link = document.getElementById('queue-link');
+  if (product.productUrl) {
+    link.href = product.productUrl;
+    link.style.display = 'inline-flex';
+  } else {
+    link.removeAttribute('href');
+    link.style.display = 'none';
+  }
+  document.getElementById('queue-pack').style.display = 'none';
+}
+
+async function queueNext(enrich) {
+  log(enrich ? 'Next item + enrich images…' : 'Next item (link only)…', 'log-info');
+  try {
+    const r = await fetch(`${API}/queue/next?enrich=${enrich ? '1' : '0'}`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.product) {
+      toast('Queue empty — import CSV or fetch emails');
+      document.getElementById('queue-panel').style.display = 'none';
+      currentQueueProduct = null;
+      return;
+    }
+    renderQueueProduct(data.product, data.remaining, data.enrich);
+    log(`▶ ${data.product.productTitle?.substring(0, 60)} (${data.remaining} in queue)`, 'log-ok');
+    toast(`Queue: ${data.remaining} remaining`);
+  } catch (e) {
+    log('❌ Queue: ' + e.message, 'log-err');
+    toast(e.message);
+  }
+}
+
+async function enrichCurrent() {
+  if (!currentQueueProduct) return toast('Load next item first');
+  try {
+    const r = await fetch(`${API}/products/${encodeURIComponent(currentQueueProduct.orderId)}/enrich`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fetchImages: true }),
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    renderQueueProduct(data.product, null, { reason: data.reason });
+    toast(data.fetchError ? `Partial: ${data.fetchError}` : `Images: ${(data.imageUrls || []).length}`);
+  } catch (e) {
+    toast(e.message);
+  }
+}
+
+async function showListingPack() {
+  if (!currentQueueProduct) return toast('Load next item first');
+  try {
+    const r = await fetch(`${API}/products/${encodeURIComponent(currentQueueProduct.orderId)}/listing-pack`);
+    const pack = await r.json();
+    if (pack.error) throw new Error(pack.error);
+    const el = document.getElementById('queue-pack');
+    el.style.display = 'block';
+    el.textContent = [
+      pack.title,
+      '',
+      `Price: $${pack.suggestedPrice ?? '?'}`,
+      pack.productUrl || '',
+      '',
+      pack.description,
+      '',
+      `Images (${pack.imageCount}):`,
+      ...(pack.selectedImages || []),
+    ].join('\n');
+    try {
+      await navigator.clipboard.writeText(el.textContent);
+      toast('Listing pack copied to clipboard');
+    } catch {
+      toast('Listing pack ready (copy manually)');
+    }
+  } catch (e) {
+    toast(e.message);
   }
 }
 
