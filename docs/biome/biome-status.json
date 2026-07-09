@@ -1,38 +1,87 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-09T20:34:57.592Z",
+  "generated_at": "2026-07-09T21:30:42.724Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "92/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 92,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29048363886,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29048363886",
+            "id": 29051597395,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051597395",
             "conclusion": "failure"
           },
           {
-            "id": 29045232965,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29045232965",
+            "id": 29051590941,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051590941",
             "conclusion": "failure"
           },
           {
-            "id": 29041734523,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29041734523",
+            "id": 29051588487,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051588487",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051588392,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051588392",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051584703,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051584703",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051584305,
+            "name": "OpenRouter Assignee — First Line of Sight",
+            "path": ".github/workflows/openrouter-assignee.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051584305",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051580067,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051580067",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051579717,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051579717",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051579564,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051579564",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29051568775,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29051568775",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +107,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29043971190"
+        "last_run": null
       }
     },
     "sheaf": {
