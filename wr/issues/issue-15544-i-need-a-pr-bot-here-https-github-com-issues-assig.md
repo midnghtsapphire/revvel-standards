@@ -1,4 +1,4 @@
-# WR: [WR] I need a PR bot here: https://github.com/issues/assigned?issue=midnghtsapphire
+# WR: [WR] I need a PR bot here: <https://github.com/issues/assigned?issue=midnghtsapphire>
 
 **Issue:** #15544  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -8,7 +8,6 @@
 **WR Status:** 🟡 In Progress
 
 ---
-
 
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
@@ -130,7 +129,7 @@ _No response_
 <!-- revvel-research-findings -->
 Source packet: `docs/research-engine/run-28965709802.md`
 
-# WR-Ready Research Packet: PR Bot Implementation
+## WR-Ready Research Packet: PR Bot Implementation
 
 ## 1. Executive Decision
 
@@ -309,11 +308,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check for repository URL
+        env:
+          # Pass untrusted issue body via env, never interpolate into the script
+          # (CLAUDE.md gotcha #4 — command-injection vector).
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          if [[ ! "${{ github.event.issue.body }}" =~ github\.com/[^/]+/[^/]+ ]]; then
-            gh issue comment ${{ github.event.issue.number }} \
+          if [[ ! "$ISSUE_BODY" =~ github\.com/[^/]+/[^/]+ ]]; then
+            gh issue comment "$ISSUE_NUMBER" \
               --body "❌ Invalid repository URL. Please provide: https://github.com/owner/repo"
-            gh issue edit ${{ github.event.issue.number }} \
+            gh issue edit "$ISSUE_NUMBER" \
               --add-label "blocked-invalid-url,needs-clarification"
           fi
 ```

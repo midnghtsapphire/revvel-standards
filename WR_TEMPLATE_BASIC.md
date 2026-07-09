@@ -10,7 +10,8 @@
 ## Title
 
 <!-- One-line summary of what you want. Be specific. -->
-<!-- Example: "Add Polar.sh checkout button to OSINT tool landing page" -->
+<!-- REQUIRED: Start the title with [WR] so automation routes it correctly. -->
+<!-- Example: "[WR] Add Polar.sh checkout button to OSINT tool landing page" -->
 
 
 

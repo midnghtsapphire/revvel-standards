@@ -83,20 +83,28 @@ function marker(owner, repo) {
   return `fleet-maintenance:${owner}/${repo}`;
 }
 
-function hasOpenWorkRequest(centralRepo, owner, repo) {
+function hasOpenWorkRequest(centralRepo, owner, repo, ghRunner = gh) {
+  const searchMarker = marker(owner, repo);
   try {
-    const raw = gh([
+    const raw = ghRunner([
       "issue", "list", "--repo", centralRepo,
-      "--state", "open", "--search", marker(owner, repo), "--json", "number",
+      "--state", "open", "--search", searchMarker, "--json", "number",
     ]);
-    return JSON.parse(raw || "[]").length > 0;
-  } catch {
-    return false;
+    const issues = JSON.parse(raw || "[]");
+    if (!Array.isArray(issues)) {
+      throw new Error(`expected an array, got ${typeof issues}`);
+    }
+    return issues.length > 0;
+  } catch (err) {
+    throw new Error(
+      `Unable to verify open fleet Work Requests for ${owner}/${repo} in ${centralRepo} ` +
+      `(${searchMarker}); refusing to file a duplicate. ${err.message}`
+    );
   }
 }
 
-function fileWorkRequest(centralRepo, owner, repo, dryRun) {
-  if (hasOpenWorkRequest(centralRepo, owner, repo)) {
+function fileWorkRequest(centralRepo, owner, repo, dryRun, ghRunner = gh) {
+  if (hasOpenWorkRequest(centralRepo, owner, repo, ghRunner)) {
     console.log(`• ${repo}: open fleet Work Request already exists — skipping.`);
     return false;
   }
@@ -129,7 +137,7 @@ function fileWorkRequest(centralRepo, owner, repo, dryRun) {
 
   const tmp = `/tmp/fleet-wr-${repo}.md`;
   fs.writeFileSync(tmp, body);
-  const out = gh([
+  const out = ghRunner([
     "issue", "create", "--repo", centralRepo,
     "--title", title, "--body-file", tmp,
     "--label", "work-request", "--label", "openrouter",
@@ -180,4 +188,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { selectRepos, isoWeek };
+module.exports = { selectRepos, isoWeek, hasOpenWorkRequest, fileWorkRequest, marker };
