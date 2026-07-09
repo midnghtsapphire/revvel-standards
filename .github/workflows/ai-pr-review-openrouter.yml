@@ -44,7 +44,7 @@ jobs:
         continue-on-error: true
         uses: maxlim0/AI-PR-Reviewer@v0.3
         env:
-          # Prefer ADMIN_GITHUB_TOKEN (PAT) — it has its own 5 k req/h bucket
+          # Prefer ADMIN_GITHUB_TOKEN (PAT) — it has its own 5k req/h bucket
           # that is NOT shared with the installation-scoped GITHUB_TOKEN pool.
           # Without this, concurrent workflows drain the shared pool and return
           # "403 API rate limit exceeded for installation".
