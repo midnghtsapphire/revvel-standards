@@ -1,33 +1,98 @@
 # Secrets Management — Workflow ↔ Secret Matrix
 
-> **Last audited:** 2026-05-01
-> **Source:** Gap analysis session ([link](https://app.OpenHands.ai/sessions/40f0ab04ae9b44459499712d0cc4dd2f))
-> **NEW:** 🛡️ Secret Persistence Guard now active — hourly monitoring & auto-recovery
+> **Last audited:** 2026-07-09
+> **Source:** Doppler decommission (wr/pending/12-secrets-sanity.md, issue #15516)
+> **Generated map:** see [`docs/SECRETS_MAP.md`](./SECRETS_MAP.md) — regenerated from the
+> workflows themselves (`npm run secrets:map`), so it cannot drift. Prefer it over the
+> hand-maintained tables below.
 
 This document maps every GitHub Actions workflow to the secrets it requires
 (excluding `GITHUB_TOKEN`, which is auto-provided). Use this to verify
 that all automations have the secrets they need to actually run.
 
+## ✍️ The ONE write path (read this first)
+
+**GitHub Actions repository secrets are the single store.** Doppler is
+decommissioned (owner decision 2026-07-08: "i dont want doppler"). To add or
+update a secret there is exactly one way:
+
+```bash
+gh secret set NAME --repo midnghtsapphire/revvel-standards
+# or: GitHub → repo Settings → Secrets and variables → Actions
+```
+
+Values additionally live in your desktop password manager (1Password/Bitwarden)
+as the human-side backup — see [`skills/credential-clerk/`](../skills/credential-clerk/SKILL.md)
+for the reconciliation skill. **No workflow may write, rotate, or delete
+secrets automatically.** The sync/rotation/auto-heal workflows that used to do
+this are disabled (headers in each file explain why):
+
+- `doppler-secrets-sync.yml`, `sync-secrets-to-repos.yml` — Doppler sync, retired
+- `secret-rotation-schedule.yml` — weekly auto-rotation, cron off for good
+- `secret-persistence-guard.yml`, `secrets-sentinel.yml` — "auto-recovery" that
+  restored stale Doppler values over good GitHub tokens, crons off
+- `secret-lifecycle.yml`, `credential-gatekeeper.yml`,
+  `gatekeeper-registry-drift.yml` — Doppler-backed lifecycle/provisioning,
+  auto-triggers off (manual dispatch kept for history)
+
+**Owner checklist to finish the decommission:**
+
+1. In Doppler's dashboard, disconnect the **GitHub sync integration** (prime
+   suspect for the daily secret deletions). Don't delete the project yet.
+2. Copy any values still only in Doppler into GitHub Actions secrets.
+3. Watch the presence ledger (`docs/secrets-ledger.json`) for 7 quiet days.
+4. Then delete the six `DOPPLER_*` GitHub secrets and the Doppler account, and
+   remove `DOPPLER_TOKEN` from the ledger `NAMES` list in
+   `secrets-backup-daily.yml` **at the same time**.
+
 ## 🛡️ Secret Protection & Monitoring
 
-**NEW as of 2026-05-01:** The repository now includes automated secret protection:
+- ✅ **Secrets Presence Ledger** (`.github/workflows/secrets-backup-daily.yml`)
+  - Daily record of secret **presence + peppered fingerprint** (never values)
+    in `docs/secrets-ledger.json`
+  - Shows exactly WHEN a secret vanished or was rotated
+  - Files one labeled `[SECRET-MISSING]` issue per disappearance
 
-- ✅ **Secret Persistence Guard** (`.github/workflows/secret-persistence-guard.yml`)
-  - Blocks deletion of critical secrets
-  - Monitors availability every hour
-  - Auto-recovers missing secrets from Doppler
-  - Creates P0 issues when recovery fails
+## Missing-secret preflight standard
 
-- ✅ **Protected Secrets** (cannot be deleted):
-  - `OPENROUTER_API_KEY`
-  - `DOPPLER_TOKEN`
-  - `ADMIN_GITHUB_TOKEN`
-  - `GITHUB_TOKEN`
+Every workflow that needs a secret must degrade gracefully instead of failing
+hard. Use the `wr-auto-classify.yml` preflight pattern:
 
-- ✅ **Monitored Secrets** (checked hourly):
-  - All protected secrets plus
-  - `JULES_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY`
+```yaml
+jobs:
+  preflight:
+    name: Preflight credential check
+    runs-on: ubuntu-latest
+    outputs:
+      has_key: ${{ steps.check.outputs.has_key }}
+    steps:
+      - name: Probe credentials
+        id: check
+        env:
+          THE_KEY: ${{ secrets.THE_KEY }}
+        run: |
+          if [ -n "${THE_KEY}" ]; then
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::THE_KEY is not configured — job will be skipped. See docs/SECRETS_MAP.md."
+          fi
 
+  main:
+    needs: preflight
+    if: needs.preflight.outputs.has_key == 'true'
+    # ... the real work ...
+```
+
+Rules:
+
+- **Probe in a dedicated job step via `env:`** — never interpolate
+  `${{ secrets.X }}` into `if:` on the job itself (secrets aren't available
+  in job-level `if:`).
+- **Skip, don't fail** — a missing key emits a `::warning::` and skips.
+- **One labeled issue, not spam** — persistent absence is detected by the
+  presence ledger, which files a single `[SECRET-MISSING]` issue; preflights
+  must not open their own duplicates.
 See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md) for complete details.
 
 ## Secret Inventory
@@ -56,7 +121,7 @@ See [SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md](SECRET_PERSISTENCE_AND_LABEL_AU
 | `REVENUECAT_SECRET_API_KEY` | Downstream Revvel app backends | N/A | Server-side RevenueCat REST key; **never** ship to clients |
 | `REVENUECAT_WEBHOOK_AUTHORIZATION` | Downstream Revvel app backends | N/A | Shared secret verified on the `Authorization` header of inbound RevenueCat webhooks |
 | `REVENUECAT_PROJECT_ID` | Downstream Revvel app tooling | N/A | RevenueCat project identifier required for v2 REST API calls |
-| `GMAIL_APP_PASSWORD` | vine-to-marketplace | Yes (skips fetch with warning) | Gmail App Password for angelreporters@gmail.com IMAP access; generate at myaccount.google.com/apppasswords |
+| `GMAIL_APP_PASSWORD` | vine-to-marketplace | Yes (skips fetch with warning) | Gmail App Password for `angelreporters@gmail.com` IMAP access; generate at myaccount.google.com/apppasswords |
 | `META_PAGE_ACCESS_TOKEN` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page Access Token with pages_manage_posts scope; generate via Graph API Explorer |
 | `META_PAGE_ID` | vine-to-marketplace | Yes (dry-run mode if missing) | Facebook Page numeric ID; find at facebook.com/YOUR_PAGE → About |
 | `META_CATALOG_ID` | vine-to-marketplace | Yes (optional — Page Post used instead) | Facebook Commerce Manager Catalog ID; enables proper Marketplace product listings |
@@ -106,86 +171,23 @@ without exposing any values.
 
 ---
 
-## Doppler Integration
+## Doppler Integration (DECOMMISSIONED 2026-07-09)
 
-> **NOTE:** Doppler integration is **OPTIONAL**. Core repository functionality works without Doppler.
-> Secrets can be managed directly in GitHub Settings → Secrets and variables → Actions.
-> Doppler provides centralized management if you prefer it, but is not required.
-> Doppler-specific workflows (e.g., "Doppler Secrets Sync") will not run without a valid `DOPPLER_TOKEN`.
-
-[Doppler](https://doppler.com) is the recommended (but optional) secrets management platform for
-provisioning and syncing secrets across environments. **You must acquire credentials independently** —
-sign up at doppler.com and create your own account.
-
-### Setup (Optional)
-
-1. **Create a Doppler project** for `revvel-standards` at [dashboard.doppler.com](https://dashboard.doppler.com)
-2. **Create a "github" environment** (Options → Create Environment → name it `github`)
-3. **Add your secrets** in the Doppler dashboard for the `github` environment
-4. **Generate a service token**: Project Settings → Service Tokens → Generate → scope to `github` config
-5. **Add the service token to GitHub**: Repo Settings → Secrets and variables → Actions → `DOPPLER_TOKEN` (recommended — scoped to the `github` config) or any of `DOPPLER_LOCAL_TOKEN`, `DOPPLER_API_KEY`, `DOPPLER_AGENT_ODIC`, `DOPPLER_CIRCLECI_OIDC`, `DOPPLER_AGENT_TOKEN`
-   - All workflows check all six names automatically in this priority order: `DOPPLER_AGENT_TOKEN` → `DOPPLER_TOKEN` → `DOPPLER_LOCAL_TOKEN` → `DOPPLER_API_KEY` → `DOPPLER_AGENT_OIDC` → `DOPPLER_CIRCLECI_OIDC`
-
-### Installed GitHub Actions (from Doppler Marketplace)
-
-These official Doppler actions are already installed on this repo:
-
-| Action | What it does |
-|---|---|
-| **`dopplerhq/secrets-fetch-action@v2`** | Injects all Doppler secrets as masked env vars — **use this in most workflows** |
-| **`dopplerhq/cli-action@v3`** | Installs the Doppler CLI into `PATH` |
-
-### Verifying Doppler Connection
-
-Run the **Doppler Secrets Sync** workflow (Actions → "Doppler Secrets Sync" → Run)
-to verify connectivity and list all available secrets.
-
-### Using Doppler in Workflows
-
-**Option 1 — Environment Loader (recommended):** Injects all secrets as masked env vars.
-
-```yaml
-- name: Fetch secrets from Doppler
-  uses: dopplerhq/secrets-fetch-action@v2
-  with:
-    doppler-token: ${{ secrets.DOPPLER_TOKEN }}
-
-- name: Use secrets (they're now env vars)
-  run: |
-    echo "OpenRouter key is set: ${OPENROUTER_API_KEY:+yes}"
-```
-
-**Option 2 — CLI (for `doppler run`):** Wraps a command with all secrets injected.
-
-```yaml
-- name: Install Doppler CLI
-  uses: dopplerhq/cli-action@v3
-
-- name: Run with Doppler secrets
-  env:
-    DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-  run: doppler run -- your-command-here
-```
-
-### Local Development
-
-```bash
-# Install Doppler CLI
-curl -Ls https://cli.doppler.com/install.sh | sh
-
-# Login and select project
-doppler login
-doppler setup    # select revvel-standards → dev
-
-# Run commands with secrets injected
-doppler run -- npm start
-doppler run -- node scripts/check-compliance.js .
-
-# View configured secrets (names only)
-doppler secrets --only-names
-```
+> **Doppler is out** (owner decision, issue #15516; findings in
+> `wr/pending/12-secrets-sanity.md`). Its GitHub sync integration was the prime
+> suspect for the daily secret deletions — it removes repo secrets not present
+> in the Doppler config. GitHub Actions secrets are now the single store (see
+> "The ONE write path" above). The six token names (`DOPPLER_TOKEN`,
+> `DOPPLER_AGENT_TOKEN`, `DOPPLER_LOCAL_TOKEN`, `DOPPLER_API_KEY`,
+> `DOPPLER_AGENT_ODIC`, `DOPPLER_CIRCLECI_OIDC`) collapse to **zero** once the
+> presence ledger shows 7 quiet days. Doppler-backed workflows are disabled,
+> not deleted — each file's header explains its retirement.
 
 ### Credential Gatekeeper
+
+> **Manual dispatch only since 2026-07-09** — its auto-provision job wrote
+> secrets from Doppler/backup sources; the issue trigger is disabled as part of
+> the Doppler decommission. Retire-vs-refactor is the owner's call.
 
 The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`)
 scans issue bodies for credential requirements and generates a Bill of Materials:
