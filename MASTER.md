@@ -5,6 +5,10 @@
 > System: **REVVEL**. Method: **UPREV** (one iteration · multiple PRs · max over minimum · deep
 > research first · self-healing · form-driven not label-driven).
 
+> ⚡ **Which workflow file runs next?**  
+> **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** — human-readable call chain (issue → research → code → ship).  
+> This file (`MASTER.md`) governs *doc order*; that file governs *runtime file → next file*.
+
 ---
 
 ## 0. THE ONE RULE

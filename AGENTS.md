@@ -2,6 +2,10 @@
 
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
+> ⚡ **Call chain (what starts → what runs next):**  
+> Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
+> Do not invent a second pipeline; do not edit random folders for UI color — see that file’s “Where to change” table.
+
 > **Visiting / transient agent?** (OpenHands, Cursor Cloud, Lovable, Replit, a one-off
 > API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
 > short guest contract: where you may write, where setup/API info lives, and how not to
