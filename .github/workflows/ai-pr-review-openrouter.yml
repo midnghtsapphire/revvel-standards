@@ -39,9 +39,16 @@ jobs:
           fi
       - name: AI PR Review
         if: env.OPENROUTER_API_KEY != ''
+        # continue-on-error so a transient GitHub API rate-limit spike never
+        # hard-fails the PR — the AI review is advisory, not a gate.
+        continue-on-error: true
         uses: maxlim0/AI-PR-Reviewer@v0.3
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer ADMIN_GITHUB_TOKEN (PAT) — it has its own 5 k req/h bucket
+          # that is NOT shared with the installation-scoped GITHUB_TOKEN pool.
+          # Without this, concurrent workflows drain the shared pool and return
+          # "403 API rate limit exceeded for installation".
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
