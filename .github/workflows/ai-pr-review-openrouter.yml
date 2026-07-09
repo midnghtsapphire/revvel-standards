@@ -1,5 +1,18 @@
 name: AI PR Review (OpenRouter)
+
+# ── ENABLED 2026-07-08 (D008) ─────────────────────────────────────────────────
+# Octopus Review is quota-dead; this is the replacement (see DECISIONS.md D008).
+# Rides the existing OPENROUTER_API_KEY — no new vendor lock-in.
+# Pull-request auto-trigger added; use [skip-review] in PR title to bypass.
+# ──────────────────────────────────────────────────────────────────────────────
+
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
   workflow_dispatch: null
 permissions:
   contents: read
