@@ -1,5 +1,7 @@
 # 📖 Reminders — "Before you do X, read Y first"
 
+> ⚡ **Busy / lost in folders?** Open **[START_HERE_CALL_CHAIN.md](./START_HERE_CALL_CHAIN.md)** first — which workflow starts and what runs next.
+
 This is the activity-based companion to the topic-based [`README.md` Reference Materials table](./README.md#-reference-materials). Same content, different access pattern: this file is sorted by *what you're trying to do right now*, not by *where the doc lives in the repo*.
 
 When you're about to start something new, grep this file with the verb of your activity (e.g., `provision`, `wire`, `file`, `evaluate`, `refresh`).

@@ -79,7 +79,12 @@ test('rounding to 2 decimal places', () => {
 
 console.log('\n📧  Amazon Parser');
 
-const { parseAmazonEmail, detectEmailType } = require('../lib/amazon-parser');
+const {
+  parseAmazonEmail,
+  detectEmailType,
+  productUrlFromAsin,
+  attachProductLink,
+} = require('../lib/amazon-parser');
 
 test('detectEmailType: vine email', () => {
   assert.strictEqual(detectEmailType('Amazon Vine — Your product has arrived'), 'vine');
@@ -157,6 +162,126 @@ test('parseAmazonEmail: unknown email type returns null', () => {
     text: 'Check out these deals',
   };
   assert.strictEqual(parseAmazonEmail(mail), null);
+});
+
+test('productUrlFromAsin builds /dp/ URL', () => {
+  assert.strictEqual(
+    productUrlFromAsin('B08C4KWM9T'),
+    'https://www.amazon.com/dp/B08C4KWM9T'
+  );
+  assert.strictEqual(productUrlFromAsin('bad'), null);
+});
+
+test('parseAmazonEmail attaches productUrl from ASIN', () => {
+  const mail = {
+    subject: 'Your package has been delivered',
+    from: { text: 'ship-confirm@amazon.com' },
+    text: `
+      Order Total: $10.00
+      You ordered: Widget
+      ASIN: B08C4KWM9T
+      Your Order: 112-3456789-0123456
+    `,
+  };
+  const result = parseAmazonEmail(mail);
+  assert.strictEqual(result.productUrl, 'https://www.amazon.com/dp/B08C4KWM9T');
+  assert.strictEqual(result.source, 'email');
+});
+
+// ── CSV import ─────────────────────────────────────────────────────────────
+
+console.log('\n📄  CSV Import');
+
+const { importOrderCsv, extractAsin } = require('../lib/csv-import');
+const { buildListingPack, extractImageUrlsFromHtml } = require('../lib/product-link');
+
+test('extractAsin from bare ASIN and URL', () => {
+  assert.strictEqual(extractAsin('B08C4KWM9T'), 'B08C4KWM9T');
+  assert.strictEqual(extractAsin('https://www.amazon.com/dp/B08C4KWM9T/ref=xx'), 'B08C4KWM9T');
+});
+
+test('importOrderCsv maps rows to vine-parser product shape', () => {
+  const csv = [
+    'Order ID,Order Date,Title,ASIN,Unit Price,Quantity',
+    '112-1111111-2222222,2026-01-15,Test Blender,B08C4KWM9T,29.99,1',
+    '112-3333333-4444444,2026-01-16,Another Item,B09ABCDEFG,5.00,1',
+  ].join('\n');
+  const { products, skipped } = importOrderCsv(csv);
+  assert.strictEqual(products.length, 2);
+  assert.strictEqual(skipped, 0);
+  assert.strictEqual(products[0].asin, 'B08C4KWM9T');
+  assert.strictEqual(products[0].productUrl, 'https://www.amazon.com/dp/B08C4KWM9T');
+  assert.strictEqual(products[0].source, 'csv');
+  assert.strictEqual(products[0].emailType, 'csv');
+  assert.strictEqual(products[0].paidPrice, 29.99);
+  assert.strictEqual(products[0].listed, false);
+});
+
+test('buildListingPack includes productUrl and selectedImages', () => {
+  const pack = buildListingPack({
+    orderId: 'X',
+    asin: 'B08C4KWM9T',
+    productTitle: 'Test Blender',
+    productUrl: 'https://www.amazon.com/dp/B08C4KWM9T',
+    imageUrl: 'https://m.media-amazon.com/images/I/example.jpg',
+    imageUrls: [
+      'https://m.media-amazon.com/images/I/example.jpg',
+      'https://m.media-amazon.com/images/I/example2.jpg',
+    ],
+  }, { listingPrice: 24 });
+  assert.strictEqual(pack.productUrl, 'https://www.amazon.com/dp/B08C4KWM9T');
+  assert.strictEqual(pack.suggestedPrice, 24);
+  assert.ok(pack.selectedImages.length >= 1);
+  assert.ok(pack.selectedImages.length <= 5);
+});
+
+test('extractImageUrlsFromHtml finds og:image', () => {
+  const html = '<html><meta property="og:image" content="https://m.media-amazon.com/images/I/abc.jpg"/></html>';
+  const urls = extractImageUrlsFromHtml(html);
+  assert.ok(urls.some((u) => u.includes('abc.jpg')));
+});
+
+test('attachProductLink is idempotent', () => {
+  const p = attachProductLink({ asin: 'B08C4KWM9T', productTitle: 'x' });
+  assert.strictEqual(p.productUrl, 'https://www.amazon.com/dp/B08C4KWM9T');
+  const p2 = attachProductLink(p);
+  assert.strictEqual(p2.productUrl, p.productUrl);
+});
+
+// ── Pack store (local Documents path) ─────────────────────────────────────
+
+console.log('\n📁  Pack store');
+
+const packStore = require('../lib/pack-store');
+const os = require('os');
+const fs = require('fs');
+
+test('packsRoot defaults under home Documents', () => {
+  const prev = process.env.MARKETPLACE_PACKS_DIR;
+  delete process.env.MARKETPLACE_PACKS_DIR;
+  const root = packStore.packsRoot();
+  assert.ok(root.includes('MarketplacePacks'));
+  assert.ok(root.startsWith(os.homedir()) || root.includes(os.homedir()));
+  if (prev) process.env.MARKETPLACE_PACKS_DIR = prev;
+});
+
+test('packDir writes listing under MARKETPLACE_PACKS_DIR', () => {
+  const tmp = path.join(os.tmpdir(), 'mp-packs-test-' + Date.now());
+  process.env.MARKETPLACE_PACKS_DIR = tmp;
+  const dir = packStore.packDir({ asin: 'B08C4KWM9T', orderId: 'X' });
+  assert.ok(dir.includes('B08C4KWM9T'));
+  packStore.writeText(path.join(dir, 'listing.txt'), 'hello');
+  assert.ok(fs.existsSync(path.join(dir, 'listing.txt')));
+  const listed = packStore.listPack({ asin: 'B08C4KWM9T' });
+  assert.ok(listed.files.some((f) => f.name === 'listing.txt'));
+});
+
+test('createJob exposes visible process steps', () => {
+  const { createJob } = require('../lib/lifestyle-pipeline');
+  const job = createJob({ orderId: 'T1', asin: 'B08C4KWM9T', productTitle: 'Widget' }, { count: 3 });
+  assert.strictEqual(job.steps.length, 5);
+  assert.ok(job.steps.some((s) => s.id === 'lifestyle'));
+  assert.strictEqual(job.status, 'queued');
 });
 
 // ── Inventory ──────────────────────────────────────────────────────────────
