@@ -48,19 +48,28 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Guard the initial read so token or permission hiccups degrade
+            // Guard fallible reads so token or permission hiccups degrade
             // gracefully instead of failing the whole "PR Lifecycle Labels"
             // check; full behavior is preserved whenever the default
-            // GITHUB_TOKEN is valid for the call.
-            let currentLabels = [];
-            try {
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: prNumber
-              });
-              currentLabels = labelData.map(l => l.name);
-            } catch (e) {
-              core.warning(`listLabelsOnIssue failed for PR #${prNumber}: ${e.message}`);
+            // GITHUB_TOKEN is valid for the call. On failure the fallback
+            // value is returned and a core.warning is surfaced in the run.
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
             }
+
+            const labelResult = await safeApi(
+              `listLabelsOnIssue for PR #${prNumber}`,
+              () => github.rest.issues.listLabelsOnIssue({
+                owner, repo, issue_number: prNumber
+              }),
+              { data: [] }
+            );
+            let currentLabels = labelResult.data.map(l => l.name);
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
@@ -77,13 +86,12 @@ jobs:
                 'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
                 'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
               };
-              let repoLabels = [];
-              try {
-                ({ data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }));
-              } catch (e) {
-                core.warning(`listLabelsForRepo failed: ${e.message}`);
-                return;
-              }
+              const repoLabelsResult = await safeApi(
+                'listLabelsForRepo',
+                () => github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }),
+                { data: [] }
+              );
+              const repoLabels = repoLabelsResult.data;
               const existing = new Set(repoLabels.map(l => l.name));
               for (const label of labels) {
                 if (!existing.has(label) && palette[label]) {
@@ -216,10 +224,25 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            // Wrap fallible reads so a transient API error degrades to a
+            // warning instead of failing the whole review-handler job.
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
+            }
+
             if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-            let currentLabels = labelData.map(l => l.name);
+            const labelResult = await safeApi(
+              `listLabelsOnIssue for PR #${prNumber}`,
+              () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
+              { data: [] }
+            );
+            let currentLabels = labelResult.data.map(l => l.name);
 
             async function addLabel(label) {
               if (!currentLabels.includes(label)) {
@@ -337,6 +360,22 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            // Wrap fallible reads so one flaky API call doesn't fail label
+            // syncing for every other matching PR in this run.
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
+            }
+
+            // Small pause between PRs to stay clear of secondary rate limits.
+            async function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
             if (!conclusion || ['skipped','neutral','stale','cancelled'].includes(conclusion)) {
               console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
               return;
@@ -402,8 +441,12 @@ jobs:
 
             for (const pr of matchingPRs) {
               const prNumber = pr.number;
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              let currentLabels = labelData.map(l => l.name);
+              const labelResult = await safeApi(
+                `listLabelsOnIssue for PR #${prNumber}`,
+                () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
+                { data: [] }
+              );
+              let currentLabels = labelResult.data.map(l => l.name);
 
               async function addLabel(label) {
                 if (!currentLabels.includes(label)) {
@@ -437,6 +480,7 @@ jobs:
                 console.log(`❌ PR #${prNumber}: checks FAILING (${conclusion})`);
               }
               await upsertStatusBadge(prNumber, currentLabels);
+              await sleep(150);
             }
     timeout-minutes: 30
   check-run-handler:
@@ -454,6 +498,22 @@ jobs:
             const headSha = run.head_sha;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+
+            // Wrap fallible reads so one flaky API call doesn't fail label
+            // syncing for every other matching PR in this run.
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
+            }
+
+            // Small pause between PRs to stay clear of secondary rate limits.
+            async function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            }
 
             if (!conclusion || ['skipped','neutral','stale','action_required','cancelled'].includes(conclusion)) {
               console.log(`ℹ️ check_run conclusion: ${conclusion} — no action`);
@@ -518,8 +578,12 @@ jobs:
               const prNumber = pr.number;
 
               // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-              let currentLabels = labelData.map(l => l.name);
+              const labelResult = await safeApi(
+                `listLabelsOnIssue for PR #${prNumber}`,
+                () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
+                { data: [] }
+              );
+              let currentLabels = labelResult.data.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
               const { data: checkRuns } = await github.rest.checks.listForRef({
@@ -565,6 +629,7 @@ jobs:
                 console.log(`⏳ PR #${prNumber}: ${pending.length} check(s) still running`);
               }
               await upsertStatusBadge(prNumber, currentLabels);
+              await sleep(150);
             }
     timeout-minutes: 30
   resync-all-prs:
@@ -583,6 +648,22 @@ jobs:
               'status:draft','status:waiting-for-review','status:approved',
               'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
             ];
+
+            // Wrap fallible reads so one flaky API call doesn't abort the
+            // re-sync sweep for every remaining open PR.
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
+            }
+
+            // Small pause between PRs to stay clear of secondary rate limits.
+            async function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            }
 
             const { data: openPRs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
             console.log(`🔍 Re-syncing ${openPRs.length} open PRs...`);
@@ -640,8 +721,12 @@ jobs:
             for (const pr of openPRs) {
               const prNumber = pr.number;
               try {
-                const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-                let currentLabels = labelData.map(l => l.name);
+                const labelResult = await safeApi(
+                  `listLabelsOnIssue for PR #${prNumber}`,
+                  () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
+                  { data: [] }
+                );
+                let currentLabels = labelResult.data.map(l => l.name);
 
                 async function addLabel(label) {
                   if (!currentLabels.includes(label)) {
@@ -724,6 +809,7 @@ jobs:
               } catch(err) {
                 console.log(`  PR #${prNumber}: ⚠️ error — ${err.message}`);
               }
+              await sleep(150);
             }
             console.log('✅ Re-sync complete');
     timeout-minutes: 15
@@ -741,10 +827,26 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            // Wrap fallible reads so a transient labels-read failure doesn't
+            // abort the manual re-evaluation (the pulls.get above stays
+            // unguarded on purpose — a missing PR is a legitimate hard stop).
+            async function safeApi(callName, fn, fallback) {
+              try {
+                return await fn();
+              } catch (e) {
+                core.warning(`${callName} failed: ${e.message}`);
+                return fallback;
+              }
+            }
+
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-            const { data: labelData } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-            let currentLabels = labelData.map(l => l.name);
+            const labelResult = await safeApi(
+              `listLabelsOnIssue for PR #${prNumber}`,
+              () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
+              { data: [] }
+            );
+            let currentLabels = labelResult.data.map(l => l.name);
 
             const ALL_STATUS = [
               'status:draft','status:waiting-for-review','status:approved',
