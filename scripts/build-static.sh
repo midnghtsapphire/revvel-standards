@@ -27,8 +27,19 @@ done
 
 # Publish the docs site so each app is reachable at /docs/<app>/ (its generated
 # index.html test page). Markdown is copied alongside for direct linking.
+#
+# Exclude Next.js apps under docs/ (e.g. marketplace-relister) — those deploy as
+# their own Vercel project, not as static files on the hub.
 if [ -d docs ]; then
-  cp -R docs public/docs
+  mkdir -p public/docs
+  # Portable copy excluding the family Next app source tree
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --exclude 'marketplace-relister' docs/ public/docs/
+  else
+    # Fallback without rsync (Git Bash / busy CI): copy then remove excluded tree
+    cp -R docs/. public/docs/
+    rm -rf public/docs/marketplace-relister
+  fi
 fi
 
 echo "Static site assembled in public/"
