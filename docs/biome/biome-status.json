@@ -1,19 +1,47 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-09T09:06:41.667Z",
+  "generated_at": "2026-07-09T11:01:47.169Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 29009323038,
+            "name": "VEINS Monitor — Vital Engine INtelligence Surveillance",
+            "path": ".github/workflows/veins-monitor.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29009323038",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29009238927,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29009238927",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29007618985,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29007618985",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29007519782,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29007519782",
+            "conclusion": "failure"
+          },
           {
             "id": 29007005884,
             "name": "Update Project Dashboard",
@@ -44,10 +72,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29003416849"
+        "last_run": null
       }
     },
     "sheaf": {
