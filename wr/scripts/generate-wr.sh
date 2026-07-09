@@ -74,7 +74,9 @@ jq_get() {
 }
 
 DATE="$(date -u +%Y-%m-%d)"
-TITLE_CLEAN="$TITLE"   # caller must pass title with identifiers intact (no backtick stripping)
+# Strip the [WR] routing prefix — meaningful on the GitHub issue but redundant
+# inside the document (template already starts with "# WR:"). If absent, no-op.
+TITLE_CLEAN="$(printf '%s' "$TITLE" | sed -E 's/^\[WR\][[:space:]]*//')"
 
 # ---- FIX (class 4): issue body goes to its own section, NEVER into a table cell ----
 # ---- FIX (class 3): substitute every token; unknown metadata becomes 'unknown', not '{TOKEN}' ----
