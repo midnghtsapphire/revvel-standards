@@ -290,16 +290,18 @@ test('stuck-label-watchdog.yml silently self-heals awaiting-review+approved firs
   }
   // First occurrence must NOT create noise: escalation (lifecycle:stuck / repair issue /
   // visible comment) must be guarded behind the recurrence branch, not run unconditionally.
-  const conflictBlock = script.slice(
-    script.indexOf('const STALE_REVIEW_SYNONYMS'),
-    script.indexOf('// Fix: ready-to-merge without approved')
-  );
-  if (!conflictBlock.includes('if (!alreadySilentlyRepaired)')) {
+  const blockStart = script.indexOf('const STALE_REVIEW_SYNONYMS');
+  const blockEnd = script.indexOf('// Fix: ready-to-merge without approved');
+  if (blockStart === -1 || blockEnd === -1 || blockEnd <= blockStart) {
+    throw new Error('could not locate the awaiting-review+approved conflict block in the watchdog script');
+  }
+  const conflictBlock = script.slice(blockStart, blockEnd);
+  const recurrenceGateIndex = conflictBlock.indexOf('if (!alreadySilentlyRepaired)');
+  if (recurrenceGateIndex === -1) {
     throw new Error('watchdog must branch on !alreadySilentlyRepaired to keep the first self-heal silent');
   }
   const escalationIndex = conflictBlock.indexOf('openAgentRepairIssue');
-  const recurrenceGateIndex = conflictBlock.indexOf('alreadySilentlyRepaired');
-  if (escalationIndex === -1 || recurrenceGateIndex === -1 || escalationIndex < recurrenceGateIndex) {
+  if (escalationIndex === -1 || escalationIndex < recurrenceGateIndex) {
     throw new Error('watchdog must only open an agent repair issue after the recurrence gate for awaiting-review+approved');
   }
 });
