@@ -41,7 +41,12 @@ try {
   // rfy-tracker unavailable — RFY stats will be omitted from summary
 }
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+// On Vercel/serverless, the app filesystem is read-only except /tmp.
+const DATA_DIR =
+  process.env.DATA_DIR ||
+  (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+    ? path.join('/tmp', 'vine-marketplace-data')
+    : path.join(__dirname, '..', 'data'));
 const INVENTORY_FILE = path.join(DATA_DIR, 'inventory.json');
 
 // Ensure data directory exists
