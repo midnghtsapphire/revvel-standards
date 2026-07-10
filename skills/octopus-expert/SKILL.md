@@ -46,6 +46,7 @@ persona who answers "why did Octopus say that / stop reviewing / miss context?"
 | Octopus GitHub App | Auto-reviews PRs, posts the 🐙 sticky comment, files issues with `octopus-review` labels |
 | `.github/workflows/octopus-cli.yml` | Wraps **`@octp/cli`** (auth: `OCTOPUS_TOKEN` secret, `oct_...`) — on-demand `pr review`, `repo index`, `whoami`, `usage`; auto re-review when a PR closes an Octopus-originated issue so Octopus verifies its own ask |
 | `.github/workflows/octopus-route.yml` | Translates Octopus-filed issues into fleet vocabulary (`work-request`, `wr:code`, `[WR]` title) so the dispatcher routes them; has a rate-limited backfill mode |
+| `.github/workflows/octopus-review-fallback.yml` | **Quota-death fallback lane** — when Octopus posts the "add your own API keys" banner (or never shows up), the fleet's own `review` profile (Opus 4.7 → DeepSeek R1 via OpenRouter, per `.github/agent-models.yml`) reviews the PR instead; `scripts/octopus-review-fallback.js` |
 | Findings → Coder | Octopus diagnoses auto-route to the `coder` persona for the actual patch |
 
 ## 🥚 Lesser-Known Features Bench
@@ -124,6 +125,29 @@ downstream coder runs that cost money.
 Blocking `REQUEST_CHANGES` findings get fixed or explicitly rebutted — never
 merged-around. Informational findings route to `coder` only when they name a real
 file/line defect (DRAGNET dedup rules apply).
+
+### 6 — Quota-Death Fallback Lane (fleet reviews when Octopus can't)
+
+When Octopus is out of monthly AI quota it posts "add your own API keys" on every
+PR instead of a review — and external review apps can't be re-summoned from the WR
+area when their quota/keys die. **`.github/workflows/octopus-review-fallback.yml`**
+covers that gap:
+
+- **Triggers:** the quota banner comment from `octopus-review[bot]`, a scheduled
+  sweep for PRs Octopus never reviewed (the "absence after N minutes" lane,
+  default 30 min, max 3 reviews/run), or `workflow_dispatch` with a PR number.
+- **Reviewer:** the fleet's own `review` profile from `.github/agent-models.yml`
+  (Opus 4.7 primary → DeepSeek R1 fallback) via **OpenRouter** — no new vendor
+  lock-in; findings post as a formal PR review.
+- **No double-review:** the script skips PRs where Octopus posted a *healthy*
+  review, and dedupes itself via the `<!-- octopus-review-fallback -->` marker.
+- **Debugging:** if fallback reviews stop, check `OPENROUTER_API_KEY` funding at
+  <https://openrouter.ai/credits> first (401/402/429 = key/balance, not code).
+- **Roadmap note:** [Qodo PR-Agent](https://github.com/qodo-ai/pr-agent)
+  (open-source, OpenRouter-native) was evaluated as a drop-in replacement for the
+  bespoke script; adopt it if the fallback lane needs inline comments,
+  auto-descriptions, or `/improve`-style commands — it speaks OpenRouter natively
+  so the `review` profile models carry over.
 
 ## Guardrails
 
