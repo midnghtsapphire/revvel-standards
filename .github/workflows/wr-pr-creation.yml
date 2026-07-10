@@ -750,6 +750,13 @@ jobs:
           fi
 
           echo "Generated WR document: ${WR_FILE}"
+      - name: Sanitize WR markdown (MD012/MD025/MD049 gate failures)
+        # Pasted issue bodies / imported research packets carry their own H1s,
+        # double blank lines, and asterisk emphasis, which failed the CircleCI
+        # changed-Markdown gate on nearly every WR PR (issue #15604). Normalize
+        # the stitched document before it is validated/committed. Playbook:
+        # docs/WR_MARKDOWN_LINT_PLAYBOOK.md.
+        run: node wr/scripts/sanitize-wr-markdown.mjs "${WR_FILE}"
       - name: Validate WR local references
         run: |
           export WR_FILE
