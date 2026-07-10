@@ -7,7 +7,8 @@
     "model_profiles": ".github/agent-models.yml",
     "agent_prompts": ".github/agent-prompts.yml",
     "personas": "scripts/openrouter-personas.js",
-    "fleet": "skills/agentic-workflow-fleet/FLEET.yml"
+    "fleet": "skills/agentic-workflow-fleet/FLEET.yml",
+    "security_fleet": "skills/security-fleet/SECURITY_FLEET.yml"
   },
   "fleet": {
     "name": "agentic-workflow-fleet",
@@ -183,6 +184,119 @@
       }
     ]
   },
+  "security_fleet": {
+    "name": "security-fleet",
+    "version": "0.1.0",
+    "initial_scope": "AI-exploit red teaming of this repo's own automation: workflows, agent inputs, secrets, and permissions",
+    "charter": {
+      "essential_skills": [
+        "GitHub Actions workflow security (untrusted-input handling, permissions, token scoping)",
+        "Prompt-injection and instruction-smuggling detection in agent-consumed text",
+        "Secret and credential pattern recognition in diffs and logs",
+        "Adversarial test-case generation against LLM-driven automation",
+        "Deterministic, reproducible scanning (no network calls in detectors)"
+      ],
+      "operating_rules": [
+        "Report, never auto-mutate: findings are filed as labeled issues for the healing loop",
+        "Reuse existing tooling first (secrets-sentinel, patch-agent, security-review skill); coordinate, do not duplicate",
+        "Pass untrusted event text through env vars, never interpolate it into shells (CLAUDE.md gotcha #4)",
+        "Every detector must have a seeded test case proving one demonstrated catch",
+        "Dedupe findings by stable title so scheduled lanes never spam the tracker",
+        "False positives get an allowlist entry with a citation, not a weakened pattern"
+      ]
+    },
+    "domains": [
+      {
+        "name": "Agent Input Defense",
+        "focus": "Issue, PR, comment, and WR body text consumed by agents; the S-MOS §4 log-poisoning tripwire surface."
+      },
+      {
+        "name": "Workflow Hardening",
+        "focus": "The ~170 GitHub Actions workflows: untrusted expression interpolation and shell-injection vectors in run: blocks."
+      },
+      {
+        "name": "Data Exfiltration Defense",
+        "focus": "Diffs, logs, and artifacts that could leak tokens or credentials; extends secrets-sentinel.yml."
+      },
+      {
+        "name": "Least Privilege",
+        "focus": "Per-workflow permissions: blocks audited against what each job actually does (CLAUDE.md gotcha #3)."
+      },
+      {
+        "name": "Offense-Informed Defense",
+        "focus": "Dependency vulnerabilities via scripts/patch-agent.js plus adversarial test generation against our own agents and detectors."
+      }
+    ],
+    "agents": [
+      {
+        "handle": "sentinel",
+        "name": "Tripwire",
+        "pattern": "Prompt-Injection Detection",
+        "group": "Agent Input Defense",
+        "job": "Scans issue, PR, comment, and WR body text for instruction-smuggling before agents consume it — hidden directives, override phrasing, zero-width smuggling, and log-poisoning payloads (owner's S-MOS §4 tripwire). Does nothing else.",
+        "use_for": [
+          "prompt injection",
+          "instruction smuggling",
+          "log poisoning",
+          "jailbreak text",
+          "hidden directive"
+        ]
+      },
+      {
+        "handle": "exprwatch",
+        "name": "Hardline",
+        "pattern": "Untrusted-Expression Auditing",
+        "group": "Workflow Hardening",
+        "job": "Finds untrusted GitHub Actions expressions (github.event.*, github.head_ref, and friends) interpolated directly into run: shells across all workflows — the CLAUDE.md gotcha #4 command-injection vector. Does nothing else.",
+        "use_for": [
+          "expression injection",
+          "untrusted interpolation",
+          "run shell injection",
+          "workflow audit"
+        ]
+      },
+      {
+        "handle": "exfil",
+        "name": "Blackout",
+        "pattern": "Secret-Exfil Detection",
+        "group": "Data Exfiltration Defense",
+        "job": "Watches diffs and logs for leaked tokens and credentials (GitHub PATs, OpenRouter/OpenAI keys, cloud tokens, private keys), extending secrets-sentinel.yml which audits configured secrets. Does nothing else.",
+        "use_for": [
+          "leaked token",
+          "secret in diff",
+          "credential in logs",
+          "exfiltration"
+        ]
+      },
+      {
+        "handle": "permit",
+        "name": "Keysmith",
+        "pattern": "Permission Minimization",
+        "group": "Least Privilege",
+        "job": "Audits each workflow's permissions: block against what the jobs actually do — flags missing scopes that break the job and excessive write scopes nothing uses (CLAUDE.md gotcha #3). Does nothing else.",
+        "use_for": [
+          "permissions audit",
+          "least privilege",
+          "token scope",
+          "missing permissions"
+        ]
+      },
+      {
+        "handle": "redteam",
+        "name": "Foxglove",
+        "pattern": "Adversarial Red Teaming",
+        "group": "Offense-Informed Defense",
+        "job": "Runs the dependency lane (scripts/patch-agent.js advisories check) and generates adversarial test cases against our own agents and detectors, reporting any payload the fleet fails to catch. Does nothing else.",
+        "use_for": [
+          "red team",
+          "adversarial tests",
+          "dependency vulnerability",
+          "patch agent",
+          "detector coverage"
+        ]
+      }
+    ]
+  },
   "categories": [
     "Accessibility & Compliance",
     "Agent Operations",
@@ -286,6 +400,27 @@
         "autonomous workflow",
         "multi-agent pipeline",
         "workflow automation specialist"
+      ]
+    },
+    {
+      "name": "security_fleet",
+      "title": "Security Fleet — Five Single-Job AI-Exploit Red-Team Experts",
+      "category": "Security & Compliance",
+      "path": "skills/security-fleet/",
+      "persona": "dragnet",
+      "triggers": [
+        "security fleet",
+        "red team",
+        "prompt injection",
+        "instruction smuggling",
+        "log poisoning",
+        "expression injection",
+        "untrusted interpolation",
+        "secret exfil",
+        "leaked token",
+        "permission audit",
+        "least privilege",
+        "adversarial tests"
       ]
     },
     {
@@ -1698,6 +1833,66 @@
       ],
       "profile": "repo_surgery",
       "description": "Runs as a continuous LLM loop acting on tool feedback, inside guardrails and spend caps. Owns long-running autonomous automations and self-healing flows. Does nothing else."
+    },
+    {
+      "handle": "sentinel",
+      "name": "Tripwire",
+      "emoji": "🛡️",
+      "role": "Prompt-Injection Detection expert — Agent Input Defense",
+      "aliases": [
+        "prompt-injection-detection",
+        "fleet-sentinel"
+      ],
+      "profile": "review",
+      "description": "Scans issue, PR, comment, and WR body text for instruction-smuggling before agents consume it — hidden directives, override phrasing, zero-width smuggling, and log-poisoning payloads (owner's S-MOS §4 tripwire). Does nothing else."
+    },
+    {
+      "handle": "exprwatch",
+      "name": "Hardline",
+      "emoji": "🛡️",
+      "role": "Untrusted-Expression Auditing expert — Workflow Hardening",
+      "aliases": [
+        "untrusted-expression-auditing",
+        "fleet-exprwatch"
+      ],
+      "profile": "review",
+      "description": "Finds untrusted GitHub Actions expressions (github.event.*, github.head_ref, and friends) interpolated directly into run: shells across all workflows — the CLAUDE.md gotcha #4 command-injection vector. Does nothing else."
+    },
+    {
+      "handle": "exfil",
+      "name": "Blackout",
+      "emoji": "🛡️",
+      "role": "Secret-Exfil Detection expert — Data Exfiltration Defense",
+      "aliases": [
+        "secret-exfil-detection",
+        "fleet-exfil"
+      ],
+      "profile": "review",
+      "description": "Watches diffs and logs for leaked tokens and credentials (GitHub PATs, OpenRouter/OpenAI keys, cloud tokens, private keys), extending secrets-sentinel.yml which audits configured secrets. Does nothing else."
+    },
+    {
+      "handle": "permit",
+      "name": "Keysmith",
+      "emoji": "🛡️",
+      "role": "Permission Minimization expert — Least Privilege",
+      "aliases": [
+        "permission-minimization",
+        "fleet-permit"
+      ],
+      "profile": "review",
+      "description": "Audits each workflow's permissions: block against what the jobs actually do — flags missing scopes that break the job and excessive write scopes nothing uses (CLAUDE.md gotcha #3). Does nothing else."
+    },
+    {
+      "handle": "redteam",
+      "name": "Foxglove",
+      "emoji": "🛡️",
+      "role": "Adversarial Red Teaming expert — Offense-Informed Defense",
+      "aliases": [
+        "adversarial-red-teaming",
+        "fleet-redteam"
+      ],
+      "profile": "review",
+      "description": "Runs the dependency lane (scripts/patch-agent.js advisories check) and generates adversarial test cases against our own agents and detectors, reporting any payload the fleet fails to catch. Does nothing else."
     }
   ],
   "prompt_templates": [

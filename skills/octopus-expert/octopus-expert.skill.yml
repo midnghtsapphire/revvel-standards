@@ -21,6 +21,7 @@ dependencies:
 related_standards:
   - ".github/workflows/octopus-cli.yml"
   - ".github/workflows/octopus-route.yml"
+  - ".github/workflows/octopus-review-fallback.yml"
   - "docs/PROVENANCE_STANDARD.md"
 
 implementation:

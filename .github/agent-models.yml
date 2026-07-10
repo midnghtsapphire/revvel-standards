@@ -8,7 +8,9 @@
 #   openrouter/auto "fusion" in our own tests — pin them, don't use auto.
 # - DO NOT route to Claude Sonnet models: in our testing Sonnet repeatedly
 #   refused/violated repo operating rules. Do not reintroduce as a fallback.
-# - DeepSeek owns the reasoning lane; Gemini owns the vision lane.
+# - Claude Fable 5 owns the reasoning lane; Gemini owns the vision lane.
+#   (DeepSeek R1 held the reasoning lane until 2026-07-10; it remains the
+#   review-profile fallback.)
 # - Model IDs follow OpenRouter's vendor/model convention; verify new IDs at
 #   https://openrouter.ai/models before adding. Fallback chains absorb a bad
 #   primary — never ship a profile with no fallback.
@@ -47,10 +49,18 @@ profiles:
     use_for: ["code", "file-edit", "refactor", "implement"]
 
   # Deep reasoning - DeepSeek owns this lane
+  # Owner decision 2026-07-10: twins for execution, Fable 5 for reasoning.
+  # Fallback stays on the Opus twin so the lane keeps working if the Fable ID
+  # needs a one-time verification at https://openrouter.ai/models (that site
+  # is unreachable from the sandbox this change shipped from). Fable 5 is
+  # Mythos-class (above Opus), $10/$50 per MTok vs Opus 4.8's $5/$25 —
+  # reserve the lane for genuinely hard reasoning; routine work stays on the
+  # twins. On the Anthropic API direct (no OpenRouter), the IDs are
+  # claude-fable-5 / claude-opus-4-8.
   reasoning:
-    description: "Hard reasoning, planning, hard debugging, math — DeepSeek R1"
+    description: "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 4.8 fallback"
     provider: openrouter
-    primary: "deepseek/deepseek-r1"
+    primary: "anthropic/claude-fable-5"
     fallback: "anthropic/claude-opus-4.8"
     max_tokens: 16000
     temperature: 0.3
@@ -183,10 +193,16 @@ routing_tree:
 
 # Models that must NOT be routed to (house rule — see header):
 denylist:
-  - pattern: "anthropic/claude-sonnet-*"
-    reason: "Refused/violated repo operating rules in fleet testing (2026-07)."
+  # Pattern covers BOTH naming schemes: new-style claude-sonnet-4 AND
+  # old-style claude-3.5-sonnet. The original "anthropic/claude-sonnet-*"
+  # pattern missed the old style, which is exactly how a denylisted model
+  # survived in the fleet-controller's fallback chain until 2026-07-10.
+  - pattern: "anthropic/*sonnet*"
+    reason: "Sonnet family refused/violated repo operating rules in fleet testing (2026-07)."
   - pattern: "openrouter/auto"
     reason: "Opus twins beat auto/fusion routing in fleet A/B tests (2026-07)."
+  - pattern: "openrouter/fusion"
+    reason: "Separate router (parallel multi-model fusion, not an auto alias) — Opus twins beat it in fleet A/B tests (2026-07), same rationale as openrouter/auto."
 
 # For GitHub Actions usage:
 #   - ${{ fromJson(inputs.model_profile || 'orchestrator') }}

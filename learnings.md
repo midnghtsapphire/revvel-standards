@@ -34,6 +34,48 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-07-10T00:30:00Z
+
+**Task Attempted:** Stop the changed-Markdown lint gate from failing nearly every PR (recurring `MD012`/`MD025`/`MD003`/`MD004`/… findings on generated `wr/issues/*.md`)
+
+**Outcome:** Success — auto-heal loop shipped (PR #15623): `scripts/heal-markdown.js` + `markdown-lint-auto-heal.yml` + a heal step at WR generation time in `wr-pr-creation.yml`. Verified on the 5 worst backlog files: 362 findings → 2.
+
+**Root Cause of Failure (If any):** Two structural generation artifacts plus mechanical noise. (1) `wr-pr-creation.yml` prepends its own `# WR: <title>` H1 above template/findings bodies that already carry H1s → `MD025` on essentially every generated WR (362 instances across the 259-file backlog). (2) Issue bodies pasted verbatim bring setext `===`/`---` headings (`MD003`), asterisk bullets, stacked blank lines. ~85% of all findings are auto-fixable by `markdownlint-cli2 --fix`; the two biggest non-fixable rules (`MD025`, `MD003`) are exactly the structural ones.
+
+**Self-Healing Fix / Learned Lesson:** Don't hand-fix lint and don't weaken the gate — heal the file before the gate judges it. `npm run markdown:heal -- <files>` converts setext→ATX, demotes extra H1s to H2 (both code-fence-aware and idempotent), then runs `--fix`. The PR-time workflow pushes a `[md-auto-heal]` commit back to the branch (loop-safe: idempotent healer + push-only-on-diff + skip own commits); WR PRs are additionally healed at generation so they are born lint-clean. Lesson: when a lint failure recurs on every PR, measure the rule distribution across the accumulated corpus first — it splits cleanly into "machine fixes this" vs "generator bug" and both are automatable.
+
+**Next Action:** None for lint. Remaining non-fixable findings (e.g. `MD055` malformed tables) surface in the healer's output and still fail the real gate for a human.
+
+---
+
+**Date/Time:** 2026-07-10T00:30:00Z
+
+**Task Attempted:** Fix GitHub Copilot cloud-agent runs dying with `fatal: ambiguous argument 'main'` (cca-engine "Failed to compute changed paths", run cancelled)
+
+**Outcome:** Success — fixed in `copilot-setup-steps.yml` (PR #15623).
+
+**Root Cause of Failure (If any):** The Copilot coding agent's engine runs `git diff --name-only <sha> main`-style commands to compute changed paths, but its checkout is a single-ref shallow clone with **no local `main` ref**, so every such diff exits 128 and the run is cancelled.
+
+**Self-Healing Fix / Learned Lesson:** `copilot-setup-steps.yml` (the sanctioned hook for the Copilot agent's environment) now materializes the ref up front: `git fetch origin main --depth=200` + `git branch main origin/main` (idempotent, no-op when already on main). Lesson: "ambiguous argument '<branch>'" in any agent runtime means the ref is missing from the checkout, not that the repo is broken — fix the environment setup, not the code.
+
+**Next Action:** None — validate by watching the next Copilot-assigned issue run past the changed-paths step.
+
+---
+
+**Date/Time:** 2026-07-10T00:30:00Z
+
+**Task Attempted:** Diagnose "the fleet controller doesn't work" — the CUDA-style grid scheduler (`scripts/controller/`) thrashed instead of converging
+
+**Outcome:** Success — two convergence bugs found via the committed feed history and fixed (PR #15623).
+
+**Root Cause of Failure (If any):** (1) **Amnesia loop:** reassignment lineage was persisted only inside the previous feed's `preemptions` array; any quiet tick (fresh relaunches are young → nothing to preempt) emptied it, so the model chain restarted at step 1 every cycle — the feed history showed `reassign_count: 1, next_model: claude-3.5-sonnet` for hours, `maxReassigns` was never reached, and escalation to self-healing never fired. (2) **False stalls:** health was judged by the run's `updated_at`, which does not tick during one long step, so legitimately slow research runs (e.g. Perplexity Research Agent) were classified "stalled" at ~16m and cut every 15 minutes while healthy.
+
+**Self-Healing Fix / Learned Lesson:** (1) Durable scoreboard `docs/controller/controller-state.json` (`fleet-controller-state/v1`), keyed by workflow path, carried forward across ticks and expired 6h after the last cut — quiet ticks can no longer wipe history, so the chain advances and escalation actually happens. (2) Before evicting a *stalled* run, verify against the jobs API (`lastJobActivityMs`): recent step activity spares the run (`spared(step-progress)`), and spared runs never reach the stop/ingestion feeds; runaways are still cut on wall-clock. Lessons: a stateless controller whose memory lives in its *output* feed forgets whenever the output is empty — give schedulers a dedicated, carried-forward state file; and `updated_at` is not a heartbeat — verify liveness from job/step timestamps before killing anything.
+
+**Next Action:** Watch `docs/controller/controller-state.json` commits after merge: `tried_models` should advance (sonnet → fusion → deepseek) on a repeatedly-stalling workflow and then hand it to `controller-ingestion.json` for self-healing.
+
+---
+
 **Date/Time:** 2026-07-09T03:03:00Z
 
 **Task Attempted:** Fix fleet maintenance duplicate Work Request risk when open-issue lookup fails

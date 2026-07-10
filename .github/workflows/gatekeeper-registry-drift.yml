@@ -1,7 +1,11 @@
 name: Gatekeeper — Registry Drift Check
+# DOPPLER DECOMMISSIONED 2026-07-09 (wr/pending/12-secrets-sanity.md, issue #15516).
+# Daily cron disabled — this compares the gatekeeper registry to Doppler, which
+# no longer exists as a store. Kept for on-demand dispatch per
+# COMMENT-DONT-DELETE (disable, don't destroy).
 on:
-  schedule:
-    - cron: 0 4 * * *
+  # schedule:
+  #   - cron: 0 4 * * *
   workflow_dispatch: null
 permissions:
   contents: read

@@ -196,38 +196,61 @@ jobs:
 
             core.info(`Determined target label: ${targetLabel}`);
 
-            // Remove old review status labels
-            const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
+            // Atomic label transition: compute the final label set (drop every
+            // conflicting review-state label, including ALL review-waiting
+            // variants) and apply it with a single setLabels call. The previous
+            // remove-one-by-one-then-add sequence left a window where a stale
+            // waiting label (e.g. awaiting-review) could coexist with
+            // `approved` if a concurrent event interleaved between the writes.
+            const reviewLabels = [
+              'awaiting-approval', 'awaiting-review', 'status:waiting-for-review',
+              'changes-requested', 'approved', 'review-started',
+            ];
             const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
 
-            for (const label of currentLabels) {
-              if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: prNumber,
-                    name: label.name,
-                  });
-                  core.info(`Removed label: ${label.name}`);
-                } catch (e) {
-                  core.warning(`Could not remove label ${label.name}: ${e.message}`);
+            const nextLabels = currentLabels
+              .map(l => l.name)
+              .filter(name => !reviewLabels.includes(name) || name === targetLabel);
+            if (!nextLabels.includes(targetLabel)) nextLabels.push(targetLabel);
+
+            try {
+              await github.rest.issues.setLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: nextLabels,
+              });
+              core.info(`Applied label atomically: ${targetLabel}`);
+            } catch (e) {
+              // Fallback: non-atomic remove/add so the state still converges.
+              core.warning(`setLabels failed (${e.message}) — falling back to remove/add`);
+              for (const label of currentLabels) {
+                if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
+                  try {
+                    await github.rest.issues.removeLabel({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: prNumber,
+                      name: label.name,
+                    });
+                    core.info(`Removed label: ${label.name}`);
+                  } catch (err) {
+                    core.warning(`Could not remove label ${label.name}: ${err.message}`);
+                  }
                 }
               }
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: [targetLabel],
+              });
+              core.info(`Applied label: ${targetLabel}`);
             }
-
-            // Add the target label
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              labels: [targetLabel],
-            });
-            core.info(`Applied label: ${targetLabel}`);
 
             // Build reviewer summary
             const reviewerSummary = [];
