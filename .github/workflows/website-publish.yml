@@ -1,0 +1,112 @@
+name: Website Publish (Hub Registry)
+
+# Website publication lane (issue #15510). When a website WR merges to main
+# with a data/hub/entries/<slug>.json entry, this workflow:
+#   1. Regenerates hub-registry.{json,js} (consumed by index.html) via
+#      scripts/build-hub-registry.js and commits them if changed — the hub
+#      tab list is generated, never hand-edited, so it cannot drift.
+#   2. Comments the live GitHub Pages URL back on each entry's source WR
+#      issue (once per issue — reruns are idempotent via a marker comment).
+# The actual page deploy is handled by static.yml (Pages) + Vercel on the
+# same push; this workflow only maintains the registry + closes the loop.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - data/hub/entries/**
+      - scripts/build-hub-registry.js
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: website-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # PAT fallback so the registry-refresh push can cascade to the
+          # Pages deploy workflow (the default GITHUB_TOKEN cannot trigger
+          # other workflows; static.yml must redeploy with the new registry).
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Rebuild hub registry
+        run: node scripts/build-hub-registry.js
+
+      - name: Commit refreshed registry if changed
+        run: |
+          if git diff --quiet -- hub-registry.json hub-registry.js; then
+            echo "Hub registry unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hub-registry.json hub-registry.js
+          git commit -m "chore(hub): refresh public hub registry"
+          git push
+
+      - name: Comment live URL back on source WR issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const registry = JSON.parse(fs.readFileSync("hub-registry.json", "utf8"));
+            const entries = (registry.entries || []).filter((e) => e.issue);
+            if (!entries.length) {
+              core.info("No registry entries with a source issue — nothing to comment.");
+              return;
+            }
+            // Idempotency marker: reruns (or later registry refreshes) must
+            // not re-comment the same live URL on the same WR issue.
+            const MARKER = "<!-- website-publish:live-url -->";
+            for (const entry of entries) {
+              try {
+                const comments = await github.paginate(github.rest.issues.listComments, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: entry.issue,
+                  per_page: 100,
+                });
+                if (comments.some((c) => (c.body || "").includes(MARKER) && (c.body || "").includes(entry.live_url))) {
+                  core.info(`#${entry.issue}: live URL already posted for ${entry.slug}`);
+                  continue;
+                }
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: entry.issue,
+                  body: [
+                    MARKER,
+                    `🌐 **Website published to the Public Hub**`,
+                    "",
+                    `**${entry.title}** is live and registered on the hub tab list:`,
+                    "",
+                    `- Live URL: ${entry.live_url}`,
+                    `- Hub: ${registry.pages_base_url}`,
+                    "",
+                    `_Registered automatically from \`data/hub/entries/${entry.slug}.json\` by the website publication lane (\`website-publish.yml\`)._`,
+                  ].join("\n"),
+                });
+                core.info(`#${entry.issue}: posted live URL for ${entry.slug}`);
+              } catch (err) {
+                // A bad/closed/foreign issue number must not fail the whole
+                // publish run — log it so agent-monitor can pick it up.
+                core.warning(`#${entry.issue} (${entry.slug}): could not comment live URL: ${err.message}`);
+              }
+            }

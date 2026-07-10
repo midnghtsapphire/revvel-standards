@@ -186,6 +186,24 @@ jobs:
                   continue;
                 }
 
+                // VEINS grounding gate (CuP = 100%): absence of the grounded
+                // Ship Quality Check is NOT evidence of health — the 2026-07-08
+                // incident shipped six broken sites because approval keyed off
+                // "no failures" instead of "verified success". Require the
+                // grounded check to be PRESENT and SUCCESSFUL before approving.
+                const REQUIRED_GROUNDED = ['ship quality check'];
+                const missingGrounded = REQUIRED_GROUNDED.filter(req =>
+                  !relevant.some(r =>
+                    r.name.toLowerCase().includes(req) &&
+                    r.status === 'completed' &&
+                    r.conclusion === 'success'
+                  )
+                );
+                if (missingGrounded.length > 0) {
+                  core.info(`PR #${prNumber} grounded check(s) not verified green (${missingGrounded.join(', ')}) — skipping until the real test suite passes.`);
+                  continue;
+                }
+
                 // All checks pass, author is trusted — submit APPROVE from a
                 // non-author identity so GitHub accepts it (not a silent self-approve).
                 const { client: approver, who } = approverFor(author);

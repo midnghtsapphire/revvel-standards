@@ -32,7 +32,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
+      - name: Ensure local main ref exists for diff-based tooling
+        # The Copilot cloud agent's engine runs `git diff ... main` to compute
+        # changed paths; its checkout is a single-ref clone with no local
+        # `main`, so that dies with "fatal: ambiguous argument 'main'" and
+        # cancels the run. Fetch straight into the local ref (a plain fetch
+        # only populates FETCH_HEAD in a single-ref clone). A real fetch
+        # failure fails this step loudly — without the ref the agent's diffs
+        # would die later anyway, so don't mask it.
+        run: |
+          if git rev-parse --verify --quiet main >/dev/null; then
+            echo "local main ref already present"
+          else
+            git fetch --depth=200 origin +refs/heads/main:refs/heads/main
+          fi
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"

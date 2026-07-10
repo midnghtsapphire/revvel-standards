@@ -395,6 +395,45 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   }
 });
 
+test('pr-lifecycle.yml approval handler applies labels atomically via setLabels', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['review-state'].steps[0].with?.script || '';
+
+  // Approval events must clear ALL review-waiting label variants and set the
+  // approval state in a single setLabels write — sequential remove/add calls
+  // leave a window where awaiting-review + approved can coexist.
+  if (!script.includes('setLabels')) {
+    throw new Error('review-state must use issues.setLabels for atomic label transitions');
+  }
+  for (const waiting of ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review']) {
+    if (!script.includes(`'${waiting}'`)) {
+      throw new Error(`review-state REVIEW_WAITING must include ${waiting}`);
+    }
+  }
+  if (!script.includes('REVIEW_WAITING')) {
+    throw new Error('review-state must define the REVIEW_WAITING variant list');
+  }
+  if (!script.includes('setLabelsAtomic')) {
+    throw new Error('review-state approved/changes_requested paths must use setLabelsAtomic');
+  }
+});
+
+test('pr-review-status.yml removes all review-waiting variants atomically', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-review-status.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['update-review-status'].steps[0].with?.script || '';
+
+  if (!script.includes('setLabels')) {
+    throw new Error('update-review-status must use issues.setLabels for atomic label transitions');
+  }
+  for (const waiting of ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review']) {
+    if (!script.includes(`'${waiting}'`)) {
+      throw new Error(`update-review-status reviewLabels must include ${waiting}`);
+    }
+  }
+});
+
 test('agent-audit-logger.yml persists audit entries without committing to main', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'agent-audit-logger.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
