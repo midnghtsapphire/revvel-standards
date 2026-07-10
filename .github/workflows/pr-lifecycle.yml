@@ -259,6 +259,40 @@ jobs:
             };
 
 
+            // ALL review-waiting label variants. Approval / changes-requested
+            // transitions must clear every one of these in a single atomic
+            // operation — the old remove-one-by-one-then-add sequence left a
+            // window where `approved` + `awaiting-review` could coexist
+            // (see stuck-label-watchdog.yml for the repair-side of that race).
+
+            const REVIEW_WAITING = ['awaiting-review', 'awaiting-approval',
+                                    'status:waiting-for-review'];
+
+
+            // Atomic transition: compute the final label set locally, then apply
+            // it with a single issues.setLabels call (one write, no intermediate
+            // states). Unrelated labels are preserved. Falls back to the
+            // remove/add helpers only if setLabels itself fails.
+
+            const setLabelsAtomic = async (removeList, addList) => {
+              const cur = await currentLabels();
+              const next = cur.filter(l => !removeList.includes(l));
+              for (const l of addList) if (!next.includes(l)) next.push(l);
+              try {
+                await github.rest.issues.setLabels({
+                  owner, repo, issue_number: num, labels: next
+                });
+                core.info(`  labels → ${next.join(', ') || '(none)'}`);
+                return next;
+              } catch (e) {
+                core.warning(`setLabels: ${e.message} — falling back to remove/add`);
+                await remove(...removeList);
+                await add(...addList);
+                return currentLabels();
+              }
+            };
+
+
             if (state === 'commented') {
               const cur = await currentLabels();
               if (!cur.includes('review-started')) await add('review-started');
@@ -267,13 +301,13 @@ jobs:
 
 
             if (state === 'approved') {
-              await remove('awaiting-review', 'awaiting-approval',
-                           'changes-requested', 'needs-action');
-              await add('approved');
+              const next = await setLabelsAtomic(
+                [...REVIEW_WAITING, 'changes-requested', 'needs-action'],
+                ['approved']
+              );
 
               // Gate: checks-passing already? → ready-to-merge
-              const cur = await currentLabels();
-              if (cur.includes('checks-passing')) {
+              if (next.includes('checks-passing')) {
                 await add('ready-to-merge');
                 core.info(`PR #${num} → ready-to-merge (approved + checks-passing)`);
               } else {
@@ -283,9 +317,10 @@ jobs:
 
 
             if (state === 'changes_requested') {
-              await remove('awaiting-review', 'awaiting-approval',
-                           'approved', 'ready-to-merge');
-              await add('changes-requested', 'needs-action');
+              await setLabelsAtomic(
+                [...REVIEW_WAITING, 'approved', 'ready-to-merge'],
+                ['changes-requested', 'needs-action']
+              );
             }
     timeout-minutes: 15
   check-state:
