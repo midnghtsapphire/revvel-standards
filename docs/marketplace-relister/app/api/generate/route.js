@@ -29,6 +29,9 @@ async function openRouterImage(prompt, apiKey, model) {
     },
     body: JSON.stringify({
       model,
+      // modalities must include 'image' so that Gemini/image-capable models
+      // return image content instead of text-only output.
+      modalities: ['text', 'image'],
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -48,7 +51,10 @@ async function openRouterImage(prompt, apiKey, model) {
     const m = msg.content.match(/data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/);
     if (m) return m[0];
   }
-  throw new Error('No image returned — set OPENROUTER_IMAGE_MODEL to an image-capable model');
+  // Surface a preview in server logs (but don't send raw provider output back to clients)
+  const preview = JSON.stringify(data).slice(0, 300);
+  console.error('OpenRouter no-image response preview:', preview);
+  throw new Error('No image in response — check OPENROUTER_IMAGE_MODEL is an image-capable model.');
 }
 
 export async function POST(request) {
@@ -73,8 +79,10 @@ export async function POST(request) {
       );
     }
 
+    // Use the GA model (not the -preview slug) — preview endpoints go offline
+    // without notice and return "No endpoints found". The stable slug is always served.
     const model =
-      process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image-preview';
+      process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image';
     const label = title || `Amazon product ${asin}`;
     const images = [];
     const errors = [];

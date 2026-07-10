@@ -34,13 +34,13 @@ No npm. No PowerShell for daily use.
 
 4. **Environment Variables** (Production + Preview):
 
-   | Name | Value |
-   |------|--------|
-   | `OPENROUTER_API_KEY` | your OpenRouter key |
-   | `FAMILY_APP_PASSWORD` | shared family password |
-   | `OPENROUTER_IMAGE_MODEL` | optional |
+| Name | Value |
+|------|--------|
+| `OPENROUTER_API_KEY` | your OpenRouter key |
+| `FAMILY_APP_PASSWORD` | shared family password |
+| `OPENROUTER_IMAGE_MODEL` | optional — defaults to `google/gemini-2.5-flash-image` |
 
-5. **Deploy** → copy URL → bookmark → send daughter the link + password
+1. **Deploy** → copy URL → bookmark → send daughter the link + password
 
 ---
 
