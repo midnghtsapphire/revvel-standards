@@ -78,8 +78,16 @@ if [ -n "$CHANGED_FILES" ]; then
     LINE_NO=0
     while IFS= read -r line; do
       LINE_NO=$((LINE_NO + 1))
-      # Match REVVEL-DISABLED that is NOT immediately followed by -END
-      if echo "$line" | grep -qE 'REVVEL-DISABLED([^-]|$)' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
+      # Anchor on the canonical header shape (COMMENT-DONT-DELETE.md §3):
+      # a real opener is a COMMENT — one of the comment markers the standard's
+      # examples use (// # ; /* * <!-- --) followed by the token and its
+      # pipe-separated field list. Anything looser opens phantom blocks on
+      # prose: a bare-token match bit learnings.md's prose in PR #15623 (same
+      # bug class as wr-lint rule 11), and a permissive any-punctuation prefix
+      # still matched Markdown bullets/blockquotes (cubic review, same PR).
+      # Markdown bullets ("- "), blockquotes (">"), and backtick code spans
+      # ("`REVVEL-DISABLED |`") all fail this anchor; SQL "--" still passes.
+      if echo "$line" | grep -qE '^[[:space:]]*(//|#|;|/\*|\*|<!--|--)[[:space:]]*REVVEL-DISABLED \|' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
         IN_BLOCK=true
         BLOCK_LINE=$LINE_NO
         BLOCK_HEADER="$line"
