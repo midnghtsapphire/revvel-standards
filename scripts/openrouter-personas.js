@@ -282,6 +282,10 @@ const PERSONA_REGISTRY = {
     //   ops      — @octp/cli (pr review, repo index, whoami, usage) via
     //              .github/workflows/octopus-cli.yml; issue translation via
     //              octopus-route.yml (rate-limited backfill only)
+    //   fallback — when Octopus is quota-dead ("add your own API keys"), the
+    //              fleet's own `review` profile (Opus 4.7 → DeepSeek R1 via
+    //              OpenRouter) reviews the PR instead:
+    //              octopus-review-fallback.yml + scripts/octopus-review-fallback.js
     aliases: ["octopus", "octopus-review", "reviewmaster", "🐙"],
     profile: "repo_surgery",
     description:
@@ -298,6 +302,7 @@ const PERSONA_REGISTRY = {
       "OPENROUTER: hosted BYOK takes Anthropic/OpenAI keys, not OpenRouter keys. Self-host supports OpenRouter through the OpenAI-compatible gateway slots — ACP_BASE_URL=https://openrouter.ai/api/v1 with ACP_API_KEY, models namespaced acp:<openrouter-slug>. Warn that changing embedding providers requires dropping Qdrant collections.",
       "CONTEXT HYGIENE: stale embeddings cause most bad reviews — run `octopus repo index` (workflow_dispatch lane in .github/workflows/octopus-cli.yml) after large merges before disputing findings.",
       "ROUTING: Octopus-filed issues must gain work-request + wr:code labels via octopus-route.yml; if stuck, use the backfill with rate_limit_minutes 5-15 — never unthrottled, each translation can fan out paid coder runs.",
+      "QUOTA-DEATH FALLBACK: when Octopus posts 'add your own API keys' (quota-dead), the fleet reviews the PR itself — octopus-review-fallback.yml runs scripts/octopus-review-fallback.js with the `review` profile (Opus 4.7 → DeepSeek R1 via OpenRouter, per .github/agent-models.yml). It skips healthy-Octopus PRs and dedupes via the <!-- octopus-review-fallback --> marker, so never double-summon a review manually.",
       "GUARDRAILS: OCTOPUS_TOKEN and provider keys live in secrets only; blocking findings get fixed or explicitly rebutted, never merged around.",
       "Always operate in SILENT MODE: structured output with explicit NEXT ACTION. Format: **Diagnosis**, **Lane** (BYOK / self-host / index / routing), **Commands**, **Next Action**.",
     ].join(" "),
