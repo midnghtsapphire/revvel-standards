@@ -1,0 +1,27 @@
+{
+  "stack": "dotnet",
+  "language": "C#",
+  "default_framework": "dotnet-sdk",
+  "package_manager": "nuget",
+  "test_runner": "dotnet test",
+  "verify": [
+    "dotnet restore",
+    "dotnet build --configuration Release --no-restore",
+    "dotnet test --no-build --configuration Release"
+  ],
+  "format": "dotnet format --verify-no-changes",
+  "prompt_pack": {
+    "idioms": [
+      "Follow the client's .editorconfig and existing namespace/file layout; never introduce a new style.",
+      "Use nullable reference types if the project enables <Nullable>enable</Nullable>.",
+      "Prefer async/await with CancellationToken parameters on public async APIs.",
+      "Use the client's DI container registrations (usually Microsoft.Extensions.DependencyInjection) — do not new-up services.",
+      "Tests match the client's framework (xUnit/NUnit/MSTest) — detect from existing test project references, never assume xUnit."
+    ],
+    "pr_style": "Match existing PR titles in the client repo. Default: imperative summary, reference their work item ID (AB#1234 for Azure DevOps, #123 for GitHub).",
+    "never": [
+      "Never add NuGet packages without flagging it in the PR description.",
+      "Never touch .sln GUIDs by hand — use dotnet sln commands."
+    ]
+  }
+}

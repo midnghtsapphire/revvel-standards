@@ -656,3 +656,13 @@ At the end of every session:
 - **Tags:** superpowers, tdd, red-green-refactor, brainstorming, systematic-debugging, four-phase-debug, execute-plan, code-reviewer, writing-skills, composable-skills, structured-development, architectural-escalation
 - **Trigger:** "superpowers", "/brainstorming", "/tdd", "/execute-plan", "/debug superpowers", "/writing-skills", "red-green-refactor", "structured tdd", "four-phase debug", "subagent code review", "tests must fail first", "architectural review escalation", "claude superpowers plugin".
 - **Lifecycle:** Composable — load individual modules or the full suite on demand.
+
+#### client-stacks
+
+- **Path:** `skills/client-stacks/`
+- **Files:** `SKILL.md` · `client-stacks.skill.yml` · `detect-stack.js` · `run-engagement.js` · `stacks/*.json`
+- **Description:** Paid-contract engagement kit — hook the fleet into ANY client stack and do the work. `detect-stack.js` profiles a client checkout (language, framework, test runner, CI, package manager); per-stack lane packs (`stacks/dotnet.json`, `java`, `python`, `typescript`, `php`, `go`, `ruby`) carry an idiomatic prompt pack plus the CLIENT'S verify commands so the coding lane runs their tests, not ours; `run-engagement.js` plans a client-style PR in dry-run and appends a per-client JSONL audit action log. Integration tiers (API-only → repo-level → fleet-in-their-infra), remedial-work menu with Polar pricing hooks, isolation rules, and the engagement checklist live in `docs/CLIENT_ENGAGEMENT_KIT.md`.
+- **Tags:** client-contract, stack-detection, polyglot, dotnet, java, python, typescript, php, engagement, audit-log, pricing
+- **Trigger:** "client stack", "client contract", "contract engagement", "detect client stack", "we do C#", "polyglot lane", "engagement kit"
+- **Documentation:** `docs/CLIENT_ENGAGEMENT_KIT.md`
+- **Status:** Active (tests: `tests/client-stacks.test.js`)

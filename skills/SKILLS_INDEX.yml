@@ -176,6 +176,22 @@ skills:
       - "shape router"
       - "session start router"
 
+  - name: client_stacks
+    title: "Client Stacks — Hook Into Any Client Stack and Do the Work"
+    version: "1.0.0"
+    path: "skills/client-stacks/"
+    skill_file: "skills/client-stacks/client-stacks.skill.yml"
+    category: "Agent Operations"
+    integration_doc: "docs/CLIENT_ENGAGEMENT_KIT.md"
+    access: all
+    triggers:
+      - "client stack"
+      - "client contract"
+      - "contract engagement"
+      - "detect client stack"
+      - "polyglot lane"
+      - "engagement kit"
+
   - name: gbrain
     title: "GBrain — Persistent Agent Memory"
     version: "1.0.0"
