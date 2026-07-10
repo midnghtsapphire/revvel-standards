@@ -82,6 +82,14 @@ FILES="$(git diff --name-only --diff-filter=d "$BASE" HEAD -- '*.md')"
 gates **changed** Markdown on purpose. Always `python3 -c "import yaml; yaml.safe_load(open(F))"`
 a workflow after editing it.
 
+If changed-Markdown lint is red, don't hand-fix: run
+`npm run markdown:heal -- <files>` (`scripts/heal-markdown.js`). It fixes the
+non-`--fix`-able structural rules too (MD025 extra H1s → demoted to H2, MD003
+setext → ATX) and then runs `markdownlint-cli2 --fix`. The same healer runs
+automatically on every same-repo PR touching Markdown
+(`markdown-lint-auto-heal.yml`, pushes a `[md-auto-heal]` commit) and at WR
+generation time (`wr-pr-creation.yml`). The gates themselves stay real.
+
 ## Working conventions
 
 - Develop on the assigned feature branch; commit + push there. Open PRs as **draft**.

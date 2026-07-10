@@ -789,6 +789,15 @@ jobs:
 
           print(f'Validated local references in {wr_file}')
           PY
+      - name: Auto-heal Markdown lint in generated WR
+        # Generated WRs carry the issue body verbatim (setext headings,
+        # asterisk bullets, stacked blank lines) plus a prepended `# WR:`
+        # header above template bodies that may already contain an H1 — the
+        # exact findings that turn the changed-Markdown gate red on every WR
+        # PR. Heal them at generation time so the PR is born lint-clean.
+        # (No npm ci in this job: heal-markdown falls back to a pinned
+        # npx markdownlint-cli2 fetch.)
+        run: node scripts/heal-markdown.js "${WR_FILE}"
       - name: Commit WR document
         run: |
           git add "${WR_FILE}"

@@ -32,6 +32,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Ensure local main ref exists for diff-based tooling
+        # The Copilot cloud agent's engine runs `git diff ... main` to compute
+        # changed paths; its checkout is a single-ref clone with no local
+        # `main`, so that dies with "fatal: ambiguous argument 'main'" and
+        # cancels the run. Materialize the ref up front (idempotent — a no-op
+        # when the checkout is already on main).
+        run: |
+          git fetch origin main --depth=200 || true
+          git rev-parse --verify --quiet main >/dev/null \
+            || git branch main origin/main \
+            || true
+
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
         with:
