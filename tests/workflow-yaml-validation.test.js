@@ -276,6 +276,36 @@ test('stuck-label-watchdog.yml reconciles awaiting-review from live approvals on
   }
 });
 
+test('stuck-label-watchdog.yml silently self-heals awaiting-review+approved first, escalates only on same-head recurrence', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'stuck-label-watchdog.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs.sweep.steps[0].with?.script || '';
+
+  // A per-head-SHA hidden marker is how the watchdog remembers a prior silent repair.
+  if (!script.includes('watchdog-silent-repair:awaiting-review-approved:')) {
+    throw new Error('watchdog must record a per-head-SHA silent-repair marker for awaiting-review+approved');
+  }
+  if (!script.includes('alreadySilentlyRepaired')) {
+    throw new Error('watchdog must gate escalation on whether a silent repair already happened on this head SHA');
+  }
+  // First occurrence must NOT create noise: escalation (lifecycle:stuck / repair issue /
+  // visible comment) must be guarded behind the recurrence branch, not run unconditionally.
+  const blockStart = script.indexOf('const STALE_REVIEW_SYNONYMS');
+  const blockEnd = script.indexOf('// Fix: ready-to-merge without approved');
+  if (blockStart === -1 || blockEnd === -1 || blockEnd <= blockStart) {
+    throw new Error('could not locate the awaiting-review+approved conflict block in the watchdog script');
+  }
+  const conflictBlock = script.slice(blockStart, blockEnd);
+  const recurrenceGateIndex = conflictBlock.indexOf('if (!alreadySilentlyRepaired)');
+  if (recurrenceGateIndex === -1) {
+    throw new Error('watchdog must branch on !alreadySilentlyRepaired to keep the first self-heal silent');
+  }
+  const escalationIndex = conflictBlock.indexOf('openAgentRepairIssue');
+  if (escalationIndex === -1 || escalationIndex < recurrenceGateIndex) {
+    throw new Error('watchdog must only open an agent repair issue after the recurrence gate for awaiting-review+approved');
+  }
+});
+
 test('stuck-check-watchdog.yml clears lifecycle:stuck on recovered issues with write scope', () => {
   const filePath = path.join(WORKFLOWS_DIR, 'stuck-check-watchdog.yml');
   const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
@@ -362,6 +392,45 @@ test('pr-lifecycle.yml does not re-add awaiting-review after approval on review_
   }
   if (!script.includes("!approvedOnHead && !cur.includes('awaiting-review')")) {
     throw new Error('awaiting-review must only be added when not approved on head and not already present');
+  }
+});
+
+test('pr-lifecycle.yml approval handler applies labels atomically via setLabels', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['review-state'].steps[0].with?.script || '';
+
+  // Approval events must clear ALL review-waiting label variants and set the
+  // approval state in a single setLabels write — sequential remove/add calls
+  // leave a window where awaiting-review + approved can coexist.
+  if (!script.includes('setLabels')) {
+    throw new Error('review-state must use issues.setLabels for atomic label transitions');
+  }
+  for (const waiting of ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review']) {
+    if (!script.includes(`'${waiting}'`)) {
+      throw new Error(`review-state REVIEW_WAITING must include ${waiting}`);
+    }
+  }
+  if (!script.includes('REVIEW_WAITING')) {
+    throw new Error('review-state must define the REVIEW_WAITING variant list');
+  }
+  if (!script.includes('setLabelsAtomic')) {
+    throw new Error('review-state approved/changes_requested paths must use setLabelsAtomic');
+  }
+});
+
+test('pr-review-status.yml removes all review-waiting variants atomically', () => {
+  const filePath = path.join(WORKFLOWS_DIR, 'pr-review-status.yml');
+  const doc = yaml.parse(fs.readFileSync(filePath, 'utf8'));
+  const script = doc.jobs['update-review-status'].steps[0].with?.script || '';
+
+  if (!script.includes('setLabels')) {
+    throw new Error('update-review-status must use issues.setLabels for atomic label transitions');
+  }
+  for (const waiting of ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review']) {
+    if (!script.includes(`'${waiting}'`)) {
+      throw new Error(`update-review-status reviewLabels must include ${waiting}`);
+    }
   }
 });
 

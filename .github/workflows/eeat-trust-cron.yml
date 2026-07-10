@@ -62,11 +62,10 @@ jobs:
         uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
-      - name: Load secrets from Doppler
-        if: steps.quiet.outputs.active == 'true'
-        uses: dopplerhq/secrets-fetch-action@v2.0.0
-        with:
-          doppler-token: ${{ secrets.DOPPLER_AGENT_TOKEN || secrets.DOPPLER_TOKEN || secrets.DOPPLER_LOCAL_TOKEN || secrets.DOPPLER_API_KEY || secrets.DOPPLER_AGENT_ODIC || secrets.DOPPLER_CIRCLECI_OIDC }}
+      # Doppler fetch step removed 2026-07-09 — Doppler is decommissioned
+      # (wr/pending/12-secrets-sanity.md, issue #15516). Any env this job needs
+      # must be referenced directly from GitHub Actions secrets. Without a
+      # valid token the fetch action failed the whole nightly run.
       - name: Install dependencies
         if: steps.quiet.outputs.active == 'true'
         run: |

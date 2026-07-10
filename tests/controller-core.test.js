@@ -4,6 +4,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const {
   DEFAULTS,
+  DEFAULT_MODEL_CHAIN,
   runStartMs,
   isProtected,
   classifyRun,
@@ -113,18 +114,40 @@ test('nextModel returns the first untried model, else null', () => {
 
 test('planPreemptions: cut+reassign up to the cap, then escalate to self-healing', () => {
   const cut = [{ id: 9, path: '.github/workflows/foo.yml', health: 'stalled', reason: 'no progress for 16m', headBranch: 'main' }];
-  // fresh => reassign to chain[0]
+  // fresh => reassign to chain[0] (derived from the chain, never hardcoded)
   const first = planPreemptions(cut)[0];
   assert.equal(first.action, 'reassign');
-  assert.equal(first.nextModel, 'anthropic/claude-3.5-sonnet');
+  assert.equal(first.nextModel, DEFAULT_MODEL_CHAIN[0]);
   assert.equal(first.reassignCount, 1);
   assert.equal(first.ref, 'main');
   // already reassigned twice with two models tried => escalate
   const exhausted = planPreemptions(cut, {
-    priorReassigns: { '.github/workflows/foo.yml': { count: 2, tried: ['anthropic/claude-3.5-sonnet', 'openrouter/fusion'] } },
+    priorReassigns: { '.github/workflows/foo.yml': { count: 2, tried: DEFAULT_MODEL_CHAIN.slice(0, 2) } },
   })[0];
   assert.equal(exhausted.action, 'escalate');
   assert.match(exhausted.reason, /exhausted/);
+});
+
+test('DEFAULT_MODEL_CHAIN honours the SSOT model policy (twins + Fable 5, no denylisted models)', () => {
+  // Drift-proof: read the denylist straight from .github/agent-models.yml so
+  // this test fails the moment a banned model (Sonnet family, auto/fusion)
+  // sneaks back into the controller's reassignment chain.
+  const fs = require('fs');
+  const path = require('path');
+  const YAML = require('yaml');
+  const ssot = YAML.parse(fs.readFileSync(path.join(__dirname, '..', '.github', 'agent-models.yml'), 'utf8'));
+  const denyRes = (ssot.denylist || []).map((d) =>
+    new RegExp(`^${String(d.pattern).replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`)
+  );
+  assert.ok(denyRes.length >= 2, 'SSOT denylist should exist');
+  for (const model of DEFAULT_MODEL_CHAIN) {
+    for (const re of denyRes) {
+      assert.ok(!re.test(model), `${model} is denylisted by ${re}`);
+    }
+  }
+  // The owner's standing policy: Opus 4.8/4.7 twins first, Fable 5 reasoning.
+  assert.deepEqual(DEFAULT_MODEL_CHAIN.slice(0, 2), ['anthropic/claude-opus-4.8', 'anthropic/claude-opus-4.7']);
+  assert.equal(DEFAULT_MODEL_CHAIN[2], 'anthropic/claude-fable-5');
 });
 
 test('evaluate is a pure node: feed + stop + self-healing ingestion', () => {
@@ -136,7 +159,7 @@ test('evaluate is a pure node: feed + stop + self-healing ingestion', () => {
   // arm b as already-exhausted so it lands in ingestion
   const out = evaluate(runs, now, {
     preemptEnabled: true,
-    priorReassigns: { '.github/workflows/b.yml': { count: 2, tried: ['anthropic/claude-3.5-sonnet', 'openrouter/fusion'] } },
+    priorReassigns: { '.github/workflows/b.yml': { count: 2, tried: DEFAULT_MODEL_CHAIN.slice(0, 2) } },
   });
   assert.equal(out.feed.schema, 'fleet-controller/v1');
   assert.equal(out.ingestion.schema, 'fleet-controller-ingestion/v1');

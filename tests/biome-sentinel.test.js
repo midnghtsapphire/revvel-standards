@@ -8,6 +8,8 @@ const {
   buildSentinelSection,
   shouldFileIncident,
   buildIncidentBody,
+  buildIncidentTitle,
+  buildResolutionComment,
   INCIDENT_MARKER,
   DEFAULTS,
 } = require('../scripts/biome/sentinel');
@@ -71,4 +73,36 @@ test('buildIncidentBody embeds dedupe marker', () => {
   const body = buildIncidentBody(section, '2026-06-30T00:00:00Z');
   assert.ok(body.includes(INCIDENT_MARKER));
   assert.ok(body.includes('credit-free'));
+});
+
+test('buildIncidentTitle reflects the current status', () => {
+  const degraded = buildSentinelSection({ failed: 3, total: 10, failureRate: 0.3, recentFailures: [] }, []);
+  assert.equal(buildIncidentTitle(degraded), '[BIOME-SENTINEL] Fleet pain detected (degraded)');
+  const down = buildSentinelSection({ failed: 5, total: 10, failureRate: 0.5, recentFailures: [] }, [{ number: 9 }]);
+  assert.equal(buildIncidentTitle(down), '[BIOME-SENTINEL] Fleet pain detected (down)');
+});
+
+test('buildResolutionComment embeds dedupe marker and timestamp', () => {
+  const comment = buildResolutionComment('2026-06-30T00:00:00Z');
+  assert.ok(comment.includes(INCIDENT_MARKER));
+  assert.ok(comment.includes('2026-06-30T00:00:00Z'));
+  assert.ok(/auto-resolving/i.test(comment));
+});
+
+test('sentinel CLI refreshes existing incidents in place (PATCH, not comment spam)', () => {
+  // Regression guard for the "chatty cathy" incident (#15491): an ongoing
+  // incident must be refreshed by editing the issue, never by POSTing a new
+  // comment every 2h sweep. Semantic check: the only comment POST allowed is
+  // the one-time recovery note (buildResolutionComment).
+  const fs = require('fs');
+  const path = require('path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'biome', 'sentinel.js'), 'utf8');
+  const commentPosts = src.match(/\/comments`/g) || [];
+  assert.equal(commentPosts.length, 1, 'exactly one comment POST is allowed (the recovery note)');
+  const commentIdx = src.indexOf('/comments`');
+  const surrounding = src.slice(Math.max(0, commentIdx - 300), commentIdx + 300);
+  assert.ok(surrounding.includes('buildResolutionComment'),
+    'the only comment POST must be the recovery resolution note');
+  assert.ok(src.includes("method: 'PATCH'"), 'sentinel must PATCH the incident');
+  assert.ok(src.includes("state: 'closed'"), 'sentinel must auto-resolve on recovery');
 });
