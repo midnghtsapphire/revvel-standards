@@ -177,3 +177,31 @@ test('lastJobActivityMs returns null when the jobs API yields nothing (fall back
   assert.equal(await lastJobActivityMs(1, () => Promise.resolve(null)), null);
   assert.equal(await lastJobActivityMs(1, () => Promise.resolve({ jobs: [] })), null);
 });
+
+test('lastJobActivityMs pages past 100 jobs so a large matrix run is not falsely cut', async () => {
+  const page1 = Array.from({ length: 100 }, () => ({ started_at: '2026-07-10T00:00:00Z', steps: [] }));
+  const page2 = [{ started_at: '2026-07-10T00:00:00Z', steps: [{ started_at: '2026-07-10T00:30:00Z' }] }];
+  const pagesSeen = [];
+  const api = (url) => {
+    const page = Number((url.match(/[?&]page=(\d+)/) || [])[1] || 1);
+    pagesSeen.push(page);
+    return Promise.resolve({ jobs: page === 1 ? page1 : page === 2 ? page2 : [] });
+  };
+  const ms = await lastJobActivityMs(1, api);
+  assert.equal(ms, Date.parse('2026-07-10T00:30:00Z')); // activity found on page 2
+  assert.deepEqual(pagesSeen, [1, 2]); // stopped on the short page
+});
+
+test('legacy feed entries are stamped at migration so the TTL can expire them', () => {
+  const dir = writeFeed({
+    preempt_enabled: true,
+    preemptions: [{ path: '.github/workflows/a.yml', planned: 'reassign', reassign_count: 1, tried_models: ['m1'] }],
+  });
+  const migrateAt = Date.parse('2026-07-10T00:00:00Z');
+  const state = loadControllerState(dir, migrateAt);
+  assert.equal(state['.github/workflows/a.yml'].last_cut_at, new Date(migrateAt).toISOString());
+  // Persist it, then confirm it expires like any other entry.
+  saveControllerState(dir, state, [], new Date(migrateAt).toISOString());
+  assert.ok(loadControllerState(dir, migrateAt + STATE_TTL_MS - 1000)['.github/workflows/a.yml']);
+  assert.equal(loadControllerState(dir, migrateAt + STATE_TTL_MS + 1000)['.github/workflows/a.yml'], undefined);
+});

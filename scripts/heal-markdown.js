@@ -260,13 +260,25 @@ function runMarkdownlint(files, opts = {}) {
  * @returns {RegExp}
  */
 function globToRegExp(pattern) {
-  let p = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
-  p = p
-    .replace(/\*\*/g, "\u0000")
-    .replace(/\*/g, "[^/]*")
-    .replace(/\u0000/g, ".*")
-    .replace(/\?/g, "[^/]");
-  return new RegExp(`^${p}(?:$|/)`);
+  // Segment-wise build so `**` keeps gitignore semantics: a globstar segment
+  // matches ZERO or more whole directories (docs/**/drafts must match
+  // docs/drafts/x.md, not require an intermediate directory).
+  const segments = pattern.split("/");
+  const parts = [];
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const isLast = i === segments.length - 1;
+    if (seg === "**") {
+      parts.push(isLast ? "(?:.*)?" : "(?:[^/]+/)*");
+      continue;
+    }
+    const esc = seg
+      .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+      .replace(/\*/g, "[^/]*")
+      .replace(/\?/g, "[^/]");
+    parts.push(esc + (isLast ? "" : "/"));
+  }
+  return new RegExp(`^${parts.join("")}(?:$|/)`);
 }
 
 /**

@@ -139,3 +139,14 @@ test("globToRegExp + isIgnored honour .markdownlintignore-style patterns", () =>
   assert.equal(isIgnored("wr/issues/issue-1-x.md", patterns, root), false);
   assert.equal(isIgnored("CLAUDE.md", patterns, root), false);
 });
+
+test("globToRegExp: a middle/leading globstar matches ZERO directories (gitignore semantics)", () => {
+  const root = require("path").resolve(__dirname, "..");
+  const mid = [globToRegExp("docs/**/transcripts/**")];
+  assert.equal(isIgnored("docs/transcripts/t1.md", mid, root), true); // zero dirs between
+  assert.equal(isIgnored("docs/agents/x/transcripts/t1.md", mid, root), true); // many dirs
+  assert.equal(isIgnored("docs/transcripts-other/t1.md", mid, root), false);
+  const lead = [globToRegExp("**/drafts/**")];
+  assert.equal(isIgnored("drafts/a.md", lead, root), true); // zero leading dirs
+  assert.equal(isIgnored("x/y/drafts/a.md", lead, root), true);
+});

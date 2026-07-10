@@ -95,7 +95,11 @@ function loadControllerState(outDir, nowMs = Date.now(), ttlMs = STATE_TTL_MS) {
   if (!workflows) {
     workflows = {};
     const legacy = loadPriorReassigns(outDir);
-    for (const [k, v] of Object.entries(legacy)) workflows[k] = { ...v, last_cut_at: null };
+    // Stamp migrated entries with the migration time so the TTL applies to
+    // them too — a null stamp would survive expiry forever, and a workflow
+    // that recovered could skip straight to escalation days later.
+    const migratedAt = new Date(nowMs).toISOString();
+    for (const [k, v] of Object.entries(legacy)) workflows[k] = { ...v, last_cut_at: migratedAt };
   }
   const live = {};
   for (const [k, v] of Object.entries(workflows)) {
@@ -134,21 +138,27 @@ function saveControllerState(outDir, workflows, preemptions, generatedAtIso) {
  */
 async function lastJobActivityMs(runId, api = repoApi) {
   if (!api) return null;
-  const data = await api(`/actions/runs/${runId}/jobs?per_page=100`, { allowError: true });
-  const jobs = data && Array.isArray(data.jobs) ? data.jobs : null;
-  if (!jobs) return null;
   let last = null;
   const consider = (t) => {
     const ms = Date.parse(t || '');
     if (Number.isFinite(ms)) last = last == null ? ms : Math.max(last, ms);
   };
-  for (const j of jobs) {
-    consider(j.started_at);
-    consider(j.completed_at);
-    for (const s of j.steps || []) {
-      consider(s.started_at);
-      consider(s.completed_at);
+  // Page past 100 jobs (bounded) — a large matrix run's ACTIVE job can sit
+  // beyond page 1, and missing it would spuriously cut a healthy run.
+  // Partial data can only miss a spare, never create a false one.
+  for (let page = 1; page <= 5; page += 1) {
+    const data = await api(`/actions/runs/${runId}/jobs?per_page=100&page=${page}`, { allowError: true });
+    const jobs = data && Array.isArray(data.jobs) ? data.jobs : null;
+    if (!jobs) break;
+    for (const j of jobs) {
+      consider(j.started_at);
+      consider(j.completed_at);
+      for (const s of j.steps || []) {
+        consider(s.started_at);
+        consider(s.completed_at);
+      }
     }
+    if (jobs.length < 100) break; // last page
   }
   return last;
 }
