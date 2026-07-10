@@ -212,6 +212,7 @@ const CHECKS = [
         'scripts/secret-set.sh',
         'scripts/provision-repo-secrets.sh',
         'scripts/auditor-controller.js',
+        'scripts/secrets-map.js',           // mentions DOPPLER_TOKEN in JSDoc comment only (decommission docs)
         '.github/workflows/bito-ai.yml',
         '.github/workflows/eeat-trust-cron.yml',
         'scripts/gatekeeper-cli.md',
