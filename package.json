@@ -20,6 +20,7 @@
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\"",
     "markdown:backlog": "node scripts/fix-markdown-backlog.js --check",
     "markdown:fix-backlog": "node scripts/fix-markdown-backlog.js --fix",
+    "markdown:heal": "node scripts/heal-markdown.js",
     "scorecard": "node scripts/agent-scorecard/index.js",
     "connections": "node scripts/connections-registry.js --markdown",
     "connections:html": "node scripts/connections-registry.js --html",
