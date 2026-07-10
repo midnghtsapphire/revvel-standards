@@ -80,8 +80,10 @@ export async function POST(request) {
       );
     }
 
+    // Use the GA model (not the -preview slug) — preview endpoints go offline
+    // without notice and return "No endpoints found". The stable slug is always served.
     const model =
-      process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image-preview';
+      process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image';
     const label = title || `Amazon product ${asin}`;
     const images = [];
     const errors = [];
