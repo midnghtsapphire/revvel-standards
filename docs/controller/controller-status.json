@@ -1,205 +1,37 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-10T04:13:36.173Z",
+  "generated_at": "2026-07-10T05:44:35.266Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 15,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 20,
-    "running": 15,
+    "total": 6,
+    "running": 1,
     "queued": 5,
     "done": 0,
-    "healthy": 5,
-    "stalled": 10,
+    "healthy": 1,
+    "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 15,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29068549311,
+      "id": 29072069154,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29068549311",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29072069154",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7173,
-      "since_update_ms": 4173,
+      "age_ms": 8266,
+      "since_update_ms": 4266,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 29068216297,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29068216297",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 527173,
-      "since_update_ms": 422173,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29068191428,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29068191428",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 568173,
-      "since_update_ms": 501173,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29068158317,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29068158317",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 619173,
-      "since_update_ms": 569173,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29067985498,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067985498",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 896173,
-      "since_update_ms": 705173,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29067825542,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067825542",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1171173,
-      "since_update_ms": 911173,
-      "reason": "no progress for 15m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067807608,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067807608",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1202173,
-      "since_update_ms": 966173,
-      "reason": "no progress for 16m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067788979,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067788979",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1233173,
-      "since_update_ms": 1044173,
-      "reason": "no progress for 17m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067758044,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067758044",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1285173,
-      "since_update_ms": 1106173,
-      "reason": "no progress for 18m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067727440,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067727440",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1338173,
-      "since_update_ms": 1195173,
-      "reason": "no progress for 20m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067664679,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067664679",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1442173,
-      "since_update_ms": 1292173,
-      "reason": "no progress for 22m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067645439,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067645439",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1475173,
-      "since_update_ms": 1353173,
-      "reason": "no progress for 23m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067602266,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067602266",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1553173,
-      "since_update_ms": 1504173,
-      "reason": "no progress for 25m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067601496,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067601496",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1554173,
-      "since_update_ms": 1505173,
-      "reason": "no progress for 25m ≥ 15m",
-      "protected": false
-    },
-    {
-      "id": 29067561154,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29067561154",
-      "status": "in_progress",
-      "health": "stalled",
-      "age_ms": 1624173,
-      "since_update_ms": 1594173,
-      "reason": "no progress for 27m ≥ 15m",
-      "protected": false
     },
     {
       "id": 29060586643,
@@ -262,166 +94,5 @@
       "protected": false
     }
   ],
-  "preemptions": [
-    {
-      "id": 29067825542,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 15m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/marketplace-relisting-pipeline\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067807608,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 16m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/client-contract-fleet-hook\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067788979,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 17m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/watchdog-repair-auto-moving-issues\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067758044,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 18m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/biome-sentinel-fix-fleet-pain-detected\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067727440,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 20m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: wr/issue-15638-revvel-standards-docs-marketplace-relister-has-an-\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067664679,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 22m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/fix-endpoint-error-marketplace-relister\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067645439,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 23m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/wr-veins-grounding-gate-stop-fake-sheaf-healing\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067602266,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 25m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/fix-dragnet\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067601496,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 25m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: claude/markdown-lint-auto-heal-0y81yk\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    },
-    {
-      "id": 29067561154,
-      "name": "Create Issue Branch",
-      "path": ".github/workflows/create-issue-branch.yml",
-      "health": "stalled",
-      "reason": "no progress for 27m ≥ 15m",
-      "planned": "reassign",
-      "next_model": "anthropic/claude-opus-4.8",
-      "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "cut": "cancelled",
-      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/create-issue-branch.yml/dispatches -> 422 {\"message\":\"No ref found for: copilot/fix-dragnet\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}",
-      "error": null
-    }
-  ]
+  "preemptions": []
 }
