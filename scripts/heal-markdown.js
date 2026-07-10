@@ -51,11 +51,13 @@ const REPO_ROOT = path.resolve(__dirname, "..");
 const MARKDOWNLINT_PINNED = "markdownlint-cli2@0.22.1";
 
 /** Matches an opening/closing code fence (``` or ~~~, up to 3 leading spaces). */
-const FENCE_RE = /^ {0,3}(`{3,}|~{3,})/;
+const FENCE_RE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 
 /**
  * Split text into lines with an "inside fenced code block" flag per line.
- * Conservative toggle model: any fence line flips state; fence lines
+ * Tracks the opening marker character and length: per CommonMark, a block
+ * only closes on a fence of the SAME character, at least as long, with no
+ * info string — so a ``` line inside a ~~~~ block stays content. Fence lines
  * themselves are marked as inside so no transform ever touches them.
  *
  * @param {string} text
@@ -64,13 +66,21 @@ const FENCE_RE = /^ {0,3}(`{3,}|~{3,})/;
 function mapFences(text) {
   const lines = text.split("\n");
   const inFence = new Array(lines.length).fill(false);
-  let open = false;
+  let open = null; // {char, len} of the currently open fence
   for (let i = 0; i < lines.length; i++) {
-    if (FENCE_RE.test(lines[i])) {
+    const m = lines[i].match(FENCE_RE);
+    if (m) {
       inFence[i] = true;
-      open = !open;
+      const char = m[1][0];
+      const len = m[1].length;
+      if (!open) {
+        open = { char, len };
+      } else if (char === open.char && len >= open.len && m[2].trim() === "") {
+        open = null; // valid closing fence
+      }
+      // otherwise: a fence-looking line INSIDE the open block — stays content
     } else {
-      inFence[i] = open;
+      inFence[i] = open != null;
     }
   }
   return { lines, inFence };
@@ -158,12 +168,13 @@ function demoteExtraH1s(text) {
   let seenH1 = false;
   const out = lines.map((line, i) => {
     if (inFence[i]) return line;
-    if (/^#(?!#)/.test(line)) {
+    // ATX headings allow up to 3 leading spaces — preserve them when demoting.
+    if (/^ {0,3}#(?!#)/.test(line)) {
       if (!seenH1) {
         seenH1 = true;
         return line;
       }
-      return `#${line}`;
+      return line.replace(/^( {0,3})#/, "$1##");
     }
     return line;
   });
@@ -242,6 +253,57 @@ function runMarkdownlint(files, opts = {}) {
 }
 
 /**
+ * Convert one .markdownlintignore pattern (gitignore-lite: `**`, `*`, `?`)
+ * to an anchored RegExp over repo-relative POSIX paths. Pure + unit-tested.
+ *
+ * @param {string} pattern
+ * @returns {RegExp}
+ */
+function globToRegExp(pattern) {
+  let p = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+  p = p
+    .replace(/\*\*/g, "\u0000")
+    .replace(/\*/g, "[^/]*")
+    .replace(/\u0000/g, ".*")
+    .replace(/\?/g, "[^/]");
+  return new RegExp(`^${p}(?:$|/)`);
+}
+
+/**
+ * Read .markdownlintignore patterns (comments/blank lines dropped).
+ *
+ * @param {string} [repoRoot]
+ * @returns {RegExp[]}
+ */
+function loadIgnorePatterns(repoRoot = REPO_ROOT) {
+  try {
+    return fs
+      .readFileSync(path.join(repoRoot, ".markdownlintignore"), "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith("#"))
+      .map(globToRegExp);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * True when a file is excluded by .markdownlintignore — the structural pass
+ * must never rewrite content the lint gate would never judge (raw transcripts,
+ * research dumps, audit prompts).
+ *
+ * @param {string} file - path as given on the CLI
+ * @param {RegExp[]} patterns
+ * @param {string} [repoRoot]
+ * @returns {boolean}
+ */
+function isIgnored(file, patterns, repoRoot = REPO_ROOT) {
+  const rel = path.relative(repoRoot, path.resolve(file)).split(path.sep).join("/");
+  return patterns.some((re) => re.test(rel));
+}
+
+/**
  * Parse CLI args. Pure + unit-tested.
  *
  * @param {string[]} argv - process.argv.slice(2)
@@ -260,10 +322,15 @@ function parseArgs(argv) {
 function main() {
   const opts = parseArgs(process.argv.slice(2));
 
+  const ignorePatterns = loadIgnorePatterns();
   const files = opts.files.filter((f) => {
     if (!f.endsWith(".md")) return false;
     if (!fs.existsSync(f)) {
       console.log(`skip (missing): ${f}`);
+      return false;
+    }
+    if (isIgnored(f, ignorePatterns)) {
+      console.log(`skip (.markdownlintignore): ${f}`);
       return false;
     }
     return true;
@@ -295,6 +362,13 @@ function main() {
   const finalRun = runMarkdownlint(files);
   const remaining = countLintErrors(finalRun.output);
   if (remaining === 0) {
+    // Zero findings parsed + non-zero exit = the linter itself failed to run
+    // (npx fetch failure, killed process, bad config) — that is NOT "clean".
+    if (finalRun.status !== 0) {
+      console.error("markdownlint-cli2 invocation failed (no findings parsed):");
+      console.error(finalRun.output);
+      process.exit(1);
+    }
     console.log("✅ All findings healed; files are lint-clean.");
     return;
   }
@@ -319,4 +393,7 @@ module.exports = {
   countLintErrors,
   parseArgs,
   mapFences,
+  globToRegExp,
+  loadIgnorePatterns,
+  isIgnored,
 };

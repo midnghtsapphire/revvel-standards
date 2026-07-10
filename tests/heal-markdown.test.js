@@ -9,6 +9,8 @@ const {
   heal,
   countLintErrors,
   parseArgs,
+  globToRegExp,
+  isIgnored,
 } = require("../scripts/heal-markdown.js");
 
 test("convertSetextToAtx: = underline becomes H1, - underline becomes H2", () => {
@@ -108,4 +110,32 @@ test("parseArgs separates flags from files", () => {
   assert.equal(opts.strict, true);
   assert.equal(opts.quiet, true);
   assert.deepEqual(opts.files, ["a.md", "b.md"]);
+});
+
+test("mapFences: a ``` line inside a ~~~ block does not close it (marker tracking)", () => {
+  const input = "~~~\n```\nFake Heading\n====\n~~~\ntext";
+  assert.equal(convertSetextToAtx(input), input);
+  assert.equal(demoteExtraH1s(`# Real\n~~~\n# not a heading\n\`\`\`\n# also not\n~~~`),
+    "# Real\n~~~\n# not a heading\n```\n# also not\n~~~");
+});
+
+test("mapFences: a longer same-char fence closes; a shorter one does not", () => {
+  // ```` opened; ``` inside stays content; ```` closes.
+  const input = "````\n```\nStill Code\n====\n````\n\nAfter\n====";
+  const out = convertSetextToAtx(input);
+  assert.equal(out, "````\n```\nStill Code\n====\n````\n\n# After");
+});
+
+test("demoteExtraH1s: indented (≤3 spaces) H1s are demoted with indentation preserved", () => {
+  const input = "# First\n\n   # Second";
+  assert.equal(demoteExtraH1s(input), "# First\n\n   ## Second");
+});
+
+test("globToRegExp + isIgnored honour .markdownlintignore-style patterns", () => {
+  const patterns = ["docs/MASTER_AUDIT_PROMPTS/**", "docs/research-drafts/**"].map(globToRegExp);
+  const root = require("path").resolve(__dirname, "..");
+  assert.equal(isIgnored("docs/MASTER_AUDIT_PROMPTS/session.md", patterns, root), true);
+  assert.equal(isIgnored("docs/research-drafts/deep/nested/dump.md", patterns, root), true);
+  assert.equal(isIgnored("wr/issues/issue-1-x.md", patterns, root), false);
+  assert.equal(isIgnored("CLAUDE.md", patterns, root), false);
 });
