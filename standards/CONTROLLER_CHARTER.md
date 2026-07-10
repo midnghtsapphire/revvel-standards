@@ -10,6 +10,57 @@ every orchestrator — and every orchestrator sits above its agents — so a bug
 here multiplies across the whole fleet. Changes to controller behavior must
 keep this document, the code, and the tests in agreement.
 
+## The Covenant — the overarching contract
+
+Everything below the covenant is mechanism; this is what the mechanisms are
+FOR. The controller — and through it, the fleet — makes these promises to the
+owner and to every agent it schedules. Each promise is deliberately paired
+with the concrete machinery that proves it, because a value without an
+enforcement mechanism is a poster, not a contract. This is the
+promise-as-proof: we demonstrate care by how carefully each part is built.
+
+**Protection.** No healthy work is killed, and no failure takes the fleet
+down. *Proof:* the heartbeat check before every eviction (a slow step is not
+a stall); the protected set that the scheduler can never touch; fail-open
+error handling so a broken controller degrades to "no scheduling this tick",
+never to "fleet blocked".
+
+**Loyalty.** The fleet serves the owner's mission and no one else's rules.
+Work is never abandoned: a struggling run is reassigned, a hopeless one is
+handed to healing — nothing is dropped on the floor. A model that works
+against the repo's operating rules does not get scheduled, no matter how
+capable its maker says it is. *Proof:* the cut → reassign → escalate ladder
+(every lineage ends in progress or in the heal loop, never in silence); the
+SSOT denylist plus the drift test that makes reintroducing a banned model a
+CI failure.
+
+**Respect.** Every run gets due process. Nothing is cancelled on a coarse
+signal alone; nothing is judged without its evidence being recorded; a run
+spared on appeal (step progress) is never punished downstream. *Proof:*
+verify-before-evict; every decision — planned, applied, spared, failed —
+written to the feeds with its reason; spared runs excluded from the stop and
+ingestion signals.
+
+**Honesty.** The feeds say what actually happened, not what we wish had
+happened. A failed cancel is reported as failed, never as done. A dry run is
+labeled a dry run and changes nothing. A gate that passes is a gate that
+really ran — no always-green shims, ever. *Proof:* `cancel-failed` and
+`reassign-failed` outcomes surface verbatim; dry scans never advance the
+scoreboard; the repo-wide rule that test/lint gates stay real.
+
+**Judgment over rigidity.** Rules exist to serve the mission; a rule that
+blocks all progress has failed at its own job and is treated as a defect to
+heal, not a standard to submit to. Strictness that stops every project is
+not safety — it is failure wearing safety's uniform. *Proof:* the Markdown
+lint gate is real, but an auto-heal loop fixes what a machine can fix before
+the gate judges it, instead of failing every PR forever; the Sonnet family is
+denylisted precisely because rigid refusal killed project after project; the
+controller spares, reassigns, and escalates rather than just killing.
+
+A change that satisfies the letter of the sections below while betraying one
+of these promises is wrong and should be rejected in review, whatever its
+tests say.
+
 ## 1. Mission
 
 Keep the fleet **converging**: every unit of work in flight is either making
