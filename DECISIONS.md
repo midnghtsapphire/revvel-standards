@@ -26,12 +26,14 @@
 | D008 | **REPLACE Octopus Review** → ai-pr-review-openrouter lane | Quota-dead on free tier; OpenRouter lane (Opus 4.x / DeepSeek fallback) covers same signal at ~API cost only; no new vendor lock-in | 2026-07-08 | @midnghtsapphire |
 | D009 | **KEEP CodeRabbit** on free tier | Free GitHub App; codebase-index catches 2 unique issues in 50-PR sample; $0 cost | 2026-07-08 | @midnghtsapphire |
 | D010 | **KEEP Mabl** archived / paused (prior decision 2026-05-27) | Replaced by Keploy for E2E; workflow auto-triggers already commented out; no action needed | 2026-07-08 | @midnghtsapphire |
+| D012 | **Host is deterministic** — rule-based decomposition of WR → agent-contract, NOT LLM-driven. `scripts/host.js` is a pure library exporting `decompose(input)` + `validate(contract)`. Contract schema is JSON Schema Draft 2020-12 (`schemas/agent-contract.schema.json`). Device Tree (`config/device-tree.yml`) has 11 Thread kinds across 7 roles. Host does NOT dispatch — `agent-fallback.yml` does. Grid gating expressed as `depends_on` chain in the contract. | Deterministic host makes pause/resume honest and testable. LLM is not needed to read a `## Blocks` bullet list; using one would break reproducibility of the contract. Draft 2020-12 matches existing `state.schema.json` precedent. Separation of Host (planner) from `agent-fallback.yml` (dispatcher) keeps each layer testable. | 2026-07-10 | @midnghtsapphire |
 
 ---
 
 ## Pending Decisions
 
 > None currently. Review-tool fleet consolidated 2026-07-08 (D006–D010).
+> Host + agent-contract schema locked 2026-07-10 (D012). Depends on D011 (checkpoint-gated Grids, PR #15668).
 
 ---
 

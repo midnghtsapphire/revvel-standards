@@ -74,14 +74,20 @@ async function runTests() {
 
   // Registry shape
   console.log("Test Group: Persona Registry");
-  // Core personas are hand-authored here; fleet pattern experts are derived
-  // from skills/agentic-workflow-fleet/FLEET.yml via agent-creator-data.json.
+  // Core + fleet personas are the SLA-critical roster that must never regress.
+  // The registry is allowed to grow (e.g. security fleet added personas beyond
+  // this list on 2026-07-08); the guarantee is that the mandatory ones are
+  // still present. Assert superset, not equality. Drift lesson: hardcoded
+  // registry sizes broke this test twice in one week (learnings.md 2026-07-08
+  // and 2026-07-10) - do not reintroduce a hardcoded total.
   const CORE_PERSONAS = ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"];
   const FLEET_PERSONAS = ["chain", "planner", "fanout", "conductor", "switchboard", "critic", "mirror", "rewoo", "loop"];
+  const registryKeys = new Set(Object.keys(getPersonas()));
+  const missing = [...CORE_PERSONAS, ...FLEET_PERSONAS].filter((k) => !registryKeys.has(k));
   assertEqual(
-    Object.keys(getPersonas()).sort(),
-    [...CORE_PERSONAS, ...FLEET_PERSONAS].sort(),
-    "Should register the nine core personas plus the nine fleet pattern experts"
+    missing,
+    [],
+    "Registry contains every mandatory core + fleet persona (extras allowed)"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
