@@ -1,47 +1,131 @@
 name: WR Field Filler — no blanks ever ship
 
-# Fires on every new/edited Work Request issue. Runs scripts/wr-fill-fields.js,
-# which loops through every field defined in config/wr-field-defaults.yml and
-# fills any blank one via rule-based defaults, then LLM refinement, then a
+# Fires on new/edited Work Request issues AND on downstream failures AND on a
+# 15-minute sweep. Runs scripts/wr-fill-fields.js, which loops through every
+# field defined in config/wr-field-defaults.yml and fills any blank one via
+# rule-based defaults, then LLM refinement (OpenRouter cascade), then a
 # guaranteed non-empty fallback. Never stops with a blank.
 #
-# Idempotent: skipped when the issue body already has zero blank markers, so
-# manually filled WRs are not overwritten.
+# Four ways this fires:
+#   1. issues events (opened / edited / labeled)                — normal intake
+#   2. workflow_run: WR PR Creation completed failure           — self-heal loop
+#   3. schedule (every 15 min)                                  — stragglers + missed events
+#   4. workflow_dispatch                                        — manual
+#
+# After a fill, the workflow toggles the `wr:reset` label. Per the WR PR
+# Creation workflow header, `wr:reset` is the canonical self-heal signal that
+# forces `wr-pr-creation.yml` to try again with the newly-filled body — closing
+# the loop without a human in the middle.
 
 on:
   issues:
     types: [opened, edited, labeled]
+  workflow_run:
+    # When WR PR Creation (or WR Lint) fails, the most common cause is a
+    # blank field the intake form left as `_No response_` / `None`. The
+    # workflow_run trigger lets us pick that up automatically. We ONLY act
+    # on `completed + failure` conclusions, so a green run is a no-op.
+    workflows: ["WR PR Creation", "WR Lint"]
+    types: [completed]
+  schedule:
+    # Every 15 min. Catches: WRs opened before this workflow existed, events
+    # that were dropped (label races), and edits where the fill errored.
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       issue_number:
         description: WR issue number to (re)fill
-        required: true
+        required: false
         type: number
 
 concurrency:
-  group: wr-fill-${{ github.event.issue.number || inputs.issue_number }}
+  group: wr-fill-${{ github.event.issue.number || inputs.issue_number || github.event.workflow_run.id || github.run_id }}
   cancel-in-progress: false
 
 permissions:
   contents: read
   issues: write
+  actions: write   # needed to re-dispatch the failed downstream workflow
 
 jobs:
+  # ── Discovery ────────────────────────────────────────────────────────────
+  # For events with an explicit issue number, emit that number. For sweep /
+  # workflow_run, scan open WRs and emit every issue that still has blank
+  # markers.
+  discover:
+    name: Discover WR(s) that need filling
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      issues: ${{ steps.compute.outputs.issues }}
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --no-audit --no-fund
+
+      - name: Skip sweep when triggering workflow_run was a success
+        if: >
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion != 'failure'
+        run: |
+          echo "Downstream workflow succeeded — nothing to self-heal."
+          echo "SKIP=1" >> "$GITHUB_ENV"
+
+      - name: Compute list of issues to fill
+        id: compute
+        if: env.SKIP != '1'
+        run: |
+          set -euo pipefail
+          # Event-scoped issue number takes precedence when present.
+          ISSUE="${{ github.event.issue.number || inputs.issue_number || '' }}"
+          if [ -n "$ISSUE" ]; then
+            # Confirm this single issue actually needs filling; if not, emit
+            # an empty list so we do not thrash a fully-filled WR.
+            NUMS="$(node scripts/wr-fill-sweep.js --issues "$ISSUE")"
+          else
+            # Sweep + workflow_run branches: scan all open WRs.
+            NUMS="$(node scripts/wr-fill-sweep.js)"
+          fi
+          if [ -z "$NUMS" ]; then
+            echo "issues=[]" >> "$GITHUB_OUTPUT"
+          else
+            JSON="$(printf '%s\n' "$NUMS" | node -e '
+              const lines = require("fs").readFileSync(0,"utf8").trim().split(/\r?\n/).filter(Boolean).map(Number);
+              process.stdout.write(JSON.stringify(lines));
+            ')"
+            echo "issues=$JSON" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ── Fill ────────────────────────────────────────────────────────────────
+  # One matrix job per issue that needs filling. Parallelism 4 is plenty
+  # (the OpenRouter cascade is per-field, not per-issue) and keeps rate
+  # limits sane on schedule sweeps.
   fill:
-    name: Fill every blank field
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      contains(github.event.issue.labels.*.name, 'work-request') ||
-      contains(github.event.issue.labels.*.name, 'wr:in-progress')
+    name: Fill blanks on WR #${{ matrix.issue }}
+    needs: discover
+    if: fromJson(needs.discover.outputs.issues || '[]')[0] != null
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        issue: ${{ fromJson(needs.discover.outputs.issues) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
-      ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
-      # When set, the filler will call OpenRouter to refine free-text fields.
-      # When absent, it falls back to the declared fallback: strings in the
-      # defaults YAML. Either way, no blank field leaves the workflow.
+      ISSUE_NUMBER: ${{ matrix.issue }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       WR_LLM: ${{ secrets.OPENROUTER_API_KEY != '' && '1' || '0' }}
     steps:
@@ -62,25 +146,6 @@ jobs:
         run: |
           set -euo pipefail
           gh issue view "$ISSUE_NUMBER" --json title,body,labels > issue.json
-          # If the issue already has no blank markers, skip - do not overwrite
-          # anything a human filled in manually.
-          if node -e '
-            const d = require("./issue.json");
-            const body = d.body || "";
-            const markers = ["_No response_", "\nNone\n", "\nTBD\n", "\nTODO\n"];
-            const hit = markers.some((m) => body.includes(m));
-            process.exit(hit ? 0 : 42);
-          '; then
-            echo "has_blanks=true" >> "$GITHUB_OUTPUT"
-          else
-            code=$?
-            if [ "$code" = "42" ]; then
-              echo "has_blanks=false" >> "$GITHUB_OUTPUT"
-              echo "No blank markers detected - nothing to fill."
-            else
-              echo "issue read failed with $code" >&2; exit "$code"
-            fi
-          fi
           node -e '
             const d = require("./issue.json");
             require("fs").writeFileSync("body.md", d.body || "");
@@ -88,7 +153,6 @@ jobs:
           '
 
       - name: Run WR Field Filler
-        if: steps.read.outputs.has_blanks == 'true'
         run: |
           set -euo pipefail
           TITLE="$(cat title.txt)"
@@ -100,7 +164,7 @@ jobs:
           {
             echo "## WR Field Filler ran"
             echo ""
-            echo "The intake form left blank field(s) on this WR. The filler applied rule-based defaults from \`config/wr-field-defaults.yml\`, then LLM refinement for free-text sections. No field was left blank."
+            echo "The intake form left blank field(s) on this WR. The filler applied rule-based defaults from \`config/wr-field-defaults.yml\`, then LLM refinement (via OpenRouter cascade) for free-text sections. No field was left blank."
             echo ""
             echo "<details><summary>Fields filled</summary>"
             echo ""
@@ -110,12 +174,43 @@ jobs:
             echo ""
             echo "</details>"
             echo ""
-            echo "_Filled automatically by \`wr-field-filler.yml\`. Edit the issue to override any field; the filler will skip WRs that have no blank markers._"
+            trigger="${{ github.event_name }}"
+            echo "_Triggered by \`$trigger\`. Filled automatically by \`wr-field-filler.yml\`. Edit the issue to override any field; the filler will skip WRs with no blank markers._"
           } > comment.md
 
-      - name: Update issue body and comment summary
-        if: steps.read.outputs.has_blanks == 'true'
+      - name: Update issue body + comment summary
         run: |
           set -euo pipefail
+          # Only edit if the filler actually changed the body — cheap guard so
+          # re-runs are no-ops when nothing needed doing.
+          if diff -q body.md filled.md > /dev/null 2>&1; then
+            echo "no change in body — skipping edit/comment/label toggle"
+            exit 0
+          fi
           gh issue edit "$ISSUE_NUMBER" --body-file filled.md
           gh issue comment "$ISSUE_NUMBER" --body-file comment.md
+
+      - name: Toggle wr:reset label to force downstream re-processing
+        # After a successful fill, force wr-pr-creation.yml to try again by
+        # cycling the `wr:reset` label — that label's whole purpose (per the
+        # header comment in wr-pr-creation.yml) is "self-heal system to force
+        # a fresh PR creation pass." Remove-then-add so the labeled event
+        # fires even when the label was already present.
+        run: |
+          set -euo pipefail
+          if diff -q body.md filled.md > /dev/null 2>&1; then
+            exit 0
+          fi
+          gh issue edit "$ISSUE_NUMBER" --remove-label "wr:reset" 2>/dev/null || true
+          gh issue edit "$ISSUE_NUMBER" --add-label "wr:reset"
+
+      - name: Upload filled body as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wr-fill-${{ matrix.issue }}-${{ github.run_id }}
+          path: |
+            body.md
+            filled.md
+            fill.log
+          retention-days: 14
