@@ -123,7 +123,7 @@
 
     <section id="hub" aria-labelledby="hub-h" class="mb-14 md:mb-20">
       <h2 id="hub-h" class="text-sm font-mono pill uppercase text-cyan mb-6">// Live tabs</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div id="hub-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
         <a href="./oaudrey/" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
           <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Landing</div>
@@ -202,5 +202,57 @@
       </div>
     </footer>
   </main>
+
+  <!-- Website publication lane (issue #15510): cards for merged website WRs
+       are generated from hub-registry.js — built by scripts/build-hub-registry.js
+       from data/hub/entries/*.json. Never hand-edit the registry; the workflow
+       .github/workflows/website-publish.yml regenerates it on merge. The
+       hub-registry.json fetch is the fallback for HTTP contexts where the
+       window-global file is missing (e.g. a partial deploy). -->
+  <script src="hub-registry.js"></script>
+  <script>
+  "use strict";
+  (function () {
+    function renderHubEntries(registry) {
+      const grid = document.getElementById("hub-grid");
+      if (!grid || !registry || !Array.isArray(registry.entries)) return;
+      for (const entry of registry.entries) {
+        // Build with DOM APIs (not innerHTML) so WR-supplied titles and
+        // descriptions can never inject markup into the hub.
+        const card = document.createElement("a");
+        card.href = entry.path;
+        card.className = "card border border-steel/70 p-6 hover:border-iris transition-colors";
+
+        const tag = document.createElement("div");
+        tag.className = "font-mono text-[10px] pill uppercase text-cyan mb-2";
+        tag.textContent = entry.tag || "Website";
+
+        const title = document.createElement("h3");
+        title.className = "text-xl font-bold";
+        title.textContent = entry.title;
+
+        const desc = document.createElement("p");
+        desc.className = "mt-2 text-sm text-mist";
+        desc.textContent = entry.description;
+
+        const link = document.createElement("p");
+        link.className = "mt-4 font-mono text-[11px] text-iris";
+        link.textContent = entry.path + " →";
+
+        card.append(tag, title, desc, link);
+        grid.appendChild(card);
+      }
+    }
+
+    if (window.HUB_REGISTRY) {
+      renderHubEntries(window.HUB_REGISTRY);
+    } else if (location.protocol !== "file:") {
+      fetch("hub-registry.json")
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then(renderHubEntries)
+        .catch(() => { /* registry unavailable — static cards still render */ });
+    }
+  })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,90 @@
+# ============================================================
+# OCTOPUS REVIEW FALLBACK — self-hosted review lane
+# ============================================================
+# Octopus Review (octopus-review.ai) goes quota-dead monthly and posts an
+# "add your own API keys" banner instead of a review. External review apps
+# can't be re-summoned from the WR area when their quota/keys die, so this
+# workflow runs the fleet's OWN review lane instead:
+#
+#   * issue_comment lane — fires the moment octopus-review[bot] posts the
+#     quota banner on a PR.
+#   * schedule lane      — "absence after N minutes": sweeps recently-updated
+#     open PRs that Octopus never reviewed (conservative: max 3 per run).
+#   * workflow_dispatch  — manual re-summon for a specific PR.
+#
+# The heavy lifting lives in scripts/octopus-review-fallback.js, which:
+#   * skips when Octopus posted a HEALTHY review (no double-review), and
+#   * dedupes via an HTML marker so the fallback never reviews twice, and
+#   * uses the `review` profile from .github/agent-models.yml
+#     (Opus 4.7 primary → DeepSeek R1 fallback) via OpenRouter — no new
+#     vendor lock-in.
+#
+# If reviews stop appearing: check OPENROUTER_API_KEY funding FIRST
+# (https://openrouter.ai/credits) — 401/402/429 means key/balance, not code.
+# Persona docs: skills/octopus-expert/SKILL.md ("Quota-Death Fallback Lane").
+# ============================================================
+
+name: Octopus Review Fallback
+
+on:
+  issue_comment:
+    types: [created]
+  schedule:
+    # Every 6 hours — catches PRs Octopus silently never reviewed.
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to force a fallback review on"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: octopus-review-fallback-${{ github.event.issue.number || github.event.inputs.pr_number || 'sweep' }}
+  cancel-in-progress: false
+
+jobs:
+  fallback-review:
+    # issue_comment lane: only PR comments from octopus-review[bot] whose body
+    # looks like the quota banner. Other lanes pass straight through; the
+    # script re-checks everything (healthy-review + dedupe guards) anyway.
+    if: >
+      github.event_name != 'issue_comment' ||
+      (
+        github.event.issue.pull_request != null &&
+        github.event.comment.user.login == 'octopus-review[bot]' &&
+        (
+          contains(github.event.comment.body, 'add your own API keys') ||
+          contains(github.event.comment.body, 'usage limit') ||
+          contains(github.event.comment.body, 'quota')
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # `yaml` (used to read agent-models.yml) is a root dependency.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run fallback review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # issue_comment → the PR the banner landed on; dispatch → the input.
+          PR_NUMBER: ${{ github.event.issue.number || github.event.inputs.pr_number }}
+          # schedule → sweep mode ("absence after N minutes" lane).
+          SWEEP: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+          MIN_PR_AGE_MINUTES: "30"
+          MAX_SWEEP_REVIEWS: "3"
+        run: node scripts/octopus-review-fallback.js

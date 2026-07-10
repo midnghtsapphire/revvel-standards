@@ -19,6 +19,9 @@
  *   - EXECUTION (an action verb like build/implement/create/fix/ship/do): instead of
  *     talking, the persona files a real Work Request issue and triggers the
  *     working coder (openrouter-coder) — so the persona DOES instead of describes.
+ *   - RESEARCH (DRAGNET only, "research ..." / "search loop"): dispatches
+ *     research-engine.yml so the Ralph search loop fills every WR field —
+ *     see standards/DRAGNET_FRAMEWORK.md → "Search Loop Continuation".
  *
  * DRAGNET special behavior (EXECUTION mode):
  *   Before filing a new WR, DRAGNET searches open issues (label: work-request) and
@@ -34,6 +37,10 @@
  *   persona no longer notifies the real GitHub user with that username.
  * 2026-06-20 (Claude): added /dragnet persona with WR/PR dedup-before-create logic
  *   and "do" as an execution verb so "do a perm fix" enters EXECUTION mode.
+ * 2026-07-09 (Claude): issue #15480 — politeness prefixes ("please do ...") broke
+ *   action detection, and "/dragnet please research ..." fell into a one-shot
+ *   advisory reply so the search loop never ran and WR fields stayed empty.
+ *   Added stripPoliteness + the DRAGNET research lane (dispatchResearchEngine).
  *
  * Env: COMMENT_BODY, ISSUE_NUMBER, REPO (owner/repo), OPENROUTER_API_KEY, GH_TOKEN
  */
@@ -48,9 +55,31 @@ const { instantiate, getPersonas, getEmoticonBank } = require("./openrouter-pers
 const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add", "do"];
 const EMOTICON_BANK_REQUEST = /\b(emoji|emojis|emoticon|emoticons|emoticonbank|emoji\s*bank)\b/i;
 
+// Politeness/filler prefixes users naturally type before the real verb
+// ("/dragnet please do a fix", "/dragnet can you research ..."). Root cause of
+// issue #15480: detectAction anchored at ^ so "please research ..." parsed as
+// NO action and fell into one-shot ADVISORY chat — the search loop never ran
+// and the WR fields were never filled. Strip these before verb detection.
+const POLITENESS_PREFIX = /^\s*(?:(?:please|pls|plz|kindly|can|could|would|will|you)\s+)+/i;
+
+function stripPoliteness(task) {
+  return String(task || "").replace(POLITENESS_PREFIX, "");
+}
+
 function detectAction(task) {
-  const m = (task || "").match(/^\s*(build|implement|create|fix|ship|make|add|do)\b/i);
+  const m = stripPoliteness(task).match(/^\s*(build|implement|create|fix|ship|make|add|do)\b/i);
   return m ? m[1].toLowerCase() : null;
+}
+
+// "/dragnet ... research ..." must route to the Research Engine's search loop
+// (the Ralph loop, which iterates lanes until every WR field is filled or the
+// iteration cap is hit) — NOT to a one-shot advisory LLM reply that cannot fill
+// anything. Matches a leading "research"/"deep research" verb (after politeness
+// prefixes) or an explicit mention of the search loop anywhere in the task.
+// See standards/DRAGNET_FRAMEWORK.md → "Search Loop Continuation".
+function isResearchRequest(task) {
+  const t = stripPoliteness(task);
+  return /^\s*(?:deep[- ]?)?research\b/i.test(t) || /\bsearch\s+loop\b/i.test(t);
 }
 
 function escapeRegExp(input) {
@@ -461,6 +490,42 @@ function dragnetFixRequest({ repo, task, requestedOn }) {
 }
 
 /**
+ * DRAGNET RESEARCH mode: dispatch the Research Engine orchestrator so the
+ * Ralph search loop runs against this issue and iterates every lane until all
+ * WR fields are filled (or the iteration cap is reached, in which case the
+ * packet must list what is still missing — see standards/DRAGNET_FRAMEWORK.md).
+ *
+ * Needed because research-engine.yml intentionally dropped its issue_comment
+ * trigger (label-churn storms), so a comment can only reach the search loop
+ * through an explicit workflow_dispatch like this one. Requires the calling
+ * workflow to grant `actions: write`.
+ *
+ * @param {string} repo               - "owner/repo"
+ * @param {number|string} issueNumber - Issue the research packet belongs to.
+ * @returns {boolean} true when the dispatch succeeded.
+ */
+function dispatchResearchEngine(repo, issueNumber) {
+  try {
+    execFileSync(
+      "gh",
+      [
+        "workflow", "run", "research-engine.yml",
+        "--repo", repo,
+        "-f", `issue_number=${issueNumber}`,
+        "-f", "research_depth=deep_search",
+      ],
+      { encoding: "utf8" }
+    );
+    return true;
+  } catch (err) {
+    // Soft-fail (missing `actions: write`, network, etc.) — the caller falls
+    // back to ADVISORY mode so the user still gets a diagnosis instead of silence.
+    console.log(`::warning::DRAGNET could not dispatch research-engine.yml: ${err.message}`);
+    return false;
+  }
+}
+
+/**
  * EXECUTION mode: file a real Work Request issue and trigger the working coder.
  * Returns the new issue number (or the raw gh output if it can't be parsed).
  */
@@ -507,6 +572,30 @@ async function main() {
     postComment(repo, issueNumber, renderEmoticonBankMarkdown());
     console.log(`🕵️ DRAGNET posted emoticon bank on issue #${issueNumber}`);
     return;
+  }
+
+  // DRAGNET RESEARCH lane: "/dragnet research ..." (or any mention of the
+  // search loop) must run the Research Engine's Ralph loop against this issue
+  // so every WR field actually gets filled — a one-shot advisory chat reply
+  // cannot do that (issue #15480). Guarded on !command.action so an EXECUTION
+  // request like "/dragnet fix the search loop bug" still files a perm-fix WR.
+  // Falls through to ADVISORY on dispatch failure.
+  if (command.handle === "dragnet" && !command.action && isResearchRequest(command.task)) {
+    if (dispatchResearchEngine(repo, issueNumber)) {
+      postComment(
+        repo,
+        issueNumber,
+        `🕵️ **DRAGNET** dispatched the Research Engine search loop for this issue.\n\n` +
+          `The Ralph loop will re-run every research lane until all WR fields are ` +
+          `filled with sourced detail (or the iteration cap is hit, in which case ` +
+          `the packet lists exactly which fields are still missing and why).\n\n` +
+          `_Per \`standards/DRAGNET_FRAMEWORK.md\` → Search Loop Continuation: the ` +
+          `loop never stops silently with empty fields._`
+      );
+      console.log(`🕵️ DRAGNET dispatched research-engine.yml for issue #${issueNumber}`);
+      return;
+    }
+    console.log("🕵️ DRAGNET research dispatch failed — falling back to advisory diagnosis.");
   }
 
   // EXECUTION mode: an action verb means "do it", so file real work instead of replying.
@@ -602,5 +691,6 @@ module.exports = {
   sanitizeMentions,
   gatherContext,
   isEmoticonBankRequest,
+  isResearchRequest,
   renderEmoticonBankMarkdown,
 };
