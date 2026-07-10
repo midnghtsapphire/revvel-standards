@@ -119,6 +119,32 @@ skills:
       - "multi-agent pipeline"
       - "workflow automation specialist"
 
+  - name: security_fleet
+    title: "Security Fleet — Five Single-Job AI-Exploit Red-Team Experts"
+    version: "0.1.0"
+    path: "skills/security-fleet/"
+    skill_file: "skills/security-fleet/security-fleet.skill.yml"
+    category: "Security & Compliance"
+    fleet_file: "skills/security-fleet/SECURITY_FLEET.yml"
+    scanner: "scripts/security-fleet.js"
+    workflow: ".github/workflows/security-fleet.yml"
+    access: all
+    persona: dragnet
+    lifecycle: proposed
+    triggers:
+      - "security fleet"
+      - "red team"
+      - "prompt injection"
+      - "instruction smuggling"
+      - "log poisoning"
+      - "expression injection"
+      - "untrusted interpolation"
+      - "secret exfil"
+      - "leaked token"
+      - "permission audit"
+      - "least privilege"
+      - "adversarial tests"
+
   - name: malama
     title: "Mālama — Self-Healing Autonomous Agent Operating Loop"
     version: "1.0.0"
