@@ -28,10 +28,17 @@ Curt rules. Don't negotiate them. If a deliverable breaks one, it is **not done.
   does not need approval; a rewrite does.
 
 ## 6. Scope
-- **One iteration, done in full.** No "overhaul", no "30-day", no "long", no "big".
-  Minimal scope, complete. Just build it.
+- **One iteration per Block, done in full.** No "overhaul", no "30-day", no "long",
+  no "big". Minimal scope, complete. Just build it.
+- **Complex WRs may ship as multiple Blocks** — one PR per Block — **only when**
+  the WR is labeled `checkpoint-gated`. Each Block PR still satisfies rules #1–#5
+  on its own (live URL, no scaffolding, reuse, no destroy, approved reimagining).
+  The Grid is not done until every Block has shipped and been checkpoint-approved.
+  See `docs/AGENTS.md` § Checkpoint-Gated Grids.
 
 ---
 
 _Enforced by: No-Destroy Guard (#4), Completeness Gate (#2), App Registry (#3),
-Approve-to-Reimagine gate (#5). Ship-to-market deploys + records the live URL (#1)._
+Approve-to-Reimagine gate (#5). Ship-to-market deploys + records the live URL (#1).
+Checkpoint enforcement: the `checkpoint-gated` label + PR title convention
+`checkpoint: block-N of N` + `checkpoint-approved` label on the previous Block._

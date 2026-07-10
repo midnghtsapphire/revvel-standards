@@ -621,14 +621,38 @@ This is a team effort. Team members look after each other. Agents look after the
 
 - **Execute autonomously.** Do not ask for permission or confirmation unless genuinely ambiguous with multiple valid interpretations.
 - **Be relentlessly resourceful.** Every blocker has a solution—find it. Research documentation, search GitHub, check forums, examine similar projects, test alternatives.
-- **One iteration, all-inclusive.** Deliver the complete solution. Do not propose "Phase 1" or "MVP first" unless explicitly told to.
+- **One iteration per Block, not per Grid.** Every merged unit of work — the Block — is a complete, working, testable slice. Never a stub or placeholder. The ban on scaffolding, phased language, and TODO stubs stands: every merged Block must be complete on its own.
   - ❌ **PROHIBITED:** "Let's implement Phase 1 first (authentication), then do Phase 2 (UI) in a future PR"
   - ❌ **PROHIBITED:** "I'll deliver the MVP now and add the remaining features later"
   - ❌ **PROHIBITED:** "This PR implements basic functionality; advanced features coming in Phase 2"
+  - ✅ **ALLOWED:** A complex Grid (multi-Block WR) that ships one complete Block per PR when the WR is labeled `checkpoint-gated` — see [Checkpoint-Gated Grids](#checkpoint-gated-grids) below.
   - ✅ **ALLOWED:** Evaluation documents that describe multi-phase adoption roadmaps for future work
   - ✅ **ALLOWED:** Standards that define phased processes (e.g., "Phase 1: Planning, Phase 2: Implementation")
   - ✅ **ALLOWED:** Documentation of project lifecycle phases (Research → Build → Ship → Monetize)
-  - **Rule of thumb:** If you're writing CODE, deliver it ALL. If you're writing DOCS about future work, phased planning is acceptable.
+  - **Rule of thumb:** If you're writing CODE, deliver each Block ALL — no stubs. If the WR is `checkpoint-gated`, ship one working Block at a time and wait for owner review before the next. If you're writing DOCS about future work, phased planning is acceptable.
+
+### Checkpoint-Gated Grids
+
+Some work — meta systems, architectural changes, anything where a wrong turn cascades — benefits from **owner review between Blocks** even when every Block ships complete. The rule is not "add scaffolding to buy review time"; the rule is "make Blocks small enough that shipping one at a time is natural, and pause between them so the owner can course-correct."
+
+**When to use:** Any WR labeled `checkpoint-gated`, `owner-review-per-block`, or `high-stakes`. Also opt-in via the WR body: `Checkpoint-gate: yes`.
+
+**How it works:**
+- **Decompose the WR into Blocks up front** and list them in the WR body (e.g., "Block 1 of 4: Host + device-tree; Block 2 of 4: Watchdog; ...").
+- **Ship each Block as its own PR.** PR title carries `checkpoint: block-N of N`. The PR is complete and merge-ready — not a draft, not scaffolding.
+- **Do not launch the next Block** until the owner marks the previous Block PR with the `checkpoint-approved` label, comments `next`, or the PR is merged.
+- **The Grid is not "done"** until every Block has shipped and been approved. Update `SYSTEM_STATE.md` after the final Block, not after each one.
+- **If the owner rejects a Block PR**, adjust that Block. Do not proceed to the next Block until it is approved.
+
+**What each Block PR must still satisfy** (unchanged from the standard rules):
+- No `TODO: implement` stubs, no placeholder code, no scaffolding language
+- All tests pass, build succeeds, no linter errors
+- Anti-scaffolding enforcer is green
+- Conventional Commits
+
+**What this rule prevents:** Agents rushing an entire Grid in one giant PR that turns out to miss the owner's vision — forcing a full rewrite. Small approved Blocks are cheaper to adjust than large merged ones.
+
+**What this rule does not weaken:** Every Block is still shipped complete. Un-gated WRs still ship as a single working iteration by default. Scaffolding is still banned everywhere.
 - **Fix what is broken before adding what is new.** If tests fail, fix them first. If the build is broken, fix it first.
 - **Self-heal automatically.** When errors occur, diagnose and fix them immediately. Don't wait for human intervention.
 - **Write tests.** Every functional component gets a test. Run tests before declaring anything complete.

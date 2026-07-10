@@ -26,12 +26,14 @@
 | D008 | **REPLACE Octopus Review** → ai-pr-review-openrouter lane | Quota-dead on free tier; OpenRouter lane (Opus 4.x / DeepSeek fallback) covers same signal at ~API cost only; no new vendor lock-in | 2026-07-08 | @midnghtsapphire |
 | D009 | **KEEP CodeRabbit** on free tier | Free GitHub App; codebase-index catches 2 unique issues in 50-PR sample; $0 cost | 2026-07-08 | @midnghtsapphire |
 | D010 | **KEEP Mabl** archived / paused (prior decision 2026-05-27) | Replaced by Keploy for E2E; workflow auto-triggers already commented out; no action needed | 2026-07-08 | @midnghtsapphire |
+| D011 | **Introduce Checkpoint-Gated Grids** — complex WRs may ship one complete Block per PR when labeled `checkpoint-gated`; owner reviews between Blocks (`checkpoint-approved` label or `next` comment) before next Block launches | Prevents whole-Grid rewrites when the first Block misses the owner's vision. Keeps every merged Block complete (no scaffolding weakening). Uses natural Block boundaries as review points instead of forcing all-or-nothing PRs. Ban on `TODO`/phased language stands. | 2026-07-10 | @midnghtsapphire |
 
 ---
 
 ## Pending Decisions
 
 > None currently. Review-tool fleet consolidated 2026-07-08 (D006–D010).
+> Checkpoint-gated Grids rolled out 2026-07-10 (D011).
 
 ---
 
