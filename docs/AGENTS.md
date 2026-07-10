@@ -943,8 +943,8 @@ Every time a workflow, automation, or process fails during your work:
 - Related issues: #[if any]
 ````
 
-5. **Tag appropriately** — `bug`, `auto-fix`, `documentation`, `workflow`, `automation`
-6. **Close immediately** — these are for documentation, not for work tracking
+1. **Tag appropriately** — `bug`, `auto-fix`, `documentation`, `workflow`, `automation`
+2. **Close immediately** — these are for documentation, not for work tracking
 
 This creates a knowledge base of problems solved, making the system smarter over time.
 
