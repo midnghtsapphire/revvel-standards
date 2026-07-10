@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-10T11:01:43.099Z",
+  "generated_at": "2026-07-10T12:46:02.430Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 29082404536,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29082404536",
+            "id": 29093609119,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29093609119",
             "conclusion": "failure"
           }
         ],
