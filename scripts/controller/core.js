@@ -32,12 +32,15 @@ const DEFAULTS = Object.freeze({
 });
 
 // Fallback LLM chain a cut orchestrator is reassigned through (best → next).
-// Mirrors deep-search-router ROUTING_PROFILES; a cut arm/orchestrator is
-// relaunched on the next untried model, not just killed.
+// House model policy (.github/agent-models.yml + MODEL_CONFIG.md): the Opus
+// twins carry execution, Fable 5 is the reasoning-tier escalation. Sonnet and
+// auto/fusion are DENYLISTED (refused/violated repo rules in fleet testing) —
+// a drift test in controller-core.test.js checks this chain against the SSOT
+// denylist so a banned model can never sneak back in.
 const DEFAULT_MODEL_CHAIN = Object.freeze([
-  'anthropic/claude-3.5-sonnet',
-  'openrouter/fusion',
-  'deepseek/deepseek-v3.2',
+  'anthropic/claude-opus-4.8', // Opus twin — primary
+  'anthropic/claude-opus-4.7', // Opus twin — fallback
+  'anthropic/claude-fable-5', // reasoning-tier escalation (Claude 5 family)
 ]);
 
 // --- time helpers (pure) ---------------------------------------------------

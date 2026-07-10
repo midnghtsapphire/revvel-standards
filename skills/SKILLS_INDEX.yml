@@ -119,6 +119,32 @@ skills:
       - "multi-agent pipeline"
       - "workflow automation specialist"
 
+  - name: security_fleet
+    title: "Security Fleet — Five Single-Job AI-Exploit Red-Team Experts"
+    version: "0.1.0"
+    path: "skills/security-fleet/"
+    skill_file: "skills/security-fleet/security-fleet.skill.yml"
+    category: "Security & Compliance"
+    fleet_file: "skills/security-fleet/SECURITY_FLEET.yml"
+    scanner: "scripts/security-fleet.js"
+    workflow: ".github/workflows/security-fleet.yml"
+    access: all
+    persona: dragnet
+    lifecycle: proposed
+    triggers:
+      - "security fleet"
+      - "red team"
+      - "prompt injection"
+      - "instruction smuggling"
+      - "log poisoning"
+      - "expression injection"
+      - "untrusted interpolation"
+      - "secret exfil"
+      - "leaked token"
+      - "permission audit"
+      - "least privilege"
+      - "adversarial tests"
+
   - name: malama
     title: "Mālama — Self-Healing Autonomous Agent Operating Loop"
     version: "1.0.0"
@@ -149,6 +175,22 @@ skills:
       - "which standard"
       - "shape router"
       - "session start router"
+
+  - name: client_stacks
+    title: "Client Stacks — Hook Into Any Client Stack and Do the Work"
+    version: "1.0.0"
+    path: "skills/client-stacks/"
+    skill_file: "skills/client-stacks/client-stacks.skill.yml"
+    category: "Agent Operations"
+    integration_doc: "docs/CLIENT_ENGAGEMENT_KIT.md"
+    access: all
+    triggers:
+      - "client stack"
+      - "client contract"
+      - "contract engagement"
+      - "detect client stack"
+      - "polyglot lane"
+      - "engagement kit"
 
   - name: gbrain
     title: "GBrain — Persistent Agent Memory"
