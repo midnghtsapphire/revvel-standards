@@ -15,7 +15,7 @@
 
 Source packet: `docs/research-engine/run-29064104799.md`
 
-# WR-Ready Research Packet: Marketplace Relister Endpoint Error
+## WR-Ready Research Packet: Marketplace Relister Endpoint Error
 
 ## 1. Executive Decision
 
@@ -186,7 +186,7 @@ None
 
 ### Summary
 
-_No response_
+N/A
 
 ### Objective
 
@@ -196,19 +196,19 @@ Download listing.txt
 
 ### Required Bundle
 
-_No response_
+N/A
 
 ### Definition of Done
 
-_No response_
+N/A
 
 ### Do Not Under-Scope
 
-_No response_
+N/A
 
 ### Explicit Exclusions
 
-_No response_
+N/A
 
 ### Delivery Shape
 
@@ -216,23 +216,23 @@ None
 
 ### Sellable Artifact Bundle
 
-_No response_
+N/A
 
 ### Purchase Validation (functions-as-purchased)
 
-_No response_
+N/A
 
 ### Expected Scope
 
-_No response_
+N/A
 
 ### Validation Expectations
 
-_No response_
+N/A
 
 ### Blocker Rule
 
-_No response_
+N/A
 
 ### Acknowledgements
 
@@ -244,26 +244,26 @@ _No response_
 
 ## Summary
 
-N/A — pending Jules refinement
+N/A
 
 ## Objective
 
-N/A — pending Jules refinement
+N/A
 
 ## Required Bundle
 
-N/A — pending Jules refinement
+N/A
 
 ## Definition of Done
 
-N/A — pending Jules refinement
+N/A
 
 ## Validation
 
-N/A — pending Jules refinement
+N/A
 
 ## Blockers
 
-N/A — pending Jules refinement
+N/A
 
 <!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
