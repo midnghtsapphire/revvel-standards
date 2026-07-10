@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-10T08:13:17.308Z",
+  "generated_at": "2026-07-10T09:33:27.167Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 29079084873,
+      "id": 29083432460,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29079084873",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29083432460",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 8308,
-      "since_update_ms": 4308,
+      "age_ms": 11167,
+      "since_update_ms": 7167,
       "reason": "running within budget",
       "protected": true
     },
