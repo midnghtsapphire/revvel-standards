@@ -12,6 +12,36 @@ keep this document, the code, and the tests in agreement.
 
 ## The Covenant — the overarching contract
 
+### For stakeholders: what a "contract" means here
+
+If you're not an engineer, read just this part. A contract in this system is
+a **written promise with a built-in way to check it's being kept**. It is not
+a legal document and not a mission statement — it's closer to a warranty:
+every promise below names the specific machinery that enforces it, and that
+machinery is tested automatically on every change. If someone edits the
+system in a way that breaks a promise, the tests fail and the change is
+rejected before it ships.
+
+What that buys you in practice:
+
+- **Your projects can't silently die.** Stuck work is detected, restarted
+  with a better tool, or handed to a repair loop — there is no state where
+  something just quietly stops and nobody notices.
+- **Tools that block everything get removed.** If a checker or an AI model is
+  so strict that no work can ever pass it, that's treated as a broken tool,
+  not a high standard — it gets fixed or banned (this has already happened).
+- **Status reports are real.** The system is required to report what actually
+  happened — failures as failures, successes only when verified. A green
+  checkmark means the check truly ran.
+- **The promises can't quietly erode.** Changing a promise requires changing
+  this document, the code, and the tests together, in public, in the same
+  change — so the contract and the reality can't drift apart.
+
+The rest of this section states the five promises; the sections after it are
+the engineering detail that makes them true.
+
+### The promises
+
 Everything below the covenant is mechanism; this is what the mechanisms are
 FOR. The controller — and through it, the fleet — makes these promises to the
 owner and to every agent it schedules. Each promise is deliberately paired
