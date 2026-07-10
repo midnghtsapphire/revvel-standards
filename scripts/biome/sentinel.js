@@ -161,6 +161,8 @@ if (require.main === module) {
     if (!shouldFileIncident(section)) {
       if (existing) {
         // Recovery: honor the footer's promise — one resolution comment, then close.
+        // Comment first so the recovery note lands while the issue is still open
+        // (and is delivered with the incident context, not after a bare close).
         // (Close is ops metadata, not a content deletion; same pattern as homeostat.)
         await repoApi(`/issues/${existing.number}/comments`, {
           method: 'POST',
