@@ -78,8 +78,16 @@ if [ -n "$CHANGED_FILES" ]; then
     LINE_NO=0
     while IFS= read -r line; do
       LINE_NO=$((LINE_NO + 1))
-      # Match REVVEL-DISABLED that is NOT immediately followed by -END
-      if echo "$line" | grep -qE 'REVVEL-DISABLED([^-]|$)' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
+      # Anchor on the canonical header shape (COMMENT-DONT-DELETE.md §3):
+      # a real opener has ONLY comment punctuation before the token
+      # (// # ; /* <!-- --) and the pipe-separated field list after it.
+      # A bare-token (or even bare "REVVEL-DISABLED |") match opens a phantom
+      # block on PROSE mentions — docs, templates, and learnings.md entries
+      # that QUOTE the anchor in backticks. Same bug class already fixed in
+      # wr-lint rule 11; it re-bit this scanner on learnings.md in PR #15623.
+      # The backtick exclusion keeps `REVVEL-DISABLED |` code-span mentions
+      # from matching; no real comment marker contains a backtick.
+      if echo "$line" | grep -qE '^[^A-Za-z0-9`]*REVVEL-DISABLED \|' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
         IN_BLOCK=true
         BLOCK_LINE=$LINE_NO
         BLOCK_HEADER="$line"
