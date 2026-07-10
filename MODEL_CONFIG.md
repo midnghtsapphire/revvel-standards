@@ -11,6 +11,7 @@ This file is the human summary; when they disagree, the YAML wins.
 | Coding | `code_patch` | `anthropic/claude-opus-4.8` | `anthropic/claude-opus-4.7` |
 | Deep reasoning | `reasoning` | `anthropic/claude-fable-5` | `anthropic/claude-opus-4.8` |
 | Vision / images / OCR | `vision` | `google/gemini-2.5-pro` | `google/gemini-2.5-flash` |
+| Image generation / image-to-image | `image_gen` | `google/gemini-2.5-flash-image` | `openai/gpt-image-1` |
 | Review | `review` | `anthropic/claude-opus-4.7` | `deepseek/deepseek-r1` |
 | Research (cited) | `research` | `sonar-pro` (Perplexity) | `sonar-deep-research` |
 | Triage / classify | `triage` | `openai/gpt-4o-mini` | `anthropic/claude-haiku-4.5` |

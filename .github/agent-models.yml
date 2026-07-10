@@ -76,6 +76,23 @@ profiles:
     temperature: 0.3
     use_for: ["image", "screenshot", "ocr", "diagram", "vision", "multimodal", "pdf-image"]
 
+  # Image GENERATION - creating/editing pixels (not understanding them; that's `vision`)
+  # Used by the marketplace relisting pipeline (scripts/marketplace-relist.js) for
+  # image-to-image "casual photo" staging conditioned on real product photos.
+  # Catalog of alternatives: docs/OPENROUTER_IMAGE_MODELS.md
+  image_gen:
+    description: "Image generation / image-to-image editing — Gemini 2.5 Flash Image, GPT Image 1 fallback"
+    provider: openrouter
+    primary: "google/gemini-2.5-flash-image"
+    fallback: "openai/gpt-image-1"
+    max_tokens: 8000
+    temperature: 0.6
+    use_for: ["image-gen", "image-to-image", "product-staging", "creative-render", "thumbnail"]
+    # Per-batch spend cap (USD). Pipelines MUST stop requesting new images once
+    # the estimated batch spend reaches this cap (override via
+    # IMAGE_GEN_BATCH_SPEND_CAP_USD env; see scripts/marketplace-relist.js).
+    batch_spend_cap_usd: 1.00
+
   # Best researcher - web-grounded with citations
   # (Perplexity direct today; sonar models also exist on OpenRouter as
   #  perplexity/sonar-pro if we ever consolidate keys fully.)
@@ -154,6 +171,8 @@ profiles:
 # profile above. Workflows, routers, and the Agent Creator dashboard should
 # consult this tree instead of inventing their own mapping.
 routing_tree:
+  - when: "job GENERATES or edits images (image-to-image, product staging, creative renders)"
+    profile: image_gen
   - when: "job involves images, screenshots, diagrams, OCR, or PDF pages as pixels"
     profile: vision
   - when: "job needs deep reasoning: planning, hard debugging, math, architecture"
