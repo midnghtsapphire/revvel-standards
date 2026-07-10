@@ -17,24 +17,34 @@ The `stuck-label-watchdog.yml` workflow no longer only removes conflicting
 labels. When it detects a broken or stale PR state, it now:
 
 1. Applies the immediate safe repair on the PR, such as removing
-   `awaiting-review` when `approved` is already present.
-2. Adds `lifecycle:stuck` to make the PR visible in queues.
-3. Creates or reuses a deduped repair issue with a hidden
-   `watchdog-agent-repair` marker.
-4. Labels that issue with `agent-fallback`, `auto-fix`, `openrouter`,
-   `role:orchestrator`, and `bug`.
-5. Comments back on the PR with the routed repair issue number.
+   `awaiting-review` (and its synonyms `awaiting-approval` /
+   `status:waiting-for-review`) when `approved` is already present.
+2. For the `awaiting-review` + `approved` race — which the safe repair fully
+   heals — the **first** self-heal on a given head SHA is **silent**: no
+   `lifecycle:stuck`, no repair issue, no visible PR comment. The watchdog only
+   drops a hidden `watchdog-silent-repair:awaiting-review-approved:<sha>` marker
+   so it can recognize the same conflict returning later.
+3. Escalates (adds `lifecycle:stuck`, opens/reuses a deduped repair issue,
+   comments on the PR) only when a conflict is genuinely stuck — either a
+   non-self-healable conflict, or the `awaiting-review` + `approved` conflict
+   **recurring on the same head SHA** (no new commit), which proves a workflow
+   path is actively re-adding the stale label and needs a real code fix rather
+   than another cosmetic sweep.
+4. Labels each escalated repair issue with `agent-fallback`, `auto-fix`,
+   `openrouter`, `role:orchestrator`, and `bug`.
 
 Those labels wake the `agent-fallback.yml` workflow, which routes the repair
 through OpenRouter first, then Cursor, then OpenHands when explicitly opted in.
-This gives every watchdog finding an assignable agent task with target PR,
-head SHA, applied fix, and acceptance criteria.
+This gives every escalated watchdog finding an assignable agent task with target
+PR, head SHA, applied fix, and acceptance criteria — while transient races are
+healed quietly so the queue is not spammed with one-off noise every hour.
 
 Current watchdog-routed states:
 
-| Watchdog finding | Immediate repair | Agent follow-up |
+| Watchdog finding | Immediate repair | Escalation / agent follow-up |
 |---|---|---|
-| `awaiting-review` + `approved` | Remove `awaiting-review` | Inspect review/synchronize paths that may re-add review state after approval |
+| `awaiting-review` + `approved` (first time on a head SHA) | Remove `awaiting-review` + synonyms, restore approval | **None — silent self-heal** (hidden per-SHA marker recorded) |
+| `awaiting-review` + `approved` (recurs on same head SHA) | Same safe repair | Add `lifecycle:stuck` + open repair issue: inspect review/auto-approve/synchronize paths re-adding review state after approval |
 | `approved` + `needs-action` | Remove `needs-action` | Verify no stale changes-requested path reintroduced action-needed state |
 | `checks-passing` + `checks-failing` | Query live CI and remove the stale check label | Patch check-suite/check-run race or stale-label path |
 | `ready-to-merge` without `approved` | Remove `ready-to-merge` | Ensure merge-ready promotion always requires approval |

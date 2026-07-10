@@ -358,6 +358,13 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Tags:** security, owasp, helmet, csp, rate-limiting, secrets, auth
 - **Trigger:** Any work touching authentication, API keys, user inputs, or data storage.
 
+#### security-fleet
+- **Path:** `skills/security-fleet/`
+- **Files:** `SKILL.md` · `security-fleet.skill.yml` · `SECURITY_FLEET.yml`
+- **Description:** Five single-job AI-exploit red-team experts on the agentic-workflow-fleet model: `@sentinel` (prompt-injection tripwire on agent-consumed text), `@exprwatch` (untrusted `${{ github.event.* }}` in `run:` shells), `@exfil` (leaked tokens in diffs/logs, extends secrets-sentinel), `@permit` (per-workflow `permissions:` vs actual usage), `@redteam` (patch-agent dependency lane + adversarial tests against our own detectors). Personas are derived from `SECURITY_FLEET.yml`; detectors live in `scripts/security-fleet.js`; lanes in `.github/workflows/security-fleet.yml` file `security-fleet`-labeled findings.
+- **Tags:** security-fleet, red-team, prompt-injection, expression-injection, secret-exfil, least-privilege, adversarial-testing, patch-agent
+- **Trigger:** `security fleet`, `red team`, `prompt injection`, `instruction smuggling`, `expression injection`, `secret exfil`, `leaked token`, `permission audit`, `least privilege`, `adversarial tests`.
+
 #### grc-compliance
 - **Path:** `skills/grc-compliance/`
 - **Files:** `SKILL.md` · `grc-compliance.skill.yml`

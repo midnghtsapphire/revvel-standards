@@ -11,6 +11,7 @@ const {
   parsePersonaCommand,
   sanitizeMentions,
   isEmoticonBankRequest,
+  isResearchRequest,
   renderEmoticonBankMarkdown,
 } = require("../scripts/persona-comment-runner");
 
@@ -89,6 +90,35 @@ test("detects an action verb (execution mode)", () => {
 test("a question is advisory (no action)", () => {
   assert.strictEqual(parsePersonaCommand("/professor what is the TAM?").action, null);
   assert.strictEqual(parsePersonaCommand("/oaudrey how should we route this?").action, null);
+});
+
+// Issue #15480: "/dragnet please do a fix" parsed as NO action because the
+// verb regex was anchored at ^ — politeness prefixes must be skipped.
+test("politeness prefixes still enter execution mode", () => {
+  assert.strictEqual(parsePersonaCommand("/dragnet please do a fix").action, "do");
+  assert.strictEqual(parsePersonaCommand("/dragnet can you fix the gate").action, "fix");
+  assert.strictEqual(parsePersonaCommand("/oaudrey kindly build a CSV exporter").action, "build");
+  assert.strictEqual(parsePersonaCommand("/dragnet Please Fix this error").action, "fix");
+});
+
+// Issue #15480: "/dragnet please research ... search loop ..." must route to
+// the Research Engine search loop, not a one-shot advisory chat reply.
+test("detects DRAGNET research / search-loop requests", () => {
+  assert.strictEqual(
+    isResearchRequest("please research use the search loop until every field is filled out in full detail?"),
+    true
+  );
+  assert.strictEqual(isResearchRequest("research the OSINT market"), true);
+  assert.strictEqual(isResearchRequest("please deep-research pricing chatter"), true);
+  assert.strictEqual(isResearchRequest("run the search loop again"), true);
+  assert.strictEqual(isResearchRequest("diagnose this workflow timeout"), false);
+  assert.strictEqual(isResearchRequest("fix the CI gate"), false);
+  assert.strictEqual(isResearchRequest(""), false);
+});
+
+test("execution verbs beat the research lane (fix the search loop bug is a fix)", () => {
+  const cmd = parsePersonaCommand("/dragnet fix the search loop bug");
+  assert.strictEqual(cmd.action, "fix"); // main() guards research lane on !action
 });
 
 test("detects DRAGNET emoticon bank requests", () => {

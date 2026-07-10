@@ -58,7 +58,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/controller/controller-status.json docs/controller/controller-stop.json docs/controller/controller-ingestion.json
+          # controller-state.json is the durable reassignment scoreboard — it MUST
+          # be committed or the controller forgets its model-chain progress on the
+          # next tick and loops cut→relaunch on the first model forever.
+          git add docs/controller/controller-status.json docs/controller/controller-stop.json docs/controller/controller-ingestion.json docs/controller/controller-state.json
           if git diff --cached --quiet; then
             echo "feed unchanged"
           else
@@ -69,7 +72,7 @@ jobs:
             # we log a warning and exit 0 so the scheduler never wedges the fleet.
             git push && echo "feed committed to main" || {
               echo "::warning::Direct push blocked by branch protection — retrying via Contents API"
-              for f in docs/controller/controller-status.json docs/controller/controller-stop.json docs/controller/controller-ingestion.json; do
+              for f in docs/controller/controller-status.json docs/controller/controller-stop.json docs/controller/controller-ingestion.json docs/controller/controller-state.json; do
                 [ -f "$f" ] || continue
                 existing_sha=$(gh api "repos/${GH_REPO}/contents/${f}" --jq '.sha' 2>/dev/null || true)
                 b64=$(base64 "$f" | tr -d '\n')
