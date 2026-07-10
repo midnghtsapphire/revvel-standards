@@ -500,3 +500,16 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** LOCKED-IN — see `standards/GREEN_MAIN_STANDARD.md`. (1) A red gate on main outranks all WR work; never build on red. (2) Before fixing anything, check whether a fix already landed — reconcile, don't append; one implementation per behavior, delete the losers. (3) Make assertions drift-proof: derive counts/lists from the source of truth (`Object.keys(REGISTRY).length`, never `8`). (4) Never weaken a gate to get green — reconstruct intent and verify against the current implementation. (5) The interleave signature to grep for in review: redeclared `const`, repeated `return`, stacked comment headers citing different issue numbers. Every repaired site carries an inline `RECONSTRUCTED 2026-07-08` comment so the lesson lives where it applies.
 
 **Next Action:** Keep `main` at 0 fail. Reviewers treat "CI was already failing" as a blocker, not an excuse.
+
+
+**Date/Time:** 2026-07-10T21:20:00Z
+
+**Task Attempted:** Introduce checkpoint-gated Grids so the owner can review complex work between complete Blocks without weakening the anti-scaffolding rule. Seed the CUDA execution-model rollout (Host + Watchdog + Memory) as a series of checkpoint-gated Blocks.
+
+**Outcome:** PR-A shipped as draft #15668 - the rule itself + baseline restore. Suite 505/505 green, 187 workflows valid. Session paused per the new rule; PR-B (CUDA Block 1) deferred until owner marks #15668 checkpoint-approved or comments next.
+
+**Root Cause of Failure (If any):** Two pre-existing baseline failures blocked new work per GREEN_MAIN_STANDARD: tests/openrouter-personas.test.js hardcoded 18 personas (catalog now has 23 after security fleet added), and docs/SECRETS_MAP.md had drifted from generator output. Same disease - hardcoded expectations vs source-of-truth drift - noted in the 2026-07-08 entry.
+
+**Self-Healing Fix / Learned Lesson:** (1) The right way to run a checkpoint-gated rollout is to make the rule itself the FIRST checkpoint-gated PR - dogfood the mechanic before layering the systems that depend on it. (2) Baseline restoration MUST happen before layering new work; splitting the fix into its own commit inside the same branch keeps history clean and makes the rule PR reviewable. (3) When .github/labels.yml adds new labels but sync-labels.yml has not yet run, gh pr edit --add-label fails with not found - the labels only become usable after the sync workflow runs post-merge. Do not treat this as a blocker; it self-heals on merge.
+
+**Next Action:** Wait for owner review on #15668. On checkpoint-approved label or next comment, launch PR-B: feat(cuda) Host + device-tree + agent-contract schema as Block 1 of 4. Do not launch PR-B until #15668 is approved (dogfooding the rule this session shipped).
