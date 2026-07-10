@@ -1,5 +1,9 @@
 # Fleet Controller — the grid scheduler over every orchestrator
 
+> **Governance:** `standards/CONTROLLER_CHARTER.md` — mission, authority,
+> limits, testable invariants, and model policy. Changes to controller
+> behavior must keep the charter, code, and tests in agreement.
+
 The controller is a **grid-level scheduler** for the automation fleet, borrowing
 the CUDA execution model ([Oxford CUDA course, lec 3](https://people.maths.ox.ac.uk/gilesm/cuda/lecs/lec3.pdf)):
 a device runs many SMs, each running many blocks of warps, and a scheduler
