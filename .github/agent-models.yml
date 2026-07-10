@@ -183,7 +183,7 @@ denylist:
   - pattern: "openrouter/auto"
     reason: "Opus twins beat auto/fusion routing in fleet A/B tests (2026-07)."
   - pattern: "openrouter/fusion"
-    reason: "Alias of openrouter/auto — same A/B result applies."
+    reason: "Separate router (parallel multi-model fusion, not an auto alias) — Opus twins beat it in fleet A/B tests (2026-07), same rationale as openrouter/auto."
 
 # For GitHub Actions usage:
 #   - ${{ fromJson(inputs.model_profile || 'orchestrator') }}

@@ -147,7 +147,16 @@ async function lastJobActivityMs(runId, api = repoApi) {
   // beyond page 1, and missing it would spuriously cut a healthy run.
   // Partial data can only miss a spare, never create a false one.
   for (let page = 1; page <= 5; page += 1) {
-    const data = await api(`/actions/runs/${runId}/jobs?per_page=100&page=${page}`, { allowError: true });
+    // allowError absorbs non-2xx responses, but a network-level rejection
+    // (DNS, timeout) still throws — and an uncaught throw here would abort
+    // the whole preemption loop before feeds are written. This check is
+    // best-effort: swallow the error and fall back to whatever we saw.
+    let data;
+    try {
+      data = await api(`/actions/runs/${runId}/jobs?per_page=100&page=${page}`, { allowError: true });
+    } catch {
+      break;
+    }
     const jobs = data && Array.isArray(data.jobs) ? data.jobs : null;
     if (!jobs) break;
     for (const j of jobs) {

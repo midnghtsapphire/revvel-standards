@@ -67,9 +67,15 @@ jobs:
 
             for (const pr of prs) {
               const prNumber = pr.number;
+              // timed_out / startup_failure / action_required / stale must
+              // clear a stale checks-passing or ready-to-merge state (cubic
+              // P1 on #15623). 'cancelled' is deliberately a no-op: with
+              // cancel-in-progress concurrency, cancellations are routine
+              // supersessions and mapping them to failing would flap the
+              // labels on every rapid push.
               const desired =
                 conclusion === 'success' || conclusion === 'neutral' ? 'passing'
-                : conclusion === 'failure' ? 'failing'
+                : ['failure', 'timed_out', 'action_required', 'startup_failure', 'stale'].includes(conclusion) ? 'failing'
                 : null;
               if (!desired) {
                 core.info(`PR #${prNumber}: conclusion ${conclusion} — no action`);
