@@ -51,11 +51,10 @@ async function openRouterImage(prompt, apiKey, model) {
     const m = msg.content.match(/data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/);
     if (m) return m[0];
   }
-  // Surface the raw response so the error is visible in Vercel function logs
+  // Surface a preview in server logs (but don't send raw provider output back to clients)
   const preview = JSON.stringify(data).slice(0, 300);
-  throw new Error(
-    `No image in response — check OPENROUTER_IMAGE_MODEL is an image-capable model. Response: ${preview}`
-  );
+  console.error('OpenRouter no-image response preview:', preview);
+  throw new Error('No image in response — check OPENROUTER_IMAGE_MODEL is an image-capable model.');
 }
 
 export async function POST(request) {
