@@ -513,7 +513,6 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Next Action:** Ship PR-C for the WR Field Filler. Once merged, run the manual dispatch on the three stuck WRs (#15665, #15661, #15660) to auto-fill them so wr-pr-creation.yml can process them. Do not touch the controller lane.
 
-
 **Date/Time:** 2026-07-11T00:15:00Z
 
 **Task Attempted:** Owner ran `wr-pr-creation.yml` on a stuck WR with `_No response_` fields; it failed. Owner asked: "does the LLM pick up requests that for some reason didn't get those fields put in? and reset the labels?" — original workflow only fired on issue events, not downstream failures or a sweep. Extending the WR Field Filler with a self-heal loop.
