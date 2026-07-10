@@ -119,6 +119,35 @@ function isReviewChangesRequested(reviewState) {
   return reviewState === 'CHANGES_REQUESTED';
 }
 
+// Mirrors the atomic label transition in the review-state job of pr-lifecycle.yml:
+// approval events compute the final label set in one pass (drop ALL review-waiting
+// variants + conflicting states, add the new state) and apply it via a single
+// issues.setLabels call, so no intermediate conflicting state (e.g.
+// awaiting-review + approved) can be observed by a concurrent event.
+const REVIEW_WAITING = ['awaiting-review', 'awaiting-approval', 'status:waiting-for-review'];
+
+function computeAtomicLabelSet(currentLabels, removeList, addList) {
+  const next = currentLabels.filter(l => !removeList.includes(l));
+  for (const l of addList) if (!next.includes(l)) next.push(l);
+  return next;
+}
+
+function computeApprovedLabelSet(currentLabels) {
+  return computeAtomicLabelSet(
+    currentLabels,
+    [...REVIEW_WAITING, 'changes-requested', 'needs-action'],
+    ['approved']
+  );
+}
+
+function computeChangesRequestedLabelSet(currentLabels) {
+  return computeAtomicLabelSet(
+    currentLabels,
+    [...REVIEW_WAITING, 'approved', 'ready-to-merge'],
+    ['changes-requested', 'needs-action']
+  );
+}
+
 // === Tests ===
 
 (async () => {
@@ -244,6 +273,50 @@ function isReviewChangesRequested(reviewState) {
 
   await test('review_requested adds awaiting-review when head approval is overridden by changes-requested', () => {
     assert.equal(shouldAddAwaitingReviewOnReviewRequested(new Set(), ['APPROVED', 'CHANGES_REQUESTED']), true);
+  });
+
+  // Atomic approval transition — ALL review-waiting variants removed in one operation
+  await test('approval atomically removes all review-waiting label variants', () => {
+    const next = computeApprovedLabelSet([
+      'awaiting-review', 'awaiting-approval', 'status:waiting-for-review', 'checks-passing',
+    ]);
+    for (const waiting of REVIEW_WAITING) {
+      assert.ok(!next.includes(waiting), `${waiting} must be removed on approval`);
+    }
+    assert.ok(next.includes('approved'));
+    assert.ok(next.includes('checks-passing'), 'unrelated labels preserved');
+  });
+
+  await test('approval removes changes-requested and needs-action in same atomic set', () => {
+    const next = computeApprovedLabelSet(['changes-requested', 'needs-action', 'awaiting-review']);
+    assert.deepEqual(next, ['approved']);
+  });
+
+  await test('approved label set never contains a review-waiting label (no intermediate state)', () => {
+    // Rapid approval/review-request race: even starting from every conflicting
+    // combination, the single computed set is conflict-free.
+    for (const waiting of REVIEW_WAITING) {
+      const next = computeApprovedLabelSet([waiting, 'approved']);
+      assert.deepEqual(next, ['approved'], `starting from [${waiting}, approved]`);
+    }
+  });
+
+  await test('approval is idempotent (approved not duplicated)', () => {
+    const next = computeApprovedLabelSet(['approved']);
+    assert.deepEqual(next, ['approved']);
+  });
+
+  await test('approval preserves non-lifecycle labels', () => {
+    const next = computeApprovedLabelSet(['work-request', 'awaiting-review']);
+    assert.deepEqual(next.sort(), ['approved', 'work-request']);
+  });
+
+  await test('changes_requested atomically removes waiting variants, approved, and ready-to-merge', () => {
+    const next = computeChangesRequestedLabelSet([
+      'awaiting-review', 'awaiting-approval', 'status:waiting-for-review',
+      'approved', 'ready-to-merge',
+    ]);
+    assert.deepEqual(next.sort(), ['changes-requested', 'needs-action']);
   });
 
   // Label Management

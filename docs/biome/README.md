@@ -29,7 +29,7 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 
 | Worker | Biomimetic role | Schedule | What it does (rule-based, no AI) |
 |--------|-----------------|----------|----------------------------------|
-| `biome-sentinel` | nociceptor (pain sensor) | every 2h | Scans recent runs + open issues; files/updates one deduped `[BIOME-SENTINEL]` incident when failures or stuck items cross threshold. |
+| `biome-sentinel` | nociceptor (pain sensor) | every 2h | Scans recent runs + open issues; files one deduped `[BIOME-SENTINEL]` incident when failures or stuck items cross threshold. Ongoing incidents are **refreshed quietly** (issue body/title edited in place — no comment spam) and **auto-resolved** (one resolution comment + close) when the fleet recovers. |
 | `biome-medic` | macrophage (immune cell) | every 6h | Re-surfaces stuck items (`self-heal` label + comment); when AI lanes are offline, clears dead `openrouter:needs-key` blocks. Storm-safe; never deletes content. |
 | `biome-homeostat` | homeostasis regulator | every 6h | Detects missing AI keys (the Doppler-wipe case); posts ONE consolidated, deduped status note and auto-resolves it when keys return. No `needs-human` spam. |
 | `biome-sheaf` | connective tissue | hourly | Glues every worker's local section into `biome-status.json` + `biome-status.html` and commits them (single committer — no commit races). |
@@ -38,7 +38,13 @@ every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 ## The loop (detect → remediate → regulate → monitor → inspect → reset)
 
 1. **Detect** — `biome-sentinel` finds failures/stuck items via the GitHub API and
-   files a deduped incident labeled `biome`, `scorecard`, `self-heal`.
+   files a deduped incident labeled `biome`, `scorecard`, `self-heal`. While the
+   pain persists, each 2h sweep edits the incident's body/title in place (a
+   notification-free PATCH; the previous snapshots stay in the issue's edit
+   history). It never posts a per-sweep comment — the old comment-per-sweep
+   behavior turned long incidents into notification storms (see incident #15491).
+   When the fleet recovers, sentinel posts one resolution comment and closes the
+   incident, fulfilling the body's "auto-resolves" promise.
 2. **Remediate** — `biome-medic` applies rule-based, storm-safe fixes (re-label +
    comment; clear dead key-blocks). Re-running failed runs is **off by default**.
 3. **Regulate** — `biome-homeostat` keeps the crew "healthy" even with AI lanes
@@ -135,3 +141,19 @@ node --test tests/biome-sentinel.test.js tests/biome-homeostat.test.js \
 **Bootstrap (2026-06-30).** Workflows are scheduled and the feed path is seeded
 with a bootstrap snapshot; the first scheduled `biome-sheaf` run replaces it with
 live data.
+
+## Field notes / known pain signatures
+
+- **PR Lifecycle failing in bulk (dozens per sweep):** the dominant signature in
+  incident #15491 was `403 API rate limit exceeded for installation`
+  (`x-ratelimit-used: 5000`) on `GET /pulls?state=open&per_page=100`. That is the
+  shared 5,000 req/h installation budget for `GITHUB_TOKEN` being exhausted by the
+  fleet as a whole, not a bug in the failing workflow itself. If sentinel reports
+  waves of `PR Lifecycle` / `PR State Orchestrator` failures, check the failing
+  job's log for `x-ratelimit-remaining: 0` before changing any workflow code —
+  the fix is reducing fleet-wide API pressure (fewer triggers, caching, backoff),
+  not patching the reporter.
+- **Sentinel itself feeling "chatty":** by design it edits the incident in place;
+  if you see repeated sentinel comments on one incident again, the quiet-refresh
+  PATCH in `scripts/biome/sentinel.js` has regressed
+  (guarded by `tests/biome-sentinel.test.js`).

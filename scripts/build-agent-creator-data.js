@@ -30,10 +30,36 @@ const SOURCES = {
   agent_prompts: ".github/agent-prompts.yml",
   personas: "scripts/openrouter-personas.js",
   fleet: "skills/agentic-workflow-fleet/FLEET.yml",
+  security_fleet: "skills/security-fleet/SECURITY_FLEET.yml",
 };
 
 function readYaml(rel) {
   return YAML.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+}
+
+// Normalize a fleet source-of-truth YAML (FLEET.yml / SECURITY_FLEET.yml —
+// same shape) into the catalog form consumed by the dashboard and by
+// scripts/openrouter-personas.js for derived personas.
+function shapeFleet(fleetDoc) {
+  return {
+    name: fleetDoc.fleet,
+    version: fleetDoc.version,
+    initial_scope: fleetDoc.initial_scope || "",
+    charter: fleetDoc.charter || {},
+    domains: (fleetDoc.domains || []).map((d) =>
+      typeof d === "string"
+        ? { name: d, focus: "" }
+        : { name: d.name, focus: (d.focus || "").trim() }
+    ),
+    agents: (fleetDoc.agents || []).map((a) => ({
+      handle: a.handle,
+      name: a.name,
+      pattern: a.pattern,
+      group: a.group || "",
+      job: (a.job || "").trim(),
+      use_for: a.use_for || [],
+    })),
+  };
 }
 
 function buildData() {
@@ -76,25 +102,8 @@ function buildData() {
   }));
 
   const fleetDoc = readYaml(SOURCES.fleet);
-  const fleet = {
-    name: fleetDoc.fleet,
-    version: fleetDoc.version,
-    initial_scope: fleetDoc.initial_scope || "",
-    charter: fleetDoc.charter || {},
-    domains: (fleetDoc.domains || []).map((d) =>
-      typeof d === "string"
-        ? { name: d, focus: "" }
-        : { name: d.name, focus: (d.focus || "").trim() }
-    ),
-    agents: (fleetDoc.agents || []).map((a) => ({
-      handle: a.handle,
-      name: a.name,
-      pattern: a.pattern,
-      group: a.group || "",
-      job: (a.job || "").trim(),
-      use_for: a.use_for || [],
-    })),
-  };
+  const fleet = shapeFleet(fleetDoc);
+  const securityFleet = shapeFleet(readYaml(SOURCES.security_fleet));
 
   return {
     schema_version: "1.0",
@@ -102,6 +111,7 @@ function buildData() {
     repo: "midnghtsapphire/revvel-standards",
     sources: SOURCES,
     fleet,
+    security_fleet: securityFleet,
     categories: [...new Set(skills.map((s) => s.category))].sort(),
     skills,
     profiles,
