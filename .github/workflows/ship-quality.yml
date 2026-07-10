@@ -1,3 +1,10 @@
+# VEINS grounding gate (CuP = 100%): this check used to be an LLM vibe-scan of
+# the diff that never ran the test suite and said "PASS — Ready to ship" over a
+# broken pipeline for weeks (2026-07-08 incident; predicted by the owner's
+# V.E.I.N.S. research as "Speculative Hallucination & Rule-Poisoning").
+# The verdict now CONSUMES the real `npm test` result via
+# scripts/ship-quality-verdict.js: a red suite is a hard FAIL, and an LLM
+# opinion may WARN or BLOCK but can never establish a PASS on its own.
 name: Intelligent Code Quality Scanner
 on:
   pull_request:
@@ -24,95 +31,124 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Grounding gate — run the REAL test suite. This is the stalk the verdict
+      # is glued from; the LLM opinion below can only downgrade its result.
+      - name: Grounding gate — run real test suite
+        id: suite
+        run: |
+          npm ci --no-audit --no-fund
+          if npm test; then
+            echo "tests=pass" >> "$GITHUB_OUTPUT"
+          else
+            echo "tests=fail" >> "$GITHUB_OUTPUT"
+          fi
       - name: Get diff
         id: diff
-        run: >
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-
-          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD
-          -- '*.py' '*.js' '*.ts' '*.md' | head -5000)
-
-          # Properly escape for GITHUB_OUTPUT - use base64
-
-          echo "$DIFF" | base64 | tr -d '\n' >> $GITHUB_OUTPUT
-
-          echo "diff_length=${#DIFF}" >> $GITHUB_OUTPUT
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "$BASE_REF"
+          git diff "origin/$BASE_REF"..HEAD -- '*.py' '*.js' '*.ts' '*.md' \
+            | head -5000 > "$RUNNER_TEMP/pr-diff.txt"
+          echo "diff_length=$(wc -c < "$RUNNER_TEMP/pr-diff.txt")" >> "$GITHUB_OUTPUT"
       - name: Analyze with AI
         if: env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0
         id: ai
-        run: >
-          # Decode base64 diff
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          # Build the request with jq so the untrusted PR diff is JSON-escaped
+          # (log-poisoning protection, S-MOS §4: never shell-interpolate
+          # instruction-shaped strings from PR content).
+          SYSTEM_PROMPT='You are a code quality reviewer. Analyze PR changes for:
+          1. Real TODOs/FIXMEs that are incomplete code
+          2. Placeholder code that needs implementation
+          3. Phased implementation language in code
 
-          DIFF=$(cat $GITHUB_OUTPUT | grep ^diff= | cut -d= -f2- | base64 -d)
+          IGNORE:
+          - Documentation explaining rules (like AGENTS.md)
+          - README and docs files
+          - Comments about what NOT to do
 
+          Respond with:
+          - BLOCK only if there are real incomplete code TODOs
+          - WARN for minor issues
+          - PASS if code is ship-ready (note: PASS is advisory only; the real test suite gates the final verdict)
 
-          # Smart analysis - understand context
+          Format: VERDICT: BLOCK|WARN|PASS
+          Reason: one line exactly why'
+
+          PAYLOAD=$(jq -n \
+            --arg system "$SYSTEM_PROMPT" \
+            --rawfile diff "$RUNNER_TEMP/pr-diff.txt" \
+            '{model: "anthropic/claude-3.7-sonnet", messages: [
+              {role: "system", content: $system},
+              {role: "user", content: ("Here are the PR changes to review:\n\n" + $diff)}
+            ]}')
 
           RESPONSE=$(curl -s https://openrouter.ai/api/v1/chat/completions \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
             -H "Referer: https://github.com" \
-            -d '{
-              "model": "anthropic/claude-3.7-sonnet",
-              "messages": [{
-                "role": "system",
-                "content": "You are a code quality reviewer. Analyze PR changes for:\n1. Real TODOs/FIXMEs that are incomplete code\n2. Placeholder code that needs implementation\n3. Phased implementation language in code\n\nIGNORE:\n- Documentation explaining rules (like AGENTS.md)\n- README and docs files\n- Comments about what NOT to do\n\nRespond with:\n- BLOCK only if there are real incomplete code TODOs\n- WARN for minor issues\n- PASS if code is ship-ready\n\nFormat: VERDICT: BLOCK|WARN|PASS\nReason: one line exactly why"
-              }, {
-                "role": "user",
-                "content": "Here are the PR changes to review:\n\n$DIFF"
-              }]
-            }' | jq -r '.choices[0].message.content')
+            -d "$PAYLOAD" | jq -r '.choices[0].message.content')
 
-          echo "$RESPONSE" >> $GITHUB_STEP_SUMMARY
-
+          echo "$RESPONSE" >> "$GITHUB_STEP_SUMMARY"
 
           if echo "$RESPONSE" | grep -q "BLOCK"; then
-            echo "result=fail" >> $GITHUB_OUTPUT
+            echo "result=fail" >> "$GITHUB_OUTPUT"
           elif echo "$RESPONSE" | grep -q "WARN"; then
-            echo "result=warn" >> $GITHUB_OUTPUT
+            echo "result=warn" >> "$GITHUB_OUTPUT"
           else
-            echo "result=pass" >> $GITHUB_OUTPUT
+            echo "result=pass" >> "$GITHUB_OUTPUT"
           fi
-      - name: Smart pass for docs-only
-        if: steps.ai.outputs.result == ''
-        run: |
-          # If no AI key, pass by default - don't block artificially
-          echo "result=pass" >> $GITHUB_OUTPUT
+      # Combine grounded suite result + AI opinion. The combiner enforces:
+      # tests fail => FAIL always; no suite result => at most WARN; the LLM can
+      # never upgrade to PASS. Seeded-test coverage: tests/ship-quality-verdict.test.js
+      - name: Grounded verdict
+        id: verdict
+        env:
+          TESTS_RESULT: ${{ steps.suite.outputs.tests }}
+          AI_RESULT: ${{ steps.ai.outputs.result }}
+        run: node scripts/ship-quality-verdict.js --tests "$TESTS_RESULT" --ai "$AI_RESULT"
       - name: Report
-        run: >
-          RESULT=${{ steps.ai.outputs.result || 'pass' }}
-
-
-          echo "## 🧠 Intelligent Code Quality Scan" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
+        env:
+          RESULT: ${{ steps.verdict.outputs.final }}
+          TESTS_RESULT: ${{ steps.suite.outputs.tests }}
+        run: |
+          echo "## 🧠 Intelligent Code Quality Scan" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Grounding gate (\`npm test\`): **${TESTS_RESULT:-not run}**" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
 
           if [ "$RESULT" = "pass" ]; then
-            echo "✅ **PASS** - Code is ship-ready" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **PASS** - Test suite green and code is ship-ready" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$RESULT" = "warn" ]; then
-            echo "⚠️ **WARN** - Minor issues noted, merge allowed" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **WARN** - Minor issues noted, merge allowed" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "❌ **BLOCK** - Real scaffolding found" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **BLOCK** - Grounding gate red or real scaffolding found" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
       - name: Post as PR review
         if: always()
-        run: >
-          RESULT=${{ steps.ai.outputs.result || 'pass' }}
-
+        env:
+          RESULT: ${{ steps.verdict.outputs.final }}
+          TESTS_RESULT: ${{ steps.suite.outputs.tests }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
           BODY="## Ship Quality Check"
-
+          BODY="$BODY\n\nGrounding gate (\`npm test\`): **${TESTS_RESULT:-not run}**"
 
           if [ "$RESULT" = "pass" ]; then
-            BODY="$BODY\n\n✅ **PASS** - Ready to ship"
+            BODY="$BODY\n\n✅ **PASS** - Test suite green, ready to ship"
           elif [ "$RESULT" = "warn" ]; then
             BODY="$BODY\n\n⚠️ Warnings noted - merge allowed"
           else
-            BODY="$BODY\n\n❌ Code needs completion"
+            BODY="$BODY\n\n❌ Grounding gate failed - the real test suite (or a compile gate) is red. An LLM opinion cannot PASS over it."
           fi
 
-
-          gh pr review --body "$BODY" --comment ${{
-          github.event.pull_request.number }}
+          gh pr review --body "$BODY" --comment "$PR_NUMBER"
     timeout-minutes: 30
