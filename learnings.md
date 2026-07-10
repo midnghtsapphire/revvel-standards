@@ -501,10 +501,9 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Next Action:** Keep `main` at 0 fail. Reviewers treat "CI was already failing" as a blocker, not an excuse.
 
-
 **Date/Time:** 2026-07-10T23:15:00Z
 
-**Task Attempted:** Owner reported three open WRs stuck with 9 blank _No response_ fields and 7 unfilled None dropdowns each (#15665, #15661, #15660). Owner rule: agents must run a search loop until every field is filled - never leave a blank. Building a WR Field Filler as a new parallel lane (does NOT touch the CUDA Grid or the controller).
+**Task Attempted:** Owner reported three open WRs stuck with 9 blank *No response* fields and 7 unfilled None dropdowns each (#15665, #15661, #15660). Owner rule: agents must run a search loop until every field is filled - never leave a blank. Building a WR Field Filler as a new parallel lane (does NOT touch the CUDA Grid or the controller).
 
 **Outcome:** Shipping. config/wr-field-defaults.yml (declarative per-field defaults keyed off Output Type; every field has a guaranteed non-empty fallback: string), scripts/wr-fill-fields.js (pure library + CLI with cascading fill: rule-based -> LLM refinement via OpenRouter cascade -> declared fallback), .github/workflows/wr-field-filler.yml (fires on issue events; only runs when blank markers are detected, so manually filled WRs are not overwritten), tests/wr-fill-fields.test.js (12 assertions including source-of-truth alignment vs the issue form YAML). 517/517 tests green (505 baseline + 12 filler). 188/188 workflows valid. Smoke tested against real stuck WR #15665: filled 21 field(s), zero blank markers remaining, passes wr-lint rule 12 (forbidden placeholders).
 
