@@ -79,15 +79,15 @@ if [ -n "$CHANGED_FILES" ]; then
     while IFS= read -r line; do
       LINE_NO=$((LINE_NO + 1))
       # Anchor on the canonical header shape (COMMENT-DONT-DELETE.md §3):
-      # a real opener has ONLY comment punctuation before the token
-      # (// # ; /* <!-- --) and the pipe-separated field list after it.
-      # A bare-token (or even bare "REVVEL-DISABLED |") match opens a phantom
-      # block on PROSE mentions — docs, templates, and learnings.md entries
-      # that QUOTE the anchor in backticks. Same bug class already fixed in
-      # wr-lint rule 11; it re-bit this scanner on learnings.md in PR #15623.
-      # The backtick exclusion keeps `REVVEL-DISABLED |` code-span mentions
-      # from matching; no real comment marker contains a backtick.
-      if echo "$line" | grep -qE '^[^A-Za-z0-9`]*REVVEL-DISABLED \|' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
+      # a real opener is a COMMENT — one of the comment markers the standard's
+      # examples use (// # ; /* * <!-- --) followed by the token and its
+      # pipe-separated field list. Anything looser opens phantom blocks on
+      # prose: a bare-token match bit learnings.md's prose in PR #15623 (same
+      # bug class as wr-lint rule 11), and a permissive any-punctuation prefix
+      # still matched Markdown bullets/blockquotes (cubic review, same PR).
+      # Markdown bullets ("- "), blockquotes (">"), and backtick code spans
+      # ("`REVVEL-DISABLED |`") all fail this anchor; SQL "--" still passes.
+      if echo "$line" | grep -qE '^[[:space:]]*(//|#|;|/\*|\*|<!--|--)[[:space:]]*REVVEL-DISABLED \|' && ! echo "$line" | grep -qF 'REVVEL-DISABLED-END'; then
         IN_BLOCK=true
         BLOCK_LINE=$LINE_NO
         BLOCK_HEADER="$line"
