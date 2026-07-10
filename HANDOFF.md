@@ -99,3 +99,39 @@ git checkout -b feat/cuda-block-1-host
 4. Every Block PR must be complete — no scaffolding, no TODO, no phased language.
 5. Update this HANDOFF.md every Block. Move rows from `⏳` to `✅ shipped, awaiting review` to `✅ approved`.
 6. SYSTEM_STATE.md updates only after ALL Blocks are approved (per D011).
+
+---
+
+## Prior Art — validates the CUDA execution-model metaphor
+
+Owner surfaced three references on 2026-07-10 that independently validate the naming + Thread-workspace structure. Use these as design references, not dependencies. Do not clone or install FLAME GPU 2 (requires actual NVIDIA GPU).
+
+### 1. BytedTsinghua-SIA / CUDA-Agent (2026, OSS)
+
+RL-trained LLM that beats Claude Opus-4.6 and Gemini 3 Pro on CUDA kernel generation. Their `agent_workdir/` layout is directly translatable to our Thread workspace:
+
+| Their file | Purpose | Our equivalent |
+|---|---|---|
+| `agent_workdir/SKILL.md` | Rules + constraints for this agent's job | Our existing `skills/*/SKILL.md` (already aligned) |
+| `agent_workdir/model.py` | Baseline input ("before") | Grid input from WR |
+| `agent_workdir/model_new.py` | Agent's output ("after") | Thread's produced artifact |
+| `agent_workdir/utils/verification.py` | Correctness check | **Code Verifier** (Block 2) |
+| `agent_workdir/utils/profiling.py` | Performance oracle | **Watchdog** semantic score (Block 2) |
+| `agent_workdir/utils/compile.sh` | Build passes | Existing `npm test`, `workflows:validate`, `anti-scaffolding-enforcer.yml` |
+| `binding_registry.h` | Shared binding registration | `agent-contract.yml` (Block 1) |
+
+**When implementing Block 1**, use `agent_workdir/` as the reference layout for how one Thread's workspace looks on disk. Do not literally copy their code — it is CUDA C++ for kernel generation; our domain is orchestration.
+
+### 2. CUDA-Agent-Ops-6K (Hugging Face dataset)
+
+6,000 training samples for CUDA kernel generation. **Not needed for this Grid.** Only relevant if we ever fine-tune a model on our own domain (future GPU/local-LLM PR).
+
+### 3. FLAMEGPU / FLAMEGPU2 (GPU agent-based modeling, AGPL-3.0)
+
+Mature FOSS framework: formal agent specifications mapped to CUDA, multiple agent types, agent communication, birth/death allocation. **Reference for `device-tree.yml` schema in Block 1.** Their formal spec file format is a proven pattern for how Blocks declare their Threads — steal the structure, not the code.
+
+**Watch:** AGPL-3.0 is copyleft; do not vendor their code. Design inspiration only. C++/CUDA implementation is irrelevant to our Node/JS stack.
+
+### Why this matters
+
+Two independent serious labs (ByteDance + Tsinghua SIA; the FLAME GPU team) arrived at the same shape we designed: agent workspaces with contracts, verification steps, and formal Thread declarations. Confirms the CUDA execution-model naming is not costume — it is the correct abstraction for this class of work. Ship Block 1 with confidence.
