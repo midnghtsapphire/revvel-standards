@@ -1,0 +1,121 @@
+name: WR Field Filler — no blanks ever ship
+
+# Fires on every new/edited Work Request issue. Runs scripts/wr-fill-fields.js,
+# which loops through every field defined in config/wr-field-defaults.yml and
+# fills any blank one via rule-based defaults, then LLM refinement, then a
+# guaranteed non-empty fallback. Never stops with a blank.
+#
+# Idempotent: skipped when the issue body already has zero blank markers, so
+# manually filled WRs are not overwritten.
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: WR issue number to (re)fill
+        required: true
+        type: number
+
+concurrency:
+  group: wr-fill-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  fill:
+    name: Fill every blank field
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'work-request') ||
+      contains(github.event.issue.labels.*.name, 'wr:in-progress')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+      # When set, the filler will call OpenRouter to refine free-text fields.
+      # When absent, it falls back to the declared fallback: strings in the
+      # defaults YAML. Either way, no blank field leaves the workflow.
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      WR_LLM: ${{ secrets.OPENROUTER_API_KEY != '' && '1' || '0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --no-audit --no-fund
+
+      - name: Read issue body + title
+        id: read
+        run: |
+          set -euo pipefail
+          gh issue view "$ISSUE_NUMBER" --json title,body,labels > issue.json
+          # If the issue already has no blank markers, skip - do not overwrite
+          # anything a human filled in manually.
+          if node -e '
+            const d = require("./issue.json");
+            const body = d.body || "";
+            const markers = ["_No response_", "\nNone\n", "\nTBD\n", "\nTODO\n"];
+            const hit = markers.some((m) => body.includes(m));
+            process.exit(hit ? 0 : 42);
+          '; then
+            echo "has_blanks=true" >> "$GITHUB_OUTPUT"
+          else
+            code=$?
+            if [ "$code" = "42" ]; then
+              echo "has_blanks=false" >> "$GITHUB_OUTPUT"
+              echo "No blank markers detected - nothing to fill."
+            else
+              echo "issue read failed with $code" >&2; exit "$code"
+            fi
+          fi
+          node -e '
+            const d = require("./issue.json");
+            require("fs").writeFileSync("body.md", d.body || "");
+            require("fs").writeFileSync("title.txt", d.title || "");
+          '
+
+      - name: Run WR Field Filler
+        if: steps.read.outputs.has_blanks == 'true'
+        run: |
+          set -euo pipefail
+          TITLE="$(cat title.txt)"
+          node scripts/wr-fill-fields.js \
+            --issue-file body.md \
+            --title "$TITLE" \
+            --out filled.md \
+            2> fill.log
+          {
+            echo "## WR Field Filler ran"
+            echo ""
+            echo "The intake form left blank field(s) on this WR. The filler applied rule-based defaults from \`config/wr-field-defaults.yml\`, then LLM refinement for free-text sections. No field was left blank."
+            echo ""
+            echo "<details><summary>Fields filled</summary>"
+            echo ""
+            echo '```'
+            tail -n +2 fill.log | sed 's/^\[wr-fill\]\s*//'
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "_Filled automatically by \`wr-field-filler.yml\`. Edit the issue to override any field; the filler will skip WRs that have no blank markers._"
+          } > comment.md
+
+      - name: Update issue body and comment summary
+        if: steps.read.outputs.has_blanks == 'true'
+        run: |
+          set -euo pipefail
+          gh issue edit "$ISSUE_NUMBER" --body-file filled.md
+          gh issue comment "$ISSUE_NUMBER" --body-file comment.md
