@@ -1,56 +1,5 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-10T04:13:36.173Z",
-  "stop": [
-    {
-      "id": 29067825542,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 15m ≥ 15m"
-    },
-    {
-      "id": 29067807608,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 16m ≥ 15m"
-    },
-    {
-      "id": 29067788979,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 17m ≥ 15m"
-    },
-    {
-      "id": 29067758044,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 18m ≥ 15m"
-    },
-    {
-      "id": 29067727440,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 20m ≥ 15m"
-    },
-    {
-      "id": 29067664679,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 22m ≥ 15m"
-    },
-    {
-      "id": 29067645439,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 23m ≥ 15m"
-    },
-    {
-      "id": 29067602266,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 25m ≥ 15m"
-    },
-    {
-      "id": 29067601496,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 25m ≥ 15m"
-    },
-    {
-      "id": 29067561154,
-      "name": "Create Issue Branch",
-      "reason": "no progress for 27m ≥ 15m"
-    }
-  ]
+  "generated_at": "2026-07-10T05:44:35.266Z",
+  "stop": []
 }
