@@ -10,6 +10,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  checks: read
 jobs:
   enable-auto-merge:
     name: Enable Auto-Merge
@@ -33,6 +34,34 @@ jobs:
                 `Auto-merge NOT enabled — remove 'won\\'t-merge' first.`
               );
               return;
+            }
+
+            // VEINS grounding gate: never arm auto-merge over a red suite.
+            // If the grounded Ship Quality Check has completed with a failure
+            // on the current head SHA, refuse to enable — an LLM opinion (or
+            // the absence of one) cannot merge a PR whose real tests fail.
+            // Pending/queued checks are fine: GitHub's auto-merge waits for
+            // required checks before merging.
+            try {
+              const { owner, repo } = context.repo;
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner, repo, ref: pr.head.sha, per_page: 100,
+              });
+              const groundedFailed = checks.check_runs.filter(r =>
+                r.name.toLowerCase().includes('ship quality check') &&
+                r.status === 'completed' &&
+                !['success', 'skipped', 'neutral'].includes(r.conclusion)
+              );
+              if (groundedFailed.length > 0) {
+                core.warning(
+                  `PR #${pr.number}: grounded Ship Quality Check is RED on ` +
+                  `${pr.head.sha.substring(0, 7)} — auto-merge NOT enabled. ` +
+                  `Fix the failing test suite first (grounding gate, WR 14).`
+                );
+                return;
+              }
+            } catch (e) {
+              core.warning(`Could not verify grounding gate for PR #${pr.number}: ${e.message}`);
             }
 
             try {
