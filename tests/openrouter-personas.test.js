@@ -74,14 +74,33 @@ async function runTests() {
 
   // Registry shape
   console.log("Test Group: Persona Registry");
-  // Core personas are hand-authored here; fleet pattern experts are derived
-  // from skills/agentic-workflow-fleet/FLEET.yml via agent-creator-data.json.
+  // Core personas are hand-authored in scripts/openrouter-personas.js; every
+  // additional fleet is derived from agent-creator-data.json. Deriving the
+  // expected set from that same catalog keeps this test drift-proof when new
+  // fleets are added (see learnings.md 2026-07-08 — hardcoded counts caused
+  // stale-test churn during the parallel-agent-merge incident).
   const CORE_PERSONAS = ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"];
-  const FLEET_PERSONAS = ["chain", "planner", "fanout", "conductor", "switchboard", "critic", "mirror", "rewoo", "loop"];
+  let derivedFleetHandles = [];
+  try {
+    const catalog = JSON.parse(require("fs").readFileSync(
+      require("path").join(__dirname, "..", "agent-creator-data.json"),
+      "utf8"
+    ));
+    for (const key of Object.keys(catalog)) {
+      const agents = (catalog[key] && catalog[key].agents) || [];
+      for (const m of agents) {
+        if (m.handle && !CORE_PERSONAS.includes(m.handle)) {
+          derivedFleetHandles.push(m.handle);
+        }
+      }
+    }
+  } catch (_) {
+    // Catalog not built; the registry falls back to core personas only.
+  }
   assertEqual(
     Object.keys(getPersonas()).sort(),
-    [...CORE_PERSONAS, ...FLEET_PERSONAS].sort(),
-    "Should register the nine core personas plus the nine fleet pattern experts"
+    [...CORE_PERSONAS, ...derivedFleetHandles].sort(),
+    "Registers every core persona plus every fleet member derived from agent-creator-data.json"
   );
   assertTrue(
     Object.values(PERSONA_REGISTRY).every(
