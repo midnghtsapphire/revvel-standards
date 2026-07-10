@@ -1,0 +1,251 @@
+# WR Field Defaults — declarative rule set for scripts/wr-fill-fields.js
+#
+# Purpose: every WR field has an explicit fill rule so a blank field can NEVER
+# ship to downstream agents. When an owner submits a WR with `_No response_` or
+# `None` in a field, the WR Field Filler consults this file first (rule-based
+# fill), then falls back to LLM refinement (OpenRouter cascade), and finally to
+# an explicit `N/A — <specific reason>` — never a bare blank.
+#
+# Source of truth for FIELD LIST: .github/ISSUE_TEMPLATE/00-work-request.yml
+# When a field is added there, add its rule here too. `tests/wr-fill-fields.test.js`
+# asserts these two files stay in sync.
+#
+# Every field record has:
+#   heading          : the exact `### <Heading>` used in the rendered issue body
+#   kind             : dropdown | input | textarea | checkboxes
+#   required         : true if the WR form marks it required
+#   allowed          : dropdown/checkboxes option list (for validation)
+#   default_by       : `output_type` | `always` | `derived` | `llm`
+#   defaults         : per-output_type map when default_by=output_type
+#   fallback         : string to use if nothing else applies (never blank)
+#   depends_on       : field this default keys off of (for logging + tests)
+
+version: 1
+
+fields:
+  - heading: "Output Type (required)"
+    kind: dropdown
+    required: true
+    allowed:
+      - production-app
+      - desktop-tool
+      - sellable-pdf
+      - technical-documentation
+      - client-code-task
+      - project-management-doc
+      - internal-script-automation
+      - cli-product
+      - mcp-product
+      - api-product
+      - invention-flow
+    default_by: llm
+    fallback: production-app
+
+  - heading: "PDF pipeline batch"
+    kind: dropdown
+    required: false
+    allowed: [Not applicable, Autocreate 3, Autocreate 20]
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: Autocreate 3
+      "*": Not applicable
+    fallback: Not applicable
+
+  - heading: "Research Mode"
+    kind: dropdown
+    required: false
+    allowed: [standard, deepresearch]
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      production-app: deepresearch
+      sellable-pdf: deepresearch
+      invention-flow: deepresearch
+      api-product: deepresearch
+      mcp-product: deepresearch
+      cli-product: deepresearch
+      technical-documentation: standard
+      project-management-doc: standard
+      internal-script-automation: standard
+      desktop-tool: standard
+      client-code-task: standard
+      "*": standard
+    fallback: standard
+
+  - heading: "Delivery Mode"
+    kind: dropdown
+    required: false
+    allowed: [build-direct, build-with-brief-options, proposal-first]
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      invention-flow: proposal-first
+      "*": build-direct
+    fallback: build-direct
+
+  - heading: "Lifecycle Mode"
+    kind: dropdown
+    required: false
+    allowed: [new-build, refresh-existing, audit-only]
+    default_by: derived
+    fallback: new-build
+
+  - heading: "Commercial Mode"
+    kind: dropdown
+    required: false
+    allowed: [digital-product, saas-app, api-usage, license, client-billable, internal-only]
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: digital-product
+      production-app: saas-app
+      api-product: api-usage
+      mcp-product: api-usage
+      cli-product: digital-product
+      desktop-tool: digital-product
+      client-code-task: client-billable
+      internal-script-automation: internal-only
+      technical-documentation: internal-only
+      project-management-doc: internal-only
+      invention-flow: license
+      "*": internal-only
+    fallback: internal-only
+
+  - heading: "Assign To / Decision Team"
+    kind: dropdown
+    required: false
+    allowed: [orchestrator, dragnet-team]
+    default_by: always
+    defaults:
+      "*": orchestrator
+    fallback: orchestrator
+
+  - heading: Summary
+    kind: input
+    required: false
+    default_by: derived
+    fallback: "See title and Objective for scope."
+
+  - heading: Objective
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "Deliver the outcome described in the WR title and Summary. Ship complete per docs/DEFINITION_OF_DONE.md — no scaffolding, no phased language."
+
+  - heading: Required Bundle
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "Implementation code, tests, docs updates required to describe or explain the change, and workflow wiring where relevant. If secrets are required, add their names (not values) to docs/SECRETS_MAP.md via the standard generator."
+
+  - heading: Definition of Done
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "`npm test` passes 100%; `npm run workflows:validate` reports 0 invalid; anti-scaffolding-enforcer.yml passes; PR title follows Conventional Commits; new files documented where relevant."
+
+  - heading: Do Not Under-Scope
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "Do not defer any explicitly requested item to a follow-up PR. If a piece is truly infeasible in one iteration, open a WR-BLOCKER issue (label: `wr-blocker`) and reference it in the PR body — never silently drop it."
+
+  - heading: Explicit Exclusions
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "N/A — no items are explicitly out of scope for this WR."
+
+  - heading: Delivery Shape
+    kind: dropdown
+    required: false
+    allowed:
+      - One PR
+      - One PR preferred, split only if blocked
+      - Proposal first
+      - Multiple PRs intentionally planned
+      - Explodable sellable ZIP (unpacks into repo folders)
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: Explodable sellable ZIP (unpacks into repo folders)
+      invention-flow: Proposal first
+      "*": One PR preferred, split only if blocked
+    fallback: One PR preferred, split only if blocked
+
+  - heading: Sellable Artifact Bundle
+    kind: textarea
+    required: false
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: "PDF file, per-buyer redemption link, README with purchase context, license summary, and a Gumroad/LemonSqueezy product page copy block. All packaged as an explodable ZIP under wr/deliverables/ that unpacks into the repo's normal folders."
+      cli-product: "CLI binary or npm/pip publish target, README with usage examples, quick-start script, and (if paid) a purchase page copy block."
+      mcp-product: "MCP server package, `.mcp.json` config snippet, README explaining the exposed tools, and one working example call."
+      api-product: "OpenAPI spec, example client snippets in JS + Python + curl, README with auth/rate-limit docs, and a paid tier page copy block if commercial."
+      desktop-tool: "Executable per OS, README with install steps, sample data or config, and a distribution page copy block."
+      "*": "N/A — not a sellable artifact for this Output Type."
+    fallback: "N/A — not a sellable artifact for this Output Type."
+
+  - heading: "Purchase Validation (functions-as-purchased)"
+    kind: textarea
+    required: false
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: "Buy a copy end-to-end from the storefront (test-mode), download it, open it, verify formatting on desktop + mobile, click every internal + external link, run the code snippets if any, and confirm redemption logs the purchase."
+      cli-product: "Install from the published channel (npm/pip/brew/etc.) fresh, run every documented command, and confirm output matches the README."
+      mcp-product: "Wire the server into a fresh MCP client from the exact snippet shipped in the WR, list tools, and call each tool successfully."
+      api-product: "Hit every OpenAPI endpoint with the example client, assert status codes, and confirm rate-limit + auth work as documented."
+      desktop-tool: "Install from the shipped installer on a clean OS image, run the primary user flow, and confirm the artifact still validates on second launch."
+      "*": "N/A — not a purchased artifact for this Output Type."
+    fallback: "N/A — not a purchased artifact for this Output Type."
+
+  - heading: Expected Scope
+    kind: input
+    required: false
+    default_by: output_type
+    depends_on: Output Type (required)
+    defaults:
+      sellable-pdf: "1 PDF + 1 storefront listing + 1 redemption path"
+      production-app: "1 shippable app with docs + tests + deploy path"
+      cli-product: "1 CLI + tests + published package"
+      mcp-product: "1 MCP server + tests + client config"
+      api-product: "1 API + OpenAPI spec + tests + client examples"
+      desktop-tool: "1 tool + installer + docs"
+      technical-documentation: "1 doc set + cross-links updated"
+      project-management-doc: "1 document + linked from index"
+      internal-script-automation: "1 script/workflow + tests"
+      client-code-task: "1 delivered change per client spec"
+      invention-flow: "1 proposal + prior-art review + next-step plan"
+      "*": "1 self-contained deliverable"
+    fallback: "1 self-contained deliverable"
+
+  - heading: Validation Expectations
+    kind: textarea
+    required: false
+    default_by: llm
+    fallback: "`npm test` and `npm run workflows:validate` must be green. If the WR touches UI, include screenshots or a public preview URL. If the WR touches paid product surface, complete the Purchase Validation checklist above."
+
+  - heading: Blocker Rule
+    kind: textarea
+    required: false
+    default_by: always
+    defaults:
+      "*": "If any part of the Required Bundle cannot be completed in one iteration, open a WR-BLOCKER issue (label: `wr-blocker`) that names the missing capability, credential, or human action, and reference it from the PR body. Do NOT silently drop scope."
+    fallback: "If any part of the Required Bundle cannot be completed in one iteration, open a WR-BLOCKER issue (label: `wr-blocker`) that names the missing capability, credential, or human action, and reference it from the PR body. Do NOT silently drop scope."
+
+  - heading: Acknowledgements
+    kind: checkboxes
+    required: false
+    allowed:
+      - "This WR defines a bundled outcome, not just a minimum acceptable patch."
+      - "Explicitly requested secondary items should not be silently deferred."
+      - "If the PR is partial, the blocker must be documented."
+      - "The PR should reflect the WR's required bundle and definition of done."
+      - "After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue."
+    default_by: always
+    defaults:
+      "*": "all"   # tick every acknowledgement box
+    fallback: all
