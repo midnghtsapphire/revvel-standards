@@ -63,6 +63,96 @@ async function discoverRuns(api = repoApi) {
   return runs;
 }
 
+// How long a workflow's reassignment lineage is remembered after its last cut.
+// Long enough that a 15-min cut→relaunch→stall cycle can never outrun the
+// ledger; short enough that a workflow that recovers gets a clean slate.
+const STATE_TTL_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * Durable scoreboard: reassignment lineage persisted in its own state file so
+ * a quiet tick can NEVER wipe it. The original design read history back from
+ * the last feed's `preemptions` — but the moment a tick had nothing to preempt
+ * (e.g. right after a relaunch, while the fresh run was still young) the feed
+ * carried no history, the next tick started the model chain from scratch, and
+ * the controller looped cut→relaunch on model #1 forever without ever
+ * escalating to self-healing. CUDA framing: the warp scheduler's scoreboard
+ * must outlive the current issue cycle, or eviction can't converge.
+ *
+ * Entries expire after `ttlMs` since their last cut (a recovered workflow gets
+ * a clean slate). Falls back to the legacy last-feed read for the first run
+ * after this file ships.
+ */
+function loadControllerState(outDir, nowMs = Date.now(), ttlMs = STATE_TTL_MS) {
+  let workflows = null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(path.join(outDir, 'controller-state.json'), 'utf8'));
+    if (raw && raw.schema === 'fleet-controller-state/v1' && raw.workflows && typeof raw.workflows === 'object') {
+      workflows = raw.workflows;
+    }
+  } catch {
+    // no state file yet — legacy fallback below
+  }
+  if (!workflows) {
+    workflows = {};
+    const legacy = loadPriorReassigns(outDir);
+    for (const [k, v] of Object.entries(legacy)) workflows[k] = { ...v, last_cut_at: null };
+  }
+  const live = {};
+  for (const [k, v] of Object.entries(workflows)) {
+    const t = Date.parse((v && v.last_cut_at) || '');
+    if (Number.isFinite(t) && nowMs - t > ttlMs) continue; // recovered — clean slate
+    live[k] = { count: (v && v.count) || 0, tried: (v && v.tried) || [], last_cut_at: (v && v.last_cut_at) || null };
+  }
+  return live;
+}
+
+// Write the scoreboard back: every cut that actually happened this tick stamps
+// its workflow's lineage; untouched entries are carried forward unchanged (this
+// carry-forward is the amnesia fix). Only called on preempting runs — a dry
+// scan must never advance scheduling state.
+function saveControllerState(outDir, workflows, preemptions, generatedAtIso) {
+  const next = { ...workflows };
+  for (const p of preemptions || []) {
+    if (p.cut !== 'cancelled') continue;
+    const key = p.path || String(p.id);
+    next[key] = { count: p.reassignCount || 0, tried: p.triedModels || [], last_cut_at: generatedAtIso };
+  }
+  const payload = { schema: 'fleet-controller-state/v1', updated_at: generatedAtIso, workflows: next };
+  fs.writeFileSync(path.join(outDir, 'controller-state.json'), `${JSON.stringify(payload, null, 2)}\n`);
+  return payload;
+}
+
+/**
+ * Real heartbeat for a "stalled" verdict: a run's `updated_at` does not tick
+ * while one long step is executing, so a legitimately slow research step reads
+ * as "no progress" and gets cut while healthy. Before evicting, check the
+ * run's jobs/steps — the latest started_at/completed_at across them is actual
+ * evidence of progress. Returns the epoch-ms of the last observed activity, or
+ * null when the jobs API gave us nothing (caller falls back to the original
+ * verdict). CUDA framing: check the warp's scoreboard before eviction — an
+ * in-flight op that recently issued is not a stall.
+ */
+async function lastJobActivityMs(runId, api = repoApi) {
+  if (!api) return null;
+  const data = await api(`/actions/runs/${runId}/jobs?per_page=100`, { allowError: true });
+  const jobs = data && Array.isArray(data.jobs) ? data.jobs : null;
+  if (!jobs) return null;
+  let last = null;
+  const consider = (t) => {
+    const ms = Date.parse(t || '');
+    if (Number.isFinite(ms)) last = last == null ? ms : Math.max(last, ms);
+  };
+  for (const j of jobs) {
+    consider(j.started_at);
+    consider(j.completed_at);
+    for (const s of j.steps || []) {
+      consider(s.started_at);
+      consider(s.completed_at);
+    }
+  }
+  return last;
+}
+
 // Read the previous feed so reassignment counts/tried-models survive across the
 // stateless cron ticks (key: workflow path or run id).
 function loadPriorReassigns(outDir) {
@@ -120,7 +210,7 @@ async function main() {
   const outDir = process.env.CONTROLLER_OUT_DIR || path.join(process.cwd(), 'docs', 'controller');
 
   const runs = await discoverRuns();
-  const priorReassigns = loadPriorReassigns(outDir);
+  const priorReassigns = loadControllerState(outDir, now);
   const generatedAtIso = new Date(now).toISOString();
   const { classified, preemptions } = core.evaluate(runs, now, { preemptEnabled, priorReassigns, generatedAtIso });
 
@@ -128,6 +218,18 @@ async function main() {
     if (!preemptEnabled) {
       p.cut = 'would-cancel'; // dry scan: report the cut + reassign we *would* do
       continue;
+    }
+    // 0) a "stalled" verdict is only a proxy (run.updated_at doesn't tick during
+    //    a long step) — verify against the jobs API before evicting, so a slow
+    //    but healthy research step isn't killed every 15 minutes. Runaways skip
+    //    this: past the wall-clock budget they're cut regardless of activity.
+    if (p.health === 'stalled') {
+      const activity = await lastJobActivityMs(p.id);
+      if (activity != null && now - activity < core.DEFAULTS.stallMs) {
+        p.cut = 'spared(step-progress)';
+        console.error(`controller: spared run ${p.id} (${p.name || '?'}) — step activity ${Math.round((now - activity) / 60000)}m ago`);
+        continue;
+      }
     }
     // 1) cut the stalled/runaway run. No allowError: a failed cancel must NOT be
     //    recorded as 'cancelled', or we'd relaunch a duplicate while the original
@@ -154,14 +256,19 @@ async function main() {
   }
 
   const feed = core.buildControllerFeed({ classified, preemptions, preemptEnabled, generatedAtIso });
-  const stop = core.buildStopSignal(preemptions, generatedAtIso);
-  const ingestion = core.buildIngestion(preemptions, generatedAtIso);
+  // Spared runs stay visible in the status feed (cut: 'spared(step-progress)')
+  // but must NOT reach the stop signal or the self-healing ingestion — they
+  // were judged healthy after all.
+  const acted = preemptions.filter((p) => p.cut !== 'spared(step-progress)');
+  const stop = core.buildStopSignal(acted, generatedAtIso);
+  const ingestion = core.buildIngestion(acted, generatedAtIso);
 
   try {
     fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(path.join(outDir, 'controller-status.json'), `${JSON.stringify(feed, null, 2)}\n`);
     fs.writeFileSync(path.join(outDir, 'controller-stop.json'), `${JSON.stringify(stop, null, 2)}\n`);
     fs.writeFileSync(path.join(outDir, 'controller-ingestion.json'), `${JSON.stringify(ingestion, null, 2)}\n`);
+    if (preemptEnabled) saveControllerState(outDir, priorReassigns, preemptions, generatedAtIso);
   } catch (e) {
     console.error(`controller: writing feeds failed (continuing): ${e.message}`);
   }
@@ -186,7 +293,7 @@ async function ingest() {
   const now = Date.now();
   const runs = await discoverRuns();
   const outDir = process.env.CONTROLLER_OUT_DIR || path.join(process.cwd(), 'docs', 'controller');
-  const priorReassigns = loadPriorReassigns(outDir);
+  const priorReassigns = loadControllerState(outDir, now);
   return core.evaluate(runs, now, { preemptEnabled: false, priorReassigns }).ingestion;
 }
 
@@ -198,4 +305,15 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, ingest, listRuns, discoverRuns, reassignWorkflow, loadPriorReassigns };
+module.exports = {
+  main,
+  ingest,
+  listRuns,
+  discoverRuns,
+  reassignWorkflow,
+  loadPriorReassigns,
+  loadControllerState,
+  saveControllerState,
+  lastJobActivityMs,
+  STATE_TTL_MS,
+};

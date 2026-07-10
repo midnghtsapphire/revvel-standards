@@ -56,6 +56,31 @@ Written to `docs/controller/` every run and committed back by the workflow:
 | `controller-status.json` | `fleet-controller/v1` | Lovable monitor — occupancy, per-orchestrator health, planned/applied cuts + reassignments |
 | `controller-stop.json` | `fleet-controller-stop/v1` | An **in-process** orchestrator reads this at its `onSoftBudget` tick to self-halt (the "signal stop" half of preemption) |
 | `controller-ingestion.json` | `fleet-controller-ingestion/v1` | **Self-healing** — orchestrators that exhausted reassignment and need the heal loop |
+| `controller-state.json` | `fleet-controller-state/v1` | **The controller itself** — the durable reassignment scoreboard (see below) |
+
+## The scoreboard and the heartbeat (2026-07-10 convergence fixes)
+
+Two failure modes made the controller *look* broken — it thrashed instead of
+converging:
+
+1. **Amnesia loop.** Reassignment history used to live only inside the last
+   feed's `preemptions` array. One quiet tick (fresh relaunches are young and
+   healthy) emptied that array, wiped the history, and the next stall restarted
+   the model chain from step 1 — `reassign_count: 1` forever, never reaching
+   `maxReassigns`, never escalating to self-healing. The fix is a **durable
+   scoreboard** (`controller-state.json`) keyed by workflow path, carried
+   forward across ticks regardless of what the current tick preempted, expiring
+   `STATE_TTL_MS` (6h) after a workflow's last cut so recovered workflows get a
+   clean slate. CUDA framing: the warp scheduler's scoreboard must outlive the
+   current issue cycle, or eviction can never converge.
+2. **False stalls.** A run's `updated_at` does not tick while one long step
+   executes, so a legitimately slow research step read as "stalled" and was cut
+   every 15 minutes while healthy. Before evicting a *stalled* run (runaways are
+   cut regardless), the driver now checks the run's **jobs/steps heartbeat**
+   (`lastJobActivityMs`) — recent step activity spares the run
+   (`cut: 'spared(step-progress)'` in the feed; spared runs never reach the stop
+   signal or the ingestion feed). Check the warp's scoreboard before eviction:
+   an in-flight op that recently issued is not a stall.
 
 ## As a node for self-healing ingestion
 

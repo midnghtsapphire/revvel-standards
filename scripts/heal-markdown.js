@@ -224,9 +224,16 @@ function runMarkdownlint(files, opts = {}) {
     cwd: REPO_ROOT,
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
+    // Generous ceiling: the npx fallback may fetch the package. Prevents a hung
+    // lint from wedging the auto-heal workflow (per AI review on the PR).
+    timeout: 120000,
   });
   if (res.error) {
-    return { output: String(res.error.message || res.error), status: 1 };
+    const msg =
+      res.error.code === "ETIMEDOUT"
+        ? "markdownlint-cli2 timed out after 120s"
+        : String(res.error.message || res.error);
+    return { output: msg, status: 1 };
   }
   return {
     output: `${res.stdout || ""}${res.stderr || ""}`,
