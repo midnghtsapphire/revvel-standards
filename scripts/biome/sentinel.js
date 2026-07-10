@@ -7,7 +7,11 @@
  * Credit-free, rule-based failure detection. Reads recent workflow runs and open
  * issues via the GitHub API (GITHUB_TOKEN only) and decides — with deterministic
  * rules, no AI — whether the fleet is in pain. When it is, sentinel files (or
- * updates, deduped) a single [BIOME-SENTINEL] incident issue.
+ * quietly refreshes, deduped) a single [BIOME-SENTINEL] incident issue: ongoing
+ * incidents are updated by editing the issue body in place (PATCH) rather than
+ * posting a new comment each sweep, so nobody gets notification-spammed every
+ * 2 hours. When the fleet recovers, the incident is auto-resolved (one
+ * resolution comment + close).
  *
  * Pure decision functions are exported for unit testing; the CLI at the bottom
  * performs the actual GitHub I/O.
@@ -83,6 +87,14 @@ function shouldFileIncident(section) {
   return section.status !== 'healthy';
 }
 
+function buildIncidentTitle(section) {
+  return `[BIOME-SENTINEL] Fleet pain detected (${section.status})`;
+}
+
+function buildResolutionComment(generatedAtIso) {
+  return `${INCIDENT_MARKER}\n✅ Fleet recovered as of ${generatedAtIso} — no failures or stuck items over threshold. Auto-resolving.`;
+}
+
 function buildIncidentBody(section, generatedAtIso) {
   const f = section.detail.recent_failures || [];
   const s = section.detail.stuck || [];
@@ -122,6 +134,8 @@ module.exports = {
   buildSentinelSection,
   shouldFileIncident,
   buildIncidentBody,
+  buildIncidentTitle,
+  buildResolutionComment,
   labelNames,
 };
 
@@ -137,26 +151,46 @@ if (require.main === module) {
     const generatedAt = new Date().toISOString();
     console.log(`[biome-sentinel] status=${section.status} ${section.summary}`);
 
-    if (!shouldFileIncident(section)) {
-      console.log('[biome-sentinel] fleet healthy — no incident filed.');
-      return;
-    }
-
-    // Dedupe: reuse an existing open incident if one is present.
+    // Dedupe: find the existing open incident (if any) before deciding anything —
+    // it's needed both to refresh an ongoing incident and to auto-resolve it on recovery.
     const search = await repoApi('/issues?state=open&labels=biome,scorecard&per_page=50', { allowError: true });
     const existing = Array.isArray(search)
       ? search.find((i) => !i.pull_request && (i.body || '').includes(INCIDENT_MARKER))
       : null;
+
+    if (!shouldFileIncident(section)) {
+      if (existing) {
+        // Recovery: honor the footer's promise — one resolution comment, then close.
+        // (Close is ops metadata, not a content deletion; same pattern as homeostat.)
+        await repoApi(`/issues/${existing.number}/comments`, {
+          method: 'POST',
+          body: { body: buildResolutionComment(generatedAt) },
+        });
+        await repoApi(`/issues/${existing.number}`, { method: 'PATCH', body: { state: 'closed' } });
+        console.log(`[biome-sentinel] fleet healthy — auto-resolved incident #${existing.number}`);
+      } else {
+        console.log('[biome-sentinel] fleet healthy — no incident filed.');
+      }
+      return;
+    }
+
     const body = buildIncidentBody(section, generatedAt);
 
     if (existing) {
-      await repoApi(`/issues/${existing.number}/comments`, { method: 'POST', body: { body } });
-      console.log(`[biome-sentinel] updated existing incident #${existing.number}`);
+      // Quiet refresh: edit the incident in place instead of posting a new comment.
+      // A comment every 2h sweep spams notifications ("chatty cathy"); a body PATCH
+      // keeps the incident current without pinging anyone. The full change history
+      // stays available in the issue's edit history — nothing is lost.
+      await repoApi(`/issues/${existing.number}`, {
+        method: 'PATCH',
+        body: { title: buildIncidentTitle(section), body },
+      });
+      console.log(`[biome-sentinel] refreshed existing incident #${existing.number} in place`);
     } else {
       const created = await repoApi('/issues', {
         method: 'POST',
         body: {
-          title: `[BIOME-SENTINEL] Fleet pain detected (${section.status})`,
+          title: buildIncidentTitle(section),
           body,
           labels: ['biome', 'scorecard', 'self-heal'],
         },
