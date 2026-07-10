@@ -37,36 +37,17 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'check_suite'
     steps:
-      - name: Ensure check status labels exist
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            const labels = [
-              { name: 'checks-passing', color: '16a34a', description: 'All CI checks pass' },
-              { name: 'checks-failing', color: 'dc2626', description: 'One or more CI checks failed' },
-              { name: 'ready-to-merge', color: '8b5cf6', description: 'Approved + checks passing — ready to merge' },
-            ];
-            for (const label of labels) {
-              try {
-                await github.rest.issues.getLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name: label.name,
-                });
-              } catch (e) {
-                if (e.status === 404) {
-                  await github.rest.issues.createLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    name: label.name,
-                    color: label.color,
-                    description: label.description,
-                  });
-                  core.info(`Created label: ${label.name}`);
-                }
-              }
-            }
+      # 2026-07-10 rate-limit fix (Claude): this workflow fires on EVERY completed
+      # check suite (dozens per push in a 166-workflow repo) and used to do 3
+      # label-existence reads, 2 blind label removals, adds, and a brand-NEW
+      # comment each time — ~15 duplicate "CI Checks Passing" comments landed on
+      # a single PR and the installation's API quota was exhausted (confirmed
+      # 403 "API rate limit exceeded for installation" killing other workflows,
+      # e.g. AI PR review on #15623). Now: ONE read, label writes only on real
+      # state transitions, and ONE sticky comment updated in place — a repeat
+      # suite conclusion costs 2 reads and 0 writes. The ensure-labels step was
+      # dropped: the labels already exist and issues.addLabels auto-creates
+      # missing ones anyway.
       - name: Update PR status based on check suite
         uses: actions/github-script@v9.0.0
         with:
@@ -81,90 +62,74 @@ jobs:
               return;
             }
 
+            const MARKER = '<!-- pr-check-status:sticky -->';
+            const { owner, repo } = context.repo;
+
             for (const pr of prs) {
               const prNumber = pr.number;
-              core.info(`Processing PR #${prNumber}, conclusion: ${conclusion}`);
+              const desired =
+                conclusion === 'success' || conclusion === 'neutral' ? 'passing'
+                : conclusion === 'failure' ? 'failing'
+                : null;
+              if (!desired) {
+                core.info(`PR #${prNumber}: conclusion ${conclusion} — no action`);
+                continue;
+              }
+              core.info(`Processing PR #${prNumber}, conclusion: ${conclusion} -> ${desired}`);
 
-              // Remove both status labels first
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  name: 'checks-passing',
-                });
-              } catch (e) { /* ignore */ }
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  name: 'checks-failing',
-                });
-              } catch (e) { /* ignore */ }
+              // ONE read of current labels; every write below is conditional on
+              // an actual state transition.
+              const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+                owner, repo, issue_number: prNumber,
+              });
+              const names = prLabels.map((l) => l.name);
+              const approved = names.includes('approved');
 
-              // Determine new state
-              if (conclusion === 'success' || conclusion === 'neutral') {
-                // Checks passed - add checks-passing
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  labels: ['checks-passing'],
-                });
-
-                // Check if also has "approved" label - if so, mark ready-to-merge
-                const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                });
-                const labelNames = prLabels.map(l => l.name);
-
-                if (labelNames.includes('approved')) {
-                  // Remove ready-to-merge from any other PRs first
-                  await github.rest.issues.addLabels({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: prNumber,
-                    labels: ['ready-to-merge'],
-                  });
+              if (desired === 'passing') {
+                if (names.includes('checks-failing')) {
+                  try {
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-failing' });
+                  } catch (e) { /* already gone */ }
+                }
+                if (!names.includes('checks-passing')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-passing'] });
+                }
+                if (approved && !names.includes('ready-to-merge')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['ready-to-merge'] });
                   core.info(`PR #${prNumber} is now ready to merge!`);
                 }
+              } else {
+                if (names.includes('checks-passing')) {
+                  try {
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-passing' });
+                  } catch (e) { /* already gone */ }
+                }
+                if (!names.includes('checks-failing')) {
+                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-failing'] });
+                }
+                if (names.includes('ready-to-merge')) {
+                  try {
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'ready-to-merge' });
+                  } catch (e) { /* already gone */ }
+                }
+              }
 
-                // Post success comment
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body: `✅ **CI Checks Passing** — All checks have passed.${labelNames.includes('approved') ? ' This PR is now ready to merge!' : ''}`,
-                });
+              // Sticky status comment: update the ONE marked comment in place;
+              // create it only the first time; write nothing when unchanged.
+              const body = desired === 'passing'
+                ? `${MARKER}\n✅ **CI Checks Passing** — All checks have passed.${approved ? ' This PR is now ready to merge!' : ''}`
+                : `${MARKER}\n❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](${suite.html_url}) and push a fix.`;
 
-              } else if (conclusion === 'failure') {
-                // Checks failed - add checks-failing, remove ready-to-merge
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  labels: ['checks-failing'],
-                });
-
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: prNumber,
-                    name: 'ready-to-merge',
-                  });
-                } catch (e) { /* ignore */ }
-
-                // Post failure comment
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body: `❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](${suite.html_url}) and push a fix.`,
-                });
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: prNumber, per_page: 100,
+              });
+              const existing = comments.find((c) => c.body && c.body.includes(MARKER));
+              if (existing && existing.body === body) {
+                core.info(`PR #${prNumber}: sticky status unchanged — no write`);
+              } else if (existing) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
               }
             }
     timeout-minutes: 30
