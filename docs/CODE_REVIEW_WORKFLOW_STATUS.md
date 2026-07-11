@@ -44,6 +44,14 @@ This document clarifies the current state of code review automation in `revvel-s
 **Purpose:** Enforce "No scaffolding" rule from AGENTS.md Prime Directive  
 **Failure Mode:** 🚫 **BLOCKING** — Violations prevent merge
 
+### 5. Devin Code Review (Opt-In)
+**Workflow:** `.github/workflows/devin-code-review.yml`  
+**Status:** ✅ **ACTIVE** — opt-in only (WR #15672)  
+**Trigger:** `/devin` slash command on PR/issue comments, `devin-review` label on a non-draft PR, or manual dispatch — deliberately no automatic PR open/sync trigger (Devin is a paid surface, sessions cost ACUs)  
+**Action:** `aaronsteers/devin-action` (SHA-pinned; listed in `ACCEPTED_SINGLE_AUTHOR_ACTIONS`)  
+**Config:** `DEVIN_API_KEY` repo secret + `DEVIN_ORG_ID` repo variable; soft-skips (stays green) when either is missing  
+**Notes:** Operational strengths/weaknesses in `docs/agent-stack/DEVIN_OBSERVATIONS.md` — verify Devin's "✅ Resolved" claims before trusting them
+
 ## Disabled Workflows (Manual Dispatch Only)
 
 ### 1. pr-auto-review.yml
@@ -163,16 +171,16 @@ All workflows now use **valid OpenRouter model IDs**:
 
 ## FAQs
 
-### Why disable multiple reviewers?
+### Why disable multiple reviewers
 Having 6+ AI bots review every PR created noise and confusion. BITO AI provides the best balance of context-awareness and actionable feedback.
 
-### Can I still use OpenRouter for reviews?
+### Can I still use OpenRouter for reviews
 Yes, via manual dispatch on `pr-auto-review.yml` or `ai-pr-review-openrouter.yml`. Useful for second opinions or when BITO is unavailable.
 
-### What happens if BITO AI fails?
+### What happens if BITO AI fails
 The workflows have graceful fallback. PRs can still be merged with human review approval.
 
-### Are PromptFoo failures blocking?
+### Are PromptFoo failures blocking
 No. PromptFoo runs in advisory mode. Review the artifacts and decide whether to address findings before merge.
 
 ---
