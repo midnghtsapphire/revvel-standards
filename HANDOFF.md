@@ -128,7 +128,7 @@ RL-trained LLM that beats Claude Opus-4.6 and Gemini 3 Pro on CUDA kernel genera
 
 ### 3. FLAMEGPU / FLAMEGPU2 (GPU agent-based modeling, AGPL-3.0)
 
-Mature FOSS framework: formal agent specifications mapped to CUDA, multiple agent types, agent communication, birth/death allocation. **Reference for `device-tree.yml` schema in Block 1.** Their formal spec file format is a proven pattern for how Blocks declare their Threads — steal the structure, not the code.
+Mature FOSS framework: agents, variables, messages, and execution layers are declared programmatically through `ModelDescription` / `AgentDescription` APIs. **Use those concepts as design inspiration for `device-tree.yml` in Block 1; FLAME GPU 2 does not provide a schema file to copy.**
 
 **Watch:** AGPL-3.0 is copyleft; do not vendor their code. Design inspiration only. C++/CUDA implementation is irrelevant to our Node/JS stack.
 
