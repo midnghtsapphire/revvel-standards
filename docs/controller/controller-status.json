@@ -1,49 +1,37 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-11T02:47:50.711Z",
+  "generated_at": "2026-07-11T03:56:31.680Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 2,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 7,
-    "running": 2,
+    "total": 6,
+    "running": 1,
     "queued": 5,
     "done": 0,
-    "healthy": 2,
+    "healthy": 1,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 2,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29136931471,
+      "id": 29138800030,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29136931471",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29138800030",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10711,
-      "since_update_ms": 7711,
+      "age_ms": 8680,
+      "since_update_ms": 5680,
       "reason": "running within budget",
       "protected": true
-    },
-    {
-      "id": 29136789482,
-      "name": "PR Lifecycle",
-      "path": ".github/workflows/pr-lifecycle.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29136789482",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 322711,
-      "since_update_ms": 320711,
-      "reason": "running within budget",
-      "protected": false
     },
     {
       "id": 29132916787,
