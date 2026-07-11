@@ -245,6 +245,20 @@ function getHealingActions(brokenAreas) {
     assert.deepEqual(nameOnly.missing, ['agent-dispatcher']);
   });
 
+  await test('checkWorkflowsPresent flags workflows absent from a truncated page (issue #15684)', () => {
+    // The live API returns 30 workflows per page by default; this repo has
+    // 150+. The workflow step must use `gh api --paginate` — a truncated
+    // first page that omits a required workflow must be reported missing,
+    // which is why pagination is mandatory in self-healing.yml.
+    const truncatedFirstPage = Array.from({ length: 30 }, (_, i) => ({
+      name: `Unrelated Workflow ${i}`,
+      path: `.github/workflows/unrelated-${i}.yml`,
+    }));
+    const result = checkWorkflowsPresent(truncatedFirstPage, REQUIRED_WORKFLOWS);
+    assert.ok(!result.healthy);
+    assert.deepEqual(result.missing, REQUIRED_WORKFLOWS);
+  });
+
   // Broken Area Identification
   await test('identifyBrokenAreas detects failed actions', () => {
     const broken = identifyBrokenAreas(5, 0, { healthy: true });

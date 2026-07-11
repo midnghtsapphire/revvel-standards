@@ -93,7 +93,7 @@ jobs:
           # retry once API access recovers.
           if ! PATHS="$(gh api --paginate "repos/${GH_REPO}/actions/workflows" \
             --jq '.workflows[].path')" || [[ -z "$PATHS" ]]; then
-            echo "::warning::Could not list workflows via gh api (auth/rate-limit/network?) — skipping presence check this run"
+            echo "::warning::Could not list workflows via gh api (auth/rate-limit/network?) — skipping presence check this run; expected during transient outages, next scheduled sweep (every 4h) will retry automatically"
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
             exit 0
           fi
