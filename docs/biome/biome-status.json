@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-11T03:03:30.549Z",
+  "generated_at": "2026-07-11T05:02:58.937Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 29136789482,
-            "name": "PR Lifecycle",
-            "path": ".github/workflows/pr-lifecycle.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29136789482",
+            "id": 29140571746,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29140571746",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29134455526"
+        "last_run": null
       }
     },
     "sheaf": {
