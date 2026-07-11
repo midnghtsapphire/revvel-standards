@@ -64,7 +64,16 @@ test('DRY_RUN --json dedupes, trims, and emits expected JSON shape', () => {
   const r = spawnSync(SCRIPT,
     ['--secrets', 'OPENROUTER_API_KEY, DIGITALOCEAN_API_TOKEN ,, OPENROUTER_API_KEY',
      '--repo', 'midnghtsapphire/revvel-standards', '--json'],
-    { encoding: 'utf8', env: { ...process.env, DRY_RUN: '1' } });
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        DRY_RUN: '1',
+        GH_TOKEN: '',
+        GITHUB_TOKEN: '',
+        MOCK_GITHUB_SECRETS: '',
+      },
+    });
   assert(r.status === 0, `exit ${r.status}: ${r.stderr}`);
   // The JSON line is the last non-empty line of stdout.
   const lines = r.stdout.trim().split('\n').filter(Boolean);

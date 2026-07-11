@@ -201,6 +201,21 @@ labels:
     color: "c2e0c6"
     description: "Lightweight quick/internal WR"
 
+  - name: checkpoint-gated
+    axis: wr
+    color: "fbca04"
+    description: "Ship block-by-block; owner reviews between blocks"
+
+  - name: checkpoint-approved
+    axis: wr
+    color: "0e8a16"
+    description: "Owner approved this block; next block may launch"
+
+  - name: high-stakes
+    axis: wr
+    color: "b60205"
+    description: "Meta or architectural work; use checkpoint-gated flow"
+
   - name: "wr:in-progress"
     axis: wr
     color: "f9d71c"
