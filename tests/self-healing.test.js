@@ -531,8 +531,10 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
     assert.deepEqual(record.actions.reran_run_ids, ['111', '222']);
     assert.deepEqual(record.closed_issues, ['15684']);
     assert.ok(record.ts && record.run_url);
-    // Must serialize to a single JSONL line.
-    assert.ok(!JSON.stringify(record).includes('\n'));
+    // Must serialize to a single JSONL line, and round-trip losslessly.
+    const line = JSON.stringify(record);
+    assert.ok(!line.includes('\n'));
+    assert.deepEqual(JSON.parse(line), record);
   });
 
   // Threshold Constants

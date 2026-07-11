@@ -28,6 +28,10 @@ env:
   # the repo from. GH_REPO targets every gh command at the right repo and
   # avoids "fatal: not a git repository".
   GH_REPO: ${{ github.repository }}
+  # Health thresholds shared by research-state detection AND self-heal
+  # verification — single source so the two checks can never drift apart.
+  FAILED_ACTIONS_THRESHOLD: 3
+  STUCK_ISSUES_THRESHOLD: 5
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
@@ -126,11 +130,11 @@ jobs:
         run: |
           BROKEN=()
           
-          if [[ "$ACTIONS_FAILED" -gt 3 ]]; then
+          if [[ "$ACTIONS_FAILED" -gt "$FAILED_ACTIONS_THRESHOLD" ]]; then
             BROKEN+=("GitHub Actions: $ACTIONS_FAILED recent failures")
           fi
           
-          if [[ "$STUCK" -gt 5 ]]; then
+          if [[ "$STUCK" -gt "$STUCK_ISSUES_THRESHOLD" ]]; then
             BROKEN+=("Stuck issues: $STUCK open")
           fi
           
@@ -242,6 +246,11 @@ jobs:
           # (a rerun resets conclusion to null/queued). Without verification
           # the old job just DECLARED "healing completed" — this step makes
           # the claim real before we close anything or write memory.
+          #
+          # 30s is not "runs finished" — it only needs to cover the API-side
+          # transition from conclusion=failure to conclusion=null (queued),
+          # which happens within seconds of the rerun POST. If a rerun fails
+          # AGAIN later, the next 4h sweep catches it and re-escalates.
           sleep 30
 
           # 1. Recent workflow-run failures (re-run runs no longer count:
@@ -253,10 +262,10 @@ jobs:
           STUCK=$(gh api "repos/${GH_REPO}/issues" \
             --state open --jq '.[] | select(.labels[].name | contains("stuck") or contains("checking")) | .number' 2>/dev/null | wc -w)
 
-          # Same thresholds as research-state (fail counts > 3, stuck > 5).
+          # Same thresholds as research-state (workflow-level env vars).
           REMAINING=()
-          [[ "$FAILED" -gt 3 ]] && REMAINING+=("GitHub Actions: $FAILED recent failures")
-          [[ "$STUCK" -gt 5 ]] && REMAINING+=("Stuck issues: $STUCK open")
+          [[ "$FAILED" -gt "$FAILED_ACTIONS_THRESHOLD" ]] && REMAINING+=("GitHub Actions: $FAILED recent failures")
+          [[ "$STUCK" -gt "$STUCK_ISSUES_THRESHOLD" ]] && REMAINING+=("Stuck issues: $STUCK open")
 
           if [[ ${#REMAINING[@]} -eq 0 ]]; then
             echo "healed=true" >> "$GITHUB_OUTPUT"
