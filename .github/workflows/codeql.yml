@@ -139,6 +139,8 @@ jobs:
           # Alert fields come from the GitHub API (semi-trusted); they are
           # only ever passed to gh as quoted arguments, never eval'd.
           SUMMARY=$(jq -r "${SEV_FILTER}"'[:20] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
+          # printf: %% is a literal % (the URL query is percent-encoded,
+          # e.g. %%3A → %3A → ":").
           BODY=$(printf 'Weekly CodeQL alert triage (`codeql.yml` → `alert-triage` job) found **%s** open critical/high alert(s):\n\n%s\n\nFull list: https://github.com/%s/security/code-scanning?query=is%%3Aopen+tool%%3ACodeQL\n' \
             "$COUNT" "$SUMMARY" "$GH_REPO")
           if [ -n "$EXISTING" ]; then
