@@ -1,8 +1,8 @@
 # HANDOFF — CUDA Execution-Model Rollout (Grid in progress)
 
-## Status: 🟡 BLOCK 0 OF 5 SHIPPED — awaiting owner review
+## Status: 🟡 FOUNDATIONAL RULE PR SHIPPED — awaiting owner review before Block 1
 
-Grid decomposed into 5 Blocks. Block 0 (the rule change that governs the rest) is shipped in PR #15668 and awaits owner review. Block 0 establishes the checkpoint rule and is exempt from the later `checkpoint: block-N of N` title convention used for Blocks 1+.
+Grid decomposed into 5 implementation Blocks. PR #15668 shipped the foundational checkpoint rule that governs the rest and now awaits explicit owner review. The first follow-on checkpoint PR starts at Block 1 and is the first PR that should carry the `checkpoint: block-N of N` title marker.
 
 ---
 
@@ -33,7 +33,7 @@ Rename map (embedded / CUDA vocabulary throughout code):
 
 | # | Block | Status | PR | Files |
 |---|---|---|---|---|
-| 0 | **Checkpoint rule** — the mechanic that gates every other Block | ✅ shipped; awaiting review | #15668 | docs/AGENTS.md, docs/DEFINITION_OF_DONE.md, .github/labels.yml, DECISIONS.md D011, wr/memory/decisions.jsonl |
+| 0 | **Checkpoint rule** — the mechanic that gates every other Block | ✅ foundational PR shipped; awaiting explicit owner review | #15668 | docs/AGENTS.md, docs/DEFINITION_OF_DONE.md, .github/labels.yml, DECISIONS.md D011, wr/memory/decisions.jsonl |
 | 1 | **Host + Device Tree + Agent Contract Schema** — reads WR, decomposes into Grid, generates agent-contract.yml, launches Kernels via existing agent-fallback.yml | ⏳ blocked on #15668 approval | — | config/device-tree.yml, scripts/host.mjs, schemas/agent-contract.schema.json, .github/workflows/host.yml, tests/host.test.js |
 | 2 | **Watchdog + Code Verifier** — semantic LLM check on every bus event + deterministic contract check on every Kernel completion. Writes to wr/memory/watchdog.jsonl. Uses cheap-model tier via OpenRouter (Octopus lane); contrarian family default | ⏳ blocked on Block 1 | — | scripts/watchdog.mjs, scripts/code-verifier.mjs, config/watchdog-firmware.yml, tests |
 | 3 | **Memory Retrieval + Boot ROM Injection** — minisearch (BM25, ~15KB MIT, no binary deps) over all memory files → wr/memory/index.jsonl. agent-factory/hooks/on-start-inject-memory.sh writes MEMORY_CONTEXT.md before every Thread starts. Rebuild workflow on push + nightly | ⏳ blocked on Block 2 | — | scripts/memory/{index,retrieve,distill}.mjs, agent-factory/hooks/on-start-inject-memory.sh, .github/workflows/memory-index.yml, tests |
@@ -49,7 +49,7 @@ Rename map (embedded / CUDA vocabulary throughout code):
 
 ## Resume Command
 
-When owner marks #15668 `checkpoint-approved` (or comments `next`, or merges), the next agent picks up here:
+When owner marks #15668 `checkpoint-approved` or comments `next`, the next agent picks up here:
 
 ```bash
 cd /workspace/project/revvel-standards
@@ -94,7 +94,7 @@ git checkout -b feat/cuda-block-1-host
 ## For the Next Agent
 
 1. Read `docs/AGENTS.md` § Checkpoint-Gated Grids first.
-2. Do not launch Block 1 until #15668 is approved (`checkpoint-approved` label, `next` comment, or merged).
+2. Do not launch Block 1 until #15668 is approved (`checkpoint-approved` label or `next` comment).
 3. When you do launch Block 1, follow the Resume Command above verbatim.
 4. Every Block PR must be complete — no scaffolding, no TODO, no phased language.
 5. Update this HANDOFF.md every Block. Move rows from `⏳` to `✅ shipped, awaiting review` to `✅ approved`.

@@ -635,12 +635,12 @@ This is a team effort. Team members look after each other. Agents look after the
 
 Some work — meta systems, architectural changes, anything where a wrong turn cascades — benefits from **owner review between Blocks** even when every Block ships complete. The rule is not "add scaffolding to buy review time"; the rule is "make Blocks small enough that shipping one at a time is natural, and pause between them so the owner can course-correct."
 
-**When to use:** Any WR labeled `checkpoint-gated`. A `high-stakes` label is a signal to add `checkpoint-gated`; it does not activate the flow by itself. Also opt in via the WR body: `Checkpoint-gate: yes`.
+**When to use:** Any WR explicitly labeled `checkpoint-gated`. A `high-stakes` label is only a signal that the owner may want the checkpoint flow; it does not opt a WR in by itself.
 
 **How it works:**
 - **Decompose the WR into Blocks up front** and list them in the WR body (e.g., "Block 1 of 4: Host + device-tree; Block 2 of 4: Watchdog; ...").
-- **Ship each Block as its own PR.** PR title carries `checkpoint: block-N of N`. The PR is complete and merge-ready — not a draft, not scaffolding.
-- **Do not launch the next Block** until the owner marks the previous Block PR with the `checkpoint-approved` label, comments `next`, or the PR is merged.
+- **Ship each Block as its own PR.** Follow-on Block PR titles carry `checkpoint: block-N of N`. The PR is complete and merge-ready — not a draft, not scaffolding.
+- **Do not launch the next Block** until the owner explicitly marks the previous Block PR with the `checkpoint-approved` label or comments `next`. Merge alone is not proof of owner review, and this flow is currently a coordination convention rather than an automated gate.
 - **The Grid is not "done"** until every Block has shipped and been approved. Update `SYSTEM_STATE.md` after the final Block, not after each one.
 - **If the owner rejects a Block PR**, adjust that Block. Do not proceed to the next Block until it is approved.
 
