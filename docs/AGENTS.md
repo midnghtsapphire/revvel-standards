@@ -635,7 +635,7 @@ This is a team effort. Team members look after each other. Agents look after the
 
 Some work — meta systems, architectural changes, anything where a wrong turn cascades — benefits from **owner review between Blocks** even when every Block ships complete. The rule is not "add scaffolding to buy review time"; the rule is "make Blocks small enough that shipping one at a time is natural, and pause between them so the owner can course-correct."
 
-**When to use:** Any WR labeled `checkpoint-gated`, `owner-review-per-block`, or `high-stakes`. Also opt-in via the WR body: `Checkpoint-gate: yes`.
+**When to use:** Any WR labeled `checkpoint-gated`. A `high-stakes` label is a signal to add `checkpoint-gated`; it does not activate the flow by itself. Also opt in via the WR body: `Checkpoint-gate: yes`.
 
 **How it works:**
 - **Decompose the WR into Blocks up front** and list them in the WR body (e.g., "Block 1 of 4: Host + device-tree; Block 2 of 4: Watchdog; ...").
