@@ -4,7 +4,7 @@ Investigation report for WR issue
 [#15693](https://github.com/midnghtsapphire/revvel-standards/issues/15693).
 <<<<<<< HEAD
 Scope is **assessment only** (per the WR's Explicit Exclusions) — no CodeQL
-configuration, rules, or workflows were changed as part of this work.
+configuration, rules, or workflows were changed as part of this work
 =======
 Scope started as **assessment only** (per the WR's Explicit Exclusions), then
 the maintainer explicitly requested that the identified fixes be implemented in
@@ -61,7 +61,7 @@ Assessment date: 2026-07-11.
 
 There is **no** `codeql-config.yml`, no custom queries (`*.ql`), and no custom
 query suites (`*.qls`) anywhere in the repository — the workflow relies on the
-stock CodeQL query packs for the two configured languages.
+stock CodeQL query packs for the two configured languages
 =======
 | Failure posture | `analyze` runs with `continue-on-error: true` to tolerate post-processing/upload API failures after SARIF export, while `Verify SARIF was generated` fails the run if analysis did not emit SARIF |
 
