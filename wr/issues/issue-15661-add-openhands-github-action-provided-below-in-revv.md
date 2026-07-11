@@ -52,6 +52,7 @@ _No response_
 
 ### Objective
 
+```yaml
 - name: OpenHands PR Review Action
   uses: xinbenlv/openhands-pr-review-action@v1.0.0-rc1
 
@@ -100,6 +101,7 @@ jobs:
 
           # Optional: Pass additional CLI args to OpenHands
           # cli_args: '--max-iterations 15'
+```
 
 ### Required Bundle
 
