@@ -501,6 +501,17 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 **Next Action:** Keep `main` at 0 fail. Reviewers treat "CI was already failing" as a blocker, not an excuse.
 
+**Date/Time:** 2026-07-10T22:30:00Z
+
+**Task Attempted:** Block 1 of the CUDA execution-model Grid - Host + Device Tree + Agent Contract Schema. First real dogfood of the checkpoint-gated rule shipped in PR-A #15668.
+
+**Outcome:** Shipping. schemas/agent-contract.schema.json (Draft 2020-12), config/device-tree.yml (11 Thread kinds across 7 roles), scripts/host.js (pure decomposer with public decompose/validate API), .github/workflows/host.yml (triggers on WR labels, decomposes, comments contract back to issue), tests/host.test.js (15 assertions covering fallback, multi-block parse, classifier, gating, schema validation). 520/520 green (was 505 pre-block, added 15 host tests). 188/188 workflows valid.
+
+**Root Cause of Failure (If any):** Two drift bugs on main since PR-A branched: (1) openrouter-personas.test.js again hardcoded a fixed persona LIST (not just count) - the security fleet added five more personas (exfil, exprwatch, permit, redteam, sentinel); (2) docs/SECRETS_MAP.md drifted from generator output. Both are the same disease that hit us twice this week - hardcoded expectations vs source-of-truth drift.
+
+**Self-Healing Fix / Learned Lesson:** (1) When a test asserts membership of a growable registry, assert SUPERSET (missing elements empty), NOT equality. The mandatory core+fleet personas are the SLA; extras beyond that are fine. Applied to openrouter-personas.test.js line 87. (2) The Host is deterministic on purpose. No LLM call is required to decompose a WR - a small explicit rule set applied to labels + a ## Blocks section reads the intent unambiguously. This makes the Grid pause/resume flow honest and the tests trustable. Only refinement (not decomposition) would benefit from an LLM, and that is opt-in via HOST_LLM_REFINE env var not implemented yet. (3) Classifier keyword ordering matters: 'Watchdog + Code Verifier' hits verify before review - fixed by putting more specific review nouns (watchdog, verifier) BEFORE the generic testing verbs and using word boundaries.
+
+**Next Action:** Ship PR-B for Block 1, wait for #15668 approval AND #NEW approval before launching Block 2 (Watchdog + Code Verifier). Update HANDOFF.md Block 1 row to shipped+awaiting.
 **Date/Time:** 2026-07-10T21:20:00Z
 
 **Task Attempted:** Introduce checkpoint-gated Grids so the owner can review complex work between complete Blocks without weakening the anti-scaffolding rule. Seed the CUDA execution-model rollout (Host + Watchdog + Memory) as a series of checkpoint-gated Blocks.
