@@ -143,19 +143,57 @@ jobs:
             const workflowId = 'wr-pr-creation.yml';
             const dispatchTime = Date.now();
             const MATCH_WINDOW_MS = 120000; // Account for API/listing clock skew around dispatch time.
-
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: workflowId,
-              ref: 'main',
-              inputs: {
-                issue_number: issueNumber,
-              },
-            });
-            core.info(`Dispatched ${workflowId} for issue #${issueNumber}`);
-
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            // Retry the dispatch on rate-limit (403/429) instead of crashing.
+            // Incident (issue #15673, run 29130339627): an unhandled 403
+            // "API rate limit exceeded" here meant the WR PR was NEVER
+            // dispatched, no completion label landed, and the WR sat at
+            // wr:in-progress in the stuck-wr-detector dead zone. The token
+            // bucket usually refills within minutes under burst load, so
+            // spaced retries recover most transient rate-limit failures.
+            // If every attempt fails we setFailed with a pointer to the
+            // manual re-dispatch command — never throw unhandled.
+            const RETRY_DELAYS_MS = [30000, 60000, 120000, 240000];
+            let dispatched = false;
+            let lastError = null;
+            for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: workflowId,
+                  ref: 'main',
+                  inputs: {
+                    issue_number: issueNumber,
+                  },
+                });
+                dispatched = true;
+                core.info(`Dispatched ${workflowId} for issue #${issueNumber} (attempt ${attempt + 1})`);
+                break;
+              } catch (error) {
+                lastError = error;
+                const status = error.status || 0;
+                const retriable = status === 403 || status === 429 || status >= 500;
+                if (!retriable || attempt === RETRY_DELAYS_MS.length) {
+                  break;
+                }
+                core.warning(
+                  `Dispatch attempt ${attempt + 1} failed with HTTP ${status} (${error.message}). ` +
+                  `Retrying in ${RETRY_DELAYS_MS[attempt] / 1000}s...`
+                );
+                await sleep(RETRY_DELAYS_MS[attempt]);
+              }
+            }
+
+            if (!dispatched) {
+              core.setFailed(
+                `Could not dispatch ${workflowId} for issue #${issueNumber} after retries: ` +
+                `${lastError ? lastError.message : 'unknown error'}. ` +
+                `Re-dispatch manually with: gh workflow run ${workflowId} --repo ${context.repo.owner}/${context.repo.repo} -f issue_number=${issueNumber}`
+              );
+              return;
+            }
             const delays = [5000, 10000, 20000, 30000];
             let foundRun = null;
 
