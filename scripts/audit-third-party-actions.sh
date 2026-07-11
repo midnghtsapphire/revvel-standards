@@ -65,6 +65,9 @@ MULTI_AUTHOR_OWNERS=(
 ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #14884: active releases/commits and already pinned to a full commit SHA.
   "robvanderleek/create-issue-branch"
+  # WR #15673: org-published (ASD B.V.), active releases (v1.0.1), pinned to a
+  # full commit SHA in devinci-debug.yml.
+  "asd-engineering/asd-devinci"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
