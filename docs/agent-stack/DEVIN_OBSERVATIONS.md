@@ -50,11 +50,14 @@ Devin uses three severities visible on PR threads:
 ## Cost / availability
 
 - **Paid surface.** Subscription was $80/mo as of the cleanup window.
-- **In-repo activation lane** — when PR #14375 lands, the lane is wired
-  via `scripts/call-devin-api.sh` + `.github/workflows/devin.yml`.
-  Until then, neither file is on `main` — Devin runs only via the
-  always-on `devin-ai-integration[bot]` GitHub App. Activation will
-  require the `DEVIN_API_KEY` repo secret (per cubic review).
+- **In-repo activation lane** — wired via
+  `.github/workflows/devin-code-review.yml` (WR #15672), which calls the
+  reusable `aaronsteers/devin-action` (SHA-pinned). Opt-in only: `/devin`
+  slash command, the `devin-review` PR label, or manual dispatch. Requires
+  the `DEVIN_API_KEY` repo secret (per cubic review) and the `DEVIN_ORG_ID`
+  repo variable; the workflow soft-skips when either is missing. The earlier
+  `scripts/call-devin-api.sh` + `.github/workflows/devin.yml` lane from
+  PR #14375 never landed on `main`.
 - **GitHub App review surface** — `devin-ai-integration[bot]` —
   always-on, posts review comments on PRs without any in-repo wiring.
   This is the lane that produced every "Devin Review found N issues"
