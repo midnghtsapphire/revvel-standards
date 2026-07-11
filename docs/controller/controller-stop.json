@@ -1,5 +1,21 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-10T22:40:35.897Z",
-  "stop": []
+  "generated_at": "2026-07-11T00:10:08.148Z",
+  "stop": [
+    {
+      "id": 29131273039,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    },
+    {
+      "id": 29131269181,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    },
+    {
+      "id": 29131266693,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    }
+  ]
 }

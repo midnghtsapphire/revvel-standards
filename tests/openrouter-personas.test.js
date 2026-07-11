@@ -76,10 +76,10 @@ async function runTests() {
   console.log("Test Group: Persona Registry");
   // Core + fleet personas are the SLA-critical roster that must never regress.
   // The registry is allowed to grow (e.g. security fleet added personas beyond
-  // this list on 2026-07-08); the guarantee is that the mandatory ones are
-  // still present. Assert superset, not equality. Drift lesson: hardcoded
-  // registry sizes broke this test twice in one week (learnings.md 2026-07-08
-  // and 2026-07-10) - do not reintroduce a hardcoded total.
+  // this list); the guarantee is that the mandatory ones are still present.
+  // Assert superset, not equality. Drift lesson: hardcoded registry sizes
+  // broke this test twice in one week (learnings.md 2026-07-08 and 2026-07-10)
+  // — do not reintroduce a hardcoded total.
   const CORE_PERSONAS = ["coder", "dragnet", "mender", "mindmappr", "oaudrey", "octo", "openrouter", "orbit", "professor"];
   const FLEET_PERSONAS = ["chain", "planner", "fanout", "conductor", "switchboard", "critic", "mirror", "rewoo", "loop"];
   const registryKeys = new Set(Object.keys(getPersonas()));
