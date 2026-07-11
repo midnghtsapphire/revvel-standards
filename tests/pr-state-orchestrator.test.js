@@ -86,6 +86,78 @@ test('label reads are guarded by safeApi instead of raw awaits', () => {
   }
 });
 
+test('safeApi degrades gracefully on API rate-limit 403s', () => {
+  const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
+  const githubScriptSteps = getGithubScriptSteps(workflow);
+
+  for (const { jobName, step } of githubScriptSteps) {
+    const script = step.with?.script || '';
+    assert.match(
+      script,
+      /e\?\.status === 403 && \/rate limit\/i\.test\(e\?\.message \|\| ''\)/,
+      `expected ${jobName} safeApi to detect rate-limit 403 errors`,
+    );
+  }
+});
+
+test('bulk reads (pulls.list, checks.listForRef, listReviews) go through safeApi', () => {
+  const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
+  const githubScriptSteps = getGithubScriptSteps(workflow);
+
+  for (const { jobName, step } of githubScriptSteps) {
+    const script = step.with?.script || '';
+    // Raw awaits on these reads caused unhandled HttpError job failures when
+    // the installation rate limit was exhausted (e.g. run 29153321163).
+    for (const call of [
+      'github.rest.pulls.list(',
+      'github.rest.checks.listForRef(',
+      'github.rest.pulls.listReviews(',
+    ]) {
+      assert.ok(
+        !script.includes(`await ${call}`),
+        `expected ${jobName} to call ${call} only through safeApi`,
+      );
+    }
+  }
+});
+
+test('workflow dedupes stacked runs with a per-PR/SHA concurrency group', () => {
+  const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
+  const concurrency = workflow.concurrency;
+
+  assert.ok(concurrency, 'expected a top-level concurrency block');
+  assert.equal(concurrency['cancel-in-progress'], true);
+  assert.match(concurrency.group, /github\.event_name/);
+  assert.match(concurrency.group, /pull_request\.number/);
+  assert.match(concurrency.group, /check_run\.head_sha/);
+});
+
+test('every job has a right-sized timeout-minutes limit', () => {
+  const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
+
+  const expected = {
+    'pr-lifecycle': 10,
+    'review-handler': 10,
+    'check-suite-handler': 15,
+    'check-run-handler': 15,
+    'resync-all-prs': 30,
+    'manual-reevaluate': 10,
+  };
+
+  assert.deepEqual(
+    Object.keys(workflow.jobs).sort(),
+    Object.keys(expected).sort(),
+    'job list drifted — update expected timeouts',
+  );
+  for (const [jobName, minutes] of Object.entries(expected)) {
+    assert.equal(
+      workflow.jobs[jobName]['timeout-minutes'],
+      minutes,
+      `expected ${jobName} to have timeout-minutes: ${minutes}`,
+    );
+  }
+});
+
 test('multi-PR loops pace themselves with sleep(150)', () => {
   const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
 
