@@ -81,14 +81,17 @@ jobs:
             "api-rate-limit-handler"
           )
 
+          # stderr goes to a log (not /dev/null) so a failed listing can be
+          # debugged from the step output below instead of vanishing silently.
           gh api --paginate repos/midnghtsapphire/revvel-standards/actions/workflows \
-            --jq '.workflows[].path' 2>/dev/null > /tmp/workflow-paths.txt || true
+            --jq '.workflows[].path' 2>/tmp/workflow-list-err.log > /tmp/workflow-paths.txt || true
 
           # If the API call failed or returned nothing, the check is
           # inconclusive — do NOT report everything missing (that is exactly
           # the false-positive healing-report noise we are guarding against).
           if [[ ! -s /tmp/workflow-paths.txt ]]; then
             echo "⚠️ Could not list workflows via the API — skipping this check"
+            cat /tmp/workflow-list-err.log 2>/dev/null || true
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
             exit 0
           fi

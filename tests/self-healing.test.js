@@ -223,8 +223,11 @@ function getHealingActions(brokenAreas) {
     ];
     const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
     assert.ok(!result.healthy);
-    assert.ok(result.missing.length > 0);
-    assert.ok(!result.missing.includes('agent-dispatcher'));
+    assert.deepEqual(result.missing, [
+      'issue-state-machine',
+      'stuck-check-watchdog',
+      'api-rate-limit-handler',
+    ]);
   });
 
   await test('checkWorkflowsPresent matches by path regardless of display name (#15680)', () => {
