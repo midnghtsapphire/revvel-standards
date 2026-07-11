@@ -1,0 +1,184 @@
+# DevInCi — Dev in CI (WR #15673)
+#
+# Spins up a full development environment INSIDE a GitHub Actions runner using
+# asd-engineering/asd-devinci (ASD — Accelerated Software Development B.V.):
+#   • Web terminal (ttyd) or VS Code (code-server) in the browser
+#   • Public tunnel URL — no SSH keys required, just click to connect
+#   • Full ASD CLI available in the session (asd net, asd caddy, asd expose, …)
+#
+# Primary use case: put Devin (or any human/agent reviewer) back into code
+# review — dispatch this workflow against a PR branch and the reviewer gets a
+# live, browser-accessible environment with the branch checked out.
+#
+# ── Security controls (WR "Do Not Under-Scope") ──────────────────────────────
+#   1. `workflow_dispatch` ONLY — GitHub requires write access to dispatch, so
+#      random users cannot start a shell on our runners. An explicit
+#      collaborator-permission gate double-checks this before anything starts.
+#   2. The action is pinned to a full commit SHA (v1.0.1) — a third-party
+#      composite action that opens a shell must never float on a mutable tag.
+#   3. Session TTL is required, capped at 120 minutes, and doubly enforced by
+#      the job-level `timeout-minutes` — no persistent dev environments.
+#   4. Only the credential-FREE URL (`url-base`) is written to the run summary.
+#      The credential-embedded URL is masked by the action (::add-mask::) and
+#      delivered via the action's short-retention `tunnel-url` artifact.
+#   5. Access logging: actor, ref, interface, and TTL are recorded in the run
+#      summary so every session is auditable from the Actions tab.
+#
+# Auth modes (all three supported, per the WR "Explicit Exclusions"):
+#   • API key (recommended): set the `ASD_API_KEY` repo secret
+#     (create at https://asd.host/workspace/api-keys with `cicd:provision`).
+#   • Ephemeral (no setup): leave `ASD_API_KEY` unset — the action falls back
+#     to short-lived rate-limited tokens automatically.
+#   • Pre-existing credentials: supply client id/secret + tunnel host/port as
+#     dispatch inputs (used by the `asd terminal` CLI hand-off).
+#
+# If the tunnel fails: check outbound SSH (port 2223) is allowed from runners,
+# verify ASD_API_KEY has the `cicd:provision` scope and is funded/valid, and
+# see https://github.com/asd-engineering/asd-devinci#troubleshooting.
+name: DevInCi Debug Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      interface:
+        description: 'Interface: ttyd (web terminal) or codeserver (VS Code)'
+        required: false
+        default: ttyd
+        type: choice
+        options:
+          - ttyd
+          - codeserver
+      ttl_minutes:
+        description: Session TTL in minutes (max 120)
+        required: false
+        default: '30'
+        type: string
+      tunnel_name:
+        description: Subdomain prefix (defaults to devinci-<run id>)
+        required: false
+        type: string
+      client_id:
+        description: Pre-existing ASD client ID (optional; skips provisioning)
+        required: false
+        type: string
+      client_secret:
+        description: Pre-existing ASD client secret (optional)
+        required: false
+        type: string
+      tunnel_host:
+        description: Tunnel server hostname (required with client_id)
+        required: false
+        type: string
+      tunnel_port:
+        description: Tunnel server SSH port (required with client_id)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: devinci-debug-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  devinci:
+    name: Start DevInCi session
+    runs-on: ubuntu-latest
+    # Hard stop for the whole session — the belt to the TTL's suspenders.
+    # 130 = max TTL (120) + 10 minutes of setup/teardown headroom.
+    timeout-minutes: 130
+    steps:
+      - name: Verify dispatcher has write access
+        # workflow_dispatch already requires write access, but re-verify
+        # explicitly so a future trigger change can never silently remove the
+        # gate — this workflow opens a shell on the runner.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          PERMISSION="$(gh api "repos/${GH_REPO}/collaborators/${ACTOR}/permission" --jq '.permission' || echo 'none')"
+          echo "Dispatcher ${ACTOR} has permission: ${PERMISSION}"
+          case "$PERMISSION" in
+            admin|maintain|write) echo "Access verified." ;;
+            *) echo "::error::${ACTOR} does not have write access — refusing to start a shell session."; exit 1 ;;
+          esac
+
+      - name: Validate and cap session TTL
+        id: ttl
+        env:
+          TTL_INPUT: ${{ inputs.ttl_minutes }}
+        run: |
+          TTL="${TTL_INPUT:-30}"
+          if ! [[ "$TTL" =~ ^[0-9]+$ ]] || [ "$TTL" -lt 1 ]; then
+            echo "::error::ttl_minutes must be a positive integer (got '${TTL}')."
+            exit 1
+          fi
+          if [ "$TTL" -gt 120 ]; then
+            echo "::warning::ttl_minutes ${TTL} exceeds the 120-minute cap — clamping to 120."
+            TTL=120
+          fi
+          echo "minutes=${TTL}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Record session access log
+        env:
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref }}
+          INTERFACE: ${{ inputs.interface }}
+          TTL: ${{ steps.ttl.outputs.minutes }}
+        run: |
+          {
+            echo "## DevInCi session access log"
+            echo ""
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Dispatched by | \`${ACTOR}\` |"
+            echo "| Ref | \`${REF}\` |"
+            echo "| Interface | \`${INTERFACE}\` |"
+            echo "| TTL (minutes) | \`${TTL}\` |"
+            echo "| Run | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Start DevInCi
+        id: devinci
+        # Pinned to the v1.0.1 release commit — see security note in header.
+        uses: asd-engineering/asd-devinci@6e8c7a17715ae522f42aca3bbb6cc89dca08c60d # v1.0.1
+        with:
+          # Empty api-key + empty client-id → the action's ephemeral mode.
+          api-key: ${{ secrets.ASD_API_KEY }}
+          interface: ${{ inputs.interface }}
+          tunnel-name: ${{ inputs.tunnel_name || format('devinci-{0}', github.run_id) }}
+          ttl-minutes: ${{ steps.ttl.outputs.minutes }}
+          client-id: ${{ inputs.client_id }}
+          client-secret: ${{ inputs.client_secret }}
+          tunnel-host: ${{ inputs.tunnel_host }}
+          tunnel-port: ${{ inputs.tunnel_port }}
+
+      - name: Publish credential-free session URL
+        # Only url-base (NO embedded credentials) goes to the summary/logs.
+        # The credentialed one-click URL is delivered via the action's
+        # `tunnel-url` artifact (1-day retention) and masked in logs.
+        env:
+          URL_BASE: ${{ steps.devinci.outputs.url-base }}
+          EXPIRES_AT: ${{ steps.devinci.outputs.expires-at }}
+        run: |
+          {
+            echo ""
+            echo "## DevInCi session ready"
+            echo ""
+            echo "- **URL (credentials NOT included):** ${URL_BASE}"
+            echo "- **Expires:** ${EXPIRES_AT:-per session TTL}"
+            echo "- Credentials are in the \`tunnel-url\` artifact of this run (1-day retention)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Hold session open until TTL expires
+        env:
+          TTL: ${{ steps.ttl.outputs.minutes }}
+        run: |
+          echo "Holding the runner alive for ${TTL} minute(s); cancel the run to end the session early."
+          sleep "$(( TTL * 60 ))"
+          echo "Session TTL reached — tearing down."
