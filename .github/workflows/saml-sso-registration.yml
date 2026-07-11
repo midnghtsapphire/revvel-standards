@@ -48,7 +48,7 @@ jobs:
             let providerConfigured = false;
 
             if (!username) {
-              core.warning('No username resolved from the triggering event; skipping SAML lookup.');
+              core.warning(`No username resolved from the '${context.eventName}' event (checked github.event.membership.user.login and github.event.pull_request.user.login); skipping SAML lookup.`);
             } else {
               try {
                 const result = await github.graphql(
