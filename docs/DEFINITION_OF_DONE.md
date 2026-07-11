@@ -40,5 +40,6 @@ Curt rules. Don't negotiate them. If a deliverable breaks one, it is **not done.
 
 _Enforced by: No-Destroy Guard (#4), Completeness Gate (#2), App Registry (#3),
 Approve-to-Reimagine gate (#5). Ship-to-market deploys + records the live URL (#1).
-Checkpoint enforcement: the `checkpoint-gated` label + PR title convention
-`checkpoint: block-N of N` + `checkpoint-approved` label on the previous Block._
+Checkpoint convention: use the `checkpoint-gated` label, the PR title convention
+`checkpoint: block-N of N`, and the `checkpoint-approved` label on the previous
+Block to signal the intended review flow for later Blocks._
