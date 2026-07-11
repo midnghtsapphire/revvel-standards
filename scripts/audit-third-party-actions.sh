@@ -68,6 +68,12 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15675: Devin session reminders (.github/workflows/devin-reminders.yml).
   # Actively released (v0.5.0, 2026) and pinned to a full commit SHA.
   "aaronsteers/devin-reminders-action"
+  # WR #15673: org-published (ASD B.V.), active releases (v1.0.1), pinned to a
+  # full commit SHA in devinci-debug.yml.
+  "asd-engineering/asd-devinci"
+  # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
+  # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
+  "aaronsteers/devin-action"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

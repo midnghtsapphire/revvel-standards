@@ -499,6 +499,11 @@ labels:
     color: "0e8a16"
     description: "PR has been approved by reviewers"
 
+  - name: devin-review
+    axis: review
+    color: "5319e7"
+    description: "Opt-in: start a Devin.ai code-review session on this PR (devin-code-review.yml)"
+
   - name: review-started
     axis: review
     color: "0075ca"
