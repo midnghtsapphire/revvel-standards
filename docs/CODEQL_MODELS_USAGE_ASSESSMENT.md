@@ -118,14 +118,16 @@ analysis.
 
 ## 4. Gaps and recommendations
 
-Assessment-only; none of these were implemented here.
+All four recommendations were implemented in this PR at the maintainer's
+explicit request (PR comment on 2026-07-11), overriding the original
+assessment-only scope.
 
-| # | Gap | Recommendation | Effort |
+| # | Gap | Recommendation | Status |
 | --- | --- | --- | --- |
-| 1 | Python (incl. `coldtrace/backend/models/`) not in the CodeQL matrix | Add `python` to `strategy.matrix.language` in `codeql.yml` (build-mode `none` works for Python) | ~1 line |
-| 2 | `continue-on-error: true` on `analyze` can hide real scan failures | Once default setup is confirmed disabled, tighten to fail on analysis errors while tolerating only upload conflicts | Small |
-| 3 | No documented alert-triage cadence for CodeQL findings | Fold code-scanning alert review into the existing self-healing / agent-monitor loops | Medium |
-| 4 | `docs/github-project-v2-workflows.md` says CodeQL "was removed" (describing another stack), which can mislead readers about this repo | Clarify that note's scope | Doc-only |
+| 1 | Python (incl. `coldtrace/backend/models/`) not in the CodeQL matrix | Add `python` to `strategy.matrix.language` in `codeql.yml` (build-mode `none` works for Python) | ✅ Done — matrix is now `actions`, `javascript-typescript`, `python` |
+| 2 | `continue-on-error: true` on `analyze` can hide real scan failures | Tighten to fail on analysis errors while tolerating only upload conflicts | ✅ Done — analysis (`upload: never`) now fails the run on real errors; a separate `upload-sarif` step keeps `continue-on-error: true` for default-setup upload conflicts only |
+| 3 | No documented alert-triage cadence for CodeQL findings | Fold code-scanning alert review into the self-healing loop | ✅ Done — new weekly `alert-triage` job in `codeql.yml` files/refreshes a `[SELF-HEAL]` issue (labels `security`, `self-heal`) for open critical/high alerts and auto-closes it on recovery |
+| 4 | `docs/github-project-v2-workflows.md` says CodeQL "was removed" (describing another stack), which can mislead readers about this repo | Clarify that note's scope | ✅ Done — note now states removal applies to the Project v2 bundle's target repos, not `revvel-standards` |
 
 ## 5. Definition-of-done mapping
 
@@ -136,5 +138,45 @@ Assessment-only; none of these were implemented here.
 | Active-scan confirmation | ✅ Section 1.2 (2,381 runs, recent successes) |
 | Models-directory coverage assessment | ✅ Section 2 (not covered; gap #1) |
 | Scan-results review | ✅ Section 3 (upload path verified; alert listing requires admin access — noted) |
-| Gaps + actionable next steps | ✅ Section 4 |
-| No code/config changes (Explicit Exclusions) | ✅ This PR is documentation-only |
+| Gaps + actionable next steps | ✅ Section 4 (all four implemented per maintainer request) |
+| No code/config changes (Explicit Exclusions) | ⚠️ Superseded — the maintainer explicitly requested the §4 fixes in PR review, so this PR now includes the `codeql.yml` and doc-note changes |
+
+## 6. What you (the human) actually need to do — plain English
+
+Everything in this PR is automated **except two one-time checks** that only a
+repo admin can do in the browser. Here they are, click by click:
+
+### Check 1 — make sure GitHub's "default setup" scanning is OFF (2 minutes)
+
+Why: this repo uses its own CodeQL workflow file. If GitHub's built-in
+scanner is *also* turned on, the two fight and results silently stop
+uploading.
+
+1. Open <https://github.com/midnghtsapphire/revvel-standards/settings/security_analysis>
+2. Scroll to the **Code scanning** section.
+3. Look at the **CodeQL analysis** row:
+   - If it says **"Default setup"** with an **Enabled** badge → click the
+     `…` menu on that row → click **Disable CodeQL** (only default setup is
+     disabled; the workflow in this repo keeps running).
+   - If it already says **Advanced** or shows no default setup → you're done,
+     nothing to click.
+4. Success looks like: no "Default setup · Enabled" badge on that row.
+
+### Check 2 — look at the security findings once (3 minutes)
+
+Why: the scanner files results into a tab that only admins can see. Nobody
+has confirmed whether there are any open findings yet.
+
+1. Open <https://github.com/midnghtsapphire/revvel-standards/security/code-scanning>
+2. You'll see a list (possibly empty). Each row is one potential problem the
+   scanner found — click a row to see the exact file and line.
+3. What to do with what you see:
+   - **Empty list** → great, nothing to do.
+   - **Rows marked Critical or High** → don't fix anything by hand; the new
+     weekly `alert-triage` job (added in this PR) will automatically open a
+     `[SELF-HEAL]` issue every Monday listing them, and the fleet picks that
+     issue up like any other work item.
+   - **Rows marked Medium/Low** → safe to ignore for now.
+
+That's it. After Check 1 is done once, the whole loop (scan → alert → issue →
+fix PR) runs by itself with no further human steps.
