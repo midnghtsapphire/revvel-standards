@@ -63,7 +63,7 @@ git checkout -b feat/cuda-block-1-host
 # 6. Log D012 in DECISIONS.md; add JSONL entry in wr/memory/decisions.jsonl
 # 7. Commit as feat(cuda): Block 1 - Host + device-tree + agent-contract schema
 # 8. Open PR titled: "feat(cuda) Host + Device Tree + Agent Contract [checkpoint: block-1 of 4]"
-# 9. Label the PR: checkpoint-gated
+# 9. Ensure the WR/issue is labeled `checkpoint-gated`
 # 10. Stop. Do not start Block 2. Update this HANDOFF.md to move Block 1 to "shipped, awaiting review".
 ```
 
