@@ -116,8 +116,9 @@ jobs:
           # Triage is best-effort: if the alerts API is unavailable (code
           # scanning disabled, token lacks access), warn and exit green — the
           # analyze jobs above remain the real gate.
-          if ! gh api "repos/${GH_REPO}/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" \
-              > /tmp/alerts.json 2>/tmp/alerts.err; then
+          if ! gh api --paginate --slurp \
+              "repos/${GH_REPO}/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" \
+              --jq 'add' > /tmp/alerts.json 2>/tmp/alerts.err; then
             echo "::warning::Could not list code-scanning alerts (see log)"
             cat /tmp/alerts.err
             exit 0
