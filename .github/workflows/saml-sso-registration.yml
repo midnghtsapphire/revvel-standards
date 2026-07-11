@@ -18,38 +18,96 @@ jobs:
     steps:
       - name: Resolve triggering username
         id: resolve-user
-        run: |
+        env:
           # organization member_added exposes the new member via .membership.user.login
           # pull_request events expose the PR author via .pull_request.user.login
-          USERNAME="${{ github.event.membership.user.login || github.event.pull_request.user.login }}"
+          # Passed through env (not inline ${{ }}) so event data can't inject into the shell.
+          USERNAME: ${{ github.event.membership.user.login || github.event.pull_request.user.login }}
+        run: |
           echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
           echo "Checking SAML identity for: ${USERNAME}"
-      - name: get-saml-identity-action
+      # NOTE: this step used to call gagoar/get-saml-identity-action@0.9.0, but that
+      # action's only published tag never committed its dist/ bundle, so every run
+      # failed with "File not found: .../dist/index.js" before any logic executed.
+      # We query the same GraphQL mapping (organization → samlIdentityProvider →
+      # externalIdentities) directly instead. Requires a token with admin:org scope
+      # (ADMIN_GITHUB_TOKEN); if that's missing, or the repo owner is a personal
+      # account with no SAML provider, the step degrades to a warning/notice rather
+      # than failing the PR.
+      - name: Resolve SAML identity via GraphQL
         id: saml-identity
-        uses: gagoar/get-saml-identity-action@0.9.0
+        uses: actions/github-script@v9.0.0
+        env:
+          TARGET_USERNAME: ${{ steps.resolve-user.outputs.username }}
         with:
-          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          username: ${{ steps.resolve-user.outputs.username }}
-          organization: ${{ github.repository_owner }}
-      - name: Report SAML identity result
-        run: |
-          IDENTITY="${{ steps.saml-identity.outputs.identity }}"
-          USERNAME="${{ steps.resolve-user.outputs.username }}"
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const username = process.env.TARGET_USERNAME;
+            const owner = context.repo.owner;
+            let identity = '';
+            let providerConfigured = false;
 
-          if [ -z "${IDENTITY}" ]; then
-            echo "::warning title=SAML Identity Missing::User '${USERNAME}' does not have a linked SAML/SSO identity in the organization. Ask them to authorize via SSO at https://github.com/orgs/${{ github.repository_owner }}/sso"
+            if (!username) {
+              core.warning('No username resolved from the triggering event; skipping SAML lookup.');
+            } else {
+              try {
+                const result = await github.graphql(
+                  `query($org: String!, $login: String!) {
+                    organization(login: $org) {
+                      samlIdentityProvider {
+                        externalIdentities(first: 1, login: $login) {
+                          nodes { samlIdentity { nameId } }
+                        }
+                      }
+                    }
+                  }`,
+                  { org: owner, login: username }
+                );
+                const provider = result.organization && result.organization.samlIdentityProvider;
+                if (provider) {
+                  providerConfigured = true;
+                  const node = provider.externalIdentities.nodes[0];
+                  identity = (node && node.samlIdentity && node.samlIdentity.nameId) || '';
+                } else {
+                  // Personal accounts and orgs without SAML land here — nothing to verify.
+                  core.notice(`Owner '${owner}' has no SAML identity provider configured (or is a personal account); skipping SSO verification.`);
+                }
+              } catch (error) {
+                // Token lacks admin:org, or owner is not an organization. Never fail
+                // the PR for this — surface a warning and let the run stay green.
+                core.warning(`SAML identity lookup failed: ${error.message}. If SSO enforcement is expected, check that ADMIN_GITHUB_TOKEN has admin:org scope.`);
+              }
+            }
+
+            core.setOutput('identity', identity);
+            core.setOutput('provider_configured', String(providerConfigured));
+      - name: Report SAML identity result
+        env:
+          IDENTITY: ${{ steps.saml-identity.outputs.identity }}
+          USERNAME: ${{ steps.resolve-user.outputs.username }}
+          PROVIDER_CONFIGURED: ${{ steps.saml-identity.outputs.provider_configured }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          if [ "${PROVIDER_CONFIGURED}" != "true" ]; then
+            echo "::notice title=SAML Not Configured::No SAML identity provider for '${OWNER}'; nothing to verify."
+          elif [ -z "${IDENTITY}" ]; then
+            echo "::warning title=SAML Identity Missing::User '${USERNAME}' does not have a linked SAML/SSO identity in the organization. Ask them to authorize via SSO at https://github.com/orgs/${OWNER}/sso"
           else
             echo "::notice title=SAML Identity Verified::User '${USERNAME}' → SSO identity: ${IDENTITY}"
           fi
       - name: Comment on PR if SAML identity is missing
         if: |
-          github.event_name == 'pull_request' && steps.saml-identity.outputs.identity == ''
+          github.event_name == 'pull_request' &&
+          steps.saml-identity.outputs.provider_configured == 'true' &&
+          steps.saml-identity.outputs.identity == ''
         uses: actions/github-script@v9.0.0
+        env:
+          TARGET_USERNAME: ${{ steps.resolve-user.outputs.username }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const username = '${{ steps.resolve-user.outputs.username }}';
-            const org = '${{ github.repository_owner }}';
+            const username = process.env.TARGET_USERNAME;
+            const org = context.repo.owner;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
