@@ -1,0 +1,191 @@
+# Devin Reminders — schedule, list, cancel, and fire reminders for Devin.ai
+# sessions (WR #15675).
+#
+# Why this exists: Devin sessions go idle once their initial prompt is done.
+# Reminders let automation "ping" a session later so Devin can continue a
+# self-healing pass, iterate on a recursive-code task, or re-run a code
+# review after new commits land. See docs/DEVIN_REMINDERS.md for the loop
+# recipes and gotchas.
+#
+# IMPORTANT — single-file constraint: the underlying action persists the
+# reminder list in a GitHub Actions artifact (`devin-reminders-list`), and
+# workflows can only upload artifacts to their OWN workflow runs. All four
+# actions (put / list / cancel / cron) therefore MUST live in this one file.
+# Do not split jobs out to other workflow files — they would stop sharing
+# the same artifact and reminders would silently never fire.
+#
+# Secrets:
+#   DEVIN_API_KEY    — required. Repo-standard Devin token name (see
+#                      config/connections.yml and scripts/setup-agent-fallback.sh).
+#                      If it is missing/unfunded the Devin API returns 401/403,
+#                      not a delivered reminder — check the secret first.
+#   SLACK_BOT_TOKEN  — optional. Only used when a slack channel is configured.
+#
+# Every job is gated on the DEVIN_API_KEY secret being present so that the
+# 30-minute cron does not generate failure spam (agent-monitor files
+# [AGENT-FAILURE] issues on red runs) in forks or before the secret is set.
+
+name: Devin Reminders
+run-name: "Devin Reminders (${{ inputs.action || 'cron' }})"
+
+on:
+  schedule:
+    # Fire due reminders every 30 minutes. Reminders can only be scheduled
+    # up to 3 days ahead; the storage artifact expires after 4 days, so the
+    # cron cadence must stay well inside that retention window.
+    - cron: "*/30 * * * *"
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action to perform: put, list, cancel, or cron"
+        required: true
+        type: choice
+        options:
+          - cron
+          - list
+          - put
+          - cancel
+      reminder_message:
+        description: "Reminder message to deliver (required for 'put')."
+        required: false
+        type: string
+      remind_at:
+        description: >
+          ISO 8601 timestamp with timezone offset for when the reminder fires
+          (required for 'put'). Must be in the future and no more than 3 days
+          ahead. Example: 2026-02-20T17:00:00-08:00
+        required: false
+        type: string
+      agent_session_url:
+        description: "Devin session URL (required for 'put' and 'cancel')."
+        required: false
+        type: string
+      slack_users_cc:
+        description: >
+          Comma-delimited list of Slack user tags to CC on notifications.
+          Example: '<@U12345>, <@U67890>'
+        required: false
+        type: string
+      cancel_guids:
+        description: "JSON array of reminder GUIDs to cancel (required for 'cancel')."
+        required: false
+        type: string
+
+# Reminder mutations race when put/cancel/cron overlap; the action's own
+# lock-mode handles cross-run artifact locking, but serializing at the
+# workflow level too keeps the lock queue short.
+concurrency:
+  group: devin-reminders
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  # secrets.* is not available in job-level `if:` expressions, so a tiny gate
+  # job converts "is DEVIN_API_KEY configured?" into a job output the real
+  # jobs can branch on. Without this gate the 30-minute cron would fail on
+  # every run in forks / pre-setup repos and flood agent-monitor with
+  # [AGENT-FAILURE] issues.
+  gate:
+    name: Check Devin token
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      has-token: ${{ steps.check.outputs.has-token }}
+    steps:
+      - name: Check DEVIN_API_KEY presence
+        id: check
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -n "$DEVIN_API_KEY" ]; then
+            echo "has-token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-token=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DEVIN_API_KEY secret is not set - all reminder jobs will be skipped. See docs/DEVIN_REMINDERS.md."
+          fi
+
+  list-reminders:
+    name: List Reminders
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: gate
+    if: ${{ needs.gate.outputs.has-token == 'true' && inputs.action == 'list' }}
+    steps:
+      - name: Execute reminder action
+        id: reminders
+        # Pinned to full commit SHA (v0.5.0) — single-author action policy,
+        # see scripts/audit-third-party-actions.sh and
+        # docs/THIRD_PARTY_ACTION_AUDIT.md.
+        uses: aaronsteers/devin-reminders-action@5fc7303adc3fb6a33871f6f7108470bd92a92e3a # v0.5.0
+        with:
+          action: 'list'
+          reminder-timezone: UTC
+          devin-token: ${{ secrets.DEVIN_API_KEY }}
+
+      - name: Report counts
+        env:
+          DUE_COUNT: ${{ steps.reminders.outputs.due-count }}
+          TOTAL_COUNT: ${{ steps.reminders.outputs.total-count }}
+        run: |
+          echo "Due: $DUE_COUNT / Total: $TOTAL_COUNT"
+
+  create-new-reminder:
+    name: Create New Reminder
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: gate
+    if: ${{ needs.gate.outputs.has-token == 'true' && inputs.action == 'put' }}
+    steps:
+      - name: Execute reminder action
+        uses: aaronsteers/devin-reminders-action@5fc7303adc3fb6a33871f6f7108470bd92a92e3a # v0.5.0
+        with:
+          action: 'put'
+          lock-mode: auto
+          reminder-timezone: UTC
+          devin-token: ${{ secrets.DEVIN_API_KEY }}
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-channel: ${{ vars.DEVIN_REMINDERS_SLACK_CHANNEL || '' }}
+          remind-at: ${{ inputs.remind_at }}
+          reminder-message: ${{ inputs.reminder_message }}
+          agent-session-url: ${{ inputs.agent_session_url }}
+          slack-users-cc: ${{ inputs.slack_users_cc }}
+
+  cancel-reminders:
+    name: Cancel Reminders
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: gate
+    if: ${{ needs.gate.outputs.has-token == 'true' && inputs.action == 'cancel' }}
+    steps:
+      - name: Execute reminder action
+        uses: aaronsteers/devin-reminders-action@5fc7303adc3fb6a33871f6f7108470bd92a92e3a # v0.5.0
+        with:
+          action: 'cancel'
+          lock-mode: auto
+          reminder-timezone: UTC
+          devin-token: ${{ secrets.DEVIN_API_KEY }}
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-channel: ${{ vars.DEVIN_REMINDERS_SLACK_CHANNEL || '' }}
+          agent-session-url: ${{ inputs.agent_session_url }}
+          cancel-guids: ${{ inputs.cancel_guids }}
+
+  process-reminders-due:
+    name: Process Reminders Due
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: gate
+    if: ${{ needs.gate.outputs.has-token == 'true' && (github.event_name == 'schedule' || inputs.action == 'cron') }}
+    steps:
+      - name: Execute reminder action
+        uses: aaronsteers/devin-reminders-action@5fc7303adc3fb6a33871f6f7108470bd92a92e3a # v0.5.0
+        with:
+          action: 'cron'
+          lock-mode: auto
+          reminder-timezone: UTC
+          devin-token: ${{ secrets.DEVIN_API_KEY }}
+          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-channel: ${{ vars.DEVIN_REMINDERS_SLACK_CHANNEL || '' }}

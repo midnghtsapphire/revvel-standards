@@ -3,7 +3,7 @@
 
 Every secret name referenced by the workflows, where it lives, which workflows consume it, and its fallback chain. **Generated from `.github/workflows/*.yml`** — run `npm run secrets:map` to regenerate, never hand-edit this file. Values live in exactly ONE store: **GitHub Actions repository secrets** (plus your desktop password manager — see `skills/credential-clerk/`). Doppler is decommissioned; see `docs/SECRETS_MANAGEMENT.md`.
 
-**99** stored secret names referenced · **7** tracked by the daily presence ledger (`docs/secrets-ledger.json`).
+**101** stored secret names referenced · **7** tracked by the daily presence ledger (`docs/secrets-ledger.json`).
 
 | Secret | Lives in | Ledger | Consumed by | Fallback chain |
 | --- | --- | :---: | --- | --- |
@@ -27,6 +27,7 @@ Every secret name referenced by the workflows, where it lives, which workflows c
 | `CREDENTIAL_BACKUP_JSON` | GitHub → Settings → Secrets → Actions | — | `credential-autonomy-agent.yml`, `credential-gatekeeper.yml`, `secret-persistence-guard.yml`, `secrets-guardian.yml`, `secrets-sentinel.yml` | — |
 | `CURSOR_API_KEY` | GitHub → Settings → Secrets → Actions | — | `agent-fallback.yml` | — |
 | `DATABASE_URL` | GitHub → Settings → Secrets → Actions | — | `ship-to-market.yml` | — |
+| `DEVIN_API_KEY` | GitHub → Settings → Secrets → Actions | — | `devin-reminders.yml` | — |
 | `DIGITALOCEAN_API_TOKEN` | GitHub → Settings → Secrets → Actions | ✅ | `deploy-oaudrey.yml`, `secrets-backup-daily.yml`, `secrets-health-check.yml`, `secrets-sentinel.yml`, `sync-oaudrey-dns.yml` | — |
 | `DOPPLER_AGENT_ODIC` | GitHub → Settings → Secrets → Actions (**decommissioned** — delete after 7 quiet ledger days) | — | `credential-gatekeeper.yml`, `doppler-secrets-sync.yml`, `gatekeeper-registry-drift.yml`, `secret-lifecycle.yml`, `secret-persistence-guard.yml`, `secret-rotation-schedule.yml`, `secrets-health-check.yml`, `secrets-sentinel.yml` | `DOPPLER_AGENT_TOKEN → DOPPLER_TOKEN → DOPPLER_LOCAL_TOKEN → DOPPLER_API_KEY → DOPPLER_AGENT_ODIC → DOPPLER_CIRCLECI_OIDC` |
 | `DOPPLER_AGENT_TOKEN` | GitHub → Settings → Secrets → Actions (**decommissioned** — delete after 7 quiet ledger days) | — | `credential-gatekeeper.yml`, `doppler-secrets-sync.yml`, `gatekeeper-registry-drift.yml`, `secret-lifecycle.yml`, `secret-persistence-guard.yml`, `secret-rotation-schedule.yml`, `secrets-health-check.yml`, `secrets-sentinel.yml` | `DOPPLER_AGENT_TOKEN → DOPPLER_TOKEN → DOPPLER_LOCAL_TOKEN → DOPPLER_API_KEY → DOPPLER_AGENT_ODIC → DOPPLER_CIRCLECI_OIDC` |
@@ -92,6 +93,7 @@ Every secret name referenced by the workflows, where it lives, which workflows c
 | `RECURSE_ML_API_KEY` | GitHub → Settings → Secrets → Actions | — | `recurse-ml.yml`, `secrets-health-check.yml` | — |
 | `ROO_API_KEY` | GitHub → Settings → Secrets → Actions | — | `openrouter-coder.yml` | — |
 | `S3_BUCKET` | GitHub → Settings → Secrets → Actions | — | `durability-mirror.yml` | — |
+| `SLACK_BOT_TOKEN` | GitHub → Settings → Secrets → Actions | — | `devin-reminders.yml` | — |
 | `SWE_AGENT_API_KEY` | GitHub → Settings → Secrets → Actions | — | `swe-agent.yml` | — |
 | `TUBEBUDDY_API_KEY` | GitHub → Settings → Secrets → Actions | — | `content-automation.yml` | — |
 | `TWITTER_ACCESS_TOKEN` | GitHub → Settings → Secrets → Actions | — | `social-media-automation.yml` | — |

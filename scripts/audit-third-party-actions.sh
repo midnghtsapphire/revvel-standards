@@ -65,6 +65,9 @@ MULTI_AUTHOR_OWNERS=(
 ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #14884: active releases/commits and already pinned to a full commit SHA.
   "robvanderleek/create-issue-branch"
+  # WR #15675: Devin session reminders (.github/workflows/devin-reminders.yml).
+  # Actively released (v0.5.0, 2026) and pinned to a full commit SHA.
+  "aaronsteers/devin-reminders-action"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
