@@ -122,7 +122,10 @@ jobs:
             cat /tmp/alerts.err
             exit 0
           fi
-          COUNT=$(jq '[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")] | length' /tmp/alerts.json)
+          # Single source of truth for which severities get triaged, shared by
+          # the count and the summary below so the criteria can't drift.
+          SEV_FILTER='[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")]'
+          COUNT=$(jq "${SEV_FILTER} | length" /tmp/alerts.json)
           echo "Open critical/high CodeQL alerts: $COUNT"
           TITLE="[SELF-HEAL] Open critical/high CodeQL alerts need triage"
           EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
@@ -135,7 +138,7 @@ jobs:
           fi
           # Alert fields come from the GitHub API (semi-trusted); they are
           # only ever passed to gh as quoted arguments, never eval'd.
-          SUMMARY=$(jq -r '[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")][:20] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
+          SUMMARY=$(jq -r "${SEV_FILTER}"'[:20] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
           BODY=$(printf 'Weekly CodeQL alert triage (`codeql.yml` → `alert-triage` job) found **%s** open critical/high alert(s):\n\n%s\n\nFull list: https://github.com/%s/security/code-scanning?query=is%%3Aopen+tool%%3ACodeQL\n' \
             "$COUNT" "$SUMMARY" "$GH_REPO")
           if [ -n "$EXISTING" ]; then
