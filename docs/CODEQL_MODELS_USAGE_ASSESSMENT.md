@@ -22,9 +22,10 @@ Assessment date: 2026-07-11.
     only as an external SAST *app* in `config/review-fleet-personas.yml`
     (`external_apps_catalog.canned_apps`).
   - The only `models/` **directory** in the repo is
-    `coldtrace/backend/models/` (Python / Pydantic models). It is **not
-    currently covered** by CodeQL, because the workflow's language matrix does
-    not include `python` — see [Gaps](#4-gaps-and-recommendations).
+    `coldtrace/backend/models/` (Python / Pydantic models). It **was not
+    covered at assessment time** because the workflow matrix did not include
+    `python`; this PR adds `python`, so it is now covered — see
+    [Gaps](#4-gaps-and-recommendations).
 
 ## 1. Where CodeQL is configured
 
@@ -34,18 +35,17 @@ Assessment date: 2026-07-11.
 | --- | --- |
 | Setup type | Advanced (workflow-based), not GitHub default setup |
 | Action | `github/codeql-action/init@v3` + `analyze@v3` |
-| Languages (at assessment time) | `actions`, `javascript-typescript` |
+| Languages | `actions`, `javascript-typescript`, `python` |
 | Build mode | `none` |
 | Triggers | `push` (main), `pull_request` (main), weekly `schedule` (Mon 03:20 UTC), `workflow_dispatch` |
 | Query suites | Default (no `queries:` input, no custom `.ql`/`.qls` files in the repo) |
 | Path filters | None — scans the whole repository for the configured languages |
 | Permissions | `security-events: write` (SARIF upload enabled) |
-| Failure posture (at assessment time) | `analyze` step used `continue-on-error: true`, which prevented blocks from upload conflicts but could also hide real analysis failures |
+| Failure posture | `analyze` runs with `continue-on-error: true` to tolerate post-processing/upload API failures after SARIF export, while `Verify SARIF was generated` fails the run if analysis did not emit SARIF |
 
 There is **no** `codeql-config.yml`, no custom queries (`*.ql`), and no custom
 query suites (`*.qls`) anywhere in the repository — the workflow relies on the
-stock CodeQL query packs. At assessment time, only two languages were
-configured; this PR adds `python`.
+stock CodeQL query packs.
 
 ### 1.2 Run evidence (is it actually running?)
 
@@ -142,7 +142,7 @@ assessment-only scope.
 | Documented implementation status | ✅ Section 1 |
 | Configuration details | ✅ Sections 1.1, 1.3 |
 | Active-scan confirmation | ✅ Section 1.2 (2,381 runs, recent successes) |
-| Models-directory coverage assessment | ✅ Section 2 (not covered; gap #1) |
+| Models-directory coverage assessment | ✅ Section 2 (initially not covered; now covered after the `python` matrix update in this PR) |
 | Scan-results review | ✅ Section 3 (upload path verified; alert listing requires admin access — noted) |
 | Gaps + actionable next steps | ✅ Section 4 (all four implemented per maintainer request) |
 | No code/config changes (Explicit Exclusions) | ⚠️ Superseded — the maintainer explicitly requested the §4 fixes in PR review, so this PR now includes the `codeql.yml` and doc-note changes |
