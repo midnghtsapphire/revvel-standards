@@ -12,8 +12,9 @@ name: CodeQL
 #    CodeQL analyses from advanced configurations cannot be processed
 #    when the default setup is enabled."
 #
-# If you cannot disable default setup, the analyze step below is configured with
-# continue-on-error: true so the SARIF upload failure does not block PRs.
+# If you cannot disable default setup, this workflow tolerates only upload/
+# post-processing API failures (after SARIF generation) while still failing when
+# no SARIF is produced.
 # ───────────────────────────────────────────────────────────────────────────────
 on:
   push:
@@ -73,13 +74,28 @@ jobs:
       # an upload conflict (e.g. GitHub default setup re-enabled — see header
       # comment) only degrades to a warning instead of blocking PRs.
       - name: Perform CodeQL Analysis
+        id: analyze
+        # Keep this tolerant so post-processing/API quota failures (seen in run
+        # 29153988622 after SARIF export) don't block PRs; a separate validation
+        # step below is the real gate for successful SARIF generation.
+        continue-on-error: true
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:${{ matrix.language }}
           upload: never
           output: sarif-results
 
+      - name: Verify SARIF was generated
+        id: verify_sarif
+        run: |
+          set -euo pipefail
+          if ! find sarif-results -maxdepth 1 -name '*.sarif' -type f | grep -q .; then
+            echo "::error::CodeQL analysis did not produce SARIF output."
+            exit 1
+          fi
+
       - name: Upload SARIF
+        if: always() && steps.verify_sarif.outcome == 'success'
         # continue-on-error tolerates ONLY upload failures (default-setup
         # conflict). If this step fails, findings are missing from the
         # Security tab — check Settings → Security → Code scanning first.
