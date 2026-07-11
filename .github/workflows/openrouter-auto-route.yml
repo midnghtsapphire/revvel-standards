@@ -43,55 +43,8 @@ jobs:
         contains(format(' {0} ', github.event.issue.title), ' #api ') ||
         contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
         contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
-        contains(format(' {0} ', github.event.issue.title), ' #mcp ')))
-        contains(github.event.issue.title, '#app') ||
-        contains(github.event.issue.title, '#tool')))
-        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-        contains(github.event.issue.labels.*.name, 'work-request') ||
-        contains(github.event.issue.title, '#app') ||
-        contains(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#cli') ||
-        contains(github.event.issue.title, '#api') ||
-        contains(github.event.issue.title, '#mcp') ||
-        contains(github.event.issue.title, '#pdf') ||
-        contains(github.event.issue.title, '#doc') ||
-        contains(github.event.issue.title, '#docs') ||
+        contains(format(' {0} ', github.event.issue.title), ' #mcp ') ||
         (github.event.action == 'labeled' && startsWith(github.event.label.name, 'output-type:'))))
-        contains(github.event.issue.labels.*.name, 'work-request') ||
-        contains(github.event.issue.labels.*.name, 'weekly-research') ||
-        contains(github.event.issue.title, '#app') ||
-        contains(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#pdf') ||
-        contains(github.event.issue.title, '#docs') ||
-        contains(github.event.issue.title, '#api') ||
-        contains(github.event.issue.title, '#cli') ||
-        contains(github.event.issue.title, '#mcp') ||
-        contains(github.event.issue.title, '#video')))
-        contains(github.event.issue.title, '#tools ') ||
-        endsWith(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#tool ') ||
-        endsWith(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#app ') ||
-        endsWith(github.event.issue.title, '#app')))
-        contains(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#app')))
-        contains(github.event.issue.title, '#app') ||
-        contains(github.event.issue.title, '#apps') ||
-        contains(github.event.issue.title, '#tool') ||
-        contains(github.event.issue.title, '#tools') ||
-        contains(github.event.issue.title, '#pdf') ||
-        contains(github.event.issue.title, '#api') ||
-        contains(github.event.issue.title, '#cli') ||
-        contains(github.event.issue.title, '#mcp') ||
-        contains(github.event.issue.title, '#doc') ||
-        contains(github.event.issue.title, '#docs')))
-        (contains(github.event.issue.labels.*.name, 'wr:new') &&
-         contains(github.event.issue.labels.*.name, 'openrouter'))))
-        contains(github.event.issue.labels.*.name, 'work-request') ||
-        contains(github.event.issue.labels.*.name, 'weekly-research')))
     steps:
       - name: Parse Output Type and apply agent labels
         uses: actions/github-script@v9.0.0
