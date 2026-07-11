@@ -2,8 +2,14 @@
 
 Investigation report for WR issue
 [#15693](https://github.com/midnghtsapphire/revvel-standards/issues/15693).
+<<<<<<< HEAD
 Scope is **assessment only** (per the WR's Explicit Exclusions) — no CodeQL
 configuration, rules, or workflows were changed as part of this work.
+=======
+Scope started as **assessment only** (per the WR's Explicit Exclusions), then
+the maintainer explicitly requested that the identified fixes be implemented in
+this PR.
+>>>>>>> origin/main
 
 Assessment date: 2026-07-11.
 
@@ -21,9 +27,16 @@ Assessment date: 2026-07-11.
     only as an external SAST *app* in `config/review-fleet-personas.yml`
     (`external_apps_catalog.canned_apps`).
   - The only `models/` **directory** in the repo is
+<<<<<<< HEAD
     `coldtrace/backend/models/` (Python / Pydantic models). It is **not
     currently covered** by CodeQL, because the workflow's language matrix does
     not include `python` — see [Gaps](#4-gaps-and-recommendations).
+=======
+    `coldtrace/backend/models/` (Python / Pydantic models). It **was not
+    covered at assessment time** because the workflow matrix did not include
+    `python`; this PR adds `python`, so it is now covered — see
+    [Gaps](#4-gaps-and-recommendations).
+>>>>>>> origin/main
 
 ## 1. Where CodeQL is configured
 
@@ -33,17 +46,29 @@ Assessment date: 2026-07-11.
 | --- | --- |
 | Setup type | Advanced (workflow-based), not GitHub default setup |
 | Action | `github/codeql-action/init@v3` + `analyze@v3` |
+<<<<<<< HEAD
 | Languages | `actions`, `javascript-typescript` |
+=======
+| Languages | `actions`, `javascript-typescript`, `python` |
+>>>>>>> origin/main
 | Build mode | `none` |
 | Triggers | `push` (main), `pull_request` (main), weekly `schedule` (Mon 03:20 UTC), `workflow_dispatch` |
 | Query suites | Default (no `queries:` input, no custom `.ql`/`.qls` files in the repo) |
 | Path filters | None — scans the whole repository for the configured languages |
 | Permissions | `security-events: write` (SARIF upload enabled) |
+<<<<<<< HEAD
 | Failure posture | `analyze` step uses `continue-on-error: true` so a SARIF-upload conflict with GitHub default setup cannot block PRs (documented in the workflow header comment) |
 
 There is **no** `codeql-config.yml`, no custom queries (`*.ql`), and no custom
 query suites (`*.qls`) anywhere in the repository — the workflow relies on the
 stock CodeQL query packs for the two configured languages.
+=======
+| Failure posture | `analyze` runs with `continue-on-error: true` to tolerate post-processing/upload API failures after SARIF export, while `Verify SARIF was generated` fails the run if analysis did not emit SARIF |
+
+There is **no** `codeql-config.yml`, no custom queries (`*.ql`), and no custom
+query suites (`*.qls`) anywhere in the repository — the workflow relies on the
+stock CodeQL query packs.
+>>>>>>> origin/main
 
 ### 1.2 Run evidence (is it actually running?)
 
@@ -92,11 +117,23 @@ readings were checked:
 ### 2.1 Coverage of `coldtrace/backend/models/`
 
 The ColdTrace backend (`coldtrace/backend/`) is **Python** (19 `.py` files, a
+<<<<<<< HEAD
 FastAPI-style app with `models/`, `routers/`, `services/`, `tests/`). The
 CodeQL matrix scans only `actions` and `javascript-typescript`, so:
 
 > **CodeQL does not currently analyze `coldtrace/backend/models/` (or any
 > Python code in the repo).**
+=======
+FastAPI-style app with `models/`, `routers/`, `services/`, `tests/`). At
+assessment time, the CodeQL matrix scanned only `actions` and
+`javascript-typescript`, so:
+
+> **At assessment time, CodeQL did not analyze
+> `coldtrace/backend/models/` (or any Python code in the repo).**
+
+Post-change in this PR, `python` is now in the matrix, so
+`coldtrace/backend/models/` is included in CodeQL scanning.
+>>>>>>> origin/main
 
 Mitigating coverage: `semgrep.yml` runs `p/security-audit`, `p/owasp-top-ten`,
 `p/cwe-top-25`, and `p/secrets` packs with language auto-detection, so the
@@ -113,8 +150,13 @@ analysis.
   `https://github.com/midnghtsapphire/revvel-standards/security/code-scanning`.
 - The workflow header documents a known operational caveat: if GitHub's
   code-scanning **default setup** is ever re-enabled, advanced-config SARIF
+<<<<<<< HEAD
   uploads fail; `continue-on-error: true` keeps that failure from blocking PRs
   (at the cost of silently skipping the upload).
+=======
+  uploads can fail. The workflow now separates concerns: it requires SARIF
+  generation, then treats upload/post-processing API failures as warnings.
+>>>>>>> origin/main
 
 ## 4. Gaps and recommendations
 
@@ -136,7 +178,11 @@ assessment-only scope.
 | Documented implementation status | ✅ Section 1 |
 | Configuration details | ✅ Sections 1.1, 1.3 |
 | Active-scan confirmation | ✅ Section 1.2 (2,381 runs, recent successes) |
+<<<<<<< HEAD
 | Models-directory coverage assessment | ✅ Section 2 (not covered; gap #1) |
+=======
+| Models-directory coverage assessment | ✅ Section 2 (initially not covered; now covered after the `python` matrix update in this PR) |
+>>>>>>> origin/main
 | Scan-results review | ✅ Section 3 (upload path verified; alert listing requires admin access — noted) |
 | Gaps + actionable next steps | ✅ Section 4 (all four implemented per maintainer request) |
 | No code/config changes (Explicit Exclusions) | ⚠️ Superseded — the maintainer explicitly requested the §4 fixes in PR review, so this PR now includes the `codeql.yml` and doc-note changes |
