@@ -75,9 +75,9 @@ jobs:
       # comment) only degrades to a warning instead of blocking PRs.
       - name: Perform CodeQL Analysis
         id: analyze
-        # Keep this tolerant so post-processing/API quota failures (seen in run
-        # 29153988622 after SARIF export) don't block PRs; a separate validation
-        # step below is the real gate for successful SARIF generation.
+        # Keep this tolerant so post-processing/API quota failures after SARIF
+        # export don't block PRs; a separate validation step below is the real
+        # gate for successful SARIF generation.
         continue-on-error: true
         uses: github/codeql-action/analyze@v3
         with:
@@ -89,7 +89,8 @@ jobs:
         id: verify_sarif
         run: |
           set -euo pipefail
-          if ! find sarif-results -maxdepth 1 -name '*.sarif' -type f | grep -q .; then
+          SARIF_FILES=$(find sarif-results -maxdepth 1 -name '*.sarif' -type f 2>/dev/null || true)
+          if [ -z "$SARIF_FILES" ]; then
             echo "::error::CodeQL analysis did not produce SARIF output."
             exit 1
           fi
@@ -141,6 +142,7 @@ jobs:
           fi
           # Single source of truth for which severities get triaged, shared by
           # the count and the summary below so the criteria can't drift.
+          MAX_SUMMARY_ALERTS=20
           SEV_FILTER='[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")]'
           COUNT=$(jq "${SEV_FILTER} | length" /tmp/alerts.json)
           echo "Open critical/high CodeQL alerts: $COUNT"
@@ -155,11 +157,16 @@ jobs:
           fi
           # Alert fields come from the GitHub API (semi-trusted); they are
           # only ever passed to gh as quoted arguments, never eval'd.
-          SUMMARY=$(jq -r "${SEV_FILTER}"'[:20] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
+          SUMMARY=$(jq -r --argjson max "$MAX_SUMMARY_ALERTS" "${SEV_FILTER}"'[:$max] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
+          if [ "$COUNT" -gt "$MAX_SUMMARY_ALERTS" ]; then
+            TRUNCATION_NOTE=$(printf '\n\n(Showing first %s of %s critical/high alerts. See full list link below.)' "$MAX_SUMMARY_ALERTS" "$COUNT")
+          else
+            TRUNCATION_NOTE=""
+          fi
           # printf: %% is a literal % (the URL query is percent-encoded,
           # e.g. %%3A → %3A → ":").
-          BODY=$(printf 'Weekly CodeQL alert triage (`codeql.yml` → `alert-triage` job) found **%s** open critical/high alert(s):\n\n%s\n\nFull list: https://github.com/%s/security/code-scanning?query=is%%3Aopen+tool%%3ACodeQL\n' \
-            "$COUNT" "$SUMMARY" "$GH_REPO")
+          BODY=$(printf 'Weekly CodeQL alert triage (`codeql.yml` → `alert-triage` job) found **%s** open critical/high alert(s):\n\n%s%s\n\nFull list: https://github.com/%s/security/code-scanning?query=is%%3Aopen+tool%%3ACodeQL\n' \
+            "$COUNT" "$SUMMARY" "$TRUNCATION_NOTE" "$GH_REPO")
           if [ -n "$EXISTING" ]; then
             gh issue edit "$EXISTING" --body "$BODY"
           else
