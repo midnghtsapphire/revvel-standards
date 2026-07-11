@@ -67,22 +67,39 @@ jobs:
       - name: Check agent health
         id: agents
         run: |
-          # Check if key workflows exist
+          # Check if key workflows exist. Match on the workflow FILE PATH, not
+          # the display name: files like agent-dispatcher.yml have display
+          # names like "Agent Dispatcher", so a case-sensitive
+          # `.name | contains("agent-dispatcher")` never matches and every run
+          # falsely reported all four workflows missing (see issue #15680).
+          # Also: this repo has 150+ workflows and the API returns 30 per page,
+          # so --paginate is required or most workflows are invisible here.
           WORKFLOWS=(
             "agent-dispatcher"
             "issue-state-machine"
             "stuck-check-watchdog"
             "api-rate-limit-handler"
           )
-          
+
+          gh api --paginate repos/midnghtsapphire/revvel-standards/actions/workflows \
+            --jq '.workflows[].path' 2>/dev/null > /tmp/workflow-paths.txt || true
+
+          # If the API call failed or returned nothing, the check is
+          # inconclusive — do NOT report everything missing (that is exactly
+          # the false-positive healing-report noise we are guarding against).
+          if [[ ! -s /tmp/workflow-paths.txt ]]; then
+            echo "⚠️ Could not list workflows via the API — skipping this check"
+            echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           MISSING=()
           for wf in "${WORKFLOWS[@]}"; do
-            if ! gh api repos/midnghtsapphire/revvel-standards/actions/workflows \
-              --jq ".workflows[] | select(.name | contains(\"$wf\"))" 2>/dev/null | grep -q .; then
+            if ! grep -qx ".github/workflows/${wf}.yml" /tmp/workflow-paths.txt; then
               MISSING+=("$wf")
             fi
           done
-          
+
           if [[ ${#MISSING[@]} -eq 0 ]]; then
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
           else
@@ -185,7 +202,30 @@ jobs:
           echo "=== SELF-HEALING LOG ==="
           echo "Time: $(date)"
           echo "Broken areas: $BROKEN"
-          echo "Actions taken: Labeled stuck issues, re-ran failed workflows"
+
+          # Only report actions that actually ran. The earlier heal steps are
+          # each gated on a grep of $BROKEN — mirror those exact conditions
+          # here so the healing journal cannot claim work that never happened
+          # (issue #15680: report said stuck issues were labeled and workflows
+          # re-run when the only broken area was "Missing workflows", so
+          # neither step did anything).
+          ACTIONS=""
+          N=0
+          if echo "$BROKEN" | grep -q "Stuck issues"; then
+            N=$((N+1)); ACTIONS+="$N. Labeled stuck issues as check-failed"$'\n'
+          fi
+          if echo "$BROKEN" | grep -q "GitHub Actions"; then
+            N=$((N+1)); ACTIONS+="$N. Re-ran failed workflows"$'\n'
+          fi
+          if echo "$BROKEN" | grep -q "Missing workflows"; then
+            N=$((N+1)); ACTIONS+="$N. Flagged missing required workflows — no automated fix exists; a human must restore them"$'\n'
+          fi
+          if [[ -z "$ACTIONS" ]]; then
+            ACTIONS="None — no automated healing action matched the broken areas."
+          fi
+
+          echo "Actions taken:"
+          echo "$ACTIONS"
 
           BODY=$(cat <<EOF
           ## Healing Report
@@ -195,8 +235,7 @@ jobs:
           **Issues found:** $BROKEN
 
           ### Actions Taken
-          1. Labeled stuck issues as check-failed
-          2. Re-ran failed workflows
+          $ACTIONS
 
           ### Next Steps
           - Monitor for 1 hour

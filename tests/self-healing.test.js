@@ -63,17 +63,21 @@ function parseStuckCount(stuckIssues) {
 }
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
-  const missing = [];
-  
-  for (const required of requiredWorkflows) {
-    const found = workflowsList.some(wf => 
-      wf.name?.toLowerCase().includes(required.toLowerCase())
-    );
-    if (!found) {
-      missing.push(required);
-    }
+  // Mirrors self-healing.yml "Check agent health": match on the workflow FILE
+  // PATH (.github/workflows/<name>.yml), never the display name — files like
+  // agent-dispatcher.yml carry display names like "Agent Dispatcher", so a
+  // name-based contains() falsely reported every workflow missing (#15680).
+  // An empty list means the API call failed → inconclusive, treated healthy
+  // so a listing hiccup can't spam false healing reports.
+  if (!workflowsList || workflowsList.length === 0) {
+    return { healthy: true, missing: [], inconclusive: true };
   }
-  
+
+  const paths = new Set(workflowsList.map(wf => wf.path));
+  const missing = requiredWorkflows.filter(
+    required => !paths.has(`.github/workflows/${required}.yml`)
+  );
+
   return {
     healthy: missing.length === 0,
     missing,
@@ -202,10 +206,10 @@ function getHealingActions(brokenAreas) {
   // Workflow Presence Check
   await test('checkWorkflowsPresent returns healthy when all present', () => {
     const workflows = [
-      { name: 'agent-dispatcher' },
-      { name: 'issue-state-machine' },
-      { name: 'stuck-check-watchdog' },
-      { name: 'api-rate-limit-handler' },
+      { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
+      { name: 'Issue State Machine', path: '.github/workflows/issue-state-machine.yml' },
+      { name: 'Stuck Check Watchdog', path: '.github/workflows/stuck-check-watchdog.yml' },
+      { name: 'API Rate Limit Handler', path: '.github/workflows/api-rate-limit-handler.yml' },
     ];
     const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
     assert.ok(result.healthy);
@@ -214,20 +218,34 @@ function getHealingActions(brokenAreas) {
 
   await test('checkWorkflowsPresent identifies missing workflows', () => {
     const workflows = [
-      { name: 'agent-dispatcher' },
+      { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
+      { name: 'Something Else', path: '.github/workflows/something-else.yml' },
     ];
     const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
     assert.ok(!result.healthy);
     assert.ok(result.missing.length > 0);
+    assert.ok(!result.missing.includes('agent-dispatcher'));
   });
 
-  await test('checkWorkflowsPresent handles case insensitivity', () => {
+  await test('checkWorkflowsPresent matches by path regardless of display name (#15680)', () => {
+    // Regression: the old check matched display names case-sensitively, so
+    // "Agent Dispatcher" never matched "agent-dispatcher" and every run
+    // falsely reported all required workflows missing.
     const workflows = [
-      { name: 'Agent-Dispatcher' },
-      { name: 'ISSUE-STATE-MACHINE' },
+      { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
+      { name: 'ISSUE STATE MACHINE', path: '.github/workflows/issue-state-machine.yml' },
     ];
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher', 'issue-state-machine']);
     assert.ok(result.healthy);
+  });
+
+  await test('checkWorkflowsPresent treats an empty listing as inconclusive, not all-missing', () => {
+    // A failed/empty API listing must not report every workflow missing —
+    // that is exactly the false-positive healing report from issue #15680.
+    const result = checkWorkflowsPresent([], REQUIRED_WORKFLOWS);
+    assert.ok(result.healthy);
+    assert.deepEqual(result.missing, []);
+    assert.ok(result.inconclusive);
   });
 
   // Broken Area Identification
@@ -357,7 +375,10 @@ function getHealingActions(brokenAreas) {
     const actionsStatus = parseActionsStatus([{ conclusion: 'success' }]);
     const stuckCount = parseStuckCount('0');
     const workflowsStatus = checkWorkflowsPresent(
-      [{ name: 'agent-dispatcher' }, { name: 'issue-state-machine' }],
+      [
+        { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
+        { name: 'Issue State Machine', path: '.github/workflows/issue-state-machine.yml' },
+      ],
       ['agent-dispatcher', 'issue-state-machine']
     );
     const broken = identifyBrokenAreas(actionsStatus.failedCount, stuckCount, workflowsStatus);
@@ -374,7 +395,10 @@ function getHealingActions(brokenAreas) {
       { conclusion: 'failure' },
     ]);
     const stuckCount = parseStuckCount('10');
-    const workflowsStatus = checkWorkflowsPresent([], ['agent-dispatcher']);
+    const workflowsStatus = checkWorkflowsPresent(
+      [{ name: 'Something Else', path: '.github/workflows/something-else.yml' }],
+      ['agent-dispatcher']
+    );
     const broken = identifyBrokenAreas(actionsStatus.failedCount, stuckCount, workflowsStatus);
     const health = getSystemHealth(broken);
     const actions = getHealingActions(broken);
