@@ -12,8 +12,9 @@ name: CodeQL
 #    CodeQL analyses from advanced configurations cannot be processed
 #    when the default setup is enabled."
 #
-# If you cannot disable default setup, the analyze step below is configured with
-# continue-on-error: true so the SARIF upload failure does not block PRs.
+# If you cannot disable default setup, this workflow tolerates only upload/
+# post-processing API failures (after SARIF generation) while still failing when
+# no SARIF is produced.
 # ───────────────────────────────────────────────────────────────────────────────
 on:
   push:
@@ -54,7 +55,9 @@ jobs:
       fail-fast: false
       matrix:
         # 2026-05-21 (Claude): scan the JS sources, not just workflow files.
-        language: ['actions', 'javascript-typescript']
+        # 2026-07-11 (Copilot, WR #15693): add python so coldtrace/backend
+        # (incl. its models/ package) is covered; build-mode none works.
+        language: ['actions', 'javascript-typescript', 'python']
 
     steps:
       - name: Checkout repository
@@ -66,11 +69,106 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: none
 
+      # Analysis and SARIF upload are split so a *real* analysis failure blocks
+      # the run (no more blanket continue-on-error hiding broken scans), while
+      # an upload conflict (e.g. GitHub default setup re-enabled — see header
+      # comment) only degrades to a warning instead of blocking PRs.
       - name: Perform CodeQL Analysis
-        # continue-on-error prevents SARIF upload failures (e.g. default-setup
-        # conflict) from blocking the PR. Security findings are still surfaced
-        # in the Security tab when the upload succeeds.
+        id: analyze
+        # Keep this tolerant so post-processing/API quota failures after SARIF
+        # export don't block PRs; a separate validation step below is the real
+        # gate for successful SARIF generation.
         continue-on-error: true
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:${{ matrix.language }}
+          upload: never
+          output: sarif-results
+
+      - name: Verify SARIF was generated
+        id: verify_sarif
+        run: |
+          set -euo pipefail
+          SARIF_FILES=$(find sarif-results -maxdepth 1 -name '*.sarif' -type f 2>/dev/null || true)
+          if [ -z "$SARIF_FILES" ]; then
+            echo "::error::CodeQL analysis did not produce SARIF output."
+            exit 1
+          fi
+
+      - name: Upload SARIF
+        if: always() && steps.verify_sarif.outcome == 'success'
+        # continue-on-error tolerates ONLY upload failures (default-setup
+        # conflict). If this step fails, findings are missing from the
+        # Security tab — check Settings → Security → Code scanning first.
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-results
+          category: /language:${{ matrix.language }}
+
+  # Weekly alert-triage cadence (WR #15693 recommendation #3): surface open
+  # critical/high CodeQL alerts as a single self-heal issue that the fleet's
+  # routing workflows pick up. The issue body is refreshed in place (never
+  # per-sweep comments, per the biome-sentinel anti-spam convention) and
+  # auto-closed when the alerts are resolved.
+  alert-triage:
+    name: Triage open CodeQL alerts
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: read # list code-scanning alerts
+      issues: write         # file/refresh/close the triage issue
+    env:
+      # gh runs unauthenticated without a token; prefer the ADMIN PAT so the
+      # filed issue can cascade to downstream routing workflows.
+      GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      # No checkout in this job, so gh cannot infer the repo from a git remote.
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: File or refresh triage issue for critical/high alerts
+        run: |
+          set -euo pipefail
+          # Triage is best-effort: if the alerts API is unavailable (code
+          # scanning disabled, token lacks access), warn and exit green — the
+          # analyze jobs above remain the real gate.
+          if ! gh api --paginate --slurp \
+              "repos/${GH_REPO}/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" \
+              --jq 'add' > /tmp/alerts.json 2>/tmp/alerts.err; then
+            echo "::warning::Could not list code-scanning alerts (see log)"
+            cat /tmp/alerts.err
+            exit 0
+          fi
+          # Single source of truth for which severities get triaged, shared by
+          # the count and the summary below so the criteria can't drift.
+          MAX_SUMMARY_ALERTS=20
+          SEV_FILTER='[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high")]'
+          COUNT=$(jq "${SEV_FILTER} | length" /tmp/alerts.json)
+          echo "Open critical/high CodeQL alerts: $COUNT"
+          TITLE="[SELF-HEAL] Open critical/high CodeQL alerts need triage"
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
+          if [ "$COUNT" -eq 0 ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" \
+                --comment "All critical/high CodeQL alerts are resolved — closing (weekly triage sweep)."
+            fi
+            exit 0
+          fi
+          # Alert fields come from the GitHub API (semi-trusted); they are
+          # only ever passed to gh as quoted arguments, never eval'd.
+          SUMMARY=$(jq -r --argjson max "$MAX_SUMMARY_ALERTS" "${SEV_FILTER}"'[:$max] | map("- [\(.rule.id)](\(.html_url)) — \(.rule.security_severity_level) — `\(.most_recent_instance.location.path // "unknown")`") | join("\n")' /tmp/alerts.json)
+          if [ "$COUNT" -gt "$MAX_SUMMARY_ALERTS" ]; then
+            TRUNCATION_NOTE=$(printf '\n\n(Showing first %s of %s critical/high alerts. See full list link below.)' "$MAX_SUMMARY_ALERTS" "$COUNT")
+          else
+            TRUNCATION_NOTE=""
+          fi
+          # printf: %% is a literal % (the URL query is percent-encoded,
+          # e.g. %%3A → %3A → ":").
+          BODY=$(printf 'Weekly CodeQL alert triage (`codeql.yml` → `alert-triage` job) found **%s** open critical/high alert(s):\n\n%s%s\n\nFull list: https://github.com/%s/security/code-scanning?query=is%%3Aopen+tool%%3ACodeQL\n' \
+            "$COUNT" "$SUMMARY" "$TRUNCATION_NOTE" "$GH_REPO")
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --label security --label self-heal --body "$BODY"
+          fi
