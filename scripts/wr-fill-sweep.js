@@ -25,33 +25,47 @@
  *   edits and leaves a new blank), the sweep picks it up again.
  */
 
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const path = require('path');
 const filler = require(path.join(__dirname, 'wr-fill-fields.js'));
 
 const REPO = process.env.GH_REPO || 'midnghtsapphire/revvel-standards';
 
-function gh(args) {
-  // gh returns non-zero on API errors; propagate as thrown errors so the
-  // workflow step fails loudly instead of silently emitting an empty list.
-  return execSync(`gh ${args}`, { encoding: 'utf8', env: process.env });
+// Argv-form invocation (no shell interpolation) so semgrep's
+// detect-child-process rule stays green and there is no path for a caller to
+// smuggle shell metacharacters into `gh`.
+function gh(argv) {
+  const result = spawnSync('gh', argv, { encoding: 'utf8', env: process.env });
+  if (result.status !== 0) {
+    const stderr = (result.stderr || '').trim();
+    throw new Error(`gh ${argv.join(' ')} failed (exit ${result.status}): ${stderr}`);
+  }
+  return result.stdout;
 }
 
 function listOpenWrIssues() {
   // work-request is the canonical label added by the issue form. wr:reset,
   // wr:in-progress, and wr:new are the same lane; any WR that reaches the
   // filler will carry at least one of them.
-  const raw = gh(
-    `issue list --repo ${REPO} --state open --label work-request --limit 500 ` +
-    `--json number,title,body,labels`,
-  );
+  const raw = gh([
+    'issue', 'list',
+    '--repo', REPO,
+    '--state', 'open',
+    '--label', 'work-request',
+    '--limit', '500',
+    '--json', 'number,title,body,labels',
+  ]);
   return JSON.parse(raw);
 }
 
 function fetchIssues(numbers) {
   const out = [];
   for (const n of numbers) {
-    const raw = gh(`issue view ${n} --repo ${REPO} --json number,title,body,labels`);
+    const raw = gh([
+      'issue', 'view', String(n),
+      '--repo', REPO,
+      '--json', 'number,title,body,labels',
+    ]);
     out.push(JSON.parse(raw));
   }
   return out;
