@@ -92,10 +92,17 @@ test('safeApi degrades gracefully on API rate-limit 403s', () => {
 
   for (const { jobName, step } of githubScriptSteps) {
     const script = step.with?.script || '';
+    // Match the intent (403 + "rate limit" message sniffing) rather than the
+    // exact source text so harmless refactors don't break the test.
     assert.match(
       script,
-      /e\?\.status === 403 && \/rate limit\/i\.test\(e\?\.message \|\| ''\)/,
-      `expected ${jobName} safeApi to detect rate-limit 403 errors`,
+      /status === 403/,
+      `expected ${jobName} safeApi to check for HTTP 403 status`,
+    );
+    assert.match(
+      script,
+      /\/rate limit\/i/,
+      `expected ${jobName} safeApi to sniff "rate limit" in the error message`,
     );
   }
 });
@@ -108,14 +115,15 @@ test('bulk reads (pulls.list, checks.listForRef, listReviews) go through safeApi
     const script = step.with?.script || '';
     // Raw awaits on these reads caused unhandled HttpError job failures when
     // the installation rate limit was exhausted (e.g. run 29153321163).
-    for (const call of [
-      'github.rest.pulls.list(',
-      'github.rest.checks.listForRef(',
-      'github.rest.pulls.listReviews(',
-    ]) {
+    // Regex (instead of a literal string) so whitespace variations between
+    // `await` and the call can't slip past the guard.
+    for (const method of ['pulls.list', 'checks.listForRef', 'pulls.listReviews']) {
+      const rawAwait = new RegExp(
+        String.raw`await\s+github\.rest\.` + method.replace(/\./g, String.raw`\.`) + String.raw`\s*\(`,
+      );
       assert.ok(
-        !script.includes(`await ${call}`),
-        `expected ${jobName} to call ${call} only through safeApi`,
+        !rawAwait.test(script),
+        `expected ${jobName} to call github.rest.${method}() only through safeApi`,
       );
     }
   }

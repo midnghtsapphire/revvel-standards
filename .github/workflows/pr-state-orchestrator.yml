@@ -875,7 +875,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = parseInt(context.payload.inputs.pr_number, 10);
+            const rawPrNumber = context.payload.inputs.pr_number;
+            const prNumber = parseInt(rawPrNumber, 10);
+            if (Number.isNaN(prNumber) || prNumber <= 0) {
+              // Fail fast with a friendly message — otherwise a NaN surfaces
+              // later as a confusing API 404 from pulls.get.
+              core.setFailed(`Invalid pr_number input: "${rawPrNumber}" — expected a positive integer PR number.`);
+              return;
+            }
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
