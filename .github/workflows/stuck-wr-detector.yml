@@ -102,6 +102,15 @@ jobs:
             // research engine simply never fired.  We force a PR skeleton by
             // applying wr:reset so wr-pr-creation can build the document.
             const LONG_STUCK_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+            // Medium-stuck path: a WR that automation already picked up
+            // (`wr:in-progress` applied by weekly-research) but that never got
+            // a completion label or a PR is a crashed pipeline, not a pending
+            // one. Incident: #15673 — research-engine's dispatch of
+            // wr-pr-creation.yml died on an unhandled API rate-limit 403, so
+            // the WR sat at wr:in-progress with nothing scheduled to rescue it
+            // for 7 days. 6 hours matches the cron cadence: one forced-reset
+            // attempt per sweep, bounded by the wr:reset-already-applied guard.
+            const MEDIUM_STUCK_MS = 6 * 60 * 60 * 1000; // 6 hours
 
             const stuck = [];
             for (const issue of issues) {
@@ -116,11 +125,15 @@ jobs:
                 labelNames.has('wr:complete') ||
                 labelNames.has('research:complete');
               // Long-stuck path: WR open > 7 days, no completion signal, no PR.
-              // Apply wr:reset to force a PR skeleton regardless of research state.
+              // Medium-stuck path: WR already marked wr:in-progress but open
+              // > 6h with no completion signal — the pipeline crashed mid-run.
+              // Both force a PR skeleton by applying wr:reset.
               if (!readyForWrPr) {
-                if (ageMs >= LONG_STUCK_MS) {
+                const forceResetThresholdMs =
+                  labelNames.has('wr:in-progress') ? MEDIUM_STUCK_MS : LONG_STUCK_MS;
+                if (ageMs >= forceResetThresholdMs) {
                   if (labelNames.has('wr:reset')) {
-                    core.info(`#${issue.number}: wr:reset already applied; skipping long-stuck path.`);
+                    core.info(`#${issue.number}: wr:reset already applied; skipping forced-reset path.`);
                     continue;
                   }
                   // Check if a PR already exists before forcing wr:reset.
@@ -128,27 +141,32 @@ jobs:
                   if (baseTitle) {
                     const existingPr = await findAssociatedPr({ github, owner, repo, issue, core });
                     if (!existingPr) {
-                      core.warning(`#${issue.number}: WR open ${Math.round(ageMs / 86400000)}d without completion signal or PR — forcing wr:reset to unblock.`);
+                      const ageLabel = ageMs >= 86400000
+                        ? `${Math.round(ageMs / 86400000)} days`
+                        : `${Math.round(ageMs / 3600000)} hours`;
+                      core.warning(`#${issue.number}: WR open ${ageLabel} without completion signal or PR — forcing wr:reset to unblock.`);
                       if (!dryRun) {
                         await addLabelsBestEffort(issue.number, ['wr:reset', 'lifecycle:stuck', 'wr-stuck']);
                         await github.rest.issues.createComment({
                           owner, repo, issue_number: issue.number,
                           body: [
-                            '## 🚨 VEINS: Long-Stuck WR — Forced PR Creation',
+                            '## 🚨 VEINS: Stuck WR — Forced PR Creation',
                             '',
-                            `This Work Request has been open for **${Math.round(ageMs / 86400000)} days** without a`,
+                            `This Work Request has been open for **${ageLabel}** without a`,
                             'completion signal (`wr:complete` / `research:complete`) or associated PR.',
                             '',
                             '**Root cause:** ' + (labelNames.has('research:blocked')
                               ? '`research:blocked` was applied, halting the research engine before it could signal completion.'
-                              : 'No completion label was ever applied — research engine may not have run.'),
+                              : labelNames.has('wr:in-progress')
+                                ? '`wr:in-progress` was applied but no completion label ever landed — the research pipeline likely crashed mid-run (e.g. an API rate-limit failure while dispatching `wr-pr-creation.yml`).'
+                                : 'No completion label was ever applied — research engine may not have run.'),
                             '',
                             '**Auto-fix applied:** `wr:reset` label added to force `wr-pr-creation.yml` to',
                             'generate a PR skeleton even without full research.',
                             '',
                             '**Labels added:** `wr:reset`, `lifecycle:stuck`, `wr-stuck`',
                             '',
-                            '_Detected by `stuck-wr-detector.yml` (long-stuck path) — ' + new Date().toISOString() + '_',
+                            '_Detected by `stuck-wr-detector.yml` (forced-reset path) — ' + new Date().toISOString() + '_',
                           ].join('\n'),
                         });
                       } else {

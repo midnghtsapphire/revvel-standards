@@ -1008,5 +1008,48 @@ test('fleet-controller.yml feed push survives branch protection (API fallback, f
   }
 });
 
+test('devin-code-review.yml is SHA-pinned, opt-in only, and soft-skips without credentials', () => {
+  // Guards for the Devin Action wiring (WR #15672):
+  //  * single-author action must stay pinned to a full commit SHA (never @v1/@main)
+  //  * no automatic pull_request open/synchronize trigger — every session costs ACUs
+  //  * slash-command lane must exclude bots (feedback-loop guard)
+  //  * missing DEVIN_API_KEY / DEVIN_ORG_ID must soft-skip, not fail the PR
+  const filePath = path.join(WORKFLOWS_DIR, 'devin-code-review.yml');
+  const content = fs.readFileSync(filePath, 'utf8');
+  const doc = yaml.parse(content);
+
+  if (/aaronsteers\/devin-action@(v\d|main)/.test(content)) {
+    throw new Error('devin-action must be pinned to a full commit SHA, not a floating tag/branch');
+  }
+  if (!/aaronsteers\/devin-action@[0-9a-f]{40}/.test(content)) {
+    throw new Error('devin-action SHA pin not found');
+  }
+
+  const on = doc.on || doc[true];
+  const prTypes = on.pull_request?.types || [];
+  if (prTypes.includes('opened') || prTypes.includes('synchronize')) {
+    throw new Error('devin-code-review must not auto-trigger on PR open/sync (paid surface — opt-in only)');
+  }
+
+  const job = doc.jobs['devin-review'];
+  if (!job.if || !job.if.includes("comment.user.type != 'Bot'")) {
+    throw new Error('slash-command lane must exclude Bot comments to prevent session loops');
+  }
+  if (!job.if.includes("startsWith(github.event.comment.body, '/devin')")) {
+    throw new Error('slash-command lane must gate on the /devin prefix');
+  }
+
+  const verify = job.steps.find((s) => s.id === 'verify-secrets');
+  if (!verify) throw new Error('verify-secrets soft-skip gate step not found');
+  if (!(verify.run || '').includes('DEVIN_SKIP=true')) {
+    throw new Error('verify-secrets must set DEVIN_SKIP=true when credentials are missing');
+  }
+  for (const step of job.steps.filter((s) => (s.uses || '').startsWith('aaronsteers/devin-action'))) {
+    if (!(step.if || '').includes("env.DEVIN_SKIP == 'false'")) {
+      throw new Error(`devin-action step "${step.name}" must be gated on DEVIN_SKIP == 'false'`);
+    }
+  }
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);
