@@ -147,6 +147,52 @@ function getHealingActions(brokenAreas) {
   return actions;
 }
 
+// Mirror of the self-heal job's "Verify healing" step: after healing actions,
+// re-check the same thresholds. Healed only when nothing remains broken.
+function verifyHealing(failedCount, stuckCount) {
+  const remaining = [];
+  if (failedCount > FAILED_ACTIONS_THRESHOLD) {
+    remaining.push(`GitHub Actions: ${failedCount} recent failures`);
+  }
+  if (stuckCount > STUCK_ISSUES_THRESHOLD) {
+    remaining.push(`Stuck issues: ${stuckCount} open`);
+  }
+  return { healed: remaining.length === 0, remaining };
+}
+
+// Mirror of "Close healed issues or escalate in place": verified healed →
+// close every open [SELF-HEAL] issue as completed; not healed → update the
+// first open issue in place (biome-sentinel pattern) and consolidate
+// duplicates; not healed with no open issue → create one escalation issue.
+function selectJournalAction(healed, openIssueNumbers) {
+  if (healed) {
+    return { action: 'close-completed', close: openIssueNumbers, keep: null };
+  }
+  if (openIssueNumbers.length > 0) {
+    return {
+      action: 'update-in-place',
+      keep: openIssueNumbers[0],
+      close: openIssueNumbers.slice(1),
+    };
+  }
+  return { action: 'create-escalation', keep: null, close: [] };
+}
+
+// Mirror of "Save healing memory": one JSONL record per healing pass.
+function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, healed, remaining, outcome, closedIssues, runUrl }) {
+  return {
+    ts,
+    event: 'self-heal',
+    broken,
+    actions: { stuck_relabeled: stuckRelabeled, reran_run_ids: reranRunIds },
+    healed,
+    remaining,
+    outcome,
+    closed_issues: closedIssues,
+    run_url: runUrl,
+  };
+}
+
 // === Tests ===
 
 (async () => {
@@ -413,6 +459,80 @@ function getHealingActions(brokenAreas) {
     
     assert.equal(health, 'needs-healing');
     assert.ok(actions.length > 0);
+  });
+
+  // Healing Verification (self-heal "Verify healing" step)
+  await test('verifyHealing reports healed when everything below thresholds', () => {
+    const result = verifyHealing(0, 0);
+    assert.ok(result.healed);
+    assert.deepEqual(result.remaining, []);
+  });
+
+  await test('verifyHealing reports not healed when failures remain', () => {
+    const result = verifyHealing(5, 0);
+    assert.ok(!result.healed);
+    assert.ok(result.remaining.some(a => a.includes('GitHub Actions')));
+  });
+
+  await test('verifyHealing reports not healed when stuck issues remain', () => {
+    const result = verifyHealing(0, 10);
+    assert.ok(!result.healed);
+    assert.ok(result.remaining.some(a => a.includes('Stuck issues')));
+  });
+
+  await test('verifyHealing uses same thresholds as detection (at-threshold is healed)', () => {
+    const result = verifyHealing(FAILED_ACTIONS_THRESHOLD, STUCK_ISSUES_THRESHOLD);
+    assert.ok(result.healed);
+  });
+
+  // Journal Action Selection (close-as-completed vs escalate-in-place)
+  await test('selectJournalAction closes all open issues as completed when healed', () => {
+    const result = selectJournalAction(true, [15680, 15682, 15684]);
+    assert.equal(result.action, 'close-completed');
+    assert.deepEqual(result.close, [15680, 15682, 15684]);
+  });
+
+  await test('selectJournalAction updates first issue in place and consolidates duplicates when not healed', () => {
+    const result = selectJournalAction(false, [15680, 15682, 15684]);
+    assert.equal(result.action, 'update-in-place');
+    assert.equal(result.keep, 15680);
+    assert.deepEqual(result.close, [15682, 15684]);
+  });
+
+  await test('selectJournalAction creates one escalation issue when not healed and none open', () => {
+    const result = selectJournalAction(false, []);
+    assert.equal(result.action, 'create-escalation');
+    assert.deepEqual(result.close, []);
+  });
+
+  await test('selectJournalAction is a no-op close when healed with none open', () => {
+    const result = selectJournalAction(true, []);
+    assert.equal(result.action, 'close-completed');
+    assert.deepEqual(result.close, []);
+  });
+
+  // Healing Memory Record (wr/memory/healing.jsonl)
+  await test('buildHealingMemoryRecord captures full provenance', () => {
+    const record = buildHealingMemoryRecord({
+      ts: '2026-07-11T12:00:00Z',
+      broken: 'Stuck issues: 10 open; ',
+      stuckRelabeled: 4,
+      reranRunIds: ['111', '222'],
+      healed: true,
+      remaining: '',
+      outcome: 'healed',
+      closedIssues: ['15684'],
+      runUrl: 'https://github.com/midnghtsapphire/revvel-standards/actions/runs/1',
+    });
+    assert.equal(record.event, 'self-heal');
+    assert.equal(record.healed, true);
+    assert.equal(record.outcome, 'healed');
+    assert.equal(record.actions.stuck_relabeled, 4);
+    assert.deepEqual(record.actions.reran_run_ids, ['111', '222']);
+    assert.deepEqual(record.closed_issues, ['15684']);
+    assert.ok(record.ts && record.run_url);
+    // Must serialize to a single JSONL line.
+    assert.ok(!JSON.stringify(record).includes('\n'));
   });
 
   // Threshold Constants
