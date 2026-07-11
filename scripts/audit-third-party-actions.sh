@@ -68,6 +68,9 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15673: org-published (ASD B.V.), active releases (v1.0.1), pinned to a
   # full commit SHA in devinci-debug.yml.
   "asd-engineering/asd-devinci"
+  # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
+  # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
+  "aaronsteers/devin-action"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
