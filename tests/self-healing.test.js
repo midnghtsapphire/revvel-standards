@@ -72,7 +72,8 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   // all required workflows missing (false-positive [SELF-HEAL] issues,
   // e.g. #15683).
   for (const required of requiredWorkflows) {
-    const pattern = new RegExp(`/${required}\\.ya?ml$`, 'i');
+    const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
     const found = workflowsList.some(wf => pattern.test(wf.path || ''));
     if (!found) {
       missing.push(required);
@@ -240,7 +241,7 @@ function getHealingActions(brokenAreas) {
   // required workflows as missing and filed a bogus [SELF-HEAL] issue.
   await test('checkWorkflowsPresent matches on path, not display name (issue #15683)', () => {
     const workflows = REQUIRED_WORKFLOWS.map(slug => ({
-      name: slug.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' '),
+      name: slug.split('-').filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join(' '),
       path: `.github/workflows/${slug}.yml`,
     }));
     const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
