@@ -1,5 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-12T22:55:18.659Z",
-  "stop": []
+  "generated_at": "2026-07-12T23:25:32.811Z",
+  "stop": [
+    {
+      "id": 29212899528,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212895887,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212894135,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212890494,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212889533,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212886961,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212884976,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29212818799,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 18m ≥ 15m"
+    }
+  ]
 }
