@@ -1,13 +1,5 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-07-11T23:55:31.894Z",
-  "workflows": {
-    ".github/workflows/perplexity-research-agent.yml": {
-      "count": 1,
-      "tried": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "last_cut_at": "2026-07-11T18:38:24.873Z"
-    }
-  }
+  "updated_at": "2026-07-12T00:54:41.716Z",
+  "workflows": {}
 }
