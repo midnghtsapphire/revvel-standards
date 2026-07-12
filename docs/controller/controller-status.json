@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-12T12:57:24.214Z",
+  "generated_at": "2026-07-12T13:39:36.743Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 1,
@@ -8,9 +8,9 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 6,
+    "total": 7,
     "running": 1,
-    "queued": 5,
+    "queued": 6,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
@@ -22,16 +22,28 @@
   },
   "orchestrators": [
     {
-      "id": 29193532696,
+      "id": 29194798585,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29193532696",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29194798585",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 8214,
-      "since_update_ms": 5214,
+      "age_ms": 8743,
+      "since_update_ms": 4743,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 29194802025,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29194802025",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
     },
     {
       "id": 29174019208,
