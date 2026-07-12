@@ -62,7 +62,7 @@ jobs:
        contains(format(' {0} ', github.event.issue.title), ' #mcp ') ||
        contains(format(' {0} ', github.event.issue.title), ' #skill ') ||
        contains(format(' {0} ', github.event.issue.title), ' #skills ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #website ')))
+       contains(format(' {0} ', github.event.issue.title), ' #website '))
     runs-on: ubuntu-latest
     env:
       PAT: ${{ secrets.PROJECTS_PAT }}

@@ -224,10 +224,15 @@ jobs:
           echo "  4. Verify BITO posts a review comment"
           echo ""
       - name: API connectivity test (if key available)
-        if: ${{ secrets.BITO_API_KEY != '' }}
         env:
           BITO_API_KEY: ${{ secrets.BITO_API_KEY }}
         run: |
+          # `secrets` context is not allowed in step `if:` (it invalidates the
+          # whole workflow file), so guard in-shell instead.
+          if [ -z "$BITO_API_KEY" ]; then
+            echo "BITO_API_KEY not configured; skipping API tests"
+            exit 0
+          fi
           echo "BITO_API_KEY is available — running API tests..."
           ./scripts/test-bito-api.sh
     timeout-minutes: 30
