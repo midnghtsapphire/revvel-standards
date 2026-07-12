@@ -63,31 +63,19 @@ function parseStuckCount(stuckIssues) {
 }
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
-<<<<<<< HEAD
-  // Mirrors self-healing.yml "Check agent health": match on the workflow FILE
-  // PATH (.github/workflows/<name>.yml), never the display name — files like
-  // agent-dispatcher.yml carry display names like "Agent Dispatcher", so a
-  // name-based contains() falsely reported every workflow missing (#15680).
+  // Mirrors the "Check agent health" step in self-healing.yml: match on the
+  // workflow FILE PATH (slug), never the display name. The API's .name field
+  // is the display name ("Agent Dispatcher") and does not contain the
+  // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
+  // all required workflows missing (false-positive [SELF-HEAL] issues,
+  // e.g. #15680 / #15683).
   // An empty list means the API call failed → inconclusive, treated healthy
   // so a listing hiccup can't spam false healing reports.
   if (!workflowsList || workflowsList.length === 0) {
     return { healthy: true, missing: [], inconclusive: true };
   }
 
-  const paths = new Set(workflowsList.map(wf => wf.path));
-  const missing = requiredWorkflows.filter(
-    required => !paths.has(`.github/workflows/${required}.yml`)
-  );
-
-=======
   const missing = [];
-
-  // Mirrors the "Check agent health" step in self-healing.yml: match on the
-  // workflow FILE PATH (slug), never the display name. The API's .name field
-  // is the display name ("Agent Dispatcher") and does not contain the
-  // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
-  // all required workflows missing (false-positive [SELF-HEAL] issues,
-  // e.g. #15683).
   for (const required of requiredWorkflows) {
     const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
@@ -97,7 +85,6 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
     }
   }
 
->>>>>>> origin/main
   return {
     healthy: missing.length === 0,
     missing,
@@ -239,10 +226,7 @@ function getHealingActions(brokenAreas) {
   await test('checkWorkflowsPresent identifies missing workflows', () => {
     const workflows = [
       { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
-<<<<<<< HEAD
       { name: 'Something Else', path: '.github/workflows/something-else.yml' },
-=======
->>>>>>> origin/main
     ];
     const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
     assert.ok(!result.healthy);
@@ -258,19 +242,13 @@ function getHealingActions(brokenAreas) {
     // "Agent Dispatcher" never matched "agent-dispatcher" and every run
     // falsely reported all required workflows missing.
     const workflows = [
-<<<<<<< HEAD
-      { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
-      { name: 'ISSUE STATE MACHINE', path: '.github/workflows/issue-state-machine.yml' },
-=======
       { path: '.github/workflows/Agent-Dispatcher.YML' },
       { path: '.github/workflows/ISSUE-STATE-MACHINE.yaml' },
->>>>>>> origin/main
     ];
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher', 'issue-state-machine']);
     assert.ok(result.healthy);
   });
 
-<<<<<<< HEAD
   await test('checkWorkflowsPresent treats an empty listing as inconclusive, not all-missing', () => {
     // A failed/empty API listing must not report every workflow missing —
     // that is exactly the false-positive healing report from issue #15680.
@@ -278,7 +256,8 @@ function getHealingActions(brokenAreas) {
     assert.ok(result.healthy);
     assert.deepEqual(result.missing, []);
     assert.ok(result.inconclusive);
-=======
+  });
+
   // Regression: issue #15683 — the check used to grep the display name
   // (.name), which never contains the file slug, so every sweep reported all
   // required workflows as missing and filed a bogus [SELF-HEAL] issue.
@@ -298,7 +277,6 @@ function getHealingActions(brokenAreas) {
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher']);
     assert.ok(!result.healthy);
     assert.deepEqual(result.missing, ['agent-dispatcher']);
->>>>>>> origin/main
   });
 
   // Broken Area Identification
@@ -429,13 +407,8 @@ function getHealingActions(brokenAreas) {
     const stuckCount = parseStuckCount('0');
     const workflowsStatus = checkWorkflowsPresent(
       [
-<<<<<<< HEAD
         { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
         { name: 'Issue State Machine', path: '.github/workflows/issue-state-machine.yml' },
-=======
-        { path: '.github/workflows/agent-dispatcher.yml' },
-        { path: '.github/workflows/issue-state-machine.yml' },
->>>>>>> origin/main
       ],
       ['agent-dispatcher', 'issue-state-machine']
     );
