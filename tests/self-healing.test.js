@@ -64,6 +64,7 @@ function parseStuckCount(stuckIssues) {
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   const missing = [];
+  const normalizedPaths = workflowsList.map(wf => (wf.path || '').toLowerCase());
 
   // Mirrors the "Check agent health" step in self-healing.yml: match on the
   // workflow FILE PATH (slug), never the display name. The API's .name field
@@ -72,9 +73,9 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   // all required workflows missing (false-positive [SELF-HEAL] issues,
   // e.g. #15683).
   for (const required of requiredWorkflows) {
-    const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
-    const found = workflowsList.some(wf => pattern.test(wf.path || ''));
+    const ymlPath = `.github/workflows/${required}.yml`;
+    const yamlPath = `.github/workflows/${required}.yaml`;
+    const found = normalizedPaths.includes(ymlPath) || normalizedPaths.includes(yamlPath);
     if (!found) {
       missing.push(required);
     }

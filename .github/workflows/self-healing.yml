@@ -95,7 +95,7 @@ jobs:
 
           if ! gh api --paginate repos/midnghtsapphire/revvel-standards/actions/workflows \
             --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
-            ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//')
+            ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | sed 's/::/COLON-COLON/g')
             if [[ -z "$ERR_MSG" ]]; then
               ERR_MSG="auth/rate-limit/network error"
             fi
@@ -112,10 +112,12 @@ jobs:
 
           MISSING=()
           for wf in "${WORKFLOWS[@]}"; do
-            # Escape regex metacharacters so a slug like api-v2.0-handler
-            # matches literally instead of "." matching any character.
-            wf_esc=$(printf '%s' "$wf" | sed 's/[.[\*^$]/\\&/g')
-            if ! grep -q "/${wf_esc}\.ya\?ml$" /tmp/workflow-paths.txt; then
+            # Compare against exact file paths (case-insensitive by normalizing
+            # API output to lowercase). Accept both .yml and .yaml.
+            wf_path_yml=".github/workflows/${wf}.yml"
+            wf_path_yaml=".github/workflows/${wf}.yaml"
+            if ! tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt | grep -Fqx "$wf_path_yml" \
+              && ! tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt | grep -Fqx "$wf_path_yaml"; then
               MISSING+=("$wf")
             fi
           done
