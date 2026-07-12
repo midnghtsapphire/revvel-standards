@@ -1,24 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-12T15:22:19.225Z",
+  "generated_at": "2026-07-12T16:20:12.919Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29196569221,
+            "id": 29199912357,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29199912357",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29198269615,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29196569221",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29198269615",
             "conclusion": "failure"
           }
         ],
