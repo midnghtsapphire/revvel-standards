@@ -100,20 +100,32 @@ jobs:
           # let the next 4h sweep retry once API access recovers (see GH_TOKEN
           # note at top of file before assuming workflows were deleted).
           if ! gh api --paginate "repos/${GH_REPO}/actions/workflows" \
-            --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err \
-            || [[ ! -s /tmp/workflow-paths.txt ]]; then
-            echo "::warning::Could not list workflows via gh api (auth/rate-limit/network?) — skipping presence check this run; next scheduled sweep (every 4h) will retry automatically"
-            cat /tmp/workflow-paths.err
+            --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
+            ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | sed 's/::/COLON-COLON/g')
+            if [[ -z "$ERR_MSG" ]]; then
+              ERR_MSG="auth/rate-limit/network error"
+            fi
+            echo "::warning::Could not list workflows via gh api (${ERR_MSG}) — skipping presence check this run; next scheduled sweep (every 4h) will retry automatically"
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
             exit 0
           fi
 
+          if [[ ! -s /tmp/workflow-paths.txt ]]; then
+            echo "::warning::Workflow API returned no paths — skipping presence check this run to avoid false positives; next scheduled sweep (every 4h) will retry automatically"
+            echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt > /tmp/workflow-paths-lc.txt
+
           MISSING=()
           for wf in "${WORKFLOWS[@]}"; do
-            # Escape regex metacharacters so a slug like api-v2.0-handler
-            # matches literally instead of "." matching any character.
-            wf_esc=$(printf '%s' "$wf" | sed 's/[.[\*^$]/\\&/g')
-            if ! grep -q "/${wf_esc}\.ya\?ml$" /tmp/workflow-paths.txt; then
+            # Compare against exact file paths (case-insensitive by normalizing
+            # API output to lowercase). Accept both .yml and .yaml.
+            wf_path_yml=".github/workflows/${wf}.yml"
+            wf_path_yaml=".github/workflows/${wf}.yaml"
+            if ! grep -Fqx "$wf_path_yml" /tmp/workflow-paths-lc.txt \
+              && ! grep -Fqx "$wf_path_yaml" /tmp/workflow-paths-lc.txt; then
               MISSING+=("$wf")
             fi
           done
