@@ -64,6 +64,7 @@ function parseStuckCount(stuckIssues) {
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   const missing = [];
+<<<<<<< HEAD
   
   // Mirror of the self-healing.yml "Check agent health" step: required
   // entries are file slugs (agent-dispatcher), so match the workflow file
@@ -74,11 +75,24 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
     const found = workflowsList.some(wf =>
       wf.path === `.github/workflows/${required}.yml`
     );
+=======
+
+  // Mirrors the "Check agent health" step in self-healing.yml: match on the
+  // workflow FILE PATH (slug), never the display name. The API's .name field
+  // is the display name ("Agent Dispatcher") and does not contain the
+  // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
+  // all required workflows missing (false-positive [SELF-HEAL] issues,
+  // e.g. #15683).
+  for (const required of requiredWorkflows) {
+    const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
+    const found = workflowsList.some(wf => pattern.test(wf.path || ''));
+>>>>>>> origin/main
     if (!found) {
       missing.push(required);
     }
   }
-  
+
   return {
     healthy: missing.length === 0,
     missing,
@@ -276,8 +290,13 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
     // Display names like "Agent Dispatcher" never contain the slug
     // "agent-dispatcher"; the check must key off the workflow file path.
     const workflows = [
+<<<<<<< HEAD
       { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
       { name: 'ISSUE STATE MACHINE', path: '.github/workflows/issue-state-machine.yml' },
+=======
+      { path: '.github/workflows/Agent-Dispatcher.YML' },
+      { path: '.github/workflows/ISSUE-STATE-MACHINE.yaml' },
+>>>>>>> origin/main
     ];
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher', 'issue-state-machine']);
     assert.ok(result.healthy);
@@ -303,6 +322,27 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
     const result = checkWorkflowsPresent(truncatedFirstPage, REQUIRED_WORKFLOWS);
     assert.ok(!result.healthy);
     assert.deepEqual(result.missing, REQUIRED_WORKFLOWS);
+  });
+
+  // Regression: issue #15683 — the check used to grep the display name
+  // (.name), which never contains the file slug, so every sweep reported all
+  // required workflows as missing and filed a bogus [SELF-HEAL] issue.
+  await test('checkWorkflowsPresent matches on path, not display name (issue #15683)', () => {
+    const workflows = REQUIRED_WORKFLOWS.map(slug => ({
+      name: slug.split('-').filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join(' '),
+      path: `.github/workflows/${slug}.yml`,
+    }));
+    const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
+    assert.ok(result.healthy, `expected healthy, missing: ${result.missing.join(', ')}`);
+  });
+
+  await test('checkWorkflowsPresent does not false-match a slug substring in another path', () => {
+    const workflows = [
+      { name: 'Other', path: '.github/workflows/not-agent-dispatcher-really.yml' },
+    ];
+    const result = checkWorkflowsPresent(workflows, ['agent-dispatcher']);
+    assert.ok(!result.healthy);
+    assert.deepEqual(result.missing, ['agent-dispatcher']);
   });
 
   // Broken Area Identification
@@ -433,8 +473,13 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
     const stuckCount = parseStuckCount('0');
     const workflowsStatus = checkWorkflowsPresent(
       [
+<<<<<<< HEAD
         { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
         { name: 'Issue State Machine', path: '.github/workflows/issue-state-machine.yml' },
+=======
+        { path: '.github/workflows/agent-dispatcher.yml' },
+        { path: '.github/workflows/issue-state-machine.yml' },
+>>>>>>> origin/main
       ],
       ['agent-dispatcher', 'issue-state-machine']
     );
