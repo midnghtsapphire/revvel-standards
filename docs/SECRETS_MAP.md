@@ -122,4 +122,4 @@ Every secret name referenced by the workflows, where it lives, which workflows c
   when set, else B). `DOPPLER_*` chains remain listed until the secrets are
   deleted so the decommission is auditable.
 
-*Last generated: 2026-07-11 from `.github/workflows/`.*
+*Last generated: 2026-07-12 from `.github/workflows/`.*
