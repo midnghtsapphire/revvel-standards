@@ -64,17 +64,18 @@ function parseStuckCount(stuckIssues) {
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   const missing = [];
+  const normalizedPaths = workflowsList.map(wf => (wf.path || '').toLowerCase());
 
   // Mirrors the "Check agent health" step in self-healing.yml: match on the
   // workflow FILE PATH (slug), never the display name. The API's .name field
   // is the display name ("Agent Dispatcher") and does not contain the
   // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
   // all required workflows missing (false-positive [SELF-HEAL] issues,
-  // e.g. #15683).
+  // e.g. #15683 / #15684).
   for (const required of requiredWorkflows) {
-    const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
-    const found = workflowsList.some(wf => pattern.test(wf.path || ''));
+    const ymlPath = `.github/workflows/${required}.yml`;
+    const yamlPath = `.github/workflows/${required}.yaml`;
+    const found = normalizedPaths.includes(ymlPath) || normalizedPaths.includes(yamlPath);
     if (!found) {
       missing.push(required);
     }
@@ -146,6 +147,52 @@ function getHealingActions(brokenAreas) {
   }
   
   return actions;
+}
+
+// Mirror of the self-heal job's "Verify healing" step: after healing actions,
+// re-check the same thresholds. Healed only when nothing remains broken.
+function verifyHealing(failedCount, stuckCount) {
+  const remaining = [];
+  if (failedCount > FAILED_ACTIONS_THRESHOLD) {
+    remaining.push(`GitHub Actions: ${failedCount} recent failures`);
+  }
+  if (stuckCount > STUCK_ISSUES_THRESHOLD) {
+    remaining.push(`Stuck issues: ${stuckCount} open`);
+  }
+  return { healed: remaining.length === 0, remaining };
+}
+
+// Mirror of "Close healed issues or escalate in place": verified healed →
+// close every open [SELF-HEAL] issue as completed; not healed → update the
+// first open issue in place (biome-sentinel pattern) and consolidate
+// duplicates; not healed with no open issue → create one escalation issue.
+function selectJournalAction(healed, openIssueNumbers) {
+  if (healed) {
+    return { action: 'close-completed', close: openIssueNumbers, keep: null };
+  }
+  if (openIssueNumbers.length > 0) {
+    return {
+      action: 'update-in-place',
+      keep: openIssueNumbers[0],
+      close: openIssueNumbers.slice(1),
+    };
+  }
+  return { action: 'create-escalation', keep: null, close: [] };
+}
+
+// Mirror of "Save healing memory": one JSONL record per healing pass.
+function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, healed, remaining, outcome, closedIssues, runUrl }) {
+  return {
+    ts,
+    event: 'self-heal',
+    broken,
+    actions: { stuck_relabeled: stuckRelabeled, reran_run_ids: reranRunIds },
+    healed,
+    remaining,
+    outcome,
+    closed_issues: closedIssues,
+    run_url: runUrl,
+  };
 }
 
 // === Tests ===
@@ -227,13 +274,37 @@ function getHealingActions(brokenAreas) {
     assert.ok(result.missing.length > 0);
   });
 
-  await test('checkWorkflowsPresent handles case insensitivity', () => {
+  await test('checkWorkflowsPresent matches file path, not display name (issue #15684)', () => {
+    // Display names like "Agent Dispatcher" never contain the slug
+    // "agent-dispatcher"; the check must key off the workflow file path.
     const workflows = [
       { path: '.github/workflows/Agent-Dispatcher.YML' },
       { path: '.github/workflows/ISSUE-STATE-MACHINE.yaml' },
     ];
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher', 'issue-state-machine']);
     assert.ok(result.healthy);
+
+    // A name-only match (no path) must NOT count as present.
+    const nameOnly = checkWorkflowsPresent(
+      [{ name: 'agent-dispatcher' }],
+      ['agent-dispatcher']
+    );
+    assert.ok(!nameOnly.healthy);
+    assert.deepEqual(nameOnly.missing, ['agent-dispatcher']);
+  });
+
+  await test('checkWorkflowsPresent flags workflows absent from a truncated page (issue #15684)', () => {
+    // The live API returns 30 workflows per page by default; this repo has
+    // 150+. The workflow step must use `gh api --paginate` — a truncated
+    // first page that omits a required workflow must be reported missing,
+    // which is why pagination is mandatory in self-healing.yml.
+    const truncatedFirstPage = Array.from({ length: 30 }, (_, i) => ({
+      name: `Unrelated Workflow ${i}`,
+      path: `.github/workflows/unrelated-${i}.yml`,
+    }));
+    const result = checkWorkflowsPresent(truncatedFirstPage, REQUIRED_WORKFLOWS);
+    assert.ok(!result.healthy);
+    assert.deepEqual(result.missing, REQUIRED_WORKFLOWS);
   });
 
   // Regression: issue #15683 — the check used to grep the display name
@@ -411,6 +482,82 @@ function getHealingActions(brokenAreas) {
     
     assert.equal(health, 'needs-healing');
     assert.ok(actions.length > 0);
+  });
+
+  // Healing Verification (self-heal "Verify healing" step)
+  await test('verifyHealing reports healed when everything below thresholds', () => {
+    const result = verifyHealing(0, 0);
+    assert.ok(result.healed);
+    assert.deepEqual(result.remaining, []);
+  });
+
+  await test('verifyHealing reports not healed when failures remain', () => {
+    const result = verifyHealing(5, 0);
+    assert.ok(!result.healed);
+    assert.ok(result.remaining.some(a => a.includes('GitHub Actions')));
+  });
+
+  await test('verifyHealing reports not healed when stuck issues remain', () => {
+    const result = verifyHealing(0, 10);
+    assert.ok(!result.healed);
+    assert.ok(result.remaining.some(a => a.includes('Stuck issues')));
+  });
+
+  await test('verifyHealing uses same thresholds as detection (at-threshold is healed)', () => {
+    const result = verifyHealing(FAILED_ACTIONS_THRESHOLD, STUCK_ISSUES_THRESHOLD);
+    assert.ok(result.healed);
+  });
+
+  // Journal Action Selection (close-as-completed vs escalate-in-place)
+  await test('selectJournalAction closes all open issues as completed when healed', () => {
+    const result = selectJournalAction(true, [15680, 15682, 15684]);
+    assert.equal(result.action, 'close-completed');
+    assert.deepEqual(result.close, [15680, 15682, 15684]);
+  });
+
+  await test('selectJournalAction updates first issue in place and consolidates duplicates when not healed', () => {
+    const result = selectJournalAction(false, [15680, 15682, 15684]);
+    assert.equal(result.action, 'update-in-place');
+    assert.equal(result.keep, 15680);
+    assert.deepEqual(result.close, [15682, 15684]);
+  });
+
+  await test('selectJournalAction creates one escalation issue when not healed and none open', () => {
+    const result = selectJournalAction(false, []);
+    assert.equal(result.action, 'create-escalation');
+    assert.deepEqual(result.close, []);
+  });
+
+  await test('selectJournalAction is a no-op close when healed with none open', () => {
+    const result = selectJournalAction(true, []);
+    assert.equal(result.action, 'close-completed');
+    assert.deepEqual(result.close, []);
+  });
+
+  // Healing Memory Record (wr/memory/healing.jsonl)
+  await test('buildHealingMemoryRecord captures full provenance', () => {
+    const record = buildHealingMemoryRecord({
+      ts: '2026-07-11T12:00:00Z',
+      broken: 'Stuck issues: 10 open; ',
+      stuckRelabeled: 4,
+      reranRunIds: ['111', '222'],
+      healed: true,
+      remaining: '',
+      outcome: 'healed',
+      closedIssues: ['15684'],
+      runUrl: 'https://github.com/midnghtsapphire/revvel-standards/actions/runs/1',
+    });
+    assert.equal(record.event, 'self-heal');
+    assert.equal(record.healed, true);
+    assert.equal(record.outcome, 'healed');
+    assert.equal(record.actions.stuck_relabeled, 4);
+    assert.deepEqual(record.actions.reran_run_ids, ['111', '222']);
+    assert.deepEqual(record.closed_issues, ['15684']);
+    assert.ok(record.ts && record.run_url);
+    // Must serialize to a single JSONL line, and round-trip losslessly.
+    const line = JSON.stringify(record);
+    assert.ok(!line.includes('\n'));
+    assert.deepEqual(JSON.parse(line), record);
   });
 
   // Threshold Constants
