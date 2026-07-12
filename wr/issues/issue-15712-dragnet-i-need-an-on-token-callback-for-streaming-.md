@@ -232,7 +232,8 @@ git commit -m "test: add unit tests for streaming callback"
 The user has a working implementation but lacks confidence due to poor documentation discoverability. This is a **documentation and developer experience problem**, not a technical limitation. Fixing this will likely prevent hundreds of similar support requests and accelerate OpenHands adoption.
 
 ### Key Risk
-The invalid model string will cause immediate runtime failure. This must be fixed before any user can successfully run the script
+The invalid model string will cause immediate runtime failure. This must be fixed before any user can successfully run the script.
+
 ---
 
 ### Output Type (required)
@@ -269,168 +270,9 @@ i need an on_token callback for streaming for openhands? can ou please help. i h
 
 ### Objective
 
-please help me do this ; or do it: import os
-import sys
-from typing import Literal
+please help me do this ; or do it:
 
-from pydantic import SecretStr
-
-from openhands.sdk import (
-    Conversation,
-    get_logger,
-)
-from openhands.sdk.llm import LLM
-from openhands.sdk.llm.streaming import ModelResponseStream
-from openhands.tools.preset.default import get_default_agent
-
-logger = get_logger(**name**)
-
-api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise RuntimeError("Set LLM_API_KEY or OPENAI_API_KEY in your environment.")
-
-model = os.getenv("LLM_MODEL", "anthropic/claude-sonnet-4-5-20250929")
-base_url = os.getenv("LLM_BASE_URL")
-llm = LLM(
-    model=model,
-    api_key=SecretStr(api_key),
-    base_url=base_url,
-    usage_id="stream-demo",
-    stream=True,
-)
-
-agent = get_default_agent(llm=llm, cli_mode=True)
-
-## Define streaming states
-StreamingState = Literal["thinking", "content", "tool_name", "tool_args"]
-## Track state across on_token calls for boundary detection
-_current_state: StreamingState | None = None
-
-def on_token(chunk: ModelResponseStream) -> None:
-    """
-    Handle all types of streaming tokens including content,
-    tool calls, and thinking blocks with dynamic boundary detection.
-    """
-    global_current_state
-
-    choices = chunk.choices
-    for choice in choices:
-        delta = choice.delta
-        if delta is not None:
-            # Handle thinking blocks (reasoning content)
-            reasoning_content = getattr(delta, "reasoning_content", None)
-            if isinstance(reasoning_content, str) and reasoning_content:
-                if _current_state != "thinking":
-                    if _current_state is not None:
-                        sys.stdout.write("\n")
-                    sys.stdout.write("THINKING: ")
-                    _current_state = "thinking"
-                sys.stdout.write(reasoning_content)
-                sys.stdout.flush()
-
-            # Handle regular content
-            content = getattr(delta, "content", None)
-            if isinstance(content, str) and content:
-                if _current_state != "content":
-                    if _current_state is not None:
-                        sys.stdout.write("\n")
-                    sys.stdout.write("CONTENT: ")
-                    _current_state = "content"
-                sys.stdout.write(content)
-                sys.stdout.flush()
-
-            # Handle tool calls
-            tool_calls = getattr(delta, "tool_calls", None)
-            if tool_calls:
-                for tool_call in tool_calls:
-                    tool_name = (
-                        tool_call.function.name if tool_call.function.name else ""
-                    )
-                    tool_args = (
-                        tool_call.function.arguments
-                        if tool_call.function.arguments
-                        else ""
-                    )
-                    if tool_name:
-                        if _current_state != "tool_name":
-                            if _current_state is not None:
-                                sys.stdout.write("\n")
-                            sys.stdout.write("TOOL NAME: ")
-                            _current_state = "tool_name"
-                        sys.stdout.write(tool_name)
-                        sys.stdout.flush()
-                    if tool_args:
-                        if _current_state != "tool_args":
-                            if _current_state is not None:
-                                sys.stdout.write("\n")
-                            sys.stdout.write("TOOL ARGS: ")
-                            _current_state = "tool_args"
-                        sys.stdout.write(tool_args)
-                        sys.stdout.flush()
-
-conversation = Conversation(
-    agent=agent,
-    workspace=os.getcwd(),
-    token_callbacks=[on_token],
-)
-
-story_prompt = (
-    "Tell me a long story about LLM streaming, write it a file, "
-    "make sure it has multiple paragraphs. "
-)
-conversation.send_message(story_prompt)
-print("Token Streaming:")
-print("-" * 100 + "\n")
-conversation.run()
-
-cleanup_prompt = (
-    "Thank you. Please delete the streaming story file now that I've read it, "
-    "then confirm the deletion."
-)
-conversation.send_message(cleanup_prompt)
-print("Token Streaming:")
-print("-" * 100 + "\n")
-conversation.run()
-
-## Report cost
-cost = llm.metrics.accumulated_cost
-print(f"EXAMPLE_COST: {cost}")
-
-### Required Bundle
-
-openhands-sdk, pydantic, typing (built-in), os (built-in), sys (built-in). The user needs help implementing an on_token callback for streaming in OpenHands SDK, specifically for handling ModelResponseStream chunks with different streaming states like thinking, content, tool_name, and tool_args.
-
-### Definition of Done
-
-The streaming callback implementation is complete when the on_token function correctly handles all ModelResponseStream chunk types (thinking, content, tool_name, tool_args), maintains proper state tracking across streaming boundaries, integrates seamlessly with the existing OpenHands SDK agent workflow, and successfully processes real-time token streams without errors or data loss.
-
-### Do Not Under-Scope
-
-Ensure the streaming callback implementation handles all token types (content, tool calls, thinking blocks) with proper state management and boundary detection. Don't overlook error handling for malformed chunks, state transitions between different streaming modes, or cleanup when streaming completes. The callback must maintain thread safety if used in concurrent contexts and properly handle partial JSON in tool arguments that may arrive across multiple chunks.
-
-### Explicit Exclusions
-
-This work request excludes any modifications to the core OpenHands SDK streaming architecture or LLM class internals. The implementation should not involve changes to the ModelResponseStream class structure or the underlying streaming protocol. Additionally, this excludes creating a complete production application framework or extensive error handling beyond basic token processing safeguards.
-
-### Delivery Shape
-
-One PR preferred, split only if blocked
-
-### Sellable Artifact Bundle
-
-please help get this pushed out asap!
-
-### Purchase Validation (functions-as-purchased)
-
-N/A — not a purchased artifact for this Output Type.
-
-### Expected Scope
-
-1 shippable app with docs + tests + deploy path
-
-### Validation Expectations
-
-it did say need on_token call back for streaming in Openhands sorry not openrouter callback?
+```python
 import os
 import sys
 from typing import Literal
@@ -557,6 +399,171 @@ conversation.run()
 ## Report cost
 cost = llm.metrics.accumulated_cost
 print(f"EXAMPLE_COST: {cost}")
+```
+
+### Required Bundle
+
+openhands-sdk, pydantic, typing (built-in), os (built-in), sys (built-in). The user needs help implementing an on_token callback for streaming in OpenHands SDK, specifically for handling ModelResponseStream chunks with different streaming states like thinking, content, tool_name, and tool_args.
+
+### Definition of Done
+
+The streaming callback implementation is complete when the on_token function correctly handles all ModelResponseStream chunk types (thinking, content, tool_name, tool_args), maintains proper state tracking across streaming boundaries, integrates seamlessly with the existing OpenHands SDK agent workflow, and successfully processes real-time token streams without errors or data loss.
+
+### Do Not Under-Scope
+
+Ensure the streaming callback implementation handles all token types (content, tool calls, thinking blocks) with proper state management and boundary detection. Don't overlook error handling for malformed chunks, state transitions between different streaming modes, or cleanup when streaming completes. The callback must maintain thread safety if used in concurrent contexts and properly handle partial JSON in tool arguments that may arrive across multiple chunks.
+
+### Explicit Exclusions
+
+This work request excludes any modifications to the core OpenHands SDK streaming architecture or LLM class internals. The implementation should not involve changes to the ModelResponseStream class structure or the underlying streaming protocol. Additionally, this excludes creating a complete production application framework or extensive error handling beyond basic token processing safeguards.
+
+### Delivery Shape
+
+One PR preferred, split only if blocked
+
+### Sellable Artifact Bundle
+
+please help get this pushed out asap!
+
+### Purchase Validation (functions-as-purchased)
+
+N/A — not a purchased artifact for this Output Type.
+
+### Expected Scope
+
+1 shippable app with docs + tests + deploy path
+
+### Validation Expectations
+
+it did say need on_token call back for streaming in Openhands sorry not openrouter callback?
+```python
+import os
+import sys
+from typing import Literal
+
+from pydantic import SecretStr
+
+from openhands.sdk import (
+    Conversation,
+    get_logger,
+)
+from openhands.sdk.llm import LLM
+from openhands.sdk.llm.streaming import ModelResponseStream
+from openhands.tools.preset.default import get_default_agent
+
+logger = get_logger(**name**)
+
+api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise RuntimeError("Set LLM_API_KEY or OPENAI_API_KEY in your environment.")
+
+model = os.getenv("LLM_MODEL", "anthropic/claude-sonnet-4-5-20250929")
+base_url = os.getenv("LLM_BASE_URL")
+llm = LLM(
+    model=model,
+    api_key=SecretStr(api_key),
+    base_url=base_url,
+    usage_id="stream-demo",
+    stream=True,
+)
+
+agent = get_default_agent(llm=llm, cli_mode=True)
+
+## Define streaming states
+StreamingState = Literal["thinking", "content", "tool_name", "tool_args"]
+## Track state across on_token calls for boundary detection
+_current_state: StreamingState | None = None
+
+def on_token(chunk: ModelResponseStream) -> None:
+    """
+    Handle all types of streaming tokens including content,
+    tool calls, and thinking blocks with dynamic boundary detection.
+    """
+    global_current_state
+
+    choices = chunk.choices
+    for choice in choices:
+        delta = choice.delta
+        if delta is not None:
+            # Handle thinking blocks (reasoning content)
+            reasoning_content = getattr(delta, "reasoning_content", None)
+            if isinstance(reasoning_content, str) and reasoning_content:
+                if _current_state != "thinking":
+                    if _current_state is not None:
+                        sys.stdout.write("\n")
+                    sys.stdout.write("THINKING: ")
+                    _current_state = "thinking"
+                sys.stdout.write(reasoning_content)
+                sys.stdout.flush()
+
+            # Handle regular content
+            content = getattr(delta, "content", None)
+            if isinstance(content, str) and content:
+                if _current_state != "content":
+                    if _current_state is not None:
+                        sys.stdout.write("\n")
+                    sys.stdout.write("CONTENT: ")
+                    _current_state = "content"
+                sys.stdout.write(content)
+                sys.stdout.flush()
+
+            # Handle tool calls
+            tool_calls = getattr(delta, "tool_calls", None)
+            if tool_calls:
+                for tool_call in tool_calls:
+                    tool_name = (
+                        tool_call.function.name if tool_call.function.name else ""
+                    )
+                    tool_args = (
+                        tool_call.function.arguments
+                        if tool_call.function.arguments
+                        else ""
+                    )
+                    if tool_name:
+                        if _current_state != "tool_name":
+                            if _current_state is not None:
+                                sys.stdout.write("\n")
+                            sys.stdout.write("TOOL NAME: ")
+                            _current_state = "tool_name"
+                        sys.stdout.write(tool_name)
+                        sys.stdout.flush()
+                    if tool_args:
+                        if _current_state != "tool_args":
+                            if _current_state is not None:
+                                sys.stdout.write("\n")
+                            sys.stdout.write("TOOL ARGS: ")
+                            _current_state = "tool_args"
+                        sys.stdout.write(tool_args)
+                        sys.stdout.flush()
+
+conversation = Conversation(
+    agent=agent,
+    workspace=os.getcwd(),
+    token_callbacks=[on_token],
+)
+
+story_prompt = (
+    "Tell me a long story about LLM streaming, write it a file, "
+    "make sure it has multiple paragraphs. "
+)
+conversation.send_message(story_prompt)
+print("Token Streaming:")
+print("-" * 100 + "\n")
+conversation.run()
+
+cleanup_prompt = (
+    "Thank you. Please delete the streaming story file now that I've read it, "
+    "then confirm the deletion."
+)
+conversation.send_message(cleanup_prompt)
+print("Token Streaming:")
+print("-" * 100 + "\n")
+conversation.run()
+
+## Report cost
+cost = llm.metrics.accumulated_cost
+print(f"EXAMPLE_COST: {cost}")
+```
 
 ### Blocker Rule
 
@@ -572,26 +579,26 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Summary
 
-N/A — pending Jules refinement
+Implement an `on_token` streaming callback for the OpenHands SDK so real-time token output (thinking, content, tool name, tool args) is printed as it streams. The requester supplied a near-working script from the OpenHands website; validate it, fix the known blocking issues, and ship it as a documented, tested example.
 
 ## Objective
 
-N/A — pending Jules refinement
+Deliver a working `on_token` callback (see the full script under Objective in the intake sections above) that handles all `ModelResponseStream` chunk types with state-boundary detection, wired into `Conversation(..., token_callbacks=[...])` with the `on_token` function registered. Fix the blocking issues identified in the research packet: the invalid `global_current_state` statement (should be `global _current_state`), the `get_logger(**name**)` typo (should be `get_logger(__name__)`), missing error handling for malformed chunks, and thread-safety of the shared state.
 
 ## Required Bundle
 
-N/A — pending Jules refinement
+1) A runnable example script (e.g. `examples/streaming_with_on_token.py`) using `openhands-sdk` with the corrected `on_token` callback. 2) Error handling for malformed/partial chunks, including partial JSON in tool arguments arriving across chunks. 3) A short usage doc covering required env vars (`LLM_API_KEY`/`OPENAI_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL`). 4) Tests covering state transitions between thinking/content/tool_name/tool_args and cleanup on stream completion.
 
 ## Definition of Done
 
-N/A — pending Jules refinement
+The callback processes real streaming runs end-to-end without errors or data loss; all four chunk types render with correct boundary labels; the two syntax bugs above are fixed; tests for state transitions and malformed-chunk handling pass; and the example plus doc are committed and referenced from the PR body.
 
 ## Validation
 
-N/A — pending Jules refinement
+Run the example against a live model with `stream=True` and confirm labeled THINKING/CONTENT/TOOL NAME/TOOL ARGS output appears incrementally, then run the test suite for the callback. Static check: the script imports and compiles cleanly (`python -m py_compile`).
 
 ## Blockers
 
-N/A — pending Jules refinement
+Requires a funded LLM API key (`LLM_API_KEY` or `OPENAI_API_KEY`) for live streaming validation; without one, only static/compile and unit-test validation is possible. If live validation cannot be performed, open a WR-BLOCKER issue (label: `wr-blocker`) naming the missing credential per the Blocker Rule above.
 
 <!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
