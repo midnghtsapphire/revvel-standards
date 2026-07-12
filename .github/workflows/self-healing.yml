@@ -101,6 +101,9 @@ jobs:
           # note at top of file before assuming workflows were deleted).
           if ! gh api --paginate "repos/${GH_REPO}/actions/workflows" \
             --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
+            # Escape literal "::" from gh stderr before embedding it in a
+            # workflow warning annotation; unescaped command markers can corrupt
+            # the annotation payload instead of printing the original error.
             ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | sed 's/::/COLON-COLON/g')
             if [[ -z "$ERR_MSG" ]]; then
               ERR_MSG="auth/rate-limit/network error"
