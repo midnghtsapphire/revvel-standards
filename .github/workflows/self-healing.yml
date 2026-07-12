@@ -71,21 +71,8 @@ jobs:
       - name: Check agent health
         id: agents
         run: |
-<<<<<<< HEAD
-          # Check if key workflows exist.
-          #
-          # Gotcha (issue #15684): the entries below are file slugs
-          # (agent-dispatcher), but the API's `.name` field is the display name
-          # ("Agent Dispatcher"), so matching on `.name` never hit and every
-          # run falsely reported all four workflows missing. Match on the
-          # workflow file `.path` instead — it is always
-          # `.github/workflows/<slug>.yml`. Also `--paginate`: this repo has
-          # 150+ workflows and the default page size (30) would silently drop
-          # most of them. If this check regresses, verify with:
-          #   gh api --paginate repos/OWNER/REPO/actions/workflows --jq '.workflows[].path'
-=======
-          # Check if key workflows exist. Two gotchas fixed here (incident:
-          # issue #15683 — every 4h sweep reported all four workflows
+          # Check if key workflows exist. Two gotchas fixed here (incidents:
+          # issues #15683 / #15684 — every 4h sweep reported all four workflows
           # "missing" and filed a bogus [SELF-HEAL] journal, when nothing was
           # actually broken or healed):
           #   1. Match on .path (the file slug, e.g.
@@ -96,43 +83,29 @@ jobs:
           #   2. --paginate: this repo has 190+ workflows and the unpaginated
           #      API returns only the first 30, so even a correct matcher
           #      could miss workflows that exist.
-          # Fallback if this fails: an empty /tmp/workflow-paths.txt marks
-          # everything missing — check the gh auth/token first (see GH_TOKEN
-          # note at top of file) before assuming workflows were deleted.
->>>>>>> origin/main
+          # If this check regresses, verify with:
+          #   gh api --paginate repos/OWNER/REPO/actions/workflows --jq '.workflows[].path'
           WORKFLOWS=(
             "agent-dispatcher"
             "issue-state-machine"
             "stuck-check-watchdog"
             "api-rate-limit-handler"
           )
-<<<<<<< HEAD
-          
+
           # Fetch the full workflow list once, then check each slug against it.
-          # If the API call itself fails (bad token, rate limit, network), do
-          # NOT report workflows as missing — an empty PATHS would flag all
-          # four and recreate the exact false positive this check had before.
-          # Fail open: log loudly, report healthy, and let the next 4h sweep
-          # retry once API access recovers.
-          if ! PATHS="$(gh api --paginate "repos/${GH_REPO}/actions/workflows" \
-            --jq '.workflows[].path')" || [[ -z "$PATHS" ]]; then
-            echo "::warning::Could not list workflows via gh api (auth/rate-limit/network?) — skipping presence check this run; expected during transient outages, next scheduled sweep (every 4h) will retry automatically"
+          # If the API call itself fails (bad token, rate limit, network) or
+          # returns nothing, do NOT report workflows as missing — an empty
+          # list would flag all four and recreate the exact false positive
+          # this check had before. Fail open: log loudly, report healthy, and
+          # let the next 4h sweep retry once API access recovers (see GH_TOKEN
+          # note at top of file before assuming workflows were deleted).
+          if ! gh api --paginate "repos/${GH_REPO}/actions/workflows" \
+            --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err \
+            || [[ ! -s /tmp/workflow-paths.txt ]]; then
+            echo "::warning::Could not list workflows via gh api (auth/rate-limit/network?) — skipping presence check this run; next scheduled sweep (every 4h) will retry automatically"
+            cat /tmp/workflow-paths.err
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
             exit 0
-          fi
-          
-          MISSING=()
-          for wf in "${WORKFLOWS[@]}"; do
-            if ! grep -qx ".github/workflows/${wf}.yml" <<< "$PATHS"; then
-=======
-
-          if ! gh api --paginate repos/midnghtsapphire/revvel-standards/actions/workflows \
-            --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
-            # Don't fail the whole health scan, but make the cause visible so
-            # a "missing workflows" report can be traced to an API/auth error
-            # rather than genuinely deleted workflows.
-            echo "::warning::workflows API call failed; agent-health check may report false missings"
-            cat /tmp/workflow-paths.err
           fi
 
           MISSING=()
@@ -141,7 +114,6 @@ jobs:
             # matches literally instead of "." matching any character.
             wf_esc=$(printf '%s' "$wf" | sed 's/[.[\*^$]/\\&/g')
             if ! grep -q "/${wf_esc}\.ya\?ml$" /tmp/workflow-paths.txt; then
->>>>>>> origin/main
               MISSING+=("$wf")
             fi
           done
