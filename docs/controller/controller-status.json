@@ -1,47 +1,35 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-12T21:24:46.907Z",
+  "generated_at": "2026-07-12T21:55:03.436Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 2,
+    "running": 1,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 7,
-    "running": 2,
+    "total": 6,
+    "running": 1,
     "queued": 5,
     "done": 0,
-    "healthy": 2,
+    "healthy": 1,
     "stalled": 0,
     "runaway": 0,
     "protected": 1,
-    "occupancy": 2,
+    "occupancy": 1,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29209579083,
-      "name": "Stuck Check Watchdog",
-      "path": ".github/workflows/stuck-check-watchdog.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29209579083",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 4907,
-      "since_update_ms": 1907,
-      "reason": "running within budget",
-      "protected": false
-    },
-    {
-      "id": 29209576796,
+      "id": 29210515016,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29209576796",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29210515016",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7907,
-      "since_update_ms": 4907,
+      "age_ms": 7436,
+      "since_update_ms": 4436,
       "reason": "running within budget",
       "protected": true
     },
