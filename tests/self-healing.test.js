@@ -63,20 +63,27 @@ function parseStuckCount(stuckIssues) {
 }
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
-  // Mirrors self-healing.yml "Check agent health": match on the workflow FILE
-  // PATH (.github/workflows/<name>.yml), never the display name — files like
-  // agent-dispatcher.yml carry display names like "Agent Dispatcher", so a
-  // name-based contains() falsely reported every workflow missing (#15680).
+  // Mirrors the "Check agent health" step in self-healing.yml: match on the
+  // workflow FILE PATH (slug), never the display name. The API's .name field
+  // is the display name ("Agent Dispatcher") and does not contain the
+  // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
+  // all required workflows missing (false-positive [SELF-HEAL] issues,
+  // e.g. #15680 / #15683).
   // An empty list means the API call failed → inconclusive, treated healthy
   // so a listing hiccup can't spam false healing reports.
   if (!workflowsList || workflowsList.length === 0) {
     return { healthy: true, missing: [], inconclusive: true };
   }
 
-  const paths = new Set(workflowsList.map(wf => wf.path));
-  const missing = requiredWorkflows.filter(
-    required => !paths.has(`.github/workflows/${required}.yml`)
-  );
+  const missing = [];
+  for (const required of requiredWorkflows) {
+    const escaped = required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`/${escaped}\\.ya?ml$`, 'i');
+    const found = workflowsList.some(wf => pattern.test(wf.path || ''));
+    if (!found) {
+      missing.push(required);
+    }
+  }
 
   return {
     healthy: missing.length === 0,
@@ -235,8 +242,8 @@ function getHealingActions(brokenAreas) {
     // "Agent Dispatcher" never matched "agent-dispatcher" and every run
     // falsely reported all required workflows missing.
     const workflows = [
-      { name: 'Agent Dispatcher', path: '.github/workflows/agent-dispatcher.yml' },
-      { name: 'ISSUE STATE MACHINE', path: '.github/workflows/issue-state-machine.yml' },
+      { path: '.github/workflows/Agent-Dispatcher.YML' },
+      { path: '.github/workflows/ISSUE-STATE-MACHINE.yaml' },
     ];
     const result = checkWorkflowsPresent(workflows, ['agent-dispatcher', 'issue-state-machine']);
     assert.ok(result.healthy);
@@ -249,6 +256,27 @@ function getHealingActions(brokenAreas) {
     assert.ok(result.healthy);
     assert.deepEqual(result.missing, []);
     assert.ok(result.inconclusive);
+  });
+
+  // Regression: issue #15683 — the check used to grep the display name
+  // (.name), which never contains the file slug, so every sweep reported all
+  // required workflows as missing and filed a bogus [SELF-HEAL] issue.
+  await test('checkWorkflowsPresent matches on path, not display name (issue #15683)', () => {
+    const workflows = REQUIRED_WORKFLOWS.map(slug => ({
+      name: slug.split('-').filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join(' '),
+      path: `.github/workflows/${slug}.yml`,
+    }));
+    const result = checkWorkflowsPresent(workflows, REQUIRED_WORKFLOWS);
+    assert.ok(result.healthy, `expected healthy, missing: ${result.missing.join(', ')}`);
+  });
+
+  await test('checkWorkflowsPresent does not false-match a slug substring in another path', () => {
+    const workflows = [
+      { name: 'Other', path: '.github/workflows/not-agent-dispatcher-really.yml' },
+    ];
+    const result = checkWorkflowsPresent(workflows, ['agent-dispatcher']);
+    assert.ok(!result.healthy);
+    assert.deepEqual(result.missing, ['agent-dispatcher']);
   });
 
   // Broken Area Identification
