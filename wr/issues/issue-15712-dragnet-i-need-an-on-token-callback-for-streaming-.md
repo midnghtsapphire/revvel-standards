@@ -587,11 +587,18 @@ Deliver a working `on_token` callback (see the full script under Objective in th
 
 ## Required Bundle
 
-1) A runnable example script (e.g. `examples/streaming_with_on_token.py`) using `openhands-sdk` with the corrected `on_token` callback. 2) Error handling for malformed/partial chunks, including partial JSON in tool arguments arriving across chunks. 3) A short usage doc covering required env vars (`LLM_API_KEY`/`OPENAI_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL`). 4) Tests covering state transitions between thinking/content/tool_name/tool_args and cleanup on stream completion.
+- A runnable example script (e.g. `examples/streaming_with_on_token.py`) using `openhands-sdk` with the corrected `on_token` callback.
+- Error handling for malformed/partial chunks, including partial JSON in tool arguments arriving across chunks.
+- A short usage doc covering required env vars (`LLM_API_KEY`/`OPENAI_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL`).
+- Tests covering state transitions between thinking/content/tool_name/tool_args and cleanup on stream completion.
 
 ## Definition of Done
 
-The callback processes real streaming runs end-to-end without errors or data loss; all four chunk types render with correct boundary labels; the two syntax bugs above are fixed; tests for state transitions and malformed-chunk handling pass; and the example plus doc are committed and referenced from the PR body.
+- The callback processes real streaming runs end-to-end without errors or data loss.
+- All four chunk types render with correct boundary labels.
+- The two syntax bugs above are fixed.
+- Tests for state transitions and malformed-chunk handling pass.
+- The example plus doc are committed and referenced from the PR body.
 
 ## Validation
 
