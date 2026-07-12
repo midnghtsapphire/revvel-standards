@@ -30,6 +30,13 @@ permissions:
   contents: write
   issues: write
   checks: read
+# Dedupe stacked runs: rapid check_run/check_suite events for the same SHA (or
+# repeated events for the same PR) superseded each other anyway — each run
+# re-reads full live state — but letting them all execute exhausted the
+# installation API rate limit (5000/h) and caused unhandled 403 job failures.
+concurrency:
+  group: pr-state-orchestrator-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.check_suite.head_sha || github.event.check_run.head_sha || github.ref }}
+  cancel-in-progress: true
 jobs:
   pr-lifecycle:
     name: 🔄 PR Lifecycle Labels
@@ -57,7 +64,11 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
@@ -206,7 +217,7 @@ jobs:
               for (const l of ALL_STATUS) await removeLabel(l);
               console.log(pr.merged ? '🎉 Merged — all status labels cleared' : '🚫 Closed — labels cleared');
             }
-    timeout-minutes: 15
+    timeout-minutes: 10
   review-handler:
     name: 🔍 Review State Labels
     if: github.event_name == 'pull_request_review'
@@ -230,7 +241,11 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
@@ -315,9 +330,11 @@ jobs:
               await addLabel('status:approved');
               for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
               // Re-check live CI status to immediately promote to ready-to-merge if checks already passed
-              const { data: checkRuns } = await github.rest.checks.listForRef({
-                owner, repo, ref: pr.head.sha, per_page: 100
-              });
+              const { data: checkRuns } = await safeApi(
+                `checks.listForRef for PR #${prNumber}`,
+                () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
+                { data: { check_runs: [] } }
+              );
               const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
               const failing = runs.filter(r => ['failure','timed_out'].includes(r.conclusion));
               const passing = runs.filter(r => r.conclusion === 'success');
@@ -343,7 +360,7 @@ jobs:
             }
 
             await upsertStatusBadge(prNumber, currentLabels);
-    timeout-minutes: 30
+    timeout-minutes: 10
   check-suite-handler:
     name: ✅ CI Check Suite Labels
     if: github.event_name == 'check_suite'
@@ -366,7 +383,11 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
@@ -382,7 +403,11 @@ jobs:
               return;
             }
 
-            const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const { data: prs } = await safeApi(
+              'pulls.list (open PRs)',
+              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
+              { data: [] }
+            );
             const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
 
             if (matchingPRs.length === 0) {
@@ -483,7 +508,7 @@ jobs:
               await upsertStatusBadge(prNumber, currentLabels);
               await sleep(150);
             }
-    timeout-minutes: 30
+    timeout-minutes: 15
   check-run-handler:
     name: ✅ CI Check Run Labels
     if: github.event_name == 'check_run'
@@ -506,7 +531,11 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
@@ -522,7 +551,11 @@ jobs:
               return;
             }
 
-            const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const { data: prs } = await safeApi(
+              'pulls.list (open PRs)',
+              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
+              { data: [] }
+            );
             const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
             if (matchingPRs.length === 0) return;
 
@@ -588,9 +621,11 @@ jobs:
               let currentLabels = labelResult.data.map(l => l.name);
 
               // Get full picture of ALL checks for this SHA before deciding
-              const { data: checkRuns } = await github.rest.checks.listForRef({
-                owner, repo, ref: headSha, per_page: 100
-              });
+              const { data: checkRuns } = await safeApi(
+                `checks.listForRef for PR #${prNumber}`,
+                () => github.rest.checks.listForRef({ owner, repo, ref: headSha, per_page: 100 }),
+                { data: { check_runs: [] } }
+              );
               const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
               const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
               const passing = completed.filter(r => r.conclusion === 'success');
@@ -633,7 +668,7 @@ jobs:
               await upsertStatusBadge(prNumber, currentLabels);
               await sleep(150);
             }
-    timeout-minutes: 30
+    timeout-minutes: 15
   resync-all-prs:
     name: 🔄 Re-sync All Open PRs
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
@@ -657,7 +692,11 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
@@ -668,7 +707,11 @@ jobs:
               return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            const { data: openPRs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const { data: openPRs } = await safeApi(
+              'pulls.list (open PRs)',
+              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
+              { data: [] }
+            );
             console.log(`🔍 Re-syncing ${openPRs.length} open PRs...`);
 
             async function upsertStatusBadge(prNum, labels) {
@@ -759,7 +802,11 @@ jobs:
                 await removeLabel('status:draft');
 
                 // 2. Review state — latest per-reviewer decision wins
-                const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+                const { data: reviews } = await safeApi(
+                  `pulls.listReviews for PR #${prNumber}`,
+                  () => github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber }),
+                  { data: [] }
+                );
                 const latestReviews = {};
                 for (const r of reviews) {
                   if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
@@ -780,9 +827,11 @@ jobs:
                 }
 
                 // 3. CI state — full picture from check runs
-                const { data: checkRuns } = await github.rest.checks.listForRef({
-                  owner, repo, ref: pr.head.sha, per_page: 100
-                });
+                const { data: checkRuns } = await safeApi(
+                  `checks.listForRef for PR #${prNumber}`,
+                  () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
+                  { data: { check_runs: [] } }
+                );
                 const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
                 const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
                 const passing = completed.filter(r => r.conclusion === 'success');
@@ -815,7 +864,7 @@ jobs:
               await sleep(150);
             }
             console.log('✅ Re-sync complete');
-    timeout-minutes: 15
+    timeout-minutes: 30
   manual-reevaluate:
     name: 🔄 Manual Re-evaluate Single PR
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
@@ -826,7 +875,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = parseInt('${{ github.event.inputs.pr_number }}');
+            const rawPrNumber = context.payload.inputs.pr_number;
+            const prNumber = parseInt(rawPrNumber, 10);
+            if (Number.isNaN(prNumber) || prNumber <= 0) {
+              // Fail fast with a friendly message — otherwise a NaN surfaces
+              // later as a confusing API 404 from pulls.get.
+              core.setFailed(`Invalid pr_number input: "${rawPrNumber}" — expected a positive integer PR number.`);
+              return;
+            }
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
@@ -837,13 +893,21 @@ jobs:
               try {
                 return await fn();
               } catch (e) {
-                core.warning(`${callName} failed: ${e.message}`);
+                // Rate-limit 403s are expected under event storms (see the
+                // attached WR snippet): degrade gracefully instead of letting
+                // an unhandled HttpError fail the whole job.
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
                 return fallback;
               }
             }
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
-            const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
+            const { data: reviews } = await safeApi(
+              `pulls.listReviews for PR #${prNumber}`,
+              () => github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber }),
+              { data: [] }
+            );
             const labelResult = await safeApi(
               `listLabelsOnIssue for PR #${prNumber}`,
               () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
@@ -953,9 +1017,11 @@ jobs:
             }
 
             // Determine CI state from check runs
-            const { data: checkRuns } = await github.rest.checks.listForRef({
-              owner, repo, ref: pr.head.sha, per_page: 100
-            });
+            const { data: checkRuns } = await safeApi(
+              `checks.listForRef for PR #${prNumber}`,
+              () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
+              { data: { check_runs: [] } }
+            );
             const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
             const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
             const passing = completed.filter(r => r.conclusion === 'success');
@@ -978,6 +1044,6 @@ jobs:
             }
             await upsertStatusBadge(prNumber, currentLabels);
             console.log(`PR #${prNumber} re-evaluated successfully`);
-    timeout-minutes: 30
+    timeout-minutes: 10
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

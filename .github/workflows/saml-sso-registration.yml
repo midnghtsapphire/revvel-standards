@@ -1,8 +1,9 @@
 name: SAML SSO Registration
 on:
-  organization:
-    types:
-      - member_added
+  # NOTE: "organization: member_added" is not a valid Actions trigger — org
+  # membership events cannot trigger repository workflows, and listing it makes
+  # GitHub reject the whole workflow file (instant "failure" run with 0 jobs).
+  # SAML identity is verified on PR events instead.
   pull_request:
     types:
       - opened
@@ -19,9 +20,8 @@ jobs:
       - name: Resolve triggering username
         id: resolve-user
         run: |
-          # organization member_added exposes the new member via .membership.user.login
           # pull_request events expose the PR author via .pull_request.user.login
-          USERNAME="${{ github.event.membership.user.login || github.event.pull_request.user.login }}"
+          USERNAME="${{ github.event.pull_request.user.login }}"
           echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
           echo "Checking SAML identity for: ${USERNAME}"
       - name: get-saml-identity-action
