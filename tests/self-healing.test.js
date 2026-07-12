@@ -71,7 +71,7 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   // is the display name ("Agent Dispatcher") and does not contain the
   // hyphenated slug ("agent-dispatcher"), which caused every sweep to report
   // all required workflows missing (false-positive [SELF-HEAL] issues,
-  // e.g. #15683).
+  // e.g. #15683 / #15684).
   for (const required of requiredWorkflows) {
     const ymlPath = `.github/workflows/${required}.yml`;
     const yamlPath = `.github/workflows/${required}.yaml`;

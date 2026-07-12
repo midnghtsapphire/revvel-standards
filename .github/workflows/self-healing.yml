@@ -71,8 +71,8 @@ jobs:
       - name: Check agent health
         id: agents
         run: |
-          # Check if key workflows exist. Two gotchas fixed here (incident:
-          # issue #15683 — every 4h sweep reported all four workflows
+          # Check if key workflows exist. Two gotchas fixed here (incidents:
+          # issues #15683 / #15684 — every 4h sweep reported all four workflows
           # "missing" and filed a bogus [SELF-HEAL] journal, when nothing was
           # actually broken or healed):
           #   1. Match on .path (the file slug, e.g.
@@ -83,9 +83,8 @@ jobs:
           #   2. --paginate: this repo has 190+ workflows and the unpaginated
           #      API returns only the first 30, so even a correct matcher
           #      could miss workflows that exist.
-          # Fallback if the API call fails or returns empty output: fail open
-          # (report healthy), log a warning with the stderr detail, and retry
-          # on the next 4-hour sweep instead of reporting a false incident.
+          # If this check regresses, verify with:
+          #   gh api --paginate repos/OWNER/REPO/actions/workflows --jq '.workflows[].path'
           WORKFLOWS=(
             "agent-dispatcher"
             "issue-state-machine"
@@ -93,8 +92,18 @@ jobs:
             "api-rate-limit-handler"
           )
 
-          if ! gh api --paginate repos/midnghtsapphire/revvel-standards/actions/workflows \
+          # Fetch the full workflow list once, then check each slug against it.
+          # If the API call itself fails (bad token, rate limit, network) or
+          # returns nothing, do NOT report workflows as missing — an empty
+          # list would flag all four and recreate the exact false positive
+          # this check had before. Fail open: log loudly, report healthy, and
+          # let the next 4h sweep retry once API access recovers (see GH_TOKEN
+          # note at top of file before assuming workflows were deleted).
+          if ! gh api --paginate "repos/${GH_REPO}/actions/workflows" \
             --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
+            # Escape literal "::" from gh stderr before embedding it in a
+            # workflow warning annotation; unescaped command markers can corrupt
+            # the annotation payload instead of printing the original error.
             ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | sed 's/::/COLON-COLON/g')
             if [[ -z "$ERR_MSG" ]]; then
               ERR_MSG="auth/rate-limit/network error"
@@ -110,14 +119,16 @@ jobs:
             exit 0
           fi
 
+          tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt > /tmp/workflow-paths-lc.txt
+
           MISSING=()
           for wf in "${WORKFLOWS[@]}"; do
             # Compare against exact file paths (case-insensitive by normalizing
             # API output to lowercase). Accept both .yml and .yaml.
             wf_path_yml=".github/workflows/${wf}.yml"
             wf_path_yaml=".github/workflows/${wf}.yaml"
-            if ! tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt | grep -Fqx "$wf_path_yml" \
-              && ! tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt | grep -Fqx "$wf_path_yaml"; then
+            if ! grep -Fqx "$wf_path_yml" /tmp/workflow-paths-lc.txt \
+              && ! grep -Fqx "$wf_path_yaml" /tmp/workflow-paths-lc.txt; then
               MISSING+=("$wf")
             fi
           done
