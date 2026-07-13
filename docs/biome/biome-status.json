@@ -1,19 +1,90 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-13T12:52:48.546Z",
+  "generated_at": "2026-07-13T14:59:50.019Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "70/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 70,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 29260303105,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260303105",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260290471,
+            "name": "OpenRouter Assignee — First Line of Sight",
+            "path": ".github/workflows/openrouter-assignee.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260290471",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260233267,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260233267",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260211624,
+            "name": "PR & Issue Recovery Engine",
+            "path": ".github/workflows/recovery-engine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260211624",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260132308,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260132308",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260103892,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260103892",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260092781,
+            "name": "Credential Label Router",
+            "path": ".github/workflows/credential-label-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260092781",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29260040861,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29260040861",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29259983447,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29259983447",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29259942719,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29259942719",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
