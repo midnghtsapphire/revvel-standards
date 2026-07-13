@@ -358,11 +358,24 @@ jobs:
             }
 
 
-            // Find open PRs matching this head SHA
+            // Find open PRs matching this head SHA. This job re-fires on
+            // every one of the repo's workflow_run completions, so an
+            // installation rate-limit 403 here must degrade gracefully
+            // instead of hard-failing the whole job (see incident: 403s
+            // pinned the shared installation budget at 0 for a full hour
+            // and spammed "Run failed" notifications on every occurrence).
 
-            const { data: prs } = await github.rest.pulls.list({
-              owner, repo, state: 'open', per_page: 100
-            });
+            let prs = [];
+            try {
+              const res = await github.rest.pulls.list({
+                owner, repo, state: 'open', per_page: 100
+              });
+              prs = res.data;
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`pulls.list failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              return;
+            }
 
             const targets = prs.filter(p => p.head.sha === headSha);
 
