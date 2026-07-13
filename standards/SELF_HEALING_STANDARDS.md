@@ -457,3 +457,45 @@ All changes should:
   rm -rf .git/merge-info
   ```
 - **Prevention:** Always wait for rebase to complete or explicitly abort
+
+### 10.11 `removeLabel` 404 crashes github-script job mid-sweep
+
+> **Added:** 2026-07-13 · **Who:** Copilot (fix-commit-checks) · **Why:** `stuck-check-watchdog.yml` job 86803890088 aborted mid-sweep — all remaining stuck issues left unprocessed
+
+- **Symptom:** `HttpError: Label does not exist` (404) — the entire github-script
+  job dies, abandoning every remaining stuck issue in the sweep pass. Occurs
+  in `stuck-check-watchdog.yml` and any workflow that removes labels inside a
+  multi-workflow label ecosystem.
+- **Root Cause:** Label-mutation race. Between the watchdog's issue fetch and
+  its `removeLabel` call, another workflow (e.g. `wr-auto-classify`, the field
+  filler's `wr:reset` cycle, or a manual relabel) had already removed the
+  label. The REST API returns 404 for removing an absent label; github-script
+  treats any thrown `HttpError` as fatal; the entire job aborts.
+- **Fix (fleet-wide pattern):** Wrap every `removeLabel` call in a `.catch`
+  that swallows **only 404** (the desired end state — label gone — is already
+  true) and rethrows anything else so genuine auth/permission failures still
+  surface:
+
+  ```javascript
+  await github.rest.issues.removeLabel({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: issueNumber,
+    name: 'wr:checking',
+  }).catch(err => {
+    if (err.status !== 404) throw err;
+    console.log('label already removed (404) — continuing');
+  });
+  ```
+
+  Acceptable alternative: a `removeLabelSafe(issueNumber, label)` wrapper
+  function defined once in the script block and called at every site.
+
+- **Auto-detection:** **ChaosMender** (`scripts/chaosmender.js`, check
+  `bare-remove-label`) scans `.github/workflows/*.yml` for
+  `github.rest.issues.removeLabel` calls not followed by a `.catch` within 5
+  lines. Runs daily at 06:00 UTC via `.github/workflows/chaosmender.yml` and
+  on every PR touching workflow files. Findings are filed as
+  `[SELF-HEAL] ChaosMender: …` issues with label `auto-error` so the
+  self-healing loop can track and remind.
+- **Error-ledger entry:** `LABEL-RACE-001` in `config/error-ledger.json`.
