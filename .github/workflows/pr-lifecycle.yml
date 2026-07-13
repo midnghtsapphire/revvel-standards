@@ -45,7 +45,9 @@ on:
     # pass/fail should affect PR ready-to-merge labels, add its `name:`
     # value here too — this filter matches by the workflow's `name:` field
     # verbatim (case-sensitive), NOT by filename, and a mismatch means the
-    # trigger silently never fires for it.
+    # trigger silently never fires for it. Keep this list case-insensitively
+    # alphabetical — tests/workflow-yaml-validation.test.js enforces both
+    # that ordering and that every entry still matches a real workflow name.
     workflows:
       - "Agent Fingerprint Gate"
       - "Anti-Scaffolding Enforcer"
@@ -57,13 +59,13 @@ on:
       - "Cypress E2E — life-insurance-lead-engine"
       - "Docs Freshness Check"
       - "Fix-WR Gate"
-      - "No-Destroy Guard"
+      - "Intelligent Code Quality Scanner"
       - "No Root Junk"
+      - "No-Destroy Guard"
       - "SAML SSO Registration"
-      - "SEO + A11y Guard"
       - "Secrets Map"
       - "Semgrep SAST"
-      - "Intelligent Code Quality Scanner"
+      - "SEO + A11y Guard"
       - "Template Sync Check"
       - "Test BITO AI Integration"
       - "Trivy"
