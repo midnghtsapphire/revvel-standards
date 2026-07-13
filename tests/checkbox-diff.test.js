@@ -1,185 +1,191 @@
 'use strict';
 
-const test = require('node:test');
-const assert = require('node:assert');
-
+const assert = require('assert');
 const {
   findNewlyCheckedFollowUps,
-  parseTaskItems,
-  normalizeKey,
+  parseTaskListItems,
+  extractFollowUpDescription,
 } = require('../scripts/checkbox-diff');
 
-// ── findNewlyCheckedFollowUps ───────────────────────────────────────────────
+let passed = 0;
+let failed = 0;
 
-test('reports a single follow-up item checked in this edit', () => {
-  const oldBody = [
-    '## Summary',
-    '',
-    '- [ ] Follow-up: circle back on the flaky retry logic',
-  ].join('\n');
-  const newBody = [
-    '## Summary',
-    '',
-    '- [x] Follow-up: circle back on the flaky retry logic',
-  ].join('\n');
+function test(name, fn) {
+  try {
+    fn();
+    passed++;
+    console.log(`  ok  ${name}`);
+  } catch (err) {
+    failed++;
+    console.error(`  FAIL ${name}`);
+    console.error(err && err.stack ? err.stack : err);
+  }
+}
 
+console.log('checkbox-diff');
+
+// 1. Single item transitioned from unchecked to checked.
+test('detects a single newly-checked follow-up', () => {
+  const oldBody = '- [ ] Follow-up: revisit caching strategy';
+  const newBody = '- [x] Follow-up: revisit caching strategy';
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, ['circle back on the flaky retry logic']);
+  assert.deepStrictEqual(result, ['revisit caching strategy']);
 });
 
-test('reports multiple follow-up items checked in the same edit', () => {
+// 2. Multiple items checked in the same edit.
+test('detects multiple newly-checked follow-ups in one edit', () => {
   const oldBody = [
-    '- [ ] Follow-up: item one',
-    '- [ ] Follow-up: item two',
-    '- [ ] some unrelated task',
+    '- [ ] Follow-up: first item',
+    '- [ ] Follow-up: second item',
+    '- [ ] Follow-up: third item',
   ].join('\n');
   const newBody = [
-    '- [x] Follow-up: item one',
-    '- [x] Follow-up: item two',
-    '- [x] some unrelated task',
+    '- [x] Follow-up: first item',
+    '- [ ] Follow-up: second item',
+    '- [X] Follow-up: third item',
   ].join('\n');
-
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, ['item one', 'item two']);
+  assert.deepStrictEqual(result, ['first item', 'third item']);
 });
 
-test('does not match a checked box whose text is not a follow-up item', () => {
-  const oldBody = '- [ ] Deploy to staging';
-  const newBody = '- [x] Deploy to staging';
-
+// 3. An unrelated (non-follow-up) checkbox being checked is ignored.
+test('ignores non-follow-up checkboxes', () => {
+  const oldBody = [
+    '- [ ] Some random task',
+    '- [ ] Closes #N is present',
+  ].join('\n');
+  const newBody = [
+    '- [x] Some random task',
+    '- [x] Closes #N is present',
+  ].join('\n');
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
   assert.deepStrictEqual(result, []);
 });
 
-test('does not re-report a follow-up that was already checked before this edit', () => {
-  const oldBody = [
-    '- [x] Follow-up: already tracked, do not refire',
-    '- [ ] Follow-up: newly checked this time',
-  ].join('\n');
-  const newBody = [
-    '- [x] Follow-up: already tracked, do not refire',
-    '- [x] Follow-up: newly checked this time',
-  ].join('\n');
-
+// 4. Already-checked item is not re-reported.
+test('does not re-report already-checked items', () => {
+  const oldBody = '- [x] Follow-up: previously handled';
+  const newBody = '- [x] Follow-up: previously handled';
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, ['newly checked this time']);
+  assert.deepStrictEqual(result, []);
 });
 
-test('returns an empty array when oldBody is missing/null (e.g. issue just created)', () => {
-  const newBody = '- [x] Follow-up: brand new item checked on creation';
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(null, newBody), []);
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(undefined, newBody), []);
-  assert.deepStrictEqual(findNewlyCheckedFollowUps('', newBody), []);
+// 5. Item added-and-checked in the same edit (no prior unchecked state) is
+//    NOT reported — that's the anti-overfire rule.
+test('does not report items added-and-checked in the same edit', () => {
+  const oldBody = 'Some description with no checkboxes yet.';
+  const newBody = [
+    'Some description with no checkboxes yet.',
+    '- [x] Follow-up: brand new item',
+  ].join('\n');
+  const result = findNewlyCheckedFollowUps(oldBody, newBody);
+  assert.deepStrictEqual(result, []);
 });
 
-test('returns an empty array when newBody is missing/null', () => {
+// 6. Null / undefined oldBody handled gracefully.
+test('handles null oldBody without throwing', () => {
+  const newBody = '- [x] Follow-up: something';
+  const result = findNewlyCheckedFollowUps(null, newBody);
+  // No prior state to transition from → nothing reported.
+  assert.deepStrictEqual(result, []);
+});
+
+// 7. Null / undefined newBody handled gracefully.
+test('handles null newBody without throwing', () => {
   const oldBody = '- [ ] Follow-up: something';
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(oldBody, null), []);
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(oldBody, undefined), []);
-});
-
-test('returns an empty array when there are no task-list lines at all', () => {
-  const oldBody = 'Just a plain description with no checkboxes.';
-  const newBody = 'Just a plain description with no checkboxes, edited.';
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(oldBody, newBody), []);
-});
-
-test('ignores an item newly added and checked in the same edit (no prior unchecked state to transition from)', () => {
-  const oldBody = '- [ ] Follow-up: existing item';
-  const newBody = [
-    '- [ ] Follow-up: existing item',
-    '- [x] Follow-up: item that appeared already checked',
-  ].join('\n');
-
-  const result = findNewlyCheckedFollowUps(oldBody, newBody);
+  const result = findNewlyCheckedFollowUps(oldBody, null);
   assert.deepStrictEqual(result, []);
 });
 
-test('matches follow-up items by text even when unrelated lines are reordered', () => {
+// 8. Both bodies null — returns empty, no throw.
+test('handles both bodies null', () => {
+  const result = findNewlyCheckedFollowUps(null, null);
+  assert.deepStrictEqual(result, []);
+});
+
+// 9. Reordered lines between old and new body still match by content.
+test('matches items across reordering', () => {
   const oldBody = [
-    '- [ ] alpha task',
-    '- [ ] Follow-up: track the migration cleanup',
-    '- [ ] beta task',
+    '- [ ] Follow-up: item A',
+    '- [ ] Follow-up: item B',
   ].join('\n');
   const newBody = [
-    '- [x] beta task',
-    '- [x] Follow-up: track the migration cleanup',
-    '- [ ] alpha task',
+    '- [x] Follow-up: item B',
+    '- [ ] Follow-up: item A',
   ].join('\n');
-
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, ['track the migration cleanup']);
+  assert.deepStrictEqual(result, ['item B']);
 });
 
-test('handles case-insensitive and hyphen/colon variations of the Follow-up prefix', () => {
-  const oldBody = [
-    '- [ ] FOLLOWUP no colon or hyphen',
-    '- [ ] followup: no hyphen, with colon',
-    '- [ ] Follow-Up:  extra   spacing',
-  ].join('\n');
-  const newBody = [
-    '- [x] FOLLOWUP no colon or hyphen',
-    '- [x] followup: no hyphen, with colon',
-    '- [x] Follow-Up:  extra   spacing',
-  ].join('\n');
-
+// 10. Prefix casing variants — "follow-up:", "Follow-Up:", "FOLLOW-UP:".
+test('recognizes case-insensitive Follow-up prefix', () => {
+  const oldBody = '- [ ] follow-up: lowercase prefix';
+  const newBody = '- [x] FOLLOW-UP: lowercase prefix';
   const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, [
-    'no colon or hyphen',
-    'no hyphen, with colon',
-    'extra   spacing',
-  ]);
+  assert.deepStrictEqual(result, ['lowercase prefix']);
 });
 
-test('does not match "Follow up:" with a bare space (convention requires the hyphenated form)', () => {
-  const oldBody = '- [ ] Follow up: with a bare space';
-  const newBody = '- [x] Follow up: with a bare space';
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(oldBody, newBody), []);
+// 11. Whitespace-variant prefix ("Follow up:" with space, "Followup:" without hyphen).
+test('tolerates minor whitespace/hyphen variants on the prefix', () => {
+  assert.strictEqual(extractFollowUpDescription('Follow up: no hyphen'), 'no hyphen');
+  assert.strictEqual(extractFollowUpDescription('Followup: joined'), 'joined');
+  assert.strictEqual(extractFollowUpDescription('Follow-up : trailing space'), 'trailing space');
 });
 
-test('tolerates minor whitespace differences between old and new line text when matching', () => {
-  const oldBody = '- [ ]   Follow-up:   trim me   ';
-  const newBody = '- [x] Follow-up:   trim me';
-
-  const result = findNewlyCheckedFollowUps(oldBody, newBody);
-  assert.deepStrictEqual(result, ['trim me']);
-});
-
-test('drops a Follow-up item with no description text', () => {
+// 12. Follow-up line with no description is skipped (not actionable).
+test('skips follow-up lines with no description', () => {
   const oldBody = '- [ ] Follow-up:';
   const newBody = '- [x] Follow-up:';
-  assert.deepStrictEqual(findNewlyCheckedFollowUps(oldBody, newBody), []);
+  const result = findNewlyCheckedFollowUps(oldBody, newBody);
+  assert.deepStrictEqual(result, []);
 });
 
-// ── parseTaskItems ───────────────────────────────────────────────────────
+// 13. Different list markers (`*`, `+`) still parsed.
+test('parses task lists with * and + markers', () => {
+  const items = parseTaskListItems('* [ ] Follow-up: star marker\n+ [x] Follow-up: plus marker');
+  assert.strictEqual(items.length, 2);
+  assert.strictEqual(items[0].followUpDescription, 'star marker');
+  assert.strictEqual(items[1].followUpDescription, 'plus marker');
+  assert.strictEqual(items[1].checked, true);
+});
 
-test('parseTaskItems parses checked/unchecked markers and strips marker syntax', () => {
-  const body = [
-    '- [ ] unchecked item',
-    '- [x] checked lowercase',
-    '- [X] checked uppercase',
-    '* [x] asterisk bullet',
-    '+ [x] plus bullet',
-    'not a task line',
+// 14. Mixed edit: one newly checked, one unchecked, one unrelated toggled.
+test('mixed edit reports only the newly-checked follow-up', () => {
+  const oldBody = [
+    '- [ ] Follow-up: relevant transition',
+    '- [ ] Follow-up: still unchecked',
+    '- [ ] Some unrelated checkbox',
   ].join('\n');
-
-  assert.deepStrictEqual(parseTaskItems(body), [
-    { checked: false, text: 'unchecked item' },
-    { checked: true, text: 'checked lowercase' },
-    { checked: true, text: 'checked uppercase' },
-    { checked: true, text: 'asterisk bullet' },
-    { checked: true, text: 'plus bullet' },
-  ]);
+  const newBody = [
+    '- [x] Follow-up: relevant transition',
+    '- [ ] Follow-up: still unchecked',
+    '- [x] Some unrelated checkbox',
+  ].join('\n');
+  const result = findNewlyCheckedFollowUps(oldBody, newBody);
+  assert.deepStrictEqual(result, ['relevant transition']);
 });
 
-test('parseTaskItems returns an empty array for null/undefined/empty input', () => {
-  assert.deepStrictEqual(parseTaskItems(null), []);
-  assert.deepStrictEqual(parseTaskItems(undefined), []);
-  assert.deepStrictEqual(parseTaskItems(''), []);
+// 15. Empty bodies handled.
+test('handles empty-string bodies', () => {
+  assert.deepStrictEqual(findNewlyCheckedFollowUps('', ''), []);
+  assert.deepStrictEqual(findNewlyCheckedFollowUps('', '- [x] Follow-up: anything'), []);
 });
 
-// ── normalizeKey ─────────────────────────────────────────────────────────
-
-test('normalizeKey folds case and collapses whitespace', () => {
-  assert.strictEqual(normalizeKey('  Follow-Up:   Do The Thing  '), 'follow-up: do the thing');
+// 16. Duplicated follow-up in newBody deduplicated in output.
+test('deduplicates identical follow-up descriptions within newBody', () => {
+  const oldBody = [
+    '- [ ] Follow-up: same text',
+    '- [ ] Follow-up: same text',
+  ].join('\n');
+  const newBody = [
+    '- [x] Follow-up: same text',
+    '- [x] Follow-up: same text',
+  ].join('\n');
+  const result = findNewlyCheckedFollowUps(oldBody, newBody);
+  assert.deepStrictEqual(result, ['same text']);
 });
+
+console.log(`\n${passed} passed, ${failed} failed`);
+if (failed > 0) {
+  process.exit(1);
+}
