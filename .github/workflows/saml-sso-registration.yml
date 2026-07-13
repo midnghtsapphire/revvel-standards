@@ -13,6 +13,7 @@ jobs:
       contents: read
     steps:
       - name: Get SAML Identity
+      - name: Check SAML SSO Identity
         id: saml-identity
         uses: actions/github-script@v9.0.0
         env:
@@ -23,6 +24,17 @@ jobs:
           script: |
             const author = process.env.PR_AUTHOR;
             const org = process.env.ORG_LOGIN;
+            const org = process.env.ORG_LOGIN;
+            const author = process.env.PR_AUTHOR;
+            let identity = '';
+            try {
+              const query = `query($org: String!, $login: String!) {
+                organization(login: $org) {
+                  samlIdentityProvider {
+                    externalIdentities(first: 1, login: $login) {
+                      edges {
+                        node {
+            const login = process.env.PR_AUTHOR;
             let identity = '';
             try {
               const query = `
@@ -53,6 +65,37 @@ jobs:
               }
             } catch (err) {
               core.warning(`SAML identity lookup failed: ${err.message}`);
+                      externalIdentities(first: 1, userName: $login) {
+                        nodes {
+                          samlIdentity { nameId }
+                          user { login }
+                        }
+                      }
+                    }
+                  }
+                }
+              }`;
+              const result = await github.graphql(query, { org, login: author });
+              const edges = result?.organization?.samlIdentityProvider?.externalIdentities?.edges || [];
+              if (edges.length > 0 && edges[0].node?.samlIdentity?.nameId) {
+                identity = edges[0].node.samlIdentity.nameId;
+              }
+            } catch (err) {
+              core.warning(`SAML identity lookup failed (org may not have SAML IdP configured, or token lacks admin:org scope): ${err.message}`);
+              `;
+              const result = await github.graphql(query, { org, login });
+              const nodes =
+                result &&
+                result.organization &&
+                result.organization.samlIdentityProvider &&
+                result.organization.samlIdentityProvider.externalIdentities &&
+                result.organization.samlIdentityProvider.externalIdentities.nodes;
+              if (nodes && nodes.length > 0 && nodes[0].samlIdentity && nodes[0].samlIdentity.nameId) {
+                identity = nodes[0].samlIdentity.nameId;
+              }
+            } catch (err) {
+              core.warning(`Unable to resolve SAML identity for ${login} in ${org}: ${err.message}`);
+              identity = '';
             }
             core.setOutput('identity', identity);
             return identity;
@@ -66,6 +109,14 @@ jobs:
           fi
 
       - name: Comment on PR if SAML not linked
+            echo "::notice::SAML SSO identity linked for ${{ github.event.pull_request.user.login }}: ${{ steps.saml-identity.outputs.identity }}"
+            echo "::notice::SAML identity linked: ${{ steps.saml-identity.outputs.identity }}"
+          else
+            echo "::warning::SAML SSO identity not linked for ${{ github.event.pull_request.user.login }}"
+          fi
+
+      - name: Comment on PR if SAML not linked
+      - name: Comment on PR if identity not linked
         if: steps.saml-identity.outputs.identity == ''
         uses: actions/github-script@v9.0.0
         with:
@@ -82,10 +133,30 @@ jobs:
               '3. Re-run the failed check',
               '',
               'If you believe this is an error, contact an org admin.'
+            const author = context.payload.pull_request.user.login;
+            const body = [
+              '## ⚠️ SAML SSO Identity Not Linked',
+              '',
+              `@${author} — your GitHub account does not appear to have a SAML SSO identity linked to this organization.`,
+              '',
+              'Please link your SAML SSO identity to continue contributing:',
+              '',
+              `1. Visit https://github.com/orgs/${context.repo.owner}/sso`,
+              '2. Complete the SAML SSO authentication flow',
+              '3. Re-run the failed check or push a new commit',
+              '',
+              'If you believe this is an error, contact your organization administrator.'
+            const body = [
+              '## ⚠️ SAML SSO Identity Not Linked',
+              '',
+              `@${context.payload.pull_request.user.login}, your GitHub account does not appear to have a linked SAML SSO identity for this organization.`,
+              '',
+              'Please ensure your account is properly authorized via SSO before this PR can be merged.',
             ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
+              body: body
               body,
             });
