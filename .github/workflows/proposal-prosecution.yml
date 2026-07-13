@@ -11,6 +11,12 @@ on:
 
 permissions:
   contents: read
+  # issues: write is required because the prosecute job calls
+  # github.rest.issues.createComment to post prosecution findings. This workflow only
+  # triggers on `issues: labeled` (label == 'proposal') or workflow_dispatch with an
+  # issue id, so the comment target is always an issue, never a PR — pull-requests:
+  # write is not needed. Without issues: write, the comment post 403s silently.
+  issues: write
 
 jobs:
   prosecute:

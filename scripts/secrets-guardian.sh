@@ -68,6 +68,33 @@ for SECRET in "${ALL_SECRETS[@]}"; do
   # subsequent critical secret to be re-checked and duplicated in output.
   if printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET"; then
     continue
+  # Skip if already checked. Bare "$CRITICAL_SECRETS" (no [@]/[*]) only
+  # expands to the array's first element, not all 11 entries, so this must
+  # iterate the array — otherwise every critical secret but the first falls
+  # through and gets redundantly re-checked/re-restored below, doubling
+  # gh secret list/set calls and appending duplicate names to
+  # RESTORED/MISSING (written to GITHUB_OUTPUT further down).
+  printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET" && continue
+  
+  echo -n "   Checking $SECRET... "
+  
+  if gh secret list --repo "$GITHUB_REPOSITORY" 2>/dev/null | grep -q "^${SECRET} "; then
+    echo "✅ exists"
+  else
+    echo "❌ MISSING"
+    
+    VALUE=$(echo "$CREDENTIAL_BACKUP_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('$SECRET', ''))" 2>/dev/null || echo "")
+    
+    if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
+      echo "   → Found in backup, restoring..."
+      if [ "$DRY_RUN" != "true" ]; then
+        gh secret set "$SECRET" --body "$VALUE" --repo "$GITHUB_REPOSITORY"
+      fi
+      RESTORED="${RESTORED}${SECRET},"
+      echo "   → ✅ Restored!"
+    else
+      MISSING="${MISSING}${SECRET},"
+    fi
   fi
   if secret_exists "$SECRET"; then
     continue
