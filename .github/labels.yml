@@ -191,6 +191,11 @@ labels:
     color: "1d76db"
     description: "Work Request intake issue"
 
+  - name: auto-diagnosed
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by daily-diagnostic-audit.yml from a code-level diagnosis"
+
   - name: weekly-research
     axis: wr
     color: "fbca04"
