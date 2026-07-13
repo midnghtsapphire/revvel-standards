@@ -29,8 +29,11 @@
  *       RESOLVED <path>   N hunks ok
  *       PARTIAL  <path>   N ok, M ambiguous
  *       MANUAL   <path>   all M hunks ambiguous
- *   - Exit code 0 iff every file is fully resolved.
- *   - Exit code 2 iff anything remained ambiguous.
+ *   - Exit code 0 iff every conflicted file came out fully, cleanly
+ *     resolved (this includes files with zero recognized conflict-marker
+ *     hunks, e.g. binary "both modified" conflicts — those still count as
+ *     unresolved and block a 0 exit).
+ *   - Exit code 2 iff anything remained ambiguous, unresolved, or unparsed.
  *
  * Caller responsibility:
  *   - Decide whether to commit (exit 0) or `git merge --abort` (exit 2).
@@ -220,12 +223,24 @@ function main() {
   }
 
   let totalAmbiguous = 0;
+  // Counts every file that did NOT come out fully, cleanly resolved —
+  // including files whose conflict-marker scanner found zero hunks at all
+  // (binary "both modified" conflicts, or any conflict style iterHunks
+  // doesn't recognize). Such a file still has an unresolved/undefined
+  // working-tree state and must gate the exit code, even though it
+  // contributes nothing to totalAmbiguous (ambiguous === 0 for it). Without
+  // this counter, a PR where every conflicted file hits that path would
+  // report "MANUAL" for each one yet still exit 0, and the caller
+  // (conflict-helper.yml) would `git add -A && git commit && git push`
+  // that unresolved state onto the PR branch as if it were safely resolved.
+  let totalUnresolved = 0;
   const lines = [];
 
   for (const file of conflicted) {
     if (!fs.existsSync(file)) {
       lines.push(`SKIP     ${file}   (deleted on one side — leave to human)`);
       totalAmbiguous++;
+      totalUnresolved++;
       continue;
     }
     const { ok, ambiguous } = resolveFile(file);
@@ -234,13 +249,15 @@ function main() {
       lines.push(`RESOLVED ${file}   ${ok} hunk(s) auto-resolved`);
     } else if (ok > 0) {
       lines.push(`PARTIAL  ${file}   ${ok} ok, ${ambiguous} ambiguous`);
+      totalUnresolved++;
     } else {
       lines.push(`MANUAL   ${file}   ${ambiguous} hunk(s) ambiguous`);
+      totalUnresolved++;
     }
   }
 
   console.log(lines.join("\n"));
-  process.exit(totalAmbiguous > 0 ? 2 : 0);
+  process.exit(totalUnresolved > 0 ? 2 : 0);
 }
 
 if (require.main === module) main();
