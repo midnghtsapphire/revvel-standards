@@ -27,6 +27,30 @@
  * contributed nothing to that counter, so an all-MANUAL run could exit 0
  * and the CI workflow would happily push an unresolved conflict onto the
  * PR branch. We now track `totalUnresolved` at file granularity instead.
+ *   2. ADDITIVE_LINES — incoming and current both ADD lines around the
+ *      same anchor in main, neither removes anything. Keep both blocks
+ *      in original order (current first, incoming after). Detected by
+ *      "incoming is N new lines + current is M different new lines and
+ *      neither hunk side is a strict subset of the merge-base context."
+ *
+ * Anything else is marked ambiguous; the script writes the file back
+ * with markers intact and reports it on stdout.
+ *
+ * Output:
+ *   - Resolved files written in place.
+ *   - One line per file printed to stdout:
+ *       RESOLVED <path>   N hunks ok
+ *       PARTIAL  <path>   N ok, M ambiguous
+ *       MANUAL   <path>   all M hunks ambiguous
+ *   - Exit code 0 iff every conflicted file came out fully, cleanly
+ *     resolved (this includes files with zero recognized conflict-marker
+ *     hunks, e.g. binary "both modified" conflicts — those still count as
+ *     unresolved and block a 0 exit).
+ *   - Exit code 2 iff anything remained ambiguous, unresolved, or unparsed.
+ *
+ * Caller responsibility:
+ *   - Decide whether to commit (exit 0) or `git merge --abort` (exit 2).
+ *   - Post the per-file summary to the PR as a comment.
  */
 
 'use strict';
@@ -168,6 +192,23 @@ function main() {
     // Skip files we deliberately don't touch.
     if (f.startsWith('node_modules/')) {
       console.log(`SKIP   ${f}`);
+  // Counts every file that did NOT come out fully, cleanly resolved —
+  // including files whose conflict-marker scanner found zero hunks at all
+  // (binary "both modified" conflicts, or any conflict style iterHunks
+  // doesn't recognize). Such a file still has an unresolved/undefined
+  // working-tree state and must gate the exit code, even though it
+  // contributes nothing to totalAmbiguous (ambiguous === 0 for it). Without
+  // this counter, a PR where every conflicted file hits that path would
+  // report "MANUAL" for each one yet still exit 0, and the caller
+  // (conflict-helper.yml) would `git add -A && git commit && git push`
+  // that unresolved state onto the PR branch as if it were safely resolved.
+  let totalUnresolved = 0;
+  const lines = [];
+
+  for (const file of conflicted) {
+    if (!fs.existsSync(file)) {
+      lines.push(`SKIP     ${file}   (deleted on one side — leave to human)`);
+      totalAmbiguous++;
       totalUnresolved++;
       continue;
     }
@@ -185,6 +226,10 @@ function main() {
       // "both modified" conflict). Both cases are unresolved and unsafe
       // to push.
       console.log(`MANUAL   ${f}   ${ambiguous} hunk(s) ambiguous`);
+      lines.push(`PARTIAL  ${file}   ${ok} ok, ${ambiguous} ambiguous`);
+      totalUnresolved++;
+    } else {
+      lines.push(`MANUAL   ${file}   ${ambiguous} hunk(s) ambiguous`);
       totalUnresolved++;
     }
   }
@@ -197,6 +242,8 @@ function main() {
 
 if (require.main === module) {
   main();
+  console.log(lines.join("\n"));
+  process.exit(totalUnresolved > 0 ? 2 : 0);
 }
 
 module.exports = {

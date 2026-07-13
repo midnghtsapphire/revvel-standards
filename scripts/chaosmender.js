@@ -1,0 +1,472 @@
+#!/usr/bin/env node
+/**
+ * ChaosMender — Error Pattern Sentinel
+ *
+ * Inspired by Netflix Chaos Monkey, but instead of randomly killing services
+ * to test resilience, ChaosMender proactively hunts for KNOWN failure patterns
+ * from config/error-ledger.json BEFORE they cause incidents. When a pattern is
+ * detected it reports the exact location plus the ledger's known fix, and can
+ * optionally file a [SELF-HEAL] GitHub issue so the existing self-healing loop
+ * auto-remediates without human intervention.
+ *
+ * Usage:
+ *   node scripts/chaosmender.js                   # scan and report
+ *   node scripts/chaosmender.js --file-issues     # scan + file GitHub issues
+ *   node scripts/chaosmender.js --dry-run         # show what would be filed
+ *   node scripts/chaosmender.js --ledger <path>   # custom ledger file
+ *   node scripts/chaosmender.js --scope <glob>    # override scan scope
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+const REPO_ROOT = path.resolve(__dirname, '..');
+const DEFAULT_LEDGER = path.join(REPO_ROOT, 'config', 'error-ledger.json');
+
+// Map of chaosmender_check id → scanner function.
+// Each scanner receives (repoRoot) and returns an array of findings:
+//   { file, line, excerpt, errorId, title, fix, fix_code_snippet }
+const CHECKS = {
+  'bare-remove-label': scanBareRemoveLabel,
+  'workflow-run-missing-workflows-list': scanWorkflowRunMissingWorkflowsList,
+  'github-script-column-0-body': scanGithubScriptColumn0,
+};
+
+// ---------------------------------------------------------------------------
+// Scanners
+// ---------------------------------------------------------------------------
+
+/**
+ * LABEL-RACE-001
+ * Find github.rest.issues.removeLabel calls that are NOT followed by a
+ * .catch within the next 5 lines. Accepts:
+ *   - .catch(err => { if (err.status !== 404) throw err; })  (preferred)
+ *   - .catch(() => {})  (silent swallow — acceptable but not ideal)
+ *   - a wrapper function named removeLabelSafe (veins-monitor pattern)
+ */
+function scanBareRemoveLabel(repoRoot) {
+  const findings = [];
+  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  if (!fs.existsSync(workflowDir)) return findings;
+
+  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+
+  for (const file of files) {
+    const filepath = path.join(workflowDir, file);
+    const lines = fs.readFileSync(filepath, 'utf8').split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Match a github.rest.issues.removeLabel call line
+      if (!/github\.rest\.issues\.removeLabel/.test(line)) continue;
+
+      // Check whether this file uses a removeLabelSafe wrapper function.
+      // If so, every call site in this file is considered guarded.
+      const fileContent = lines.join('\n');
+      if (/function\s+removeLabelSafe\b/.test(fileContent)) continue;
+
+      // Look ahead up to 5 lines for a .catch
+      const windowEnd = Math.min(i + 6, lines.length);
+      const window = lines.slice(i, windowEnd).join('\n');
+      if (/\.catch/.test(window)) continue;
+
+      findings.push({
+        file: path.relative(repoRoot, filepath),
+        line: i + 1,
+        excerpt: line.trim(),
+        errorId: 'LABEL-RACE-001',
+      });
+    }
+  }
+
+  return findings;
+}
+
+/**
+ * WORKFLOW-RUN-001
+ * Find workflow files that declare a workflow_run event but lack a
+ * `workflows:` key under it.
+ * Note: scripts/check-workflow-yaml.js already catches this in CI.
+ * ChaosMender re-checks here so the pattern is cross-referenced with the
+ * error ledger and the self-heal filing path is consistent.
+ */
+function scanWorkflowRunMissingWorkflowsList(repoRoot) {
+  const findings = [];
+  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  if (!fs.existsSync(workflowDir)) return findings;
+
+  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+
+  for (const file of files) {
+    const filepath = path.join(workflowDir, file);
+    const content = fs.readFileSync(filepath, 'utf8');
+
+    // Quick pre-filter: does this file even mention workflow_run?
+    if (!/workflow_run/.test(content)) continue;
+
+    const lines = content.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      // Matches `workflow_run:` as an on: event key (indented or not)
+      if (!/^\s+workflow_run\s*:/.test(lines[i])) continue;
+
+      // Look ahead for a `workflows:` key before the next top-level key
+      let foundWorkflows = false;
+      for (let j = i + 1; j < Math.min(i + 15, lines.length); j++) {
+        const ahead = lines[j];
+        // If we hit a new top-level YAML key (no leading space on a non-blank line), stop
+        if (/^[a-zA-Z]/.test(ahead) && ahead.trim() !== '') break;
+        if (/^\s+workflows\s*:/.test(ahead)) { foundWorkflows = true; break; }
+      }
+
+      if (!foundWorkflows) {
+        findings.push({
+          file: path.relative(repoRoot, filepath),
+          line: i + 1,
+          excerpt: lines[i].trim(),
+          errorId: 'WORKFLOW-RUN-001',
+        });
+      }
+    }
+  }
+
+  return findings;
+}
+
+/**
+ * GITHUB-SCRIPT-INLINE-001
+ * Find github-script blocks where the script: | body has lines at column 0
+ * (which terminates the YAML block scalar).
+ * This is a best-effort heuristic; definitive detection is scripts/check-workflow-yaml.js.
+ */
+function scanGithubScriptColumn0(repoRoot) {
+  const findings = [];
+  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  if (!fs.existsSync(workflowDir)) return findings;
+
+  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+
+  for (const file of files) {
+    const filepath = path.join(workflowDir, file);
+    const lines = fs.readFileSync(filepath, 'utf8').split('\n');
+    let inScriptBlock = false;
+    let scriptIndent = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Detect start of a `script: |` block inside a uses: actions/github-script step
+      if (/^\s+script\s*:\s*\|/.test(line)) {
+        inScriptBlock = true;
+        // The script body should be indented MORE than this key
+        scriptIndent = line.search(/\S/);
+        continue;
+      }
+
+      if (!inScriptBlock) continue;
+
+      // An empty line doesn't end the block
+      if (line.trim() === '') continue;
+
+      const indent = line.search(/\S/);
+
+      // A line at column 0 while we think we're still inside a script block
+      // is the defect: it terminates the YAML block scalar prematurely. Flag
+      // it BEFORE the "left the block" guard so we record the finding rather
+      // than silently resetting state.
+      if (indent === 0) {
+        findings.push({
+          file: path.relative(repoRoot, filepath),
+          line: i + 1,
+          excerpt: line.trim().slice(0, 80),
+          errorId: 'GITHUB-SCRIPT-INLINE-001',
+        });
+        inScriptBlock = false;
+        scriptIndent = -1;
+        continue;
+      }
+
+      // If indent is at or less than the script: key, we've left the block
+      if (indent <= scriptIndent) {
+        inScriptBlock = false;
+        scriptIndent = -1;
+        continue;
+      }
+    }
+  }
+
+  return findings;
+}
+
+// ---------------------------------------------------------------------------
+// Core
+// ---------------------------------------------------------------------------
+
+function loadLedger(ledgerPath) {
+  if (!fs.existsSync(ledgerPath)) {
+    throw new Error(`Error ledger not found: ${ledgerPath}`);
+  }
+  return JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+}
+
+/**
+ * Run all auto-detectable checks from the ledger that have a registered
+ * scanner. Returns an array of enriched findings.
+ */
+function runChecks(repoRoot, ledger) {
+  const allFindings = [];
+
+  for (const entry of ledger.errors) {
+    if (!entry.auto_detectable) continue;
+    const checkId = entry.chaosmender_check;
+    if (!checkId) continue;
+    const scanner = CHECKS[checkId];
+    if (!scanner) continue;
+
+    const raw = scanner(repoRoot);
+    for (const f of raw) {
+      allFindings.push({
+        ...f,
+        title: entry.title,
+        category: entry.category,
+        severity: entry.severity,
+        fix: entry.fix,
+        fix_code_snippet: entry.fix_code_snippet,
+        self_heal_label: entry.self_heal_label || 'auto-error',
+        references: entry.references || [],
+      });
+    }
+  }
+
+  return allFindings;
+}
+
+// ---------------------------------------------------------------------------
+// Reporting
+// ---------------------------------------------------------------------------
+
+const SEVERITY_ICON = { critical: '🔴', high: '🟠', medium: '🟡', low: '🔵' };
+
+function printReport(findings) {
+  if (findings.length === 0) {
+    console.log('✅ ChaosMender: no known error patterns detected.');
+    return;
+  }
+
+  console.log(`⚡ ChaosMender: ${findings.length} known error pattern(s) detected.\n`);
+
+  for (const f of findings) {
+    const icon = SEVERITY_ICON[f.severity] || '⚪';
+    console.log(`${icon} [${f.errorId}] ${f.title}`);
+    console.log(`   File  : ${f.file}:${f.line}`);
+    console.log(`   Found : ${f.excerpt}`);
+    console.log(`   Fix   : ${f.fix}`);
+    if (f.fix_code_snippet) {
+      console.log(`   Snippet:\n${f.fix_code_snippet.split('\n').map(l => `     ${l}`).join('\n')}`);
+    }
+    console.log();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GitHub Issue Filing
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the issue body for a batch of findings.
+ */
+function buildIssueBody(findings) {
+  const lines = [
+    '## ChaosMender detected known error patterns',
+    '',
+    'The following unguarded call sites match patterns in `config/error-ledger.json`.',
+    'Apply the listed fix to each location.',
+    '',
+  ];
+
+  // Group by errorId
+  const byId = {};
+  for (const f of findings) {
+    (byId[f.errorId] = byId[f.errorId] || []).push(f);
+  }
+
+  for (const [id, group] of Object.entries(byId)) {
+    const first = group[0];
+    lines.push(`### ${id} — ${first.title}`);
+    lines.push('');
+    lines.push(`**Category:** ${first.category}  `);
+    lines.push(`**Severity:** ${first.severity}  `);
+    lines.push(`**Fix:** ${first.fix}`);
+    lines.push('');
+    if (first.fix_code_snippet) {
+      lines.push('```javascript');
+      lines.push(first.fix_code_snippet);
+      lines.push('```');
+      lines.push('');
+    }
+    lines.push('**Affected locations:**');
+    lines.push('');
+    for (const f of group) {
+      lines.push(`- \`${f.file}\` line ${f.line}: \`${f.excerpt}\``);
+    }
+    lines.push('');
+    if (first.references && first.references.length) {
+      lines.push(`**References:** ${first.references.join(', ')}`);
+      lines.push('');
+    }
+  }
+
+  lines.push('---');
+  lines.push('*Auto-filed by ChaosMender · config/error-ledger.json*');
+  return lines.join('\n');
+}
+
+async function fileIssue(findings, dryRun) {
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  if (!token) {
+    console.warn('⚠️  No GH_TOKEN / GITHUB_TOKEN — skipping issue filing.');
+    return;
+  }
+
+  const repo = process.env.GITHUB_REPOSITORY || process.env.GH_REPO || 'midnghtsapphire/revvel-standards';
+  const [owner, repoName] = repo.split('/');
+
+  const title = `[SELF-HEAL] ChaosMender: ${findings.length} known error pattern(s) detected`;
+  const body = buildIssueBody(findings);
+
+  // Deduplicate: check if an open [SELF-HEAL] ChaosMender issue already exists
+  const searchUrl = `https://api.github.com/repos/${owner}/${repoName}/issues?state=open&labels=auto-error&per_page=50`;
+  const searchRes = await fetch(searchUrl, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
+  });
+  if (searchRes.ok) {
+    const open = await searchRes.json();
+    const existing = open.find(i => i.title.startsWith('[SELF-HEAL] ChaosMender'));
+    if (existing) {
+      console.log(`ℹ️  Existing ChaosMender issue #${existing.number} already open — updating in place.`);
+      if (!dryRun) {
+        await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues/${existing.number}`, {
+          method: 'PATCH',
+          headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body }),
+        });
+        console.log(`✅ Updated issue #${existing.number}`);
+      } else {
+        console.log('[dry-run] Would PATCH issue #' + existing.number);
+      }
+      return;
+    }
+  }
+
+  if (dryRun) {
+    console.log('[dry-run] Would create issue:');
+    console.log(`  title: ${title}`);
+    console.log(`  labels: auto-error, chaosmender`);
+    return;
+  }
+
+  // Determine which labels exist before trying to add them
+  const labelCandidates = ['auto-error', 'chaosmender'];
+  const labelsUrl = `https://api.github.com/repos/${owner}/${repoName}/labels?per_page=100`;
+  let validLabels = [];
+  const labelsRes = await fetch(labelsUrl, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
+  });
+  if (labelsRes.ok) {
+    const all = await labelsRes.json();
+    const names = new Set(all.map(l => l.name));
+    validLabels = labelCandidates.filter(l => names.has(l));
+  }
+
+  const createRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
+    method: 'POST',
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, body, labels: validLabels }),
+  });
+
+  if (createRes.ok) {
+    const issue = await createRes.json();
+    console.log(`✅ Filed issue #${issue.number}: ${issue.html_url}`);
+  } else {
+    const err = await createRes.text();
+    console.error(`❌ Failed to create issue: ${createRes.status} — ${err}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CLI
+// ---------------------------------------------------------------------------
+
+function parseArgs(argv) {
+  const opts = {
+    fileIssues: false,
+    dryRun: false,
+    ledger: DEFAULT_LEDGER,
+    scope: null,
+  };
+  for (let i = 2; i < argv.length; i++) {
+    const a = argv[i];
+    const next = argv[i + 1];
+    if (a === '--file-issues') opts.fileIssues = true;
+    else if (a === '--dry-run') { opts.dryRun = true; opts.fileIssues = true; }
+    else if (a === '--ledger' && next) { opts.ledger = next; i++; }
+    else if (a === '--scope' && next) { opts.scope = next; i++; }
+  }
+  return opts;
+}
+
+async function main() {
+  const opts = parseArgs(process.argv);
+
+  let ledger;
+  try {
+    ledger = loadLedger(opts.ledger);
+  } catch (e) {
+    console.error(`❌ ${e.message}`);
+    process.exit(1);
+  }
+
+  const findings = runChecks(REPO_ROOT, ledger);
+  printReport(findings);
+
+  if (opts.fileIssues && findings.length > 0) {
+    await fileIssue(findings, opts.dryRun);
+  }
+
+  // Write findings to GITHUB_OUTPUT for workflow consumption
+  if (process.env.GITHUB_OUTPUT) {
+    const summary = findings.length > 0
+      ? findings.map(f => `${f.errorId}:${f.file}:${f.line}`).join(',')
+      : '';
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `findings_count=${findings.length}\nfindings=${summary}\n`);
+  }
+
+  // Exit 1 only for critical/high findings (don't block CI on medium/low)
+  const blocking = findings.filter(f => f.severity === 'critical' || f.severity === 'high');
+  process.exit(blocking.length > 0 ? 1 : 0);
+}
+
+// Export for tests
+module.exports = {
+  loadLedger,
+  runChecks,
+  scanBareRemoveLabel,
+  scanWorkflowRunMissingWorkflowsList,
+  scanGithubScriptColumn0,
+  buildIssueBody,
+  CHECKS,
+};
+
+if (require.main === module) {
+  main().catch(err => {
+    console.error('Fatal:', err.message);
+    process.exit(1);
+  });
+}

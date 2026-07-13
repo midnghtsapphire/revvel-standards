@@ -67,6 +67,28 @@ implementation per behavior, delete the losers). The interleave signature:
 redeclared `const`, repeated `return`, stacked comments citing different issues.
 Make count/list assertions drift-proof (derive from the registry, never hardcode).
 
+### 6. Exit codes must reflect true resolution state, not a proxy metric
+A script that counts one specific case (e.g. "ambiguous conflicts found") and
+exits 0 whenever that counter is zero can report a **false success** if a
+different failure path never increments the same counter — e.g. a file with
+zero detected conflict markers still isn't resolved. Fix: gate the exit code on
+an explicit "was everything actually fully resolved?" check, not a metric that
+can read zero for the wrong reason. Found in a merge-conflict auto-resolver
+whose caller trusted exit 0 to mean "safe to push" (PR #15826).
+
+### 7. `nosemgrep` suppression comments must stay physically adjacent
+Semgrep's inline suppression only applies when the `// nosemgrep: <rule-id>`
+comment is immediately above (or on) the flagged line. Inserting a new
+explanatory comment **between** the directive and the code it covers silently
+breaks the suppression, so a previously clean file starts failing CI with no
+behavior change. Fix: when adding comments near a `nosemgrep`-suppressed line,
+keep the directive as the last comment line immediately before the code
+(PR #15825).
+
+See `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` for the full audit
+methodology and a fast-lookup catalog of these and other established fix
+patterns — read it before running a new audit pass.
+
 ## Verifying changes locally (mirror the CircleCI gate)
 
 CircleCI (`.circleci/config.yml`) runs two **real** gates — replicate them before pushing:
