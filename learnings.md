@@ -546,3 +546,15 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** (1) `workflow_run: types: [completed]` fires on BOTH success and failure — must guard the discover job with a step-level `if: conclusion != 'failure'` so successful downstream runs are no-ops. Without that guard, the sweep runs on every green PR-creation, hammering the API for zero value. (2) `matrix.issue` from `fromJson()` needs `if: fromJson(needs.discover.outputs.issues || '[]')[0] != null` to short-circuit when the sweep found nothing — otherwise GitHub Actions errors on empty matrices. (3) The label toggle must be REMOVE-then-ADD, not just ADD — if the label is already present, an add-only op emits no `labeled` event and the downstream workflow never wakes up. Documented this in the step comment so a future refactor does not "optimise" the remove step away.
 
 **Next Action:** Push to `feat/wr-field-filler` — the amend arrives on PR #15670 automatically. After #15670 merges, the sweep will discover #15665, #15661, #15660, #15666 on its next scheduled tick (within 15 min) and fill them without a manual dispatch.
+
+**Date/Time:** 2026-07-13T11:45:00Z
+
+**Task Attempted:** Stop `stuck-check-watchdog.yml` from crashing mid-run with `HttpError: Label does not exist` (404) when it tried to remove `wr:checking` during a `move-code` transition (GitHub Actions job 86803890088).
+
+**Outcome:** Success — fixed on branch `copilot/fix-commit-checks` (commit 5e7a96c): the `issues.removeLabel({ name: 'wr:checking' })` call now has a `.catch` that swallows ONLY 404 and rethrows everything else.
+
+**Root Cause of Failure (If any):** Label-mutation race. Between the watchdog's issue fetch and its `removeLabel` call, another workflow (e.g. `wr-auto-classify`, the field-filler's `wr:reset` cycle, or a manual relabel) had already removed `wr:checking`. The REST API returns 404 for a remove of an absent label, github-script treats any thrown HttpError as fatal, and the whole watchdog job dies — leaving every remaining stuck issue in the sweep unprocessed. One racing relabel silently disabled the entire recovery pass.
+
+**Self-Healing Fix / Learned Lesson:** `removeLabel` is not idempotent on the API side, so make it idempotent at the call site: wrap every `github.rest.issues.removeLabel` in a catch that swallows only `err.status === 404` (the desired end state — label gone — is already true) and rethrows anything else, because a 401/403 is a real auth/permission failure that must still surface. This is a fleet-wide pattern, not a one-off: any workflow that removes labels in a multi-workflow label ecosystem WILL race eventually. When auditing or writing new label-touching workflows, grep for bare `removeLabel` calls and apply the same guard. (Companion rule already learned: label toggles that need to re-fire downstream `labeled` events must be REMOVE-then-ADD.)
+
+**Next Action:** Merge the branch. Opportunistic follow-up for a future sweep: audit the other 180+ workflows for unguarded `removeLabel` calls and file a `[SELF-HEAL]` issue if any are found.
