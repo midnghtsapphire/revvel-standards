@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-07-13T21:32:16.363Z",
+  "updated_at": "2026-07-13T21:49:20.529Z",
   "workflows": {
     ".github/workflows/perplexity-research-agent.yml": {
       "count": 2,
@@ -8,22 +8,28 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-07-13T21:32:16.363Z"
+      "last_cut_at": "2026-07-13T21:04:08.930Z"
     },
     ".github/workflows/pr-lifecycle.yml": {
-      "count": 2,
+      "count": 1,
       "tried": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
-      "last_cut_at": "2026-07-13T20:11:02.229Z"
+      "last_cut_at": "2026-07-13T19:32:05.574Z"
+    },
+    ".github/workflows/agent-fallback.yml": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-07-13T21:04:08.930Z"
     },
     ".github/workflows/codeql.yml": {
       "count": 1,
       "tried": [
         "anthropic/claude-opus-4.8"
       ],
-      "last_cut_at": "2026-07-13T20:11:02.229Z"
+      "last_cut_at": "2026-07-13T21:49:20.529Z"
     }
   }
 }
