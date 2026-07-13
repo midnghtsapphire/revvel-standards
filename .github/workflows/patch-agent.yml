@@ -1,56 +1,82 @@
 name: Patch Agent
 
-# Manual-only by design. This repo's prior automation failed because everything
-# auto-triggered on label/comment/schedule churn and looped. The Patch agent runs
-# deliberately: dispatch it, review the report, and let it open a PR you approve.
 on:
   workflow_dispatch:
     inputs:
-      fix:
-        description: Apply fixes (raise vulnerable ranges) and open a PR. If false, report only.
-        required: false
-        type: boolean
-        default: false
+      issue_number:
+        description: 'Issue number to patch'
+        required: true
+        type: string
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
-
-concurrency:
-  group: patch-agent
-  cancel-in-progress: false
 
 jobs:
   patch:
-    name: Scan advisories and (optionally) patch
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:patch'))
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: "22"
-      - name: Install root deps (for semver range engine)
-        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
-      - name: Run patch agent (report)
-        id: report
-        run: node scripts/patch-agent.js --check | tee /tmp/patch-report.txt
-      - name: Apply fixes and open PR
-        if: inputs.fix == true
-        env:
-          GH_TOKEN: ${{ github.token }}
+          fetch-depth: 0
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci || npm install
+
+      - name: Determine issue number
+        id: issue
         run: |
-          node scripts/patch-agent.js --fix
-          if [ -n "$(git status --porcelain)" ]; then
-            branch="patch-agent/security-bumps-${{ github.run_id }}"
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git checkout -b "$branch"
-            git commit -am "fix(security): raise vulnerable dependency floors (patch-agent)"
-            git push origin "$branch"
-            gh pr create --title "fix(security): patch-agent dependency bumps" \
-              --body "Automated by the Patch agent (scripts/patch-agent.js). Review the raised version floors before merging." \
-              --base main --head "$branch"
+          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
+            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
           else
-            echo "No declared dependencies needed patching."
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Configure git
+        run: |
+          git config user.name "patch-agent[bot]"
+          git config user.email "patch-agent[bot]@users.noreply.github.com"
+
+      - name: Run patcher
+        env:
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          if [ -f scripts/patch-agent.js ]; then
+            node scripts/patch-agent.js
+          else
+            echo "patch-agent.js not found, skipping"
+          fi
+
+      - name: Apply fixes and open PR
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          BRANCH="patch/issue-${ISSUE_NUMBER}-$(date +%s)"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "fix: patch for issue #${ISSUE_NUMBER}"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "fix: patch for issue #${ISSUE_NUMBER}" \
+            --body "Closes #${ISSUE_NUMBER}" \
+            --head "$BRANCH" \
+            --base main
