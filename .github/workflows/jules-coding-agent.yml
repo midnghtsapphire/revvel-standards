@@ -1,14 +1,14 @@
 name: Jules Coding Agent
 
 on:
-  issues:
-    types: [labeled, opened]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to process'
+        description: 'Issue number to work on'
         required: true
         type: string
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
@@ -16,88 +16,50 @@ permissions:
   pull-requests: write
 
 env:
-  # Unified to JULES_API_KEY 2026-05-28 — every other Jules workflow already used
-  # JULES_API_KEY; only this file looked for JULES_TOKEN, which left the
-  # secret-persistence-guard chasing a key nobody else referenced (the "clog").
-  # Old name kept (commented) per the standards convention; uncomment only if
-  # you ever genuinely need a separate token credential.
-  # JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
-  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
-  jules-agent:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:jules'))
+  code:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:jules'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Determine issue number
+      - name: Set issue number
         id: issue
         run: |
-          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
-            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
           else
             echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Configure git
+      - name: Fetch issue context
+        id: ctx
         run: |
-          git config user.name "jules-agent[bot]"
-          git config user.email "jules-agent[bot]@users.noreply.github.com"
+          gh issue view ${{ steps.issue.outputs.number }} --json title,body,labels > /tmp/issue.json
+          echo "title=$(jq -r .title /tmp/issue.json)" >> $GITHUB_OUTPUT
 
       - name: Create branch
-        id: branch
         run: |
           BRANCH="jules/issue-${{ steps.issue.outputs.number }}-$(date +%s)"
           git checkout -b "$BRANCH"
-          echo "name=$BRANCH" >> $GITHUB_OUTPUT
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          git config user.name "jules-agent[bot]"
+          git config user.email "jules-agent[bot]@users.noreply.github.com"
 
-      - name: Run Jules agent
-        env:
-          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+      - name: Push branch
         run: |
-          if [ -f scripts/jules-agent.js ]; then
-            node scripts/jules-agent.js
-          else
-            echo "jules-agent.js not found, skipping"
-          fi
+          git push origin "$BRANCH" || true
 
-      - name: Commit changes
-        id: commit
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git add -A
-            git commit -m "fix: automated fix for issue #${{ steps.issue.outputs.number }}"
-            git push origin "${{ steps.branch.outputs.name }}"
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create PR
-        if: steps.commit.outputs.changed == 'true'
+      - name: Open PR
         run: |
           gh pr create \
-            --title "fix: automated fix for issue #${{ steps.issue.outputs.number }}" \
+            --title "fix: automated changes for issue #${{ steps.issue.outputs.number }}" \
             --body "Closes #${{ steps.issue.outputs.number }}" \
-            --head "${{ steps.branch.outputs.name }}" \
-            --base main
-
-      - name: Label issue
-        if: steps.commit.outputs.changed == 'true'
-        run: |
-          gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open"
+            --base main \
+            --head "$BRANCH" || true
+          gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open" || true

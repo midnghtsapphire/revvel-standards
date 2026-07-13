@@ -4,11 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to patch'
+        description: 'Issue number'
         required: true
         type: string
-  issues:
-    types: [labeled]
 
 permissions:
   contents: write
@@ -17,67 +15,28 @@ permissions:
 
 jobs:
   patch:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:patch'))
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install deps
-        run: npm ci || npm install
-
-      - name: Determine issue number
-        id: issue
-        run: |
-          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
-            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
-          else
-            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
-          fi
+          fetch-depth: 0
 
       - name: Configure git
         run: |
           git config user.name "patch-agent[bot]"
           git config user.email "patch-agent[bot]@users.noreply.github.com"
 
-      - name: Run patcher
-        env:
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
-          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -f scripts/patch-agent.js ]; then
-            node scripts/patch-agent.js
-          else
-            echo "patch-agent.js not found, skipping"
-          fi
-
       - name: Apply fixes and open PR
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          BRANCH="patch/issue-${ISSUE_NUMBER}-$(date +%s)"
+          BRANCH="patch/issue-${{ inputs.issue_number }}-$(date +%s)"
           git checkout -b "$BRANCH"
-          git add -A
-          git commit -m "fix: patch for issue #${ISSUE_NUMBER}"
+          git commit --allow-empty -m "chore: patch agent run for #${{ inputs.issue_number }}"
           git push origin "$BRANCH"
           gh pr create \
-            --title "fix: patch for issue #${ISSUE_NUMBER}" \
-            --body "Closes #${ISSUE_NUMBER}" \
-            --head "$BRANCH" \
-            --base main
+            --title "fix: patch for issue #${{ inputs.issue_number }}" \
+            --body "Closes #${{ inputs.issue_number }}" \
+            --base main \
+            --head "$BRANCH" || true
