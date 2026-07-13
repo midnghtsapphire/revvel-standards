@@ -10,6 +10,7 @@
 // re-checked/re-restored, doubling gh secret list/set calls and appending
 // duplicate names into the restored=/missing= GITHUB_OUTPUT lines.
 
+const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
@@ -18,7 +19,7 @@ const { spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', 'scripts', 'secrets-guardian.sh');
 
-function testCriticalSecretsNotDuplicatedInMissingOutput() {
+test('critical secrets not duplicated in missing= output', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'secrets-guardian-test-'));
   try {
     // Stub `gh` on PATH so `gh secret list` reports no secrets exist,
@@ -71,9 +72,4 @@ function testCriticalSecretsNotDuplicatedInMissingOutput() {
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
-  console.log('ok critical secrets not duplicated in missing= output');
-}
-
-testCriticalSecretsNotDuplicatedInMissingOutput();
-
-console.log('secrets-guardian: all tests passed');
+});

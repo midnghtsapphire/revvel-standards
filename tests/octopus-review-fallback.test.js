@@ -35,6 +35,7 @@ const {
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
   githubRequest,
+  RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
 } = require('../scripts/octopus-review-fallback.js');
 
 test('isQuotaDeathComment matches known Octopus quota banners (case-insensitive)', () => {
@@ -226,8 +227,9 @@ test('computeRetryDelayMs honors Retry-After in full (bounded only by the shared
   // Retry-After to 20s (the pre-fix behavior) meant retrying BEFORE
   // GitHub's requested delay — exactly the bug flagged in Copilot's
   // post-merge review of #15836.
-  const ceilingMs = parseInt(process.env.RATE_LIMIT_MAX_INPROCESS_WAIT_MS, 10);
-  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), ceilingMs);
+  // Assert against the module's own exported constant rather than re-parsing
+  // the env var (which is fragile — NaN if unset before this line runs).
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
   // No header at all still falls back to the short exponential guess,
   // capped at RATE_LIMIT_MAX_DELAY_MS (unrelated, deliberately small cap —
   // it's a guess, not a real number from GitHub).
