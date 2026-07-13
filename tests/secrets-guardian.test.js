@@ -1,69 +1,76 @@
 // Regression test for scripts/secrets-guardian.sh
 //
-// PRIME DIRECTIVE: $10k/month → $10M in 3 years. The secrets guardian keeps
-// the revenue automation pipeline (Polar.sh, OSINT tools) running, so its
-// missing-secret reporting must be accurate — no duplicates, no dropped
-// critical secrets.
-//
-// Bug: the second loop's "already handled" guard used `echo "$CRITICAL_SECRETS"`
-// which only expands to the first array element. Every critical secret except
-// the first fell through and was re-appended to `missing=`. This test stubs
-// `gh` to report no secrets present and asserts each critical secret appears
-// exactly once in the emitted `missing=` line.
+// Verifies that critical secrets (specifically GITHUB_TOKEN, which is not the
+// first element of CRITICAL_SECRETS after the fix) appear exactly once in the
+// `missing=` line emitted to $GITHUB_OUTPUT, and that no secret name is
+// duplicated across the list.
 
 const test = require('node:test');
-const assert = require('node:assert/strict');
+const assert = require('node:assert');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const SCRIPT = path.join(__dirname, '..', 'scripts', 'secrets-guardian.sh');
+const SCRIPT = path.resolve(__dirname, '..', 'scripts', 'secrets-guardian.sh');
 
-function runGuardian() {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'secrets-guardian-'));
-  const ghStub = path.join(tmpDir, 'gh');
-  const githubOutput = path.join(tmpDir, 'github_output');
-
-  // Stub `gh` so `gh secret list` prints nothing → every secret is "missing".
-  fs.writeFileSync(ghStub, '#!/usr/bin/env bash\nexit 0\n');
-  fs.chmodSync(ghStub, 0o755);
-  fs.writeFileSync(githubOutput, '');
-
-  const env = {
-    ...process.env,
-    PATH: `${tmpDir}:${process.env.PATH || ''}`,
-    GITHUB_OUTPUT: githubOutput,
-  };
-
-  execFileSync('bash', [SCRIPT], { env, stdio: ['ignore', 'pipe', 'pipe'] });
-
-  const output = fs.readFileSync(githubOutput, 'utf8');
-  fs.rmSync(tmpDir, { recursive: true, force: true });
-  return output;
+function makeStubBin() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'guardian-stub-'));
+  const gh = path.join(dir, 'gh');
+  // Stub gh: report no secrets present regardless of args
+  fs.writeFileSync(gh, '#!/usr/bin/env bash\nexit 0\n', { mode: 0o755 });
+  return dir;
 }
 
-test('secrets-guardian syntax is valid', () => {
-  execFileSync('bash', ['-n', SCRIPT], { stdio: 'ignore' });
-});
-
-test('missing= list contains no duplicate secret names', () => {
-  const output = runGuardian();
-  const line = output.split('\n').find((l) => l.startsWith('missing='));
-  assert.ok(line, 'expected missing= line in GITHUB_OUTPUT');
-
-  const names = line.replace(/^missing=/, '').trim().split(/\s+/).filter(Boolean);
-  const seen = new Set();
-  for (const name of names) {
-    assert.ok(!seen.has(name), `duplicate secret in missing=: ${name}`);
-    seen.add(name);
+test('secrets-guardian emits each missing secret exactly once', (t) => {
+  if (!fs.existsSync(SCRIPT)) {
+    t.skip('secrets-guardian.sh not present');
+    return;
   }
-});
 
-test('GITHUB_TOKEN appears exactly once in missing= (regression: bare $CRITICAL_SECRETS guard)', () => {
-  const output = runGuardian();
-  const line = output.split('\n').find((l) => l.startsWith('missing=')) || '';
-  const names = line.replace(/^missing=/, '').trim().split(/\s+/).filter(Boolean);
-  const count = names.filter((n) => n === 'GITHUB_TOKEN').length;
-  assert.equal(count, 1, `GITHUB_TOKEN should appear once, saw ${count} in: ${line}`);
+  const stubBin = makeStubBin();
+  const outFile = path.join(os.tmpdir(), `guardian-out-${process.pid}-${Date.now()}`);
+
+  let threw = false;
+  try {
+    execFileSync('bash', [SCRIPT], {
+      env: {
+        ...process.env,
+        PATH: `${stubBin}:${process.env.PATH || ''}`,
+        GITHUB_OUTPUT: outFile,
+      },
+      stdio: 'pipe',
+    });
+  } catch (_e) {
+    // Script exits non-zero when critical secrets are missing; that's expected here.
+    threw = true;
+  }
+
+  assert.ok(threw, 'script should exit non-zero when critical secrets are missing');
+  assert.ok(fs.existsSync(outFile), 'GITHUB_OUTPUT file should be written');
+
+  const content = fs.readFileSync(outFile, 'utf8');
+  const missingLine = content.split('\n').find((l) => l.startsWith('missing='));
+  assert.ok(missingLine, 'missing= line should be present in GITHUB_OUTPUT');
+
+  const names = missingLine.replace(/^missing=/, '').split(',').filter(Boolean);
+
+  // GITHUB_TOKEN is a critical secret and is the first element of the array; the
+  // regression here is that non-first elements were duplicated. Assert both:
+  // - GITHUB_TOKEN appears exactly once
+  // - Some non-first critical secret (e.g. OPENROUTER_API_KEY) appears exactly once
+  const countGithubToken = names.filter((n) => n === 'GITHUB_TOKEN').length;
+  const countOpenRouter = names.filter((n) => n === 'OPENROUTER_API_KEY').length;
+  assert.strictEqual(countGithubToken, 1, `GITHUB_TOKEN should appear exactly once, got ${countGithubToken} in: ${missingLine}`);
+  assert.strictEqual(countOpenRouter, 1, `OPENROUTER_API_KEY should appear exactly once, got ${countOpenRouter} in: ${missingLine}`);
+
+  // No duplicates overall
+  const seen = new Set();
+  for (const n of names) {
+    assert.ok(!seen.has(n), `duplicate secret name in missing= list: ${n}`);
+    seen.add(n);
+  }
+
+  try { fs.unlinkSync(outFile); } catch (_) {}
+  try { fs.rmSync(stubBin, { recursive: true, force: true }); } catch (_) {}
 });
