@@ -1,288 +1,135 @@
-// Renovate configuration for automated dependency updates.
 {
-  // Renovate configuration for this repository.
+  // Renovate configuration for automated dependency updates.
   // Docs: https://docs.renovatebot.com/configuration-options/
   //
-  // This config is inert until the Renovate GitHub App is installed on the
-  // repo/org. See docs/RENOVATE_SETUP.md for the manual one-time step.
+  // This config is inert until the Renovate GitHub App is installed:
+  //   https://github.com/apps/renovate
+  // See docs/RENOVATE_SETUP.md for full rationale and install steps.
 
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 
   // Renovate's maintained sane-defaults preset: dependency dashboard,
-  // semantic commits, rate limiting, major/minor/patch separation, etc.
-// ═══════════════════════════════════════════════════════════════════════════
-// RENOVATE CONFIGURATION — revvel-standards
-//
-// This file is inert until a repo/org admin installs the Renovate GitHub App
-// at https://github.com/apps/renovate. See docs/RENOVATE_SETUP.md for the
-// full rationale, policy summary, and installation instructions.
-//
-// Validated with: npx --yes -p renovate renovate-config-validator .github/renovate.json5
-{
-  $schema: "https://docs.renovatebot.com/renovate-schema.json",
-
-  // Renovate's maintained sane-defaults preset: dependency dashboard,
-  // semantic commits, rate limiting, major/minor/patch separation, etc.
-  extends: ["config:recommended"],
+  // semantic commits, rate limiting, major/minor/patch separation.
+  extends: ['config:recommended'],
 
   // Match this repo's actual dependency surfaces exactly. No Dockerfiles
-  // exist, so nothing else is enabled by accident when Renovate adds new
-  // managers upstream.
-  enabledManagers: ["npm", "github-actions"],
+  // exist; keep the surface explicit so new upstream managers don't
+  // silently activate.
+  enabledManagers: ['npm', 'github-actions'],
 
-  // Off the Monday 09:00 UTC dependency-update-checker.yml report:
-  // Wednesday gives a couple days' visibility from the manual report
-  // before automated PRs land, and avoids a same-day collision.
-  timezone: "Etc/UTC",
-  schedule: ["before 6am on wednesday"],
-
-  // Caps batch size so a first install (or backlog) doesn't storm the PR
-  // list. This repo has a demonstrated aversion to noisy automation.
-  // Restrict Renovate to the dependency surfaces this repo actually has.
-  // No Dockerfiles exist; explicitly listing managers prevents accidental
-  // activation when Renovate adds new managers upstream.
-  // ─── SCOPE ──────────────────────────────────────────────────────────────
-  // This repo's dependency surfaces today: npm (package.json) and GitHub
-  // Actions (.github/workflows/*.yml). No Dockerfiles, no other package
-  // managers detected. Being explicit here means adding a new manager
-  // (e.g. a future Dockerfile) is a deliberate opt-in, not a silent
-  // auto-enable next time Renovate's own defaults change.
-  enabledManagers: [
-    'npm',
-    'github-actions',
-  ],
-
-  // Scheduling: run Wednesday early morning UTC so that the existing
-  // Monday 09:00 UTC `dependency-update-checker.yml` manual report has a
-  // couple of days of visibility before automated PRs land.
-  // ─── SCHEDULING ─────────────────────────────────────────────────────────
-  // dependency-update-checker.yml already runs Monday 09:00 UTC and files a
-  // manual report issue. Renovate's own PR batch runs later in the same
-  // week, off-hours, so: (a) it never collides with the Monday report run,
-  // and (b) maintainers get a couple of days' visibility from the manual
-  // report before automated PRs actually land. All times are UTC to match
-  // the cron schedules already used elsewhere in .github/workflows/*.yml
-  // (GitHub Actions cron is always UTC).
+  // Schedule off the Monday 09:00 UTC dependency-update-checker.yml
+  // report: Wednesday gives a couple days' visibility from the manual
+  // report before automated PRs land.
   timezone: 'Etc/UTC',
-  schedule: [
-    'before 6am on wednesday',
-  ],
+  schedule: ['before 6am on wednesday'],
 
-  // Rate limiting: cap PR churn, especially for the initial run/backlog.
+  // Cap batch size so a first install (or backlog) doesn't storm the PR
+  // list. This repo has a demonstrated aversion to noisy automation.
   prConcurrentLimit: 10,
   prHourlyLimit: 4,
 
-  // Central tracking issue for pending updates and major-version gating.
-  // Cap batch size so a fresh install (or a big backlog) doesn't dump dozens
-  // of PRs at once — consistent with this repo's demonstrated aversion to
-  // noisy automation (see CLAUDE.md's gotchas about noisy/broken checks).
-  prConcurrentLimit: 10,
-  prHourlyLimit: 4,
-
-  // Renovate's built-in "everything pending" tracking issue. Mirrors this
-  // repo's existing WR/issue tracking conventions; majors require checking
-  // a box here before their PR even opens.
+  // Renovate's built-in "everything pending" tracking issue. Majors
+  // require checking a box here before their PR even opens.
   dependencyDashboard: true,
-  dependencyDashboardLabels: ["dependencies"],
   dependencyDashboardTitle: 'Renovate Dependency Dashboard',
-  dependencyDashboardLabels: [
-    'dependencies',
-    'renovate',
-  ],
+  dependencyDashboardLabels: ['dependencies', 'renovate'],
 
-  // Use the same label the existing dependency-update-checker.yml issues use.
-  ],
+  // Same label dependency-update-checker.yml already uses for its
+  // report issues — one taxonomy, not two.
+  labels: ['dependencies'],
 
-  // Same label dependency-update-checker.yml already uses for its report
-  // issues -- one taxonomy, not two.
-  labels: ["dependencies"],
-
-  // Produces `type(scope): description` titles matching this repo's
-  // conventional-commit convention (enforced by pull_request_template.md).
-  semanticCommits: "enabled",
+  // Produce `type(scope): description` titles matching this repo's
+  // conventional-commit convention (enforced by the PR template).
+  semanticCommits: 'enabled',
   commitMessagePrefix: null,
 
-  // Matches package.json's existing mixed caret-range style instead of
+  // Match package.json's existing mixed caret-range style instead of
   // fighting it.
-  rangeStrategy: "auto",
-  // Conventional-commit style titles (matches the repo's PR template checklist).
-  semanticCommits: 'enabled',
-  commitMessagePrefix: '',
-  commitBodyTable: true,
-
-  // Match package.json's existing mixed caret-range style instead of forcing it.
   rangeStrategy: 'auto',
 
-  // Weekly lockfile refresh catches transitive drift that wouldn't otherwise
-  // trigger a PR.
+  // Catch transitive-dependency drift that wouldn't otherwise trigger
+  // a PR.
   lockFileMaintenance: {
     enabled: true,
-    schedule: [
-      'before 6am on wednesday',
-    ],
+    schedule: ['before 6am on wednesday'],
     commitMessageAction: 'Refresh',
-    commitMessageTopic: 'lockfile',
+    commitMessageTopic: 'lock file',
   },
-
-  // Security fixes: bypass the weekly schedule and open immediately.
-  // ─── COMMIT MESSAGE / PR TITLE CONVENTIONS ─────────────────────────────
-  // This repo's commit history and .github/pull_request_template.md both
-  // require conventional-commit-format titles: `type(scope): description`
-  // (e.g. `chore(controller): ...`, `feat(self-heal): ...`). Renovate's
-  // semantic-commits feature produces exactly that shape; pin the type/scope
-  // so output reads as `chore(deps): update dependency X to vY` for npm and
-  // is overridden to `chore(actions): ...` for GitHub Actions below.
-  semanticCommits: 'enabled',
-  semanticCommitType: 'chore',
-  semanticCommitScope: 'deps',
 
   // Security fixes open immediately, not delayed by the weekly cadence.
   // OSV widens detection beyond GitHub's native advisory feed.
   vulnerabilityAlerts: {
     enabled: true,
-    labels: ["dependencies", "security"],
-    schedule: ["at any time"],
-    labels: [
-      'dependencies',
-      'security',
-    ],
-    schedule: [
-      'at any time',
-    ],
+    labels: ['dependencies', 'security'],
+    schedule: ['at any time'],
   },
-
-  // Widen vulnerability detection beyond GitHub's native advisory feed.
   osvVulnerabilityAlerts: true,
 
-  // GitHub Actions pin behavior: repo overwhelmingly pins by version tag
-  // (@v4, @v9.0.0); a couple of security-audit-owned workflows additionally
-  // SHA-pin with a `# vX.Y.Z` comment. Don't force tag-pinned actions into
-  // SHA pinning -- that's the audit workflows' call. Already-SHA-pinned
-  // actions still get digest/version-comment updates by default.
+  // GitHub Actions: repo overwhelmingly pins by version tag (@v4). A
+  // few security-audit workflows SHA-pin with a "# vX.Y.Z" comment.
+  // Do not force tag-pinned actions into SHA pinning — that's the audit
+  // workflows' call. Renovate still updates already-SHA-pinned digests
+  // by default.
   'github-actions': {
     pinDigests: false,
   },
 
   packageRules: [
-    // ---- GitHub Actions ----
-    // Group non-major bumps into one PR and auto-merge once CI is green.
-    // 166+ workflow files ungrouped would be extremely noisy.
+    // GitHub Actions: non-major grouped and auto-mergeable. 166+
+    // workflow files ungrouped would be extremely noisy; non-major
+    // bumps are low-risk CI tooling.
     {
       matchManagers: ['github-actions'],
       matchUpdateTypes: ['minor', 'patch', 'digest'],
       groupName: 'github-actions (non-major)',
-  },
-  osvVulnerabilityAlerts: true,
-
-  // Catches transitive-dependency drift that wouldn't otherwise trigger a
-  // PR.
-  lockFileMaintenance: {
-    enabled: true,
-    schedule: ["before 6am on wednesday"],
-  },
-
-  // Repo overwhelmingly pins actions by version tag (@v4, @v9.0.0); a
-  // couple of security-audit-owned workflows additionally SHA-pin with a
-  // `# vX.Y.Z` comment. Renovate is told not to force tag-pinned actions
-  // into SHA pinning (that's the audit workflows' call), but still keeps
-  // already-SHA-pinned actions' digests (and version comments) current.
-  "github-actions": {
-    pinDigests: false,
-  },
-
-  packageRules: [
-    // GitHub Actions: non-major grouped + auto-merge.
-    // 166+ workflow files ungrouped would be extremely noisy; non-major
-    // bumps are low-risk CI tooling, safe to auto-merge once CI is green.
-    {
-      matchManagers: ["github-actions"],
-      matchUpdateTypes: ["minor", "patch", "digest"],
-      groupName: "github-actions (non-major)",
       automerge: true,
-      automergeType: "pr",
+      automergeType: 'pr',
       platformAutomerge: true,
+      labels: ['dependencies', 'github-actions'],
     },
 
-    // GitHub Actions: major, isolated, no auto-merge, dashboard-gated.
-    // Breaking action changes get individual review, one PR each, and
-    // don't even open until a maintainer opts in from the dashboard.
-    // Major GitHub Actions bumps: isolated, no auto-merge, dashboard-gated.
+    // GitHub Actions major: isolated, no auto-merge, dashboard-gated.
+    // Breaking action changes get individual review, one PR each.
     {
       matchManagers: ['github-actions'],
       matchUpdateTypes: ['major'],
       dependencyDashboardApproval: true,
       automerge: false,
-      groupName: null,
-      commitMessageSuffix: '(major)',
+      labels: ['dependencies', 'github-actions', 'major-update'],
     },
 
-    // ---- npm devDependencies ----
-    // Low-risk dev tooling: group non-major bumps and auto-merge.
+    // npm devDependencies non-major: grouped and auto-mergeable. Same
+    // low-risk rationale — dev tooling, not shipped.
     {
       matchManagers: ['npm'],
       matchDepTypes: ['devDependencies'],
       matchUpdateTypes: ['minor', 'patch'],
       groupName: 'npm devDependencies (non-major)',
-    // GitHub Actions — major bumps stay isolated and manual.
-    {
-      matchManagers: ["github-actions"],
-      matchUpdateTypes: ["major"],
-      dependencyDashboardApproval: true,
-      automerge: false,
-    },
-
-    // npm devDependencies: non-major grouped + auto-merge.
-    // Same low-risk rationale as GH Actions -- dev tooling, not shipped.
-    {
-      matchManagers: ["npm"],
-      matchDepTypes: ["devDependencies"],
-      matchUpdateTypes: ["minor", "patch"],
-      groupName: "npm devDependencies (non-major)",
       automerge: true,
-      automergeType: "pr",
+      automergeType: 'pr',
       platformAutomerge: true,
+      labels: ['dependencies', 'npm'],
     },
 
-    // npm production dependencies: never auto-merged (any bump size).
-    // No `dependencies` block exists in package.json today, but the rule
-    // is defined pre-emptively so it's correct the moment one is added --
-    // production deps always need human review.
-    // ---- npm production dependencies ----
-    // No `dependencies` block exists in package.json today, but the rule is
-    // defined pre-emptively so it's correct the moment one is added:
-    // production deps ALWAYS need human review, regardless of bump size.
+    // npm production dependencies: never auto-merged, any bump size.
+    // No `dependencies` block exists today, but the rule is defined
+    // pre-emptively so it's correct the moment one is added.
     {
       matchManagers: ['npm'],
       matchDepTypes: ['dependencies'],
       automerge: false,
+      labels: ['dependencies', 'npm', 'production'],
     },
 
-    // ---- Any major bump, either manager ----
-    // Belt-and-suspenders: isolate majors and gate them behind the dashboard.
-    // This is the anchor of the conservative auto-merge policy -- Renovate
-    // will NOT blindly auto-merge everything it opens.
+    // Any major bump on either manager: isolated + dashboard-gated.
+    // Ties the whole auto-merge policy back to WR #15833's flagged gap:
+    // this config does NOT blindly auto-merge everything Renovate opens.
     {
+      matchManagers: ['npm', 'github-actions'],
       matchUpdateTypes: ['major'],
       dependencyDashboardApproval: true,
       automerge: false,
-    },
-  ],
-    // npm production dependencies — visible, grouped for readability, but
-    // NEVER auto-merged (any bump type). Currently a no-op (no `dependencies`
-    // block in package.json today) — defined proactively for when one exists.
-    {
-      matchManagers: ["npm"],
-      matchDepTypes: ["dependencies"],
-      automerge: false,
-    },
-
-    // Any major bump (either manager): isolated + dashboard-gated.
-    // Ties the whole auto-merge policy back to the flagged gap: this
-    // config does NOT blindly auto-merge everything Renovate opens.
-    {
-      matchUpdateTypes: ["major"],
-      dependencyDashboardApproval: true,
-      automerge: false,
+      labels: ['dependencies', 'major-update'],
     },
   ],
 }
