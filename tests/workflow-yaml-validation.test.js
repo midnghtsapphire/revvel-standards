@@ -1052,8 +1052,8 @@ test('devin-code-review.yml is SHA-pinned, opt-in only, and soft-skips without c
 });
 
 test('pr-lifecycle.yml check-state workflow_run allowlist matches real workflow names, sorted, no wildcard', () => {
-  // Drift guard for the rate-limit-exhaustion fix (2026-07-13, see PR #15887
-  // and the check-state hardening in the same series): workflow_run's
+  // Drift guard for the rate-limit-exhaustion fix and the check-state
+  // hardening in the same series (2026-07-13, see PR #15887): workflow_run's
   // `workflows:` filter matches by name verbatim, so a renamed/deleted
   // workflow silently stops re-triggering check-state with no error anywhere.
   const filePath = path.join(WORKFLOWS_DIR, 'pr-lifecycle.yml');
@@ -1061,7 +1061,7 @@ test('pr-lifecycle.yml check-state workflow_run allowlist matches real workflow 
   const doc = yaml.parse(content);
 
   const on = doc.on || doc[true];
-  const allowlist = on.workflow_run?.workflows;
+  const allowlist = on?.workflow_run?.workflows;
   if (!Array.isArray(allowlist) || allowlist.length === 0) {
     throw new Error('check-state workflow_run.workflows allowlist not found');
   }
@@ -1082,7 +1082,11 @@ test('pr-lifecycle.yml check-state workflow_run allowlist matches real workflow 
   const sorted = [...allowlist].sort((a, b) => {
     const ka = key(a);
     const kb = key(b);
-    return ka < kb ? -1 : ka > kb ? 1 : 0;
+    if (ka < kb) return -1;
+    if (ka > kb) return 1;
+    // Case-insensitive keys tie (e.g. two names differing only by case) —
+    // fall back to the original strings so the sort stays deterministic.
+    return a < b ? -1 : a > b ? 1 : 0;
   });
   if (JSON.stringify(allowlist) !== JSON.stringify(sorted)) {
     throw new Error('workflow_run.workflows allowlist must stay case-insensitively alphabetical (reduces merge conflicts, eases audits)');
