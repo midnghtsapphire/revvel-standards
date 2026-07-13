@@ -201,6 +201,22 @@ these. Each pattern below was found and fixed at least once in this repo.
   your own PRs" audit step above. See PR #15828
   (`saml-sso-check-broken-action`).
 
+### 9. GitHub installation API rate limit during CodeQL SARIF upload
+- **Symptom:** CodeQL `Analyze` job fails with `API rate limit exceeded for
+  installation` during SARIF fingerprinting/upload or telemetry gathering.
+  The analysis itself completes, but results never reach the Security tab.
+- **Root cause:** Multiple matrix jobs (e.g. `actions`, `javascript-typescript`,
+  `python`) run simultaneously, each hitting the GitHub REST API during their
+  post-analysis upload phase. The installation token's rate limit is shared
+  across ALL concurrent workflow runs in the repo — parallel SARIF uploads
+  from the same workflow, plus any other automation, can exhaust it.
+- **Fix:** (1) Add `max-parallel: 1` to the matrix strategy so language scans
+  serialize their upload phases. (2) Add a retry step with 60s backoff after
+  the first upload attempt fails. The `continue-on-error: true` on upload
+  already prevents PR gating. See issue #15851 (`codeql.yml`).
+- **Tools:** `github/codeql-action/upload-sarif@v4`, `wait-for-processing`,
+  GitHub Actions `get_job_logs`, `max-parallel` strategy key.
+
 ## Where the memory lives
 
 - This playbook: `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`
