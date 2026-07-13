@@ -20,13 +20,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-permissions:
-  contents: write
-
 jobs:
   fix-build:
     name: DependaFix — auto-remediate breaking dependency changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     # Only run on Dependabot PRs — never on human-authored branches
     if: github.event.pull_request.user.login == 'dependabot[bot]'
 
@@ -48,7 +47,7 @@ jobs:
 
       - name: Test Build
         id: build
-        run: npm run build 2> error_log.txt
+        run: npm run build > error_log.txt 2>&1
         continue-on-error: true
 
       # If the build failed, trigger the self-healing agent
@@ -70,5 +69,5 @@ jobs:
           git add .
           if ! git diff --staged --quiet; then
             git commit -m "fix(deps): auto-remediate breaking dependency changes"
-            git push
+            git push --force-with-lease
           fi
