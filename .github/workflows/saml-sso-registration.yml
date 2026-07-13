@@ -1,3 +1,12 @@
+name: SAML SSO Registration Check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
 name: SAML SSO Registration
 
 on:
@@ -26,9 +35,36 @@ jobs:
     types: [opened, synchronize, reopened]
 
 jobs:
-  verify-saml-identity:
-    name: Verify SAML SSO Identity
+  check-saml-linked:
+    name: Check SAML SSO Identity Linked
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.fork == false
+    steps:
+      - name: Check SAML identity via GraphQL
+        id: saml
+        uses: actions/github-script@v7
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          ORG_LOGIN: ${{ github.repository_owner }}
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const author = process.env.PR_AUTHOR;
+            const org = process.env.ORG_LOGIN;
+            core.info(`Checking SAML identity for @${author} in org ${org}`);
+
+            const query = `
+              query($org: String!, $login: String!) {
+                organization(login: $org) {
+                  samlIdentityProvider {
+                    externalIdentities(first: 1, login: $login) {
+                      edges {
+                        node {
+                          samlIdentity {
+                            nameId
+                          }
+                          user {
+                            login
     permissions:
       pull-requests: write
       contents: read
@@ -175,6 +211,29 @@ jobs:
 
             try {
               const result = await github.graphql(query, { org, login: author });
+              const idp = result?.organization?.samlIdentityProvider;
+              if (!idp) {
+                core.info('Organization does not have SAML SSO configured; skipping check.');
+                core.setOutput('linked', 'skip');
+                return;
+              }
+              const edges = idp.externalIdentities?.edges || [];
+              const nameId = edges[0]?.node?.samlIdentity?.nameId;
+              if (nameId) {
+                core.info(`SAML identity linked: ${nameId}`);
+                core.setOutput('linked', 'true');
+              } else {
+                core.warning(`No SAML identity found for @${author}`);
+                core.setOutput('linked', 'false');
+              }
+            } catch (err) {
+              core.warning(`SAML lookup failed (likely missing admin:org scope): ${err.message}`);
+              core.setOutput('linked', 'skip');
+            }
+
+      - name: Comment on PR if SAML not linked
+        if: steps.saml.outputs.linked == 'false'
+        uses: actions/github-script@v7
               const idp = result.organization && result.organization.samlIdentityProvider;
               if (!idp) {
                 core.info(`Org ${org} has no SAML IdP configured; skipping.`);
@@ -252,7 +311,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const author = context.payload.pull_request.user.login;
+            const org = context.repo.owner;
             const body = [
+              `👋 @${author} — your GitHub account does not appear to have a SAML SSO identity linked in the **${org}** organization.`,
+              ``,
+              `To contribute, please link your SAML identity: https://github.com/orgs/${org}/sso`,
+              ``,
+              `_This check is informational and does not block your PR._`,
               '## SAML SSO Identity Not Linked',
               '',
               `@${context.payload.pull_request.user.login}, your GitHub account does not appear to have a SAML SSO identity linked to the \`${context.repo.owner}\` organization.`,
@@ -280,12 +346,11 @@ jobs:
               '',
               'If you believe this is an error, contact the organization administrators.'
             ].join('\n');
-            const username = '${{ steps.resolve-user.outputs.username }}';
-            const org = '${{ github.repository_owner }}';
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
+              body,
               body
               body,
               body: [

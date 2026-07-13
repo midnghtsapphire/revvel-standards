@@ -10,6 +10,29 @@ permissions:
 
 jobs:
   devin-review:
+    name: Devin AI Code Review
+    runs-on: ubuntu-latest
+    # Soft-skip when credentials are not configured; opt-in only.
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Check for Devin credentials
+        id: creds
+        run: |
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DEVIN_API_KEY not configured; skipping Devin review (soft-skip)."
+          fi
+
+      - name: Checkout
+        if: steps.creds.outputs.has_creds == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Devin review
+        if: steps.creds.outputs.has_creds == 'true'
     runs-on: ubuntu-latest
     if: ${{ !github.event.pull_request.draft }}
     steps:
@@ -41,6 +64,12 @@ jobs:
           api-key: ${{ secrets.DEVIN_API_KEY }}
           mode: review
 
+      - name: Post-review notice
+        if: steps.creds.outputs.has_creds == 'true'
+        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
+        with:
+          api-key: ${{ secrets.DEVIN_API_KEY }}
+          mode: notify
       - name: Post Devin review comment
         if: steps.check.outputs.present == 'true'
       # -----------------------------------------------------------------------
