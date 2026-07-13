@@ -139,6 +139,21 @@ jobs:
             echo "agent_workflows=missing: ${MISSING[*]}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check grounding gate (ship-quality)
+        id: grounding_gate
+        run: |
+          # Detect persistent ship-quality (grounding gate) failures.
+          # A single transient flake is noise; 2+ failures of the last 5
+          # ship-quality runs signal a persistently red test suite that must be
+          # escalated. The workflow file slug is used (not the display name) so
+          # this check cannot break if the workflow's name: field is renamed.
+          # Fail-open: if the API is unavailable emit 0 so we never false-flag.
+          GATE_FAILED=$(gh api "repos/${GH_REPO}/actions/workflows/ship-quality.yml/runs" \
+            --jq '[.workflow_runs[:5][] | select(.conclusion == "failure")] | length' \
+            2>/dev/null || echo 0)
+          echo "grounding_gate_failed=${GATE_FAILED}" >> "$GITHUB_OUTPUT"
+          echo "Recent ship-quality failures (last 5 runs): ${GATE_FAILED}"
+
       - name: Scan for broken areas
         id: scan
         env:
@@ -151,6 +166,7 @@ jobs:
           ACTIONS_FAILED: ${{ steps.actions.outputs.failed_count }}
           STUCK: ${{ steps.stuck.outputs.stuck_count }}
           AGENTS: ${{ steps.agents.outputs.agent_workflows }}
+          GATE_FAILED: ${{ steps.grounding_gate.outputs.grounding_gate_failed }}
         run: |
           BROKEN=()
           
@@ -165,7 +181,15 @@ jobs:
           if ! echo "$AGENTS" | grep -q "healthy"; then
             BROKEN+=("Missing workflows: $AGENTS")
           fi
-          
+
+          # Grounding gate: 2+ failures in the last 5 ship-quality runs means
+          # npm test is persistently red (threshold > 1, so single flakes are
+          # ignored). Filed as a separate broken-area so the heal step can
+          # create a targeted WR rather than just re-running failed workflows.
+          if [[ "${GATE_FAILED:-0}" -gt 1 ]]; then
+            BROKEN+=("Grounding gate: $GATE_FAILED ship-quality failures")
+          fi
+
           # Emit each broken-area element with %s. Guard on array length: a bare
           # `printf '%s; '` with no args still prints "; " (non-empty), which
           # would mark the system needs-healing on every healthy run. An empty
@@ -261,6 +285,38 @@ jobs:
               --jq '.workflow_runs[] | select(.conclusion == "failure") | .id' | head -3)
           fi
           echo "rerun_ids=${RERUN_IDS[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Heal grounding gate failures
+        id: heal_grounding
+        env:
+          BROKEN: ${{ needs.research-state.outputs.broken }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if echo "$BROKEN" | grep -q "Grounding gate"; then
+            echo "=== HEALING GROUNDING GATE ==="
+            # File or update a targeted WR so the auto-routing system can pick
+            # it up and dispatch an auto-fix agent. Follow the biome-sentinel
+            # pattern: update the first open issue in place; never create
+            # duplicates per sweep.
+            OPEN_GATE=$(gh issue list --label auto-fix --state open \
+              --search "[SELF-HEAL] Grounding gate in:title" --json number \
+              --jq '.[0].number' 2>/dev/null || echo "")
+            BODY=$(printf \
+              "## Grounding Gate Failure\n\n**Detected:** %s\n**Self-heal run:** %s\n\nThe \`npm test\` suite is persistently red. The grounding gate (ship-quality.yml) is blocking PRs. This issue was auto-filed by the self-healing agent and routed for an auto-fix pass.\n\n### What to check\n1. Run \`npm test\` locally to reproduce the failure.\n2. Check recent commits to \`main\` for changes to test files or dependencies.\n3. See \`learnings.md\` for previous grounding gate incidents.\n\n### Do not close manually\nThe self-healing agent closes this automatically once the grounding gate is verified green." \
+              "$(date -u)" "$RUN_URL")
+            if [[ -n "$OPEN_GATE" ]]; then
+              gh issue edit "$OPEN_GATE" \
+                --title "[SELF-HEAL] Grounding gate red — npm test failing" \
+                --body "$BODY" 2>/dev/null \
+                && echo "Updated grounding gate issue #$OPEN_GATE in place"
+            else
+              gh issue create \
+                --title "[SELF-HEAL] Grounding gate red — npm test failing" \
+                --body "$BODY" \
+                --label "auto-fix,self-healing,wr:new" 2>/dev/null \
+                || echo "::warning::Could not create grounding gate issue — check labels and permissions"
+            fi
+          fi
 
       - name: Verify healing
         id: verify
