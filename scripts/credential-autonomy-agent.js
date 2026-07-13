@@ -87,9 +87,15 @@ function run(command, args = [], options = {}) {
   // spawnSync with an explicit argv array does NOT spawn a shell, so args
   // cannot be shell-injected. All callers pass a fixed command ('gh').
   // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); command is a fixed literal at every call site
+  //
+  // Callers may pass `options.input` to feed data (e.g. secret values) to
+  // the child's stdin instead of argv, since argv is visible to any other
+  // process on the host for the process's lifetime via
+  // /proc/<pid>/cmdline or `ps aux`. stdio[0] must be 'pipe' (not
+  // 'ignore') for `input` to actually reach the child.
   const result = spawnSync(command, args, {
     encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
+    stdio: [options.input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe'],
     ...options,
   });
   return {
@@ -206,7 +212,11 @@ async function restore(secretsToRestore) {
     if (DRY_RUN) {
       log(`${name}: would restore (DRY RUN)`, 'action');
     } else {
-      const result = run('gh', ['secret', 'set', name, '--body', value, '--repo', REPO]);
+      // Pass the plaintext value via stdin (not argv/--body) so it never
+      // appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
+      // from stdin by default when --body is omitted — same safe pattern
+      // already established in scripts/provision-repo-secrets.sh.
+      const result = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
       if (result.ok) {
         log(`${name}: restored`, 'success');
         restored.push(name);
