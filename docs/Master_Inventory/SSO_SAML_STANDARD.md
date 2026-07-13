@@ -84,7 +84,7 @@ export default function LoginPage() {
 
 ## 3. Resolving GitHub SAML Identity in CI/CD
 
-When a workflow needs to map a GitHub username (e.g., a PR author) to their corporate SSO email, use the `gagoar/get-saml-identity-action`.
+When a workflow needs to map a GitHub username (e.g., a PR author) to their corporate SSO email, query GitHub's GraphQL SAML identity mapping directly with `actions/github-script`. (Do **not** use the third-party `gagoar/get-saml-identity-action` — its only published tag never shipped its compiled `dist/` bundle and fails every run with `File not found: .../dist/index.js`.)
 
 ### 3.1. Why This Is Needed
 
@@ -125,16 +125,34 @@ jobs:
     steps:
       - name: Get SAML identity for PR author
         id: saml
-        uses: gagoar/get-saml-identity-action@0.9.0
+        uses: actions/github-script@v8
+        env:
+          TARGET_USERNAME: ${{ github.actor }}
         with:
-          login: ${{ github.actor }}
-          organization: ${{ github.repository_owner }}
-          token: ${{ secrets.ORG_ADMIN_TOKEN }}
+          github-token: ${{ secrets.ORG_ADMIN_TOKEN }}
+          script: |
+            const result = await github.graphql(
+              `query($org: String!, $login: String!) {
+                organization(login: $org) {
+                  samlIdentityProvider {
+                    externalIdentities(first: 1, login: $login) {
+                      nodes { samlIdentity { nameId } }
+                    }
+                  }
+                }
+              }`,
+              { org: context.repo.owner, login: process.env.TARGET_USERNAME }
+            );
+            const provider = result.organization && result.organization.samlIdentityProvider;
+            const node = provider && provider.externalIdentities.nodes[0];
+            core.setOutput('identity', (node && node.samlIdentity && node.samlIdentity.nameId) || '');
 
       - name: Print resolved identity
+        env:
+          IDENTITY: ${{ steps.saml.outputs.identity }}
         run: |
           echo "GitHub user : ${{ github.actor }}"
-          echo "SSO email   : ${{ steps.saml.outputs.identity }}"
+          echo "SSO email   : ${IDENTITY}"
 ```
 
 For the full reusable template, see `templates/cicd/get-saml-identity.yml`.
