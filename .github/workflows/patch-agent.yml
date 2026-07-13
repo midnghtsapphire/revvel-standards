@@ -34,13 +34,36 @@ jobs:
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
       - name: Run patch agent (report)
         id: report
-        run: node scripts/patch-agent.js --check | tee /tmp/patch-report.txt
+        run: |
+          # pipefail so the pipeline's exit code reflects patch-agent.js, not
+          # tee — otherwise a crash/throw in the scanner is masked by tee's 0
+          # and a failed scan looks successful.
+          set -o pipefail
+          node scripts/patch-agent.js --check | tee /tmp/patch-report.txt
       - name: Apply fixes and open PR
         if: inputs.fix == true
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
+          set -o pipefail
           node scripts/patch-agent.js --fix
+
+          # patch-agent.js --fix only raises the DECLARED range in package.json;
+          # it does NOT touch package-lock.json. Without regenerating the
+          # lockfile, `npm ci` in later CI keeps installing the OLD (vulnerable)
+          # resolved version and vulnerability scans re-flag the same advisory
+          # forever. Regenerate the lockfile for every package dir whose
+          # package.json the fixer changed, so the resolved versions match the
+          # new floors. --package-lock-only updates the lockfile without a full
+          # install.
+          CHANGED_PKG_DIRS="$(git diff --name-only -- '*package.json' | xargs -r -n1 dirname | sort -u)"
+          for dir in $CHANGED_PKG_DIRS; do
+            if [ -f "$dir/package-lock.json" ]; then
+              echo "Regenerating lockfile in ${dir}"
+              ( cd "$dir" && npm install --package-lock-only --no-audit --no-fund )
+            fi
+          done
+
           if [ -n "$(git status --porcelain)" ]; then
             branch="patch-agent/security-bumps-${{ github.run_id }}"
             git config user.name "github-actions[bot]"
