@@ -1,0 +1,90 @@
+# ChaosMender — Error Pattern Sentinel
+# Inspired by Netflix Chaos Monkey. Instead of randomly killing services to
+# test resilience, ChaosMender proactively scans for KNOWN failure patterns
+# from config/error-ledger.json BEFORE they cause incidents.
+#
+# When unguarded patterns are detected:
+#   - Reports exact file + line number + known fix from the ledger
+#   - Files a [SELF-HEAL] GitHub issue so the self-healing loop picks it up
+#
+# Runs:
+#   - On every PR that touches workflows or scripts (prevention gate)
+#   - Daily at 06:00 UTC (background detection sweep)
+#   - On workflow_dispatch (manual trigger)
+
+name: ChaosMender
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'config/error-ledger.json'
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      file_issues:
+        description: 'File GitHub issues for findings (true/false)'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  scan:
+    name: Scan for known error patterns
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run ChaosMender scan
+        id: scan
+        # On PRs: report only (don't file issues — the developer sees the output).
+        # On schedule or manual dispatch: report + file issues so the self-healing
+        # loop can track and auto-remediate.
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            node scripts/chaosmender.js
+          elif [[ "${{ github.event.inputs.file_issues }}" == "false" ]]; then
+            node scripts/chaosmender.js
+          else
+            node scripts/chaosmender.js --file-issues
+          fi
+        env:
+          GH_TOKEN: ${{ env.GH_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Annotate PR with findings
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '## ⚡ ChaosMender detected known error patterns',
+                '',
+                'This PR introduces or modifies files that trigger patterns in `config/error-ledger.json`.',
+                'See the [ChaosMender job log](' +
+                  context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo +
+                  '/actions/runs/' + context.runId + ') for exact locations and fixes.',
+                '',
+                'Apply the listed fix before merging to prevent a production incident.',
+              ].join('\n'),
+            });
