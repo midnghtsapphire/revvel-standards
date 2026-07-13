@@ -1,264 +1,178 @@
 #!/usr/bin/env node
 /**
- * Auto-resolve mechanical merge conflicts.
+ * auto-resolve-mechanical-conflicts.js
  *
- * Run inside a merge-in-progress worktree (the caller already ran
- * `git merge --no-commit --no-ff <ref>` and got conflicts). This script
- * walks each conflicted file, classifies every conflict hunk by pattern,
- * and resolves the safe patterns in place. Anything ambiguous is left
- * with conflict markers intact so a human still decides.
+ * Attempts to mechanically resolve simple merge conflicts (e.g. version bumps
+ * in GitHub Actions `uses:` lines) left over from a `git merge` that produced
+ * conflict markers in the working tree.
  *
- * Safe patterns we resolve:
+ * Exit code contract:
+ *   0 - every conflicted file was fully, mechanically resolved (RESOLVED)
+ *   2 - at least one conflicted file was NOT fully resolved. This includes:
+ *         * SKIP     (file type/path we refuse to touch)
+ *         * PARTIAL  (some hunks resolved, some ambiguous)
+ *         * MANUAL   (nothing resolvable; also covers the zero-hunk case,
+ *                    e.g. binary "both modified" conflicts that never get
+ *                    textual <<<<<<< markers)
+ *   1 - unexpected/internal error
  *
- *   1. VERSION_BUMP — same `uses: owner/repo@ref` line on both sides,
- *      different `@ref`. Keep the newer one (SHA-pinned > tag, higher
- *      semver > lower, longer-prefix SHA > shorter).
- *
- *   2. ADDITIVE_LINES — incoming and current both ADD lines around the
- *      same anchor in main, neither removes anything. Keep both blocks
- *      in original order (current first, incoming after). Detected by
- *      "incoming is N new lines + current is M different new lines and
- *      neither hunk side is a strict subset of the merge-base context."
- *
- * Anything else is marked ambiguous; the script writes the file back
- * with markers intact and reports it on stdout.
- *
- * Output:
- *   - Resolved files written in place.
- *   - One line per file printed to stdout:
- *       RESOLVED <path>   N hunks ok
- *       PARTIAL  <path>   N ok, M ambiguous
- *       MANUAL   <path>   all M hunks ambiguous
- *   - Exit code 0 iff every conflicted file came out fully, cleanly
- *     resolved (this includes files with zero recognized conflict-marker
- *     hunks, e.g. binary "both modified" conflicts — those still count as
- *     unresolved and block a 0 exit).
- *   - Exit code 2 iff anything remained ambiguous, unresolved, or unparsed.
- *
- * Caller responsibility:
- *   - Decide whether to commit (exit 0) or `git merge --abort` (exit 2).
- *   - Post the per-file summary to the PR as a comment.
+ * Important: a conflicted file with zero detected marker hunks (binary
+ * conflicts, unusual conflict styles) is counted as UNRESOLVED, not as a
+ * success. Previously the exit code was gated only on `totalAmbiguous`
+ * (which counts hunks, not files), so a PR whose only conflicts were binary
+ * would exit 0 and the CI helper would happily push the unresolved state
+ * back onto the PR branch. See conflict-helper.yml.
  */
 
-"use strict";
+'use strict';
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-// ── Pattern detectors ───────────────────────────────────────────────────────
-
-const USES_LINE = /^(\s*-?\s*uses:\s*)([A-Za-z0-9_.\/-]+)@([^\s#]+)(.*)$/;
-
-/**
- * If both sides are exactly one line and both match `uses: owner/repo@ref`
- * with the same owner/repo, return the resolved line (newer ref wins).
- * Otherwise return null.
- */
-function tryVersionBump(currentBlock, incomingBlock) {
-  // Preserve indent — split without trimming, then drop empty trailing lines.
-  const curr = currentBlock.split(/\r?\n/).filter((l) => l !== "");
-  const inc = incomingBlock.split(/\r?\n/).filter((l) => l !== "");
-  if (curr.length !== 1 || inc.length !== 1) return null;
-
-  const cm = curr[0].match(USES_LINE);
-  const im = inc[0].match(USES_LINE);
-  if (!cm || !im) return null;
-  if (cm[2] !== im[2]) return null; // different action — not a version bump
-
-  const newer = pickNewerRef(cm[3], im[3]);
-  if (!newer) return null; // can't decide — leave to human
-
-  // Take the matching source line (preserves indentation + trailing comment).
-  const winner = newer === cm[3] ? curr[0] : inc[0];
-  return winner + "\n";
+function listConflictedFiles() {
+  const out = execSync('git diff --name-only --diff-filter=U', { encoding: 'utf8' });
+  return out.split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
 /**
- * Return whichever ref is newer ("a" or "b"), or null if undecidable.
- * Rules:
- *   - SHA (40-char hex) is treated as the newest reference because it's
- *     immutable. If both sides are SHAs, prefer the longer/more-recent
- *     one we cannot determine — return null.
- *   - vX.Y.Z semver: compare numerically.
- *   - vX vs vY: compare major.
- *   - SHA vs tag: SHA wins (immutable pin).
- *   - Anything else: null.
- */
-function pickNewerRef(a, b) {
-  const isSha = (s) => /^[0-9a-f]{40}$/i.test(s);
-  if (a === b) return a;
-  if (isSha(a) && isSha(b)) return null;
-  if (isSha(a)) return a;
-  if (isSha(b)) return b;
-
-  const sem = (s) => {
-    const m = s.match(/^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?/);
-    if (!m) return null;
-    return [m[1], m[2] || "0", m[3] || "0"].map(Number);
-  };
-  const sa = sem(a);
-  const sb = sem(b);
-  if (!sa || !sb) return null;
-  for (let i = 0; i < 3; i++) {
-    if (sa[i] > sb[i]) return a;
-    if (sb[i] > sa[i]) return b;
-  }
-  return null;
-}
-
-/**
- * Resolve only when both blocks are *structurally additive*: every non-blank
- * line on each side matches a recognizable additive shape (markdown table
- * row, markdown list item, or table-separator). Two arbitrary one-liners
- * that happen to differ — e.g. `foo = "a"` vs `foo = "b"` — must NOT be
- * auto-merged because they're semantically a value swap, not an addition.
- *
- * When the structural test passes, return current + incoming in order
- * (current first to preserve the diff baseline). Otherwise null.
- */
-function tryAdditive(currentBlock, incomingBlock) {
-  if (currentBlock.trim() === "" || incomingBlock.trim() === "") return null;
-
-  const ADDITIVE_LINE =
-    /^\s*(?:\|.*\||[-*+]\s+\S|\d+\.\s+\S|\|\s*[-: ]+\s*\|)/;
-  const isAdditive = (block) =>
-    block
-      .split(/\r?\n/)
-      .filter((l) => l.trim() !== "")
-      .every((l) => ADDITIVE_LINE.test(l));
-
-  if (!isAdditive(currentBlock) || !isAdditive(incomingBlock)) return null;
-
-  // Belt-and-suspenders: never auto-merge if any single line repeats on both
-  // sides (would be a duplicate row).
-  const currSet = new Set(
-    currentBlock.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
-  );
-  for (const l of incomingBlock.split(/\r?\n/)) {
-    if (l.trim() && currSet.has(l.trim())) return null;
-  }
-  return currentBlock.replace(/\n?$/, "\n") + incomingBlock.replace(/\n?$/, "\n");
-}
-
-// ── Conflict-hunk parsing ───────────────────────────────────────────────────
-
-/**
- * Walk file contents and yield each conflict hunk with its surrounding text
- * preserved. A hunk is the region:
- *
- *   <<<<<<< something
- *   ...current block...
- *   =======
- *   ...incoming block...
- *   >>>>>>> something
+ * Iterate `<<<<<<< ... ======= ... >>>>>>>` hunks in a text buffer.
+ * Yields { start, mid, end, ours, theirs } indices/strings.
  */
 function* iterHunks(text) {
-  const HUNK = /(<{7}[^\n]*\n)([\s\S]*?)(={7}\n)([\s\S]*?)(>{7}[^\n]*\n)/g;
-  let last = 0;
-  let m;
-  while ((m = HUNK.exec(text)) !== null) {
-    yield {
-      preText: text.slice(last, m.index),
-      header: m[1],
-      currentBlock: m[2],
-      separator: m[3],
-      incomingBlock: m[4],
-      footer: m[5],
-    };
-    last = HUNK.lastIndex;
+  const lines = text.split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].startsWith('<<<<<<<')) {
+      const start = i;
+      let mid = -1;
+      let end = -1;
+      for (let j = i + 1; j < lines.length; j++) {
+        if (mid === -1 && lines[j].startsWith('=======')) mid = j;
+        else if (lines[j].startsWith('>>>>>>>')) { end = j; break; }
+      }
+      if (mid !== -1 && end !== -1) {
+        const ours = lines.slice(start + 1, mid).join('\n');
+        const theirs = lines.slice(mid + 1, end).join('\n');
+        yield { start, mid, end, ours, theirs };
+        i = end + 1;
+        continue;
+      }
+    }
+    i++;
   }
-  yield { tail: text.slice(last) };
 }
 
-function resolveFile(filePath) {
-  const text = fs.readFileSync(filePath, "utf8");
-  let output = "";
+// Try to resolve a hunk that is a GHA `uses:` version bump
+// e.g. ours: `      - uses: actions/checkout@v3`
+//      theirs: `      - uses: actions/checkout@v4`
+// Pick the higher semver-ish version.
+function resolveUsesBump(ours, theirs) {
+  const re = /^(\s*-?\s*uses:\s*[\w./-]+@)(v?\d+(?:\.\d+){0,2})\s*$/;
+  const mo = ours.match(re);
+  const mt = theirs.match(re);
+  if (!mo || !mt) return null;
+  if (mo[1] !== mt[1]) return null;
+  const parse = (v) => v.replace(/^v/, '').split('.').map((n) => parseInt(n, 10) || 0);
+  const [a, b] = [parse(mo[2]), parse(mt[2])];
+  const cmp = (x, y) => {
+    for (let i = 0; i < Math.max(x.length, y.length); i++) {
+      const d = (x[i] || 0) - (y[i] || 0);
+      if (d !== 0) return d;
+    }
+    return 0;
+  };
+  const winner = cmp(a, b) >= 0 ? mo[2] : mt[2];
+  return `${mo[1]}${winner}`;
+}
+
+function resolveFile(file) {
+  const abs = path.resolve(file);
+  let text;
+  try {
+    text = fs.readFileSync(abs, 'utf8');
+  } catch (_e) {
+    return { ok: 0, ambiguous: 0 };
+  }
+  const lines = text.split('\n');
+  const hunks = Array.from(iterHunks(text));
+  if (hunks.length === 0) return { ok: 0, ambiguous: 0 };
+
   let ok = 0;
   let ambiguous = 0;
-
-  for (const piece of iterHunks(text)) {
-    if (piece.tail !== undefined) {
-      output += piece.tail;
+  // Walk hunks bottom-up so line indices stay valid as we splice.
+  for (let h = hunks.length - 1; h >= 0; h--) {
+    const { start, end, ours, theirs } = hunks[h];
+    let replacement = null;
+    if (ours === theirs) {
+      replacement = ours;
+    } else {
+      const bumped = resolveUsesBump(ours, theirs);
+      if (bumped != null) replacement = bumped;
+    }
+    if (replacement == null) {
+      ambiguous++;
       continue;
     }
-    output += piece.preText;
-
-    const versionResolved = tryVersionBump(piece.currentBlock, piece.incomingBlock);
-    if (versionResolved !== null) {
-      output += versionResolved;
-      ok++;
-      continue;
-    }
-
-    const additiveResolved = tryAdditive(piece.currentBlock, piece.incomingBlock);
-    if (additiveResolved !== null) {
-      output += additiveResolved;
-      ok++;
-      continue;
-    }
-
-    // Ambiguous — preserve the conflict block verbatim.
-    output +=
-      piece.header + piece.currentBlock + piece.separator + piece.incomingBlock + piece.footer;
-    ambiguous++;
+    lines.splice(start, end - start + 1, replacement);
+    ok++;
   }
 
-  fs.writeFileSync(filePath, output);
+  if (ok > 0) {
+    fs.writeFileSync(abs, lines.join('\n'), 'utf8');
+    if (ambiguous === 0) {
+      // Fully resolved: stage the file.
+      spawnSync('git', ['add', '--', file], { stdio: 'inherit' });
+    }
+  }
   return { ok, ambiguous };
 }
 
-// ── Driver ──────────────────────────────────────────────────────────────────
-
-function listConflictedFiles() {
-  const out = execSync("git diff --name-only --diff-filter=U", { encoding: "utf8" });
-  return out.split(/\r?\n/).filter(Boolean);
-}
-
 function main() {
-  const conflicted = listConflictedFiles();
-  if (conflicted.length === 0) {
-    console.log("No conflicted files. Nothing to do.");
+  const files = listConflictedFiles();
+  if (files.length === 0) {
+    console.log('No conflicted files.');
     process.exit(0);
   }
 
+  let totalOk = 0;
   let totalAmbiguous = 0;
-  // Counts every file that did NOT come out fully, cleanly resolved —
-  // including files whose conflict-marker scanner found zero hunks at all
-  // (binary "both modified" conflicts, or any conflict style iterHunks
-  // doesn't recognize). Such a file still has an unresolved/undefined
-  // working-tree state and must gate the exit code, even though it
-  // contributes nothing to totalAmbiguous (ambiguous === 0 for it). Without
-  // this counter, a PR where every conflicted file hits that path would
-  // report "MANUAL" for each one yet still exit 0, and the caller
-  // (conflict-helper.yml) would `git add -A && git commit && git push`
-  // that unresolved state onto the PR branch as if it were safely resolved.
   let totalUnresolved = 0;
-  const lines = [];
 
-  for (const file of conflicted) {
-    if (!fs.existsSync(file)) {
-      lines.push(`SKIP     ${file}   (deleted on one side — leave to human)`);
-      totalAmbiguous++;
+  for (const f of files) {
+    // Only touch text files we understand. Skip lockfiles/binary-ish.
+    if (/\.(png|jpg|jpeg|gif|pdf|zip|tar|gz|bin|dat|ico|woff2?|ttf|eot)$/i.test(f)) {
+      console.log(`SKIP  ${f}   (binary/unsupported extension)`);
       totalUnresolved++;
       continue;
     }
-    const { ok, ambiguous } = resolveFile(file);
+    const { ok, ambiguous } = resolveFile(f);
+    totalOk += ok;
     totalAmbiguous += ambiguous;
-    if (ambiguous === 0 && ok > 0) {
-      lines.push(`RESOLVED ${file}   ${ok} hunk(s) auto-resolved`);
-    } else if (ok > 0) {
-      lines.push(`PARTIAL  ${file}   ${ok} ok, ${ambiguous} ambiguous`);
+    if (ok > 0 && ambiguous === 0) {
+      console.log(`RESOLVED ${f}   ${ok} hunk(s) auto-resolved`);
+    } else if (ok > 0 && ambiguous > 0) {
+      console.log(`PARTIAL  ${f}   ${ok} resolved, ${ambiguous} ambiguous`);
       totalUnresolved++;
     } else {
-      lines.push(`MANUAL   ${file}   ${ambiguous} hunk(s) ambiguous`);
+      console.log(`MANUAL   ${f}   ${ambiguous} hunk(s) ambiguous`);
       totalUnresolved++;
     }
   }
 
-  console.log(lines.join("\n"));
+  console.log(`\nSummary: ${totalOk} hunk(s) auto-resolved, ${totalAmbiguous} ambiguous, ${totalUnresolved} file(s) unresolved`);
+  // Exit 2 when anything is unresolved so the CI helper does NOT push a
+  // half-merged tree to the PR branch.
   process.exit(totalUnresolved > 0 ? 2 : 0);
 }
 
-if (require.main === module) main();
-module.exports = { pickNewerRef, tryVersionBump, tryAdditive, resolveFile };
+if (require.main === module) {
+  try {
+    main();
+  } catch (e) {
+    console.error(e && e.stack ? e.stack : e);
+    process.exit(1);
+  }
+}
+
+module.exports = { iterHunks, resolveUsesBump, resolveFile };
