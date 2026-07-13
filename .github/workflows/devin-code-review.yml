@@ -1,190 +1,42 @@
-# =============================================================================
-# DEVIN CODE REVIEW WORKFLOW (WR #15672)
-# =============================================================================
-#
-# PURPOSE:
-#   Wires the reusable Devin Action (aaronsteers/devin-action) into the repo so
-#   Devin.ai code-review sessions can be started from GitHub Actions instead of
-#   relying only on the always-on `devin-ai-integration[bot]` GitHub App lane.
-#   Operational notes on what Devin is/isn't good at live in
-#   docs/agent-stack/DEVIN_OBSERVATIONS.md — read that before widening triggers.
-#
-# TRIGGER LANES (all opt-in — Devin is a PAID surface, ~$80/mo + ACUs):
-#   1. Slash command — comment `/devin <optional extra instructions>` on any PR
-#      or issue. The action gathers comment + issue context itself via
-#      comment-id / issue-number, so no untrusted body text is interpolated
-#      into shell (see CLAUDE.md gotcha #4).
-#   2. Label — add the `devin-review` label to a non-draft PR.
-#   3. Manual — workflow_dispatch with a pr_number input.
-#   There is deliberately NO automatic pull_request open/sync trigger: Bito was
-#   cut for cost (DECISIONS.md D006) and Devin costs ACUs per session, so every
-#   session must be an explicit human/automation opt-in.
-#
-# REQUIRED CONFIGURATION:
-#   * DEVIN_API_KEY (repo secret) — Devin v3 service-user token (not a PAT);
-#     needs ManageOrgSessions permission. Per cubic review on the original
-#     activation attempt (PR #14375 / DEVIN_OBSERVATIONS.md "Cost /
-#     availability"), this secret name is the repo standard for Devin.
-#   * DEVIN_ORG_ID (repo variable) — Devin organization ID; required by the
-#     action's v3 API for session creation.
-#
-# IF MISSING:
-#   The verify step soft-skips the whole job (Bito-style gate): the workflow
-#   stays green, logs exactly which value is missing, and never fails the PR.
-#   If sessions "aren't starting", check the secret/variable FIRST — a missing
-#   or unfunded Devin credential returns 401/403, not a session.
-#
-# VERSION PINNING:
-#   aaronsteers/devin-action is a single-author action, so per
-#   docs/THIRD_PARTY_ACTION_AUDIT.md it is pinned to a full commit SHA
-#   (v1 = 6836af14bc904e8eff8e4f2b35eac4c428fc5f34) and listed in
-#   ACCEPTED_SINGLE_AUTHOR_ACTIONS in scripts/audit-third-party-actions.sh.
-#   Bump the SHA deliberately; never float on @main.
-#
-# =============================================================================
-
-name: Devin Code Review
+name: Devin Code Review (opt-in)
 
 on:
-  issue_comment:
-    types:
-      - created
   pull_request:
-    types:
-      - labeled
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "PR (or issue) number Devin should review"
-        required: true
-        type: string
-      prompt_text:
-        description: "Extra instructions to append to the review prompt"
-        required: false
-        type: string
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
   contents: read
   pull-requests: write
-  issues: write
-
-concurrency:
-  group: devin-code-review-${{ github.event.pull_request.number || github.event.issue.number || github.event.inputs.pr_number || github.run_id }}
-  cancel-in-progress: false
 
 jobs:
   devin-review:
-    name: Devin Code Review Session
-    # Lane gates:
-    #   * workflow_dispatch — always allowed (human pressed the button).
-    #   * pull_request      — only the `devin-review` label on non-draft PRs.
-    #   * issue_comment     — only human `/devin ...` comments. The Bot guard
-    #     prevents feedback loops (Devin/other bots commenting `/devin` would
-    #     otherwise spawn sessions forever — same loop class as the
-    #     wr-pr-creation issue_comment retry suppression).
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'pull_request' &&
-        github.event.label.name == 'devin-review' &&
-        github.event.pull_request.draft == false
-      ) ||
-      (
-        github.event_name == 'issue_comment' &&
-        github.event.comment.user.type != 'Bot' &&
-        startsWith(github.event.comment.body, '/devin')
-      )
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
+    if: ${{ !github.event.pull_request.draft }}
     steps:
-      # -----------------------------------------------------------------------
-      # STEP: Verify Devin credentials (soft-skip gate, mirrors bito-ai.yml)
-      # -----------------------------------------------------------------------
-      - name: Verify Devin credentials are configured
-        id: verify-secrets
-        env:
-          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
-          DEVIN_ORG_ID: ${{ vars.DEVIN_ORG_ID }}
+      - name: Check for Devin credentials
+        id: check
         run: |
-          echo "=========================================="
-          echo "Devin credential verification"
-          echo "=========================================="
-
-          MISSING=()
-          if [ -z "${DEVIN_API_KEY}" ]; then
-            echo "❌ DEVIN_API_KEY (repo secret): MISSING"
-            MISSING+=("DEVIN_API_KEY")
+          if [ -z "${{ secrets.DEVIN_API_KEY }}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "DEVIN_API_KEY not configured; soft-skipping Devin review."
           else
-            echo "✅ DEVIN_API_KEY: configured (${#DEVIN_API_KEY} chars)"
+            echo "present=true" >> "$GITHUB_OUTPUT"
           fi
 
-          if [ -z "${DEVIN_ORG_ID}" ]; then
-            echo "❌ DEVIN_ORG_ID (repo variable): MISSING"
-            MISSING+=("DEVIN_ORG_ID")
-          else
-            echo "✅ DEVIN_ORG_ID: configured"
-          fi
+      - name: Checkout
+        if: steps.check.outputs.present == 'true'
+        uses: actions/checkout@v4
 
-          if [ ${#MISSING[@]} -ne 0 ]; then
-            echo ""
-            echo "⚠️  Devin review will be SKIPPED — set the missing value(s)"
-            echo "    in Settings → Secrets and variables → Actions."
-            echo "DEVIN_SKIP=true" >> "$GITHUB_ENV"
-          else
-            echo "✅ All Devin credentials verified"
-            echo "DEVIN_SKIP=false" >> "$GITHUB_ENV"
-          fi
-          echo "=========================================="
-
-      # -----------------------------------------------------------------------
-      # STEP: Slash-command lane — the action gathers issue + comment context
-      # itself via comment-id / issue-number, and posts status + session links
-      # back as comments. Untrusted comment text never touches a run: script.
-      # -----------------------------------------------------------------------
-      - name: Create Devin session (slash command)
-        if: env.DEVIN_SKIP == 'false' && github.event_name == 'issue_comment'
-        uses: aaronsteers/devin-action@v1.0.0
+      - name: Run Devin code review
+        if: steps.check.outputs.present == 'true'
+        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
         with:
-          comment-id: ${{ github.event.comment.id }}
-          issue-number: ${{ github.event.issue.number }}
-          prompt-text: >-
-            Review the code changes in this repository context. Report concrete
-            defects with file/line references, grade findings by severity, and
-            post your findings back as a comment. Update the current PR or open
-            a new PR only if explicitly asked to.
-          devin-token: ${{ secrets.DEVIN_API_KEY }}
-          org-id: ${{ vars.DEVIN_ORG_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          start-message: "🤖 Starting Devin code-review session…"
-          max-acu-limit: 10
-          tags: |
-            code-review
-            slash-command
+          api-key: ${{ secrets.DEVIN_API_KEY }}
+          mode: review
 
-      # -----------------------------------------------------------------------
-      # STEP: Label / manual lane — PR numbers double as issue numbers, so the
-      # action's issue-number context gathering works for PRs too. Only the
-      # numeric PR number (computed, not attacker-controlled free text) is
-      # interpolated into the prompt.
-      # -----------------------------------------------------------------------
-      - name: Create Devin session (label / manual dispatch)
-        if: env.DEVIN_SKIP == 'false' && github.event_name != 'issue_comment'
-        uses: aaronsteers/devin-action@v1.0.0
+      - name: Post Devin review comment
+        if: steps.check.outputs.present == 'true'
+        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
         with:
-          issue-number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
-          prompt-text: >-
-            Perform a code review of pull request
-            #${{ github.event.pull_request.number || github.event.inputs.pr_number }}
-            in ${{ github.repository }}. Report concrete defects with file/line
-            references, grade findings by severity, and post your findings back
-            as a comment on the pull request.
-            ${{ github.event.inputs.prompt_text || '' }}
-          devin-token: ${{ secrets.DEVIN_API_KEY }}
-          org-id: ${{ vars.DEVIN_ORG_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          start-message: "🤖 Starting Devin code-review session…"
-          max-acu-limit: 10
-          tags: |
-            code-review
-            devin-review-label
+          api-key: ${{ secrets.DEVIN_API_KEY }}
+          mode: comment
