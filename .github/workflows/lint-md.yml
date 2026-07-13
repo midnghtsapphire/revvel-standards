@@ -1,0 +1,31 @@
+---
+name: Lint Markdown (lint-md)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  lint-markdown:
+    name: lint-md
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Lint Markdown
+        uses: lint-md/github-action@v0.2.0
+        with:
+          files: './'
+          configFile: '.lintmdrc'
+          failOnWarnings: 'false'
