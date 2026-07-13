@@ -31,13 +31,6 @@ name: Daily Diagnostic Audit
 
 on:
   schedule:
-    - cron: '40 6 * * *'
-  workflow_dispatch:
-    inputs:
-      window_hours:
-        description: 'Hours to look back for changed files'
-        required: false
-        default: '48'
     # 06:40 UTC daily — a distinct "morning" slot that doesn't collide with
     # repo-self-healer.yml (3 AM), self-healing.yml (every 4h, on the hour),
     # or other 06:xx/08:xx crons already scheduled in this repo (checked via
@@ -49,33 +42,6 @@ permissions:
   contents: read
   issues: write
 
-concurrency:
-  group: daily-diagnostic-audit
-  cancel-in-progress: false
-
-jobs:
-  audit:
-    name: Bounded code-level bug diagnosis
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout with history
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-          uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Run diagnostic audit
-        env:
-          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          WINDOW_HOURS: ${{ github.event.inputs.window_hours || '48' }}
-          MAX_SCOPE_FILES: '8'
 env:
   # Prefer the ADMIN PAT so the new WR can trigger downstream WR-processing
   # workflows (openrouter-assignee.yml, wr-pr-creation.yml) — the default
