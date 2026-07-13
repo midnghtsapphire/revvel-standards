@@ -227,18 +227,13 @@ test('computeRetryDelayMs honors Retry-After in full (bounded only by the shared
   // Retry-After to 20s (the pre-fix behavior) meant retrying BEFORE
   // GitHub's requested delay — exactly the bug flagged in Copilot's
   // post-merge review of #15836.
-<<<<<<< HEAD
   // Assert against the module's own exported constant rather than re-parsing
   // the env var (which is fragile — NaN if unset before this line runs).
-=======
->>>>>>> origin/main
   assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
   // No header at all still falls back to the short exponential guess,
   // capped at RATE_LIMIT_MAX_DELAY_MS (unrelated, deliberately small cap —
   // it's a guess, not a real number from GitHub).
   assert.strictEqual(computeRetryDelayMs({}, 10, 1000), 20000);
-<<<<<<< HEAD
-=======
 });
 
 test('computeRetryDelayMs honors an explicit Retry-After: 0 as "retry immediately", not "missing"', () => {
@@ -246,7 +241,6 @@ test('computeRetryDelayMs honors an explicit Retry-After: 0 as "retry immediatel
   // treated the same as a missing header (which falls back to exponential
   // backoff instead of retrying right away).
   assert.strictEqual(computeRetryDelayMs({ 'retry-after': '0' }, 1, 1000), 0);
->>>>>>> origin/main
 });
 
 test('githubRequest falls back to short backoff for a primary-worded 403 with NO rate-limit headers to read a reset from', async () => {
