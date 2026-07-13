@@ -1,21 +1,41 @@
-# [WR] <title>
+# WR: {TITLE}
+
+<!-- who: {ISSUE_REF} -->
+<!-- date: {DATE} -->
+<!-- description: {ISSUE_REF} -->
+<!-- **Issue:** {ISSUE_REF}   -->
+<!-- **Repository:** {REPO}   -->
+<!-- **Created:** {DATE}      -->
+<!-- **WR Status:** {STATUS}  -->
 
 ## Issue Context
 
-<Describe the problem, motivation, and any pointers to relevant code/docs/prior discussion.>
+{ISSUE_BODY}
 
-## Acceptance Criteria
+## Summary
 
-- <criterion 1>
-- <criterion 2>
+{SUMMARY}
 
-## Learnings — What & Why
+## Objective
 
-Agents completing other WR types should fill this in themselves once done — a short note on what was learned during this WR and why it matters (patterns discovered, gotchas hit, follow-ups worth tracking). For WRs auto-generated from checked `Follow-up:` items, this section is populated automatically by `followup-checkbox-router.yml` with the source link and follow-up text.
+{OBJECTIVE}
 
-## Notes
+## Required Bundle
 
-<Optional additional context.>
+{REQUIRED_BUNDLE}
+
+## Definition of Done
+
+{DEFINITION_OF_DONE}
+
+## Validation
+
+{VALIDATION}
+
+## Blockers
+
+{BLOCKERS}
+
 ## Learnings — What & Why
 
 _Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._
