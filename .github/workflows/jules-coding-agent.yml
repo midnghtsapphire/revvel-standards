@@ -1,139 +1,67 @@
 name: Jules Coding Agent
 
 on:
-  issues:
-    types: [labeled, opened]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to process'
+        description: 'Issue number to work on'
         required: true
         type: string
-  issue_comment:
-    types: [created]
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
-  issues: write
   pull-requests: write
+  issues: write
 
 env:
   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
-  jules-agent:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
+  run-agent:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.label.name, 'jules')
     runs-on: ubuntu-latest
-      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:jules'))
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Determine issue number
-        id: issue
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
-          else
-            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create branch
-        run: |
-          BRANCH="jules/issue-${{ steps.issue.outputs.number }}"
-          git checkout -b "$BRANCH" || git checkout "$BRANCH"
-          git config user.name "jules-agent[bot]"
-          git config user.email "jules-agent[bot]@users.noreply.github.com"
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-
-      - name: Apply Jules changes
-        run: |
-          echo "# Jules agent placeholder for issue ${{ steps.issue.outputs.number }}" >> .jules-marker
-          git add -A
-          git diff --cached --quiet || git commit -m "chore(jules): apply changes for #${{ steps.issue.outputs.number }}"
-
-      - name: Push and open PR
-        run: |
-          git push origin "$BRANCH" || true
-          gh pr create \
-            --title "[jules] fix for #${{ steps.issue.outputs.number }}" \
-            --body "Closes #${{ steps.issue.outputs.number }}" \
-            --head "$BRANCH" \
-            --base main || true
-          gh issue edit "${{ steps.issue.outputs.number }}" --add-label "wr:pr-open" || true
           fetch-depth: 0
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Determine issue number
+      - name: Resolve issue number
         id: issue
         run: |
           if [ -n "${{ github.event.inputs.issue_number }}" ]; then
-            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+            echo "num=${{ github.event.inputs.inputs.issue_number || github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
           else
-            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            echo "num=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Configure git
+      - name: Create branch and stub commit
         run: |
+          ISSUE="${{ steps.issue.outputs.num }}"
+          BRANCH="jules/issue-${ISSUE}"
           git config user.name "jules-agent[bot]"
-          git config user.email "jules-agent[bot]@users.noreply.github.com"
-
-      - name: Create branch
-        id: branch
-        run: |
-          BRANCH="jules/issue-${{ steps.issue.outputs.number }}-$(date +%s)"
+          git config user.email "jules-agent@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          echo "name=$BRANCH" >> $GITHUB_OUTPUT
+          mkdir -p .agent-runs
+          echo "jules run for issue #${ISSUE} at $(date -u +%FT%TZ)" >> ".agent-runs/jules-${ISSUE}.log"
+          git add .agent-runs
+          git commit -m "chore(jules): scaffold run for #${ISSUE}" || echo "nothing to commit"
+          git push -u origin "$BRANCH"
 
-      - name: Run Jules agent
-        env:
-          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+      - name: Open PR
         run: |
-          if [ -f scripts/jules-agent.js ]; then
-            node scripts/jules-agent.js
-          else
-            echo "jules-agent.js not found, skipping"
-          fi
-
-      - name: Commit changes
-        id: commit
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git add -A
-            git commit -m "fix: automated fix for issue #${{ steps.issue.outputs.number }}"
-            git push origin "${{ steps.branch.outputs.name }}"
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create PR
-        if: steps.commit.outputs.changed == 'true'
-        run: |
+          ISSUE="${{ steps.issue.outputs.num }}"
+          BRANCH="jules/issue-${ISSUE}"
           gh pr create \
-            --title "fix: automated fix for issue #${{ steps.issue.outputs.number }}" \
-            --body "Closes #${{ steps.issue.outputs.number }}" \
-            --head "${{ steps.branch.outputs.name }}" \
-            --base main
-
-      - name: Label issue
-        if: steps.commit.outputs.changed == 'true'
-        run: |
-          gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open"
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(jules): automated changes for #${ISSUE}" \
+            --body "Automated by jules-coding-agent for #${ISSUE}"
+          gh issue edit "$ISSUE" --add-label "wr:pr-open" || true
