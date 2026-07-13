@@ -1,5 +1,16 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T11:10:52.787Z",
-  "stop": []
+  "generated_at": "2026-07-13T15:09:30.425Z",
+  "stop": [
+    {
+      "id": 29257786646,
+      "name": "No-Destroy Guard",
+      "reason": "no progress for 44m ≥ 15m"
+    },
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "reason": "running 116m ≥ 60m budget"
+    }
+  ]
 }
