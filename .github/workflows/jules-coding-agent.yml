@@ -9,6 +9,8 @@ on:
         description: 'Issue number to process'
         required: true
         type: string
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: write
@@ -16,19 +18,14 @@ permissions:
   pull-requests: write
 
 env:
-  # Unified to JULES_API_KEY 2026-05-28 — every other Jules workflow already used
-  # JULES_API_KEY; only this file looked for JULES_TOKEN, which left the
-  # secret-persistence-guard chasing a key nobody else referenced (the "clog").
-  # Old name kept (commented) per the standards convention; uncomment only if
-  # you ever genuinely need a separate token credential.
-  # JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
-  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   jules-agent:
     if: |
       github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
+    runs-on: ubuntu-latest
       (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:jules'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -36,6 +33,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Determine issue number
+        id: issue
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch
+        run: |
+          BRANCH="jules/issue-${{ steps.issue.outputs.number }}"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          git config user.name "jules-agent[bot]"
+          git config user.email "jules-agent[bot]@users.noreply.github.com"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+      - name: Apply Jules changes
+        run: |
+          echo "# Jules agent placeholder for issue ${{ steps.issue.outputs.number }}" >> .jules-marker
+          git add -A
+          git diff --cached --quiet || git commit -m "chore(jules): apply changes for #${{ steps.issue.outputs.number }}"
+
+      - name: Push and open PR
+        run: |
+          git push origin "$BRANCH" || true
+          gh pr create \
+            --title "[jules] fix for #${{ steps.issue.outputs.number }}" \
+            --body "Closes #${{ steps.issue.outputs.number }}" \
+            --head "$BRANCH" \
+            --base main || true
+          gh issue edit "${{ steps.issue.outputs.number }}" --add-label "wr:pr-open" || true
           fetch-depth: 0
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 

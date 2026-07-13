@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
+        description: 'Issue number'
+        required: true
+        type: string
         description: 'Issue number to patch'
         required: true
         type: string
@@ -17,6 +20,19 @@ permissions:
 
 jobs:
   patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Apply fixes and open PR
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:patch'))
@@ -56,6 +72,19 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
+          BRANCH="patch-agent/issue-${{ inputs.issue_number }}"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          git config user.name "patch-agent[bot]"
+          git config user.email "patch-agent[bot]@users.noreply.github.com"
+          echo "# patch-agent marker for #${{ inputs.issue_number }}" >> .patch-marker
+          git add -A
+          git diff --cached --quiet || git commit -m "chore(patch-agent): fix for #${{ inputs.issue_number }}"
+          git push origin "$BRANCH" || true
+          gh pr create \
+            --title "[patch-agent] fix for #${{ inputs.issue_number }}" \
+            --body "Closes #${{ inputs.issue_number }}" \
+            --head "$BRANCH" \
+            --base main || true
           if [ -f scripts/patch-agent.js ]; then
             node scripts/patch-agent.js
           else

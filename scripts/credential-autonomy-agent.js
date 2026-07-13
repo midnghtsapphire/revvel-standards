@@ -1,223 +1,112 @@
 #!/usr/bin/env node
 /**
- * Credential Autonomy Agent
+ * credential-autonomy-agent.js
  *
- * Manages GitHub repository secrets safely. Secret values are passed to
- * `gh secret set` via stdin (never argv) so they do not appear in
- * /proc/<pid>/cmdline or `ps aux`.
+ * Rotates and restores GitHub repository secrets used by the automation
+ * pipeline. Invoked from .github/workflows/credential-autonomy-agent.yml.
+ *
+ * SECURITY NOTE:
+ *   `gh secret set` accepts the secret value via stdin when `--body` is
+ *   omitted. We deliberately use the stdin path so plaintext secret values
+ *   never appear in argv (visible to other processes via /proc/<pid>/cmdline
+ *   or `ps aux`). See scripts/provision-repo-secrets.sh for the same
+ *   established pattern.
  */
 
 const { spawnSync } = require('child_process');
 
-const REPO = process.env.GITHUB_REPOSITORY || '';
+const REPO = process.env.GITHUB_REPOSITORY || process.env.REPO || '';
 
 /**
- * Run a subprocess.
+ * Run a subprocess synchronously.
  *
  * @param {string} cmd
  * @param {string[]} args
  * @param {{ input?: string }} [options]
+ *   input: if provided, piped to the child's stdin. Node's spawnSync silently
+ *          drops `input` when stdio[0] === 'ignore', so we switch stdio[0] to
+ *          'pipe' whenever an input is supplied.
  * @returns {{ status: number|null, stdout: string, stderr: string }}
  */
 function run(cmd, args, options = {}) {
-  const hasInput = typeof options.input === 'string';
-  // NOTE: Node's spawnSync silently drops `input` when stdio[0] === 'ignore',
-  // so we must switch stdin to 'pipe' whenever we intend to feed the child.
-  const stdio = [hasInput ? 'pipe' : 'ignore', 'pipe', 'pipe'];
-  const spawnOptions = { stdio, encoding: 'utf8' };
+  const hasInput = typeof options.input === 'string' && options.input.length > 0;
+  const spawnOptions = {
+    stdio: [hasInput ? 'pipe' : 'ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
+  };
   if (hasInput) {
     spawnOptions.input = options.input;
   }
   const result = spawnSync(cmd, args, spawnOptions);
-function run(command, args = [], options = {}) {
-  // spawnSync with an explicit argv array does NOT spawn a shell, so args
-  // cannot be shell-injected. All callers pass a fixed command ('gh').
-  //
-  // Callers may pass `options.input` to feed data (e.g. secret values) to
-  // the child's stdin instead of argv, since argv is visible to any other
-  // process on the host for the process's lifetime via
-  // /proc/<pid>/cmdline or `ps aux`. stdio[0] must be 'pipe' (not
-  // 'ignore') for `input` to actually reach the child.
-  // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); command is a fixed literal at every call site
-  const result = spawnSync(command, args, {
-    encoding: 'utf8',
-    stdio: [options.input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe'],
-    ...options,
-  });
   return {
     status: result.status,
-    stdout: result.stdout || '',
-    stderr: result.stderr || '',
+    stdout: (result.stdout || '').toString(),
+    stderr: (result.stderr || '').toString(),
   };
 }
 
 function listSecrets() {
-  const result = run('gh', ['secret', 'list', '--repo', REPO]);
-  if (result.status !== 0) {
-    throw new Error(`Failed to list secrets: ${result.stderr}`);
+  const res = run('gh', ['secret', 'list', '--repo', REPO]);
+  if (res.status !== 0) {
+    throw new Error(`gh secret list failed: ${res.stderr.trim()}`);
   }
-  return result.stdout
+  return res.stdout
     .split('\n')
-    .map((line) => line.trim().split(/\s+/)[0])
-    .filter(Boolean);
-    .filter(line => line.trim())
-    .map(line => line.split(' ')[0]);
-}
-
-async function audit() {
-  log('🔍 Auditing credentials...', 'info');
-  
-  const current = await getCurrentSecrets();
-  const backup = parseBackupJSON();
-  const currentSet = new Set(current);
-  const backupKeys = Object.keys(backup);
-  
-  const missing = [];
-  const inBackupNotGitHub = [];
-  const inGitHubNotBackup = [];
-  const ok = [];
-  
-  // Check each known credential
-  for (const [name, info] of Object.entries(CREDENTIAL_REGISTRY)) {
-    const inGitHub = currentSet.has(name);
-    const inBackup = backupKeys.includes(name) && backup[name];
-    
-    if (inGitHub && inBackup) {
-      ok.push(name);
-    } else if (inGitHub && !inBackup) {
-      inGitHubNotBackup.push(name);
-    } else if (!inGitHub && inBackup) {
-      inBackupNotGitHub.push(name);
-    } else if (info.critical && !inGitHub) {
-      missing.push(name);
-    }
-  }
-  
-  console.log('\n📊 Audit Results:\n');
-  
-  if (ok.length) {
-    log(`OK: ${ok.length}`, 'success');
-    console.log(`   ${ok.join(', ')}\n`);
-  }
-  
-  if (inBackupNotGitHub.length) {
-    log(`Need restore: ${inBackupNotGitHub.length}`, 'warning');
-    console.log(`   ${inBackupNotGitHub.join(', ')}\n`);
-  }
-  
-  if (inGitHubNotBackup.length) {
-    log(`Extra (not in backup): ${inGitHubNotBackup.length}`, 'info');
-    console.log(`   ${inGitHubNotBackup.join(', ')}\n`);
-  }
-  
-  if (missing.length) {
-    log(`CRITICAL missing: ${missing.length}`, 'error');
-    console.log(`   ${missing.join(', ')}\n`);
-  }
-  
-  return {
-    missing,
-    inBackupNotGitHub,
-    inGitHubNotBackup,
-    ok,
-  };
-}
-
-async function restore(secretsToRestore) {
-  if (!secretsToRestore || secretsToRestore.length === 0) {
-    log('Nothing to restore', 'info');
-    return [];
-  }
-  
-  const backup = parseBackupJSON();
-  const restored = [];
-  
-  log(`🔄 Restoring ${secretsToRestore.length} secrets...`, 'action');
-  
-  for (const name of secretsToRestore) {
-    const value = backup[name];
-    if (!value) {
-      log(`${name}: not in backup`, 'warning');
-      continue;
-    }
-    
-    if (DRY_RUN) {
-      log(`${name}: would restore (DRY RUN)`, 'action');
-    } else {
-      // Pass the plaintext value via stdin (not argv/--body) so it never
-      // appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
-      // from stdin by default when --body is omitted — same safe pattern
-      // already established in scripts/provision-repo-secrets.sh.
-      const result = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
-      if (result.ok) {
-        log(`${name}: restored`, 'success');
-        restored.push(name);
-      } else {
-        log(`${name}: FAILED - ${result.stderr}`, 'error');
-      }
-    }
-  }
-  
-  return restored;
-}
-
-async function cleanup(staleSecrets) {
-  if (!staleSecrets || staleSecrets.length === 0) {
-    log('Nothing to cleanup', 'info');
-    return [];
-  }
-  
-  log(`🧹 Cleaning up ${staleSecrets.length} stale secrets...`, 'action');
-  
-  const cleaned = [];
-  for (const name of staleSecrets) {
-    if (DRY_RUN) {
-      log(`${name}: would remove (DRY RUN)`, 'action');
-    } else {
-      const result = run('gh', ['secret', 'remove', name, '--repo', REPO]);
-      if (result.ok) {
-        log(`${name}: removed`, 'success');
-        cleaned.push(name);
-      } else {
-        log(`${name}: FAILED to remove`, 'warning');
-      }
-    }
-  }
-  
-  return cleaned;
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.split(/\s+/)[0]);
 }
 
 function removeSecret(name) {
-  const result = run('gh', ['secret', 'remove', name, '--repo', REPO]);
-  if (result.status !== 0) {
-    throw new Error(`Failed to remove secret ${name}: ${result.stderr}`);
+  const res = run('gh', ['secret', 'remove', name, '--repo', REPO]);
+  if (res.status !== 0) {
+    // Non-fatal: secret may already be absent.
+    console.warn(`warn: could not remove secret ${name}: ${res.stderr.trim()}`);
   }
 }
 
 /**
- * Restore (create or update) a repository secret.
+ * Restore (create or overwrite) a repository secret.
  *
- * The secret value is delivered via stdin so plaintext is never present in
- * the child process's argv. See scripts/provision-repo-secrets.sh for the
- * established pattern this mirrors.
+ * The value is passed to `gh secret set` via stdin so the plaintext never
+ * appears in the child process argv.
  *
  * @param {string} name
  * @param {string} value
  */
 function restore(name, value) {
-  if (typeof value !== 'string') {
-    throw new TypeError(`restore(${name}): value must be a string`);
+  if (!name || typeof value !== 'string') {
+    throw new Error('restore(name, value): both arguments required');
   }
-  const result = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
-  if (result.status !== 0) {
-    // Deliberately do NOT include `value` or stderr contents that could echo it.
-    throw new Error(`Failed to set secret ${name} (exit ${result.status})`);
+  const res = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
+  if (res.status !== 0) {
+    throw new Error(`gh secret set ${name} failed: ${res.stderr.trim()}`);
   }
+  // Intentionally do not log `value` or any derivative of it.
+  console.log(`ok: restored secret ${name}`);
 }
 
-module.exports = {
-  run,
-  listSecrets,
-  removeSecret,
-  restore,
-};
+module.exports = { run, listSecrets, removeSecret, restore };
+
+if (require.main === module) {
+  const [, , action, name] = process.argv;
+  try {
+    if (action === 'list') {
+      console.log(listSecrets().join('\n'));
+    } else if (action === 'remove' && name) {
+      removeSecret(name);
+    } else if (action === 'restore' && name) {
+      const value = process.env.SECRET_VALUE;
+      if (!value) {
+        throw new Error('SECRET_VALUE env var required for restore');
+      }
+      restore(name, value);
+    } else {
+      console.error('usage: credential-autonomy-agent.js <list|remove NAME|restore NAME>');
+      process.exit(2);
+    }
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
+}

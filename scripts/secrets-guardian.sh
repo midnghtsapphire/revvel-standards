@@ -1,117 +1,85 @@
 #!/usr/bin/env bash
-# secrets-guardian.sh - Ensures critical GitHub secrets are present
+# secrets-guardian.sh - Ensure critical GitHub Actions secrets exist
 #
-# Iterates through a list of critical secrets and reports any that are
-# missing. When run with restore capability, attempts to restore missing
-# secrets from a backup source (not implemented here).
+# PRIME DIRECTIVE: $10k/month → $10M in 3 years
+# Critical secrets keep the automated product pipeline (Polar.sh, OSINT tools)
+# operational. Missing secrets = broken revenue automation.
 #
-# Outputs (when $GITHUB_OUTPUT is set):
-#   restored=<space-separated list>
-#   missing=<space-separated list>
+# Usage: ./scripts/secrets-guardian.sh
+#
+# Environment:
+#   GITHUB_OUTPUT - if set, writes `restored=` and `missing=` lines.
+#   GH_REPO       - optional repo override for `gh secret` commands.
 
 set -euo pipefail
 
-# Critical secrets that must always be present
+# Critical secrets required by the revenue automation pipeline.
 CRITICAL_SECRETS=(
   "GITHUB_TOKEN"
   "POLAR_ACCESS_TOKEN"
   "POLAR_WEBHOOK_SECRET"
-  "STRIPE_API_KEY"
-  "STRIPE_WEBHOOK_SECRET"
+  "OPENROUTER_API_KEY"
   "OPENAI_API_KEY"
   "ANTHROPIC_API_KEY"
-  "NPM_TOKEN"
-  "PYPI_TOKEN"
-  "DOCKER_HUB_TOKEN"
-  "CLOUDFLARE_API_TOKEN"
+  "STRIPE_API_KEY"
+  "STRIPE_WEBHOOK_SECRET"
+  "SENTRY_DSN"
+  "DATABASE_URL"
+  "REDIS_URL"
 )
 
-# Additional (non-critical) secrets tracked for reporting
+# Additional (non-critical) secrets to inspect after the critical pass.
 ALL_SECRETS=(
   "${CRITICAL_SECRETS[@]}"
-  "SENTRY_DSN"
-  "DATADOG_API_KEY"
   "SLACK_WEBHOOK_URL"
+  "DISCORD_WEBHOOK_URL"
+  "SENDGRID_API_KEY"
 )
 
 restored=()
 missing=()
-checked=()
 
-# Helper: check if a secret exists via gh CLI
 secret_exists() {
   local name="$1"
-  gh secret list --json name --jq '.[].name' 2>/dev/null | grep -qx "$name"
+  gh secret list 2>/dev/null | awk '{print $1}' | grep -qx "$name"
 }
 
-# First pass: critical secrets
+check_secret() {
+  local name="$1"
+  if secret_exists "$name"; then
+    return 0
+  fi
+  missing+=("$name")
+  return 1
+}
+
+# First pass: critical secrets.
 for SECRET in "${CRITICAL_SECRETS[@]}"; do
-  checked+=("$SECRET")
-  if secret_exists "$SECRET"; then
-    continue
-  fi
-  # Attempt restore (placeholder - real restore logic would fetch from vault)
-  if [ -n "${SECRET_BACKUP_SOURCE:-}" ] && command -v gh >/dev/null 2>&1; then
-    if gh secret set "$SECRET" --body "${!SECRET:-}" 2>/dev/null; then
-      restored+=("$SECRET")
-      continue
-    fi
-  fi
-  missing+=("$SECRET")
+  check_secret "$SECRET" || true
 done
 
-# Second pass: remaining (non-critical) secrets
+# Second pass: remaining secrets, skipping ones already handled above.
 for SECRET in "${ALL_SECRETS[@]}"; do
-  # Skip if already checked in the critical loop.
-  # NOTE: Must expand the full array with "${CRITICAL_SECRETS[@]}" - using
-  # bare "$CRITICAL_SECRETS" only yields the first element and causes every
-  # subsequent critical secret to be re-checked and duplicated in output.
+  # Skip secrets already processed in the critical loop. The previous
+  # implementation used `echo "$CRITICAL_SECRETS"` which only expands to the
+  # first element of the array, so all but the first critical secret fell
+  # through and were re-checked (doubling gh API calls and producing duplicate
+  # entries in the missing=/restored= output).
   if printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET"; then
     continue
-  # Skip if already checked. Bare "$CRITICAL_SECRETS" (no [@]/[*]) only
-  # expands to the array's first element, not all 11 entries, so this must
-  # iterate the array — otherwise every critical secret but the first falls
-  # through and gets redundantly re-checked/re-restored below, doubling
-  # gh secret list/set calls and appending duplicate names to
-  # RESTORED/MISSING (written to GITHUB_OUTPUT further down).
-  printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET" && continue
-  
-  echo -n "   Checking $SECRET... "
-  
-  if gh secret list --repo "$GITHUB_REPOSITORY" 2>/dev/null | grep -q "^${SECRET} "; then
-    echo "✅ exists"
-  else
-    echo "❌ MISSING"
-    
-    VALUE=$(echo "$CREDENTIAL_BACKUP_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('$SECRET', ''))" 2>/dev/null || echo "")
-    
-    if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
-      echo "   → Found in backup, restoring..."
-      if [ "$DRY_RUN" != "true" ]; then
-        gh secret set "$SECRET" --body "$VALUE" --repo "$GITHUB_REPOSITORY"
-      fi
-      RESTORED="${RESTORED}${SECRET},"
-      echo "   → ✅ Restored!"
-    else
-      MISSING="${MISSING}${SECRET},"
-    fi
   fi
-  if secret_exists "$SECRET"; then
-    continue
-  fi
-  missing+=("$SECRET")
+  check_secret "$SECRET" || true
 done
 
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
-  echo "restored=${restored[*]:-}" >> "$GITHUB_OUTPUT"
-  echo "missing=${missing[*]:-}" >> "$GITHUB_OUTPUT"
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  {
+    echo "restored=${restored[*]:-}"
+    echo "missing=${missing[*]:-}"
+  } >> "$GITHUB_OUTPUT"
 fi
 
-if [ ${#missing[@]} -gt 0 ]; then
+if (( ${#missing[@]} > 0 )); then
   echo "⚠️  Missing secrets: ${missing[*]}" >&2
-fi
-if [ ${#restored[@]} -gt 0 ]; then
-  echo "✅ Restored secrets: ${restored[*]}"
 fi
 
 exit 0
