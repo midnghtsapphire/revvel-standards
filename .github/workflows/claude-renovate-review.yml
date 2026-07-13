@@ -1,0 +1,42 @@
+name: Claude Renovate Review
+
+# Reviews Renovate bot PRs using Claude Code for safety assessment.
+# Safe PRs are auto-approved; pr-state-orchestrator then handles
+# label progression and merge enablement.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  claude-renovate-review:
+    name: Claude Renovate Review
+    if: github.event.pull_request.user.login == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Claude Renovate Review
+        uses: koki-develop/claude-renovate-review@v1.3.1
+        id: review
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Log safety assessment
+        run: |
+          echo "Safety Assessment: ${{ steps.review.outputs.safety-assessment }}"
+
+      - name: Auto-approve if safe
+        if: steps.review.outputs.safety-assessment == 'safe'
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr review "$PR_NUMBER" --approve --body "Claude Renovate Review: dependency update assessed as **safe**."

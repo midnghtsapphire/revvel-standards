@@ -46,6 +46,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `a11yguard.yml` | Accessibility regression / audit workflow for preview or production URLs ([`a11ywatch/github-actions`](https://github.com/a11ywatch/github-actions)) | `.github/workflows/a11yguard.yml` |
 | `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
 | `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
+| `reno-auto.yml` | AI-generated reno release notes for new PRs via OpenAI ([`vblagoje/reno-auto`](https://github.com/vblagoje/reno-auto)) | `.github/workflows/reno-auto.yml` |
 
 > **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
 > `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
