@@ -182,11 +182,29 @@ function computePrimaryResetWaitMs(headers) {
  * to a short exponential backoff capped at RATE_LIMIT_MAX_DELAY_MS, since
  * that case is a guess and secondary limits are short-lived by nature.
  */
+<<<<<<< HEAD
+/**
+ * Reads the server's `Retry-After` header (seconds) as milliseconds — the RAW
+ * requested wait, un-capped. Returns null when the header is absent/unparseable
+ * so callers can tell "no concrete number" from "a concrete but large number".
+ */
+function parseRetryAfterMs(headers) {
+  const retryAfter = headers && (headers["retry-after"] || headers["Retry-After"]);
+  const seconds = parseInt(retryAfter, 10);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : null;
+}
+
+function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
+  const retryAfterMs = parseRetryAfterMs(headers);
+  if (retryAfterMs != null) {
+    return Math.min(retryAfterMs, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+=======
 function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
   const retryAfter = headers && (headers["retry-after"] || headers["Retry-After"]);
   const retryAfterSeconds = parseInt(retryAfter, 10);
   if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0) {
     return Math.min(retryAfterSeconds * 1000, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+>>>>>>> origin/main
   }
   const exponential = baseDelayMs * 2 ** Math.max(0, attempt - 1);
   return Math.min(exponential, RATE_LIMIT_MAX_DELAY_MS);
@@ -354,6 +372,29 @@ async function githubRequest({ pathName, method = "GET", payload, accept }) {
         // "primary" classification (e.g. text-matched with no headers) —
         // fall through to the generic short-backoff path below rather than
         // guessing a wait time we have no basis for.
+      }
+
+      // Secondary / unclassified path. If GitHub handed us a CONCRETE
+      // Retry-After that is longer than we can safely wait in-process,
+      // computeRetryDelayMs would truncate it down to the ceiling and we'd
+      // retry BEFORE the real window elapsed — hitting the same limit again,
+      // and across attempts risking the job's timeout-minutes: 15 without ever
+      // honoring the requested wait. Give up cleanly instead (mirrors the
+      // primary "reset too far out" branch above); the 6-hourly schedule sweep
+      // will pick this PR back up later. Best-effort main() turns this into a
+      // logged warning, not a red job.
+      const requestedRetryAfterMs = parseRetryAfterMs(headers);
+      if (requestedRetryAfterMs != null && requestedRetryAfterMs > RATE_LIMIT_MAX_INPROCESS_WAIT_MS) {
+        console.warn(
+          `GitHub HTTP ${status} (${kind || "rate limited"}) for ${pathName}: server asked for a ` +
+            `${Math.ceil(requestedRetryAfterMs / 1000)}s wait (Retry-After), longer than this job can ` +
+            `wait for (cap ${RATE_LIMIT_MAX_INPROCESS_WAIT_MS / 1000}s, given timeout-minutes: 15). ` +
+            "Not retrying early — the 6-hourly schedule sweep will pick this PR back up later.",
+        );
+        throw new Error(
+          `GitHub HTTP ${status} for ${pathName}: Retry-After ${Math.ceil(requestedRetryAfterMs / 1000)}s ` +
+            `exceeds the in-process wait budget — ${data.slice(0, 200)}`,
+        );
       }
 
       if (attempt <= RATE_LIMIT_MAX_RETRIES) {
@@ -575,6 +616,7 @@ module.exports = {
   classifyRateLimit,
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
+  parseRetryAfterMs,
   githubRequest,
   githubRequestOnce,
   RATE_LIMIT_MAX_RETRIES,
