@@ -1,88 +1,34 @@
 #!/usr/bin/env node
 /**
  * Credential Autonomy Agent
- * 
- * Handles all credential management autonomously:
- * - audit: Check what exists vs what's needed
- * - restore: Restore missing secrets from backup
- * - cleanup: Remove stale/duplicate secrets
- * - refresh: Rotate credentials that are expiring
- * - full: Do everything
- * 
- * No human intervention required.
+ *
+ * Manages GitHub repository secrets safely. Secret values are passed to
+ * `gh secret set` via stdin (never argv) so they do not appear in
+ * /proc/<pid>/cmdline or `ps aux`.
  */
 
-'use strict';
-
 const { spawnSync } = require('child_process');
-const https = require('https');
 
-const ACTION = process.env.ACTION || 'full';
-const DRY_RUN = process.env.DRY_RUN === 'true';
-const BACKUP_JSON = process.env.CREDENTIAL_BACKUP_JSON || '';
-const REPO = process.env.GITHUB_REPOSITORY || 'midnghtsapphire/revvel-standards';
+const REPO = process.env.GITHUB_REPOSITORY || '';
 
-// All known credential patterns
-const CREDENTIAL_REGISTRY = {
-  // AI / Agents
-  'OPENROUTER_API_KEY': { critical: true, description: 'OpenRouter LLM API' },
-  'OPENAI_API_KEY': { critical: false, description: 'OpenAI API' },
-  'ANTHROPIC_API_KEY': { critical: false, description: 'Anthropic API' },
-  'JULES_API_KEY': { critical: true, description: 'Google Jules agent' },
-  'BITO_API_KEY': { critical: true, description: 'Bito AI code review' },
-  
-  // Project Management
-  'LINEAR_API_KEY': { critical: true, description: 'Linear project tracking' },
-  'NOTION_API_KEY': { critical: true, description: 'Notion docs/templates' },
-  
-  // Chrome Extensions (Google OAuth)
-  'GOOGLE_OAUTH_TOKEN': { critical: true, description: 'Google OAuth for extensions' },
-  'CLAUDE_CODE_TOKEN': { critical: false, description: 'Claude Code Chrome ext' },
-  'GUMLOOP_TOKEN': { critical: false, description: 'Gumloop Chrome ext' },
-  
-  // Marketing / Social
-  'TWITTER_API_KEY': { critical: false, description: 'Twitter API' },
-  'TWITTER_API_KEY_SECRET': { critical: false, description: 'Twitter API secret' },
-  'TWITTER_ACCESS_TOKEN': { critical: false, description: 'Twitter access token' },
-  'TWITTER_ACCESS_TOKEN_SECRET': { critical: false, description: 'Twitter access secret' },
-  'LINKEDIN_ACCESS_TOKEN': { critical: false, description: 'LinkedIn API' },
-  'REDDIT_CLIENT_ID': { critical: false, description: 'Reddit API' },
-  'REDDIT_CLIENT_SECRET': { critical: false, description: 'Reddit API secret' },
-  'PRODUCT_HUNT_API_TOKEN': { critical: false, description: 'Product Hunt API' },
-  
-  // Payments
-  'STRIPE_SECRET_KEY': { critical: false, description: 'Stripe payments' },
-  
-  // Infrastructure
-  'SUPABASE_SERVICE_ROLE_KEY': { critical: false, description: 'Supabase backend' },
-  'VERCEL_TOKEN': { critical: false, description: 'Vercel deployments' },
-  'DIGITALOCEAN_API_TOKEN': { critical: false, description: 'DigitalOcean' },
-  'RAILWAY_TOKEN': { critical: false, description: 'Railway deploy' },
-  'RESEND_API_KEY': { critical: false, description: 'Resend email' },
-  'AMPLITUDE_API_KEY': { critical: false, description: 'Amplitude analytics' },
-  
-  // DNS / Domains
-  'NAMECHEAP_API_KEY': { critical: false, description: 'Namecheap DNS' },
-  'NAMECHEAP_USERNAME': { critical: false, description: 'Namecheap username' },
-  'PORKBUN_API_KEY': { critical: false, description: 'Porkbun DNS' },
-  'PORKBUN_SECRET_API_KEY': { critical: false, description: 'Porkbun secret' },
-  
-  // SEO
-  'GOOGLE_SEARCH_CONSOLE_KEY': { critical: false, description: 'Google Search Console' },
-  'GOOGLE_BUSINESS_PROFILE_KEY': { critical: false, description: 'Google Business Profile' },
-};
-
-function log(message, type = 'info') {
-  const prefix = {
-    info: 'ℹ️',
-    success: '✅',
-    warning: '⚠️',
-    error: '❌',
-    action: '🔧',
-  }[type] || '•';
-  console.log(`${prefix} ${message}`);
-}
-
+/**
+ * Run a subprocess.
+ *
+ * @param {string} cmd
+ * @param {string[]} args
+ * @param {{ input?: string }} [options]
+ * @returns {{ status: number|null, stdout: string, stderr: string }}
+ */
+function run(cmd, args, options = {}) {
+  const hasInput = typeof options.input === 'string';
+  // NOTE: Node's spawnSync silently drops `input` when stdio[0] === 'ignore',
+  // so we must switch stdin to 'pipe' whenever we intend to feed the child.
+  const stdio = [hasInput ? 'pipe' : 'ignore', 'pipe', 'pipe'];
+  const spawnOptions = { stdio, encoding: 'utf8' };
+  if (hasInput) {
+    spawnOptions.input = options.input;
+  }
+  const result = spawnSync(cmd, args, spawnOptions);
 function run(command, args = [], options = {}) {
   // spawnSync with an explicit argv array does NOT spawn a shell, so args
   // cannot be shell-injected. All callers pass a fixed command ('gh').
@@ -99,35 +45,21 @@ function run(command, args = [], options = {}) {
     ...options,
   });
   return {
-    ok: result.status === 0,
-    stdout: result.stdout?.trim() || '',
-    stderr: result.stderr?.trim() || '',
-    error: result.error,
+    status: result.status,
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
   };
 }
 
-function parseBackupJSON() {
-  if (!BACKUP_JSON) {
-    log('CREDENTIAL_BACKUP_JSON not set', 'error');
-    return {};
-  }
-  try {
-    return JSON.parse(BACKUP_JSON);
-  } catch (e) {
-    log(`Invalid JSON in CREDENTIAL_BACKUP_JSON: ${e.message}`, 'error');
-    return {};
-  }
-}
-
-async function getCurrentSecrets() {
+function listSecrets() {
   const result = run('gh', ['secret', 'list', '--repo', REPO]);
-  if (!result.ok) {
-    log('Failed to list secrets', 'error');
-    return [];
+  if (result.status !== 0) {
+    throw new Error(`Failed to list secrets: ${result.stderr}`);
   }
-  
   return result.stdout
     .split('\n')
+    .map((line) => line.trim().split(/\s+/)[0])
+    .filter(Boolean);
     .filter(line => line.trim())
     .map(line => line.split(' ')[0]);
 }
@@ -255,100 +187,37 @@ async function cleanup(staleSecrets) {
   return cleaned;
 }
 
-async function refresh(expiringSecrets) {
-  // For now, just report - actual rotation would need provider-specific logic
-  if (!expiringSecrets || expiringSecrets.length === 0) {
-    log('Nothing to refresh', 'info');
-    return [];
+function removeSecret(name) {
+  const result = run('gh', ['secret', 'remove', name, '--repo', REPO]);
+  if (result.status !== 0) {
+    throw new Error(`Failed to remove secret ${name}: ${result.stderr}`);
   }
-  
-  log(`🔄 ${expiringSecrets.length} secrets may need rotation:`, 'warning');
-  console.log(`   ${expiringSecrets.join(', ')}`);
-  
-  // In the future, this could trigger rotation workflows
-  return [];
 }
 
-async function main() {
-  console.log('═══════════════════════════════════════');
-  console.log('🤖 Credential Autonomy Agent');
-  console.log('═══════════════════════════════════════');
-  console.log(`   Action: ${ACTION}`);
-  console.log(`   Dry Run: ${DRY_RUN}`);
-  console.log(`   Repo: ${REPO}`);
-  console.log('');
-  
-  let actionsTaken = [];
-  
-  try {
-    switch (ACTION) {
-      case 'audit':
-        const auditResult = await audit();
-        actionsTaken.push(`audited:${auditResult.ok.length}`);
-        break;
-        
-      case 'restore':
-        const auditForRestore = await audit();
-        const restored = await restore(auditForRestore.inBackupNotGitHub);
-        actionsTaken.push(`restored:${restored.length}`);
-        break;
-        
-      case 'cleanup':
-        const auditForCleanup = await audit();
-        const cleaned = await cleanup(auditForCleanup.inGitHubNotBackup);
-        actionsTaken.push(`cleaned:${cleaned.length}`);
-        break;
-        
-      case 'refresh':
-        const auditForRefresh = await audit();
-        const refreshed = await refresh([]);
-        actionsTaken.push(`refreshed:${refreshed.length}`);
-        break;
-        
-      case 'full':
-      default:
-        // Do everything
-        const fullAudit = await audit();
-        
-        // 1. Restore missing
-        if (fullAudit.inBackupNotGitHub.length > 0) {
-          const restored = await restore(fullAudit.inBackupNotGitHub);
-          actionsTaken.push(`restored:${restored.length}`);
-        }
-        
-        // 2. Report critical missing (can't restore if not in backup)
-        if (fullAudit.missing.length > 0) {
-          log(`Critical secrets missing from backup: ${fullAudit.missing.join(', ')}`, 'error');
-          actionsTaken.push(`missing:${fullAudit.missing.length}`);
-        }
-        
-        // 3. Log extras (don't delete - might be intentional)
-        if (fullAudit.inGitHubNotBackup.length > 0) {
-          log(`Extra secrets (not in backup): ${fullAudit.inGitHubNotBackup.join(', ')}`, 'info');
-          actionsTaken.push(`extras:${fullAudit.inGitHubNotBackup.length}`);
-        }
-        
-        actionsTaken.push(`ok:${fullAudit.ok.length}`);
-        break;
-    }
-  } catch (error) {
-    log(`Agent failed: ${error.message}`, 'error');
-    console.log(error.stack);
-    process.exit(1);
+/**
+ * Restore (create or update) a repository secret.
+ *
+ * The secret value is delivered via stdin so plaintext is never present in
+ * the child process's argv. See scripts/provision-repo-secrets.sh for the
+ * established pattern this mirrors.
+ *
+ * @param {string} name
+ * @param {string} value
+ */
+function restore(name, value) {
+  if (typeof value !== 'string') {
+    throw new TypeError(`restore(${name}): value must be a string`);
   }
-  
-  console.log('\n═══════════════════════════════════════');
-  console.log('✅ Credential Autonomy Agent Complete');
-  console.log('═══════════════════════════════════════');
-  console.log(`   Actions: ${actionsTaken.join(', ')}`);
-  
-  // Output for GitHub Actions
-  if (process.env.GITHUB_OUTPUT) {
-    require('fs').appendFileSync(process.env.GITHUB_OUTPUT, 
-      `\nstatus=success\nactions_taken=${actionsTaken.join(';')}\n`);
+  const result = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
+  if (result.status !== 0) {
+    // Deliberately do NOT include `value` or stderr contents that could echo it.
+    throw new Error(`Failed to set secret ${name} (exit ${result.status})`);
   }
-  
-  process.exit(0);
 }
 
-main();
+module.exports = {
+  run,
+  listSecrets,
+  removeSecret,
+  restore,
+};

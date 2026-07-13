@@ -3,7 +3,7 @@ name: Third-Party Action Freshness Audit
 # ── Quarterly third-party action audit ───────────────────────────────────────
 # Standard: docs/THIRD_PARTY_ACTION_AUDIT.md
 # Script:   scripts/audit-third-party-actions.sh
-# Origin:   sanjay3290/jules-pr-reviewer@v1 (abandoned, single-author) left
+# Origin:   sanjay3290/jules-pr-reviewer@v1.0.0 (abandoned, single-author) left
 #           PR #13916 with a stuck `jules/review` check. This audit is the
 #           recurrence guard — it greps every workflow's `uses:` lines,
 #           classifies by publisher tier, and files a tracking issue if any
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
 
       - name: Run audit
         id: audit
@@ -91,7 +91,7 @@ jobs:
         # fix as the summary step above. Octopus finding #13996.
         env:
           REPORT_FILE: ${{ steps.audit.outputs.report_file }}
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -117,7 +117,7 @@ jobs:
               'single-author actions whose last release is older than the threshold.',
               '',
               '## Why this exists',
-              'Origin case: `sanjay3290/jules-pr-reviewer@v1` (single-author, abandoned)',
+              'Origin case: `sanjay3290/jules-pr-reviewer@v1.0.0` (single-author, abandoned)',
               'left PR #13916 with a stuck `jules/review` check. See',
               '`docs/THIRD_PARTY_ACTION_AUDIT.md` for the full recurrence guard.',
               '',
