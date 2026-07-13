@@ -244,20 +244,26 @@ href={import.meta.env.VITE_ALTTEXT_APP_URL || '#'}
 ```
 
 **Test setup:**
-Add to `package.json`:
+Merge into the `scripts` object in `package.json` (partial snippet):
 ```json
-"scripts": {
-  "test": "vitest run",
-  "test:watch": "vitest"
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
 }
 ```
-Add to `vite.config.js`:
+Merge into the exported config object in `vite.config.js` (partial snippet — add
+alongside the existing `plugins` key):
 ```js
-test: {
-  environment: 'jsdom',
-  globals: true,
-  setupFiles: './src/test-setup.js',
-}
+export default defineConfig({
+  // …existing config…
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test-setup.js',
+  },
+})
 ```
 Install dev deps: `pnpm add -D vitest @vitest/coverage-v8 jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event`
 
