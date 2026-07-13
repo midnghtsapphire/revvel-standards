@@ -1,0 +1,54 @@
+{
+  "schema": "biome-status/v1",
+  "generated_at": "2026-07-13T17:06:12.688Z",
+  "credit_free": true,
+  "overall": "healthy",
+  "workers": {
+    "sentinel": {
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "counts": {
+        "failed_runs": 0,
+        "total_runs": 100,
+        "stuck_issues": 0
+      },
+      "detail": {
+        "recent_failures": [],
+        "stuck": []
+      }
+    },
+    "homeostat": {
+      "status": "healthy",
+      "summary": "AI lanes offline (OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY unset) — credit-free rule-based lanes active",
+      "counts": {
+        "ai_keys_present": 0,
+        "ai_keys_missing": 3
+      },
+      "detail": {
+        "ai_lanes": "offline",
+        "present": [],
+        "missing": [
+          "OPENROUTER_API_KEY",
+          "ANTHROPIC_API_KEY",
+          "PERPLEXITY_API_KEY"
+        ]
+      }
+    },
+    "medic": {
+      "status": "healthy",
+      "summary": "no recent run yet",
+      "counts": {},
+      "detail": {
+        "last_run": null
+      }
+    },
+    "sheaf": {
+      "status": "healthy",
+      "summary": "feed generated",
+      "counts": {
+        "workers": 3
+      },
+      "detail": {}
+    }
+  }
+}
