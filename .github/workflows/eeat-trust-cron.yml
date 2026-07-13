@@ -59,7 +59,7 @@ jobs:
           node-version: "24"
       - name: Setup Python
         if: steps.quiet.outputs.active == 'true'
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.12"
       # Doppler fetch step removed 2026-07-09 — Doppler is decommissioned
@@ -345,7 +345,7 @@ jobs:
           echo "notify_on_warning=$NOTIFY_ON_WARNING" >> $GITHUB_OUTPUT
       - name: Create PR with health report
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8.1.1
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "TrustForge: E-E-A-T health report run #${{ steps.trustforge.outputs.run_number }}"
