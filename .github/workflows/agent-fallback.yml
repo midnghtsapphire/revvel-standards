@@ -187,31 +187,49 @@ jobs:
               return;
             }
 
-            // Fetch full details if we don't have them yet
-            if (!issueTitle || !issueBody) {
-              try {
-                const { data: issue } = await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                });
-                issueTitle = issue.title || '';
-                issueBody = issue.body || '';
-              } catch (error) {
-                core.warning(`Could not fetch issue details: ${error.message}`);
-              }
+            // Always fetch the CURRENT state — never trust the triggering event's
+            // payload alone for this check. The workflow_call/workflow_dispatch
+            // paths accept an explicit issue_number with no upstream guarantee the
+            // target is still open, and even the issues/pull_request_target event
+            // payloads can be stale by the time this job actually runs. Dispatching
+            // a coding agent against an already-merged PR or closed issue produces
+            // a duplicate PR re-implementing already-landed work on top of it —
+            // the confirmed root cause of the 2026-07-13 main-breaking interleaved-
+            // merge incidents (see PR #15914's fix for the sibling openrouter-coder.yml
+            // dispatcher, and the duplicate closed in PR #15939).
+            let currentState;
+            try {
+              const { data: current } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              currentState = current;
+            } catch (error) {
+              core.setFailed(`Could not fetch current state for #${issueNumber}: ${error.message}`);
+              return;
             }
+
+            if (currentState.state !== 'open') {
+              core.notice(`#${issueNumber} is not open (state=${currentState.state}) — skipping agent dispatch.`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            if (!issueTitle) issueTitle = currentState.title || '';
+            if (!issueBody) issueBody = currentState.body || '';
 
             // Use task_description as fallback for body
             if (!issueBody && taskDescription) {
               issueBody = taskDescription;
             }
 
+            core.setOutput('skip', 'false');
             core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', issueTitle);
             core.setOutput('issue_body', issueBody);
       - name: Try OpenRouter (Primary)
-        if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == '')
+        if: steps.issue.outputs.skip != 'true' && needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == '')
         id: openrouter
         continue-on-error: true
         env:
@@ -253,7 +271,7 @@ jobs:
             fi
           fi
       - name: Fallback to Cursor
-        if: (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
+        if: steps.issue.outputs.skip != 'true' && (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
         id: cursor
         continue-on-error: true
         env:
@@ -268,7 +286,7 @@ jobs:
         # OpenHands runs automatically when OpenRouter does not succeed — it is a
         # free-tier agent (pre-paywall Devin-class), so it is a real fallback, not
         # an opt-in last resort. Explicit prefer_agent=OpenHands also routes here.
-        if: steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == '')
+        if: steps.issue.outputs.skip != 'true' && steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == '')
         id: OpenHands
         continue-on-error: true
         env:
@@ -280,7 +298,7 @@ jobs:
           echo "🤖 Using OpenHands AI (free-quota fallback)..."
           bash scripts/call-openhands-api.sh
       - name: Determine result
-        if: always()
+        if: always() && steps.issue.outputs.skip != 'true'
         id: result
         run: |
           if [ "${{ steps.openrouter.outcome }}" = "success" ]; then
