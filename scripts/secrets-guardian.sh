@@ -96,7 +96,10 @@ for SECRET in "${CRITICAL_SECRETS[@]}"; do
     if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
       echo "   → Found in backup, restoring..."
       if [ "$DRY_RUN" != "true" ]; then
-        gh secret set "$SECRET" --body "$VALUE" --repo "$GITHUB_REPOSITORY"
+        # Pass the plaintext value via stdin (not argv/--body) so it never
+        # appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
+        # from stdin by default when --body is omitted.
+        printf '%s' "$VALUE" | gh secret set "$SECRET" --repo "$GITHUB_REPOSITORY"
       fi
       RESTORED="${RESTORED}${SECRET},"
       echo "   → ✅ Restored!"
@@ -129,7 +132,10 @@ for SECRET in "${ALL_SECRETS[@]}"; do
     if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
       echo "   → Found in backup, restoring..."
       if [ "$DRY_RUN" != "true" ]; then
-        gh secret set "$SECRET" --body "$VALUE" --repo "$GITHUB_REPOSITORY"
+        # Pass the plaintext value via stdin (not argv/--body) so it never
+        # appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
+        # from stdin by default when --body is omitted.
+        printf '%s' "$VALUE" | gh secret set "$SECRET" --repo "$GITHUB_REPOSITORY"
       fi
       RESTORED="${RESTORED}${SECRET},"
       echo "   → ✅ Restored!"

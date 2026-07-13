@@ -61,13 +61,13 @@ jobs:
               // SHIP_STATUS.md doesn't exist
             }
 
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '[AUDIT] Ship Status Weekly Digest',
               body: body,
               labels: ['audit', 'automated']
-            })
+            });
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

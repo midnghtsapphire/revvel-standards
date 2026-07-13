@@ -56,14 +56,28 @@ jobs:
         run: |
           ISSUE_NUMBER="${{ github.event.issue.number || inputs.issue_number }}"
           REPO="${{ github.repository }}"
-          ISSUE=$(gh issue view $ISSUE_NUMBER --repo $REPO --json title,body,labels,comments)
-          echo "issue_title=$(echo $ISSUE | jq -r '.title')" >> $GITHUB_OUTPUT
-          echo "issue_body=$(echo $ISSUE | jq -r '.body // ""')" >> $GITHUB_OUTPUT
-          
-          # Find the most recent research comment (from Perplexity)
-          RESEARCH=$(gh issue view $ISSUE_NUMBER --repo $REPO --comments | \
-            jq -r '.[] | select(.body | contains("Perplexity Research Handoff")) | .body' | head -c 5000)
-          echo "research_context=$RESEARCH" >> $GITHUB_OUTPUT
+          ISSUE=$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title,body,labels,comments)
+
+          # issue_title is a single line; issue_body and research_context can
+          # contain newlines, so they MUST use the heredoc/delimiter form of
+          # $GITHUB_OUTPUT — a single-line key=value would corrupt the file.
+          echo "issue_title=$(echo "$ISSUE" | jq -r '.title')" >> "$GITHUB_OUTPUT"
+          {
+            echo "issue_body<<JULES_EOF"
+            echo "$ISSUE" | jq -r '.body // ""'
+            echo "JULES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          # Find the most recent research comment (from Perplexity). Use
+          # --json comments (structured) instead of --comments (human-readable
+          # text, which is not valid JSON and would break jq).
+          RESEARCH=$(echo "$ISSUE" | \
+            jq -r '.comments[] | select(.body | contains("Perplexity Research Handoff")) | .body' | head -c 5000)
+          {
+            echo "research_context<<JULES_EOF"
+            echo "$RESEARCH"
+            echo "JULES_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Invoke Jules agent
         id: jules
