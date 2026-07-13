@@ -1,23 +1,23 @@
-# [WR] <title>
+# [WR] Basic Work Request
 
 ## Issue Context
 
-<Describe the problem, motivation, and any pointers to relevant code/docs/prior discussion.>
+<!-- Describe what this work request addresses. Link to source issue/PR if applicable. -->
 
 ## Acceptance Criteria
 
-- <criterion 1>
-- <criterion 2>
+<!-- Enumerate the concrete outcomes this WR must deliver. -->
 
 ## Learnings — What & Why
 
-Agents completing other WR types should fill this in themselves once done — a short note on what was learned during this WR and why it matters (patterns discovered, gotchas hit, follow-ups worth tracking). For WRs auto-generated from checked `Follow-up:` items, this section is populated automatically by `followup-checkbox-router.yml` with the source link and follow-up text.
+<!--
+Agents completing non-follow-up WR types should fill this in themselves once done:
+what was learned, and why the chosen approach was taken.
+For follow-up-generated WRs, the router populates this section automatically.
+-->
 
-## Notes
+## Checklist
 
-<Optional additional context.>
-## Learnings — What & Why
-
-_Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._
-
-<!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
+- [ ] Scope delivered
+- [ ] Tests passing
+- [ ] Docs updated (if applicable)
