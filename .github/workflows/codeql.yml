@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: none
@@ -79,7 +79,7 @@ jobs:
         # export don't block PRs; a separate validation step below is the real
         # gate for successful SARIF generation.
         continue-on-error: true
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: /language:${{ matrix.language }}
           upload: never
@@ -101,7 +101,7 @@ jobs:
         # conflict). If this step fails, findings are missing from the
         # Security tab — check Settings → Security → Code scanning first.
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}
