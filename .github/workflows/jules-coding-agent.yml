@@ -108,12 +108,17 @@ jobs:
         if: steps.jules.outputs.jules_invoked == 'true'
         env:
           BRANCH: ${{ steps.jules.outputs.branch }}
+          # CodeQL: attacker-controlled issue title must not be interpolated
+          # directly into the run: shell string (CLAUDE.md gotcha #4) -- pass
+          # via env and reference as "$ISSUE_TITLE" instead.
+          ISSUE_TITLE: ${{ steps.context.outputs.issue_title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
         run: |
           # Check if there are changes
           if git diff --stat | grep -v "^$" > /dev/null 2>&1; then
             gh pr create \
-              --title "[WR] ${{ steps.context.outputs.issue_title }}" \
-              --body "Created by Jules Coding Agent from issue #${{ github.event.issue.number || inputs.issue_number }}" \
+              --title "[WR] $ISSUE_TITLE" \
+              --body "Created by Jules Coding Agent from issue #$ISSUE_NUMBER" \
               --base main
             echo "pr_created=true" >> $GITHUB_OUTPUT
           else
