@@ -1,5 +1,11 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T13:18:55.658Z",
-  "stop": []
+  "generated_at": "2026-07-13T14:09:25.213Z",
+  "stop": [
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "reason": "no progress for 35m ≥ 15m"
+    }
+  ]
 }
