@@ -35,7 +35,7 @@ env:
   # you ever genuinely need a separate token credential.
   # JULES_TOKEN: ${{ secrets.JULES_TOKEN }}
   JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   jules-code:

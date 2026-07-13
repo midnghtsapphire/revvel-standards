@@ -246,12 +246,17 @@ jobs:
 
             for (const label of issueData.labels) {
               if (allLifecycleLabels.includes(label.name)) {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue,
-                  name: label.name
-                });
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue,
+                    name: label.name
+                  });
+                  console.log('Removed label:', label.name);
+                } catch (e) {
+                  console.log('Could not remove label:', label.name, e.message);
+                }
               }
             }
 
