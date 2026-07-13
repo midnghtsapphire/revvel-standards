@@ -1,6 +1,6 @@
 # WR: {TITLE}
 
-<!-- who: see {ISSUE_REF} -->
+<!-- who: {ISSUE_REF} -->
 <!-- date: {DATE} -->
 <!-- description: {ISSUE_REF} -->
 <!-- **Issue:** {ISSUE_REF}   -->
