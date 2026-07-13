@@ -25,6 +25,12 @@ on:
           - review
           - merge-ready
           - done
+
+jobs:
+  transition-state:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
 permissions:
   issues: write
 env:
@@ -51,6 +57,26 @@ jobs:
             const labelGroups = [
               ['wr:new', 'wr:research', 'wr:research-complete', 'wr:code', 'wr:pr-open', 'wr:checking', 'wr:check-failed', 'wr:review', 'wr:merge-ready', 'wr:done'],
               ['lifecycle:stuck', 'needs-human']
+          script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            const lifecycleLabels = [
+              'state:triage',
+              'state:in-progress',
+              'state:blocked',
+              'state:review',
+              'state:done',
+            ];
+            const targetLabel = `state:${targetState}`;
+            const toRemove = lifecycleLabels.filter((l) => l !== targetLabel);
+
+            for (const label of toRemove) {
+              'lifecycle:triage',
+              'lifecycle:ready',
+              'lifecycle:in-progress',
+              'lifecycle:blocked',
+              'lifecycle:review',
+              'lifecycle:done'
             ];
 
 
@@ -89,9 +115,15 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
-                  name: label
+                  name: label,
                 });
                 console.log('Removed label:', label);
+                console.log(`Removed label ${label} from #${issueNumber}`);
+              } catch (e) {
+                console.log(`Label ${label} not present on #${issueNumber} (or already removed): ${e.message}`);
+              }
+            }
+                console.log(`Removed conflicting label: ${label}`);
               } catch (e) {
                 console.log('Could not remove label:', label, e.message);
               }
@@ -168,11 +200,28 @@ jobs:
 
             console.log('Closed malformed issue #' + issue.number);
 
-      - name: Add wr:new label
-        if: steps.malformed_check.outputs.is_malformed != 'true'
-        uses: actions/github-script@v9.0.0
+      - name: Add target lifecycle label
+        uses: actions/github-script@v7
         with:
           script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            const targetLabel = `state:${targetState}`;
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: [targetLabel],
+            });
+            console.log(`Added label ${targetLabel} to #${issueNumber}`);
+
+      - name: Post transition comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
             const labels = context.payload.issue.labels.map(l => l.name);
             if (!labels.some(l => l.startsWith('wr:'))) {
               await github.rest.issues.addLabels({
@@ -244,55 +293,27 @@ jobs:
             });
 
 
-            for (const label of issueData.labels) {
-              if (allLifecycleLabels.includes(label.name)) {
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue,
-                    name: label.name
-                  });
-                  console.log('Removed label:', label.name);
-                } catch (e) {
-                  console.log('Could not remove label:', label.name, e.message);
-                }
-              }
-            }
-
-
-            // Add new label
-
-            await github.rest.issues.addLabels({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue,
-              labels: [newLabel]
+              issue_number: issueNumber,
+              body: `🔄 Lifecycle state transitioned to \`${targetState}\` via manual workflow_dispatch.`,
             });
 
-
-            console.log(' transitioned to:', newLabel);
-    timeout-minutes: 15
-  close-completed:
-    runs-on: ubuntu-latest
-    env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'issues' && github.event.action == 'closed' &&
-      contains(github.event.issue.labels.*.name, 'wr:')
-    steps:
-      - name: Mark as done if not PR
-        if: "!github.event.issue.pull_request"
-        uses: actions/github-script@v9.0.0
+      - name: Cleanup stale lifecycle labels
+        uses: actions/github-script@v7
         with:
           script: |
-            const issue = context.payload.issue;
-            const labels = issue.labels.map(l => l.name);
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            const targetLabel = `state:${targetState}`;
 
-            // Check if already marked as done
-            if (labels.includes('wr:done')) {
-              console.log('Issue already marked as done');
-              return;
-            }
+            // Belt-and-suspenders: re-sweep any lifecycle labels that shouldn't be here.
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
 
             // Add wr:done label
             await github.rest.issues.addLabels({
@@ -302,3 +323,20 @@ jobs:
               labels: ['wr:done']
             });
     timeout-minutes: 30
+            const staleLifecycleLabels = currentLabels
+              .map((l) => l.name)
+              .filter((n) => n.startsWith('state:') && n !== targetLabel);
+
+            for (const label of staleLifecycleLabels) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: label,
+                });
+                console.log(`Cleaned up stale lifecycle label ${label} on #${issueNumber}`);
+              } catch (e) {
+                console.log(`Label ${label} race on #${issueNumber} (already removed): ${e.message}`);
+              }
+            }
