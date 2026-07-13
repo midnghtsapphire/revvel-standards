@@ -31,8 +31,14 @@ jobs:
                 'bug': { color: 'd73a4a', description: 'Something is broken' },
               };
               if (!routingLabelSet) {
-                const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
-                routingLabelSet = new Set(repoLabels.map(l => l.name));
+                try {
+                  const { data: repoLabels } = await github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 });
+                  routingLabelSet = new Set(repoLabels.map(l => l.name));
+                } catch (e) {
+                  const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                  core.warning(`listLabelsForRepo failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                  routingLabelSet = new Set();
+                }
               }
               for (const label of labels) {
                 if (routingLabelSet.has(label) || !palette[label]) continue;
@@ -152,20 +158,46 @@ jobs:
             }
 
             // ─── SWEEP OPEN PRs ──────────────────────────────────────
-            const { data: pulls } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            // This runs hourly across every open PR, so an installation
+            // rate-limit 403 here must degrade gracefully instead of
+            // hard-failing the whole job.
+            let pulls = [];
+            try {
+              const res = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+              pulls = res.data;
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`pulls.list failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              pulls = [];
+            }
 
             for (const pr of pulls) {
               const prNumber = pr.number;
-              const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+              let labels;
+              try {
+                const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
+                labels = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`listLabelsOnIssue for PR #${prNumber} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                continue;
+              }
               const labelNames = labels.map(l => l.name);
               const updatedAt = new Date(pr.updated_at);
               const age = now - updatedAt;
-              const reviews = await github.paginate(github.rest.pulls.listReviews, {
-                owner,
-                repo,
-                pull_number: prNumber,
-                per_page: 100,
-              });
+              let reviews = [];
+              try {
+                reviews = await github.paginate(github.rest.pulls.listReviews, {
+                  owner,
+                  repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                });
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`pulls.listReviews for PR #${prNumber} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                reviews = [];
+              }
               const latestHeadReviewByUser = new Map();
               for (const review of reviews) {
                 if (!review.user?.login) continue;
@@ -381,7 +413,15 @@ jobs:
             }
 
             // ─── SWEEP OPEN ISSUES ───────────────────────────────────
-            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+            let issues = [];
+            try {
+              const res = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+              issues = res.data;
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`issues.listForRepo failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              issues = [];
+            }
 
             for (const issue of issues) {
               if (issue.pull_request) continue; // skip PRs
