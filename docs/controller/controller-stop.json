@@ -1,51 +1,51 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T21:32:16.363Z",
+  "generated_at": "2026-07-13T21:49:20.529Z",
   "stop": [
     {
-      "id": 29282725351,
-      "name": "Perplexity Research Agent",
-      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29281002856,
+      "name": "CodeQL",
+      "reason": "running 104m ≥ 60m budget"
     },
     {
-      "id": 29282721101,
-      "name": "Perplexity Research Agent",
-      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29280827192,
+      "name": "CodeQL",
+      "reason": "running 107m ≥ 60m budget"
     },
     {
-      "id": 29282620670,
-      "name": "Perplexity Research Agent",
-      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29280764834,
+      "name": "CodeQL",
+      "reason": "running 107m ≥ 60m budget"
     },
     {
-      "id": 29282619655,
-      "name": "Perplexity Research Agent",
-      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29280745442,
+      "name": "CodeQL",
+      "reason": "running 108m ≥ 60m budget"
     },
     {
-      "id": 29282615696,
-      "name": "Perplexity Research Agent",
-      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29280700129,
+      "name": "CodeQL",
+      "reason": "running 108m ≥ 60m budget"
     },
     {
-      "id": 29282615662,
-      "name": "Perplexity Research Agent",
-      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "id": 29280657474,
+      "name": "CodeQL",
+      "reason": "running 109m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 357m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 375m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 428m ≥ 60m budget"
+      "reason": "running 445m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 499m ≥ 60m budget"
+      "reason": "running 516m ≥ 60m budget"
     }
   ]
 }
