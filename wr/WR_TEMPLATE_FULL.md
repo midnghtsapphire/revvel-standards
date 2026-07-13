@@ -1,117 +1,38 @@
-<!-- WR_TEMPLATE_FULL.md — product/sellable WRs only. For bug/chore/docs use WR_TEMPLATE_BASIC.md. -->
-<!-- Generator must substitute every {TOKEN} and fill or N/A every [placeholder] before commit. -->
-<!-- Source-packet convention: when the research engine runs, it prepends a "## Research Findings"
-     block containing a line like `Source packet: docs/research-engine/run-<run-id>.md`. That
-     run-<run-id>.md path points to an external research-engine CI artifact (the run that produced
-     the packet) and is intentionally NOT a committed file in this repo. Reviewers should not flag
-     it as a missing/broken link — the reference is a pointer to the CI run, not a repo file.
-     See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
-# WR: {TITLE}
-
-**Issue:** {ISSUE_REF}  
-**Repository:** {REPO}  
-**Created:** {DATE}  
-**Researcher:** {RESEARCHER}  
-**Research Date:** {RESEARCH_DATE}  
-**WR Status:** {STATUS}  
+# [WR] <title>
 
 ## Issue Context
 
-{ISSUE_BODY}
+<Describe the problem in detail: what triggered this WR, what's currently broken or missing, links to related PRs/issues, and any relevant history.>
 
-## Repository Metadata
+## Scope
 
-| Property | Value |
-| --- | --- |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+<What is in scope for this WR. What is explicitly out of scope.>
 
-## Research Checklist
+## Acceptance Criteria
 
-<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- <criterion 1>
+- <criterion 2>
+- <criterion 3>
 
-## Research Findings
+## Implementation Notes
 
-<!-- revvel-research-findings -->
-{RESEARCH_FINDINGS}
+<Suggested approach, files likely to touch, patterns to follow, gotchas to watch for.>
 
-## Executive Summary
+## Validation
 
-{EXECUTIVE_SUMMARY}
+<How to verify this WR is complete: tests to run, manual checks, docs to update.>
 
-## Step 1A — Product/Output Selections
+## Learnings — What & Why
 
-{PRODUCT_SELECTIONS}
+Agents completing other WR types should fill this in themselves once done — a short note on what was learned during this WR and why it matters (patterns discovered, gotchas hit, follow-ups worth tracking). For WRs auto-generated from checked `Follow-up:` items, this section is populated automatically by `followup-checkbox-router.yml` with the source link, the follow-up text, and (if applicable) a note that this is a chained follow-up.
 
-## Step 2 — Deep Web Research
+## Notes
 
-<!-- Competitor analysis MUST include actual prices (e.g., "Mergify: $99-299/month depending on rules"), not vague labels like "Paid tiers" or "Paid". If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required." Do NOT ship incomplete competitive intelligence. -->
-<!-- This pricing rule is mirrored in scripts/research-engine.js (buildSynthesisPrompt); parity is
-     enforced by tests/research-engine.test.js. Update both files together if the wording changes. -->
-<!-- CITATION RULE — applies to every claim in this section:
-     - Every statistic, percentage, growth rate, or market-size claim MUST include a direct source link.
-     - If a number is not sourced, omit it or label it an estimate (e.g. "internal estimate", "unverified").
-     - Prefer a range over a precise figure when the number is an estimate.
-     - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
-       unattributed statistics are treated as placeholders and will be flagged in review. -->
-
-{DEEP_WEB_RESEARCH}
-
-## Step 3 — Requirements
-
-{REQUIREMENTS}
-
-## Recommendations
-
-{RECOMMENDATIONS}
-
-## Dependencies
-
-<!-- Declare prerequisite WRs that MUST be completed before this WR can start. -->
-<!-- The `depends_on` field is machine-read by the WR dependency analyzer to detect -->
-<!-- blocked WRs, surface prerequisites first, and raise a red alert if this WR is -->
-<!-- worked before its prerequisites land. Query a full chain with `/dragnet deps <wr-id>`. -->
-<!-- Use WR/issue references (e.g. #15090) or "none" — never leave a raw token. -->
-<!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
-<!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
-
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | {DEPENDS_ON} |
-| Blocked by | {BLOCKED_BY} |
-| Blocks (downstream WRs) | {BLOCKS} |
-
-{DEPENDENCIES}
-
-## Risks
-
-{RISKS}
-
-## Superseded Content
-
-<!-- Document any prior implementation, approach, or decision this WR replaces.
-     Per RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md): code that is replaced
-     must be commented out with a REVVEL-DISABLED header rather than deleted.
-     Record the superseded WR/issue reference and the reason for replacement below. -->
-<!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
-
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | {SUPERSEDES} |
-| Reason for replacement | {SUPERSESSION_REASON} |
-| Archival status | {ARCHIVAL_STATUS} |
-
+<Optional additional context.>
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
      NOT-APPLICABLE (no code was removed), PENDING-REVIEW (awaiting human decision). -->
+
+## Learnings — What & Why
+
+_Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._

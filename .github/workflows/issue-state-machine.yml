@@ -151,22 +151,35 @@ jobs:
               hint + '\n\n' +
               '---\n_Auto-closed by `issue-state-machine.yml` malformed-issue guard._';
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue.number,
-              body: closeBody,
-            });
+            // Guard both writes: this job fires on every issue opened event,
+            // so an installation rate-limit 403 here must degrade gracefully
+            // (log + stop this issue's processing) instead of hard-failing.
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: closeBody,
+              });
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`createComment for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+            }
 
-            await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue.number,
-              state: 'closed',
-              state_reason: 'not_planned',
-            });
-
-            console.log('Closed malformed issue #' + issue.number);
+            try {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'not_planned',
+              });
+              console.log('Closed malformed issue #' + issue.number);
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`issues.update for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              return;
+            }
 
       - name: Add wr:new label
         if: steps.malformed_check.outputs.is_malformed != 'true'
@@ -175,13 +188,18 @@ jobs:
           script: |
             const labels = context.payload.issue.labels.map(l => l.name);
             if (!labels.some(l => l.startsWith('wr:'))) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.issue.number,
-                labels: ['wr:new']
-              });
-              console.log('Added wr:new label');
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.issue.number,
+                  labels: ['wr:new']
+                });
+                console.log('Added wr:new label');
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`addLabels(wr:new) for issue #${context.payload.issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              }
             } else {
               console.log('Issue already has wr:* label:', labels.filter(l => l.startsWith('wr:')));
             }
@@ -246,12 +264,17 @@ jobs:
 
             for (const label of issueData.labels) {
               if (allLifecycleLabels.includes(label.name)) {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue,
-                  name: label.name
-                });
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue,
+                    name: label.name
+                  });
+                  console.log('Removed label:', label.name);
+                } catch (e) {
+                  console.log('Could not remove label:', label.name, e.message);
+                }
               }
             }
 
@@ -290,10 +313,15 @@ jobs:
             }
 
             // Add wr:done label
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue.number,
-              labels: ['wr:done']
-            });
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['wr:done']
+              });
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`addLabels(wr:done) for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+            }
     timeout-minutes: 30
