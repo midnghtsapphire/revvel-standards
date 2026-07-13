@@ -217,12 +217,19 @@ jobs:
                     labels: ['lifecycle:stuck']
                   });
                 } else if (diagnosis.action === 'move-code') {
-                  // Remove wr:checking, add wr:code
+                  // Remove wr:checking, add wr:code.
+                  // Tolerate 404: another workflow (e.g. wr-auto-classify or a
+                  // manual relabel) may have already removed wr:checking between
+                  // our fetch and this call. Anything other than 404 is a real
+                  // failure (auth/permissions) and must still surface.
                   await github.rest.issues.removeLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
                     name: 'wr:checking'
+                  }).catch(err => {
+                    if (err.status !== 404) throw err;
+                    console.log('wr:checking already removed from #' + issue.number + ' (404) — continuing');
                   });
                   await github.rest.issues.addLabels({
                     owner: context.repo.owner,
