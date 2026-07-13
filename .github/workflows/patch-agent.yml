@@ -54,6 +54,7 @@ jobs:
       - name: Run patcher
         env:
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           if [ -f scripts/patch-agent.js ]; then
             node scripts/patch-agent.js
