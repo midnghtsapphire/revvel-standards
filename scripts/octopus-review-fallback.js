@@ -185,7 +185,7 @@ function computePrimaryResetWaitMs(headers) {
 function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
   const retryAfter = headers && (headers["retry-after"] || headers["Retry-After"]);
   const retryAfterSeconds = parseInt(retryAfter, 10);
-  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0) {
     return Math.min(retryAfterSeconds * 1000, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
   }
   const exponential = baseDelayMs * 2 ** Math.max(0, attempt - 1);

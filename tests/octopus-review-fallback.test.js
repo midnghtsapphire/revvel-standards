@@ -35,6 +35,7 @@ const {
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
   githubRequest,
+  RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
 } = require('../scripts/octopus-review-fallback.js');
 
 test('isQuotaDeathComment matches known Octopus quota banners (case-insensitive)', () => {
@@ -226,12 +227,18 @@ test('computeRetryDelayMs honors Retry-After in full (bounded only by the shared
   // Retry-After to 20s (the pre-fix behavior) meant retrying BEFORE
   // GitHub's requested delay — exactly the bug flagged in Copilot's
   // post-merge review of #15836.
-  const ceilingMs = parseInt(process.env.RATE_LIMIT_MAX_INPROCESS_WAIT_MS, 10);
-  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), ceilingMs);
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
   // No header at all still falls back to the short exponential guess,
   // capped at RATE_LIMIT_MAX_DELAY_MS (unrelated, deliberately small cap —
   // it's a guess, not a real number from GitHub).
   assert.strictEqual(computeRetryDelayMs({}, 10, 1000), 20000);
+});
+
+test('computeRetryDelayMs honors an explicit Retry-After: 0 as "retry immediately", not "missing"', () => {
+  // Retry-After: 0 is a valid HTTP value meaning "no wait" — it must not be
+  // treated the same as a missing header (which falls back to exponential
+  // backoff instead of retrying right away).
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '0' }, 1, 1000), 0);
 });
 
 test('githubRequest falls back to short backoff for a primary-worded 403 with NO rate-limit headers to read a reset from', async () => {
