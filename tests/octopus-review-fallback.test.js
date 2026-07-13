@@ -356,6 +356,35 @@ test('githubRequest retries a SECONDARY (abuse-detection) limit with short backo
   }
 });
 
+test('githubRequest gives up immediately when a SECONDARY Retry-After exceeds the in-process wait ceiling (no truncate-and-retry-early)', async () => {
+  // Retry-After of 9999s is far beyond the 3s test ceiling. Truncating it to
+  // the ceiling and retrying would fire long before GitHub's real window and,
+  // across attempts, burn the job's timeout — so githubRequest must give up
+  // cleanly on the FIRST response instead (cubic finding on #15932).
+  const mock = mockHttpsResponses([
+    {
+      status: 403,
+      headers: { 'retry-after': '9999' },
+      data: JSON.stringify({
+        message: 'You have exceeded a secondary rate limit. Please retry your request again later.',
+      }),
+    },
+    { status: 200, data: JSON.stringify([{ id: 9 }]) },
+  ]);
+  const start = Date.now();
+  try {
+    await assert.rejects(
+      () => githubRequest({ pathName: '/repos/midnghtsapphire/revvel-standards/pulls/6/reviews' }),
+      /exceeds the in-process wait budget/
+    );
+    const elapsedMs = Date.now() - start;
+    assert.strictEqual(mock.callCount(), 1, 'must not retry a Retry-After it cannot honor before timeout');
+    assert.ok(elapsedMs < 500, `expected an immediate give-up, took ${elapsedMs}ms`);
+  } finally {
+    mock.restore();
+  }
+});
+
 test('githubRequest does not retry a non-rate-limit error (fails fast)', async () => {
   const mock = mockHttpsResponses([{ status: 404, data: JSON.stringify({ message: 'Not Found' }) }]);
   try {
