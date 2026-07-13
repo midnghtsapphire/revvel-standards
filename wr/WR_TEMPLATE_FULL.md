@@ -8,12 +8,15 @@
      See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
 # WR: {TITLE}
 
-**Issue:** {ISSUE_REF}  
-**Repository:** {REPO}  
-**Created:** {DATE}  
-**Researcher:** {RESEARCHER}  
-**Research Date:** {RESEARCH_DATE}  
-**WR Status:** {STATUS}  
+<!-- who: {RESEARCHER} -->
+<!-- date: {DATE} -->
+<!-- description: {ISSUE_REF} -->
+<!-- **Issue:** {ISSUE_REF}         -->
+<!-- **Repository:** {REPO}         -->
+<!-- **Created:** {DATE}            -->
+<!-- **Researcher:** {RESEARCHER}   -->
+<!-- **Research Date:** {RESEARCH_DATE} -->
+<!-- **WR Status:** {STATUS}        -->
 
 ## Issue Context
 
@@ -115,3 +118,7 @@
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
      NOT-APPLICABLE (no code was removed), PENDING-REVIEW (awaiting human decision). -->
+
+## Learnings — What & Why
+
+_Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._

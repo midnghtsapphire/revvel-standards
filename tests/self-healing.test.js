@@ -31,6 +31,10 @@ async function test(name, fn) {
 // === Constants ===
 const FAILED_ACTIONS_THRESHOLD = 3;
 const STUCK_ISSUES_THRESHOLD = 5;
+// Grounding gate: more than this many ship-quality failures in the last 5 runs
+// triggers escalation. Value of 1 means a single flake is tolerated but 2+
+// consecutive failures are treated as a persistently red test suite.
+const GROUNDING_GATE_FAILURE_THRESHOLD = 1;
 
 const REQUIRED_WORKFLOWS = [
   'agent-dispatcher',
@@ -87,7 +91,14 @@ function checkWorkflowsPresent(workflowsList, requiredWorkflows) {
   };
 }
 
-function identifyBrokenAreas(actionsFailedCount, stuckCount, agentWorkflowsStatus) {
+// Mirrors the "Check grounding gate" step in self-healing.yml.
+// Returns true when the count of recent ship-quality failures exceeds the
+// threshold (> 1, so a single transient flake is not escalated).
+function isGroundingGateBroken(failures) {
+  return failures > GROUNDING_GATE_FAILURE_THRESHOLD;
+}
+
+function identifyBrokenAreas(actionsFailedCount, stuckCount, agentWorkflowsStatus, groundingGateFailures = 0) {
   const broken = [];
   
   if (actionsFailedCount > FAILED_ACTIONS_THRESHOLD) {
@@ -100,6 +111,10 @@ function identifyBrokenAreas(actionsFailedCount, stuckCount, agentWorkflowsStatu
   
   if (!agentWorkflowsStatus.healthy) {
     broken.push(`Missing workflows: ${agentWorkflowsStatus.missing.join(', ')}`);
+  }
+
+  if (isGroundingGateBroken(groundingGateFailures)) {
+    broken.push(`Grounding gate: ${groundingGateFailures} ship-quality failures`);
   }
   
   return broken;
@@ -118,6 +133,13 @@ function shouldHealStuckIssues(brokenAreas) {
 
 function shouldHealFailedWorkflows(brokenAreas) {
   return brokenAreas.some(area => area.includes('GitHub Actions'));
+}
+
+// Mirrors the "Heal grounding gate failures" step: returns true when the
+// broken areas list contains a grounding gate entry, signalling that a
+// targeted WR should be filed / updated in place.
+function shouldHealGroundingGate(brokenAreas) {
+  return brokenAreas.some(area => area.includes('Grounding gate'));
 }
 
 function shouldCreateHealingIssue(brokenAreas, existingIssuesCount) {
@@ -144,6 +166,10 @@ function getHealingActions(brokenAreas) {
   
   if (shouldHealFailedWorkflows(brokenAreas)) {
     actions.push('heal_failed_workflows');
+  }
+
+  if (shouldHealGroundingGate(brokenAreas)) {
+    actions.push('file_grounding_gate_wr');
   }
   
   return actions;
@@ -450,6 +476,66 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
     assert.equal(actions.length, 0);
   });
 
+  // Grounding Gate Detection
+  await test('isGroundingGateBroken returns false for 0 failures', () => {
+    assert.ok(!isGroundingGateBroken(0));
+  });
+
+  await test('isGroundingGateBroken returns false for exactly 1 failure (tolerated transient flake)', () => {
+    assert.ok(!isGroundingGateBroken(1));
+  });
+
+  await test('isGroundingGateBroken returns true for 2 failures (persistent red suite)', () => {
+    assert.ok(isGroundingGateBroken(2));
+  });
+
+  await test('isGroundingGateBroken returns true for 5 failures', () => {
+    assert.ok(isGroundingGateBroken(5));
+  });
+
+  await test('identifyBrokenAreas detects grounding gate when 2+ failures', () => {
+    const broken = identifyBrokenAreas(0, 0, { healthy: true }, 2);
+    assert.ok(broken.some(a => a.includes('Grounding gate')));
+    assert.ok(broken.some(a => a.includes('2')));
+  });
+
+  await test('identifyBrokenAreas does not flag grounding gate for 1 failure', () => {
+    const broken = identifyBrokenAreas(0, 0, { healthy: true }, 1);
+    assert.ok(!broken.some(a => a.includes('Grounding gate')));
+  });
+
+  await test('identifyBrokenAreas does not flag grounding gate when 0 failures (default)', () => {
+    const broken = identifyBrokenAreas(0, 0, { healthy: true });
+    assert.ok(!broken.some(a => a.includes('Grounding gate')));
+  });
+
+  await test('shouldHealGroundingGate returns true for grounding gate broken area', () => {
+    assert.ok(shouldHealGroundingGate(['Grounding gate: 3 ship-quality failures']));
+  });
+
+  await test('shouldHealGroundingGate returns false when not in broken areas', () => {
+    assert.ok(!shouldHealGroundingGate(['GitHub Actions: 5 failures']));
+    assert.ok(!shouldHealGroundingGate([]));
+  });
+
+  await test('getHealingActions includes file_grounding_gate_wr when grounding gate broken', () => {
+    const actions = getHealingActions(['Grounding gate: 3 ship-quality failures']);
+    assert.ok(actions.includes('file_grounding_gate_wr'));
+    assert.ok(!actions.includes('heal_stuck_issues'));
+    assert.ok(!actions.includes('heal_failed_workflows'));
+  });
+
+  await test('getHealingActions includes all three actions when everything is broken', () => {
+    const actions = getHealingActions([
+      'Stuck issues: 10 open',
+      'GitHub Actions: 5 failures',
+      'Grounding gate: 3 ship-quality failures',
+    ]);
+    assert.ok(actions.includes('heal_stuck_issues'));
+    assert.ok(actions.includes('heal_failed_workflows'));
+    assert.ok(actions.includes('file_grounding_gate_wr'));
+  });
+
   // Integration Tests
   await test('full health check cycle - healthy system', () => {
     const actionsStatus = parseActionsStatus([{ conclusion: 'success' }]);
@@ -567,6 +653,10 @@ function buildHealingMemoryRecord({ ts, broken, stuckRelabeled, reranRunIds, hea
 
   await test('STUCK_ISSUES_THRESHOLD is 5', () => {
     assert.equal(STUCK_ISSUES_THRESHOLD, 5);
+  });
+
+  await test('GROUNDING_GATE_FAILURE_THRESHOLD is 1', () => {
+    assert.equal(GROUNDING_GATE_FAILURE_THRESHOLD, 1);
   });
 
   // Summary

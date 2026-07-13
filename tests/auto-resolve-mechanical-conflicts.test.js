@@ -7,11 +7,17 @@
  */
 
 const assert = require("assert");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { execSync } = require("child_process");
 const {
   pickNewerRef,
   tryVersionBump,
   tryAdditive,
 } = require("../scripts/auto-resolve-mechanical-conflicts.js");
+
+const SCRIPT_PATH = path.join(__dirname, "..", "scripts", "auto-resolve-mechanical-conflicts.js");
 
 let passed = 0;
 let failed = 0;
@@ -224,6 +230,105 @@ test("tryAdditive preserves order (current first, incoming after)", () => {
   const aIndex = result.indexOf("A");
   const cIndex = result.indexOf("C");
   assert.ok(aIndex < cIndex, "Current should come before incoming");
+});
+
+// ─── main() exit code tests ────────────────────────────────────────────────
+//
+// Regression coverage for the false-success bug: a conflicted file with
+// zero recognized conflict-marker hunks (e.g. a binary "both modified"
+// conflict) must NOT let the process exit 0. exit_code == '0' is what
+// conflict-helper.yml treats as "safe to commit + push to the PR branch",
+// so a file that was never actually resolved must still produce a non-zero
+// exit code even though it contributes 0 to the ambiguous-hunk count.
+
+console.log("\nTest Group: main() exit code (false-success regression)");
+
+function withTempGitRepo(fn) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "conflict-resolver-test-"));
+  try {
+    const git = (cmd) => execSync(`git ${cmd}`, { cwd: dir, stdio: "pipe" });
+    git('init -q -b main');
+    git('config user.email test@example.com');
+    git('config user.name test');
+    fn(dir, git);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test("main() exits non-zero for a binary conflict with zero marker hunks", () => {
+  withTempGitRepo((dir, git) => {
+    const file = path.join(dir, "bin.dat");
+    // A binary file that both branches change differently: git marks it
+    // conflicted (UU) but does NOT insert <<<<<<< markers into it, since
+    // there is nothing textual to diff. This is exactly the "MANUAL ...
+    // 0 hunk(s) ambiguous" case the bug missed.
+    fs.writeFileSync(file, Buffer.from([0, 1, 65]));
+    git("add bin.dat");
+    git('commit -qm base');
+    git("checkout -q -b feature");
+    fs.writeFileSync(file, Buffer.from([0, 1, 66]));
+    git("add bin.dat");
+    git('commit -qm feature-change');
+    git("checkout -q main");
+    fs.writeFileSync(file, Buffer.from([0, 1, 67]));
+    git("add bin.dat");
+    git('commit -qm main-change');
+
+    let mergeFailed = false;
+    try {
+      git("merge --no-commit --no-ff feature");
+    } catch (e) {
+      mergeFailed = true; // expected: merge conflict
+    }
+    assert.ok(mergeFailed, "merge should conflict");
+
+    let exitCode = 0;
+    let output = "";
+    try {
+      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+    } catch (e) {
+      exitCode = e.status;
+      output = e.stdout || "";
+    }
+    assert.strictEqual(exitCode, 2, "unresolved binary conflict must not exit 0");
+    assert.ok(output.includes("MANUAL"), "should report the file as MANUAL");
+    assert.ok(output.includes("0 hunk(s) ambiguous"), "should show 0 ambiguous hunks");
+  });
+});
+
+test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
+  withTempGitRepo((dir, git) => {
+    const file = path.join(dir, "workflow.yml");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n");
+    git("add workflow.yml");
+    git('commit -qm base');
+    git("checkout -q -b feature");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v5\n");
+    git("add workflow.yml");
+    git('commit -qm feature-change');
+    git("checkout -q main");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n  - run: echo hi\n");
+    git("add workflow.yml");
+    git('commit -qm main-change');
+
+    try {
+      git("merge --no-commit --no-ff feature");
+    } catch (e) {
+      // expected conflict
+    }
+
+    let exitCode = 0;
+    let output = "";
+    try {
+      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+    } catch (e) {
+      exitCode = e.status;
+      output = e.stdout || "";
+    }
+    assert.strictEqual(exitCode, 0, "fully resolved conflicts should exit 0");
+    assert.ok(output.includes("RESOLVED"), "should report the file as RESOLVED");
+  });
 });
 
 // ─── Summary ─────────────────────────────────────────────────────────────

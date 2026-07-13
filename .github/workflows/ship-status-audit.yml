@@ -6,6 +6,10 @@ on:
 
 permissions:
   contents: read
+  # issues: write is required because the audit job calls github.rest.issues.create
+  # to file the weekly Ship Status digest issue. Without it, the weekly digest 403s
+  # silently every run.
+  issues: write
 
 jobs:
   audit:

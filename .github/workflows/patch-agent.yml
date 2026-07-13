@@ -38,7 +38,7 @@ jobs:
       - name: Apply fixes and open PR
         if: inputs.fix == true
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           node scripts/patch-agent.js --fix
           if [ -n "$(git status --porcelain)" ]; then
