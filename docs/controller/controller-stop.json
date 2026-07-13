@@ -1,51 +1,61 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T21:49:20.529Z",
+  "generated_at": "2026-07-13T22:17:40.429Z",
   "stop": [
     {
-      "id": 29281002856,
-      "name": "CodeQL",
-      "reason": "running 104m ≥ 60m budget"
+      "id": 29287217135,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29280827192,
-      "name": "CodeQL",
-      "reason": "running 107m ≥ 60m budget"
+      "id": 29287213955,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29280764834,
-      "name": "CodeQL",
-      "reason": "running 107m ≥ 60m budget"
+      "id": 29287202247,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29280745442,
-      "name": "CodeQL",
-      "reason": "running 108m ≥ 60m budget"
+      "id": 29287200517,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29280700129,
-      "name": "CodeQL",
-      "reason": "running 108m ≥ 60m budget"
+      "id": 29287200017,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29280657474,
-      "name": "CodeQL",
-      "reason": "running 109m ≥ 60m budget"
+      "id": 29287197721,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29287198513,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29287196959,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 375m ≥ 60m budget"
+      "reason": "running 403m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 445m ≥ 60m budget"
+      "reason": "running 474m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 516m ≥ 60m budget"
+      "reason": "running 544m ≥ 60m budget"
     }
   ]
 }
