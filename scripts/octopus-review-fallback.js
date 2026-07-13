@@ -182,6 +182,7 @@ function computePrimaryResetWaitMs(headers) {
  * to a short exponential backoff capped at RATE_LIMIT_MAX_DELAY_MS, since
  * that case is a guess and secondary limits are short-lived by nature.
  */
+<<<<<<< HEAD
 /**
  * Reads the server's `Retry-After` header (seconds) as milliseconds — the RAW
  * requested wait, un-capped. Returns null when the header is absent/unparseable
@@ -197,6 +198,13 @@ function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DEL
   const retryAfterMs = parseRetryAfterMs(headers);
   if (retryAfterMs != null) {
     return Math.min(retryAfterMs, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+=======
+function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
+  const retryAfter = headers && (headers["retry-after"] || headers["Retry-After"]);
+  const retryAfterSeconds = parseInt(retryAfter, 10);
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0) {
+    return Math.min(retryAfterSeconds * 1000, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+>>>>>>> origin/main
   }
   const exponential = baseDelayMs * 2 ** Math.max(0, attempt - 1);
   return Math.min(exponential, RATE_LIMIT_MAX_DELAY_MS);
