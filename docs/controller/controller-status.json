@@ -1,37 +1,73 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-13T11:10:52.787Z",
+  "generated_at": "2026-07-13T15:09:30.425Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 1,
+    "running": 3,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 6,
-    "running": 1,
-    "queued": 5,
+    "total": 9,
+    "running": 3,
+    "queued": 6,
     "done": 0,
     "healthy": 1,
-    "stalled": 0,
-    "runaway": 0,
+    "stalled": 1,
+    "runaway": 1,
     "protected": 1,
-    "occupancy": 1,
+    "occupancy": 3,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29245346008,
+      "id": 29261026660,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29245346008",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29261026660",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7787,
-      "since_update_ms": 4787,
+      "age_ms": 11425,
+      "since_update_ms": 7425,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 29257786646,
+      "name": "No-Destroy Guard",
+      "path": ".github/workflows/no-destroy-guard.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 2720425,
+      "since_update_ms": 2632425,
+      "reason": "no progress for 44m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "path": ".github/workflows/project-board-sync.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
+      "status": "in_progress",
+      "health": "runaway",
+      "age_ms": 6959425,
+      "since_update_ms": 5705425,
+      "reason": "running 116m ≥ 60m budget",
+      "protected": false
+    },
+    {
+      "id": 29249924103,
+      "name": "CodeQL",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29249924103",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
     },
     {
       "id": 29215729856,
@@ -94,5 +130,38 @@
       "protected": false
     }
   ],
-  "preemptions": []
+  "preemptions": [
+    {
+      "id": 29257786646,
+      "name": "No-Destroy Guard",
+      "path": ".github/workflows/no-destroy-guard.yml",
+      "health": "stalled",
+      "reason": "no progress for 44m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "cut": "cancel-failed",
+      "reassign_outcome": "pending",
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29257786646/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+    },
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "path": ".github/workflows/project-board-sync.yml",
+      "health": "runaway",
+      "reason": "running 116m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "cut": "cancel-failed",
+      "reassign_outcome": "pending",
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29252937753/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+    }
+  ]
 }
