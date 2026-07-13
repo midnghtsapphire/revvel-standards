@@ -561,12 +561,22 @@ jobs:
             const repo  = context.repo.repo;
 
             // Fetch all open PRs (paginated to catch repos with many PRs).
-            const prs = await github.paginate(github.rest.pulls.list, {
-              owner,
-              repo,
-              state: 'open',
-              per_page: 100,
-            });
+            // This job runs on a schedule across every open PR, so an
+            // installation rate-limit 403 must degrade gracefully instead of
+            // hard-failing the job.
+            let prs = [];
+            try {
+              prs = await github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: 'open',
+                per_page: 100,
+              });
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`pulls.list failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              return;
+            }
 
             let advanced = 0;
             let skipped  = 0;
@@ -597,11 +607,20 @@ jobs:
               }
 
               // Check for at least one approving review.
-              const { data: reviews } = await github.rest.pulls.listReviews({
-                owner,
-                repo,
-                pull_number: num,
-              });
+              let reviews;
+              try {
+                const res = await github.rest.pulls.listReviews({
+                  owner,
+                  repo,
+                  pull_number: num,
+                });
+                reviews = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`pulls.listReviews for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
               const approved = reviews.some(r => r.state === 'APPROVED');
               if (!approved) {
                 core.info(`PR #${num}: SKIP — no approving review`);
@@ -619,17 +638,34 @@ jobs:
 
               // Check combined commit status for the head SHA.
               const sha = pr.head.sha;
-              const { data: statusData } = await github.rest.repos.getCombinedStatusForRef({
-                owner,
-                repo,
-                ref: sha,
-              });
+              let statusData;
+              try {
+                const res = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref: sha,
+                });
+                statusData = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`getCombinedStatusForRef for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
 
               // Also check check-runs (GitHub Actions show up here).
-              const checkRuns = await github.paginate(
-                github.rest.checks.listForRef,
-                { owner, repo, ref: sha, per_page: 100 }
-              );
+              let checkRuns;
+              try {
+                checkRuns = await github.paginate(
+                  github.rest.checks.listForRef,
+                  { owner, repo, ref: sha, per_page: 100 }
+                );
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`checks.listForRef for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
 
               // A PR is "green" when:
               //  - combined commit status is exactly "success" (not pending/failure), AND
@@ -650,11 +686,20 @@ jobs:
               }
 
               // Check for merge conflicts.
-              const { data: prDetail } = await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: num,
-              });
+              let prDetail;
+              try {
+                const res = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: num,
+                });
+                prDetail = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`pulls.get for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
               if (prDetail.mergeable === false) {
                 core.warning(
                   `PR #${num}: SKIP — conflicts with main. ` +
