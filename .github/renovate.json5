@@ -1,0 +1,147 @@
+{
+  // Renovate configuration for this repository.
+  // Docs: https://docs.renovatebot.com/configuration-options/
+  //
+  // This config is inert until the Renovate GitHub App is installed on the
+  // repo/org. See docs/RENOVATE_SETUP.md for the manual one-time step.
+
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+
+  // Renovate's maintained sane-defaults preset: dependency dashboard,
+  // semantic commits, rate limiting, major/minor/patch separation, etc.
+  extends: [
+    'config:recommended',
+  ],
+
+  // Restrict Renovate to the dependency surfaces this repo actually has.
+  // No Dockerfiles exist; explicitly listing managers prevents accidental
+  // activation when Renovate adds new managers upstream.
+  enabledManagers: [
+    'npm',
+    'github-actions',
+  ],
+
+  // Scheduling: run Wednesday early morning UTC so that the existing
+  // Monday 09:00 UTC `dependency-update-checker.yml` manual report has a
+  // couple of days of visibility before automated PRs land.
+  timezone: 'Etc/UTC',
+  schedule: [
+    'before 6am on wednesday',
+  ],
+
+  // Rate limiting: cap PR churn, especially for the initial run/backlog.
+  prConcurrentLimit: 10,
+  prHourlyLimit: 4,
+
+  // Central tracking issue for pending updates and major-version gating.
+  dependencyDashboard: true,
+  dependencyDashboardTitle: 'Renovate Dependency Dashboard',
+  dependencyDashboardLabels: [
+    'dependencies',
+    'renovate',
+  ],
+
+  // Use the same label the existing dependency-update-checker.yml issues use.
+  labels: [
+    'dependencies',
+  ],
+
+  // Conventional-commit style titles (matches the repo's PR template checklist).
+  semanticCommits: 'enabled',
+  commitMessagePrefix: '',
+  commitBodyTable: true,
+
+  // Match package.json's existing mixed caret-range style instead of forcing it.
+  rangeStrategy: 'auto',
+
+  // Weekly lockfile refresh catches transitive drift that wouldn't otherwise
+  // trigger a PR.
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: [
+      'before 6am on wednesday',
+    ],
+    commitMessageAction: 'Refresh',
+    commitMessageTopic: 'lockfile',
+  },
+
+  // Security fixes: bypass the weekly schedule and open immediately.
+  vulnerabilityAlerts: {
+    enabled: true,
+    labels: [
+      'dependencies',
+      'security',
+    ],
+    schedule: [
+      'at any time',
+    ],
+  },
+
+  // Widen vulnerability detection beyond GitHub's native advisory feed.
+  osvVulnerabilityAlerts: true,
+
+  // GitHub Actions pin behavior: repo overwhelmingly pins by version tag
+  // (@v4, @v9.0.0); a couple of security-audit-owned workflows additionally
+  // SHA-pin with a `# vX.Y.Z` comment. Don't force tag-pinned actions into
+  // SHA pinning -- that's the audit workflows' call. Already-SHA-pinned
+  // actions still get digest/version-comment updates by default.
+  'github-actions': {
+    pinDigests: false,
+  },
+
+  packageRules: [
+    // ---- GitHub Actions ----
+    // Group non-major bumps into one PR and auto-merge once CI is green.
+    // 166+ workflow files ungrouped would be extremely noisy.
+    {
+      matchManagers: ['github-actions'],
+      matchUpdateTypes: ['minor', 'patch', 'digest'],
+      groupName: 'github-actions (non-major)',
+      automerge: true,
+      automergeType: 'pr',
+      platformAutomerge: true,
+    },
+
+    // Major GitHub Actions bumps: isolated, no auto-merge, dashboard-gated.
+    {
+      matchManagers: ['github-actions'],
+      matchUpdateTypes: ['major'],
+      dependencyDashboardApproval: true,
+      automerge: false,
+      groupName: null,
+      commitMessageSuffix: '(major)',
+    },
+
+    // ---- npm devDependencies ----
+    // Low-risk dev tooling: group non-major bumps and auto-merge.
+    {
+      matchManagers: ['npm'],
+      matchDepTypes: ['devDependencies'],
+      matchUpdateTypes: ['minor', 'patch'],
+      groupName: 'npm devDependencies (non-major)',
+      automerge: true,
+      automergeType: 'pr',
+      platformAutomerge: true,
+    },
+
+    // ---- npm production dependencies ----
+    // No `dependencies` block exists in package.json today, but the rule is
+    // defined pre-emptively so it's correct the moment one is added:
+    // production deps ALWAYS need human review, regardless of bump size.
+    {
+      matchManagers: ['npm'],
+      matchDepTypes: ['dependencies'],
+      automerge: false,
+    },
+
+    // ---- Any major bump, either manager ----
+    // Belt-and-suspenders: isolate majors and gate them behind the dashboard.
+    // This is the anchor of the conservative auto-merge policy -- Renovate
+    // will NOT blindly auto-merge everything it opens.
+    {
+      matchUpdateTypes: ['major'],
+      dependencyDashboardApproval: true,
+      automerge: false,
+    },
+  ],
+}
