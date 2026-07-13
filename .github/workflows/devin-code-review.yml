@@ -29,6 +29,13 @@ jobs:
 
       - name: Run Devin code review
         if: steps.check.outputs.present == 'true'
+      # -----------------------------------------------------------------------
+      # STEP: Slash-command lane — the action gathers issue + comment context
+      # itself via comment-id / issue-number, and posts status + session links
+      # back as comments. Untrusted comment text never touches a run: script.
+      # -----------------------------------------------------------------------
+      - name: Create Devin session (slash command)
+        if: env.DEVIN_SKIP == 'false' && github.event_name == 'issue_comment'
         uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
         with:
           api-key: ${{ secrets.DEVIN_API_KEY }}
@@ -36,6 +43,14 @@ jobs:
 
       - name: Post Devin review comment
         if: steps.check.outputs.present == 'true'
+      # -----------------------------------------------------------------------
+      # STEP: Label / manual lane — PR numbers double as issue numbers, so the
+      # action's issue-number context gathering works for PRs too. Only the
+      # numeric PR number (computed, not attacker-controlled free text) is
+      # interpolated into the prompt.
+      # -----------------------------------------------------------------------
+      - name: Create Devin session (label / manual dispatch)
+        if: env.DEVIN_SKIP == 'false' && github.event_name != 'issue_comment'
         uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
         with:
           api-key: ${{ secrets.DEVIN_API_KEY }}
