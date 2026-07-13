@@ -1,188 +1,340 @@
-'use strict';
+#!/usr/bin/env node
+"use strict";
 
-const test = require('node:test');
-const assert = require('node:assert');
-const { spawnSync } = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+/**
+ * Unit tests for scripts/auto-resolve-mechanical-conflicts.js
+ * Tests conflict resolution logic for mechanical merge conflicts
+ */
 
-const SCRIPT = path.resolve(
-  __dirname,
-  '..',
-  'scripts',
-  'auto-resolve-mechanical-conflicts.js',
-);
+const assert = require("assert");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { execSync } = require("child_process");
+const {
+  pickNewerRef,
+  tryVersionBump,
+  tryAdditive,
+} = require("../scripts/auto-resolve-mechanical-conflicts.js");
 
-function sh(cwd, cmd, args, opts = {}) {
-  const r = spawnSync(cmd, args, {
-    cwd,
-    encoding: 'utf8',
-    ...opts,
-  });
-  return r;
+const SCRIPT_PATH = path.join(__dirname, "..", "scripts", "auto-resolve-mechanical-conflicts.js");
+
+let passed = 0;
+let failed = 0;
+
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`PASS: ${name}`);
+    passed++;
+  } catch (e) {
+    console.log(`FAIL: ${name}\n    ${e.stack || e.message}`);
+    failed++;
+  }
 }
 
-function git(cwd, args, opts = {}) {
-  return sh(cwd, 'git', args, {
-    env: {
-      ...process.env,
-      GIT_AUTHOR_NAME: 'Test',
-      GIT_AUTHOR_EMAIL: 'test@example.com',
-      GIT_COMMITTER_NAME: 'Test',
-      GIT_COMMITTER_EMAIL: 'test@example.com',
-    },
-    ...opts,
-  });
-}
+console.log("Running auto-resolve-mechanical-conflicts.js tests...\n");
 
-function mkRepo() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'armc-'));
-  git(dir, ['init', '-q', '-b', 'main']);
-  git(dir, ['config', 'commit.gpgsign', 'false']);
-  git(dir, ['config', 'user.email', 'test@example.com']);
-  git(dir, ['config', 'user.name', 'Test']);
-  return dir;
-}
+// ─── pickNewerRef tests ────────────────────────────────────────────────────
 
-test('main() exit code (false-success regression)', async (t) => {
-  await t.test(
-    'binary UU conflict with zero textual hunks exits 2, not 0',
-    () => {
-      const dir = mkRepo();
+console.log("Test Group: pickNewerRef (version comparison)");
 
-      // Seed a binary file on main.
-      const bin0 = Buffer.from([0, 1, 2, 3, 4, 5, 6, 7, 0, 8, 9]);
-      fs.writeFileSync(path.join(dir, 'bin.dat'), bin0);
-      // .gitattributes ensures git treats it as binary (no textual markers).
-      fs.writeFileSync(path.join(dir, '.gitattributes'), 'bin.dat binary\n');
-      git(dir, ['add', '.']);
-      git(dir, ['commit', '-q', '-m', 'seed']);
-
-      // Branch A modifies binary.
-      git(dir, ['checkout', '-q', '-b', 'branchA']);
-      fs.writeFileSync(
-        path.join(dir, 'bin.dat'),
-        Buffer.from([0, 1, 2, 0xaa, 0xaa, 0xaa, 6, 7, 0, 8, 9]),
-      );
-      git(dir, ['commit', '-q', '-am', 'A change']);
-
-      // Branch B modifies binary differently.
-      git(dir, ['checkout', '-q', 'main']);
-      git(dir, ['checkout', '-q', '-b', 'branchB']);
-      fs.writeFileSync(
-        path.join(dir, 'bin.dat'),
-        Buffer.from([0, 1, 2, 0xbb, 0xbb, 0xbb, 6, 7, 0, 8, 9]),
-      );
-      git(dir, ['commit', '-q', '-am', 'B change']);
-
-      // Merge A into B -> conflicted binary (UU) with no textual markers.
-      const mergeRes = git(dir, ['merge', '--no-commit', '--no-ff', 'branchA']);
-      // git returns non-zero on conflict; we just want the working tree state.
-      assert.notStrictEqual(mergeRes.status, 0, 'merge should conflict');
-
-      const status = git(dir, ['diff', '--name-only', '--diff-filter=U']);
-      assert.ok(
-        status.stdout.split('\n').includes('bin.dat'),
-        `expected bin.dat to be UU, got: ${status.stdout}`,
-      );
-
-      // Confirm there are no textual conflict markers in the file.
-      const buf = fs.readFileSync(path.join(dir, 'bin.dat'));
-      assert.ok(
-        !buf.includes(Buffer.from('<<<<<<<')),
-        'binary conflict should not contain textual markers',
-      );
-
-      const run = sh(dir, process.execPath, [SCRIPT]);
-      assert.strictEqual(
-        run.status,
-        2,
-        `expected exit 2 for unresolved binary conflict, got ${run.status}\nstdout:\n${run.stdout}\nstderr:\n${run.stderr}`,
-      );
-      assert.match(
-        run.stdout,
-        /(MANUAL|SKIP)\s+bin\.dat/,
-        `expected bin.dat reported as MANUAL/SKIP, got:\n${run.stdout}`,
-      );
-    },
-  );
-
-  await t.test(
-    'fully mechanically-resolvable conflict still exits 0',
-    () => {
-      const dir = mkRepo();
-
-      const wfPath = path.join(dir, '.github', 'workflows');
-      fs.mkdirSync(wfPath, { recursive: true });
-      const wf = path.join(wfPath, 'ci.yml');
-
-      fs.writeFileSync(
-        wf,
-        [
-          'name: ci',
-          'on: [push]',
-          'jobs:',
-          '  build:',
-          '    runs-on: ubuntu-latest',
-          '    steps:',
-          '      - uses: actions/checkout@v3',
-          '',
-        ].join('\n'),
-      );
-      git(dir, ['add', '.']);
-      git(dir, ['commit', '-q', '-m', 'seed']);
-
-      git(dir, ['checkout', '-q', '-b', 'bumpA']);
-      fs.writeFileSync(
-        wf,
-        [
-          'name: ci',
-          'on: [push]',
-          'jobs:',
-          '  build:',
-          '    runs-on: ubuntu-latest',
-          '    steps:',
-          '      - uses: actions/checkout@v4',
-          '',
-        ].join('\n'),
-      );
-      git(dir, ['commit', '-q', '-am', 'bump to v4']);
-
-      git(dir, ['checkout', '-q', 'main']);
-      git(dir, ['checkout', '-q', '-b', 'bumpB']);
-      fs.writeFileSync(
-        wf,
-        [
-          'name: ci',
-          'on: [push]',
-          'jobs:',
-          '  build:',
-          '    runs-on: ubuntu-latest',
-          '    steps:',
-          '      - uses: actions/checkout@v3.5',
-          '',
-        ].join('\n'),
-      );
-      git(dir, ['commit', '-q', '-am', 'bump to v3.5']);
-
-      const mergeRes = git(dir, ['merge', '--no-commit', '--no-ff', 'bumpA']);
-      assert.notStrictEqual(mergeRes.status, 0, 'merge should conflict');
-
-      const run = sh(dir, process.execPath, [SCRIPT]);
-      assert.strictEqual(
-        run.status,
-        0,
-        `expected exit 0 for fully mechanical resolve, got ${run.status}\nstdout:\n${run.stdout}\nstderr:\n${run.stderr}`,
-      );
-      assert.match(
-        run.stdout,
-        /RESOLVED\s+\.github\/workflows\/ci\.yml/,
-        `expected ci.yml reported RESOLVED, got:\n${run.stdout}`,
-      );
-
-      // And the ambiguous count is 0 in summary.
-      assert.match(run.stdout, /0 ambiguous/);
-    },
-  );
+test("pickNewerRef returns a when equal", () => {
+  assert.strictEqual(pickNewerRef("v1.0.0", "v1.0.0"), "v1.0.0");
 });
+
+test("pickNewerRef picks higher major version", () => {
+  assert.strictEqual(pickNewerRef("v1.0.0", "v2.0.0"), "v2.0.0");
+  assert.strictEqual(pickNewerRef("v2.0.0", "v1.0.0"), "v2.0.0");
+});
+
+test("pickNewerRef picks higher minor version", () => {
+  assert.strictEqual(pickNewerRef("v1.2.0", "v1.3.0"), "v1.3.0");
+  assert.strictEqual(pickNewerRef("v1.3.0", "v1.2.0"), "v1.3.0");
+});
+
+test("pickNewerRef picks higher patch version", () => {
+  assert.strictEqual(pickNewerRef("v1.0.1", "v1.0.2"), "v1.0.2");
+  assert.strictEqual(pickNewerRef("v1.0.2", "v1.0.1"), "v1.0.2");
+});
+
+test("pickNewerRef handles missing v prefix", () => {
+  assert.strictEqual(pickNewerRef("1.0.0", "2.0.0"), "2.0.0");
+});
+
+test("pickNewerRef handles partial semver (no patch)", () => {
+  assert.strictEqual(pickNewerRef("v1.0", "v1.1"), "v1.1");
+});
+
+test("pickNewerRef handles 40-char SHA as newest", () => {
+  const shaA = "a".repeat(40);
+  const shaB = "b".repeat(40);
+  // SHA wins over tag
+  assert.strictEqual(pickNewerRef(shaA, "v1.0.0"), shaA);
+  assert.strictEqual(pickNewerRef("v1.0.0", shaA), shaA);
+  // Both SHAs -> null (undecidable)
+  assert.strictEqual(pickNewerRef(shaA, shaB), null);
+});
+
+test("pickNewerRef returns null for non-comparable strings", () => {
+  assert.strictEqual(pickNewerRef("main", "develop"), null);
+  assert.strictEqual(pickNewerRef("abc", "def"), null);
+});
+
+test("pickNewerRef handles longer SHA prefix", () => {
+  const shaShort = "abc123";
+  const shaLong = "abc123def456789";
+  // Neither is full 40-char, so they're compared as strings
+  // But 40-char SHAs should return null when compared with each other
+  assert.strictEqual(pickNewerRef(shaShort, shaLong), null);
+});
+
+// ─── tryVersionBump tests ──────────────────────────────────────────────────
+
+console.log("\nTest Group: tryVersionBump (GitHub Actions version bump)");
+
+test("tryVersionBump resolves single-line version bump", () => {
+  const current = "    uses: actions/checkout@v4";
+  const incoming = "    uses: actions/checkout@v5";
+  const result = tryVersionBump(current, incoming);
+  assert.strictEqual(result, "    uses: actions/checkout@v5\n");
+});
+
+test("tryVersionBump returns null for multi-line blocks", () => {
+  const current = "    uses: actions/checkout@v4\n    timeout-minutes: 30";
+  const incoming = "    uses: actions/checkout@v5";
+  const result = tryVersionBump(current, incoming);
+  assert.strictEqual(result, null);
+});
+
+test("tryVersionBump returns null for different actions", () => {
+  const current = "    uses: actions/checkout@v4";
+  const incoming = "    uses: actions/setup-node@v5";
+  const result = tryVersionBump(current, incoming);
+  assert.strictEqual(result, null);
+});
+
+test("tryVersionBump returns null for non-uses lines", () => {
+  const current = "    run: npm test";
+  const incoming = "    run: npm run build";
+  const result = tryVersionBump(current, incoming);
+  assert.strictEqual(result, null);
+});
+
+test("tryVersionBump keeps newer SHA when both are SHAs (returns null)", () => {
+  const sha1 = "    uses: owner/repo@abc123def4567890123456789012345678";
+  const sha2 = "    uses: owner/repo@xyz789abc1234567890123456789012345";
+  const result = tryVersionBump(sha1, sha2);
+  // SHA vs SHA is undecidable
+  assert.strictEqual(result, null);
+});
+
+test("tryVersionBump handles whitespace variations", () => {
+  const current = "  - uses: actions/checkout@v4";
+  const incoming = "  - uses: actions/checkout@v5";
+  const result = tryVersionBump(current, incoming);
+  assert.ok(result !== null, "Should handle different indentation");
+});
+
+test("tryVersionBump picks higher semver", () => {
+  const current = "    uses: owner/repo@v1.2.3";
+  const incoming = "    uses: owner/repo@v2.0.0";
+  const result = tryVersionBump(current, incoming);
+  assert.ok(result.includes("v2.0.0"), "Should pick v2.0.0");
+});
+
+test("tryVersionBump handles refs without v prefix", () => {
+  const current = "    uses: owner/repo@1.0.0";
+  const incoming = "    uses: owner/repo@2.0.0";
+  const result = tryVersionBump(current, incoming);
+  assert.ok(result.includes("2.0.0"), "Should pick 2.0.0");
+});
+
+// ─── tryAdditive tests ────────────────────────────────────────────────────
+
+console.log("\nTest Group: tryAdditive (additive line resolution)");
+
+test("tryAdditive resolves markdown table rows (data only)", () => {
+  // Note: When both sides have identical headers/separators, they overlap
+  // and the function returns null (current behavior). This tests data-only rows.
+  const current = "| a    | b    |\n| c    | d    |";
+  const incoming = "| e    | f    |\n| g    | h    |";
+  const result = tryAdditive(current, incoming);
+  assert.ok(result !== null, "Should resolve additive table data rows");
+  assert.ok(result.includes("| a    | b    |"), "Should include current");
+  assert.ok(result.includes("| g    | h    |"), "Should include incoming");
+});
+
+test("tryAdditive resolves markdown list items", () => {
+  const current = "- Item 1\n- Item 2";
+  const incoming = "- Item 3\n- Item 4";
+  const result = tryAdditive(current, incoming);
+  assert.ok(result !== null, "Should resolve additive list items");
+});
+
+test("tryAdditive returns null when blocks are empty", () => {
+  assert.strictEqual(tryAdditive("", ""), null);
+  assert.strictEqual(tryAdditive("  ", "  "), null);
+});
+
+test("tryAdditive returns null for non-additive content", () => {
+  const current = "foo = \"a\"";
+  const incoming = "foo = \"b\"";
+  const result = tryAdditive(current, incoming);
+  assert.strictEqual(result, null, "Value swaps are not additive");
+});
+
+test("tryAdditive returns null when lines overlap", () => {
+  const current = "- Item 1\n- Item 2";
+  const incoming = "- Item 2\n- Item 3";
+  const result = tryAdditive(current, incoming);
+  assert.strictEqual(result, null, "Duplicate lines should not auto-resolve");
+});
+
+test("tryAdditive handles numbered lists", () => {
+  const current = "1. First item\n2. Second item";
+  const incoming = "3. Third item";
+  const result = tryAdditive(current, incoming);
+  assert.ok(result !== null, "Should handle numbered list items");
+});
+
+test("tryAdditive returns null when table headers/separators overlap", () => {
+  // When table headers or separators are identical, they overlap and block auto-resolve
+  const current = "|---|---|\n| a | b |";
+  const incoming = "|---|---|\n| c | d |";
+  const result = tryAdditive(current, incoming);
+  // Headers/separators overlap, so this returns null (correct behavior)
+  assert.strictEqual(result, null, "Identical headers/separators should block auto-resolve");
+});
+
+test("tryAdditive resolves pure data rows without headers", () => {
+  // Tables without header/separator overlap can be resolved
+  const current = "| a | b |\n| c | d |";
+  const incoming = "| e | f |\n| g | h |";
+  const result = tryAdditive(current, incoming);
+  assert.ok(result !== null, "Pure data rows without overlap should resolve");
+});
+
+test("tryAdditive returns null when only one side is additive", () => {
+  const current = "- List item";
+  const incoming = "foo = \"value\"";
+  const result = tryAdditive(current, incoming);
+  assert.strictEqual(result, null, "Mixed content is not purely additive");
+});
+
+test("tryAdditive preserves order (current first, incoming after)", () => {
+  const current = "* A\n* B";
+  const incoming = "* C\n* D";
+  const result = tryAdditive(current, incoming);
+  assert.ok(result !== null);
+  const aIndex = result.indexOf("A");
+  const cIndex = result.indexOf("C");
+  assert.ok(aIndex < cIndex, "Current should come before incoming");
+});
+
+// ─── main() exit code tests ────────────────────────────────────────────────
+//
+// Regression coverage for the false-success bug: a conflicted file with
+// zero recognized conflict-marker hunks (e.g. a binary "both modified"
+// conflict) must NOT let the process exit 0. exit_code == '0' is what
+// conflict-helper.yml treats as "safe to commit + push to the PR branch",
+// so a file that was never actually resolved must still produce a non-zero
+// exit code even though it contributes 0 to the ambiguous-hunk count.
+
+console.log("\nTest Group: main() exit code (false-success regression)");
+
+function withTempGitRepo(fn) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "conflict-resolver-test-"));
+  try {
+    const git = (cmd) => execSync(`git ${cmd}`, { cwd: dir, stdio: "pipe" });
+    git('init -q -b main');
+    git('config user.email test@example.com');
+    git('config user.name test');
+    fn(dir, git);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test("main() exits non-zero for a binary conflict with zero marker hunks", () => {
+  withTempGitRepo((dir, git) => {
+    const file = path.join(dir, "bin.dat");
+    // A binary file that both branches change differently: git marks it
+    // conflicted (UU) but does NOT insert <<<<<<< markers into it, since
+    // there is nothing textual to diff. This is exactly the "MANUAL ...
+    // 0 hunk(s) ambiguous" case the bug missed.
+    fs.writeFileSync(file, Buffer.from([0, 1, 65]));
+    git("add bin.dat");
+    git('commit -qm base');
+    git("checkout -q -b feature");
+    fs.writeFileSync(file, Buffer.from([0, 1, 66]));
+    git("add bin.dat");
+    git('commit -qm feature-change');
+    git("checkout -q main");
+    fs.writeFileSync(file, Buffer.from([0, 1, 67]));
+    git("add bin.dat");
+    git('commit -qm main-change');
+
+    let mergeFailed = false;
+    try {
+      git("merge --no-commit --no-ff feature");
+    } catch (e) {
+      mergeFailed = true; // expected: merge conflict
+    }
+    assert.ok(mergeFailed, "merge should conflict");
+
+    let exitCode = 0;
+    let output = "";
+    try {
+      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+    } catch (e) {
+      exitCode = e.status;
+      output = e.stdout || "";
+    }
+    assert.strictEqual(exitCode, 2, "unresolved binary conflict must not exit 0");
+    assert.ok(output.includes("MANUAL"), "should report the file as MANUAL");
+    assert.ok(output.includes("0 hunk(s) ambiguous"), "should show 0 ambiguous hunks");
+  });
+});
+
+test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
+  withTempGitRepo((dir, git) => {
+    const file = path.join(dir, "workflow.yml");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n");
+    git("add workflow.yml");
+    git('commit -qm base');
+    git("checkout -q -b feature");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v5\n");
+    git("add workflow.yml");
+    git('commit -qm feature-change');
+    git("checkout -q main");
+    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n  - run: echo hi\n");
+    git("add workflow.yml");
+    git('commit -qm main-change');
+
+    try {
+      git("merge --no-commit --no-ff feature");
+    } catch (e) {
+      // expected conflict
+    }
+
+    let exitCode = 0;
+    let output = "";
+    try {
+      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+    } catch (e) {
+      exitCode = e.status;
+      output = e.stdout || "";
+    }
+    assert.strictEqual(exitCode, 0, "fully resolved conflicts should exit 0");
+    assert.ok(output.includes("RESOLVED"), "should report the file as RESOLVED");
+  });
+});
+
+// ─── Summary ─────────────────────────────────────────────────────────────
+
+console.log("\n" + "=".repeat(60));
+console.log(`Test Summary: ${passed} passed, ${failed} failed`);
+console.log("=".repeat(60));
+
+if (failed > 0) process.exit(1);
