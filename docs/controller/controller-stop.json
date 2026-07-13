@@ -1,36 +1,71 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T18:33:07.908Z",
+  "generated_at": "2026-07-13T19:32:05.574Z",
   "stop": [
     {
-      "id": 29273319115,
+      "id": 29275994254,
       "name": "PR Lifecycle",
-      "reason": "no progress for 24m ≥ 15m"
+      "reason": "no progress for 43m ≥ 15m"
     },
     {
-      "id": 29270983747,
+      "id": 29274090746,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 15m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 71m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29270979855,
+      "id": 29274089137,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 15m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 71m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29274086444,
+      "name": "Perplexity Research Agent",
+      "reason": "running 71m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29273898979,
+      "name": "Perplexity Research Agent",
+      "reason": "running 74m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29273728881,
+      "name": "Perplexity Research Agent",
+      "reason": "running 77m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29273724430,
+      "name": "Perplexity Research Agent",
+      "reason": "running 77m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29273338883,
+      "name": "Perplexity Research Agent",
+      "reason": "running 83m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29273338496,
+      "name": "Perplexity Research Agent",
+      "reason": "running 83m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29270008019,
+      "name": "Weekly Research (WR) Automation",
+      "reason": "running 132m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 178m ≥ 60m budget"
+      "reason": "running 237m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 249m ≥ 60m budget"
+      "reason": "running 308m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 320m ≥ 60m budget"
+      "reason": "running 379m ≥ 60m budget"
     }
   ]
 }
