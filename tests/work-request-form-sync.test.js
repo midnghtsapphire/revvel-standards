@@ -305,8 +305,8 @@ test('openrouter auto-route accepts WR labels and title route tags', () => {
     'openrouter-auto-route must accept WR labels'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#app')") &&
-      wf.includes("contains(github.event.issue.title, '#tool')"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')") &&
+      wf.includes("contains(format(' {0} ', github.event.issue.title), ' #tool ')"),
     'openrouter-auto-route must accept title route tags'
   );
   assert(
@@ -450,7 +450,7 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
   );
   assert(
     autoRoute.includes("contains(github.event.issue.labels.*.name, 'work-request')") &&
-      autoRoute.includes("contains(github.event.issue.title, '#app')") &&
+      autoRoute.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')") &&
       autoRoute.includes("label.startsWith('output-type:')") &&
       autoRoute.includes('inferOutputTypeFromTitle(title)'),
     'openrouter-auto-route must accept title-tag WR intake and route from title/body/output-type label signals'
