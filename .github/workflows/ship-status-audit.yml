@@ -2,14 +2,11 @@ name: Ship Status Audit
 
 on:
   schedule:
-    - cron: '0 14 * * 1'
+    - cron: '0 12 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: read
-  # issues: write is required because the audit job calls github.rest.issues.create
-  # to file the weekly Ship Status digest issue. Without it, the weekly digest 403s
-  # silently every run.
   issues: write
 
 jobs:
@@ -17,29 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compose weekly ship status digest
-        id: digest
-        run: |
-          {
-            echo 'body<<EOF'
-            echo '# Weekly Ship Status Digest'
-            echo
-            echo "Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo
-            echo 'See workflow run for detailed metrics.'
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-      - name: Post digest issue
+      - name: Post weekly Ship Status digest
         uses: actions/github-script@v7
-        env:
-          DIGEST_BODY: ${{ steps.digest.outputs.body }}
         with:
           script: |
-            const today = new Date().toISOString().slice(0, 10);
+            const now = new Date().toISOString().slice(0, 10);
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Ship Status Digest — ${today}`,
-              body: process.env.DIGEST_BODY,
-              labels: ['ship-status-digest'],
+              title: `Ship Status digest — ${now}`,
+              body: `Weekly automated ship status audit for ${now}.`,
+              labels: ['ship-status', 'digest'],
             });

@@ -6,45 +6,33 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Proposal issue number to prosecute'
+        description: 'Issue number to prosecute'
         required: true
+        type: number
 
 permissions:
   contents: read
-  # issues: write is required because the prosecute job calls
-  # github.rest.issues.createComment to post prosecution findings. This workflow only
-  # triggers on `issues: labeled` (label == 'proposal') or workflow_dispatch with an
-  # issue id, so the comment target is always an issue, never a PR — pull-requests:
-  # write is not needed. Without issues: write, the comment post 403s silently.
   issues: write
 
 jobs:
   prosecute:
-    if: >-
-      github.event_name == 'workflow_dispatch'
-      || (github.event_name == 'issues' && github.event.label.name == 'proposal')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issues' && github.event.label.name == 'proposal')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Prosecute proposal and post findings
+      - name: Post prosecution findings
         uses: actions/github-script@v7
         with:
           script: |
-            const issueNumber = context.payload.issue?.number
-              || Number(context.payload.inputs?.issue_number);
+            const issueNumber = context.payload.issue
+              ? context.payload.issue.number
+              : Number(context.payload.inputs.issue_number);
             if (!issueNumber) {
-              core.setFailed('No issue number provided');
+              core.setFailed('No issue number resolved.');
               return;
             }
-            const findings = [
-              '## Proposal Prosecution Findings',
-              '',
-              '- Automated review complete.',
-              '- See workflow run logs for detail.',
-            ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: findings,
+              body: 'Automated prosecution findings: proposal received and queued for review.',
             });
