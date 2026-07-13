@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Proposal issue number to prosecute'
+        description: 'Issue number to prosecute'
         required: true
+        type: number
 
 permissions:
   contents: read
@@ -15,42 +16,19 @@ permissions:
 
 jobs:
   prosecute:
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'proposal'
+    if: github.event_name == 'workflow_dispatch' || (github.event.label && github.event.label.name == 'proposal')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Post prosecution findings
-    if: >-
-      github.event_name == 'workflow_dispatch'
-      || (github.event_name == 'issues' && github.event.label.name == 'proposal')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Prosecute proposal and post findings
         uses: actions/github-script@v7
         with:
           script: |
-            const issueNumber = context.payload.issue?.number
-              || parseInt(context.payload.inputs?.issue_number, 10);
-            if (!issueNumber) {
-              core.setFailed('No issue number provided.');
-              return;
-            }
-              || Number(context.payload.inputs?.issue_number);
-            if (!issueNumber) {
-              core.setFailed('No issue number provided');
-              return;
-            }
-            const findings = [
-              '## Proposal Prosecution Findings',
-              '',
-              '- Automated review complete.',
-              '- See workflow run logs for detail.',
-            ].join('\n');
+            const issueNumber = context.eventName === 'workflow_dispatch'
+              ? Number(context.payload.inputs.issue_number)
+              : context.payload.issue.number;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: 'Proposal prosecution findings: automated review complete.',
-              body: findings,
+              body: `Proposal prosecution complete. See run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
