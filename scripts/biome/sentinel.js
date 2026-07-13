@@ -143,8 +143,14 @@ module.exports = {
 if (require.main === module) {
   (async () => {
     const { repoApi } = require('./gh');
-    const runsResp = await repoApi('/actions/runs?per_page=100');
-    const issuesResp = await repoApi('/issues?state=open&per_page=100&filter=all');
+    // allowError: true — a single transient API error (rate limit, 5xx) here must
+    // degrade this sweep gracefully, not crash the whole crew (see gh.js: allowError
+    // callers get null back instead of a throw). Warn loudly so a degraded sweep is
+    // never mistaken for "genuinely healthy".
+    const runsResp = await repoApi('/actions/runs?per_page=100', { allowError: true });
+    if (!runsResp) console.warn('[biome-sentinel] warning: failed to fetch recent workflow runs (API error) — treating as 0 runs for this sweep');
+    const issuesResp = await repoApi('/issues?state=open&per_page=100&filter=all', { allowError: true });
+    if (!issuesResp) console.warn('[biome-sentinel] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep');
     const runClass = classifyRuns((runsResp && runsResp.workflow_runs) || []);
     const stuck = detectStuckIssues(issuesResp || [], Date.now(), DEFAULTS.stuckDays);
     const section = buildSentinelSection(runClass, stuck);
