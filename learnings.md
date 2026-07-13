@@ -34,6 +34,22 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-07-13T17:15:00Z
+
+**Task Attempted:** CodeQL workflow `Analyze (actions)` matrix job failed with GitHub API rate limit exceeded during SARIF upload and telemetry gathering (run 29263568406, job 86862858087)
+
+**Outcome:** Success — mitigated via `max-parallel: 1` and a retry-with-backoff step in `codeql.yml`.
+
+**Root Cause of Failure (If any):** Three CodeQL matrix jobs (`actions`, `javascript-typescript`, `python`) ran in parallel, each making API calls during SARIF fingerprinting/upload and telemetry reporting. The combined API load exceeded the GitHub App installation's rate limit (shared across all concurrent workflows in the repo). The `actions` language job hit HTTP 403 "API rate limit exceeded for installation" at the SARIF upload phase and again during telemetry — the latter is internal to `github/codeql-action` and not retryable by user code. Error: `request ID 4C50:33198C:73D136F:18A32DE5:6A5509FD, timestamp 2026-07-13 15:53:33 UTC`.
+
+**Self-Healing Fix / Learned Lesson:** (1) Added `max-parallel: 1` to the CodeQL matrix strategy — serializes the three language scans so their API-heavy upload phases don't overlap, drastically reducing peak API demand. (2) Added a retry step: if the first SARIF upload fails, wait 60s (rate-limit reset window) then retry once. The analyze step already had `continue-on-error: true`, so PR gating is unaffected, but the retry improves the odds of findings actually reaching the Security tab. Lesson: any workflow with a fan-out matrix that touches the GitHub REST API during post-processing (upload, telemetry, status checks) should either serialize via `max-parallel` or add exponential-backoff retry — the installation rate limit is shared across ALL concurrent runs in the repo, not per-workflow.
+
+**Tools Used:** GitHub Actions job logs (`get_job_logs`), CodeQL action v4, `github/codeql-action/upload-sarif@v4`, `max-parallel` strategy key, `wait-for-processing` input.
+
+**Next Action:** Monitor the next CodeQL run on main to confirm all three language scans upload SARIF successfully without rate-limit errors.
+
+---
+
 **Date/Time:** 2026-07-10T00:30:00Z
 
 **Task Attempted:** Stop the changed-Markdown lint gate from failing nearly every PR (recurring `MD012`/`MD025`/`MD003`/`MD004`/… findings on generated `wr/issues/*.md`)

@@ -53,6 +53,9 @@ jobs:
 
     strategy:
       fail-fast: false
+      # Serialize matrix jobs to avoid exhausting the GitHub installation's
+      # API rate limit during SARIF upload/telemetry (see issue #15851).
+      max-parallel: 1
       matrix:
         # 2026-05-21 (Claude): scan the JS sources, not just workflow files.
         # 2026-07-11 (Copilot, WR #15693): add python so coldtrace/backend
@@ -96,15 +99,35 @@ jobs:
           fi
 
       - name: Upload SARIF
+        id: upload_sarif
         if: always() && steps.verify_sarif.outcome == 'success'
         # continue-on-error tolerates ONLY upload failures (default-setup
-        # conflict). If this step fails, findings are missing from the
-        # Security tab — check Settings → Security → Code scanning first.
+        # conflict or transient rate limits). If this step fails, findings
+        # are missing from the Security tab — check Settings → Security →
+        # Code scanning first.
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}
+          wait-for-processing: true
+
+      # Retry SARIF upload once after a delay if the first attempt failed
+      # due to rate limiting (issue #15851).
+      - name: Retry Upload SARIF (rate-limit backoff)
+        if: always() && steps.upload_sarif.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          echo "::notice::First SARIF upload failed — waiting 60s before retry (rate-limit backoff)."
+          sleep 60
+      - name: Upload SARIF (retry)
+        if: always() && steps.upload_sarif.outcome == 'failure'
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: sarif-results
+          category: /language:${{ matrix.language }}
+          wait-for-processing: true
 
   # Weekly alert-triage cadence (WR #15693 recommendation #3): surface open
   # critical/high CodeQL alerts as a single self-heal issue that the fleet's
