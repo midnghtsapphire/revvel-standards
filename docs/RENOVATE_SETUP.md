@@ -1,5 +1,61 @@
 # Renovate Setup
 
+This document explains the Renovate configuration in `.github/renovate.json5`,
+why it was added, and the **required manual step** to actually turn it on.
+
+## What is Renovate?
+
+[Renovate](https://docs.renovatebot.com/) is an open-source dependency update
+bot (like Dependabot, but more configurable). Once enabled, it opens PRs to
+keep npm packages and GitHub Actions workflows up to date, and it batches,
+schedules, and (optionally) auto-merges those PRs according to the policy in
+`.github/renovate.json5`.
+
+## Why now?
+
+- `dependency-update-checker.yml` runs weekly and lists Renovate as a
+  "recommended tool to evaluate" in its manual report, but nothing acts on
+  that report.
+- No `renovate.json` / `renovate.json5` existed prior to this change, and
+  `renovate[bot]` has never authored a PR/issue against this repo (verified
+  via GitHub search).
+- The existing `trusted-bot-auto-approve.yml` and
+  `auto-approve-clean-prs.yml` workflows already allowlist `renovate[bot]`
+  as a trusted author -- the infrastructure was ready; only the config and
+  the app install were missing.
+
+## Policy summary
+
+| Scope | Update type | Grouped? | Auto-merge? | Dashboard gate? |
+| --- | --- | --- | --- | --- |
+| GitHub Actions | minor / patch / digest | yes | **yes** (CI-green) | no |
+| GitHub Actions | major | no (one PR each) | no | **yes** |
+| npm `devDependencies` | minor / patch | yes | **yes** (CI-green) | no |
+| npm `dependencies` (prod) | any | no | **no** | no |
+| Anything | major | no | no | **yes** |
+| Vulnerability alerts | any | no | no (opens immediately) | no |
+| Lockfile maintenance | weekly | n/a | inherits default | no |
+
+Key properties of this policy:
+
+- **Conservative auto-merge.** Only low-risk lanes (non-major CI tooling and
+  non-major dev dependencies) auto-merge, and only once CI is green. Every
+  major bump and every production npm dependency waits for a human.
+- **Dashboard-gated majors.** Major bumps don't even open a PR until a
+  maintainer checks the corresponding box on the Renovate Dependency
+  Dashboard issue. This prevents a flood of breaking-change PRs on first
+  install.
+- **Fast lane for security.** `vulnerabilityAlerts` and
+  `osvVulnerabilityAlerts` run outside the weekly schedule so security
+  fixes are not delayed by the batch cadence.
+- **Aligned schedule.** Runs Wednesday before 06:00 UTC, two days after the
+  Monday 09:00 UTC `dependency-update-checker.yml` report, so a maintainer
+  has visibility of the manual report before automated PRs arrive.
+- **Aligned label taxonomy.** Uses the same `dependencies` label the
+  existing manual report issues use -- one taxonomy, not two.
+- **Aligned commit style.** `semanticCommits: enabled` produces
+  `type(scope): description` titles matching the conventional-commit
+  convention this repo already enforces via `pull_request_template.md`.
 This repository uses [Renovate](https://docs.renovatebot.com/) to automate
 dependency updates for `npm` packages and GitHub Actions workflows. The
 configuration lives at [`.github/renovate.json5`](../.github/renovate.json5).
@@ -211,62 +267,66 @@ opposite:
 
 ## Interaction with existing auto-approve workflows
 
-`trusted-bot-auto-approve.yml` and `auto-approve-clean-prs.yml` both already
-include `renovate[bot]` in their `TRUSTED_BOTS` / `TRUSTED_AUTHORS`
-allowlists, meaning once Renovate is installed, those workflows will
-auto-**approve** (submit an APPROVE review on) any Renovate PR once its CI
-checks pass — independent of Renovate's own auto-**merge** setting above.
+`trusted-bot-auto-approve.yml` and `auto-approve-clean-prs.yml` already list
+`renovate[bot]` as a trusted author. **These do not need to change.**
 
-This was evaluated and left as-is rather than changed in this PR:
-auto-approve and auto-merge are two different gates in this fleet's model.
-Approval alone doesn't merge anything — `pr-state-orchestrator` and the
-merge automation still require the repo's normal merge conditions. Combined
-with `renovate.json5`'s own conservative `automerge` scoping (only
-non-major dev/CI bumps), the practical effect is: low-risk Renovate PRs get
-both auto-approved *and* auto-merged (fully automated, as intended); every
-major or production-dependency PR gets auto-approved (a green checkmark,
-which is harmless — the diff still needs a human to merge it) but never
-auto-merged, so it still waits for a person. No change to those two
-workflows was necessary.
+Auto-approve and auto-merge are separate gates:
 
-## How to actually turn this on (manual, one-time, outside this PR)
+- Auto-approve gives a Renovate PR the required approving review.
+- Auto-merge (controlled here in `renovate.json5`) decides whether Renovate
+  is allowed to actually merge that PR after CI + approval.
 
-**Nothing in this PR makes Renovate run.** `.github/renovate.json5` is
-config for an app that has to be installed first:
+Because this config only sets `automerge: true` on the non-major CI /
+dev-dependency lanes, majors and production-dependency PRs will still sit
+waiting for a human to hit merge, **even if** they've already been
+auto-approved. That's intentional -- approval is not merge authority.
 
-1. A repo/org admin visits <https://github.com/apps/renovate> and installs
-   the Renovate GitHub App, either on this specific repository or the whole
-   `midnghtsapphire` org.
-2. On first install, Renovate's own onboarding PR may appear (it typically
-   proposes a `renovate.json` — since this repo already ships
-   `.github/renovate.json5`, Renovate should pick that up directly and skip
-   onboarding, but confirm the first run's log/PR to be sure).
-3. Watch the Dependency Dashboard issue Renovate creates — that's the
-   control panel for everything pending, including the checkbox-gated major
-   bumps described above.
+## How to actually turn this on
 
-This session (and this PR) cannot install a GitHub App — that requires
-org/repo admin permissions exercised through the GitHub UI by a human.
+**This config is inert until a repo/org admin installs the Renovate GitHub
+App.** Merging this PR alone does nothing. Steps:
 
-## Validating the config
+1. A user with **admin** rights on this repo (or the owning org) visits
+   <https://github.com/apps/renovate>.
+2. Click **Install** (or **Configure** if the app is already installed on
+   another repo in the org).
+3. Choose either:
+   - **All repositories** (org-wide install), or
+   - **Only select repositories** and pick this repo.
+4. Grant the requested permissions. Renovate needs read access to code and
+   write access to PRs, issues, and workflows.
+5. Within a few minutes, Renovate will:
+   - Read `.github/renovate.json5`.
+   - Open a "Configure Renovate" onboarding PR (first-time installs only).
+   - After that PR merges (or if onboarding is skipped), open the
+     **Dependency Dashboard** issue and begin scheduling updates per the
+     Wednesday cadence.
 
-`.github/renovate.json5` is JSON5 (comments + unquoted-friendly), not
-strict JSON, so `python3 -m json.load` won't parse it directly. Two checks
-were run before opening this PR:
+## Validating changes to the config
 
-1. Structural validity via the `json5` npm package's `JSON5.parse()` —
-   parses cleanly, all expected top-level keys present.
-2. **Renovate's own validator**, `renovate-config-validator` (ships inside
-   the `renovate` npm package):
-   ```bash
-   npx --yes -p renovate renovate-config-validator .github/renovate.json5
-   ```
-   `npx --yes renovate-config-validator` alone (without `-p renovate`)
-   fails — that binary name isn't a published package by itself, it's a bin
-   entry inside the full `renovate` package. Installing `renovate` took a
-   few minutes (large dependency tree) but did succeed in this sandbox.
-   The validator caught two real mistakes on the first pass — `prPriority`
-   is not a valid field inside `vulnerabilityAlerts`, and there is no
-   `matchCurrentVulnerability` packageRules selector — both were removed;
-   Renovate prioritizes vulnerability-fix PRs automatically without needing
-   either. Final run: `INFO: Config validated successfully`.
+Before committing any change to `.github/renovate.json5`, run:
+
+```bash
+npx --yes -p renovate renovate-config-validator .github/renovate.json5
+```
+
+A passing run prints `INFO: Config validated successfully`. Renovate ships
+this validator specifically so config drift is caught locally, not after a
+bad push causes it to stop running.
+
+## Disabling / pausing Renovate
+
+- **Pause temporarily:** check the "Pause Renovate" box on the Dependency
+  Dashboard issue.
+- **Disable entirely:** uninstall the Renovate GitHub App from repo/org
+  settings, **or** set `"enabled": false` at the top level of
+  `.github/renovate.json5`.
+- **Disable a single manager or package:** add a `packageRules` entry with
+  `"enabled": false` scoped by `matchManagers` / `matchPackageNames`.
+
+## References
+
+- Renovate docs: <https://docs.renovatebot.com/>
+- Config options: <https://docs.renovatebot.com/configuration-options/>
+- Presets: <https://docs.renovatebot.com/presets-config/>
+- GitHub App: <https://github.com/apps/renovate>
