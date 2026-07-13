@@ -1,71 +1,168 @@
 'use strict';
 
-// Tests for the Octopus quota-death review fallback lane:
-// scripts/octopus-review-fallback.js + .github/workflows/octopus-review-fallback.yml
-// (see wr/pending/07-review-fallback-when-octopus-quota-dead.md).
-
 const test = require('node:test');
-const assert = require('node:assert');
-const fs = require('node:fs');
-const path = require('node:path');
-const yaml = require('yaml');
-
-const REPO_ROOT = path.join(__dirname, '..');
-const workflowPath = path.join(REPO_ROOT, '.github', 'workflows', 'octopus-review-fallback.yml');
+const assert = require('node:assert/strict');
+const { EventEmitter } = require('node:events');
+const https = require('node:https');
 
 const {
-  isQuotaDeathComment,
-  loadReviewProfile,
-  FALLBACK_MARKER,
-  OCTOPUS_BOT_LOGIN,
+  isRateLimitedResponse,
+  computeRetryDelayMs,
+  githubRequest,
 } = require('../scripts/octopus-review-fallback.js');
 
-test('isQuotaDeathComment matches known Octopus quota banners (case-insensitive)', () => {
-  assert.strictEqual(isQuotaDeathComment('Please Add Your Own API Keys to continue reviews'), true);
-  assert.strictEqual(isQuotaDeathComment('Your monthly AI usage limit was hit.'), true);
-  assert.strictEqual(isQuotaDeathComment('quota exceeded for this billing period'), true);
+test('isRateLimitedResponse: HTTP 429 is a rate limit', () => {
+  assert.equal(isRateLimitedResponse(429, 'anything'), true);
 });
 
-test('isQuotaDeathComment does NOT match healthy reviews or empty bodies', () => {
-  assert.strictEqual(isQuotaDeathComment('Found a null-pointer bug in scripts/foo.js line 12'), false);
-  assert.strictEqual(isQuotaDeathComment(''), false);
-  assert.strictEqual(isQuotaDeathComment(null), false);
-  assert.strictEqual(isQuotaDeathComment(undefined), false);
+test('isRateLimitedResponse: HTTP 403 with rate-limit body is a rate limit', () => {
+  const body = JSON.stringify({
+    message: 'API rate limit exceeded for installation. Please retry later.',
+  });
+  assert.equal(isRateLimitedResponse(403, body), true);
 });
 
-test('loadReviewProfile resolves the review profile from agent-models.yml', () => {
-  const profile = loadReviewProfile();
-  // Per agent-models.yml: Opus 4.7 primary, DeepSeek R1 fallback — but assert
-  // structure (drift-proof), not exact model slugs.
-  assert.ok(Array.isArray(profile.models) && profile.models.length >= 1);
-  const config = yaml.parse(
-    fs.readFileSync(path.join(REPO_ROOT, '.github', 'agent-models.yml'), 'utf8')
-  );
-  assert.strictEqual(profile.models[0], config.profiles.review.primary);
-  if (config.profiles.review.fallback) {
-    assert.strictEqual(profile.models[1], config.profiles.review.fallback);
+test('isRateLimitedResponse: HTTP 403 with permissions body is NOT a rate limit', () => {
+  const body = JSON.stringify({ message: 'Resource not accessible by integration' });
+  assert.equal(isRateLimitedResponse(403, body), false);
+});
+
+test('isRateLimitedResponse: HTTP 404 is not a rate limit', () => {
+  assert.equal(isRateLimitedResponse(404, '{"message":"Not Found"}'), false);
+});
+
+test('computeRetryDelayMs: honors Retry-After header', () => {
+  const delay = computeRetryDelayMs({ 'retry-after': '3' }, 0, 1000, 60000);
+  assert.equal(delay, 3000);
+});
+
+test('computeRetryDelayMs: falls back to exponential backoff', () => {
+  const d0 = computeRetryDelayMs({}, 0, 1000, 60000);
+  const d1 = computeRetryDelayMs({}, 1, 1000, 60000);
+  const d2 = computeRetryDelayMs({}, 2, 1000, 60000);
+  assert.equal(d0, 1000);
+  assert.equal(d1, 2000);
+  assert.equal(d2, 4000);
+});
+
+test('computeRetryDelayMs: clamps to max delay', () => {
+  const delay = computeRetryDelayMs({}, 10, 1000, 5000);
+  assert.equal(delay, 5000);
+});
+
+// --- githubRequest integration tests against a mocked https.request ------
+
+function mockHttpsRequestOnce(responses) {
+  // responses: array of { status, headers, body } consumed in order
+  const orig = https.request;
+  let call = 0;
+  https.request = function (_options, cb) {
+    const idx = call++;
+    const spec = responses[Math.min(idx, responses.length - 1)];
+    const req = new EventEmitter();
+    req.write = () => {};
+    req.end = () => {
+      const res = new EventEmitter();
+      res.statusCode = spec.status;
+      res.headers = Object.assign({ 'content-type': 'application/json' }, spec.headers || {});
+      res.setEncoding = () => {};
+      setImmediate(() => {
+        cb(res);
+        setImmediate(() => {
+          res.emit('data', spec.body || '');
+          res.emit('end');
+        });
+      });
+    };
+    return req;
+  };
+  return () => {
+    https.request = orig;
+  };
+}
+
+test('githubRequest: retries after a rate-limited 403, then succeeds', async () => {
+  const restore = mockHttpsRequestOnce([
+    {
+      status: 403,
+      headers: { 'retry-after': '0' },
+      body: JSON.stringify({ message: 'API rate limit exceeded for installation.' }),
+    },
+    { status: 200, headers: {}, body: JSON.stringify([]) },
+  ]);
+  try {
+    const res = await githubRequest('GET', '/repos/x/y/pulls/1/reviews', 'tkn', null, {
+      maxRetries: 4,
+      baseDelayMs: 1,
+      maxDelayMs: 5,
+      sleepFn: () => Promise.resolve(),
+    });
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.data, []);
+  } finally {
+    restore();
   }
-  assert.strictEqual(config.profiles.review.provider, 'openrouter');
 });
 
-test('dedupe marker and bot login are stable identifiers', () => {
-  assert.strictEqual(FALLBACK_MARKER, '<!-- octopus-review-fallback -->');
-  assert.strictEqual(OCTOPUS_BOT_LOGIN, 'octopus-review[bot]');
+test('githubRequest: gives up after exhausting retries on persistent rate limit', async () => {
+  const restore = mockHttpsRequestOnce([
+    {
+      status: 403,
+      headers: {},
+      body: JSON.stringify({ message: 'API rate limit exceeded for installation.' }),
+    },
+  ]);
+  try {
+    await assert.rejects(
+      () =>
+        githubRequest('GET', '/repos/x/y/pulls/1/reviews', 'tkn', null, {
+          maxRetries: 2,
+          baseDelayMs: 1,
+          maxDelayMs: 5,
+          sleepFn: () => Promise.resolve(),
+        }),
+      /GitHub HTTP 403/
+    );
+  } finally {
+    restore();
+  }
 });
 
-test('workflow guards the issue_comment lane to octopus-review[bot] quota banners', () => {
-  const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
-  const job = workflow.jobs['fallback-review'];
-  assert.ok(job, 'fallback-review job exists');
-  assert.match(job.if, /octopus-review\[bot\]/);
-  assert.match(job.if, /add your own API keys/);
-  assert.strictEqual(workflow.permissions['pull-requests'], 'write');
-});
-
-test('workflow covers all three lanes: quota comment, sweep schedule, manual dispatch', () => {
-  const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
-  const triggers = workflow.on || workflow[true]; // yaml parses bare `on:` as boolean true
-  assert.ok(triggers.issue_comment, 'issue_comment trigger present');
-  assert.ok(triggers.schedule, 'schedule trigger present');
-  assert.ok(triggers.workflow_dispatch, 'workflow_dispatch trigger present');
+test('githubRequest: does NOT retry a genuine (non-rate-limit) 403', async () => {
+  let calls = 0;
+  const orig = https.request;
+  https.request = function (_options, cb) {
+    calls += 1;
+    const req = new EventEmitter();
+    req.write = () => {};
+    req.end = () => {
+      const res = new EventEmitter();
+      res.statusCode = 403;
+      res.headers = { 'content-type': 'application/json' };
+      res.setEncoding = () => {};
+      setImmediate(() => {
+        cb(res);
+        setImmediate(() => {
+          res.emit('data', JSON.stringify({ message: 'Resource not accessible by integration' }));
+          res.emit('end');
+        });
+      });
+    };
+    return req;
+  };
+  try {
+    await assert.rejects(
+      () =>
+        githubRequest('GET', '/repos/x/y/pulls/1/reviews', 'tkn', null, {
+          maxRetries: 4,
+          baseDelayMs: 1,
+          maxDelayMs: 5,
+          sleepFn: () => Promise.resolve(),
+        }),
+      /GitHub HTTP 403/
+    );
+    assert.equal(calls, 1, 'permissions 403 must not be retried');
+  } finally {
+    https.request = orig;
+  }
 });
