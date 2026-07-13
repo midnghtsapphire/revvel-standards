@@ -1,32 +1,12 @@
-# Revvel Standard Label Definitions
-#
-# This file is the canonical source of truth for labels across ALL Revvel repositories.
-# The `sync-labels.yml` workflow reads this file and ensures every label exists in the repo.
-#
-# Usage:
-#   • Automatically synced by `.github/workflows/sync-labels.yml` on push to main
-#   • Run manually: Actions → Sync Standard Labels → Run workflow
-#   • Copy to any app repo alongside `templates/cicd/sync-labels.yml`
-#
-# Taxonomy rules (enforced by tests/label-taxonomy.test.js + scripts/label-inventory.js):
-#   • One namespace per axis. Every label carries an `axis:` from the documented
-#     set (see docs/AGENT_MONITORING_STANDARD.md → "Label taxonomy").
-#   • No duplicate definitions.
-#   • Workflows may NOT invent labels inline — every label a workflow hardcodes
-#     must be defined here first (this file growing to 195 labels is how we
-#     learned that; see issue "[WR] Label taxonomy cleanup").
-#   • Renames/merges/deletions of historical labels go through
-#     config/label-migrations.json + .github/workflows/label-migration.yml so
-#     old issues stay queryable.
-#   • Dynamic families (constructed at runtime): priority-slot:* and
-#     wr:retrigger-attempts-* — keep every member defined here.
-#
-# Label design conventions:
-#   • Colors from GitHub's recommended palette where possible
-#   • Each label has a short, clear description (≤ 50 chars)
+# Repository labels — synced by sync-labels.yml
 
-labels:
+- name: work-request
+  color: 0e8a16
+  description: Tracked work request (WR) issue
 
+- name: auto-generated-followup
+  color: fbca04
+  description: WR auto-generated from a checked `Follow-up:` checklist item
   # ── Type — what kind of item this is (the small free set) ───────────────────────
   - name: bug
     axis: type
@@ -190,6 +170,15 @@ labels:
     axis: wr
     color: "1d76db"
     description: "Work Request intake issue"
+
+  - name: auto-diagnosed
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by daily-diagnostic-audit.yml from a code-level diagnosis"
+  - name: auto-generated-followup
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by followup-checkbox-router.yml from a checked 'Follow-up:' checklist item"
 
   - name: weekly-research
     axis: wr
