@@ -1,6 +1,8 @@
 name: Jules Coding Agent
 
 on:
+  issues:
+    types: [labeled, opened]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -24,6 +26,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
     runs-on: ubuntu-latest
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent:jules'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,3 +72,68 @@ jobs:
             --head "$BRANCH" \
             --base main || true
           gh issue edit "${{ steps.issue.outputs.number }}" --add-label "wr:pr-open" || true
+          fetch-depth: 0
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Determine issue number
+        id: issue
+        run: |
+          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
+            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure git
+        run: |
+          git config user.name "jules-agent[bot]"
+          git config user.email "jules-agent[bot]@users.noreply.github.com"
+
+      - name: Create branch
+        id: branch
+        run: |
+          BRANCH="jules/issue-${{ steps.issue.outputs.number }}-$(date +%s)"
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Run Jules agent
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          if [ -f scripts/jules-agent.js ]; then
+            node scripts/jules-agent.js
+          else
+            echo "jules-agent.js not found, skipping"
+          fi
+
+      - name: Commit changes
+        id: commit
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "fix: automated fix for issue #${{ steps.issue.outputs.number }}"
+            git push origin "${{ steps.branch.outputs.name }}"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          gh pr create \
+            --title "fix: automated fix for issue #${{ steps.issue.outputs.number }}" \
+            --body "Closes #${{ steps.issue.outputs.number }}" \
+            --head "${{ steps.branch.outputs.name }}" \
+            --base main
+
+      - name: Label issue
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open"

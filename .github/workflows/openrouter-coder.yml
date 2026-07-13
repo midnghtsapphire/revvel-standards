@@ -74,6 +74,29 @@ jobs:
               repo: context.repo.repo,
               issue_number: issueNumber,
             });
+
+            // GitHub fires the `issues` webhook event (and `issue_comment` on
+            // its thread) even when the target is actually a pull request —
+            // e.g. labeling a PR via the Issues API still triggers
+            // `issues.labeled`. Without this guard, a PR mislabeled `wr:code`
+            // /`spec-approved` (or an already-merged PR whose thread later
+            // gets a "Research Findings:" comment) gets treated as a fresh
+            // issue and re-dispatched here, producing a duplicate
+            // "[openrouter] ... apply openrouter changes for #N" PR on top
+            // of already-merged work (confirmed root cause of the 2026-07-13
+            // main-breaking interleaved-merge incidents; see PR #15910).
+            if (issue.pull_request) {
+              core.notice(`#${issueNumber} is a pull request, not an issue — openrouter-coder only processes issues. Skipping.`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+            if (issue.state !== 'open') {
+              core.notice(`#${issueNumber} is not open (state=${issue.state}) — skipping.`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            core.setOutput('skip', 'false');
             core.setOutput('issue_number', String(issue.number));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
@@ -84,7 +107,7 @@ jobs:
         # so the integration must be wired explicitly via ROO_RUN_COMMAND. We
         # require BOTH the key and a run command so we never silently 404 on
         # a missing package; if either is absent, OpenRouter is the only lane.
-        if: env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
+        if: steps.issue.outputs.skip != 'true' && env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
         continue-on-error: true
         env:
           ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
@@ -110,7 +133,7 @@ jobs:
           echo "files_written=$files" >> "$GITHUB_OUTPUT"
       - name: Generate code changes with OpenRouter (fallback)
         id: coder
-        if: steps.roo.outcome != 'success' || steps.roo.outputs.files_written == '0' || steps.roo.outputs.files_written == ''
+        if: steps.issue.outputs.skip != 'true' && (steps.roo.outcome != 'success' || steps.roo.outputs.files_written == '0' || steps.roo.outputs.files_written == '')
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -148,7 +171,7 @@ jobs:
           PY
       - name: Create pull request
         id: cpr
-        if: steps.coder.outputs.files_written != '0'
+        if: steps.issue.outputs.skip != 'true' && steps.coder.outputs.files_written != '0'
         uses: peter-evans/create-pull-request@v8.1.1
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -175,7 +198,7 @@ jobs:
               body: `✅ OpenRouter opened PR: ${{ steps.cpr.outputs.pull-request-url }}`,
             });
       - name: Comment issue when no changes were generated
-        if: steps.coder.outputs.files_written == '0'
+        if: steps.issue.outputs.skip != 'true' && steps.coder.outputs.files_written == '0'
         uses: actions/github-script@v9.0.0
         with:
           script: |
