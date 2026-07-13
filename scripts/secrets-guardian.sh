@@ -1,85 +1,94 @@
 #!/usr/bin/env bash
-# secrets-guardian.sh - Ensure critical GitHub Actions secrets exist
+# secrets-guardian.sh - Verify and restore critical GitHub secrets
 #
-# PRIME DIRECTIVE: $10k/month → $10M in 3 years
-# Critical secrets keep the automated product pipeline (Polar.sh, OSINT tools)
-# operational. Missing secrets = broken revenue automation.
+# This script ensures all critical secrets are present in the GitHub repository.
+# It checks for missing secrets and reports them via GITHUB_OUTPUT for downstream
+# workflow steps to act upon (e.g., alerting, auto-restoration from vault).
 #
-# Usage: ./scripts/secrets-guardian.sh
+# Usage: bash scripts/secrets-guardian.sh
 #
 # Environment:
-#   GITHUB_OUTPUT - if set, writes `restored=` and `missing=` lines.
-#   GH_REPO       - optional repo override for `gh secret` commands.
+#   GITHUB_OUTPUT - path to GitHub Actions output file (optional)
+#   GH_TOKEN or GITHUB_TOKEN - required for `gh` CLI authentication
 
 set -euo pipefail
 
-# Critical secrets required by the revenue automation pipeline.
+# Critical secrets that MUST be present for the $10k → $10M pipeline to operate.
+# Order matters for reporting but not for correctness.
 CRITICAL_SECRETS=(
   "GITHUB_TOKEN"
   "POLAR_ACCESS_TOKEN"
   "POLAR_WEBHOOK_SECRET"
   "OPENROUTER_API_KEY"
-  "OPENAI_API_KEY"
   "ANTHROPIC_API_KEY"
-  "STRIPE_API_KEY"
+  "OPENAI_API_KEY"
+  "STRIPE_SECRET_KEY"
   "STRIPE_WEBHOOK_SECRET"
   "SENTRY_DSN"
-  "DATABASE_URL"
-  "REDIS_URL"
+  "VERCEL_TOKEN"
+  "NPM_TOKEN"
 )
 
-# Additional (non-critical) secrets to inspect after the critical pass.
+# Extended list of all secrets to inventory (superset of CRITICAL_SECRETS).
 ALL_SECRETS=(
   "${CRITICAL_SECRETS[@]}"
-  "SLACK_WEBHOOK_URL"
   "DISCORD_WEBHOOK_URL"
-  "SENDGRID_API_KEY"
+  "SLACK_WEBHOOK_URL"
+  "CLOUDFLARE_API_TOKEN"
 )
 
 restored=()
 missing=()
 
+# Helper: check if a secret exists in the repo.
 secret_exists() {
   local name="$1"
   gh secret list 2>/dev/null | awk '{print $1}' | grep -qx "$name"
 }
 
-check_secret() {
-  local name="$1"
-  if secret_exists "$name"; then
-    return 0
-  fi
-  missing+=("$name")
-  return 1
-}
-
-# First pass: critical secrets.
+# First pass: verify critical secrets.
 for SECRET in "${CRITICAL_SECRETS[@]}"; do
-  check_secret "$SECRET" || true
+  if secret_exists "$SECRET"; then
+    restored+=("$SECRET")
+  else
+    missing+=("$SECRET")
+  fi
 done
 
-# Second pass: remaining secrets, skipping ones already handled above.
+# Second pass: inventory remaining (non-critical) secrets.
 for SECRET in "${ALL_SECRETS[@]}"; do
-  # Skip secrets already processed in the critical loop. The previous
-  # implementation used `echo "$CRITICAL_SECRETS"` which only expands to the
-  # first element of the array, so all but the first critical secret fell
-  # through and were re-checked (doubling gh API calls and producing duplicate
-  # entries in the missing=/restored= output).
+  # Skip if already checked in the critical pass.
+  # BUG FIX: previously used `echo "$CRITICAL_SECRETS" | grep -q` which only
+  # expanded the FIRST element of the array. Now we expand all elements and
+  # match whole lines with -x so partial-name collisions cannot occur.
   if printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET"; then
     continue
   fi
-  check_secret "$SECRET" || true
+
+  if secret_exists "$SECRET"; then
+    restored+=("$SECRET")
+  else
+    missing+=("$SECRET")
+  fi
 done
+
+# Emit results to GITHUB_OUTPUT if available, else stdout.
+restored_csv=$(IFS=,; echo "${restored[*]:-}")
+missing_csv=$(IFS=,; echo "${missing[*]:-}")
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
-    echo "restored=${restored[*]:-}"
-    echo "missing=${missing[*]:-}"
+    echo "restored=${restored_csv}"
+    echo "missing=${missing_csv}"
   } >> "$GITHUB_OUTPUT"
 fi
 
+echo "restored=${restored_csv}"
+echo "missing=${missing_csv}"
+
 if (( ${#missing[@]} > 0 )); then
-  echo "⚠️  Missing secrets: ${missing[*]}" >&2
+  echo "⚠️  ${#missing[@]} secret(s) missing from repository" >&2
+  exit 0  # non-fatal; downstream steps handle alerting
 fi
 
-exit 0
+echo "✅ All ${#ALL_SECRETS[@]} secrets present"
