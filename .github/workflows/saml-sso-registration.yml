@@ -1,68 +1,41 @@
-name: SAML SSO Registration
+name: SAML SSO Registration Check
+
 on:
-  # NOTE: "organization: member_added" is not a valid Actions trigger — org
-  # membership events cannot trigger repository workflows, and listing it makes
-  # GitHub reject the whole workflow file (instant "failure" run with 0 jobs).
-  # SAML identity is verified on PR events instead.
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+    types: [opened, reopened, synchronize]
+
 permissions:
   contents: read
   pull-requests: write
+
 jobs:
-  verify-saml-identity:
-    name: Verify SAML SSO Identity
+  check-saml-linked:
+    name: Check SAML SSO Identity Linked
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.fork == false
     steps:
-      - name: Get SAML Identity
-        id: saml-identity
-        uses: actions/github-script@v9.0.0
+      - name: Check SAML identity via GraphQL
+        id: saml
+        uses: actions/github-script@v7
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          ORG_NAME: ${{ github.repository_owner }}
-      - name: Resolve triggering username
-        id: resolve-user
-        run: |
-          # pull_request events expose the PR author via .pull_request.user.login
-          USERNAME="${{ github.event.pull_request.user.login }}"
-          echo "username=${USERNAME}" >> "$GITHUB_OUTPUT"
-          echo "Checking SAML identity for: ${USERNAME}"
-      # NOTE: this used to be `gagoar/get-saml-identity-action@0.9.0`, but that
-      # tag fails on every run with:
-      #   ##[error]File not found: '.../gagoar/get-saml-identity-action/0.9.0/dist/index.js'
-      # i.e. the published 0.9.0 tag never shipped a built dist/index.js, so the
-      # action can never succeed as pinned. Confirmed failing live on PRs
-      # #15821, #15822, #15824 (and, by construction, every PR the fleet's
-      # self-healing/coding-agent workflows open — this job runs on every
-      # pull_request). This repo's session has no internet access to check
-      # gagoar/get-saml-identity-action for a later working tag, so rather than
-      # guess at another tag that might have the same problem, the lookup is
-      # reimplemented inline with actions/github-script calling the GitHub
-      # GraphQL API directly — same `ADMIN_GITHUB_TOKEN` (org-admin scoped)
-      # this job already had, no third-party dependency, and it produces the
-      # same `steps.saml-identity.outputs.identity` output the rest of this
-      # job already consumes, so downstream steps are unchanged.
-      - name: Resolve SAML identity via GitHub API
-        id: saml-identity
-        uses: actions/github-script@v9.0.0
+          ORG_LOGIN: ${{ github.repository_owner }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const login = process.env.PR_AUTHOR;
-            const org = process.env.ORG_NAME;
+            const author = process.env.PR_AUTHOR;
+            const org = process.env.ORG_LOGIN;
+            core.info(`Checking SAML identity for @${author} in org ${org}`);
+
             const query = `
               query($org: String!, $login: String!) {
                 organization(login: $org) {
                   samlIdentityProvider {
-                    externalIdentities(first: 1, userName: $login) {
+                    externalIdentities(first: 1, login: $login) {
                       edges {
                         node {
                           samlIdentity {
                             nameId
-                            username
                           }
                           user {
                             login
@@ -74,107 +47,47 @@ jobs:
                 }
               }
             `;
-            let identity = '';
+
             try {
-              const result = await github.graphql(query, { org, login });
+              const result = await github.graphql(query, { org, login: author });
               const idp = result?.organization?.samlIdentityProvider;
               if (!idp) {
-                core.warning(`Organization '${org}' has no SAML IdP configured or token lacks org-admin scope.`);
+                core.info('Organization does not have SAML SSO configured; skipping check.');
+                core.setOutput('linked', 'skip');
+                return;
+              }
+              const edges = idp.externalIdentities?.edges || [];
+              const nameId = edges[0]?.node?.samlIdentity?.nameId;
+              if (nameId) {
+                core.info(`SAML identity linked: ${nameId}`);
+                core.setOutput('linked', 'true');
               } else {
-                const edges = idp.externalIdentities?.edges || [];
-                const match = edges.find(e => e?.node?.user?.login === login);
-                const nameId = match?.node?.samlIdentity?.nameId || '';
-                const username = match?.node?.samlIdentity?.username || '';
-                identity = nameId || username || '';
+                core.warning(`No SAML identity found for @${author}`);
+                core.setOutput('linked', 'false');
               }
             } catch (err) {
-              core.warning(`Failed to query SAML identity for '${login}' in '${org}': ${err.message}`);
-            const username = '${{ steps.resolve-user.outputs.username }}';
-            const org = '${{ github.repository_owner }}';
-
-            let identity = '';
-            try {
-              const result = await github.graphql(
-                `query($org: String!, $login: String!) {
-                  organization(login: $org) {
-                    samlIdentityProvider {
-                      externalIdentities(first: 1, login: $login) {
-                        nodes {
-                          samlIdentity { nameId }
-                          user { login }
-                        }
-                      }
-                    }
-                  }
-                }`,
-                { org, login: username }
-              );
-              const nodes = result?.organization?.samlIdentityProvider?.externalIdentities?.nodes || [];
-              const match = nodes.find((n) => n.user && n.user.login === username);
-              identity = match?.samlIdentity?.nameId || '';
-            } catch (err) {
-              // Org has no SAML IdP configured (samlIdentityProvider is null),
-              // or the token lacks admin:org/read:org scope — either way there
-              // is nothing to report. Warn instead of failing the job: this
-              // workflow's job is nudging non-SSO-linked authors, not blocking
-              // PRs when SSO isn't even configured for the org.
-              core.warning(`SAML identity lookup failed: ${err.message}`);
+              core.warning(`SAML lookup failed (likely missing admin:org scope): ${err.message}`);
+              core.setOutput('linked', 'skip');
             }
 
-            core.setOutput('identity', identity);
-      - name: Report SAML identity result
-        run: |
-          if [ -n "${{ steps.saml-identity.outputs.identity }}" ]; then
-            echo "::notice::SAML identity linked for ${{ github.event.pull_request.user.login }}: ${{ steps.saml-identity.outputs.identity }}"
-          else
-            echo "::warning::No SAML identity linked for ${{ github.event.pull_request.user.login }}"
-          fi
-
-      - name: Comment on PR if SAML identity not linked
-        if: steps.saml-identity.outputs.identity == ''
-          IDENTITY="${{ steps.saml-identity.outputs.identity }}"
-          USERNAME="${{ steps.resolve-user.outputs.username }}"
-
-          if [ -z "${IDENTITY}" ]; then
-            echo "::warning title=SAML Identity Missing::User '${USERNAME}' does not have a linked SAML/SSO identity in the organization. Ask them to authorize via SSO at https://github.com/orgs/${{ github.repository_owner }}/sso"
-          else
-            echo "::notice title=SAML Identity Verified::User '${USERNAME}' → SSO identity: ${IDENTITY}"
-          fi
-      - name: Comment on PR if SAML identity is missing
-        if: |
-          github.event_name == 'pull_request' && steps.saml-identity.outputs.identity == ''
-        uses: actions/github-script@v9.0.0
+      - name: Comment on PR if SAML not linked
+        if: steps.saml.outputs.linked == 'false'
+        uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const author = context.payload.pull_request.user.login;
+            const org = context.repo.owner;
             const body = [
-              '## SAML SSO Identity Not Linked',
-              '',
-              `@${context.payload.pull_request.user.login}, your GitHub account does not appear to be linked to a SAML SSO identity for this organization.`,
-              '',
-              'Please ensure your account is linked to the organization\'s SAML SSO provider before contributing.',
-              '',
-              'If you believe this is an error, contact the organization administrators.'
+              `👋 @${author} — your GitHub account does not appear to have a SAML SSO identity linked in the **${org}** organization.`,
+              ``,
+              `To contribute, please link your SAML identity: https://github.com/orgs/${org}/sso`,
+              ``,
+              `_This check is informational and does not block your PR._`,
             ].join('\n');
-            const username = '${{ steps.resolve-user.outputs.username }}';
-            const org = '${{ github.repository_owner }}';
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: [
-                '## ⚠️ SAML SSO Identity Not Linked',
-                '',
-                `@${username}, your GitHub account does not have a linked SAML/SSO identity in the **${org}** organization.`,
-                '',
-                'Please authorize your account with the organization SSO provider before this PR can be merged:',
-                '',
-                `👉 [Authorize SSO for ${org}](https://github.com/orgs/${org}/sso)`,
-                '',
-                '---',
-                '_This comment was posted automatically by the SAML SSO Registration workflow._',
-              ].join('\n'),
+              body,
             });
-    timeout-minutes: 30
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
