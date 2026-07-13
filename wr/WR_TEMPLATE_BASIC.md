@@ -1,9 +1,12 @@
 # WR: {TITLE}
 
-**Issue:** {ISSUE_REF}  
-**Repository:** {REPO}  
-**Created:** {DATE}  
-**WR Status:** {STATUS}  
+<!-- who: {RESEARCHER} -->
+<!-- date: {DATE} -->
+<!-- description: {ISSUE_REF} -->
+<!-- **Issue:** {ISSUE_REF}   -->
+<!-- **Repository:** {REPO}   -->
+<!-- **Created:** {DATE}      -->
+<!-- **WR Status:** {STATUS}  -->
 
 ## Issue Context
 

@@ -8,12 +8,15 @@
      See scripts/research-engine.js (buildFindingsComment) for where the line is emitted. -->
 # WR: {TITLE}
 
-**Issue:** {ISSUE_REF}  
-**Repository:** {REPO}  
-**Created:** {DATE}  
-**Researcher:** {RESEARCHER}  
-**Research Date:** {RESEARCH_DATE}  
-**WR Status:** {STATUS}  
+<!-- who: {RESEARCHER} -->
+<!-- date: {DATE} -->
+<!-- description: {ISSUE_REF} -->
+<!-- **Issue:** {ISSUE_REF}         -->
+<!-- **Repository:** {REPO}         -->
+<!-- **Created:** {DATE}            -->
+<!-- **Researcher:** {RESEARCHER}   -->
+<!-- **Research Date:** {RESEARCH_DATE} -->
+<!-- **WR Status:** {STATUS}        -->
 
 ## Issue Context
 
