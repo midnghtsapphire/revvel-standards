@@ -40,26 +40,40 @@ jobs:
             const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
             const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
             
+            // Guard each list call: an installation rate-limit 403 here must
+            // degrade gracefully (skip that label bucket) instead of
+            // hard-failing the whole hourly job.
+            async function safeListForRepo(callName, params) {
+              try {
+                const res = await github.rest.issues.listForRepo(params);
+                return res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                return [];
+              }
+            }
+
             // Find issues with wr:checking label
-            const { data: checkingIssues } = await github.rest.issues.listForRepo({
+            const checkingIssues = await safeListForRepo('issues.listForRepo (wr:checking)', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               labels: 'wr:checking',
               per_page: 50
             });
-            
+
             // Find issues with issue:in-progress label
-            const { data: inProgressIssues } = await github.rest.issues.listForRepo({
+            const inProgressIssues = await safeListForRepo('issues.listForRepo (issue:in-progress)', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               labels: 'issue:in-progress',
               per_page: 50
             });
-            
+
             // Find issues with lifecycle:stuck label
-            const { data: lifecycleStuckIssues } = await github.rest.issues.listForRepo({
+            const lifecycleStuckIssues = await safeListForRepo('issues.listForRepo (lifecycle:stuck)', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
@@ -118,20 +132,38 @@ jobs:
                 comment: ''
               };
               
-              // Check if PR exists linked to issue
-              const { data: relatedPRs } = await github.rest.issues.listForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'all',
-                per_page: 50
-              });
-              
+              // Check if PR exists linked to issue. A rate-limit 403 here
+              // must degrade gracefully instead of hard-failing the whole
+              // job — skip this issue's diagnosis and move on to the next.
+              let relatedPRs;
+              try {
+                const res = await github.rest.issues.listForRepo({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: 'all',
+                  per_page: 50
+                });
+                relatedPRs = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`issues.listForRepo for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                continue;
+              }
+
               // Search for PRs that reference this issue
-              const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
-                q: `is:pr is:open repo:${context.repo.owner}/${context.repo.repo} ${issue.number}`
-              });
-              
-              const linkedPR = searchResults.items.find(pr => 
+              let searchResults;
+              try {
+                const res = await github.rest.search.issuesAndPullRequests({
+                  q: `is:pr is:open repo:${context.repo.owner}/${context.repo.repo} ${issue.number}`
+                });
+                searchResults = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`search.issuesAndPullRequests for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                continue;
+              }
+
+              const linkedPR = searchResults.items.find(pr =>
                 pr.body && (pr.body.includes('#' + issue.number) || pr.body.includes('closes #' + issue.number))
               );
               
@@ -142,13 +174,21 @@ jobs:
                 diagnosis.comment = 'No linked PR found. Issue stuck in wr:checking but no PR was created. Moving back to wr:code for code generation.';
               } else {
                 // PR exists, check status
-                const { data: checks } = await github.rest.checks.listForRef({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ref: linkedPR.head.sha,
-                  per_page: 100
-                });
-                
+                let checks;
+                try {
+                  const res = await github.rest.checks.listForRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: linkedPR.head.sha,
+                    per_page: 100
+                  });
+                  checks = res.data;
+                } catch (e) {
+                  const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                  core.warning(`checks.listForRef for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                  continue;
+                }
+
                 const latestRun = checks.check_runs.length > 0 ? checks.check_runs[0] : null;
                 
                 if (latestRun) {
@@ -217,12 +257,19 @@ jobs:
                     labels: ['lifecycle:stuck']
                   });
                 } else if (diagnosis.action === 'move-code') {
-                  // Remove wr:checking, add wr:code
+                  // Remove wr:checking, add wr:code.
+                  // Tolerate 404: another workflow (e.g. wr-auto-classify or a
+                  // manual relabel) may have already removed wr:checking between
+                  // our fetch and this call. Anything other than 404 is a real
+                  // failure (auth/permissions) and must still surface.
                   await github.rest.issues.removeLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
                     name: 'wr:checking'
+                  }).catch(err => {
+                    if (err.status !== 404) throw err;
+                    console.log('wr:checking already removed from #' + issue.number + ' (404) — continuing');
                   });
                   await github.rest.issues.addLabels({
                     owner: context.repo.owner,

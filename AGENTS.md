@@ -125,6 +125,7 @@ collisions:
 | Red Light Therapy Dosage Calculator | `products/red-light-therapy-dosage-calculator` | 3010 | Next.js. Mobile-friendly PBM/red-light session-time calculator using irradiance and target dose. |
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
+| DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
 
 Start a specific product on its assigned port:
 
@@ -140,6 +141,7 @@ cd products/ai-ad-generator      && npm run dev -- -p 3009
 cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
+cd products/devops-dashboard     && npm run dev -- -p 3011
 ```
 
 ### Running and testing

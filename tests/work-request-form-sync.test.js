@@ -251,7 +251,7 @@ test('WR auto-classify accepts title signals and infers output type from route t
     'wr-auto-classify must accept #tool title route tags'
   );
   assert(
-    wf.includes('def infer_output_type_from_title(title):'),
+    wf.includes('def infer_output_type_from_title_tags(title):'),
     'wr-auto-classify must infer Output Type from title route tags when the issue body is blank'
   );
 });
@@ -305,8 +305,8 @@ test('openrouter auto-route accepts WR labels and title route tags', () => {
     'openrouter-auto-route must accept WR labels'
   );
   assert(
-    wf.includes("contains(github.event.issue.title, '#app')") &&
-      wf.includes("contains(github.event.issue.title, '#tool')"),
+    wf.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')") &&
+      wf.includes("contains(format(' {0} ', github.event.issue.title), ' #tool ')"),
     'openrouter-auto-route must accept title route tags'
   );
   assert(
@@ -383,7 +383,7 @@ test('WR workflows infer routing from title tags for title-only intake', () => {
   );
   assert(
     wrAutoClassify.includes('infer_output_type_from_title') &&
-      wrAutoClassify.includes('Inferred Output Type from title tag'),
+      wrAutoClassify.includes('Title route tag inferred Output Type'),
     'wr-auto-classify should infer Output Type from title route tags when body is blank'
   );
   assert(
@@ -396,20 +396,20 @@ test('WR workflows infer routing from title tags for title-only intake', () => {
 test('WR auto-classify infers Output Type from title app/tool hints', () => {
   const wf = fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'wr-auto-classify.yml'), 'utf8');
   assert(
-    wf.includes('def infer_output_type_from_title(title):'),
+    wf.includes('def infer_output_type_from_title_tags(title):'),
     'wr-auto-classify should infer output type from title hints when Output Type is missing'
   );
   assert(
-    wf.includes('title_inferred_output_type = infer_output_type_from_title(ISSUE_TITLE)'),
+    wf.includes('title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)'),
     'wr-auto-classify should compute a title-based Output Type hint'
   );
   assert(
-    wf.includes('if field == "Output Type" and title_inferred_output_type in allowed:'),
+    wf.includes('elif field == "Output Type" and title_output_type in allowed:'),
     'wr-auto-classify should use the title Output Type hint before fallback defaults'
   );
   assert(
-    wf.includes('title-hint = inferred from title tags/keywords'),
-    'wr-auto-classify should document title-hint as a classification source'
+    wf.includes('title-tag = inferred from a route tag in the issue title'),
+    'wr-auto-classify should document title-tag as a classification source'
   );
 });
 
@@ -442,15 +442,15 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
     'wr-auto-classify must run for title-only route tags'
   );
   assert(
-    autoClassify.includes('def infer_output_type_from_title(title):') &&
-      autoClassify.includes('parsed["Output Type"] = title_output_type') &&
-      autoClassify.includes('return "production-app"') &&
-      autoClassify.includes('return "desktop-tool"'),
+    autoClassify.includes('def infer_output_type_from_title_tags(title):') &&
+      autoClassify.includes('TITLE_TAG_OUTPUT_TYPE.get(f"#{tag}")') &&
+      autoClassify.includes('"production-app"') &&
+      autoClassify.includes('"desktop-tool"'),
     'wr-auto-classify must infer Output Type from #app/#tool title tags when the body is blank'
   );
   assert(
     autoRoute.includes("contains(github.event.issue.labels.*.name, 'work-request')") &&
-      autoRoute.includes("contains(github.event.issue.title, '#app')") &&
+      autoRoute.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')") &&
       autoRoute.includes("label.startsWith('output-type:')") &&
       autoRoute.includes('inferOutputTypeFromTitle(title)'),
     'openrouter-auto-route must accept title-tag WR intake and route from title/body/output-type label signals'

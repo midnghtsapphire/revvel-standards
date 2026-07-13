@@ -28,6 +28,10 @@ env:
   # the repo from. GH_REPO targets every gh command at the right repo and
   # avoids "fatal: not a git repository".
   GH_REPO: ${{ github.repository }}
+  # Health thresholds shared by research-state detection AND self-heal
+  # verification — single source so the two checks can never drift apart.
+  FAILED_ACTIONS_THRESHOLD: 3
+  STUCK_ISSUES_THRESHOLD: 5
 
 jobs:
   # PHASE 1: RESEARCH - Deep dive into system state
@@ -67,18 +71,64 @@ jobs:
       - name: Check agent health
         id: agents
         run: |
-          # Check if key workflows exist
+          # Check if key workflows exist. Two gotchas fixed here (incidents:
+          # issues #15683 / #15684 — every 4h sweep reported all four workflows
+          # "missing" and filed a bogus [SELF-HEAL] journal, when nothing was
+          # actually broken or healed):
+          #   1. Match on .path (the file slug, e.g.
+          #      .github/workflows/agent-dispatcher.yml), NOT .name — .name is
+          #      the display name ("Agent Dispatcher") and never contains the
+          #      hyphenated slug, so the old check was a guaranteed false
+          #      positive.
+          #   2. --paginate: this repo has 190+ workflows and the unpaginated
+          #      API returns only the first 30, so even a correct matcher
+          #      could miss workflows that exist.
+          # If this check regresses, verify with:
+          #   gh api --paginate repos/OWNER/REPO/actions/workflows --jq '.workflows[].path'
           WORKFLOWS=(
             "agent-dispatcher"
             "issue-state-machine"
             "stuck-check-watchdog"
             "api-rate-limit-handler"
           )
-          
+
+          # Fetch the full workflow list once, then check each slug against it.
+          # If the API call itself fails (bad token, rate limit, network) or
+          # returns nothing, do NOT report workflows as missing — an empty
+          # list would flag all four and recreate the exact false positive
+          # this check had before. Fail open: log loudly, report healthy, and
+          # let the next 4h sweep retry once API access recovers (see GH_TOKEN
+          # note at top of file before assuming workflows were deleted).
+          if ! gh api --paginate "repos/${GH_REPO}/actions/workflows" \
+            --jq '.workflows[].path' > /tmp/workflow-paths.txt 2> /tmp/workflow-paths.err; then
+            # Escape literal "::" from gh stderr before embedding it in a
+            # workflow warning annotation; unescaped command markers can corrupt
+            # the annotation payload instead of printing the original error.
+            ERR_MSG=$(tr '\n' ' ' < /tmp/workflow-paths.err | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | sed 's/::/COLON-COLON/g')
+            if [[ -z "$ERR_MSG" ]]; then
+              ERR_MSG="auth/rate-limit/network error"
+            fi
+            echo "::warning::Could not list workflows via gh api (${ERR_MSG}) — skipping presence check this run; next scheduled sweep (every 4h) will retry automatically"
+            echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! -s /tmp/workflow-paths.txt ]]; then
+            echo "::warning::Workflow API returned no paths — skipping presence check this run to avoid false positives; next scheduled sweep (every 4h) will retry automatically"
+            echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          tr '[:upper:]' '[:lower:]' < /tmp/workflow-paths.txt > /tmp/workflow-paths-lc.txt
+
           MISSING=()
           for wf in "${WORKFLOWS[@]}"; do
-            if ! gh api repos/midnghtsapphire/revvel-standards/actions/workflows \
-              --jq ".workflows[] | select(.name | contains(\"$wf\"))" 2>/dev/null | grep -q .; then
+            # Compare against exact file paths (case-insensitive by normalizing
+            # API output to lowercase). Accept both .yml and .yaml.
+            wf_path_yml=".github/workflows/${wf}.yml"
+            wf_path_yaml=".github/workflows/${wf}.yaml"
+            if ! grep -Fqx "$wf_path_yml" /tmp/workflow-paths-lc.txt \
+              && ! grep -Fqx "$wf_path_yaml" /tmp/workflow-paths-lc.txt; then
               MISSING+=("$wf")
             fi
           done
@@ -88,6 +138,21 @@ jobs:
           else
             echo "agent_workflows=missing: ${MISSING[*]}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Check grounding gate (ship-quality)
+        id: grounding_gate
+        run: |
+          # Detect persistent ship-quality (grounding gate) failures.
+          # A single transient flake is noise; 2+ failures of the last 5
+          # ship-quality runs signal a persistently red test suite that must be
+          # escalated. The workflow file slug is used (not the display name) so
+          # this check cannot break if the workflow's name: field is renamed.
+          # Fail-open: if the API is unavailable emit 0 so we never false-flag.
+          GATE_FAILED=$(gh api "repos/${GH_REPO}/actions/workflows/ship-quality.yml/runs" \
+            --jq '[.workflow_runs[:5][] | select(.conclusion == "failure")] | length' \
+            2>/dev/null || echo 0)
+          echo "grounding_gate_failed=${GATE_FAILED}" >> "$GITHUB_OUTPUT"
+          echo "Recent ship-quality failures (last 5 runs): ${GATE_FAILED}"
 
       - name: Scan for broken areas
         id: scan
@@ -101,21 +166,30 @@ jobs:
           ACTIONS_FAILED: ${{ steps.actions.outputs.failed_count }}
           STUCK: ${{ steps.stuck.outputs.stuck_count }}
           AGENTS: ${{ steps.agents.outputs.agent_workflows }}
+          GATE_FAILED: ${{ steps.grounding_gate.outputs.grounding_gate_failed }}
         run: |
           BROKEN=()
           
-          if [[ "$ACTIONS_FAILED" -gt 3 ]]; then
+          if [[ "$ACTIONS_FAILED" -gt "$FAILED_ACTIONS_THRESHOLD" ]]; then
             BROKEN+=("GitHub Actions: $ACTIONS_FAILED recent failures")
           fi
           
-          if [[ "$STUCK" -gt 5 ]]; then
+          if [[ "$STUCK" -gt "$STUCK_ISSUES_THRESHOLD" ]]; then
             BROKEN+=("Stuck issues: $STUCK open")
           fi
           
           if ! echo "$AGENTS" | grep -q "healthy"; then
             BROKEN+=("Missing workflows: $AGENTS")
           fi
-          
+
+          # Grounding gate: 2+ failures in the last 5 ship-quality runs means
+          # npm test is persistently red (threshold > 1, so single flakes are
+          # ignored). Filed as a separate broken-area so the heal step can
+          # create a targeted WR rather than just re-running failed workflows.
+          if [[ "${GATE_FAILED:-0}" -gt 1 ]]; then
+            BROKEN+=("Grounding gate: $GATE_FAILED ship-quality failures")
+          fi
+
           # Emit each broken-area element with %s. Guard on array length: a bare
           # `printf '%s; '` with no args still prints "; " (non-empty), which
           # would mark the system needs-healing on every healthy run. An empty
@@ -141,76 +215,311 @@ jobs:
             echo "$BROKEN"
           fi
 
-  # PHASE 2: SELF-HEAL - Implement fixes
+  # PHASE 2: SELF-HEAL - Implement fixes, VERIFY they worked, save memory,
+  # and close the loop on the healing journal issues.
+  #
+  # History (issue #15684 and duplicates): this job used to create a brand-new
+  # "[SELF-HEAL] System healing completed" issue on every needs-healing run,
+  # claimed "auto-closes in 24 hours" (nothing ever closed it), never verified
+  # the healing actually worked, and kept no durable record. The steps below
+  # fix all three gaps:
+  #   1. Verify  — re-run the same health checks after healing actions.
+  #   2. Memory  — append a JSONL record to wr/memory/healing.jsonl (committed
+  #                to main with the same retry-push pattern as agent-scorecard).
+  #   3. Close   — when verified healed, close open [SELF-HEAL] issues as
+  #                completed; when not healed, update ONE escalation issue in
+  #                place (biome-sentinel pattern: PATCH body, never spam).
   self-heal:
     needs: research-state
     if: needs.research-state.outputs.system_health == 'needs-healing'
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write   # commits the healing memory ledger to main
+      issues: write     # re-labels stuck issues, closes/updates [SELF-HEAL] issues
+      actions: write    # re-runs failed workflow runs
     steps:
+      # Checkout is required here (unlike the other jobs) because this job
+      # commits wr/memory/healing.jsonl back to the default branch.
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
       - name: Heal stuck issues
+        id: heal_stuck
         env:
           BROKEN: ${{ needs.research-state.outputs.broken }}
         run: |
+          HEALED_COUNT=0
           if echo "$BROKEN" | grep -q "Stuck issues"; then
             echo "=== HEALING STUCK ISSUES ==="
             # Label stuck issues for human review
-            gh api repos/midnghtsapphire/revvel-standards/issues \
-              --state open --jq '.[] | select(.labels[].name | contains("wr:checking")) | .number' | while read -r num; do
-              gh api repos/midnghtsapphire/revvel-standards/issues/$num/labels \
+            while read -r num; do
+              [[ -z "$num" ]] && continue
+              gh api "repos/${GH_REPO}/issues/$num/labels" \
                 -X DELETE -d '{"labels":["wr:check-failed"]}' 2>/dev/null
               echo "Labeled issue #$num as check-failed"
-            done
+              HEALED_COUNT=$((HEALED_COUNT+1))
+            done < <(gh api "repos/${GH_REPO}/issues" \
+              --state open --jq '.[] | select(.labels[].name | contains("wr:checking")) | .number')
           fi
+          echo "stuck_relabeled=$HEALED_COUNT" >> "$GITHUB_OUTPUT"
 
       - name: Heal failed workflows
+        id: heal_runs
         env:
           BROKEN: ${{ needs.research-state.outputs.broken }}
         run: |
+          RERUN_IDS=()
           if echo "$BROKEN" | grep -q "GitHub Actions"; then
             echo "=== HEALING FAILED WORKFLOWS ==="
             # Re-run failed workflows
-            gh api repos/midnghtsapphire/revvel-standards/actions/runs \
-              --jq '.workflow_runs[] | select(.conclusion == "failure") | .id' | head -3 | while read -r id; do
-              gh api repos/midnghtsapphire/revvel-standards/actions/runs/$id/rerun \
-                -X POST 2>/dev/null && echo "Re-ran run #$id"
+            while read -r id; do
+              [[ -z "$id" ]] && continue
+              if gh api "repos/${GH_REPO}/actions/runs/$id/rerun" -X POST 2>/dev/null; then
+                echo "Re-ran run #$id"
+                RERUN_IDS+=("$id")
+              fi
+            done < <(gh api "repos/${GH_REPO}/actions/runs" \
+              --jq '.workflow_runs[] | select(.conclusion == "failure") | .id' | head -3)
+          fi
+          echo "rerun_ids=${RERUN_IDS[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Heal grounding gate failures
+        id: heal_grounding
+        env:
+          BROKEN: ${{ needs.research-state.outputs.broken }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if echo "$BROKEN" | grep -q "Grounding gate"; then
+            echo "=== HEALING GROUNDING GATE ==="
+            # File or update a targeted WR so the auto-routing system can pick
+            # it up and dispatch an auto-fix agent. Follow the biome-sentinel
+            # pattern: update the first open issue in place; never create
+            # duplicates per sweep.
+            OPEN_GATE=$(gh issue list --label auto-fix --state open \
+              --search "[SELF-HEAL] Grounding gate in:title" --json number \
+              --jq '.[0].number' 2>/dev/null || echo "")
+            BODY=$(printf \
+              "## Grounding Gate Failure\n\n**Detected:** %s\n**Self-heal run:** %s\n\nThe \`npm test\` suite is persistently red. The grounding gate (ship-quality.yml) is blocking PRs. This issue was auto-filed by the self-healing agent and routed for an auto-fix pass.\n\n### What to check\n1. Run \`npm test\` locally to reproduce the failure.\n2. Check recent commits to \`main\` for changes to test files or dependencies.\n3. See \`learnings.md\` for previous grounding gate incidents.\n\n### Do not close manually\nThe self-healing agent closes this automatically once the grounding gate is verified green." \
+              "$(date -u)" "$RUN_URL")
+            if [[ -n "$OPEN_GATE" ]]; then
+              gh issue edit "$OPEN_GATE" \
+                --title "[SELF-HEAL] Grounding gate red — npm test failing" \
+                --body "$BODY" 2>/dev/null \
+                && echo "Updated grounding gate issue #$OPEN_GATE in place"
+            else
+              gh issue create \
+                --title "[SELF-HEAL] Grounding gate red — npm test failing" \
+                --body "$BODY" \
+                --label "auto-fix,self-healing,wr:new" 2>/dev/null \
+                || echo "::warning::Could not create grounding gate issue — check labels and permissions"
+            fi
+          fi
+
+      - name: Verify healing
+        id: verify
+        run: |
+          # Re-run the SAME health checks research-state ran, after a short
+          # settle window so re-triggered runs leave the "failure" conclusion
+          # (a rerun resets conclusion to null/queued). Without verification
+          # the old job just DECLARED "healing completed" — this step makes
+          # the claim real before we close anything or write memory.
+          #
+          # 30s is not "runs finished" — it only needs to cover the API-side
+          # transition from conclusion=failure to conclusion=null (queued),
+          # which happens within seconds of the rerun POST. If a rerun fails
+          # AGAIN later, the next 4h sweep catches it and re-escalates.
+          sleep 30
+
+          # 1. Recent workflow-run failures (re-run runs no longer count:
+          #    their conclusion is null while queued/in-progress).
+          FAILED=$(gh api "repos/${GH_REPO}/actions/runs" \
+            --jq '[.workflow_runs[:10][] | select(.conclusion == "failure")] | length' 2>/dev/null || echo 0)
+
+          # 2. Stuck issues still open.
+          STUCK=$(gh api "repos/${GH_REPO}/issues" \
+            --state open --jq '.[] | select(.labels[].name | contains("stuck") or contains("checking")) | .number' 2>/dev/null | wc -w)
+
+          # Same thresholds as research-state (workflow-level env vars).
+          REMAINING=()
+          [[ "$FAILED" -gt "$FAILED_ACTIONS_THRESHOLD" ]] && REMAINING+=("GitHub Actions: $FAILED recent failures")
+          [[ "$STUCK" -gt "$STUCK_ISSUES_THRESHOLD" ]] && REMAINING+=("Stuck issues: $STUCK open")
+
+          if [[ ${#REMAINING[@]} -eq 0 ]]; then
+            echo "healed=true" >> "$GITHUB_OUTPUT"
+            echo "remaining=" >> "$GITHUB_OUTPUT"
+            echo "✅ Verified: system healthy after healing actions"
+          else
+            REMAINING_STR="$(printf '%s; ' "${REMAINING[@]}")"
+            echo "healed=false" >> "$GITHUB_OUTPUT"
+            echo "remaining=$REMAINING_STR" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Still broken after healing: $REMAINING_STR"
+          fi
+
+      - name: Close healed issues or escalate in place
+        id: journal
+        env:
+          HEALED: ${{ steps.verify.outputs.healed }}
+          BROKEN: ${{ needs.research-state.outputs.broken }}
+          REMAINING: ${{ steps.verify.outputs.remaining }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Open [SELF-HEAL] journal issues (label self-healing).
+          OPEN_ISSUES=$(gh issue list --label self-healing --state open \
+            --search "[SELF-HEAL] in:title" --json number --jq '.[].number' | tr '\n' ' ')
+          CLOSED=()
+
+          if [[ "$HEALED" == "true" ]]; then
+            # Verified healed → close every open [SELF-HEAL] issue as completed.
+            for num in $OPEN_ISSUES; do
+              gh issue comment "$num" --body "✅ **Healing verified** — the follow-up health check passed (no excess failed runs, no stuck-issue backlog). Closing as completed. Verification run: $RUN_URL" 2>/dev/null || true
+              gh issue close "$num" --reason completed 2>/dev/null && CLOSED+=("$num") && echo "Closed #$num as completed"
+            done
+            echo "outcome=healed" >> "$GITHUB_OUTPUT"
+          else
+            # Not healed → maintain ONE escalation issue, updated in place
+            # (never a new issue per sweep — that is what produced the
+            # #15680/#15682/#15684 duplicate pile-up).
+            FIRST=$(echo "$OPEN_ISSUES" | awk '{print $1}')
+            BODY="## Healing Report (escalation)
+
+          **Last sweep:** $(date -u)
+          **Originally broken:** $BROKEN
+          **Still broken after healing:** $REMAINING
+
+          ### Actions taken this sweep
+          1. Re-labeled stuck issues as check-failed
+          2. Re-ran failed workflow runs
+
+          Healing did **not** verify clean — needs human attention.
+          Latest run: $RUN_URL"
+            if [[ -n "$FIRST" ]]; then
+              gh issue edit "$FIRST" --title "[SELF-HEAL] Healing incomplete — needs attention" --body "$BODY" && echo "Updated escalation issue #$FIRST in place"
+              # Close any extra duplicates beyond the one we keep updating.
+              for num in $OPEN_ISSUES; do
+                [[ "$num" == "$FIRST" ]] && continue
+                gh issue close "$num" --reason "not planned" --comment "Duplicate healing journal — consolidated into #$FIRST." 2>/dev/null && CLOSED+=("$num")
+              done
+            else
+              gh issue create \
+                --title "[SELF-HEAL] Healing incomplete — needs attention" \
+                --body "$BODY" \
+                --label "self-healing,automation,needs-human" 2>/dev/null || echo "Could not create escalation issue"
+            fi
+            echo "outcome=escalated" >> "$GITHUB_OUTPUT"
+          fi
+          echo "closed_issues=${CLOSED[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Save healing memory
+        env:
+          HEALED: ${{ steps.verify.outputs.healed }}
+          BROKEN: ${{ needs.research-state.outputs.broken }}
+          REMAINING: ${{ steps.verify.outputs.remaining }}
+          STUCK_RELABELED: ${{ steps.heal_stuck.outputs.stuck_relabeled }}
+          RERUN_IDS: ${{ steps.heal_runs.outputs.rerun_ids }}
+          CLOSED_ISSUES: ${{ steps.journal.outputs.closed_issues }}
+          OUTCOME: ${{ steps.journal.outputs.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Durable memory: one JSONL record per healing pass, same ledger
+          # style as wr/memory/decisions.jsonl / agent-scorecard.jsonl. This
+          # is what future sweeps (and humans) read to see what actually got
+          # healed vs. merely reported. Built with jq so arbitrary broken-area
+          # strings can't break the JSON.
+          mkdir -p wr/memory
+          jq -cn \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg broken "$BROKEN" \
+            --arg remaining "$REMAINING" \
+            --arg outcome "$OUTCOME" \
+            --arg run_url "$RUN_URL" \
+            --arg closed "$CLOSED_ISSUES" \
+            --argjson healed "${HEALED:-false}" \
+            --argjson stuck_relabeled "${STUCK_RELABELED:-0}" \
+            --arg reruns "$RERUN_IDS" \
+            '{ts: $ts, event: "self-heal", broken: $broken, actions: {stuck_relabeled: $stuck_relabeled, reran_run_ids: ($reruns | split(" ") | map(select(. != "")))}, healed: $healed, remaining: $remaining, outcome: $outcome, closed_issues: ($closed | split(" ") | map(select(. != ""))), run_url: $run_url}' \
+            >> wr/memory/healing.jsonl
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wr/memory/healing.jsonl
+          if git diff --cached --quiet; then
+            echo "No memory changes to commit."
+          else
+            git commit -m "chore(self-heal): record healing memory [skip ci]"
+            # Retry with backoff — another workflow may push between our
+            # checkout and push (same pattern as agent-scorecard.yml).
+            for i in 1 2 3 4; do
+              git push origin "HEAD:${{ github.event.repository.default_branch }}" && break
+              git pull --rebase origin "${{ github.event.repository.default_branch }}" || true
+              sleep $((2**i))
             done
           fi
 
-      - name: Log healing
+  # PHASE 2b: CLOSE RESOLVED — when a scheduled sweep finds the system already
+  # healthy, close any lingering open [SELF-HEAL] journal issues as completed
+  # (fulfilling the "auto-closes" promise the old issue bodies made but nothing
+  # implemented) and record the confirmation in the healing memory ledger.
+  close-resolved:
+    needs: research-state
+    if: needs.research-state.outputs.system_health == 'healthy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Close lingering healing issues as completed
+        id: close
         env:
-          BROKEN: ${{ needs.research-state.outputs.broken }}
-          SYSTEM_HEALTH: ${{ needs.research-state.outputs.system_health }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          echo "=== SELF-HEALING LOG ==="
-          echo "Time: $(date)"
-          echo "Broken areas: $BROKEN"
-          echo "Actions taken: Labeled stuck issues, re-ran failed workflows"
+          OPEN_ISSUES=$(gh issue list --label self-healing --state open \
+            --search "[SELF-HEAL] in:title" --json number --jq '.[].number' | tr '\n' ' ')
+          CLOSED=()
+          for num in $OPEN_ISSUES; do
+            gh issue comment "$num" --body "✅ **System verified healthy** by the scheduled self-healing sweep — closing as completed. Verification run: $RUN_URL" 2>/dev/null || true
+            gh issue close "$num" --reason completed 2>/dev/null && CLOSED+=("$num") && echo "Closed #$num as completed"
+          done
+          echo "closed_issues=${CLOSED[*]}" >> "$GITHUB_OUTPUT"
 
-          BODY=$(cat <<EOF
-          ## Healing Report
+      - name: Save healthy-confirmation memory
+        if: steps.close.outputs.closed_issues != ''
+        env:
+          CLOSED_ISSUES: ${{ steps.close.outputs.closed_issues }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Only write memory when we actually closed something — a healthy
+          # sweep with nothing to close is a no-op and must not spam the
+          # ledger every 4 hours.
+          mkdir -p wr/memory
+          jq -cn \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg closed "$CLOSED_ISSUES" \
+            --arg run_url "$RUN_URL" \
+            '{ts: $ts, event: "healthy-confirmed", healed: true, closed_issues: ($closed | split(" ") | map(select(. != ""))), run_url: $run_url}' \
+            >> wr/memory/healing.jsonl
 
-          **Time:** $(date)
-          **System was:** $SYSTEM_HEALTH
-          **Issues found:** $BROKEN
-
-          ### Actions Taken
-          1. Labeled stuck issues as check-failed
-          2. Re-ran failed workflows
-
-          ### Next Steps
-          - Monitor for 1 hour
-          - If still failing, escalate to human
-
-          This issue auto-closes in 24 hours.
-          EOF
-          )
-
-          # Create healing journal entry
-          gh issue create \
-            --title "[SELF-HEAL] System healing completed" \
-            --body "$BODY" \
-            --label "self-healing,automation" 2>/dev/null || echo "No new issue created"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wr/memory/healing.jsonl
+          if git diff --cached --quiet; then
+            echo "No memory changes to commit."
+          else
+            git commit -m "chore(self-heal): record healthy confirmation [skip ci]"
+            for i in 1 2 3 4; do
+              git push origin "HEAD:${{ github.event.repository.default_branch }}" && break
+              git pull --rebase origin "${{ github.event.repository.default_branch }}" || true
+              sleep $((2**i))
+            done
+          fi
 
   # PHASE 3: UPDATE MAIN — advance approved+green PRs by enabling auto-merge
   # Runs independently of PHASE 2 (does not require needs-healing condition).
@@ -252,12 +561,22 @@ jobs:
             const repo  = context.repo.repo;
 
             // Fetch all open PRs (paginated to catch repos with many PRs).
-            const prs = await github.paginate(github.rest.pulls.list, {
-              owner,
-              repo,
-              state: 'open',
-              per_page: 100,
-            });
+            // This job runs on a schedule across every open PR, so an
+            // installation rate-limit 403 must degrade gracefully instead of
+            // hard-failing the job.
+            let prs = [];
+            try {
+              prs = await github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: 'open',
+                per_page: 100,
+              });
+            } catch (e) {
+              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+              core.warning(`pulls.list failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              return;
+            }
 
             let advanced = 0;
             let skipped  = 0;
@@ -288,11 +607,20 @@ jobs:
               }
 
               // Check for at least one approving review.
-              const { data: reviews } = await github.rest.pulls.listReviews({
-                owner,
-                repo,
-                pull_number: num,
-              });
+              let reviews;
+              try {
+                const res = await github.rest.pulls.listReviews({
+                  owner,
+                  repo,
+                  pull_number: num,
+                });
+                reviews = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`pulls.listReviews for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
               const approved = reviews.some(r => r.state === 'APPROVED');
               if (!approved) {
                 core.info(`PR #${num}: SKIP — no approving review`);
@@ -310,17 +638,34 @@ jobs:
 
               // Check combined commit status for the head SHA.
               const sha = pr.head.sha;
-              const { data: statusData } = await github.rest.repos.getCombinedStatusForRef({
-                owner,
-                repo,
-                ref: sha,
-              });
+              let statusData;
+              try {
+                const res = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref: sha,
+                });
+                statusData = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`getCombinedStatusForRef for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
 
               // Also check check-runs (GitHub Actions show up here).
-              const checkRuns = await github.paginate(
-                github.rest.checks.listForRef,
-                { owner, repo, ref: sha, per_page: 100 }
-              );
+              let checkRuns;
+              try {
+                checkRuns = await github.paginate(
+                  github.rest.checks.listForRef,
+                  { owner, repo, ref: sha, per_page: 100 }
+                );
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`checks.listForRef for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
 
               // A PR is "green" when:
               //  - combined commit status is exactly "success" (not pending/failure), AND
@@ -341,11 +686,20 @@ jobs:
               }
 
               // Check for merge conflicts.
-              const { data: prDetail } = await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: num,
-              });
+              let prDetail;
+              try {
+                const res = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: num,
+                });
+                prDetail = res.data;
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`pulls.get for PR #${num} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+                skipped++;
+                continue;
+              }
               if (prDetail.mergeable === false) {
                 core.warning(
                   `PR #${num}: SKIP — conflicts with main. ` +
