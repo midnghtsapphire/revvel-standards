@@ -1,5 +1,26 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T11:10:52.787Z",
-  "stop": []
+  "generated_at": "2026-07-13T16:22:47.379Z",
+  "stop": [
+    {
+      "id": 29263980246,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    },
+    {
+      "id": 29262820826,
+      "name": "PR Lifecycle",
+      "reason": "no progress for 44m ≥ 15m"
+    },
+    {
+      "id": 29257786646,
+      "name": "No-Destroy Guard",
+      "reason": "running 119m ≥ 60m budget"
+    },
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "reason": "running 189m ≥ 60m budget"
+    }
+  ]
 }

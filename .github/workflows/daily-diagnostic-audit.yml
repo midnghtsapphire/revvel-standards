@@ -1,0 +1,78 @@
+# ============================================================
+# DAILY DIAGNOSTIC AUDIT — bounded code-level bug diagnosis
+# ============================================================
+# NOT a duplicate of self-healing.yml. self-healing.yml (every 4h) scans
+# recent GitHub Actions RUN history, stuck issues, and agent health for
+# OPERATIONAL failures ("a workflow crashed", "an issue is stuck"). This
+# workflow is a different lens entirely: static CODE-LEVEL bug diagnosis —
+# the kind of thing a manual audit pass finds (missing `allowError`,
+# unguarded label races, token/permission gaps, exit-code-as-proxy-metric
+# bugs — see standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md). It never reads
+# workflow run history or issue state at all.
+#
+# BOUNDED SCOPE, EVERY RUN: only files under `.github/workflows/*.yml` and
+# `scripts/*.js` changed on `main` in the last 48 hours (never a full-repo
+# sweep). A quiet 48h window means zero files to diagnose and the run is a
+# clean no-op — that is expected and fine, not a failure.
+#
+# OUTPUT CAP: at most one WR issue per run, plus one comment addressed to
+# the implementing coding agent. This workflow NEVER opens a PR, NEVER
+# pushes a commit, and NEVER applies its own proposed fix — filing a WR is
+# a request for the existing openrouter-assignee.yml -> wr-pr-creation.yml
+# -> coding-agent -> review/merge pipeline to act on, never a bypass of it.
+#
+# Cost: at most one OpenRouter call per day (the `review` profile from
+# .github/agent-models.yml), zero calls on a quiet-scope day.
+#
+# The heavy lifting lives in scripts/daily-diagnostic-audit.js.
+# ============================================================
+
+name: Daily Diagnostic Audit
+
+on:
+  schedule:
+    # 06:40 UTC daily — a distinct "morning" slot that doesn't collide with
+    # repo-self-healer.yml (3 AM), self-healing.yml (every 4h, on the hour),
+    # or other 06:xx/08:xx crons already scheduled in this repo (checked via
+    # `grep -n cron: .github/workflows/*.yml` before picking this minute).
+    - cron: "40 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  # Prefer the ADMIN PAT so the new WR can trigger downstream WR-processing
+  # workflows (openrouter-assignee.yml, wr-pr-creation.yml) — the default
+  # GITHUB_TOKEN cannot trigger other workflows (CLAUDE.md gotcha #2 / #3 in
+  # the pattern catalog). Falls back to GITHUB_TOKEN so a missing PAT still
+  # lets the workflow run (issue just won't cascade automatically).
+  GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          # Full history needed so the 48h scope scan (`git log --since`)
+          # can see commits older than the default shallow-clone depth.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run daily diagnostic audit
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node scripts/daily-diagnostic-audit.js

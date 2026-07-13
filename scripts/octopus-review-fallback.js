@@ -45,6 +45,62 @@ const OCTOPUS_BOT_LOGIN = "octopus-review[bot]";
 
 const MAX_DIFF_CHARS = parseInt(process.env.MAX_DIFF_CHARS || "60000", 10);
 
+// Retry policy for GitHub API rate limiting. The issue_comment trigger is
+// unscoped (fires on every comment on every issue/PR in the repo), so a
+// single burst of bot chatter (Vercel pings, CI-status, ship-quality-check,
+// triage bots, plus Octopus itself) can spin up dozens of concurrent
+// fallback-review runs within the same few seconds — all sharing the same
+// GitHub App installation's API rate-limit budget. That burst has been
+// observed tripping GitHub's secondary/abuse rate limit ("API rate limit
+// exceeded for installation", HTTP 403) on the very first REST call of a
+// run that otherwise correctly matched the quota-death comment — and
+// because the whole script runs inside a top-level try/catch that never
+// rethrows (by design: a fallback outage must not go red itself), that
+// 403 was silently swallowed and the job still reported success, with NO
+// review ever posted. Retrying with backoff turns that transient,
+// installation-wide rate limit into a short wait instead of a silent
+// no-op.
+const RATE_LIMIT_MAX_RETRIES = parseInt(process.env.RATE_LIMIT_MAX_RETRIES || "4", 10);
+const RATE_LIMIT_BASE_DELAY_MS = parseInt(process.env.RATE_LIMIT_BASE_DELAY_MS || "1500", 10);
+const RATE_LIMIT_MAX_DELAY_MS = parseInt(process.env.RATE_LIMIT_MAX_DELAY_MS || "20000", 10);
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * True when a GitHub REST response looks like a rate-limit rejection worth
+ * retrying: HTTP 429, or HTTP 403 whose body is GitHub's primary/secondary
+ * rate-limit message (as opposed to a genuine permissions 403, which should
+ * fail fast, not retry).
+ */
+function isRateLimitedResponse(status, body) {
+  if (status === 429) return true;
+  if (status !== 403) return false;
+  const text = String(body || "").toLowerCase();
+  return (
+    text.includes("rate limit exceeded") ||
+    text.includes("secondary rate limit") ||
+    text.includes("abuse detection")
+  );
+}
+
+/**
+ * Computes the backoff delay (ms) before retry attempt `attempt` (1-based).
+ * Prefers the server's `Retry-After` header (seconds) when present, else an
+ * exponential backoff from RATE_LIMIT_BASE_DELAY_MS, capped at
+ * RATE_LIMIT_MAX_DELAY_MS.
+ */
+function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
+  const retryAfter = headers && (headers["retry-after"] || headers["Retry-After"]);
+  const retryAfterSeconds = parseInt(retryAfter, 10);
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+    return Math.min(retryAfterSeconds * 1000, RATE_LIMIT_MAX_DELAY_MS);
+  }
+  const exponential = baseDelayMs * 2 ** Math.max(0, attempt - 1);
+  return Math.min(exponential, RATE_LIMIT_MAX_DELAY_MS);
+}
+
 // Phrases Octopus uses when it is out of monthly AI quota. Matching is
 // case-insensitive; keep these lowercase.
 const QUOTA_DEATH_PATTERNS = [
@@ -96,10 +152,11 @@ function splitRepository() {
 }
 
 /**
- * Minimal GitHub REST helper (same shape as scripts/pr-auto-review.js).
- * `accept` overrides the media type so we can fetch raw diffs too.
+ * Single GitHub REST attempt — no retry logic. Resolves with
+ * { status, headers, data } so the retry wrapper (githubRequest) can decide
+ * whether to retry, independent of parsing/success handling.
  */
-function githubRequest({ pathName, method = "GET", payload, accept }) {
+function githubRequestOnce({ pathName, method = "GET", payload, accept }) {
   return new Promise((resolve, reject) => {
     const body = payload ? JSON.stringify(payload) : "";
     const req = https.request(
@@ -120,20 +177,7 @@ function githubRequest({ pathName, method = "GET", payload, accept }) {
         let data = "";
         res.on("data", (chunk) => { data += chunk; });
         res.on("end", () => {
-          const status = res.statusCode || 0;
-          if (status < 200 || status >= 300) {
-            reject(new Error(`GitHub HTTP ${status} for ${pathName}: ${data.slice(0, 400)}`));
-            return;
-          }
-          if (accept && !accept.includes("json")) {
-            resolve(data);
-            return;
-          }
-          try {
-            resolve(data ? JSON.parse(data) : {});
-          } catch (err) {
-            reject(new Error(`Failed to parse GitHub response: ${err.message}`));
-          }
+          resolve({ status: res.statusCode || 0, headers: res.headers || {}, data });
         });
       },
     );
@@ -141,6 +185,47 @@ function githubRequest({ pathName, method = "GET", payload, accept }) {
     if (body) req.write(body);
     req.end();
   });
+}
+
+/**
+ * Minimal GitHub REST helper (same shape as scripts/pr-auto-review.js).
+ * `accept` overrides the media type so we can fetch raw diffs too.
+ *
+ * Retries with backoff on rate-limit responses (see RATE_LIMIT_MAX_RETRIES
+ * doc comment above) — a burst of fan-out runs sharing one installation's
+ * rate-limit budget is expected and should be waited out, not treated as a
+ * permanent failure.
+ */
+async function githubRequest({ pathName, method = "GET", payload, accept }) {
+  let lastResult;
+  for (let attempt = 1; attempt <= RATE_LIMIT_MAX_RETRIES + 1; attempt++) {
+    lastResult = await githubRequestOnce({ pathName, method, payload, accept });
+    const { status, headers, data } = lastResult;
+
+    if (status >= 200 && status < 300) {
+      if (accept && !accept.includes("json")) return data;
+      try {
+        return data ? JSON.parse(data) : {};
+      } catch (err) {
+        throw new Error(`Failed to parse GitHub response: ${err.message}`);
+      }
+    }
+
+    if (isRateLimitedResponse(status, data) && attempt <= RATE_LIMIT_MAX_RETRIES) {
+      const delayMs = computeRetryDelayMs(headers, attempt);
+      console.warn(
+        `GitHub HTTP ${status} (rate limited) for ${pathName} — retry ${attempt}/${RATE_LIMIT_MAX_RETRIES} in ${delayMs}ms`,
+      );
+      await sleep(delayMs);
+      continue;
+    }
+
+    throw new Error(`GitHub HTTP ${status} for ${pathName}: ${data.slice(0, 400)}`);
+  }
+  // Unreachable in practice (the loop always returns or throws), but keeps
+  // the function's control flow explicit for lint/readability.
+  const { status, data } = lastResult;
+  throw new Error(`GitHub HTTP ${status} for ${pathName}: ${data.slice(0, 400)}`);
 }
 
 async function listAll(pathBase) {
@@ -339,4 +424,11 @@ module.exports = {
   FALLBACK_MARKER,
   OCTOPUS_BOT_LOGIN,
   QUOTA_DEATH_PATTERNS,
+  isRateLimitedResponse,
+  computeRetryDelayMs,
+  githubRequest,
+  githubRequestOnce,
+  RATE_LIMIT_MAX_RETRIES,
+  RATE_LIMIT_BASE_DELAY_MS,
+  RATE_LIMIT_MAX_DELAY_MS,
 };

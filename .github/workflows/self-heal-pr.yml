@@ -1,0 +1,362 @@
+# =============================================================================
+# SELF-HEAL PR WORKFLOW
+# =============================================================================
+#
+# PURPOSE:
+#   When the self-healing system identifies and applies a code fix for a bug,
+#   this workflow wraps that fix in a proper PR so:
+#     1. The change has full visibility (no silent commits to main).
+#     2. Existing CI tests run automatically on the branch.
+#     3. Code review is automatically requested via the AI PR Review workflow
+#        and, when DEVIN_API_KEY is configured, via Devin (devin-code-review.yml).
+#
+# TRIGGER LANES:
+#   1. workflow_dispatch — manual trigger from the UI with explicit inputs.
+#   2. repository_dispatch (type: self-heal-fix) — called by automation
+#      (self-healing.yml, repo-self-healer.js, etc.) when they have a
+#      concrete code change to land.
+#
+# REQUIRED INPUTS / CLIENT PAYLOAD:
+#   fix_description   — one-line description of the fix (used in PR title / body)
+#   issue_number      — GitHub issue number being resolved (optional)
+#   fix_type          — category: workflow | script | config | docs (default: workflow)
+#   patch_content     — unified diff or patch to apply (optional; when absent the
+#                       caller must have already committed changes to the branch
+#                       before dispatching, or this step is a no-op)
+#   branch_suffix     — extra slug appended to the branch name (optional)
+#
+# WHAT HAPPENS:
+#   1. Creates branch  self-heal/YYYY-MM-DD-<fix_type>[-<suffix>]
+#   2. Applies patch (if provided) and commits.
+#   3. Opens a draft PR targeted at the default branch.
+#   4. Labels: self-heal, auto-fix, devin-review (if DEVIN_API_KEY set).
+#   5. Converts PR to "ready for review" — CI + AI PR Review fire automatically.
+#
+# SECURITY:
+#   - All caller-supplied text goes through env: vars in run: blocks (never
+#     interpolated as ${{ ... }} inside shell scripts). See CLAUDE.md §4.
+#   - branch_suffix is sanitised to [a-z0-9-] before use.
+#   - patch_content is written to a file; `git apply` reads it — no shell eval.
+#
+# =============================================================================
+
+name: Self-Heal PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      fix_description:
+        description: "One-line description of what the fix does"
+        required: true
+        type: string
+      issue_number:
+        description: "Issue number being resolved (omit if not linked)"
+        required: false
+        type: string
+      fix_type:
+        description: "Category of fix"
+        required: false
+        type: choice
+        options:
+          - workflow
+          - script
+          - config
+          - docs
+        default: workflow
+      patch_content:
+        description: "Unified diff / patch to apply (leave blank if commits are pre-staged on a branch)"
+        required: false
+        type: string
+      branch_suffix:
+        description: "Extra slug appended to the branch name (a-z, 0-9, hyphens only)"
+        required: false
+        type: string
+
+  repository_dispatch:
+    types:
+      - self-heal-fix
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  # One self-heal PR creation at a time — prevents racing branches.
+  group: self-heal-pr-${{ github.event.inputs.fix_type || github.event.client_payload.fix_type || 'workflow' }}-${{ github.event.inputs.branch_suffix || github.event.client_payload.branch_suffix || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  create-pr:
+    name: 🩹 Open self-heal PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      pr_number: ${{ steps.open-pr.outputs.pr_number }}
+      branch: ${{ steps.branch.outputs.name }}
+
+    steps:
+      # -----------------------------------------------------------------------
+      # STEP: Resolve inputs from either workflow_dispatch or repository_dispatch
+      # -----------------------------------------------------------------------
+      - name: Resolve inputs
+        id: inputs
+        env:
+          # workflow_dispatch
+          WD_DESCRIPTION: ${{ github.event.inputs.fix_description }}
+          WD_ISSUE:       ${{ github.event.inputs.issue_number }}
+          WD_FIX_TYPE:    ${{ github.event.inputs.fix_type }}
+          WD_PATCH:       ${{ github.event.inputs.patch_content }}
+          WD_SUFFIX:      ${{ github.event.inputs.branch_suffix }}
+          # repository_dispatch (client_payload)
+          RD_DESCRIPTION: ${{ github.event.client_payload.fix_description }}
+          RD_ISSUE:       ${{ github.event.client_payload.issue_number }}
+          RD_FIX_TYPE:    ${{ github.event.client_payload.fix_type }}
+          RD_PATCH:       ${{ github.event.client_payload.patch_content }}
+          RD_SUFFIX:      ${{ github.event.client_payload.branch_suffix }}
+        run: |
+          DESCRIPTION="${WD_DESCRIPTION:-$RD_DESCRIPTION}"
+          ISSUE="${WD_ISSUE:-$RD_ISSUE}"
+          FIX_TYPE="${WD_FIX_TYPE:-$RD_FIX_TYPE}"
+          FIX_TYPE="${FIX_TYPE:-workflow}"
+          PATCH="${WD_PATCH:-$RD_PATCH}"
+          SUFFIX="${WD_SUFFIX:-$RD_SUFFIX}"
+
+          if [[ -z "$DESCRIPTION" ]]; then
+            echo "::error::fix_description is required but was not provided."
+            exit 1
+          fi
+
+          # Sanitise suffix: keep only a-z 0-9 hyphens, max 40 chars.
+          SAFE_SUFFIX="$(echo "$SUFFIX" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-' | cut -c1-40 | sed 's/^-*//; s/-*$//')"
+
+          echo "description=$DESCRIPTION"   >> "$GITHUB_OUTPUT"
+          echo "issue=$ISSUE"               >> "$GITHUB_OUTPUT"
+          echo "fix_type=$FIX_TYPE"         >> "$GITHUB_OUTPUT"
+          echo "safe_suffix=$SAFE_SUFFIX"   >> "$GITHUB_OUTPUT"
+          printf '%s' "$PATCH"             > /tmp/self-heal.patch
+
+      # -----------------------------------------------------------------------
+      # STEP: Checkout repository (full depth so git apply works reliably)
+      # -----------------------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Use PAT so the push can trigger downstream workflows (GITHUB_TOKEN
+          # cannot trigger other workflow runs).
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # -----------------------------------------------------------------------
+      # STEP: Create the feature branch
+      # -----------------------------------------------------------------------
+      - name: Create branch
+        id: branch
+        env:
+          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
+          SAFE_SUFFIX: ${{ steps.inputs.outputs.safe_suffix }}
+        run: |
+          DATE="$(date -u +%Y-%m-%d)"
+          if [[ -n "$SAFE_SUFFIX" ]]; then
+            BRANCH="self-heal/${DATE}-${FIX_TYPE}-${SAFE_SUFFIX}"
+          else
+            BRANCH="self-heal/${DATE}-${FIX_TYPE}-${{ github.run_id }}"
+          fi
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Created branch: $BRANCH"
+
+      # -----------------------------------------------------------------------
+      # STEP: Apply patch (if provided) and commit
+      # -----------------------------------------------------------------------
+      - name: Apply patch and commit
+        id: commit
+        env:
+          DESCRIPTION: ${{ steps.inputs.outputs.description }}
+          ISSUE:       ${{ steps.inputs.outputs.issue }}
+          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Apply patch only when the file is non-empty.
+          if [[ -s /tmp/self-heal.patch ]]; then
+            git apply --check /tmp/self-heal.patch 2>&1 && \
+              git apply /tmp/self-heal.patch || {
+                echo "::warning::Patch did not apply cleanly — continuing without patch content."
+              }
+          fi
+
+          # Stage any changes made before this step (e.g. by caller).
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No staged changes after patch — creating empty-tree sentinel commit."
+            git commit --allow-empty -m "fix(${FIX_TYPE}): ${DESCRIPTION} [self-heal] [skip ci]"
+            echo "had_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            # Build commit message with Closes trailer when issue is provided.
+            MSG="fix(${FIX_TYPE}): ${DESCRIPTION} [self-heal]"
+            if [[ -n "$ISSUE" ]]; then
+              MSG="${MSG}"$'\n\n'"Closes #${ISSUE}"
+            fi
+            git commit -m "$MSG"
+            echo "had_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # -----------------------------------------------------------------------
+      # STEP: Push the branch
+      # -----------------------------------------------------------------------
+      - name: Push branch
+        env:
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          git push origin "$BRANCH"
+
+      # -----------------------------------------------------------------------
+      # STEP: Open PR (draft first, then promote to ready-for-review)
+      # -----------------------------------------------------------------------
+      - name: Open PR
+        id: open-pr
+        env:
+          DESCRIPTION: ${{ steps.inputs.outputs.description }}
+          ISSUE:       ${{ steps.inputs.outputs.issue }}
+          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
+          BRANCH:      ${{ steps.branch.outputs.name }}
+          RUN_URL:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE="fix(${FIX_TYPE}): ${DESCRIPTION}"
+
+          # Build PR body.
+          BODY="## 🩹 Self-Healing Fix\n\n"
+          BODY+="**Type:** \`${FIX_TYPE}\`\n"
+          BODY+="**Triggered by:** Self-Healing Agent\n"
+          BODY+="**Workflow run:** ${RUN_URL}\n"
+          if [[ -n "$ISSUE" ]]; then
+            BODY+="\n**Closes:** #${ISSUE}\n"
+          fi
+          BODY+="\n---\n\n"
+          BODY+="### What this fixes\n\n${DESCRIPTION}\n\n"
+          BODY+="### Review checklist\n\n"
+          BODY+="- [ ] Fix is correct and minimal\n"
+          BODY+="- [ ] No unrelated changes\n"
+          BODY+="- [ ] CI passes\n"
+          BODY+="- [ ] Code review completed\n"
+          BODY+="\n> ⚠️ This PR was created automatically by the Self-Healing Agent."
+          BODY+=" Review the changes carefully before merging.\n"
+
+          # Create PR as draft so CI has a moment to spin up before the AI
+          # review fires. gh outputs the PR URL; parse the number from it.
+          PR_URL=$(gh pr create \
+            --title "$TITLE" \
+            --body "$(printf '%b' "$BODY")" \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH" \
+            --draft \
+            --label "self-heal,auto-fix" 2>&1)
+
+          echo "PR created: $PR_URL"
+
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+      # -----------------------------------------------------------------------
+      # STEP: Add devin-review label if DEVIN_API_KEY is configured, so the
+      # devin-code-review.yml workflow fires automatically.
+      # -----------------------------------------------------------------------
+      - name: Add devin-review label (if Devin is configured)
+        if: steps.open-pr.outputs.pr_number != ''
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          PR_NUMBER:     ${{ steps.open-pr.outputs.pr_number }}
+        run: |
+          if [[ -n "$DEVIN_API_KEY" ]]; then
+            gh pr edit "$PR_NUMBER" --add-label "devin-review" && \
+              echo "Added devin-review label to PR #${PR_NUMBER}" || \
+              echo "::warning::Could not add devin-review label (label may not exist yet)."
+          else
+            echo "DEVIN_API_KEY not set — skipping devin-review label."
+          fi
+
+      # -----------------------------------------------------------------------
+      # STEP: Promote PR from draft to ready-for-review.
+      # This fires ai-pr-review-openrouter.yml (ready_for_review trigger).
+      # -----------------------------------------------------------------------
+      - name: Mark PR ready for review
+        if: steps.open-pr.outputs.pr_number != ''
+        env:
+          PR_NUMBER: ${{ steps.open-pr.outputs.pr_number }}
+        run: |
+          gh pr ready "$PR_NUMBER"
+          echo "PR #${PR_NUMBER} is now ready for review — CI and AI review will fire automatically."
+
+      # -----------------------------------------------------------------------
+      # STEP: Comment on the originating issue (if provided)
+      # -----------------------------------------------------------------------
+      - name: Link PR back to originating issue
+        if: steps.inputs.outputs.issue != '' && steps.open-pr.outputs.pr_number != ''
+        env:
+          ISSUE:     ${{ steps.inputs.outputs.issue }}
+          PR_NUMBER: ${{ steps.open-pr.outputs.pr_number }}
+          PR_URL:    ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.open-pr.outputs.pr_number }}
+        run: |
+          COMMENT_BODY="$(printf '🩹 **Self-Healing PR opened:** #%s — %s\n\nThe self-healing agent has opened a PR with a proposed fix for this issue. The PR will go through CI and automated code review before merging. You will receive a notification when it is ready for human review.' "$PR_NUMBER" "$PR_URL")"
+          gh issue comment "$ISSUE" --body "$COMMENT_BODY"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB: Run tests on the newly created branch to confirm the fix is green.
+  # This is informational — failures are surfaced as annotations, not blockers,
+  # since the PR CI gates will catch them too.
+  # ────────────────────────────────────────────────────────────────────────────
+  run-tests:
+    name: 🧪 Verify fix (root tests)
+    needs: create-pr
+    if: needs.create-pr.outputs.branch != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.create-pr.outputs.branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run root test suite
+        id: tests
+        # continue-on-error so a test failure is surfaced as a PR annotation
+        # and a comment, not a hard block on the self-heal PR workflow itself.
+        continue-on-error: true
+        run: npm test
+
+      - name: Comment test results on PR
+        if: needs.create-pr.outputs.pr_number != '' && always()
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ needs.create-pr.outputs.pr_number }}
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          if [[ "$TEST_OUTCOME" == "success" ]]; then
+            ICON="✅"
+            MSG="Root test suite **passed**."
+          else
+            ICON="❌"
+            MSG="Root test suite **failed** — review the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+          fi
+          gh pr comment "$PR_NUMBER" \
+            --body "$(printf '%s **Self-Heal Test Report**\n\n%s\n\n_Posted automatically by `self-heal-pr.yml`_' "$ICON" "$MSG")"
