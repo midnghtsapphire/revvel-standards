@@ -69,6 +69,52 @@ and add to the catalog instead of re-deriving a pattern that's already here.
    comment that says "done." A closed issue or a cheerful status update is not
    evidence; the file being there is.
 
+## Tools & Skills Used
+
+The concrete toolset behind the method above, for whoever runs the next one of
+these (see `learnings.md`'s 2026-07-13T15:45:00Z entry for the full session
+writeup this section was distilled from):
+
+- **Parallel subagent orchestration.** Spawn read-only research agents (no file
+  edits) for the investigation pass, one per category, in a single batch so
+  they run concurrently. Give each a self-contained prompt — file paths, line
+  numbers, exact repo conventions — since a subagent has no memory of the
+  parent conversation. Once findings are triaged, spawn one code-writing agent
+  per fix, each in an **isolated worktree**, so N agents editing different
+  files never race on the same working tree or each other's git state.
+- **Progress tracking that mirrors reality.** Track every distinct fix/feature
+  as its own task, moved to in-progress on dispatch and completed only once a
+  real PR/issue exists — not a formality; it's what keeps a long session with
+  many concurrent background agents coherent instead of losing track of what
+  actually shipped.
+- **GitHub interaction via API/MCP tooling, not assumption.** Use the GitHub
+  API (or your environment's MCP wrapper for it) for the full PR/issue
+  lifecycle — search/list for recon, reading actual check-run output and job
+  logs to diagnose CI failures instead of guessing from a check's name alone,
+  and the create/update/merge/comment calls for the outcome. Some environments
+  don't have a local `gh` CLI available — check first rather than assuming.
+- **Verify by execution, not by reading.** The highest-confidence findings in
+  this doc's catalog were confirmed by actually running the broken code path —
+  compiling an extracted script payload, reproducing a bug end-to-end in a
+  throwaway repo — not by reading the code and reasoning about what it
+  probably does. Docs and comments in a large, long-lived automation fleet
+  drift from reality; grep/read/execute the live tree before trusting a claim
+  about it, including claims in this repo's own documentation.
+- **Direct (non-delegated) edits, used sparingly.** Reserve doing something
+  yourself, rather than spinning up an agent for it, for changes you're
+  confident are small and low-risk — a one-line follow-up to a subagent's
+  already-reviewed work, a PR-metadata change. If it needs real investigation
+  or touches logic, delegate it.
+- **When a tool fails, don't block indefinitely on it.** State the assumption
+  you're proceeding under and keep moving; note it clearly so the human can
+  redirect. A broken clarification channel is not a reason to stall a whole
+  session.
+- **Packaging as a Skill is a natural next step, not yet done.** As of this
+  writing the loop above ("diagnose → scope a fix → isolated-worktree agent →
+  verify → draft PR") is hand-assembled each time via direct tool
+  orchestration, not a packaged Skill/slash-command. If this becomes a
+  recurring need, packaging it would make it invocable in one step.
+
 ## Self-Healing Correction Pattern Catalog
 
 Fast lookup for a future agent debugging something that looks like one of
