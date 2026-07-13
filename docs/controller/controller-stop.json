@@ -1,66 +1,56 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-13T20:11:02.229Z",
+  "generated_at": "2026-07-13T21:04:08.930Z",
   "stop": [
     {
-      "id": 29280275996,
-      "name": "PR Lifecycle",
-      "reason": "no progress for 17m ≥ 15m"
-    },
-    {
-      "id": 29277785686,
+      "id": 29280851827,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 16m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29277781000,
+      "id": 29280846970,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 16m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29277699757,
+      "id": 29280827822,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29277699194,
+      "id": 29280823537,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 61m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29277695443,
+      "id": 29280814028,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29277694175,
+      "id": 29280809345,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 62m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29271554511,
-      "name": "CodeQL",
-      "reason": "running 148m ≥ 60m budget"
-    },
-    {
-      "id": 29271491167,
-      "name": "CodeQL",
-      "reason": "running 149m ≥ 60m budget"
+      "id": 29278841747,
+      "name": "Agent Fallback Handler",
+      "reason": "running 92m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 276m ≥ 60m budget"
+      "reason": "running 329m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 347m ≥ 60m budget"
+      "reason": "running 400m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 418m ≥ 60m budget"
+      "reason": "running 471m ≥ 60m budget"
     }
   ]
 }
