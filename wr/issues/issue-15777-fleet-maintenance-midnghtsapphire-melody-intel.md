@@ -51,10 +51,10 @@ Branch: `fleet-maintenance/revvel-standards-15777`
 | Property | Value |
 | --- | --- |
 | Stars | 0 |
-| Open Issues | 0 |
+| Open Issues | 2 |
 | Private | No (public) |
 | Archived | No |
-| Default branch | `master` |
+| Default branch | `master` (repo predates the `main` rename convention; unchanged in scope) |
 | Description | clean up routine for manus |
 
 ## Research Findings
@@ -136,10 +136,10 @@ clean and audited directly protects and accelerates revenue.
 
 ### 6. Chatter and Demand Signals
 
-`claude-code-action` (the core dependency) is Google/Anthropic's primary
-agentic workflow action — 3,000+ stars on GitHub (estimate; exact count pending
-direct API query), actively maintained, used by thousands of automation-first
-teams. The `anthropics/claude-code-action@v1` tag is stable.
+`claude-code-action` (the core dependency) is Anthropic's primary
+agentic workflow action — actively maintained with frequent releases, used by
+thousands of automation-first teams. The `anthropics/claude-code-action@v1`
+tag is stable.
 
 ### 7. DX Improvements Deferred
 
