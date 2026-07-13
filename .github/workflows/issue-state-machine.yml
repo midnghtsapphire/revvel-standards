@@ -1,327 +1,96 @@
 name: Issue State Machine
+
 on:
-  issues:
-    types:
-      - labeled
-      - opened
-      - closed
-      - reopened
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Issue number to process
-        required: false
-        type: number
+        description: 'Issue number to transition'
+        required: true
+        type: string
       target_state:
-        description: Target state
-        required: false
+        description: 'Target WR lifecycle state'
+        required: true
         type: choice
         options:
-          - new
-          - research
-          - code
-          - pr-open
-          - checking
+          - triaged
+          - in-progress
+          - blocked
           - review
-          - merge-ready
           - done
-permissions:
-  issues: write
-env:
-  LIFECYCLE_LABELS: wr:new,wr:research,wr:research-complete,wr:code,wr:pr-open,wr:checking,wr:check-failed,wr:review,wr:merge-ready,wr:done,lifecycle:stuck,needs-human
+
 jobs:
-  enforce-singular-lifecycle:
+  transition-state:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'issues'
+    permissions:
+      issues: write
+      contents: read
     steps:
-      - name: Check current labels
-        id: check_labels
-        uses: actions/github-script@v9.0.0
-        with:
-          script: >
-            const issue = context.payload.issue;
-
-            const labels = issue.labels.map(l => l.name);
-
-
-            // Define lifecycle label groups (only one allowed per group)
-
-            const labelGroups = [
-              ['wr:new', 'wr:research', 'wr:research-complete', 'wr:code', 'wr:pr-open', 'wr:checking', 'wr:check-failed', 'wr:review', 'wr:merge-ready', 'wr:done'],
-              ['lifecycle:stuck', 'needs-human']
-            ];
-
-
-            // Find conflicting labels
-
-            const conflicts = [];
-
-            for (const group of labelGroups) {
-              const found = labels.filter(l => group.includes(l));
-              if (found.length > 1) {
-                conflicts.push(...found.slice(1)); // Keep first, mark rest as conflicts
-              }
-            }
-
-
-            core.setOutput('conflicts', JSON.stringify(conflicts));
-
-            core.setOutput('all_labels', JSON.stringify(labels));
-
-
-            // Debug output
-
-            console.log('Current labels:', labels);
-
-            console.log('Conflicts found:', conflicts);
       - name: Remove conflicting labels
-        if: steps.check_labels.outputs.conflicts != '[]'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v7
         with:
           script: |
-            const conflicts = JSON.parse('${{ steps.check_labels.outputs.conflicts }}');
-            const issueNumber = context.payload.issue.number;
-            for (const label of conflicts) {
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            const lifecycleLabels = [
+              'state:triaged',
+              'state:in-progress',
+              'state:blocked',
+              'state:review',
+              'state:done',
+            ];
+            const targetLabel = `state:${targetState}`;
+            for (const label of lifecycleLabels) {
+              if (label === targetLabel) continue;
               try {
                 await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
-                  name: label
+                  name: label,
                 });
-                console.log('Removed label:', label);
               } catch (e) {
-                console.log('Could not remove label:', label, e.message);
+                console.log(`Label ${label} not present on #${issueNumber} (or already removed): ${e.message}`);
               }
             }
-    timeout-minutes: 15
-  set-initial-state:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'issues' && github.event.action == 'opened'
-    steps:
-      - name: Detect and close malformed URL-only issues
-        id: malformed_check
-        uses: actions/github-script@v9.0.0
-        with:
-          script: |
-            const issue = context.payload.issue;
-            const title = (issue.title || '').trim();
-            const body  = (issue.body  || '').trim();
-
-            // A "URL-only" title is one whose entire content is a single URL
-            // (with or without the https:// scheme). This pattern catches:
-            //   - https://... or http://...
-            //   - app.circleci.com/...  (scheme omitted, as seen in the wild)
-            //   - Any other bare hostname/path without surrounding text
-            const urlOnlyRe = /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}[/\S]*$/i;
-            const isTitleUrlOnly = urlOnlyRe.test(title) && !title.includes(' ');
-
-            if (!isTitleUrlOnly) {
-              core.setOutput('is_malformed', 'false');
-              console.log('Issue title looks valid; continuing normal lifecycle.');
-              return;
-            }
-
-            core.setOutput('is_malformed', 'true');
-            console.log('Detected URL-only issue title — closing as malformed.');
-
-            // Build a human-readable explanation
-            const circleCiRe = /circleci\.com/i;
-            const hint = circleCiRe.test(title)
-              ? '**What likely happened:** A CircleCI build-failure notification was forwarded ' +
-                'verbatim (URL only) instead of including the actual failure message. ' +
-                'Check your CircleCI webhook / email-intake configuration and make sure ' +
-                'it formats the issue title as a human-readable description (e.g. ' +
-                '`[CI FAILURE] Build #NNNN failed on branch <name>`) and includes the ' +
-                'relevant log lines in the body.\n\n' +
-                '**CircleCI log URL found in title:**\n```\n' + title + '\n```'
-              : '**What likely happened:** An automated system created this issue with a ' +
-                'raw URL as the title instead of a human-readable description. ' +
-                'Please investigate the automation and fix it to supply a meaningful title and body.';
-
-            const closeBody =
-              '## ⚠️ Malformed issue — auto-closed\n\n' +
-              'This issue was automatically closed because its title is a raw URL with no ' +
-              'descriptive text. The WR lifecycle requires a meaningful title so that ' +
-              'triage, research, and coding agents can process it correctly.\n\n' +
-              hint + '\n\n' +
-              '---\n_Auto-closed by `issue-state-machine.yml` malformed-issue guard._';
-
-            // Guard both writes: this job fires on every issue opened event,
-            // so an installation rate-limit 403 here must degrade gracefully
-            // (log + stop this issue's processing) instead of hard-failing.
-            try {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                body: closeBody,
-              });
-            } catch (e) {
-              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-              core.warning(`createComment for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-            }
-
-            try {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                state: 'closed',
-                state_reason: 'not_planned',
-              });
-              console.log('Closed malformed issue #' + issue.number);
-            } catch (e) {
-              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-              core.warning(`issues.update for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-              return;
-            }
-
-      - name: Add wr:new label
-        if: steps.malformed_check.outputs.is_malformed != 'true'
-        uses: actions/github-script@v9.0.0
-        with:
-          script: |
-            const labels = context.payload.issue.labels.map(l => l.name);
-            if (!labels.some(l => l.startsWith('wr:'))) {
-              try {
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.issue.number,
-                  labels: ['wr:new']
-                });
-                console.log('Added wr:new label');
-              } catch (e) {
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`addLabels(wr:new) for issue #${context.payload.issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-              }
-            } else {
-              console.log('Issue already has wr:* label:', labels.filter(l => l.startsWith('wr:')));
-            }
-    timeout-minutes: 15
-  transition-state:
-    runs-on: ubuntu-latest
-    env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
-    steps:
-      - name: Transition state
-        id: transition
-        uses: actions/github-script@v9.0.0
-        with:
-          script: >
-            const targetState = '${{ github.event.inputs.target_state }}';
-
-            const issueNumber = ${{ github.event.inputs.issue_number || 0 }};
-
-
-            // Map target state to label
-
-            const stateLabels = {
-              'new': 'wr:new',
-              'research': 'wr:research',
-              'code': 'wr:code',
-              'pr-open': 'wr:pr-open',
-              'checking': 'wr:checking',
-              'review': 'wr:review',
-              'merge-ready': 'wr:merge-ready',
-              'done': 'wr:done'
-            };
-
-
-            const newLabel = stateLabels[targetState];
-
-            if (!newLabel) {
-              core.setFailed('Invalid target state: ' + targetState);
-              return;
-            }
-
-
-            const issue = issueNumber > 0 ? issueNumber :
-            context.payload.issue?.number;
-
-            if (!issue) {
-              core.setFailed('No issue number provided');
-              return;
-            }
-
-
-            // Remove all lifecycle labels first
-
-            const allLifecycleLabels = Object.values(stateLabels);
-
-            const { data: issueData } = await github.rest.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue
-            });
-
-
-            for (const label of issueData.labels) {
-              if (allLifecycleLabels.includes(label.name)) {
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue,
-                    name: label.name
-                  });
-                  console.log('Removed label:', label.name);
-                } catch (e) {
-                  console.log('Could not remove label:', label.name, e.message);
-                }
-              }
-            }
-
-
-            // Add new label
-
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue,
-              labels: [newLabel]
+              issue_number: issueNumber,
+              labels: [targetLabel],
             });
 
-
-            console.log(' transitioned to:', newLabel);
-    timeout-minutes: 15
-  close-completed:
-    runs-on: ubuntu-latest
-    env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'issues' && github.event.action == 'closed' &&
-      contains(github.event.issue.labels.*.name, 'wr:')
-    steps:
-      - name: Mark as done if not PR
-        if: "!github.event.issue.pull_request"
-        uses: actions/github-script@v9.0.0
+      - name: Post transition comment
+        uses: actions/github-script@v7
         with:
           script: |
-            const issue = context.payload.issue;
-            const labels = issue.labels.map(l => l.name);
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `🔄 Lifecycle state transitioned to \`state:${targetState}\` via manual workflow_dispatch.`,
+            });
 
-            // Check if already marked as done
-            if (labels.includes('wr:done')) {
-              console.log('Issue already marked as done');
-              return;
+      - name: Cleanup stale labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+            // When transitioning to done, clean up transient workflow labels
+            const staleLabels = targetState === 'done'
+              ? ['needs-triage', 'awaiting-response', 'in-review']
+              : [];
+            for (const label of staleLabels) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: label,
+                });
+              } catch (e) {
+                console.log(`Label ${label} not present on #${issueNumber} (or already removed): ${e.message}`);
+              }
             }
-
-            // Add wr:done label
-            try {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                labels: ['wr:done']
-              });
-            } catch (e) {
-              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-              core.warning(`addLabels(wr:done) for issue #${issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-            }
-    timeout-minutes: 30
