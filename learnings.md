@@ -32,22 +32,17 @@
   3. `.github/workflows/self-heal-pr.yml` and `.github/workflows/reset-self-heal-issue.yml` are documented as automatic but only have `workflow_dispatch` — add the appropriate `on:` triggers (issue/PR events, schedule) or update the docs to match reality.
 # Goap Agent Memory & Self-Healing Log
 
-<!-- AGENT USAGE NOTE: This is the ONE source-of-truth log for all Goap executions.
-  - Before writing: check this file exists at this path. Do NOT create a duplicate.
-  - Writes must be append-only and atomic (write to a temp file, then rename/move).
-  - On lock or write failure: save entry to learnings.tmp as a rollback buffer; retry on next run.
-  - Malformed entries (missing required fields) must be flagged with a [MALFORMED] prefix and NOT deleted.
-  - Archive entries older than 90 days to DigitalOcean Spaces under goap-logs/archive/.
-  - Never delete the [Template Entry] section below.
--->
+## [Template Entry]
 
-**SSOT Links:** [`GOAP.md`](GOAP.md) · [`GOAL.md`](GOAL.md) · [`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md)  
-**Rule:** Read this file at the start of every session. Append after every task or failure. Never repeat the same mistake twice.
+**Date:** YYYY-MM-DD
 
-This file tracks autonomous executions, failures, root causes, and locked-in solutions so mistakes are never repeated.
+**Context:** What was being attempted.
 
-## [Template Entry - Do not delete]
+**Root Cause of Failure (If any):** Why it went wrong.
 
+**Self-Healing Fix / Learned Lesson:** What was changed or learned, including tools and skills actually used, for whoever runs the next one of these.
+
+---
 **Date/Time:**
 
 **Task Attempted:** [e.g., n8n email parse for angelreporters@gmail.com]
