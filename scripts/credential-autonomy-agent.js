@@ -86,13 +86,13 @@ function log(message, type = 'info') {
 function run(command, args = [], options = {}) {
   // spawnSync with an explicit argv array does NOT spawn a shell, so args
   // cannot be shell-injected. All callers pass a fixed command ('gh').
-  // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); command is a fixed literal at every call site
   //
   // Callers may pass `options.input` to feed data (e.g. secret values) to
   // the child's stdin instead of argv, since argv is visible to any other
   // process on the host for the process's lifetime via
   // /proc/<pid>/cmdline or `ps aux`. stdio[0] must be 'pipe' (not
   // 'ignore') for `input` to actually reach the child.
+  // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); command is a fixed literal at every call site
   const result = spawnSync(command, args, {
     encoding: 'utf8',
     stdio: [options.input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe'],
