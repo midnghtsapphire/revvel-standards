@@ -1,8 +1,8 @@
-name: Devin Code Review (opt-in)
+name: Devin Code Review
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
@@ -10,48 +10,32 @@ permissions:
 
 jobs:
   devin-review:
-    runs-on: ubuntu-latest
+    # Opt-in only: requires DEVIN_API_KEY secret to be configured.
+    # Soft-skips without credentials to avoid blocking PRs.
     if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Check for Devin credentials
-        id: check
+      - name: Check for Devin API key
+        id: check_key
         run: |
           if [ -z "${{ secrets.DEVIN_API_KEY }}" ]; then
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "DEVIN_API_KEY not configured; soft-skipping Devin review."
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DEVIN_API_KEY not configured; skipping Devin code review (opt-in only)."
           else
-            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout
-        if: steps.check.outputs.present == 'true'
-        uses: actions/checkout@v4
+        if: steps.check_key.outputs.has_key == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Run Devin code review
-        if: steps.check.outputs.present == 'true'
-      # -----------------------------------------------------------------------
-      # STEP: Slash-command lane — the action gathers issue + comment context
-      # itself via comment-id / issue-number, and posts status + session links
-      # back as comments. Untrusted comment text never touches a run: script.
-      # -----------------------------------------------------------------------
-      - name: Create Devin session (slash command)
-        if: env.DEVIN_SKIP == 'false' && github.event_name == 'issue_comment'
+        if: steps.check_key.outputs.has_key == 'true'
         uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
         with:
-          api-key: ${{ secrets.DEVIN_API_KEY }}
-          mode: review
+          devin-api-key: ${{ secrets.DEVIN_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Post Devin review comment
-        if: steps.check.outputs.present == 'true'
-      # -----------------------------------------------------------------------
-      # STEP: Label / manual lane — PR numbers double as issue numbers, so the
-      # action's issue-number context gathering works for PRs too. Only the
-      # numeric PR number (computed, not attacker-controlled free text) is
-      # interpolated into the prompt.
-      # -----------------------------------------------------------------------
-      - name: Create Devin session (label / manual dispatch)
-        if: env.DEVIN_SKIP == 'false' && github.event_name != 'issue_comment'
-        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
-        with:
-          api-key: ${{ secrets.DEVIN_API_KEY }}
-          mode: comment
+      - name: Fallback notice
+        if: steps.check_key.outputs.has_key == 'false'
+        run: echo "Skipped Devin review — no DEVIN_API_KEY secret configured."
