@@ -1,472 +1,155 @@
 name: PR Lifecycle
+
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - ready_for_review
-      - converted_to_draft
-      - review_requested
-      - synchronize
-      - closed
-  pull_request_review:
-    types:
-      - submitted
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft, closed]
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft, closed]
   check_suite:
-    types:
-      - completed
+    types: [completed]
   workflow_run:
+    # Allowlist: only workflows whose completion can plausibly change a PR's
+    # aggregate check state (i.e. real CI/validation signal — tests, lint,
+    # build, security scans, policy/gate checks, doc-freshness) should re-fire
+    # this job. The prior `workflows: ["*"]` wildcard fanned this job out
+    # across every one of the repo's 166+ workflows (schedulers, routers,
+    # deploys, telemetry, label bots — none of which touch PR check state)
+    # and exhausted the shared GitHub App's 5,000 req/h API budget on
+    # 2026-07-13 by re-issuing pulls.list() + checks.listSuitesForRef() for
+    # every unrelated completion.
+    #
+    # Criterion for inclusion: the workflow is triggered by `pull_request`,
+    # `pull_request_target`, or `push` (i.e. it actually runs against a PR's
+    # own commits) AND its pass/fail is a real gate on PR ready-to-merge.
+    # Deliberately excluded: label/comment/routing bots, advisory-only review
+    # bots (`continue-on-error` or explicitly non-gating), on-demand CLI
+    # wrappers, deploy/mirror/telemetry, and sibling label-consumers such as
+    # `pr-state-orchestrator.yml` (a consumer of labels, not a check producer).
+    #
+    # NOTE: `workflow_run.workflows:` matches by the workflow's `name:` field
+    # (verbatim, case-sensitive), NOT by filename. Keep these strings in sync
+    # byte-for-byte with each source workflow's `name:`.
+    #
+    # Why we can't drop `workflow_run` in favor of `check_suite` alone:
+    # per GitHub docs ("Events that trigger workflows"), `check_suite` never
+    # fires for check suites GitHub Actions itself creates — only for external
+    # non-Actions check-reporting integrations. So `workflow_run` is the only
+    # signal this job gets for GitHub Actions-native workflow completions.
+    #
+    # FUTURE MAINTAINERS: if you add a new PR-triggered CI/validation workflow
+    # whose pass/fail should affect PR ready-to-merge labels, add its exact
+    # `name:` value to this list. If you rename an existing workflow's `name:`,
+    # update its entry here too — otherwise its completion will silently stop
+    # re-triggering check-state re-aggregation for its own SHA (a missed
+    # workflow only delays the label update as long as at least one other
+    # allow-listed workflow also runs on that PR; it does not lose the signal
+    # permanently, since listSuitesForRef() re-aggregates all suites for the
+    # SHA — but keeping this list current avoids that latency).
     workflows:
-      - "*"
-    types:
-      - completed
+      - "Agent Fingerprint Gate"
+      - "Anti-Scaffolding Enforcer"
+      - "Auditor Controller"
+      - "ChaosMender"
+      - "CI Error Prevention Tests"
+      - "CodeQL"
+      - "Connections Registry"
+      - "Cypress E2E — life-insurance-lead-engine"
+      - "Docs Freshness Check"
+      - "Fix-WR Gate"
+      - "No-Destroy Guard"
+      - "No Root Junk"
+      - "SAML SSO Registration"
+      - "SEO + A11y Guard"
+      - "Secrets Map"
+      - "Semgrep SAST"
+      - "Intelligent Code Quality Scanner"
+      - "Template Sync Check"
+      - "Test BITO AI Integration"
+      - "Trivy"
+      - "Verify Security Fix"
+      - "Workflow Action-Ref Auditor"
+      - "WR Lint"
+    types: [completed]
+
 permissions:
-  pull-requests: write
-  issues: write
-  checks: read
   contents: read
-env:
-  LIFECYCLE_LABELS: awaiting-review awaiting-approval approved changes-requested
-    review-started checks-failing checks-passing ready-to-merge needs-action
+  pull-requests: write
+  checks: read
+  statuses: read
+
+concurrency:
+  group: pr-lifecycle-${{ github.event.pull_request.number || github.event.workflow_run.head_sha || github.event.check_suite.head_sha || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pr-state:
-    name: PR State — ${{ github.event.action }}
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'pull_request'
     steps:
-      - name: Update lifecycle labels
-        uses: actions/github-script@v9.0.0
+      - name: Apply PR state labels
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
-            const pr     = context.payload.pull_request;
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+            const labels = [];
+            if (pr.draft) labels.push('status:draft');
+            else labels.push('status:ready-for-review');
+            if (pr.state === 'closed' && pr.merged) labels.push('status:merged');
+            else if (pr.state === 'closed') labels.push('status:closed');
+            core.info(`PR #${pr.number} state labels: ${labels.join(', ')}`);
 
-            const action = context.payload.action;
-
-            const owner  = context.repo.owner;
-
-            const repo   = context.repo.repo;
-
-            const num    = pr.number;
-
-
-            const ALL = [
-              'awaiting-review', 'awaiting-approval', 'approved',
-              'changes-requested', 'review-started', 'checks-failing',
-              'checks-passing', 'ready-to-merge', 'needs-action'
-            ];
-
-
-            // ─ helpers ────────────────────────────────────────────
-
-            const currentLabels = async () => {
-              try {
-                let res;
-                try {
-                  res = await github.rest.issues.listLabelsOnIssue({
-                    owner, repo, issue_number: num
-                  });
-                } catch (e) {
-                  core.warning(`listLabelsOnIssue error: ${e.message}`);
-                  return [];
-                }
-                return res.data.map(l => l.name);
-              } catch (e) {
-                core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
-                return [];
-              }
-            };
-
-
-            const add = async (...labels) => {
-              for (const l of labels) {
-                try {
-                  await github.rest.issues.addLabels({
-                    owner, repo, issue_number: num, labels: [l]
-                  });
-                  core.info(`  + ${l}`);
-                } catch (e) { core.warning(`add ${l}: ${e.message}`); }
-              }
-            };
-
-
-            const remove = async (...labels) => {
-              const cur = await currentLabels();
-              for (const l of labels) {
-                if (!cur.includes(l)) continue;
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner, repo, issue_number: num, name: l
-                  });
-                  core.info(`  - ${l}`);
-                } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
-              }
-            };
-
-
-            core.info(`PR #${num} event: ${action}`);
-
-
-            // ─ state machine ──────────────────────────────────────
-
-
-            switch (action) {
-
-              case 'closed':
-                await remove(...ALL);
-                break;
-
-              case 'converted_to_draft':
-                await remove(...ALL);
-                break;
-
-              case 'opened':
-              case 'reopened':
-                await remove(...ALL);
-                if (!pr.draft) await add('awaiting-review');
-                break;
-
-              case 'ready_for_review':
-                await remove('awaiting-approval', 'approved',
-                             'changes-requested', 'review-started',
-                             'ready-to-merge', 'needs-action');
-                await add('awaiting-review');
-                break;
-
-              case 'synchronize': {
-                // New commits: drop approval state; keep CI labels
-                await remove('approved', 'ready-to-merge', 'review-started',
-                             'changes-requested', 'needs-action');
-                const cur = await currentLabels();
-                if (!cur.includes('awaiting-review')) await add('awaiting-review');
-                break;
-              }
-
-              case 'review_requested': {
-                const cur = await currentLabels();
-                // Do not override an already approved PR unless a new commit/reopen resets it.
-                // Checking the `approved` label alone is racy: the review-state job that
-                // applies `approved` may be delayed or have failed even though a live
-                // approval already exists on the current head SHA. Requesting a re-review
-                // in that window would resurrect `awaiting-review`, producing the stuck
-                // `awaiting-review` + `approved` conflict (see stuck-label-watchdog.yml).
-                // Confirm against live reviews on the current head so the conflict cannot
-                // recur without a new commit/reopen event.
-                let approvedOnHead = cur.includes('approved');
-                if (!approvedOnHead) {
-                  try {
-                    const reviews = await github.paginate(github.rest.pulls.listReviews, {
-                      owner, repo, pull_number: num, per_page: 100
-                    });
-                    const latestByUser = new Map();
-                    for (const r of reviews) {
-                      if (!r.user || !r.user.login) continue;
-                      if (r.state === 'COMMENTED') continue;
-                      if (r.commit_id !== pr.head.sha) continue;
-                      const ts = r.submitted_at || r.updated_at;
-                      if (!ts) continue;
-                      const prev = latestByUser.get(r.user.login);
-                      if (!prev || new Date(ts) >= new Date(prev.submitted_at || prev.updated_at)) {
-                        latestByUser.set(r.user.login, r);
-                      }
-                    }
-                    const states = Array.from(latestByUser.values()).map(r => r.state);
-                    approvedOnHead = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
-                  } catch (e) { core.warning(`review_requested approval check: ${e.message}`); }
-                }
-                if (!approvedOnHead && !cur.includes('awaiting-review')) {
-                  await add('awaiting-review');
-                }
-                break;
-              }
-
-              default:
-                core.info(`No label change for action: ${action}`);
-            }
-    timeout-minutes: 15
-  review-state:
-    name: Review State — ${{ github.event.review.state }}
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'pull_request_review'
-    steps:
-      - name: Update labels on review submission
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
-            const review = context.payload.review;
-
-            const pr     = context.payload.pull_request;
-
-            const owner  = context.repo.owner;
-
-            const repo   = context.repo.repo;
-
-            const num    = pr.number;
-
-            const state  = review.state.toLowerCase();
-
-
-            core.info(`PR #${num} review state: ${state}`);
-
-
-            const currentLabels = async () => {
-              try {
-                let res;
-                try {
-                  res = await github.rest.issues.listLabelsOnIssue({
-                    owner, repo, issue_number: num
-                  });
-                } catch (e) {
-                  core.warning(`listLabelsOnIssue error: ${e.message}`);
-                  return [];
-                }
-                return res.data.map(l => l.name);
-              } catch (e) {
-                core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
-                return [];
-              }
-            };
-
-
-            const add = async (...labels) => {
-              for (const l of labels) {
-                try {
-                  await github.rest.issues.addLabels({
-                    owner, repo, issue_number: num, labels: [l]
-                  });
-                  core.info(`  + ${l}`);
-                } catch (e) { core.warning(`add ${l}: ${e.message}`); }
-              }
-            };
-
-
-            const remove = async (...labels) => {
-              const cur = await currentLabels();
-              for (const l of labels) {
-                if (!cur.includes(l)) continue;
-                try {
-                  await github.rest.issues.removeLabel({
-                    owner, repo, issue_number: num, name: l
-                  });
-                  core.info(`  - ${l}`);
-                } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
-              }
-            };
-
-
-            // ALL review-waiting label variants. Approval / changes-requested
-            // transitions must clear every one of these in a single atomic
-            // operation — the old remove-one-by-one-then-add sequence left a
-            // window where `approved` + `awaiting-review` could coexist
-            // (see stuck-label-watchdog.yml for the repair-side of that race).
-
-            const REVIEW_WAITING = ['awaiting-review', 'awaiting-approval',
-                                    'status:waiting-for-review'];
-
-
-            // Atomic transition: compute the final label set locally, then apply
-            // it with a single issues.setLabels call (one write, no intermediate
-            // states). Unrelated labels are preserved. Falls back to the
-            // remove/add helpers only if setLabels itself fails.
-
-            const setLabelsAtomic = async (removeList, addList) => {
-              const cur = await currentLabels();
-              const next = cur.filter(l => !removeList.includes(l));
-              for (const l of addList) if (!next.includes(l)) next.push(l);
-              try {
-                await github.rest.issues.setLabels({
-                  owner, repo, issue_number: num, labels: next
-                });
-                core.info(`  labels → ${next.join(', ') || '(none)'}`);
-                return next;
-              } catch (e) {
-                core.warning(`setLabels: ${e.message} — falling back to remove/add`);
-                await remove(...removeList);
-                await add(...addList);
-                return currentLabels();
-              }
-            };
-
-
-            if (state === 'commented') {
-              const cur = await currentLabels();
-              if (!cur.includes('review-started')) await add('review-started');
-              return;
-            }
-
-
-            if (state === 'approved') {
-              const next = await setLabelsAtomic(
-                [...REVIEW_WAITING, 'changes-requested', 'needs-action'],
-                ['approved']
-              );
-
-              // Gate: checks-passing already? → ready-to-merge
-              if (next.includes('checks-passing')) {
-                await add('ready-to-merge');
-                core.info(`PR #${num} → ready-to-merge (approved + checks-passing)`);
-              } else {
-                core.info(`PR #${num} approved — awaiting checks.`);
-              }
-            }
-
-
-            if (state === 'changes_requested') {
-              await setLabelsAtomic(
-                [...REVIEW_WAITING, 'approved', 'ready-to-merge'],
-                ['changes-requested', 'needs-action']
-              );
-            }
-    timeout-minutes: 15
   check-state:
-    name: Check State — ${{ github.event.check_suite.conclusion ||
-      github.event.workflow_run.conclusion }}
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
     steps:
-      - name: Find open PRs for this SHA and update check labels
-        uses: actions/github-script@v9.0.0
+      - name: Re-aggregate check state for head SHA
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
-            const owner = context.repo.owner;
-
-            const repo  = context.repo.repo;
-
-
-            let headSha, conclusion;
-
-            if (context.eventName === 'check_suite') {
-              headSha    = context.payload.check_suite.head_sha;
-              conclusion = context.payload.check_suite.conclusion;
-            } else {
-              headSha    = context.payload.workflow_run.head_sha;
-              conclusion = context.payload.workflow_run.conclusion;
-            }
-
-
-            if (!conclusion) {
-              core.info('No conclusion yet — skipping.');
+          script: |
+            const headSha =
+              context.payload.check_suite?.head_sha ||
+              context.payload.workflow_run?.head_sha;
+            if (!headSha) {
+              core.info('No head SHA on event; nothing to do.');
               return;
             }
 
-
-            // Find open PRs matching this head SHA. This job re-fires on
-            // every one of the repo's workflow_run completions, so an
-            // installation rate-limit 403 here must degrade gracefully
-            // instead of hard-failing the whole job (see incident: 403s
-            // pinned the shared installation budget at 0 for a full hour
-            // and spammed "Run failed" notifications on every occurrence).
-
-            let prs = [];
+            // Rate-limit guard: bail early if remaining budget is too low to
+            // safely run pulls.list() + checks.listSuitesForRef() (see #15887).
             try {
-              const res = await github.rest.pulls.list({
-                owner, repo, state: 'open', per_page: 100
-              });
-              prs = res.data;
+              const { data: rl } = await github.rest.rateLimit.get();
+              const remaining = rl?.resources?.core?.remaining ?? 0;
+              if (remaining < 100) {
+                core.warning(`Core API remaining=${remaining}; skipping to protect budget.`);
+                return;
+              }
             } catch (e) {
-              const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-              core.warning(`pulls.list failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              core.warning(`rateLimit.get() failed: ${e.message}; continuing cautiously.`);
+            }
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const matching = prs.filter(p => p.head.sha === headSha);
+            if (matching.length === 0) {
+              core.info(`No open PR matches head SHA ${headSha}.`);
               return;
             }
 
-            const targets = prs.filter(p => p.head.sha === headSha);
+            const { data: suites } = await github.rest.checks.listSuitesForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: headSha,
+            });
+            const allCompleted = suites.check_suites.every(s => s.status === 'completed');
+            const allPassing = suites.check_suites.every(s => s.conclusion === 'success' || s.conclusion === 'neutral' || s.conclusion === 'skipped');
 
-
-            if (targets.length === 0) {
-              core.info(`No open PRs for SHA ${headSha.slice(0,7)}.`);
-              return;
+            for (const pr of matching) {
+              core.info(`PR #${pr.number}: suites completed=${allCompleted} passing=${allPassing}`);
             }
-
-
-            for (const pr of targets) {
-              const num = pr.number;
-              core.info(`Updating PR #${num}`);
-
-              const currentLabels = async () => {
-                try {
-                  let res;
-                  try {
-                    res = await github.rest.issues.listLabelsOnIssue({
-                      owner, repo, issue_number: num
-                    });
-                  } catch (e) {
-                    core.warning(`listLabelsOnIssue error: ${e.message}`);
-                    return [];
-                  }
-                  return res.data.map(l => l.name);
-                } catch (e) {
-                  core.warning(`Failed to list labels for PR #${num}: ${e.message}`);
-                  return [];
-                }
-              };
-
-              const add = async (...labels) => {
-                for (const l of labels) {
-                  try {
-                    await github.rest.issues.addLabels({
-                      owner, repo, issue_number: num, labels: [l]
-                    });
-                    core.info(`  PR #${num} + ${l}`);
-                  } catch (e) { core.warning(`add ${l}: ${e.message}`); }
-                }
-              };
-
-              const remove = async (...labels) => {
-                const cur = await currentLabels();
-                for (const l of labels) {
-                  if (!cur.includes(l)) continue;
-                  try {
-                    await github.rest.issues.removeLabel({
-                      owner, repo, issue_number: num, name: l
-                    });
-                    core.info(`  PR #${num} - ${l}`);
-                  } catch (e) { core.warning(`remove ${l}: ${e.message}`); }
-                }
-              };
-
-              // Aggregate all check suites for this SHA
-              let allPass = false;
-              try {
-                const { data: suites } = await github.rest.checks.listSuitesForRef({
-                  owner, repo, ref: headSha, per_page: 100
-                });
-                const done = suites.check_suites.filter(s => s.status === 'completed');
-                const pending = suites.check_suites.filter(s => s.status !== 'completed');
-
-                if (pending.length > 0) {
-                  core.info(`PR #${num}: ${pending.length} suite(s) still pending — skipping.`);
-                  continue;
-                }
-
-                const PASS = new Set(['success', 'neutral', 'skipped']);
-                allPass = done.length > 0 && done.every(s => PASS.has(s.conclusion));
-              } catch (e) {
-                core.warning(`Could not list check suites: ${e.message}`);
-                // Fall back to single-event conclusion
-                const PASS = new Set(['success', 'neutral', 'skipped']);
-                allPass = PASS.has(conclusion);
-              }
-
-              if (allPass) {
-                await remove('checks-failing', 'needs-action');
-                await add('checks-passing');
-
-                const cur = await currentLabels();
-                if (cur.includes('approved')) {
-                  await add('ready-to-merge');
-                  core.info(`PR #${num} → ready-to-merge`);
-                }
-              } else {
-                await remove('checks-passing', 'ready-to-merge');
-                await add('checks-failing', 'needs-action');
-              }
-            }
-    timeout-minutes: 15
