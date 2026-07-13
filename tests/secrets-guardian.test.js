@@ -1,69 +1,69 @@
 // Regression test for scripts/secrets-guardian.sh
 //
-// PRIME DIRECTIVE: $10k/month → $10M in 3 years. The secrets guardian keeps
-// the revenue automation pipeline (Polar.sh, OSINT tools) running, so its
-// missing-secret reporting must be accurate — no duplicates, no dropped
-// critical secrets.
-//
-// Bug: the second loop's "already handled" guard used `echo "$CRITICAL_SECRETS"`
-// which only expands to the first array element. Every critical secret except
-// the first fell through and was re-appended to `missing=`. This test stubs
-// `gh` to report no secrets present and asserts each critical secret appears
-// exactly once in the emitted `missing=` line.
+// Verifies the bash array-membership guard actually checks all critical
+// secrets (not just the first element). Prior to the fix, GITHUB_TOKEN
+// (index 5 in CRITICAL_SECRETS) would appear twice in the `missing=`
+// GITHUB_OUTPUT line because the second loop's guard silently expanded
+// `"$CRITICAL_SECRETS"` to only the first element.
 
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const SCRIPT = path.join(__dirname, '..', 'scripts', 'secrets-guardian.sh');
-
 function runGuardian() {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'secrets-guardian-'));
-  const ghStub = path.join(tmpDir, 'gh');
-  const githubOutput = path.join(tmpDir, 'github_output');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'guardian-'));
+  const outputFile = path.join(tmp, 'github_output');
+  const stubDir = path.join(tmp, 'bin');
+  fs.mkdirSync(stubDir);
 
-  // Stub `gh` so `gh secret list` prints nothing → every secret is "missing".
-  fs.writeFileSync(ghStub, '#!/usr/bin/env bash\nexit 0\n');
-  fs.chmodSync(ghStub, 0o755);
-  fs.writeFileSync(githubOutput, '');
+  // Stub `gh` to report no secrets present -> everything is missing.
+  const ghStub = path.join(stubDir, 'gh');
+  fs.writeFileSync(ghStub, '#!/usr/bin/env bash\nexit 0\n', { mode: 0o755 });
 
-  const env = {
-    ...process.env,
-    PATH: `${tmpDir}:${process.env.PATH || ''}`,
-    GITHUB_OUTPUT: githubOutput,
-  };
+  fs.writeFileSync(outputFile, '');
 
-  execFileSync('bash', [SCRIPT], { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const script = path.resolve(__dirname, '..', 'scripts', 'secrets-guardian.sh');
 
-  const output = fs.readFileSync(githubOutput, 'utf8');
-  fs.rmSync(tmpDir, { recursive: true, force: true });
-  return output;
+  execFileSync('bash', [script], {
+    env: {
+      ...process.env,
+      PATH: `${stubDir}:${process.env.PATH}`,
+      GITHUB_OUTPUT: outputFile,
+    },
+    stdio: 'pipe',
+  });
+
+  return fs.readFileSync(outputFile, 'utf8');
 }
 
-test('secrets-guardian syntax is valid', () => {
-  execFileSync('bash', ['-n', SCRIPT], { stdio: 'ignore' });
-});
-
-test('missing= list contains no duplicate secret names', () => {
+test('secrets-guardian: critical secrets are not duplicated in missing= output', () => {
   const output = runGuardian();
-  const line = output.split('\n').find((l) => l.startsWith('missing='));
-  assert.ok(line, 'expected missing= line in GITHUB_OUTPUT');
+  const missingLine = output
+    .split('\n')
+    .find((line) => line.startsWith('missing='));
 
-  const names = line.replace(/^missing=/, '').trim().split(/\s+/).filter(Boolean);
+  assert.ok(missingLine, 'expected a missing= line in GITHUB_OUTPUT');
+
+  const names = missingLine.replace(/^missing=/, '').trim().split(/\s+/).filter(Boolean);
+
+  // GITHUB_TOKEN is a critical secret that is NOT the first element of the
+  // CRITICAL_SECRETS array -- exactly the case that regressed pre-fix.
+  const githubTokenCount = names.filter((n) => n === 'GITHUB_TOKEN').length;
+  assert.strictEqual(
+    githubTokenCount,
+    1,
+    `GITHUB_TOKEN should appear exactly once in missing=, got ${githubTokenCount} (line: ${missingLine})`
+  );
+
+  // No secret name should appear more than once anywhere in the list.
   const seen = new Set();
-  for (const name of names) {
-    assert.ok(!seen.has(name), `duplicate secret in missing=: ${name}`);
-    seen.add(name);
+  const dupes = [];
+  for (const n of names) {
+    if (seen.has(n)) dupes.push(n);
+    seen.add(n);
   }
-});
-
-test('GITHUB_TOKEN appears exactly once in missing= (regression: bare $CRITICAL_SECRETS guard)', () => {
-  const output = runGuardian();
-  const line = output.split('\n').find((l) => l.startsWith('missing=')) || '';
-  const names = line.replace(/^missing=/, '').trim().split(/\s+/).filter(Boolean);
-  const count = names.filter((n) => n === 'GITHUB_TOKEN').length;
-  assert.equal(count, 1, `GITHUB_TOKEN should appear once, saw ${count} in: ${line}`);
+  assert.deepStrictEqual(dupes, [], `duplicate secret names in missing=: ${dupes.join(', ')}`);
 });
