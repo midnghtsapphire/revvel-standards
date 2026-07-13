@@ -29,3 +29,10 @@ Agents completing other WR types should fill this in themselves once done — a 
 ## Notes
 
 <Optional additional context.>
+<!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
+     DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
+     NOT-APPLICABLE (no code was removed), PENDING-REVIEW (awaiting human decision). -->
+
+## Learnings — What & Why
+
+_Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._

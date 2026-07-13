@@ -7,3 +7,1023 @@
 - name: auto-generated-followup
   color: fbca04
   description: WR auto-generated from a checked `Follow-up:` checklist item
+  # ── Type — what kind of item this is (the small free set) ───────────────────────
+  - name: bug
+    axis: type
+    color: "d73a4a"
+    description: "Something isn't working"
+
+  - name: enhancement
+    axis: type
+    color: "a2eeef"
+    description: "New feature or request"
+
+  - name: documentation
+    axis: type
+    color: "0075ca"
+    description: "Documentation only"
+
+  - name: security
+    axis: type
+    color: "cc0000"
+    description: "Security vulnerability or concern"
+
+  - name: design
+    axis: type
+    color: "7057ff"
+    description: "Design/brand work needed"
+
+  - name: dependencies
+    axis: type
+    color: "0075ca"
+    description: "Dependency updates (Dependabot, etc.)"
+
+  - name: good-first-issue
+    axis: type
+    color: "7057ff"
+    description: "Good for newcomers"
+
+  - name: bom-purchase
+    axis: type
+    color: "ffd700"
+    description: "Requires a purchase (links to BOM.md)"
+
+  - name: duplicate
+    axis: type
+    color: "cfd3d7"
+    description: "Type — duplicate of an existing issue/PR"
+
+  - name: testing
+    axis: type
+    color: "bfd4f2"
+    description: "Type — testing task or test-run artifact"
+
+  # ── Triage — intake classification state machine ────────────────────────────────
+  - name: triage
+    axis: triage
+    color: "e4e669"
+    description: "Needs triage — newly opened issue awaiting classification"
+
+  - name: "triage:new"
+    axis: triage
+    color: "fef2c0"
+    description: "Triage stage — freshly opened, not yet looked at"
+
+  - name: "triage:in-progress"
+    axis: triage
+    color: "f9d71c"
+    description: "Triage stage — a triager is actively classifying"
+
+  - name: "triage:needs-info"
+    axis: triage
+    color: "e4e669"
+    description: "Triage stage — waiting on reporter for more info"
+
+  - name: "triage:classified"
+    axis: triage
+    color: "c2e0c6"
+    description: "Triage stage — labelled & routed, ready for owner"
+
+  - name: needs-triage
+    axis: triage
+    color: "e4e669"
+    description: "Triage — needs triage (alias of triage)"
+
+  # ── Priority — how urgent (priority-p0..p3, priority-slot:*, urgent, blocked) ───
+  - name: priority-p0
+    axis: priority
+    color: "b60205"
+    description: "Critical priority — drop everything"
+
+  - name: priority-p1
+    axis: priority
+    color: "d93f0b"
+    description: "High priority — next up"
+
+  - name: priority-p2
+    axis: priority
+    color: "fbca04"
+    description: "Medium priority — normal queue"
+
+  - name: priority-p3
+    axis: priority
+    color: "0e8a16"
+    description: "Low priority — backlog"
+
+  - name: "priority-slot:1-1"
+    axis: priority
+    color: "b60205"
+    description: "Sprint 1, slot 1 — first active item this sprint"
+
+  - name: "priority-slot:1-2"
+    axis: priority
+    color: "d93f0b"
+    description: "Sprint 1, slot 2 — second active item this sprint"
+
+  - name: "priority-slot:1-3"
+    axis: priority
+    color: "e36209"
+    description: "Sprint 1, slot 3 — third active item this sprint"
+
+  - name: "priority-slot:2-1"
+    axis: priority
+    color: "fbca04"
+    description: "Sprint 2, slot 1 — first item next sprint"
+
+  - name: "priority-slot:2-2"
+    axis: priority
+    color: "f9d71c"
+    description: "Sprint 2, slot 2 — second item next sprint"
+
+  - name: "priority-slot:2-3"
+    axis: priority
+    color: "fef2c0"
+    description: "Sprint 2, slot 3 — third item next sprint"
+
+  - name: "priority-slot:3-1"
+    axis: priority
+    color: "c2e0c6"
+    description: "Sprint 3, slot 1 — queued for sprint after next"
+
+  - name: blocked
+    axis: priority
+    color: "e4e669"
+    description: "Blocked by external dependency"
+
+  - name: urgent
+    axis: priority
+    color: "b60205"
+    description: "Priority — urgent, act immediately"
+
+  - name: urgent-compliance
+    axis: priority
+    color: "b60205"
+    description: "Priority — urgent compliance deadline"
+
+  # ── WR — work-request lifecycle state machine (wr:* etc.) ───────────────────────
+  - name: deep-research
+    axis: wr
+    color: "0e8a16"
+    description: "Requires deep research before execution"
+
+  - name: work-request
+    axis: wr
+    color: "1d76db"
+    description: "Work Request intake issue"
+
+  - name: auto-diagnosed
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by daily-diagnostic-audit.yml from a code-level diagnosis"
+  - name: auto-generated-followup
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by followup-checkbox-router.yml from a checked 'Follow-up:' checklist item"
+
+  - name: weekly-research
+    axis: wr
+    color: "fbca04"
+    description: "Weekly research task requiring deep investigation"
+
+  - name: quick
+    axis: wr
+    color: "c2e0c6"
+    description: "Lightweight quick/internal WR"
+
+  - name: checkpoint-gated
+    axis: wr
+    color: "fbca04"
+    description: "Ship block-by-block; owner reviews between blocks"
+
+  - name: checkpoint-approved
+    axis: wr
+    color: "0e8a16"
+    description: "Owner approved this block; next block may launch"
+
+  - name: high-stakes
+    axis: wr
+    color: "b60205"
+    description: "Meta or architectural work; use checkpoint-gated flow"
+
+  - name: "wr:in-progress"
+    axis: wr
+    color: "f9d71c"
+    description: "WR task actively being researched"
+
+  - name: "wr:complete"
+    axis: wr
+    color: "0e8a16"
+    description: "WR task completed with findings documented"
+
+  - name: "wr:reset"
+    axis: wr
+    color: "e4e669"
+    description: "Force re-run WR PR creation even when a skeleton PR exists"
+
+  - name: "wr:retrigger-attempts-1"
+    axis: wr
+    color: "fef2c0"
+    description: "WR PR auto-healer retry attempt 1"
+
+  - name: "wr:retrigger-attempts-2"
+    axis: wr
+    color: "f9d71c"
+    description: "WR PR auto-healer retry attempt 2"
+
+  - name: "wr:retrigger-attempts-3"
+    axis: wr
+    color: "d93f0b"
+    description: "WR PR auto-healer retry attempt 3"
+
+  - name: wr-stuck
+    axis: wr
+    color: "b60205"
+    description: "WR auto-healer escalation tracking"
+
+  - name: research-engine
+    axis: wr
+    color: "6f42c1"
+    description: "Route to layered research engine"
+
+  - name: "wr:new"
+    axis: wr
+    color: "6b7280"
+    description: "New issue — needs triage"
+
+  - name: "wr:research"
+    axis: wr
+    color: "f59e0b"
+    description: "Research in progress"
+
+  - name: "wr:research-complete"
+    axis: wr
+    color: "10b981"
+    description: "Research complete — ready for code"
+
+  - name: "wr:code"
+    axis: wr
+    color: "8b5cf6"
+    description: "Code in progress"
+
+  - name: "wr:jules"
+    axis: wr
+    color: "7c3aed"
+    description: "Jules AI coding agent"
+
+  - name: "wr:pr-open"
+    axis: wr
+    color: "ec4899"
+    description: "PR open — awaiting review"
+
+  - name: "wr:checking"
+    axis: wr
+    color: "06b6d4"
+    description: "Checks running"
+
+  - name: "wr:check-failed"
+    axis: wr
+    color: "ef4444"
+    description: "Checks failed — needs fix"
+
+  - name: "wr:review"
+    axis: wr
+    color: "f97316"
+    description: "PR under review"
+
+  - name: "wr:merge-ready"
+    axis: wr
+    color: "22c55e"
+    description: "Approved + passing — ready to merge"
+
+  - name: "wr:done"
+    axis: wr
+    color: "16a34a"
+    description: "Completed"
+
+  # ── Research — research-engine phases and research products ─────────────────────
+  - name: "research:orchestrating"
+    axis: research
+    color: "fbca04"
+    description: "Research engine is coordinating lanes"
+
+  - name: "research:blocked"
+    axis: research
+    color: "b60205"
+    description: "Research engine blocked by missing input"
+
+  - name: "research:complete"
+    axis: research
+    color: "0e8a16"
+    description: "Research packet generated"
+
+  - name: "research:review-needed"
+    axis: research
+    color: "0075ca"
+    description: "Research needs code-review agents"
+
+  - name: "research:marketing"
+    axis: research
+    color: "ff6b6b"
+    description: "Marketing lane assigned"
+
+  - name: "research:seo"
+    axis: research
+    color: "3ddcff"
+    description: "SEO demand lane assigned"
+
+  - name: "research:competitors"
+    axis: research
+    color: "1a73e8"
+    description: "Competitor intelligence lane"
+
+  - name: "research:chatter"
+    axis: research
+    color: "f7c948"
+    description: "Audience chatter lane"
+
+  - name: "research:facts"
+    axis: research
+    color: "5319e7"
+    description: "Factual validation lane"
+
+  - name: "research:technical"
+    axis: research
+    color: "8b5cf6"
+    description: "Technical delivery lane"
+
+  - name: "research:revenue"
+    axis: research
+    color: "22c55e"
+    description: "Revenue mechanics lane"
+
+  - name: "research:reviewer"
+    axis: research
+    color: "d93f0b"
+    description: "Research review and auto-fix lane"
+
+  - name: competitor-research
+    axis: research
+    color: "1a73e8"
+    description: "Trigger competitor research lane"
+
+  - name: audience-research
+    axis: research
+    color: "f7c948"
+    description: "Trigger audience research lane"
+
+  - name: chatter-research
+    axis: research
+    color: "f59e0b"
+    description: "Trigger social chatter research lane"
+
+  - name: "deep-search:complete"
+    axis: research
+    color: "c2e0c6"
+    description: "Research — deep-search run finished"
+
+  # ── Deliver — ship-to-market delivery targets (deliver:*) ───────────────────────
+  - name: "deliver:all"
+    axis: deliver
+    color: "0e8a16"
+    description: "Trigger all delivery channels on merge"
+
+  - name: "deliver:api"
+    axis: deliver
+    color: "1d76db"
+    description: "Deploy REST/GraphQL API (Railway / Fly / Render)"
+
+  - name: "deliver:app"
+    axis: deliver
+    color: "0075ca"
+    description: "Deploy web app (Vercel / Netlify / Cloudflare)"
+
+  - name: "deliver:mobile"
+    axis: deliver
+    color: "5319e7"
+    description: "Deploy to iOS App Store + Google Play Store"
+
+  - name: "deliver:android"
+    axis: deliver
+    color: "3ddc84"
+    description: "Deploy Android app to Google Play Store"
+
+  - name: "deliver:ios"
+    axis: deliver
+    color: "555555"
+    description: "Deploy iOS app to Apple App Store / TestFlight"
+
+  - name: "deliver:pdf"
+    axis: deliver
+    color: "e4e669"
+    description: "Render and upload PDF artifact"
+
+  - name: "deliver:cli"
+    axis: deliver
+    color: "006b75"
+    description: "Publish CLI binary to npm / PyPI / Homebrew"
+
+  - name: "deliver:package"
+    axis: deliver
+    color: "0075ca"
+    description: "Publish package to npm / PyPI"
+
+  - name: "deliver:docker"
+    axis: deliver
+    color: "2496ed"
+    description: "Build and push Docker image to registry"
+
+  - name: "deliver:mcp"
+    axis: deliver
+    color: "6f42c1"
+    description: "Package and deploy MCP server"
+
+  - name: "deliver:docs"
+    axis: deliver
+    color: "0075ca"
+    description: "Build and deploy documentation site"
+
+  - name: "deliver:video"
+    axis: deliver
+    color: "d93f0b"
+    description: "Record or render demo video"
+
+  # ── Review — PR review/merge lifecycle ──────────────────────────────────────────
+  - name: in-review
+    axis: review
+    color: "fbca04"
+    description: "Linked PR is open and ready for review"
+
+  - name: awaiting-review
+    axis: review
+    color: "0075ca"
+    description: "Waiting for reviewer feedback"
+
+  - name: checks-failing
+    axis: review
+    color: "d73a4a"
+    description: "CI checks are failing"
+
+  - name: checks-passing
+    axis: review
+    color: "a2eeef"
+    description: "All CI checks pass"
+
+  - name: ready-to-merge
+    axis: review
+    color: "008672"
+    description: "Approved + checks pass — ready to merge"
+
+  - name: awaiting-approval
+    axis: review
+    color: "fbca04"
+    description: "PR is awaiting review and approval"
+
+  - name: changes-requested
+    axis: review
+    color: "d93f0b"
+    description: "PR has changes requested by reviewers"
+
+  - name: approved
+    axis: review
+    color: "0e8a16"
+    description: "PR has been approved by reviewers"
+
+  - name: devin-review
+    axis: review
+    color: "5319e7"
+    description: "Opt-in: start a Devin.ai code-review session on this PR (devin-code-review.yml)"
+
+  - name: review-started
+    axis: review
+    color: "0075ca"
+    description: "PR review has been initiated"
+
+  - name: "review-fix:in-progress"
+    axis: review
+    color: "fbca04"
+    description: "OpenRouter is analyzing and fixing review feedback"
+
+  - name: "review-fix:complete"
+    axis: review
+    color: "0e8a16"
+    description: "OpenRouter has addressed all review feedback"
+
+  - name: "review-fix:failed"
+    axis: review
+    color: "d93f0b"
+    description: "OpenRouter could not automatically fix review issues"
+
+  - name: auto-merge
+    axis: review
+    color: "0e8a16"
+    description: "Merge automatically once approved and CI passes"
+
+  - name: "won't-merge"
+    axis: review
+    color: "b60205"
+    description: "Block auto-merge — human review required"
+
+  - name: code-review
+    axis: review
+    color: "0b6fff"
+    description: "Route to code-review agents"
+
+  - name: "conflicts:needs-jules"
+    axis: review
+    color: "d93f0b"
+    description: "Review — merge conflicts routed to Jules"
+
+  - name: has-conflicts
+    axis: review
+    color: "d93f0b"
+    description: "Review — PR has merge conflicts"
+
+  - name: needs-review
+    axis: review
+    color: "fbca04"
+    description: "Review — output awaiting human/agent review"
+
+  # ── Lifecycle — issue lifecycle and escalation ──────────────────────────────────
+  - name: "issue:in-progress"
+    axis: lifecycle
+    color: "0075ca"
+    description: "Issue has a linked PR in progress"
+
+  - name: "issue:done"
+    axis: lifecycle
+    color: "0e8a16"
+    description: "Issue resolved — linked PR merged"
+
+  - name: "issue:stale"
+    axis: lifecycle
+    color: "e4e669"
+    description: "No activity for 7+ days — needs attention"
+
+  - name: "lifecycle:stuck"
+    axis: lifecycle
+    color: "d93f0b"
+    description: "Label watchdog detected a stuck state"
+
+  - name: wontfix
+    axis: lifecycle
+    color: "ffffff"
+    description: "This will not be worked on"
+
+  - name: needs-human
+    axis: lifecycle
+    color: "d93f0b"
+    description: "Escalated — requires human intervention"
+
+  - name: needs-action
+    axis: lifecycle
+    color: "fbca04"
+    description: "Requires immediate action — auto-route to OpenRouter"
+
+  - name: retro
+    axis: lifecycle
+    color: "0075ca"
+    description: "Post-deploy retrospective or gap analysis finding"
+
+  - name: resolved
+    axis: lifecycle
+    color: "0e8a16"
+    description: "Issue resolved — workflow recovered or fixed"
+
+  - name: needs-completion
+    axis: lifecycle
+    color: "fbca04"
+    description: "Lifecycle — work detected as incomplete"
+
+  - name: needs-fix
+    axis: lifecycle
+    color: "d93f0b"
+    description: "Lifecycle — automated check demands a fix"
+
+  - name: needs-spec-approval
+    axis: lifecycle
+    color: "fbca04"
+    description: "Lifecycle — spec awaiting owner approval"
+
+  # ── Fleet — which agent/lane owns the work ──────────────────────────────────────
+  - name: copilot
+    axis: fleet
+    color: "7057ff"
+    description: "Assigned to GitHub Copilot for fixing"
+
+  - name: mindmappr
+    axis: fleet
+    color: "0075ca"
+    description: "Expert code assistant (mindmappr) assigned as WR agent"
+
+  - name: ralph-loop
+    axis: fleet
+    color: "ff6b35"
+    description: "Managed by the Ralph Loop self-healing workflow"
+
+  - name: openrouter
+    axis: fleet
+    color: "6f42c1"
+    description: "Routed to the OpenRouter orchestrator (first line of sight)"
+
+  - name: agent-fallback
+    axis: fleet
+    color: "6f42c1"
+    description: "Route issue or PR to the OpenHands → Cursor → OpenRouter fallback chain"
+
+  - name: "openrouter:instantiating"
+    axis: fleet
+    color: "fbca04"
+    description: "OpenRouter instantiation in progress — API ping pending"
+
+  - name: "openrouter:instantiated"
+    axis: fleet
+    color: "0e8a16"
+    description: "OpenRouter instantiated — API key verified, 👍 live"
+
+  - name: "openrouter:instantiation-failed"
+    axis: fleet
+    color: "b60205"
+    description: "OpenRouter instantiation failed — see tracking issue for captured error"
+
+  - name: "openrouter:needs-key"
+    axis: fleet
+    color: "d93f0b"
+    description: "OPENROUTER_API_KEY not configured — cannot instantiate"
+
+  - name: "openrouter:ralph-escalated"
+    axis: fleet
+    color: "ff6b35"
+    description: "Instantiation unresolved > 24h — Ralph loop escalated to humans"
+
+  - name: "openrouter:triage-failed"
+    axis: fleet
+    color: "b60205"
+    description: "OpenRouter triage run failed — see failure comment for captured error"
+
+  - name: vault-agent
+    axis: fleet
+    color: "e4e669"
+    description: "Vault Agent credential provisioning required"
+
+  - name: flexina
+    axis: fleet
+    color: "9b59b6"
+    description: "Route to Flexina desktop automation agent"
+
+  - name: codex
+    axis: fleet
+    color: "5319e7"
+    description: "Routed to Codex (via OpenRouter) for code execution"
+
+  - name: rex
+    axis: fleet
+    color: "1f6feb"
+    description: "Routed to Rex — the oAudrey Agent Factory / no-key Perplexity lane"
+
+  - name: jules
+    axis: fleet
+    color: "4285f4"
+    description: "Routed to Google Jules for deep-research and authoring"
+
+  - name: graphite
+    axis: fleet
+    color: "8b5cf6"
+    description: "Managed by the Graphite PR-stacking app / merge queue"
+
+  - name: antigravity
+    axis: fleet
+    color: "1a73e8"
+    description: "PR authored from a Google Antigravity IDE session"
+
+  - name: oaudrey
+    axis: fleet
+    color: "7C5CFF"
+    description: "oAudrey hub landing page or subdomain work"
+
+  - name: OpenHands
+    axis: fleet
+    color: "5319e7"
+    description: "Route to OpenHands-capable automation"
+
+  - name: agent-hq
+    axis: fleet
+    color: "6f42c1"
+    description: "Handled by Agent HQ desktop agent system"
+
+  - name: desktop-agent
+    axis: fleet
+    color: "7057ff"
+    description: "Task for local desktop agent execution"
+
+  - name: goap
+    axis: fleet
+    color: "5319e7"
+    description: "GOAP agent task — goal-oriented action planning"
+
+  - name: noimosai
+    axis: fleet
+    color: "7C5CFF"
+    description: "Route to NoimosAI autonomous marketing team"
+
+  - name: bito-ai
+    axis: fleet
+    color: "0B6FFF"
+    description: "PR or issue touched by BITO AI review"
+
+  - name: "bito-ai:review"
+    axis: fleet
+    color: "4D94FF"
+    description: "BITO AI review complete — see review comment"
+
+  - name: "bito-ai:changes-needed"
+    axis: fleet
+    color: "D93F0B"
+    description: "BITO found blocking issues — address before merge"
+
+  - name: goap-escalation
+    axis: fleet
+    color: "b60205"
+    description: "GOAP escalation — requires human intervention after auto-retry failure"
+
+  - name: agent-health-alert
+    axis: fleet
+    color: "d93f0b"
+    description: "Fleet — agent health alert from audit logger"
+
+  - name: agent-monitoring
+    axis: fleet
+    color: "1d76db"
+    description: "Fleet — agent monitoring / fallback tracking"
+
+  - name: auditor-controller
+    axis: fleet
+    color: "5319e7"
+    description: "Fleet — auditor-controller agent lane"
+
+  - name: openrouter-fallback
+    axis: fleet
+    color: "fbca04"
+    description: "Fleet — OpenRouter fallback chain engaged"
+
+  - name: secrets-guardian
+    axis: fleet
+    color: "cc0000"
+    description: "Fleet — secrets-guardian agent lane"
+
+  - name: trustforge
+    axis: fleet
+    color: "7057ff"
+    description: "Fleet — TrustForge / EEAT trust lane"
+
+  # ── Role — agent role within the fleet ──────────────────────────────────────────
+  - name: "role:orchestrator"
+    axis: role
+    color: "6f42c1"
+    description: "OpenRouter agent is acting as orchestrator on this item"
+
+  - name: "role:fixer"
+    axis: role
+    color: "ff6b35"
+    description: "OpenRouter agent is acting as fixer on this item"
+
+  # ── Ops — operations/automation health signals ──────────────────────────────────
+  - name: third-party
+    axis: ops
+    color: "bfdadc"
+    description: "PR from forked repository - external contributor"
+
+  - name: external-contributor
+    axis: ops
+    color: "7057ff"
+    description: "Contribution from outside the organization"
+
+  - name: operations
+    axis: ops
+    color: "1d76db"
+    description: "Operational control issue (e.g. quiet-mode gate)"
+
+  - name: automation-control
+    axis: ops
+    color: "6f42c1"
+    description: "Controls scheduled automation state (exit-quiet-mode gate)"
+
+  - name: auto-fix
+    axis: ops
+    color: "0075ca"
+    description: "Created by auto-fix / Ralph Loop workflow"
+
+  - name: scorecard
+    axis: ops
+    color: "ff6b35"
+    description: "Agent scorecard self-heal / trust tracking"
+
+  - name: self-heal
+    axis: ops
+    color: "ff6b35"
+    description: "Self-heal remediation in progress (reset + rerun)"
+
+  - name: hallucination
+    axis: ops
+    color: "d73a4a"
+    description: "Agent referenced something that doesn't exist"
+
+  - name: credentials-missing
+    axis: ops
+    color: "d93f0b"
+    description: "Issue blocked — missing API keys/secrets/credentials"
+
+  - name: credentials-ready
+    axis: ops
+    color: "0e8a16"
+    description: "All required credentials provisioned and available"
+
+  - name: desktop-access-required
+    axis: ops
+    color: "fbca04"
+    description: "Requires desktop agent with file system/keychain access"
+
+  - name: proof-of-life
+    axis: ops
+    color: "2ea44f"
+    description: "Proof-of-life run — app-review revvel-standards-run"
+
+  - name: fork-audit
+    axis: ops
+    color: "bfdadc"
+    description: "Created by the Fork-Audit Bot (upstream repo eval)"
+
+  - name: upstream-contribution
+    axis: ops
+    color: "c5def5"
+    description: "Tracks a contribution opened in an external (upstream) repo"
+
+  - name: deploy-failure
+    axis: ops
+    color: "d73a4a"
+    description: "Production deployment failure — needs immediate attention"
+
+  - name: secrets-missing
+    axis: ops
+    color: "b60205"
+    description: "One or more required secrets are absent — auto-heal pending"
+
+  - name: auto-error
+    axis: ops
+    color: "d73a4a"
+    description: "Auto-created error issue from workflow failure"
+
+  - name: workflow-stuck
+    axis: ops
+    color: "d73a4a"
+    description: "Workflow running too long or hung — auto-fix in progress"
+
+  - name: workflow-failure
+    axis: ops
+    color: "b60205"
+    description: "Workflow failed — requires investigation"
+
+  - name: audit
+    axis: ops
+    color: "5319e7"
+    description: "Ops — audit finding or audit-run artifact"
+
+  - name: auto-fallback
+    axis: ops
+    color: "fbca04"
+    description: "Ops — automatic fallback path was taken"
+
+  - name: auto-generated
+    axis: ops
+    color: "ededed"
+    description: "Ops — issue/PR generated by automation"
+
+  - name: automated
+    axis: ops
+    color: "ededed"
+    description: "Ops — created by an automated cron/status job"
+
+  - name: automation
+    axis: ops
+    color: "1d76db"
+    description: "Ops — automation pipeline item"
+
+  - name: automation-failure
+    axis: ops
+    color: "d73a4a"
+    description: "Ops — automation pipeline failure"
+
+  - name: budget-exhausted
+    axis: ops
+    color: "d93f0b"
+    description: "Ops — API/credit budget exhausted"
+
+  - name: credential-autonomy
+    axis: ops
+    color: "0e8a16"
+    description: "Ops — credential autonomy agent item"
+
+  - name: deployment
+    axis: ops
+    color: "0e8a16"
+    description: "Ops — deployment task or deployment health"
+
+  - name: failure
+    axis: ops
+    color: "d73a4a"
+    description: "Ops — generic failure marker from monitors"
+
+  - name: monitor
+    axis: ops
+    color: "1d76db"
+    description: "Ops — monitoring / status-check item"
+
+  - name: scaffolding-detected
+    axis: ops
+    color: "d93f0b"
+    description: "Ops — anti-scaffolding enforcer hit"
+
+  - name: self-healing
+    axis: ops
+    color: "0e8a16"
+    description: "Ops — self-healing loop item (alias of self-heal)"
+
+  - name: status
+    axis: ops
+    color: "ededed"
+    description: "Ops — status report from cron jobs"
+
+  - name: third-party-action-audit
+    axis: ops
+    color: "5319e7"
+    description: "Ops — third-party action audit finding"
+
+  - name: warning
+    axis: ops
+    color: "fbca04"
+    description: "Ops — warning-level monitor signal"
+
+  # ── Content — content/marketing pipeline ────────────────────────────────────────
+  - name: marketing
+    axis: content
+    color: "FF6B6B"
+    description: "Marketing task — auto-routed to NoimosAI"
+
+  - name: seo
+    axis: content
+    color: "3DDCFF"
+    description: "SEO task — handled by NoimosAI SEO agent"
+
+  - name: content
+    axis: content
+    color: "F7C948"
+    description: "Content creation task — handled by NoimosAI content agent"
+
+  - name: content-automation
+    axis: content
+    color: "00D4AA"
+    description: "Trigger content automation pipeline"
+
+  - name: writing
+    axis: content
+    color: "FF69B4"
+    description: "Writing/copywriting task"
+
+  - name: blog
+    axis: content
+    color: "7B68EE"
+    description: "Blog post creation"
+
+  - name: seo-content
+    axis: content
+    color: "3DDCFF"
+    description: "SEO-focused content"
+
+  - name: "content:draft"
+    axis: content
+    color: "FFA500"
+    description: "Content draft stage, needs review"
+
+  - name: "content:final"
+    axis: content
+    color: "00FF00"
+    description: "Content final, ready to publish"
+
+  - name: affiliate
+    axis: content
+    color: "4CAF50"
+    description: "Affiliate link / revenue task — handled by NoimosAI affiliate agent"
+
+  - name: ui-creation
+    axis: content
+    color: "ec4899"
+    description: "UI creation engine — competitive research + design"
+
+  - name: ui-creation-complete
+    axis: content
+    color: "10b981"
+    description: "UI creation complete — artifacts ready"
+
+  - name: subscriptions
+    axis: content
+    color: "0e8a16"
+    description: "Third-party subscription / trial tracking"
