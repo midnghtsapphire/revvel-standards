@@ -191,6 +191,11 @@ labels:
     color: "1d76db"
     description: "Work Request intake issue"
 
+  - name: auto-generated-followup
+    axis: wr
+    color: "5319e7"
+    description: "WR auto-created by followup-checkbox-router.yml from a checked 'Follow-up:' checklist item"
+
   - name: weekly-research
     axis: wr
     color: "fbca04"
